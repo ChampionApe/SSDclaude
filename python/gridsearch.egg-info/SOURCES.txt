@@ -1,0 +1,10 @@
+pyproject.toml
+gridsearch/__init__.py
+gridsearch/robustRoot.py
+gridsearch/roots1d.py
+gridsearch/test_roots1d.py
+gridsearch.egg-info/PKG-INFO
+gridsearch.egg-info/SOURCES.txt
+gridsearch.egg-info/dependency_links.txt
+gridsearch.egg-info/requires.txt
+gridsearch.egg-info/top_level.txt

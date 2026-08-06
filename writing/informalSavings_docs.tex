@@ -1,0 +1,535 @@
+\documentclass[a4paper]{article}
+\input{Packages.tex}
+\begin{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                  0: title section                %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Technical Note: \\
+\emph{Social Security Design and Its Political Support}}
+
+\author{Rasmus K.\ Berg\thanks{University of Copenhagen. Oster Farimagsgade 5, 1353 Copenhagen K, Denmark. E-mail: \texttt{rasmus.kehlet.berg@econ.ku.dk}.}
+\and
+Mart\'{\i}n Gonzalez-Eiras\thanks{University of Bologna. Piazza Scaravilli 2, 40126 Bologna. E-mail: \texttt{mge@alum.mit.edu}. Web: \texttt{alum.mit.edu/www/mge}.}}
+\maketitle
+
+
+\begin{abstract}
+\noindent
+The note formally presents a number of different models used in the paper \textit{Social Security Design and Its Political Support}. In many instances, the note is more general than in the final paper.
+
+In the first part, we devote one section per general model version to describe and characterize both the economic equilibrium and the politico-economic equilibrium. All model sections are self-contained. In part II, we go through each of the models again and go through how the models are solved numerically.
+
+
+At the current stage, models include the following overall variations: The analytical-informal model, the informal savings model, and the US model. For each of the three, we currently implement a number of different solutions. First, we have one set of implementations with one common $X$ across all types and one with type-specific ones, $X_j$. Second, we have one where pension characteristics are fixed (exogenous), one where they are chosen permanently in one period, and one where characteristics are chosen without commitment equivalent to the tax rate.
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                  Main sections                   %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\part{Models}\label{part:models}
+
+This part contains a description of a number of related models. We present each of them in turn.
+
+
+\input{Part1/InformalSavings}
+\edef\refsec{sec:models:infsav}
+\edef\refeq{eq:models:infsav}
+
+
+\section{Informal Savings Model}\label{\refsec}
+The following model is a variation of the informal analytical model. The only difference in the model structure is that the informal households $j=0$ now have access to an informal savings vehicle. Their savings are not added to the formal capital (thus do not enter aggregate $s_t$). However, they still earn an interest rate $R_t^0$ on their savings that is assumed proportional to the formal savings market for simplicity. It is straightforward to show that the economic equilibrium solution is identical \textit{except} for the informal households.
+
+\smalltitle{What changes relative to the analytical model.}
+Because the change is confined to the informal household, it is worth listing up front exactly which objects are affected and which are not. Unaffected: the aggregate states \eqref{\refeq:aggregateStates}, factor prices \eqref{\refeq:factorPrices}, the informal wage rate \eqref{\refeq:w0}, the government budget \eqref{\refeq:governmentBudget}, all formal household choices \eqref{\refeq:formalOpt}, and hence the entire block of equilibrium conditions \eqref{\refeq:EE} determining $\Gamma_{s,t}$, $\Theta_{h,t}$, $h_t$, $s_t$, $s_{t,i}/s_t$, and the formal consumption functions \eqref{\refeq:EE:ci}. Affected:
+\begin{enumerate}
+    \item A new price, the informal gross return $R_t^0$ \eqref{\refeq:R0}, and a new parameter $\chi_t^R$ governing it.
+    \item The informal budget constraints \eqref{\refeq:informalBudget}, which now contain informal savings $s_{t,0}$.
+    \item The informal household's choices \eqref{\refeq:informalOpt}: labour supply is unchanged, but a savings decision is added, characterized by an Euler condition and a generalized discount factor $B_{t+1}^0$.
+    \item The informal consumption functions \eqref{\refeq:EE:c0}, and a new predetermined ratio $\varsigma_{t}^0 \equiv s_{t,0}/s_t$ that plays for the informal household the role $s_{t,i}/s_t$ plays for the formal ones.
+    \item Both informal marginal-utility terms in the political first order condition, \eqref{\refeq:PEELOG} and \eqref{\refeq:PEE}.
+\end{enumerate}
+Two results survive the change, and they are what keep the model in the same solution family as the analytical one: with $\rho=1$ all consumption functions remain log-separable in the state $s_{t-1}$, so the politico-economic equilibrium is still closed-form with no endogenous state; and the informal savings ratio $\varsigma_t^0$, like $s_{t,i}/s_t$, has a closed form in terms of parameters and policy, so it never has to be carried as a separate state. One structural property is \emph{lost}: the log first order condition now depends on the lagged tax rate $\tau_{t-1}$ (through $\varsigma_{t-1}^0$), which the analytical model's does not. We return to this in \Cref{\refsec:PEELOG}.
+
+
+\subsection{The model}\label{\refsec:model}
+We consider an economy populated by overlapping generations of workers and retirees. Within each generational cohort, we consider $J+1$ different household types indexed $j= 0,...,J$. We refer to type $j=0$ households as "informal"; they work in informal markets and save through an informal technology that is not part of the formal capital stock. Households of type $i>0$ are "formal" households; they supply $h_{t,i}\eta_{t,i}$ units of labour when young with $\eta_{t,i}$ denoting labour productivity. We let $\gamma_{t,j}$ denote sizes of working households with $\sum_i \gamma_{t,i} = 1$.
+
+As young, households are endowed with a unit of time that is allocated between labour and leisure. Formal workers pay taxes on their labour income, consume, and save; informal workers consume and save through an informal technology. Households survive and retire with probability $p_{t,j}$; all formal households survive with the same probability $p_{t,i}= p_t$. Lost savings are insured within-type, for informal as well as formal households.
+
+The government runs a pay-as-you-go (PAYG) pension system with a balanced budget. Each period, the government imposes a tax on labour supplied in the formal sector and transfers the collected amount directly to retirees. We consider social security systems that differ along two dimensions: whether workers need to qualify to receive full benefits or not, and the type of benefits provided - either tied to earnings or flat-rate.
+
+Policy decisions are taken by a government that acts in the interest of voters, but lacks commitment.
+
+\smalltitle{Technology.}
+\begin{subequations}\label{\refeq:aggregateStates}
+In the formal sector, a continuum of firms transforms aggregate capital and labour into output. We define aggregate labour and capital from
+\begin{align}
+    H_t =& n_th_t, & h_t&\equiv \sum_{i}\gamma_{t,i}\eta_{t,i}h_{t,i} \\
+    K_t =& n_{t-1} s_{t-1}, & s_{t-1}&\equiv \sum_i\gamma_{t-1,i}s_{t-1,i}.
+\end{align}
+\end{subequations}
+Both sums run over the formal types $i>0$ only: informal labour is supplied outside the formal sector, and informal savings $s_{t,0}$ are held in the informal savings vehicle and do \emph{not} add to the formal capital stock. This is the single substantive difference relative to the analytical model, and it is the reason the aggregate block below is unchanged. The representative firm produces output using labour and capital and a conventional Cobb-Douglas technology
+\begin{align*}
+    Y_t = A_t K_t^{\alpha}H_t^{1-\alpha}.
+\end{align*}
+In equilibrium this implies the following factor prices:
+\begin{align}\label{\refeq:factorPrices}
+    R_t = \alpha \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha-1}, \qquad w_t = (1-\alpha)A_t \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha},
+\end{align}
+
+
+\bigskip
+Informal households employ a linear production technology with return $w_t^0$ per efficiency unit of labour and $R_t^0$ per unit of informal savings. For simplicity, we model both as proportional to the corresponding formal factor price absent taxes. It is convenient to define the coefficient function $\Theta_{h,t}$ of \eqref{\refeq:EE:h} evaluated at $\tau_t = \tau_{t+1} = 0$,
+\begin{align}\label{\refeq:Theta0}
+    \Theta_{h,t}^0 \equiv \left(\Gamma_{h,t}\right)^{\frac{1}{1+\alpha\xi}}\left(1-\alpha\right)^{\frac{\xi}{1+\alpha\xi}},
+\end{align}
+so that the informal factor prices can be written compactly as\footnote{We can verify that these are the formal factor prices with $h_t$ evaluated around $\tau_t = \tau_{t+1} = 0$; this simplification ties the informal returns to the general development of the economy (through $s_{t-1}$), but does not allow them to respond directly to taxes. The wage rate is exactly as in the analytical model; the return $R_t^0$ is new.}
+\begin{align}
+    w_t^0 &= (1-\alpha)\left(\Theta_{h,t}^0\right)^{-\alpha}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha}{1+\alpha\xi}} = \left(\frac{1-\alpha}{\Gamma_{t,h}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}} \left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha}{1+\alpha\xi}} \label{\refeq:w0} \\
+    R_t^0 &= \chi_t^R\alpha \left(\Theta_{h,t}^0\right)^{1-\alpha}\left(\frac{s_{t-1}}{\nu_t}\right)^{-\frac{1-\alpha}{1+\alpha\xi}}, \label{\refeq:R0}
+\end{align}
+where $\chi_t^R>0$ measures the return on the informal savings vehicle relative to the formal capital market ($\chi_t^R = 1$ reproduces the formal return absent taxes exactly). Note that $\chi_t^R$ is a distinct parameter from the informal old-age productivity $\chi_t$ introduced below. Two features of \eqref{\refeq:R0} matter later: the informal return is decreasing in the formal capital stock $s_{t-1}$ (it inherits the diminishing marginal product of formal capital), and the exponents in \eqref{\refeq:w0} and \eqref{\refeq:R0} sum in such a way that second-period informal resources discounted by $R^0$ are \emph{exactly linear} in $s_{t-1}$ --- see \eqref{\refeq:EE:c0}.
+
+
+\smalltitle{Preferences and Household Choices.}
+Workers and retirees in period $t$ value consumption, $c_{1,t}^j$ and $c_{2,t}^j$ respectively. Workers discount the future at factor $\beta_{t,j}\in[0,1)$ where the survival probability $p_{t,j}$ is included.
+
+For the young households, the expected utilities are given by
+\begin{subequations}\label{\refeq:util}
+\begin{align}
+    &\max\mbox{ } U_{t,i}\left(c_{1,t}^i, h_{t,i}, c_{2,t+1}^i\right) = u_{t,i}\left(c_{1,t}^i, h_{t,i}\right) +\beta_{t,i}u_{t,i}\left(c_{2,t+1}^i,0\right), \quad \text{for }i>0 \\
+    &\max\mbox{ } U_{t,0}\left(c_{1,t}^0, h_{1,t}^0, c_{2,t+1}^0\right) = u_{t,0}\left(c_{1,t}^0, h_{1,t}^0\right) +\beta_{t,0}u_{t,0}\left(c_{2,t+1}^0,h_{2,t+1}^0\right)
+\end{align}
+\end{subequations}
+where we use CRRA-GHH preferences
+\begin{align*}
+    u_{t,j}(c,h) = \left\lbrace\begin{array}{ll} \dfrac{1}{1-1/\rho}\left(\tilde{c}_{t}^j\right)^{1-1/\rho}, & \text{for }\rho \neq 1 \\
+    \ln\left(\tilde{c}_{t}^j\right) , & \text{for }\rho = 1
+    \end{array}\right. , \qquad \tilde{c}_t^j \equiv c-\dfrac{\xi}{1+\xi}X_{t,j}\left(h\right)^{\frac{1+\xi}{\xi}}
+\end{align*}
+where $\rho>0$ is the intertemporal elasticity of substitution, $\xi$ is the Frisch elasticity, and $X_{t,j}$ is a parameter that measures the disutility of labour.
+
+\begin{subequations}\label{\refeq:formalBudget}
+The formal household receives wages, pay social security taxes $\tau_t$, save $s_{t,i}$, and consume when young, and consume their savings including pension benefits $b_{t+1}^i$ when old:
+\begin{align}
+    c_{1,t}^i &= w_t\eta_{t,i} h_{t,i}(1-\tau_t)-s_{t,i} \\
+    c_{2,t+1}^i &= s_{t,i}R_{t+1}/p_t+ b_{t+1}^i(h_{t,i}).
+\end{align}
+\end{subequations}
+
+\begin{subequations}\label{\refeq:informalBudget}
+Informal households earn informal wages when young, of which they consume part and save part in the informal vehicle; when old they earn informal wages again, collect the return on their informal savings, and receive universal pensions $b_{t+1}^0$. They pay no social security taxes:
+\begin{align}
+    c_{1,t}^0 &= w_t^0\eta_{t,0}h_{1,t}^0 - s_{t,0} \\
+    c_{2,t+1}^0 &= s_{t,0}R^0_{t+1}/p_{t,0}+w_{t+1}^0\chi_{t+1} \eta_{t,0}h_{2,t+1}^0+b_{t+1}^0,
+\end{align}
+where $\chi_{t+1}>0$ measures the relative productivity of the informal worker when old. As for formal households, savings lost to mortality are insured within the type, which is the source of the $1/p_{t,0}$ term.\tinytodo{Modelling choice for review: $s_{t,0}$ is not restricted to be non-negative, so informal households may borrow against their old-age informal income and pension at the rate $R_{t+1}^0$. Imposing $s_{t,0}\geq 0$ would add a kink and break the closed forms below.}
+\end{subequations}
+
+
+
+\smalltitle{Social Security System.}
+The government runs a pay-as-you-go pension system with a balanced budget. Every period, the government taxes labour income in the formal sector and transfers the sum directly to current retirees. Informal savings are not taxed, so the government budget is exactly as in the analytical model.
+
+
+Benefits are given by
+\begin{subequations} \label{\refeq:governmentBudget}
+\begin{align}
+    b_t^i =& \left[\theta_th_{t-1,i} \eta_{t-1,i}+(1-\theta_t)h_{t-1}\right] \overline{b}_t \\
+    b_t^0 =& \epsilon_t h_{t-1} \overline{b}_t
+\end{align}
+where $\epsilon_t$ measures universal pensions and $\theta_t$ measures contributive incentives.
+
+
+
+We note that the shares $\sum_j\gamma_{t,j} = 1+\gamma_{t,0}$ to have a unit mass of formal households (convenient to have for definition of aggregate states). Thus, the average contribution of young households at time $t$ is
+\begin{align*}
+    \text{Avg. contribution from formal} = w_t\tau_t\sum_{i>0}\gamma_{t,i}\eta_{t,i}h_t^i = w_t\tau_th_t.
+\end{align*}
+Letting $n_t$ denote total number of young households, the number of formal households are $n_t/(1+\gamma_{t,0})$. Similarly, without mortality, the share of retired households of type $j$ would be $\gamma_{t-1,j}/(1+\gamma_{t-1,0})$. Taking mortality into consideration, the balanced budget requires that
+\begin{align*}
+    \dfrac{n_t}{1+\gamma_{t,0}} w_t\tau_th_t = \dfrac{n_{t-1}}{1+\gamma_{t-1,0}}\sum_j \gamma_{t-1,j}p_{t-1,j} b_t^j
+\end{align*}
+The left hand side measures contributions, the right hand side measures beneficiaries. Using the structure of the pension design, this identifies the level in pension rates $\overline{b}_t$ as:
+\begin{align}\label{\refeq:governmentBudget:bbar}
+    \overline{b}_t & \equiv \dfrac{\nu_t w_th_t\tau_t}{h_{t-1}\kappa_{t-1}}, \qquad\kappa_t \equiv \frac{1+\gamma_{t,0}}{1+\gamma_{t+1,0}}(\epsilon_{t+1}\gamma_{t,0}p_{t,0}+p_t)
+\end{align}
+\end{subequations}
+
+
+\bigskip
+\begin{subequations}\label{\refeq:formalOpt}
+With CRRA-GHH preferences, households maximize \eqref{\refeq:util} subject to budgets \eqref{\refeq:formalBudget} and \eqref{\refeq:informalBudget}. The labour supply and savings of formal households are then given by (given factor prices and policies):
+\begin{align}
+    h_{t,i} &= \left[\frac{\eta_{t,i}}{X_{t,i}}\left(w_t(1-\tau_t)+\theta_{t+1}\overline{b}_{t+1}\right)\right]^{\xi} \\
+    s_{t,i} &= \dfrac{B_{t+1}^i}{1+B_{t+1}^i}\left[w_t\left(1-\tau_t\right)h_{t,i}\eta_{t,i}-\dfrac{X_{t,i}\xi}{1+\xi}\left(h_{t,i}\right)^{\frac{1+\xi}{\xi}}\right]-\dfrac{b_{t+1}^i/(R_{t+1}/p_t)}{1+B_{t+1}^i}
+\end{align}
+\end{subequations}
+where we have used the shorthand $B_{t+1}^i \equiv \left(\beta_{t,i}\right)^{\rho}(R_{t+1}/p_t)^{\rho-1}$.
+
+For the informal households, the GHH structure means that the two labour supply decisions remain static functions of the relevant informal wage --- exactly as in the analytical model, and in particular unaffected by the new savings margin. What is new is an active savings decision, characterized by an Euler condition of exactly the same form as the formal one. It is convenient to summarize the informal household's labour income \emph{net of the disutility of labour} in each period:
+\begin{subequations}\label{\refeq:informalOpt}
+\begin{align}
+    h_{1,t}^0 &= \left(\frac{\eta_{t,0}}{X_{t,0}}w_t^0\right)^{\xi}, &
+    \tilde{y}_{1,t}^0 &\equiv w_t^0\eta_{t,0}h_{1,t}^0-\frac{X_{t,0}\xi}{1+\xi}\left(h_{1,t}^0\right)^{\frac{1+\xi}{\xi}} = \frac{\left(\eta_{t,0}w_t^0\right)^{1+\xi}}{(1+\xi)X_{t,0}^{\xi}} \\
+    h_{2,t}^0 &= \left(\frac{\chi_t\eta_{t-1,0}}{X_{t-1,0}}w_{t}^0\right)^{\xi}, &
+    \tilde{y}_{2,t}^0 &\equiv w_t^0\chi_t\eta_{t-1,0}h_{2,t}^0-\frac{X_{t-1,0}\xi}{1+\xi}\left(h_{2,t}^0\right)^{\frac{1+\xi}{\xi}} = \frac{\left(\chi_t\eta_{t-1,0}w_t^0\right)^{1+\xi}}{(1+\xi)X_{t-1,0}^{\xi}}
+\end{align}
+With this notation the informal household's problem collapses to a standard two-period consumption-savings problem with cash-on-hand $\tilde{y}_{1,t}^0$ and second-period non-capital income $\tilde{y}_{2,t+1}^0+b_{t+1}^0$, i.e.\ $\tilde{c}_{1,t}^0 = \tilde{y}_{1,t}^0-s_{t,0}$ and $\tilde{c}_{2,t+1}^0 = s_{t,0}R_{t+1}^0/p_{t,0}+\tilde{y}_{2,t+1}^0+b_{t+1}^0$. The Euler condition $\left(\tilde{c}_{1,t}^0\right)^{-1/\rho} = \beta_{t,0}\left(R_{t+1}^0/p_{t,0}\right)\left(\tilde{c}_{2,t+1}^0\right)^{-1/\rho}$ then gives
+\begin{align}
+    s_{t,0} &= \dfrac{B_{t+1}^0}{1+B_{t+1}^0}\tilde{y}_{1,t}^0-\dfrac{\left(\tilde{y}_{2,t+1}^0+b_{t+1}^0\right)/\left(R_{t+1}^0/p_{t,0}\right)}{1+B_{t+1}^0}, \qquad B_{t+1}^0 \equiv \left(\beta_{t,0}\right)^{\rho}\left(R_{t+1}^0/p_{t,0}\right)^{\rho-1},
+\end{align}
+\end{subequations}
+which is the exact informal counterpart of \eqref{\refeq:formalOpt}, with $\tilde{y}_{1,t}^0$ in place of the formal household's after-tax labour income net of disutility and $\tilde{y}_{2,t+1}^0+b_{t+1}^0$ in place of $b_{t+1}^i$. Setting $B_{t+1}^0=0$ and $\tilde{y}_{2,t+1}^0=b_{t+1}^0=0$ recovers the analytical model's hand-to-mouth informal household, $s_{t,0}=0$.
+
+
+
+
+\subsection{The Competitive Equilibrium}\label{\refsec:EE}
+In the competitive equilibrium firms and households maximize, the government runs a balanced budget, and the markets clear. We can collect these in definition of aggregate states \eqref{\refeq:aggregateStates}, factor prices \eqref{\refeq:factorPrices} and \eqref{\refeq:R0}, household budgets \eqref{\refeq:formalBudget} and \eqref{\refeq:informalBudget}, government budgets \eqref{\refeq:governmentBudget}, and household choices \eqref{\refeq:formalOpt} and \eqref{\refeq:informalOpt}. The following derives closed form representations of the core model variables \emph{given} the generalized discount factors $B_{t+1}^j$. Because informal savings do not enter the formal capital stock and informal households pay no taxes, none of the aggregate conditions below are affected by the informal savings vehicle: \eqref{\refeq:EE} is identical to the analytical model.
+
+
+\bigskip
+\begin{subequations}\label{\refeq:EE}
+Using equilibrium conditions for wages, interest rates, and pension benefits, the labour supply for type $i$ can in equilibrium be written as
+\begin{align*}
+    h_{t,i} = \left(\dfrac{\eta_{t,i}}{X_{t,i}}\right)^{\xi}\left(\dfrac{1}{h_t}\right)^{\xi}\left((1-\alpha)(1-\tau_t)\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha}h_t^{1-\alpha}+\dfrac{1-\alpha}{\alpha}\dfrac{p_t \theta_{t+1}}{\kappa_t} s_t\tau_{t+1}\right)^{\xi}.
+\end{align*}
+The only type-specific term is $(\eta_{t,i}/X_{t,i})^{\xi}$; this shows that the ratio $h_{t,i}/h_t$ is only a function of parameters, namely that
+\begin{align}\label{\refeq:EE:hi}
+    \dfrac{h_{t,i}}{h_t} = \dfrac{(\eta_{t,i}/X_{t,i})^{\xi}}{\Gamma_{t,h}}, \qquad \Gamma_{t,h} = \sum_i\frac{\gamma_{t,i}\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}.
+\end{align}
+
+
+Next, we can use the wage rate and individual labour supply functions to write
+\begin{align*}
+    w_t(1-\tau_t)h_{t,i}\eta_{t,i}-\dfrac{X_{t,i}\xi}{1+\xi}\left(h_{t,i}\right)^{\frac{1+\xi}{\xi}} = \dfrac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{1}{\Gamma_{t,h}}\left[(1-\alpha)(1-\tau_t)h_t^{1-\alpha}\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha}-\dfrac{\xi}{1+\xi}\frac{h_t^{\frac{1+\xi}{\xi}}}{\Gamma_{t,h}^{1/\xi}}\right]
+\end{align*}
+Using the expression for $h_{t,i}$ and $h_{t,i}/h_t$, we can rewrite this as:
+\begin{align*}
+    (1-\alpha)(1-\tau_t)h_t^{1-\alpha}\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha} = \frac{h_t^{\frac{1+\xi}{\xi}}}{\Gamma_{t,h}^{1/\xi}} - \dfrac{1-\alpha}{\alpha}\dfrac{p_t \theta_{t+1}}{\kappa_t} s_t\tau_{t+1},
+\end{align*}
+From this and discounted pension benefits in equilibrium, we then finally have that
+\begin{align}\label{\refeq:EE:si}
+    s_{t,i} =& \dfrac{1}{1+B_{t+1}^i}\left[B_{t+1}^i\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\frac{1}{1+\xi}-\frac{1-\alpha}{\alpha}\frac{p_t\left(1-\theta_{t+1}\right)}{\kappa_t}s_t\tau_{t+1}\right]\\
+    -&\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}\Gamma_{t,h}}\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}}{\kappa_t}s_t\tau_{t+1} \notag
+\end{align}
+Aggregating over the different types, the savings state can then be defined as
+\begin{align}\label{\refeq:EE:s(h)}
+    s_t = \left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\underbrace{\frac{1}{1+\xi}\frac{\sum_i \frac{\gamma_{t,i}\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{B_{t+1}^i}{1+B_{t+1}^i}}{1+\frac{1-\alpha}{\alpha}\frac{p_t\tau_{t+1}}{\kappa_t}\left(\theta_{t+1}+(1-\theta_{t+1})\sum_i\frac{\gamma_{t,i}}{1+B_{t+1}^i}\right)}}_{\equiv \Gamma_{s,t}}
+\end{align}
+Importantly, note that the savings ratios $s_{t,i}/s_t$ can be written as a function of parameters and \emph{future} policy $\tau_{t+1}$ (independent e.g. of $\tau_t$ and given the generalized discount function $B$). Formally we have:
+\begin{align}\label{\refeq:EE:si_s}
+    \frac{s_{t,i}}{s_t} = &\frac{\frac{B_{t+1}^i}{1+B_{t+1}^i}\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}}{\sum_{j>0} \frac{\gamma_{t,j}\eta_{t,j}^{1+\xi}}{X_{t,j}^{\xi}}\frac{B_{t+1}^j}{1+B_{t+1}^j}}\left[1+\frac{1-\alpha}{\alpha}\frac{p_t\tau_{t+1}}{\kappa_t}\left(\theta_{t+1}+(1-\theta_{t+1})\sum_{j>0}\frac{\gamma_{t,j}}{1+B_{t+1}^j}\right)\right] \\
+    -&\frac{1}{1+B_{t+1}^i}\frac{1-\alpha}{\alpha}\frac{p_t(1-\theta_{t+1})}{\kappa_t}\tau_{t+1} - \frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{t,h}}\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}}{\kappa_t}\tau_{t+1}\notag
+\end{align}
+We note that when discount rates are identical across types, i.e. when $\beta_{t,i} = \beta_t$ and $B_{t+1}^i = B_{t+1}$, this simplifies to
+\begin{align*}
+    \frac{s_{t,i}}{s_t} = \frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{t,h}}+\frac{1-\alpha}{\alpha}\frac{p_t\tau_{t+1}}{\kappa_t}\frac{1-\theta_{t+1}}{1+B_{t+1}}\left(\frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{t,h}}-1\right).
+\end{align*}
+
+
+
+Finally, we can combine $s_t, h_t$ to yield closed form expression given the generalized discount functions: Start from the definition of $h_t$, use that $s_t$ is proportional to $h_t^{(1+\xi)/\xi}$ to write:
+\begin{align}\label{\refeq:EE:h}
+    h_t = \underbrace{\left(\Gamma_{h,t}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{(1-\alpha)(1-\tau_t)}{\Gamma_{h,t}-\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}\tau_{t+1}}{\kappa_t}\Gamma_{s,t}}\right)^{\frac{\xi}{1+\alpha\xi}}}_{\equiv \Theta_{h,t}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}}.
+\end{align}
+Naturally, we can use this in the expression for $s_t$ to write savings as
+\begin{align}\label{\refeq:EE:s}
+    s_t &= \left(\frac{\Theta_{h,t}}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\Gamma_{s,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}.
+\end{align}
+\end{subequations}
+Setting $\tau_t=\tau_{t+1}=0$ in \eqref{\refeq:EE:h} gives $\Theta_{h,t}=\Theta_{h,t}^0$ of \eqref{\refeq:Theta0}, which is what \eqref{\refeq:w0} and \eqref{\refeq:R0} are built from.
+
+
+Given discount functions, $B^i$, equations \eqref{\refeq:EE} identify aggregate states $s_t$ and $h_t$ as complicated parameter and policy functions $\Theta_{x,t}$ times the lagged state $s_{t-1}$ raised to some power $\sigma_x$.
+
+
+\smalltitle{Closed form consumption functions.}
+We note that if we know $s_t$, $h_t$, $B^j$, and $s_{t-1}$, it is straightforward to identify all other variables directly: Individual labour supply and savings decisions from \eqref{\refeq:EE:hi}, \eqref{\refeq:EE:si} and \eqref{\refeq:informalOpt}, factor prices from \eqref{\refeq:factorPrices} and \eqref{\refeq:R0}, pension benefits from \eqref{\refeq:governmentBudget}, and finally consumption simply from budgets \eqref{\refeq:formalBudget} and \eqref{\refeq:informalBudget}. However, in particular in the analytical log case, it can be useful to derive \emph{equilibrium} consumption functions as well; All consumption functions can be written on the form $x_t = \Theta_{x,t}(s_{t-1}/\nu_t)^{\sigma_x}$ with
+\begin{align}\label{\refeq:EE:sigma_ci}
+    \sigma_{c_1,t}^i &= \sigma_{c_2,t}^i = \sigma_{\tilde{c}_1,t}^i = \sigma_{\tilde{c}_1,t}^0 = \sigma_{\tilde{c}_2,t}^0 = \dfrac{\alpha(1+\xi)}{1+\alpha\xi},
+    \qquad \sigma_{c_2,t+1}^i = \left(\dfrac{\alpha(1+\xi)}{1+\alpha\xi}\right)^2.
+\end{align}
+This is essentially what ensures that the political objective function is log-separable in the state $s_{t-1}/\nu_t$. That the informal consumption functions still share the common exponent $\alpha(1+\xi)/(1+\alpha\xi)$ --- despite the new savings margin --- is verified in \eqref{\refeq:EE:c0} below, and it is what preserves the analytical log solution.
+
+\begin{subequations}\label{\refeq:EE:ci}
+The coefficient functions (that also generally depends on policy) are derived using the aggregate states in the functions above. For the formal households these are unchanged from the analytical model:
+\begin{align}
+    c_{1,t}^i &= \frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\left(1-\frac{B_{t+1}^i}{(1+B_{t+1}^i)(1+\xi)}\right)+\frac{s_t}{1+B_{t+1}^i}\frac{1-\alpha}{\alpha}\frac{p_t \tau_{t+1}(1-\theta_{t+1})}{\kappa_t} \\
+    c_{2,t}^i &= \alpha \frac{\nu_t}{p_{t-1}}h_t^{1-\alpha}\left(\frac{s_{t-1}}{\nu_t}\right)^{\alpha}\left(\frac{s_{t-1,i}}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)\right) \\
+    \tilde{c}_{1,t}^i &= \left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\frac{1}{1+B_{t+1}^i}\left(\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{1}{1+\xi}+\Gamma_{s,t}\frac{1-\alpha}{\alpha}\frac{p_t \tau_{t+1}(1-\theta_{t+1})}{\kappa_t}\right)
+\end{align}
+For the formal households that do not supply labour in retirement, we simply have $\tilde{c}_{2,t}^i = c_{2,t}^i$. \end{subequations}
+
+The informal consumption functions are where the model departs from the analytical version. It is useful to first record the three building blocks in the form $\Theta_x(s_{t-1}/\nu_t)^{\sigma_x}$, using \eqref{\refeq:w0} for the informal wage and \eqref{\refeq:governmentBudget} together with \eqref{\refeq:EE:h} for the universal pension:
+\begin{subequations}\label{\refeq:EE:y0}
+\begin{align}
+    \tilde{y}_{1,t}^0 &= \frac{\eta_{t,0}^{1+\xi}}{(1+\xi)X_{t,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}} \\
+    \tilde{y}_{2,t}^0 &= \frac{\left(\chi_{t-1}\eta_{t-1,0}\right)^{1+\xi}}{(1+\xi)X_{t-1,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}} \\
+    b_t^0 &= \dfrac{(1-\alpha)\nu_t\epsilon_t\tau_t}{\kappa_{t-1}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\alpha}h_t^{1-\alpha} = \dfrac{(1-\alpha)\nu_t\epsilon_t\tau_t}{\kappa_{t-1}}\Theta_{h,t}^{1-\alpha}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}
+\end{align}
+\end{subequations}
+Comparing with the analytical model, $\tilde{y}_{1,t}^0$ is exactly that model's $\tilde{c}_{1,t}^0$ and $\tilde{y}_{2,t}^0+b_t^0$ is exactly its $\tilde{c}_{2,t}^0$: with no savings vehicle, net income \emph{is} consumption in each period. All three share the exponent $\alpha(1+\xi)/(1+\alpha\xi)$.
+
+The key observation is what happens when second-period informal resources are discounted at the informal return. Using \eqref{\refeq:R0} and \eqref{\refeq:EE:s}, the exponents combine to
+\begin{align*}
+    \frac{\alpha(1+\xi)}{1+\alpha\xi}+\frac{1-\alpha}{1+\alpha\xi} = 1,
+\end{align*}
+so the discounted value is exactly proportional to the aggregate savings state:
+\begin{align}\label{\refeq:EE:Lambda}
+    \frac{p_{t,0}\left(\tilde{y}_{2,t+1}^0+b_{t+1}^0\right)}{R_{t+1}^0} = \Lambda_{t+1}s_t, \quad \Lambda_{t+1}\equiv\frac{p_{t,0}\left[\frac{(\chi_{t+1}\eta_{t,0})^{1+\xi}}{(1+\xi)X_{t,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t+1}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}+\frac{(1-\alpha)\nu_{t+1}\epsilon_{t+1}\tau_{t+1}}{\kappa_t}\Theta_{h,t+1}^{1-\alpha}\right]}{\nu_{t+1}\chi_{t+1}^R\alpha\left(\Theta_{h,t+1}^0\right)^{1-\alpha}}.
+\end{align}
+$\Lambda_{t+1}$ is a function of period $t+1$ parameters and policy $(\tau_{t+1},\theta_{t+1})$ only --- it does not depend on any state. This is the informal analogue of the fact that formal discounted pension benefits are proportional to $s_t$, and it is what makes everything below closed form.
+
+\begin{subequations}\label{\refeq:EE:c0}
+The informal household's savings, and its consumption when young and old, are then
+\begin{align}
+    s_{t,0} &= \frac{B_{t+1}^0}{1+B_{t+1}^0}\tilde{y}_{1,t}^0-\frac{\Lambda_{t+1}s_t}{1+B_{t+1}^0} \\
+    \tilde{c}_{1,t}^0 &= \frac{1}{1+B_{t+1}^0}\left[\tilde{y}_{1,t}^0+\Lambda_{t+1}s_t\right] \\
+    \tilde{c}_{2,t}^0 &= \frac{s_{t-1,0}R_t^0}{p_{t-1,0}}+\tilde{y}_{2,t}^0+b_t^0 \;=\; \frac{B_t^0}{1+B_t^0}\left[\frac{R_t^0}{p_{t-1,0}}\tilde{y}_{1,t-1}^0+\tilde{y}_{2,t}^0+b_t^0\right],
+\end{align}
+where the second expression for $\tilde{c}_{2,t}^0$ substitutes the equilibrium $s_{t-1,0}$ and holds along the equilibrium path. The corresponding consumption levels are $c_{1,t}^0 = \tilde{c}_{1,t}^0+\xi\tilde{y}_{1,t}^0$ and $c_{2,t}^0 = \tilde{c}_{2,t}^0+\xi\tilde{y}_{2,t}^0$.
+\end{subequations}
+Because $\tilde{y}_{1,t}^0$ and $s_t$ share the exponent $\alpha(1+\xi)/(1+\alpha\xi)$, $\tilde{c}_{1,t}^0$ does too, confirming \eqref{\refeq:EE:sigma_ci}. For $\tilde{c}_{2,t}^0$ the same conclusion follows from $s_{t-1}R_t^0 = \nu_t\chi_t^R\alpha(\Theta_{h,t}^0)^{1-\alpha}(s_{t-1}/\nu_t)^{\alpha(1+\xi)/(1+\alpha\xi)}$, i.e.\ the informal return times the state carries the common exponent as well.
+
+\smalltitle{The informal savings ratio.}
+The political problem at $t$ takes the informal old's savings $s_{t-1,0}$ as predetermined. Exactly as for the formal distribution $s_{t-1,i}/s_{t-1}$, we do not need to carry it as a separate state: the ratio to aggregate formal savings has a closed form,
+\begin{align}\label{\refeq:EE:s0_s}
+    \varsigma_{t-1}^0\equiv\frac{s_{t-1,0}}{s_{t-1}} = \frac{B_t^0}{1+B_t^0}\frac{\tilde{y}_{1,t-1}^0}{s_{t-1}}-\frac{\Lambda_t}{1+B_t^0}, \qquad
+    \frac{\tilde{y}_{1,t-1}^0}{s_{t-1}} = \frac{\eta_{t-1,0}^{1+\xi}}{(1+\xi)X_{t-1,0}^{\xi}}\frac{\left(\frac{1-\alpha}{\Gamma_{h,t-1}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}}{\left(\frac{\Theta_{h,t-1}}{\Gamma_{h,t-1}}\right)^{\frac{1+\xi}{\xi}}\Gamma_{s,t-1}},
+\end{align}
+which is a function of parameters and of policy $(\tau_{t-1},\tau_t,\theta_t)$ alone. Note the dependence on the \emph{lagged} tax rate $\tau_{t-1}$, entering through $\Theta_{h,t-1}$: informal households save out of informal income, which $\tau_{t-1}$ does not tax, while formal households save out of after-tax formal income, so a higher $\tau_{t-1}$ raises the informal-to-formal savings ratio. There is no counterpart to this in the analytical model.
+
+
+
+\subsection{The politico-economic equilibrium with LOG preferences}\label{\refsec:PEELOG}
+Let $\upsilon_{1,t}^j$ and $\upsilon_{2,t}^j$ denote the indirect utilities of different households (types and generations). Policy is set without commitment, with elections each $t$ aggregating preferences using probabilistic voting that maximizes a weighted sum of indirect utilities. Let $\tau^{t+1}(z_t)$ denote a continuation policy with $z_t$ being a vector of states. The political problem can then be written as
+\begin{align*}
+    &\max_{\tau_t}\mbox{ }\mathcal{W}_t(z_{t-1}) \equiv \omega\sum_j\left(\gamma_{t-1,j} p_{t-1,j} \mu_{t-1,j} v_{2,t}^j\right)+\nu_t\sum_j\left(\gamma_{t,j}\mu_{t,j} v_{1,t}^j\right) \\
+    &\text{s.t. competitive equilibrium and }\tau_{t+1} = \tau^{t+1}(z_t),
+\end{align*}
+where $\tau^{t+1}(z_t)$ is identified by this process at $t+1$, $\omega$ is a weight reflecting relative political power of the older generation, $\mu_{t,j}$ reflects relative voting shares for different income groups (the old generation at $t$ votes with the voting shares $\mu_{t-1,j}$ they had when young, i.e. shares are attached to a generation, not a period).
+
+With $\rho = 1$, the discount functions simplify to $B_{t+1}^i = \beta_{t,i}$ and $B_{t+1}^0 = \beta_{t,0}$, and the politico-economic equilibrium can be characterized in closed form without any continuation policy; We can exploit that all consumption functions --- including the informal ones, see \eqref{\refeq:EE:sigma_ci} --- are log-separable in $s_{t-1}$ to show that there are no endogenous states, i.e. the $z_t = \emptyset$. In general, the first order condition for $\tau_t$ is given by:
+\begin{align*}
+    \omega\sum_{j}\left(\gamma_{t-1,j}p_{t-1,j}\mu_{t-1,j} \frac{d\upsilon_{2,t}^j}{d\tau_t}\right)+
+    \nu_t\sum_j\left(\gamma_{t,j}\mu_{t,j} \frac{d\upsilon_{1,t}^j}{d\tau_t}\right) = 0,
+\end{align*}
+where the total derivatives (with "hard d") includes the partial effects of changing policy directly (through economic equilibrium functions), but also the indirect effects working through the continuation policy.
+
+\begin{subequations}\label{\refeq:PEELOG}
+For the log case, however, where there are no effects through the continuation policy, this simplifies significantly. For the formal consumption smoothers, using the Euler condition, we have $\upsilon_{1,t}^i = (1+\beta_{t,i})\ln\left(\tilde{c}_{1,t}^i\right)+\beta_{t,i} \ln\left(R_{t+1}/p_t\right)+\beta_{t,i} \ln(\beta_{t,i})$. Using that $\tilde{c}_{1,t}^i$ is log-separable in $s_{t-1}$ and the formula for the interest rate, it is straightforward to verify that this reduces to
+\begin{align}
+    \frac{d\upsilon_{1,t}^i}{d\tau_t} = -\frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi}\left(1+\beta_{t,i}\frac{\alpha(1+\xi)}{1+\alpha\xi}\right).
+\end{align}
+The informal young are now consumption smoothers as well, so the same Euler substitution applies with the informal return: $\upsilon_{1,t}^0 = (1+\beta_{t,0})\ln\left(\tilde{c}_{1,t}^0\right)+\beta_{t,0}\ln\left(R_{t+1}^0/p_{t,0}\right)+\beta_{t,0}\ln(\beta_{t,0})$. The current tax affects both terms, and it does so only through the aggregate savings state $s_t$: from \eqref{\refeq:EE:s} and \eqref{\refeq:R0},
+\begin{align*}
+    \frac{\partial \ln(s_t)}{\partial \tau_t} = -\frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi}, \qquad
+    \frac{\partial \ln\left(R_{t+1}^0\right)}{\partial \tau_t} = -\frac{1-\alpha}{1+\alpha\xi}\frac{\partial \ln(s_t)}{\partial \tau_t}.
+\end{align*}
+Since $\tilde{c}_{1,t}^0 \propto \tilde{y}_{1,t}^0+\Lambda_{t+1}s_t$ and $\tilde{y}_{1,t}^0$ does not depend on $\tau_t$, only the share of lifetime resources that comes from the second period is exposed to the current tax. Defining that share as
+\begin{align}\label{\refeq:PEELOG:phi}
+    \phi_t \equiv \frac{\Lambda_{t+1}s_t}{\tilde{y}_{1,t}^0+\Lambda_{t+1}s_t} = \frac{\Lambda_{t+1}}{\tilde{y}_{1,t}^0/s_t+\Lambda_{t+1}}\in(0,1), \qquad \frac{\tilde{y}_{1,t}^0}{s_t} = \frac{\eta_{t,0}^{1+\xi}}{(1+\xi)X_{t,0}^{\xi}}\frac{\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}}{\left(\frac{\Theta_{h,t}}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}}\Gamma_{s,t}},
+\end{align}
+which is a function of parameters and policy but not of the state, we get
+\begin{align}
+    \frac{d\upsilon_{1,t}^0}{d\tau_t} = -\frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi}\left[(1+\beta_{t,0})\phi_t-\beta_{t,0}\frac{1-\alpha}{1+\alpha\xi}\right].
+\end{align}
+The two terms have opposite signs and a clear interpretation: a higher $\tau_t$ shrinks the formal capital stock, which lowers the informal household's future income (the $\phi_t$ term, harmful), but raises the informal return $R_{t+1}^0$ (the second term, beneficial to a saver). The expression nests the analytical model exactly at the point where the informal household would choose not to save. From \eqref{\refeq:EE:c0}, $s_{t,0}=0$ if and only if $\Lambda_{t+1}s_t = \beta_{t,0}\tilde{y}_{1,t}^0$, i.e.\ $\phi_t = \beta_{t,0}/(1+\beta_{t,0})$. Substituting this and using $\alpha(1+\xi)/(1+\alpha\xi)+(1-\alpha)/(1+\alpha\xi)=1$ gives
+\begin{align*}
+    (1+\beta_{t,0})\phi_t-\beta_{t,0}\frac{1-\alpha}{1+\alpha\xi} = \beta_{t,0}\left(1-\frac{1-\alpha}{1+\alpha\xi}\right) = \beta_{t,0}\frac{\alpha(1+\xi)}{1+\alpha\xi},
+\end{align*}
+which is precisely the analytical model's $d\upsilon_{1,t}^0/d\tau_t = -\beta_{t,0}\alpha(1+\xi)^2/\left[(1-\tau_t)(1+\alpha\xi)^2\right]$. Away from that point the informal young are net savers ($\phi_t<\beta_{t,0}/(1+\beta_{t,0})$) or net borrowers ($\phi_t>\beta_{t,0}/(1+\beta_{t,0})$), and their political preference over $\tau_t$ shifts accordingly.
+
+For the older cohorts, the effect works through $\tilde{c}_{2,t}^j$. The formal expression is unchanged; for the informal it is the analytical model's expression with one additional term in the denominator, coming from the return on the savings they carry into retirement:
+\begin{align}
+    \frac{d\upsilon_{2,t}^i}{d\tau_t} =& (1-\alpha)\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial \tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{p_{t-1}}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)}{\frac{s_{t-1}^i}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)} \\
+    \frac{d\upsilon_{2,t}^0}{d\tau_t} =& \frac{\dfrac{(1-\alpha)\nu_t\epsilon_t}{\kappa_{t-1}} \Theta_{h,t}^{1-\alpha}\left(1+(1-\alpha)\tau_t\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial\tau_t}\right)}{\dfrac{\varsigma_{t-1}^0\nu_t\chi_t^R\alpha\left(\Theta_{h,t}^0\right)^{1-\alpha}}{p_{t-1,0}}+\frac{\left(\chi_{t-1}\eta_{t-1,0}\right)^{1+\xi}}{(1+\xi)X_{t-1,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}+\dfrac{(1-\alpha)\nu_t\epsilon_t\tau_t}{\kappa_{t-1}} \Theta_{h,t}^{1-\alpha}},
+\end{align}
+where
+\begin{align*}
+    \frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial \tau_t} = -\frac{1}{1-\tau_t}\frac{\xi}{1+\alpha\xi}.
+\end{align*}
+Here $\varsigma_{t-1}^0$ is the predetermined informal savings ratio \eqref{\refeq:EE:s0_s}, and the first denominator term is $s_{t-1,0}R_t^0/p_{t-1,0}$ with the common state factor $(s_{t-1}/\nu_t)^{\alpha(1+\xi)/(1+\alpha\xi)}$ divided out, exactly as for the other two terms. The numerator is unchanged relative to the analytical model because the informal old's savings and their return are both predetermined at $t$: only the universal pension $b_t^0$ responds to $\tau_t$.
+\end{subequations}
+
+\smalltitle{A structural remark.} In the analytical model, no term of the log first order condition depends on any lag of $\tau$, which makes the system of first order conditions triangular and solvable by a backward recursion over scalar problems. That property does \emph{not} survive here: $\varsigma_{t-1}^0$ depends on $\tau_{t-1}$ through $\Theta_{h,t-1}$ and $\Gamma_{s,t-1}$ (see \eqref{\refeq:EE:s0_s}), so $z_t = z_t(\tau_{t-1},\tau_t,\tau_{t+1})$ rather than $z_t(\tau_t,\tau_{t+1})$. The equilibrium is still a closed-form simultaneous system in the full tax path with no endogenous state, but it is tridiagonal rather than triangular. We return to the consequences for the numerical solution in part \ref{part:num}.
+
+
+
+
+\subsection{The politico-economic equilibrium with CRRA preferences}\label{\refsec:PEE}
+With CRRA preferences, the general first order condition is the same, but the total derivatives of indirect utilities change significantly. As we show in the numerical part \ref{part:num}, we will rely on numerical methods that approximate these derivatives in combination with grid searches. For the young generations, this means that we only have to be able to compute indirect utilities. For the older generations, however, we need to go one step deeper, in order to ensure that we do not need to evaluate on a large grid of the past distribution of savings.
+
+
+\begin{subequations}\label{\refeq:PEE}
+Using the Euler condition for the formal young households, we have that
+\begin{align}
+    \upsilon_{1,t}^i = (1+B_{t+1}^i)\frac{\left(\tilde{c}_{1,t}^i\right)^{1-1/\rho}}{1-1/\rho}.
+\end{align}
+Unlike the analytical model --- where the informal young consume hand-to-mouth and their indirect utility cannot be reduced further --- the informal young now smooth consumption, so the same Euler substitution applies with $B_{t+1}^0$ in place of $B_{t+1}^i$:
+\begin{align}
+    \upsilon_{1,t}^0 = (1+B_{t+1}^0)\frac{\left(\tilde{c}_{1,t}^0\right)^{1-1/\rho}}{1-1/\rho}.
+\end{align}
+This is a simplification relative to the analytical model: both young types are handled by one expression, and we only need to be able to evaluate $\tilde{c}_{1,t}^j$ and $B_{t+1}^j$ on a grid.
+
+Because the policy maker has to take past choices as given (such as savings and relative savings rates), we have to rely on first order conditions to efficiently identify their choices. For the formal old this is unchanged:
+\begin{align}
+    \dfrac{d v_{2,t}^i}{d \tau_t} =& \left(c_{2,t}^i\right)^{1-1/\rho}\dfrac{d\ln\left(c_{2,t}^i\right)}{d\tau_t} \\
+    \frac{d\ln\left(c_{2,t}^i\right)}{d\tau_t} =& (1-\alpha)\frac{d \ln\left(h_t\right)}{d \tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{p_{t-1}}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)}{\frac{s_{t-1}^i}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)},
+\end{align}
+where the second line explicitly uses that $s_{t-1,i}/s_{t-1}$ is predetermined. However, as this ratio has a closed-form expression that relies on $\tau_t$, we do not have to evaluate on the entire grid, rather only on the selection that are actually consistent with economic equilibrium conditions. This is the exact trick that allows us to only use $s_{t-1}$ as a relevant state and not the entire distribution.
+
+The informal old now require the same treatment --- in the analytical model their consumption involved no predetermined savings and their indirect utility could simply be evaluated directly. Here, $s_{t-1,0}$ is predetermined at $t$, so we again differentiate through the log and use that only $b_t^0$ responds to $\tau_t$:
+\begin{align}
+    \dfrac{d v_{2,t}^0}{d\tau_t} =& \left(\tilde{c}_{2,t}^0\right)^{1-1/\rho}\dfrac{d\ln\left(\tilde{c}_{2,t}^0\right)}{d\tau_t} \\
+    \frac{d\ln\left(\tilde{c}_{2,t}^0\right)}{d\tau_t} =& \frac{\dfrac{(1-\alpha)\nu_t\epsilon_t}{\kappa_{t-1}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\alpha}h_t^{1-\alpha}\left(1+(1-\alpha)\tau_t\frac{d\ln\left(h_t\right)}{d\tau_t}\right)}{\varsigma_{t-1}^0s_{t-1}R_t^0/p_{t-1,0}+\tilde{y}_{2,t}^0+b_t^0},
+\end{align}
+with $\varsigma_{t-1}^0$ from \eqref{\refeq:EE:s0_s} --- again a closed form in $\tau_t$ given predetermined objects, so the same trick applies and $s_{t-1}$ remains the only relevant state. Setting $\rho=1$ and $d\ln(h_t)/d\tau_t = \partial\ln(\Theta_{h,t})/\partial\tau_t$ recovers the log expression in \eqref{\refeq:PEELOG}.
+\end{subequations}
+
+
+
+\subsection{Finite Horizon Terminal state.}\label{\refsec:finitehorizon}
+
+\smalltitle{Economic equilibrium.}
+In the finite horizon version of the model, the economic equilibrium simplifies. All savings are zero in the terminal period --- formal ($s_t = s_{t,i} = 0$) and informal alike ($s_{t,0}=0$, since $B_{t+1}^0=0$ and there is no second-period income to borrow against). The informal young are therefore hand-to-mouth in the terminal period, exactly as in the analytical model:
+\begin{subequations}\label{\refeq:TerminalEE}
+\begin{align}
+    h_t &= \left(\Gamma_{h,t}\right)^{\frac{1}{1+\alpha\xi}}\left((1-\alpha)(1-\tau_t)\right)^{\frac{\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}} \\
+    h_t^i &= h_t\frac{(\eta_{t,i}/X_{t,i})^{\xi}}{\Gamma_{t,h}} \\
+    c_{1,t}^i &= \dfrac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}} \\
+    \tilde{c}_{1,t}^i &= \frac{c_{1,t}^i}{1+\xi} \\
+    c_{1,t}^0 &= \frac{\eta_{t,0}^{1+\xi}}{X_{t,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}} \\
+    \tilde{c}_{1,t}^0 &= \dfrac{c_{1,t}^0}{1+\xi} = \tilde{y}_{1,t}^0.
+\end{align}
+\end{subequations}
+The informal \emph{old} in the terminal period are not simplified in the same way: they saved in $t-1$, so $s_{t-1,0}\neq 0$ and $\tilde{c}_{2,t}^0$ retains its general form from \eqref{\refeq:EE:c0}.
+
+\smalltitle{Politico-economic equilibrium with log preferences.}
+The politico-economic equilibrium similarly simplifies, because we per construction do not have a continuation policy. In the log case, we can reuse the regular expressions from \eqref{\refeq:PEELOG} with $\beta_{t,j} = 0$ throughout; for the informal young this also means $\phi_t = 0$, since there is no second-period income left in their lifetime resources. This leaves us with simplified expressions for the young and replicas for the old:
+\begin{subequations}\label{\refeq:terminalPEELOG}
+\begin{align}
+    \dfrac{d v_{1,t}^i}{d \tau_t} =& - \frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi} \\
+    \dfrac{d v_{1,t}^0}{d \tau_t} =& 0 \\
+    \frac{d\upsilon_{2,t}^i}{d\tau_t} =& (1-\alpha)\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial \tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{p_{t-1}}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)}{\frac{s_{t-1}^i}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)} \\
+    \frac{d\upsilon_{2,t}^0}{d\tau_t} =& \frac{\dfrac{(1-\alpha)\nu_t\epsilon_t}{\kappa_{t-1}} \Theta_{h,t}^{1-\alpha}\left(1+(1-\alpha)\tau_t\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial\tau_t}\right)}{\dfrac{\varsigma_{t-1}^0\nu_t\chi_t^R\alpha\left(\Theta_{h,t}^0\right)^{1-\alpha}}{p_{t-1,0}}+\frac{\left(\chi_{t-1}\eta_{t-1,0}\right)^{1+\xi}}{(1+\xi)X_{t-1,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}+\dfrac{(1-\alpha)\nu_t\epsilon_t\tau_t}{\kappa_{t-1}} \Theta_{h,t}^{1-\alpha}},
+\end{align}
+where the $\partial \ln\left(\Theta_{h,t}\right)/\partial \tau_t$ is the same as for $t<T$ as well. Note that $\varsigma_{t-1}^0$ is evaluated at $t-1$, where households did save, so it is \emph{not} zero in the terminal period.
+\end{subequations}
+
+\smalltitle{Politico-economic equilibrium with CRRA preferences.}
+In the CRRA case with $\rho\neq 1$, the savings level $s_{t-1}$ is now a relevant state variable. Furthermore, we need to compute consumption levels in order to evaluate marginal utilities from changed policy. However, beyond this, we can use the log formulation and write the first order condition directly (instead of relying on numerical grid searches):
+\begin{subequations}\label{\refeq:terminalPEECRRA}
+\begin{align}
+    \dfrac{d v_{1,t}^i}{d \tau_t} =& - \frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi}\left(\tilde{c}_{1,t}^i\right)^{1-1/\rho}  \\
+    \dfrac{d v_{1,t}^0}{d \tau_t} =& 0 \\
+    \frac{d\upsilon_{2,t}^i}{d\tau_t} =& \left(c_{2,t}^i\right)^{1-1/\rho}\left[(1-\alpha)\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial \tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{p_{t-1}}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)}{\frac{s_{t-1}^i}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)}\right] \\
+    \frac{d\upsilon_{2,t}^0}{d\tau_t} =& \left(\tilde{c}_{2,t}^0\right)^{1-1/\rho}\frac{\dfrac{(1-\alpha)\nu_t\epsilon_t}{\kappa_{t-1}} \Theta_{h,t}^{1-\alpha}\left(1+(1-\alpha)\tau_t\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial\tau_t}\right)}{\dfrac{\varsigma_{t-1}^0\nu_t\chi_t^R\alpha\left(\Theta_{h,t}^0\right)^{1-\alpha}}{p_{t-1,0}}+\frac{\left(\chi_{t-1}\eta_{t-1,0}\right)^{1+\xi}}{(1+\xi)X_{t-1,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}+\dfrac{(1-\alpha)\nu_t\epsilon_t\tau_t}{\kappa_{t-1}} \Theta_{h,t}^{1-\alpha}},
+\end{align}
+where the $\partial \ln\left(\Theta_{h,t}\right)/\partial \tau_t$ is identical to the log formulation in the terminal state. As in the analytical model, none of these terms requires numerical differentiation: each is a consumption level raised to $1-1/\rho$ times the log-derivative already used in the log case. Unlike the analytical model, however, the terminal problem depends on the lagged tax $\tau_{t-1}$ through $\varsigma_{t-1}^0$, so the terminal period is not a self-contained scalar problem in $\tau_T$ alone.
+\end{subequations}
+
+
+
+
+
+\subsection{Calibration}\label{\refsec:calibration}
+The calibration of this model version follows the analytical model closely: the informal savings vehicle does not affect the identification of the income distribution, of $\theta$, or of the informal household's productivity and disutility of labour, because all of those are read off labour market outcomes and the informal labour supply decisions \eqref{\refeq:informalOpt} are unchanged. The main additions are the new parameter $\chi_t^R$ and the fact that informal savings now exist and could in principle be included in a savings-rate target.
+
+\smalltitle{Data.}
+We follow previous literature and let $t$ represent 30-year intervals (this helps with the assumption that capital fully depreciates between time steps). We find population data including projections to determine $\nu_t$ from 1950 to 2070 and amend the data with $t = 1920, 2100$ with constant extrapolation.
+
+We use a household survey to split up the population into $J+1 = 5$ household types. This household survey provides shares $\gamma$, hours worked, and income. In addition, we have data on voting shares represented by $\mu_j$ in the political problem and survival rates $(p_j)$ (where $p_i = p$ is common across $i>0$ types).
+
+We use the capital income share to identify $\alpha$, set the labour supply elasticity at a baseline value $\xi = 0.3$, identify the savings rate in a baseline year $t=2010$ to be 18.4\%, and the pension tax rate $\tau_t$ to be 12.5\% in the baseline year as well.
+
+We use OECD data to define ratio of replacement rates $RR$ at half mean wages and mean wages (represented by groups $j=1, j=3$ in our data). This will help us identify $\theta$ (we do not work with endogenous pension characteristics in this version).
+
+
+\smalltitle{Calibration.}
+Several of the model parameters are set directly using the data. This covers the parts that are not set directly, but have to be solved in one way or another.
+
+First, we calibrate the income distribution and relative working hours across the income distribution using $\eta_j$ and $X_j$. Specifically, let $z_j^{\eta}$ and $z_j^{x}$ denote income and working hours relative to the average formal household. With labour supply following $h_t^i/h_t = \eta_iX_i^{\xi}$ for formal households, we solve the system
+\begin{align*}
+        z_i^{\eta} &= \dfrac{w_t(1-\tau_t)h_t^i \eta_i}{w_t(1-\tau_t)h_t} = \dfrac{\eta_i^{1+\xi}/X_i^{\xi}}{\sum_{j>0} \left(\gamma_ j\eta_j^{1+\xi}/X_j^{\xi}\right)},  \\
+        z_i^{x} &= \frac{h_{t,i}}{\sum_i\gamma_i h_{t,i}} = \frac{\eta_i^{\xi}/X_i^{\xi}}{\sum_i \gamma_i(\eta_i/X_i)^{\xi}},
+\end{align*}
+where we normalize $\Gamma_h \equiv \sum_i \gamma_i\eta_i^{1+\xi}/X_i^{\xi} = 1$ in the calibration stage. Using $y_i^{\eta} = \eta_i^{1+\xi}/X_i^{\xi}$ and $y_i^x = (\eta_i/X_i)^{\xi}$ as shorthand, we can set up the conditions as linear systems instead:
+\begin{align*}
+    \left(\bm{z}_i^{\eta} \times \bm{\gamma}_i'-\bm{I}\right)\times \bm{y}_i^{\eta} &= \bm{0} \\
+    \left(\bm{z}_i^{x} \times \bm{\gamma}_i'-\bm{I}\right)\times \bm{y}_i^{x} &= \bm{0},
+\end{align*}
+where the bold-notation indicates vectors and matrices. We note that the $\bm{y}_i$ vectors are actually eigenvectors, which allows us to compute vectors of productivity and disutility of leisure as
+\begin{align}
+    \bm{\eta}_i &= \frac{\bm{y}^{\eta}_i}{\bm{y}_i^x \left(\bm{y}_i^{\eta} \cdot \bm{y}_i\right)} \label{\refeq:calibration:etai} \\
+    \bm{X}_i &= \frac{\bm{\eta}_i}{(\bm{y}_i^x)^{1/\xi}}, \label{\refeq:calibration:Xi}
+\end{align}
+where $\bm{y}_i^{\eta} = \text{Eigvec}(\bm{z}_i^{\eta}\times \bm{\gamma}_i')$ and $\bm{y}_i^{x} = \text{Eigvec}(\bm{z}_i^{x}\times \bm{\gamma}_i')$ are eigenvectors.
+
+To capture the relative income and working hours of the informal households requires a bit more. The ratios are defined on \emph{labour income and hours}, not on consumption, so they are unaffected by the informal savings vehicle and take the same form as in the analytical model:
+\begin{align*}
+    z_0^{\eta} &= \frac{w_t^0h_{1,t}^0\eta_{0}}{w_t(1-\tau_t)h_t} \\
+    z_0^x &= \dfrac{h_{t,1}^0}{\sum_i \gamma_{i} h_{t,i}}
+\end{align*}
+We can combine and rearrange the terms to get the following expressions for $\eta_0, X_0$:
+\begin{align}
+    \eta_{0} &= \frac{z_0^{\eta}}{z_0^x}\frac{(1-\alpha)(1-\tau_t)}{\Theta_{h,t}^{\alpha}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}} \label{\refeq:calibration:eta0}\\
+    X_{0} &= \eta_{0}\frac{\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}}{\left(\Theta_{h,t}z_0^x\right)^{1/\xi}} \label{\refeq:calibration:X0}
+\end{align}
+We note that all of this is evaluated at the baseline year. However, while we can identify most of the terms, the coefficient function $\Theta_{h,t}$ still has to be solved for us to get this. Thus, we add these two conditions determining $\eta_0, X_0$ as targets that we have to solve alongside the politico-economic equilibrium (to get $\Theta_{h,t}$ in the baseline year).
+
+
+Given vectors of productivities and disutility of labour for formal households, $\bm{\eta}_i, \bm{X}_i$, we can determine $\theta$ from the ratio of replacement rates. In particular, we solve for $\theta$ (constant across $t$ in this calibration) from the requirement:
+ \begin{align*}
+        RR \equiv \dfrac{\theta+(1-\theta)\frac{h_t}{\eta_3 h_{t,3}}}{\theta+(1-\theta)\frac{h_t}{\eta_1 h_{t,1}}} = \frac{\theta + (1-\theta)\frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}}{\theta+(1-\theta)\frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}}},
+\end{align*}
+where we have data on $RR$ from OECD data, and the two groups $j=1, 3$ represent half-mean and mean wages in our data. Given that we know $\eta_i, X_i$ for formal households already, we can simply compute $\theta$ from
+\begin{align}
+    \theta = \frac{RR \frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}} - \frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}}{1-\frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}-RR\left(1-\frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}}\right)}
+\end{align}
+
+
+\smalltitle{The informal return.} The one genuinely new parameter is $\chi_t^R$ in \eqref{\refeq:R0}. It is not identified by any of the labour market moments above, and it matters for the model's behaviour: it scales the informal household's incentive to save and hence both $\phi_t$ in \eqref{\refeq:PEELOG:phi} and $\varsigma_{t-1}^0$ in \eqref{\refeq:EE:s0_s}. Two natural options are (i) fixing $\chi_t^R$ at an assumed value, with $\chi_t^R = 1$ (the formal return absent taxes) as the natural benchmark and lower values representing an inferior informal technology, or (ii) targeting an observed informal savings rate, if data permit.\tinytodo{To be decided: how $\chi^R$ is set. Option (ii) would add a fifth target to the nested fixed point below.}
+
+\smalltitle{Savings rate target.} With the Cobb-Douglas production, the formal savings rate is
+\begin{align*}
+    \text{Savings rate}_t = \frac{s_t}{\left(s_{t-1}/\nu_t\right)^{\alpha} h_t^{1-\alpha}}.
+\end{align*}
+We keep the formal definition as the baseline target, since $s_t$ is what enters the formal capital stock and what the national accounts measure. If the empirical counterpart includes informal saving, the numerator should instead be $s_t+\gamma_{t,0}s_{t,0}$, with $s_{t,0}$ from \eqref{\refeq:EE:c0}.\tinytodo{To be decided: whether the savings rate target is formal-only or total.}
+
+Finally, we need to determine parameters $\omega$ and discount parameters $\beta$. Note that we assume that they are identical across time and household types in the calibration. They are identified by ensuring that the politico-economic equilibrium replicates a pension tax of 12.5\% and a savings rate of 18.5\% in the baseline year 2010. As in the analytical model, four parameters cannot be calibrated without knowing the politico-economic equilibrium path: $\omega, \beta, \eta_0, X_0$. As the politico-economic equilibrium cannot be solved without these parameters, the final bit of calibration is solved as a nested fixed point problem. In the numerical part \ref{part:num} we describe this calibration procedure in more detail.
+
+
+
+
+\clearpage
+\part{Numerical}\label{part:num}
+
+This part contains a description of the numerical approaches used to solve the models outlined in part \ref{part:models}.
+
+
+\input{Part2/InformalSavings}
+\edef\refsec{sec:num:infsav}
+\edef\refeq{eq:num:infsav}
+
+
+% \printbibliography[
+% heading=bibintoc,
+% title={References},
+% category=cited]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                      Appendices                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \begin{appendices}
+% \end{appendices}
+
+
+\end{document}

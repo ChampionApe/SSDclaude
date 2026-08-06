@@ -1,0 +1,736 @@
+\documentclass[a4paper]{article}
+\input{Packages.tex}
+\begin{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                  0: title section                %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Technical Note: \\
+\emph{Social Security Design and Its Political Support}}
+
+\author{Rasmus K.\ Berg\thanks{University of Copenhagen. Oster Farimagsgade 5, 1353 Copenhagen K, Denmark. E-mail: \texttt{rasmus.kehlet.berg@econ.ku.dk}.}
+\and
+Mart\'{\i}n Gonzalez-Eiras\thanks{University of Bologna. Piazza Scaravilli 2, 40126 Bologna. E-mail: \texttt{mge@alum.mit.edu}. Web: \texttt{alum.mit.edu/www/mge}.}}
+\maketitle
+
+
+\begin{abstract}
+\noindent 
+The note formally presents a number of different models used in the paper \textit{Social Security Design and Its Political Support}. In many instances, the note is more general than in the final paper. 
+
+In the first part, we devote one section per general model version to describe and characterize both the economic equilibrium and the politico-economic equilibrium. All model sections are self-contained. In part II, we go through each of the models again and go through how the models are solved numerically.
+
+
+At the current stage, models include the following overall variations: The analytical-informal model, the informal savings model, and the US model. For each of the three, we currently implement a number of different solutions. First, we have one set of implementations with one common $X$ across all types and one with type-specific ones, $X_j$. Second, we have one where pension characteristics are fixed (exogenous), one where they are chosen permanently in one period, and one where characteristics are chosen without commitment equivalent to the tax rate. 
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                  Main sections                   %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\part{Models}\label{part:models}
+
+This part contains a description of a number of related models. We present each of them in turn.
+
+
+\input{Part1/InformalAnalytical}
+\edef\refsec{sec:models:infana}
+\edef\refeq{eq:models:infana}
+
+
+\section{Informal Analytical Model}\label{\refsec}
+The following model is analytical in the sense that with Log preferences, the politico-economic equilibrium can be reduced to a closed-form expression without relying on any continuation policies. 
+
+\subsection{The model}\label{\refsec:model}
+We consider an economy populated by overlapping generations of workers and retirees. Within each generational cohort, we consider $J+1$ different household types indexed $j= 0,...,J$. We refer to type $j=0$ households as "informal"; they work in informal markets and do not have access to any savings vehicle. Households of type $i>0$ are "formal" households; they supply $h_{t,i}\eta_{t,i}$ units of labour when young with $\eta_{t,i}$ denoting labour productivity. We let $\gamma_{t,j}$ denote sizes of working households with $\sum_i \gamma_{t,i} = 1$.
+
+As young, households are endowed with a unit of time that is allocated between labour and leisure. Formal workers pay taxes on their labour income, consume, and save; informal workers consume and save through an informal technology. Households survive and retire with probability $p_{t,j}$; all formal households survive with the same probability $p_
+{t,i}= p_t$. Lost savings are insured within-type.
+
+The government runs a pay-as-you-go (PAYG) pension system with a balanced budget. Each period, the government imposes a tax on labour supplied in the formal sector and transfers the collected amount directly to retirees. We consider social security systems that differ along two dimensions: whether workers need to qualify to receive full benefits or not, and the type of benefits provided - either tied to earnings or 
+at-rate.
+
+Policy decisions are taken by a government that acts in the interest of voters, but lacks commitment. 
+
+\smalltitle{Technology.}
+\begin{subequations}\label{\refeq:aggregateStates}
+In the formal sector, a continuum of firms transforms aggregate capital and labour into output. We define aggregate labour and capital from
+\begin{align}
+    H_t =& n_th_t, & h_t&\equiv \sum_{i}\gamma_{t,i}\eta_{t,i}h_{t,i} \\ 
+    K_t =& n_{t-1} s_{t-1}, & s_{t-1}&\equiv \sum_i\gamma_{t-1,i}s_{t-1,i}.
+\end{align}
+\end{subequations}
+They do not include informal households. The representative firm produces output using labour and capital and a conventional Cobb-Douglas technology
+\begin{align*}
+    Y_t = A_t K_t^{\alpha}H_t^{1-\alpha}.    
+\end{align*}
+In equilibrium this implies the following factor prices:
+\begin{align}\label{\refeq:factorPrices}
+    R_t = \alpha \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha-1}, \qquad w_t = (1-\alpha)A_t \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha},
+\end{align}
+
+
+\bigskip
+Informal households employ a linear production technology with return $w_t^0$. For simplicity, we model $w_t^0$ as proportional to the formal wage rate absent taxes. Specifically, this means (as we can verify later) that the informal wage rate is given by\footnote{We can verify that this is the formal wage rate with $h_t$ evaluated around $\tau_t = \tau_{t+1} = 0$; this simplification ties the wage rate to the general development of the economy (through $s_{t_1}$), but does not allow it to respond directly to taxes.}
+\begin{align}\label{\refeq:w0}
+    w_t^0 = \left(\frac{1-\alpha}{\Gamma_{t,h}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}} \left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha}{1+\alpha\xi}}
+\end{align}
+
+
+
+\smalltitle{Preferences and Household Choices.}
+Workers and retirees in period $t$ value consumption, $c_{1,t}^j$ and $c_{2,t}^j$ respectively. Workers discount the future at factor $\beta_{t,j}\in[0,1)$ where the survival probability $p_t^j$ is included.
+
+For the young households, the expected utilities are given by
+\begin{subequations}\label{\refeq:util}
+\begin{align}
+    &\max\mbox{ } U_{t,i}\left(c_{1,t}^i, h_{t,i}, c_{2,t+1}^i\right) = u_{t,i}\left(c_{1,t}^i, h_{t,i}\right) +\beta_{t,i}u_{t,i}\left(c_{2,t+1}^i,0\right), \quad \text{for }i>0 \\ 
+    &\max\mbox{ } U_{t,0}\left(c_{1,t}^0, h_{1,t}^0, c_{2,t+1}^0\right) = u_{t,0}\left(c_{1,t}^0, h_{1,t}^0\right) +\beta_{t,0}u_{t,0}\left(c_{2,t+1}^0,h_{2,t+1}^0\right)
+\end{align}
+\end{subequations}
+where we use CRRA-GHH preferences
+\begin{align*}
+    u_{t,j}(c,h) = \left\lbrace\begin{array}{ll} \dfrac{1}{1-1/\rho}\left(\tilde{c}_{t}^j\right)^{1-1/\rho}, & \text{for }\rho \neq 1 \\ 
+    \ln\left(\tilde{c}_{t}^i\right) , & \text{for }\rho = 1
+    \end{array}\right. , \qquad \tilde{c}_t^j \equiv \Bigg(\underbrace{c-\dfrac{\xi}{1+\xi}X_{t,j}\left(h\right)^{\frac{1+\xi}{\xi}}}_{\equiv \tilde{c}_{t}^j}\Bigg)^{1-1/\rho}
+\end{align*}
+where $\rho>0$ is the intertemporal elasticity of substitution, $\xi$ is the Frisch elasticity, and $X_{t,j}$ is a parameter that measures the disutility of labour. 
+
+\begin{subequations}\label{\refeq:formalBudget}
+The formal household receives wages, pay social security taxes $\tau_t$, save $s_{t,i}$, and consume when young, and consume their savings including pension benefits $b_{t+1}^i$ when old:
+\begin{align}
+    c_{1,t}^i &= w_t\eta_{t,i} h_{t,i}(1-\tau_t)-s_{t,i} \\
+    c_{2,t+1}^i &= s_{t,i}R_{t+1}/p_t+ b_{t+1}^i(h_{t,i}).
+\end{align}
+\end{subequations}
+
+\begin{subequations}\label{\refeq:informalBudget}
+Informal households consume their informal wages when young and old, pays no social security taxes, and receives only universal pensions $b_{t+1}^0$:
+\begin{align}
+    c_{1,t}^0 &= w_t^0\eta_{t,0}h_{1,t}^0 \\
+    c_{2,t+1}^0 &= w_{t+1}^0\chi_{t+1} \eta_{t,0}h_{2,t+1}^0+b_{t+1}^0, 
+\end{align}
+where $\chi_{t+1}>0$ measures the relative productivity of the informal worker when old.
+\end{subequations}
+
+
+
+\smalltitle{Social Security System.}
+The government runs a pay-as-you-go pension system with a balanced budget. Every period, the government taxes labour income in the formal sector and transfers the sum directly to current retirees. 
+
+
+Benefits are given by
+\begin{subequations} \label{\refeq:governmentBudget}
+\begin{align}
+    b_t^i =& \left[\theta_th_{t-1,i} \eta_{t-1,i}+(1-\theta_t)h_{t-1}\right] \overline{b}_t \\
+    b_t^0 =& \epsilon_t h_{t-1} \overline{b}_t
+\end{align}
+where $\epsilon_t$ measures universal pensions and $\theta_t$ measures contributive incentives. 
+
+
+
+We note that the shares $\sum_j\gamma_{t,j} = 1+\gamma_{t,0}$ to have a unit mass of formal households (convenient to have for definition of aggregate states). Thus, the average contribution of young households at time $t$ is
+\begin{align*}
+    \text{Avg. contribution from formal} = w_t\tau_t\sum_{i>0}\gamma_{t,i}\eta_{t,i}h_t^i = w_t\tau_th_t.
+\end{align*}
+Letting $n_t$ denote total number of young households, the number of formal households are $n_t/(1+\gamma_{t,0})$. Similarly, without mortality, the share of retired households of type $j$ would be $\gamma_{t-1,j}/(1+\gamma_{t-1,0})$. Taking mortality into consideration, the balanced budget requires that 
+\begin{align*}
+    \dfrac{n_t}{1+\gamma_{t,0}} w_t\tau_th_t = \dfrac{n_{t-1}}{1+\gamma_{t-1,0}}\sum_j \gamma_{t-1,j}p_{t-1}^j b_t^j
+\end{align*}
+The left hand side measures contributions, the right hand side measures beneficiaries. Using the structure of the pension design, this identifies the level in pension rates $\overline{b}_t$ as:
+\begin{align}\label{\refeq:governmentBudget:bbar}
+    \overline{b}_t & \equiv \dfrac{\nu_t w_th_t\tau_t}{h_{t-1}\kappa_{t-1}}, \qquad\kappa_t \equiv \frac{1+\gamma_{t,0}}{1+\gamma_{t+1,0}}(\epsilon_{t+1}\gamma_{t,0}p_t^0+p_t)
+\end{align}
+\end{subequations}
+
+
+\bigskip
+\begin{subequations}\label{\refeq:formalOpt}
+With CRRA-GHH preferences, households maximize \eqref{\refeq:util} subject to budgets \eqref{\refeq:formalBudget} and \eqref{\refeq:informalBudget}. The labour supply and savings of formal households are then given by (given factor prices and policies):
+\begin{align}
+    h_{t,i} &= \left[\frac{\eta_{t,i}}{X_{t,i}}\left(w_t(1-\tau_t)+\theta_{t+1}\overline{b}_{t+1}\right)\right]^{\xi} \\ 
+    s_{t,i} &= \dfrac{B_{t+1}^i}{1+B_{t+1}^i}\left[w_t\left(1-\tau_t\right)h_{t,i}\eta_{t,i}-\dfrac{X_{t,i}\xi}{1+\xi}\left(h_{t,i}\right)^{\frac{1+\xi}{\xi}}\right]-\dfrac{b_{t+1}^i/(R_{t+1}/p_t)}{1+B_{t+1}^i}
+\end{align}
+\end{subequations}
+where we have used the shorthand $B_{t+1}^i \equiv \left(\beta_{t,i}\right)^{\rho}(R_{t+1}/p_t)^{\rho-1}$. For the informal households, there is no active savings decision, but a labour supply decision in both periods:
+\begin{subequations}\label{\refeq:informalOpt}
+\begin{align}
+    h_{1,t}^0 &= \left(\frac{\eta_{t,0}}{X_{t,0}}w_t^0\right)^{\xi} \\ 
+    h_{2,t+1}^0 &= \left(\frac{\chi_t\eta_{t,0}}{X_{t,0}}w_{t+1}^0\right)^{\xi}
+\end{align}
+\end{subequations}
+
+
+
+
+
+\subsection{The Competitive Equilibrium}\label{\refsec:EE}
+In the competitive equilibrium firms and households maximize, the government runs a balanced budget, and the markets clear. We can collect these in definition of aggregate states \eqref{\refeq:aggregateStates}, factor prices \eqref{\refeq:factorPrices}, household budgets \eqref{\refeq:formalBudget} and \eqref{\refeq:informalBudget}, government budgets \eqref{\refeq:governmentBudget}, and household choices \eqref{\refeq:formalOpt} and \eqref{\refeq:informalOpt}. The following derives closed form representations of the core model variables \emph{given} the generalized discount factor $B_{t+1}^j$. 
+
+
+\bigskip
+\begin{subequations}\label{\refeq:EE}
+Using equilibrium conditions for wages, interest rates, and pension benefits, the labour supply for type $i$ can in equilibrium be written as
+\begin{align*}
+    h_{t,i} = \left(\dfrac{\eta_{t,i}}{X_{t,i}}\right)^{\xi}\left(\dfrac{1}{h_t}\right)^{\xi}\left((1-\alpha)(1-\tau_t)\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha}h_t^{1-\alpha}+\dfrac{1-\alpha}{\alpha}\dfrac{p_t \theta_{t+1}}{\kappa_t} s_t\tau_{t+1}\right)^{\xi}.
+\end{align*}
+The only type-specific term is $(\eta_{t,i}/X_{t,i})^{\xi}$; this shows that the ratio $h_{t,i}/h_t$ is only a function of parameters, namely that
+\begin{align}\label{\refeq:EE:hi}
+    \dfrac{h_{t,i}}{h_t} = \dfrac{(\eta_{t,i}/X_{t,i})^{\xi}}{\Gamma_{t,h}}, \qquad \Gamma_{t,h} = \sum_i\frac{\gamma_{t,i}\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}.
+\end{align}
+
+
+Next, we can use the wage rate and individual labour supply functions to write
+\begin{align*}
+    w_t(1-\tau_t)h_{t,i}\eta_{t,i}-\dfrac{X_{t,i}\xi}{1+\xi}\left(h_{t,i}\right)^{\frac{1+\xi}{\xi}} = \dfrac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{1}{\Gamma_{t,h}}\left[(1-\alpha)(1-\tau_t)h_t^{1-\alpha}\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha}-\dfrac{\xi}{1+\xi}\frac{h_t^{\frac{1+\xi}{\xi}}}{\Gamma_{t,h}^{1/\xi}}\right]
+\end{align*}
+Using the expression for $h_{t,i}$ and $h_{t,i}/h_t$, we can rewrite this as:
+\begin{align*}
+    (1-\alpha)(1-\tau_t)h_t^{1-\alpha}\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha} = \frac{h_t^{\frac{1+\xi}{\xi}}}{\Gamma_{t,h}^{1/\xi}} - \dfrac{1-\alpha}{\alpha}\dfrac{p_t \theta_{t+1}}{\kappa_t} s_t\tau_{t+1},
+\end{align*}
+From this and discounted pension benefits in equilibrium, we then finally have that
+\begin{align}\label{\refeq:EE:si}
+    s_{t,i} =& \dfrac{1}{1+B_{t+1}^i}\left[B_{t+1}^i\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\frac{1}{1+\xi}-\frac{1-\alpha}{\alpha}\frac{p_t\left(1-\theta_{t+1}\right)}{\kappa_t}s_t\tau_{t+1}\right]\\
+    -&\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}\Gamma_{t,h}}\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}}{\kappa_t}s_t\tau_{t+1} \notag
+\end{align}
+Aggregating over the different types, the savings state can then be defined as
+\begin{align}\label{\refeq:EE:s(h)}
+    s_t = \left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\underbrace{\frac{1}{1+\xi}\frac{\sum_i \frac{\gamma_{t,i}\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{B_{t+1}^i}{1+B_{t+1}^i}}{1+\frac{1-\alpha}{\alpha}\frac{p_t\tau_{t+1}}{\kappa_t}\left(\theta_{t+1}+(1-\theta_{t+1})\sum_i\frac{\gamma_{t,i}}{1+B_{t+1}^i}\right)}}_{\equiv \Gamma_{s,t}}
+\end{align}
+Importantly, note that the savings ratios $s_{t,i}/s_t$ can be written as a function of parameters and \emph{future} policy $\tau_{t+1}$ (independent e.g. of $\tau_t$ and given the generalized discount function $B$). Formally we have:
+\begin{align}\label{\refeq:EE:si_s}
+    \frac{s_{t,i}}{s_t} = &\frac{\frac{B_{t+1}^i}{1+B_{t+1}^i}\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}}{\sum_{j>0} \frac{\gamma_{t,j}\eta_{t,j}^{1+\xi}}{X_{t,j}^{\xi}}\frac{B_{t+1}^j}{1+B_{t+1}^j}}\left[1+\frac{1-\alpha}{\alpha}\frac{p_t\tau_{t+1}}{\kappa_t}\left(\theta_{t+1}+(1-\theta_{t+1})\sum_{j>0}\frac{\gamma_{t,j}}{1+B_{t+1}^j}\right)\right] \\
+    -&\frac{1}{1+B_{t+1}^i}\frac{1-\alpha}{\alpha}\frac{p_t(1-\theta_{t+1})}{\kappa_t}\tau_{t+1} - \frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{t,h}}\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}}{\kappa_t}\tau_{t+1}\notag
+\end{align}
+We note that when discount rates are identical across types, i.e. when $\beta_{t,i} = \beta_t$ and $B_{t+1}^i = B_{t+1}$, this simplifies to 
+\begin{align*}
+    \frac{s_{t,i}}{s_t} = \frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{t,h}}+\frac{1-\alpha}{\alpha}\frac{p_t\tau_{t+1}}{\kappa_t}\frac{1-\theta_{t+1}}{1+B_{t+1}}\left(\frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{t,h}}-1\right).
+\end{align*}
+
+
+
+Finally, we can combine $s_t, h_t$ to yield closed form expression given the generalized discount functions: Start from the definition of $h_t$, use that $s_t$ is proportional to $h_t^{(1+\xi)/\xi}$ to write:
+Furthermore, note that we can combine equations for $s_t, h_t$ to yield a closed form expressions \begin{align}\label{\refeq:EE:h}
+    h_t = \underbrace{\left(\Gamma_{h,t}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{(1-\alpha)(1-\tau_t)}{\Gamma_{h,t}-\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}\tau_{t+1}}{\kappa_t}\Gamma_{s,t}}\right)^{\frac{\xi}{1+\alpha\xi}}}_{\equiv \Theta_{h,t}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}}.
+\end{align}
+Naturally, we can use this in the expression for $s_t$ to write savings as
+\begin{align}\label{\refeq:EE:s}
+    s_t &= \left(\frac{\Theta_{h,t}}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\Gamma_{s,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}.
+\end{align}
+\end{subequations}
+
+
+Given discount functions, $B^i$, equations \eqref{\refeq:EE} identify aggregate states $s_t$ and $h_t$ as complicated parameter and policy functions $\Theta_{x,t}$ times the lagged state $s_{t-1}$ raised to some power $\sigma_x$. 
+
+
+\smalltitle{Closed form consumption functions.}
+We note that if we know $s_t$ $h_t$, $B^i$, and $s_{t-1}$, it is straightforward to identify all other variables directly: Individual labour supply and savings decisions from \eqref{\refeq:EE:hi} and \eqref{\refeq:EE:si}, factor prices from \eqref{\refeq:factorPrices}, pension benefits from \eqref{\refeq:governmentBudget}, and finally consumption simply from budgets \eqref{\refeq:formalBudget} and \eqref{\refeq:informalBudget}. However, in particular in the analytical log case, it can be useful to derive \emph{equilibrium} consumption functions as well; All consumption functions can be written on the form $x_t = \Theta_{x,t}(s_{t-1}/\nu_t)^{\sigma_x}$ with 
+\begin{align}\label{\refeq:EE:sigma_ci}
+    \sigma_{c_1,t}^i &= \sigma_{c_2,t}^i = \sigma_{\tilde{c}_1,t}^i = \dfrac{\alpha(1+\xi)}{1+\alpha\xi}, 
+    \qquad \sigma_{c_2,t+1}^i = \left(\dfrac{\alpha(1+\xi)}{1+\alpha\xi}\right)^2.
+\end{align}
+This is essentially what ensures that the political objective function is log-separable in the state $s_{t-1}/\nu_t$. 
+
+\begin{subequations}\label{\refeq:EE:ci}
+The coefficient functions (that also generally depends on policy) are derived using the aggregate states in the functions above. For completeness, we have the following:
+\begin{align}
+    c_{1,t}^i &= \frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\left(1-\frac{B_{t+1}^i}{(1+B_{t+1}^i)(1+\xi)}\right)+\frac{s_t}{1+B_{t+1}^i}\frac{1-\alpha}{\alpha}\frac{p_t \tau_{t+1}(1-\theta_{t+1})}{\kappa_t} \\
+    c_{2,t}^i &= \alpha \frac{\nu_t}{p_{t-1}}h_t^{1-\alpha}\left(\frac{s_{t-1}}{\nu_t}\right)^{\alpha}\left(\frac{s_{t-1,i}}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)\right) \\
+    \tilde{c}_{1,t}^i &= \frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\frac{1}{(1+\xi)(1+B_{t+1}^i)}+\frac{s_t}{1+B_{t+1}^i}\frac{1-\alpha}{\alpha}\frac{p_t \tau_{t+1}(1-\theta_{t+1})}{\kappa_t} \notag \\ 
+    &= \left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\frac{1}{1+B_{t+1}^i}\left(\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{1}{1+\xi}+\Gamma_{s,t}\frac{1-\alpha}{\alpha}\frac{p_t \tau_{t+1}(1-\theta_{t+1})}{\kappa_t}\right)
+\end{align}
+For the formal households that do not supply labour in retirement, we simply have $\tilde{c}_{2,t}^i = c_{2,t}^i$. \end{subequations}
+
+For the informal households that consume hand-to-mouth, relevant equilibrium consumption functions are given by\footnote{Recall informal workers are assumed to receive an endowment proportional to wages of formal workers when they retire. For tractability we define this as if they were making a labour supply decision. The relevant parameter determining the size of the endowment is $\chi_t$.}
+\begin{subequations}\label{\refeq:EE:c0}
+\begin{align}
+    c_{1,t}^0 &= \frac{\eta_{t,0}^{1+\xi}}{X_{t,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}} \\ 
+    \tilde{c}_{1,t}^0 &=\frac{c_{1,t}^0}{1+\xi}
+\end{align}
+Consumption when old is then given by
+\begin{align}
+    c_{2,t}^0 &= \frac{\left(\chi_{t-1}\eta_{t-1,0}\right)^{1+\xi}}{X_{t-1,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}+\dfrac{(1-\alpha)\nu_t\epsilon_t\tau_t}{\kappa_{t-1}}\left(\frac{s_{t-1}}{\nu_t}\right)^\alpha h_t^{1-\alpha} \\
+    \tilde{c}_{2,t}^0 &= \frac{\left(\chi_{t-1}\eta_{t-1,0}\right)^{1+\xi}}{(1+\xi)X_{t-1,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}+\dfrac{(1-\alpha)\nu_t\epsilon_t\tau_t}{\kappa_{t-1}}\left(\frac{s_{t-1}}{\nu_t}\right)^\alpha h_t^{1-\alpha}.
+\end{align}
+\end{subequations}
+
+
+
+\subsection{The politico-economic equilibrium with LOG preferences}\label{\refsec:PEELOG}
+Let $\upsilon_{1,t}^j$ and $\upsilon_{2,t}^j$ denote the indirect utilities of different households (types and generations). Policy is set without commitment, with elections each $t$ aggregating preferences using probabilistic voting that maximizes a weighted sum of indirect utilities. Let $\tau^{t+1}(z_t)$ denote a continuation policy with $z_t$ being a vector of states. The political problem can then be written as
+\begin{align*}
+    &\max_{\tau_t}\mbox{ }\mathcal{W}_t(z_{t-1}) \equiv \omega\sum_j\left(\gamma_{t-1,j} p_{t-1,j} \mu_{t-1,j} v_{2,t}^j\right)+\nu_t\sum_j\left(\gamma_{t,j}\mu_{t,j} v_{1,t}^j\right) \\
+    &\text{s.t. competitive equilibrium and }\tau_{t+1} = \tau^{t+1}(z_t),
+\end{align*}
+where $\tau^{t+1}(z_t)$ is identified by this process at $t+1$, $\omega$ is a weight reflecting relative political power of the older generation, $\mu_{t,j}$ reflects relative voting shares for different income groups (the old generation at $t$ votes with the voting shares $\mu_{t-1,j}$ they had when young, i.e. shares are attached to a generation, not a period).
+
+With $\rho = 1$, the discount function simplifies to $B_{t+1}^i = \beta_{t,i}$ and the politico-economic equilibrium can be characterized in closed form without any continuation policy; We can exploit that all consumption functions are log-separable in $s_{t-1}$ to show that there are no endogenous states, i.e. the $z_t = \emptyset$ (see the paper for an elaboration of this claim). In general, the first order condition for $\tau_t$ is given by:
+\begin{align*}
+    \omega\sum_{j}\left(\gamma_{t-1,j}p_{t-1,j}\mu_{t-1,j} \frac{d\upsilon_{2,t}^j}{d\tau_t}\right)+
+    \nu_t\sum\left(\gamma_{t,j}\mu_{t,j} \frac{d\upsilon_{1,t}^j}{d\tau_t}\right) = 0,
+\end{align*}
+where the total derivatives (with "hard d") includes the partial effects of changing policy directly (through economic equilibrium functions), but also the indirect effects working through the continuation policy. 
+
+\begin{subequations}\label{\refeq:PEELOG}
+For the log case, however, where there are no effects through the continuation policy, this simplifies significantly. For the consumption smoothers, using the Euler condition, we have $\upsilon_{1,t}^i = (1+\beta_{t,i})\ln\left(\tilde{c}_{1,t}^i\right)+\beta \ln\left(R_{t+1}\right)+\beta \ln(\beta)$. Using that $\tilde{c}_{1,t}^i$ is log-separable in $s_{t-1}$ and the formula for the interest rate, it is straightforward to verify that this reduces to
+\begin{align}
+    \frac{d\upsilon_{1,t}^i}{d\tau_t} = -\frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi}\left(1+\beta_{t,i}\frac{\alpha(1+\xi)}{1+\alpha\xi}\right).
+\end{align}
+For the informal young, the current tax only works through the future informal wage rate:
+\begin{align}
+    \frac{d\upsilon_{1,t}^0}{d\tau_t} = -\frac{\beta_{t,0}}{1-\tau_t}\frac{\alpha(1+\xi)^2}{(1+\alpha\xi)^2}.
+\end{align}
+For the older cohorts, the effect works through $\tilde{c}_{2,t}^j$ and, again being log-separable in $s_{t-1}$, this simplifies to
+\begin{align}
+    \frac{d\upsilon_{2,t}^i}{d\tau_t} =& (1-\alpha)\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial \tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{p_{t-1}}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)}{\frac{s_{t-1}^i}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)} \\ 
+    \frac{d\upsilon_{2,t}^0}{d\tau_t} =& \frac{\dfrac{(1-\alpha)\nu_t\epsilon_t}{\kappa_{t-1}} \Theta_{h,t}^{1-\alpha}\left(1+(1-\alpha)\tau_t\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial\tau_t}\right)}{\frac{\left(\chi_{t-1}\eta_{t-1,0}\right)^{1+\xi}}{(1+\xi)X_{t-1,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}+\dfrac{(1-\alpha)\nu_t\epsilon_t\tau_t}{\kappa_{t-1}} \Theta_{h,t}^{1-\alpha}},
+\end{align}
+where 
+\begin{align*}
+    \frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial \tau_t} = -\frac{1}{1-\tau_t}\frac{\xi}{1+\alpha\xi}.
+\end{align*}
+\end{subequations}
+
+
+
+
+
+\subsection{The politico-economic equilibrium with CRRA preferences}\label{\refsec:PEE}
+With CRRA preferences, the general first order condition is the same, but the total derivatives of indirect utilities change significantly. As we show in the numerical part \ref{part:num}, we will rely on numerical methods that approximate these derivatives in combination with grid searches. For the young generations, this means that we only have to be able to compute indirect utilities. For the older generations, however, we need to go one step deeper, in order to ensure that we do not need to evaluate on a large grid of the past distribution of savings $s_{t-1,i}/s_{t-1}$ (see the main paper for a thorough explanation). 
+
+
+\begin{subequations}\label{\refeq:PEE}
+We start using the Euler condition for the formal young households, we have that
+\begin{align}
+    \upsilon_{1,t}^i = (1+B_{t+1}^i)\frac{\left(\tilde{c}_{1,t}^i\right)^{1-1/\rho}}{1-1/\rho}.
+\end{align}
+The indirect utility of young informal households cannot be reduced further, as they consume "hand-to-mouth", i.e. do not smooth out consumption and utility over time. Thus, we simply have:
+\begin{align}
+    \upsilon_{1,t}^0 = \frac{1}{1-1/\rho}\left[ \left(\tilde{c}_{1,t}^0\right)^{1-1/\rho}+\beta_{t,0} \left(\tilde{c}_{2,t+1}^0\right)^{1-1/\rho}\right]
+\end{align}
+
+Because the policy maker has to take past choices as given (such as savings and relative savings rates), we have to rely on first order conditions to efficiently identify their choices (to avoid searching over a full grid of states $s_{t-1,i}/s_{t-1}$). Whereas we can numerically approximate derivatives of $\upsilon_{1,t}^i$  and $\upsilon_{1,t}^0$ using simple grids, here we have to be a bit more careful. In particular, we have to use:
+\begin{align}
+    \dfrac{d v_{2,t}^i}{d \tau_t} =& \left(c_{2,t}^i\right)^{1-1/\rho}\dfrac{d\ln\left(c_{2,t}^i\right)}{d\tau_t} \\
+    \frac{d\ln\left(c_{2,t}^i\right)}{d\tau_t} =& (1-\alpha)\frac{d \ln\left(h_t\right)}{d \tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{p_{t-1}}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)}{\frac{s_{t-1}^i}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)},
+\end{align}
+where the second line explicitly uses that $s_{t-1,i}/s_{t-1}$ is predetermined. However, as this ratio has a closed-form expression that relies on $\tau_t$, we do not have to evaluate on the entire grid, rather only on the selection that are actually consistent with economic equilibrium conditions. This is the exact trick that allows us to only use $s_{t-1}$ as a relevant state and not the entire distribution.
+
+
+Finally, the current old hand-to-mouth consumers have, we do not have to worry about this, we can simply evaluate the indirect utility directly as
+\begin{align}
+    \upsilon_{2,t}^0 = \frac{\left(\tilde{c}_{2,t}^0\right)^{1-1/\rho}}{1-1/\rho}.
+\end{align}
+\end{subequations}
+
+
+
+\subsection{Finite Horizon Terminal state.}\label{\refsec:finitehorizon}
+
+\smalltitle{Economic equilibrium.}
+In the finite horizon version of the model, the economic equilibrium simplifies to (with $s_t = s_{t,i} = 0$):
+\begin{subequations}\label{\refeq:TerminalEE}
+\begin{align}
+    h_t &= \left(\Gamma_{h,t}\right)^{\frac{1}{1+\alpha\xi}}\left((1-\alpha)(1-\tau_t)\right)^{\frac{\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}} \\
+    h_t^i &= h_t\frac{(\eta_{t,i}/X_{t,i})^{\xi}}{\Gamma_{t,h}} \\ 
+    c_{1,t}^i &= \dfrac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}} \\ 
+    \tilde{c}_{1,t}^i &= \frac{c_{1,t}^i}{1+\xi} \\
+    c_{1,t}^0 &= \frac{\eta_{t,0}^{1+\xi}}{X_{t,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}} \\
+    \tilde{c}_{1,t}^0 &= \dfrac{c_{1,t}^0}{1+\xi}.
+\end{align}
+\end{subequations}
+
+\smalltitle{Politico-economic equilibrium with log preferences.}
+The politico-economic equilibrium similarly simplifies, because we per construction do not have a continuation policy. In the log case, we can simply reuse the regular expressions from \eqref{\refeq:PEELOG}, but with $\beta_{t,j} = 0$ throughout. This leaves us with simplified expressions for the young and replicas for the old:
+\begin{subequations}\label{\refeq:terminalPEELOG}
+\begin{align}
+    \dfrac{d v_{1,t}^i}{d \tau_t} =& - \frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi} \\
+    \dfrac{d v_{1,t}^0}{d \tau_t} =& 0 \\
+    \frac{d\upsilon_{2,t}^i}{d\tau_t} =& (1-\alpha)\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial \tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{p_{t-1}}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)}{\frac{s_{t-1}^i}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)} \\ 
+    \frac{d\upsilon_{2,t}^0}{d\tau_t} =& \frac{\dfrac{(1-\alpha)\nu_t\epsilon_t}{\kappa_{t-1}} \Theta_{h,t}^{1-\alpha}\left(1+(1-\alpha)\tau_t\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial\tau_t}\right)}{\frac{\left(\chi_{t-1}\eta_{t-1,0}\right)^{1+\xi}}{(1+\xi)X_{t-1,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}+\dfrac{(1-\alpha)\nu_t\epsilon_t\tau_t}{\kappa_{t-1}} \Theta_{h,t}^{1-\alpha}},
+\end{align}
+where the $\partial \ln\left(\Theta_{h,t}\right)/\partial \tau_t$ is the same as for $t<T$ as well. 
+\end{subequations}
+
+\smalltitle{Politico-economic equilibrium with CRRA preferences.}
+In the CRRA case with $\rho\neq 1$, the savings level $s_{t-1}$ is now a relevant state variable. Furthermore, we need to compute consumption levels in order to evaluate marginal utilities from changed policy. However, beyond this, we can use the log formulation and write the first order condition directly (instead of relying on numerical grid searches):
+\begin{subequations}\label{\refeq:terminalPEECRRA}
+\begin{align}
+    \dfrac{d v_{1,t}^i}{d \tau_t} =& - \frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi}\left(\tilde{c}_{1,t}^i\right)^{1-1/\rho}  \\
+    \dfrac{d v_{1,t}^0}{d \tau_t} =& 0 \\
+    \frac{d\upsilon_{2,t}^i}{d\tau_t} =& \left(c_{2,t}^i\right)^{1-1/\rho}\left[(1-\alpha)\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial \tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{p_{t-1}}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)}{\frac{s_{t-1}^i}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{t-1,h}}-1\right]\right)}\right] \\ 
+    \frac{d\upsilon_{2,t}^0}{d\tau_t} =& \left(\tilde{c}_{2,t}^0\right)^{1-1/\rho}\frac{\dfrac{(1-\alpha)\nu_t\epsilon_t}{\kappa_{t-1}} \Theta_{h,t}^{1-\alpha}\left(1+(1-\alpha)\tau_t\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial\tau_t}\right)}{\frac{\left(\chi_{t-1}\eta_{t-1,0}\right)^{1+\xi}}{(1+\xi)X_{t-1,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}+\dfrac{(1-\alpha)\nu_t\epsilon_t\tau_t}{\kappa_{t-1}} \Theta_{h,t}^{1-\alpha}},
+\end{align}
+where the $\partial \ln\left(\Theta_{h,t}\right)/\partial \tau_t$ is identical to the log formulation in the terminal state. 
+\end{subequations}
+
+
+
+
+
+\subsection{Calibration}\label{\refsec:calibration}
+This first model is used to match the case of Argentina only. The full procedure and a description of the data can be found in the main paper. The main application in the paper uses constant parameter values across $t$ for almost all parameters. Thus, when we drop the $t$-subscript in the following, we assume constant parameters.  
+
+\smalltitle{Data.} 
+We follow previous literature and let $t$ represent 30-year intervals (this helps with the assumption that capital fully depreciates between time steps). We find population data including projections to determine $\nu_t$ from 1950 to 2070 and amend the data with $t = 1920, 2100$  with constant extrapolation.
+
+We use a household survey to split up the population into $J+1 = 5$ household types. This household survey provides shares $\gamma$, hours worked, and income. In addition, we have data on voting shares represented by $\mu_j$ in the political problem and survival rates $(p_j)$ (where $p_i = p$ is common across $i>0$ types). 
+
+We use the capital income share to identify $\alpha$, set the labour supply elasticity at a baseline value $\xi = 0.3$, identify the savings rate in a baseline year $t=2010$ to be 18.4\%, and the pension tax rate $\tau_t$ to be 12.5\% in the baseline year as well. 
+
+We use OECD data to define ratio of replacement rates $RR$ at half mean wages and mean wages (represented by groups $j=1, j=3$ in our data). This will help us identify $\theta$ (we do not work with endogenous pension characteristics for Argentina). 
+
+In the Argentina case, we exploit a pension reform around $t=2010$ that drastically changed the degree of universal pensions $\epsilon$. This does not, however, yield a static calibration target, as we see below.
+
+
+\smalltitle{Calibration.}
+Several of the model parameters are set directly using the data. This covers the parts that are not set directly, but have to solved in one way or another.
+
+First, we calibrate the income distribution and relative working hours across the income distribution using $\eta_j$ and $X_j$. Specifically, let $z_j^{\eta}$ and $z_j^{x}$ denote income and working hours relative to the average formal household. With labour supply following $h_t^i/h_t = \eta_iX_i^{\xi}$ for formal households, we solve the system
+\begin{align*}
+        z_i^{\eta} &= \dfrac{w_t(1-\tau_t)h_t^i \eta_i}{w_t(1-\tau_t)h_t} = \dfrac{\eta_i^{1+\xi}/X_i^{\xi}}{\sum_{j>0} \left(\gamma_ j\eta_j^{1+\xi}/X_j^{\xi}\right)},  \\
+        z_i^{x} &= \frac{h_{t,i}}{\sum_i\gamma_i h_{t,i}} = \frac{\eta_i^{\xi}/X_i^{\xi}}{\sum_i \gamma_i(\eta_i/X_i)^{\xi}},
+\end{align*}
+where we normalize $\Gamma_h \equiv \sum_i \gamma_i\eta_i^{1+\xi}/X_i^{\xi} = 1$ in the calibration stage. Using $y_i^{\eta} = \eta_i^{1+\xi}/X_i^{\xi}$ and $y_i^x = (\eta_i/X_i)^{\xi}$ as shorthand, we can set up the conditions as linear systems instead:
+\begin{align*}
+    \left(\bm{z}_i^{\eta} \times \bm{\gamma}_i'-\bm{I}\right)\times \bm{y}_i^{\eta} &= \bm{0} \\
+    \left(\bm{z}_i^{x} \times \bm{\gamma}_i'-\bm{I}\right)\times \bm{y}_i^{x} &= \bm{0},
+\end{align*}
+where the bold-notation indicates vectors and matrices. We note that the $\bm{y}_i$ vectors are actually eigenvectors, which allows us to compute vectors of productivity and disutility of leisure as
+\begin{align} 
+    \bm{\eta}_i &= \frac{\bm{y}^{\eta}_i}{\bm{y}_i^x \left(\bm{y}_i^{\eta} \cdot \bm{y}_i\right)} \label{\refeq:calibration:etai} \\
+    \bm{X}_i &= \frac{\bm{\eta}_i}{(\bm{y}_i^x)^{1/\xi}}, \label{\refeq:calibration:Xi}
+\end{align}
+where $\bm{y}_i^{\eta} = \text{Eigvec}(\bm{z}_i^{\eta}\times \bm{\gamma}_i')$ and $\bm{y}_i^{x} = \text{Eigvec}(\bm{z}_i^{x}\times \bm{\gamma}_i')$ are eigenvectors.
+
+To capture the relative income and working hours of the informal/hand-to-mouth households, requires a bit more. First, the ratio of income and working hours can still be written as:
+\begin{align*}
+    z_0^{\eta} &= \frac{w_t^0h_{1,t}^0\eta_{0}}{w_t(1-\tau_t)h_t} \\
+    z_0^x &= \dfrac{h_{t,1}^0}{\sum_i \gamma_{i} h_{t,i}}
+\end{align*}
+We can combine and rearrange the terms to get the following expressions for $\eta_0, X_0$:
+\begin{align}
+    \eta_{0} &= \frac{z_0^{\eta}}{z_0^x}\frac{(1-\alpha)(1-\tau_t)}{\Theta_{h,t}^{\alpha}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}} \label{\refeq:calibration:eta0}\\
+    X_{0} &= \eta_{0}\frac{\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}}{\left(\Theta_{h,t}z_0^x\right)^{1/\xi}} \label{\refeq:calibration:X0}
+\end{align}
+We note that all of this is evaluated at $t=2010$, our baseline year. However, while we can identify most of the terms, the coefficient function $\Theta_{h,t}$ still has to be solved for us to get this. Thus, we add these two conditions determining $\eta_0, X_0$ as targets that we have to solve alongside the politico-economic equilibrium (to get $\Theta_{h,t}$ in the baseline year). 
+
+
+
+Given vectors of productivities and disutility of labour for formal households, $\bm{\eta}_i, \bm{X}_i$, we can determine $\theta$ from the ratio of replacement rates. In particular, we solve for $\theta$ (constant across $t$ in this calibration) from the requirement:
+ \begin{align*}
+        RR \equiv \dfrac{\theta+(1-\theta)\frac{h_t}{\eta_3 h_{t,3}}}{\theta+(1-\theta)\frac{h_t}{\eta_1 h_{t,1}}} = \frac{\theta + (1-\theta)\frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}}{\theta+(1-\theta)\frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}}},
+\end{align*}
+where we have data on $RR$ from OECD data, and the two groups $j=1, 3$ represent half-mean and mean wages in our data for Argentina. Given that we know $\eta_i, X_i$ for formal households already, we can simply compute $\theta$ from
+\begin{align}
+    \theta = \frac{RR \frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}} - \frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}}{1-\frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}-RR\left(1-\frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}}\right)}
+\end{align}
+
+
+
+Finally, we need to determine parameters $\omega$ and discount parameters $\beta$. Note that we assume that they are identical across time and household types in the calibration. They are identified by ensuring that the politico-economic equilibrium replicates a pension tax of 12.5\% and a savings rate of 18.5\% in the baseline year 2010. With the Cobb-Douglas production, the savings rate is given by
+\begin{align*}
+    \text{Savings rate}_t = \frac{s_t}{\left(s_{t-1}/\nu_t\right)^{\alpha} h_t^{1-\alpha}}.
+\end{align*}
+
+
+Most parameters can be calibrated initially, assuming values for parameters $\xi, \rho$. There are, however, four parameters that cannot be calibrated without knowing the politico-economic equilibrium path: $\omega, \beta, \eta_0, X_0$. As the politico-economic equilibrium cannot be solved without these parameters, the final bit of calibration is solved as a nested fixed point problem. In the numerical part \ref{part:num} we describe this calibration procedure in more detail. 
+
+
+
+
+\clearpage
+\part{Numerical}\label{part:num}
+
+This part contains a description of the numerical approaches used to solve the various numbers outlined in part \ref{part:models}. We present each of them in turn.
+
+\edef\refsec{sec:num:infana}
+\edef\refmodelsec{sec:models:infana}
+\edef\refeq{eq:num:infana}
+\edef\refmodeleq{eq:models:infana}
+\edef\refalg{alg:num:infana}
+
+
+\section{Informal Analytical Model}\label{\refsec}
+Before we outline the specific solutions, we start by collecting all relevant baseline equations in one with explicit reference to the arguments that may change during a solution (all of these are simply copies from part \ref{part:models}, but collected here for simplicity). We reference them with explicit arguments for the parts that may change during solution/simulation/calibration stages: 
+\begin{subequations}\label{\refeq:auxiliary}
+    \begin{align}
+        \Gamma_{s,t}\left(\bm{B}_{t+1}, \tau_{t+1} \right) &= \frac{1}{1+\xi}\frac{\sum_i \frac{\gamma_{t,i}\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{B_{t+1}^i}{1+B_{t+1}^i}}{1+\frac{1-\alpha}{\alpha}\frac{p_t\tau_{t+1}}{\kappa_t}\left(\theta_{t+1}+(1-\theta_{t+1})\sum_i\frac{\gamma_{t,i}}{1+B_{t+1}^i}\right)}, 
+        \label{\refeq:auxiliary:Gammas} \\
+        \Theta_{h,t}\left(\tau_t, \tau_{t+1}, \theta_{t+1}, \Gamma_{s,t}\right) &= \left(\Gamma_{h,t}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{(1-\alpha)(1-\tau_t)}{\Gamma_{h,t}-\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}\tau_{t+1}}{\kappa_t}\Gamma_{s,t}}\right)^{\frac{\xi}{1+\alpha\xi}} 
+        \label{\refeq:auxiliary:Thetah} \\ 
+        \Theta_{h,T}\left(\tau_T\right) &= \left(\Gamma_{h,t}\right)^{\frac{1}{1+\alpha\xi}}\left((1-\alpha)(1-\tau_t)\right)^{\frac{\xi}{1+\alpha\xi}}
+        \label{\refeq:auxiliary:ThetahT} \\
+        \Theta_{s,t}\left(\Theta_{h,t}, \Gamma_{s,t}\right) &= \left(\frac{\Theta_{h,t}}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}} \Gamma_{s,t} 
+        \label{\refeq:auxiliary:Thetas} \\
+        s_t(\Theta_{s,t}, s_{t-1}) &= \Theta_{s,t} \left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}} 
+        \label{\refeq:auxiliary:s} \\
+        h_t\left(\Theta_{h,t}, s_{t-1}\right) &= \Theta_{h,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}} \label{\refeq:auxiliary:h} \\ 
+        B_{t+1}^i\left(s_t, h_{t+1}\right) &=\left(\beta_{t,i}\right)^{\rho}\left[\frac{\alpha}{p_t}\left(\frac{s_t}{\nu_{t+1}h_{t+1}}\right)^{\alpha-1}\right]^{\rho-1}  
+        \label{\refeq:auxiliary:B} \\ 
+        R_{t+1}\left(s_t, h_{t+1}\right) &= \alpha \left(\frac{s_t}{\nu_{t+1}h_{t+1}}\right)^{\alpha-1} \label{\refeq:auxiliary:R} \\
+        s_t\left(h_t, \Gamma_{s,t}\right) &= \left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\Gamma_{s,t} 
+        \label{\refeq:auxiliary:sFromH} 
+    \end{align}
+\end{subequations}
+
+
+
+\subsection{The economic equilibrium}\label{\refsec:EE}
+
+\smalltitle{With log preferences.}
+Assume that we know the path of taxes $\tau_t$, pension characteristics $\theta_t, \epsilon_t$, and an initial exogenous level of savings $s_0$. In this case, recall that we simply have $B_{t+1}^i = \beta_{t,i}$. Given this, we can solve for the economic equilibrium without any numerical root finding: 
+\begin{itemize}
+    \item First compute $\Gamma_{s,t}$ from \eqref{\refeq:auxiliary:Gammas} (only defined for $t<T$).
+    \item Then, compute finite horizon $\Theta_{h,t}$ from stacking \eqref{\refeq:auxiliary:Thetah} for $t<T$ and \eqref{\refeq:auxiliary:ThetahT} for $t=T$. 
+    \item Then, compute $\Theta_{s,t}$ from \eqref{\refeq:auxiliary:Thetas} (only defined for $t<T$ as well).
+    \item Given $s_0$ and $\Theta_{s,t}$ we can iterate forward on \eqref{\refeq:auxiliary:s} to solve for $s_t$ for all $t<T$. For $t=T$ we have $s_T = 0$ per construction. 
+\end{itemize}
+As explained in part \ref{part:models}, this set of core variables allows us to solve for individual labour supply and savings, factor prices, pension benefits, and finally consumption levels (from budgets). 
+
+
+
+
+
+\smalltitle{With CRRA preferences.}
+Assume that we know the path of taxes $\tau_t$, pension characteristics $\theta_t, \epsilon_t$, and an initial exogenous level of savings $s_0$. The core of the economic equilibrium can then be reduced to identifying vectors of $\Gamma_{s,t}, h_t, s_t$. The three vectors are identified by three set of conditions (we have a square system of nonlinear equations):
+\begin{itemize}
+    \item The finite horizon labour supply condition requires \eqref{\refeq:auxiliary:h} with $\Theta_{h,t}$ being computed using \eqref{\refeq:auxiliary:Thetah} for $t<T$ and \eqref{\refeq:auxiliary:ThetahT} for $t=T$. 
+    \item The finite horizon savings decision requires solving for $t<T$ (with $s_T = 0$); we use \eqref{\refeq:auxiliary:sFromH} for this. 
+    \item Finally, $\Gamma_{s,t}$ is also only defined for $t<T$; we use \eqref{\refeq:auxiliary:Gammas} for this with condition \eqref{\refeq:auxiliary:Gammas} evaluated with $B_{t+1}^i(s_t, h_{t+1})$.
+\end{itemize}
+Given a solution to this core of the economic equilibrium ($s_t, h_t, \Gamma_{s,t}$), the rest of the outcomes can be solved as in the log case. 
+    
+
+\smalltitle{Initializing with steady state savings.}
+When we solve for the economic equilibrium given vectors of $\tau_t, \theta_t$, and $\epsilon_t$, our default option for the initial exogenous level of savings $s_0$ is to solve for steady state levels using parameter values from the first period ($t=1$). 
+
+
+With Log preferences, we have that $B^i = \beta_i$ and then we can simply solve for $\Gamma_{s}$ directly in closed-form using the general equation \eqref{\refeq:auxiliary:Gammas}. Given this, we can then compute steady state savings from \eqref{\refeq:steadystate_LOG:s} (here just repeated from part \ref{part:models}):
+\begin{subequations}\label{\refeq:steadystate_LOG}
+    \begin{align}
+        \Gamma_s =& \frac{1}{1+\xi}\frac{\sum_i \frac{\gamma_{i}\eta_{i}^{1+\xi}}{X_{i}^{\xi}}\frac{B^i}{1+B^i}}{1+\frac{1-\alpha}{\alpha}\frac{p\tau}{\kappa}\left(\theta+(1-\theta)\sum_i\frac{\gamma_{i}}{1+B^i}\right)} \label{\refeq:steadystate_LOG:Gammas}\\ 
+         s^* =& \Gamma_h^{1+\xi}\left[\left(\frac{(1-\alpha)(1-\tau)}{\Gamma_h-\frac{1-\alpha}{\alpha}\frac{p\theta\tau}{\kappa}\Gamma_s}\right)^{1+\xi}\frac{\Gamma_s^{1+\alpha\xi}}{\nu^{\alpha(1+\xi)}}\right]^{\frac{1}{1-\alpha}} \label{\refeq:steadystate_LOG:s}
+    \end{align}
+\end{subequations}
+
+With CRRA preferences, we have to identify $s^*$ numerically instead. This can be done technically in several ways, but we prefer the following as it allows us to solve the problem as a bounded scalar search where there are robust and fast algorithms available (e.g. golden-section search). Specifically, we solve for the $\Gamma_s$ that satisfies the following condition \eqref{\refeq:steadystate_CRRA:Gammas}
+\begin{subequations}\label{\refeq:steadystate_CRRA}
+\begin{align}
+    &\Gamma_s(1+\xi)\left[1+\frac{1-\alpha}{\alpha}\frac{p\tau}{\kappa}\left(\theta+(1-\theta)\sum_i\frac{\gamma_i}{1+B^i(\Gamma_s)}\right)\right] = \sum_i\frac{\gamma_i\eta_i^{1+\xi}}{X_i^{\xi}} \frac{B^i(\Gamma_s)}{1+B^i(\Gamma_s)}, \label{\refeq:steadystate_CRRA:Gammas} \\
+    &\text{where }B^i(\Gamma_s) = \left(\beta_i\right)^{\rho} \left(\frac{\alpha}{p}\frac{\Gamma_h-\frac{1-\alpha}{\alpha}\frac{p\theta\tau}{\kappa}\Gamma_s}{(1-\alpha)(1-\tau)}\frac{\nu}{\Gamma_s}   \right)^{\rho-1} \label{\refeq:steadystate_CRRA:Bi}
+\end{align}
+\end{subequations}
+It is relatively straightforward to define a bounded interval of $\Gamma^s$ to test out. For instance, with constant $B^i$ across types, we have that $\Gamma_s \in \left(0, B/((1+B)(1+\xi)) \right)$, which means that we can practically always use a golden section search with bounds $(0, 0.75)$ and be sure to identify the solution.
+
+
+\subsection{Robust root finding with bounds}\label{\refsec:RobustRoot}
+In the following subsection, we identify policies that maximize political objective function solving the first order condition as a root-finding problem instead of using the political objective function directly. This is paramount to avoid having the entire distribution of past savings as state variables for the political problem. Also, we will generally only work with $\tau \in[0,1]$ for numerical stability. To deal with these two points (that we work with first order conditions and only want to evaluate most functions on $\tau\in[0,1]$), we set up an auxiliary root-finding problem. 
+
+Notationally, let $z(\tau) = f\left([\tau]_{[0,1]}\right)$ denote the first order condition evaluated in the interior $[\tau]_{[0,1]} \equiv \min(1, \max(0,\tau))$. Instead of trying to solve for $f(\tau) = 0$, we suggest solving for 
+\begin{align}\label{\refeq:root}
+    h(z,\tau) = z - |z| \underbrace{\left[a_0\min\left(\tau,0\right) + a_1\left(\max(\tau,1)-1\right)\right]}_{\equiv g(\tau)} = 0,
+\end{align}
+where $a_0, a_1>0$ are some technical parameters. In this case we have three regions:
+\begin{align*}
+    h\left(z,\tau\right) = \left\lbrace \begin{array}{ll} f(0)-|f(0)| a_0 \tau, & \tau<0 \\
+    f(\tau), & \tau\in[0,1] \\ 
+    f(1)-|f(1)|a_1(\tau-1), & \tau>1\end{array}\right., && \dfrac{\partial h}{\partial \tau} = \left\lbrace \begin{array}{ll} -|f(0)|a_0, & \tau<0 \\
+    \dfrac{\partial f}{\partial \tau}, & \tau\in[0,1] \\ 
+    -|f(1)|a_1, & \tau>1\end{array}\right.
+\end{align*}
+
+
+If the function $f(\tau)$ is well behaved (i.e. identifies a maximum), we can solve simply using $h(z(\tilde{\tau}), \tilde{\tau}) = 0$ and then report the bounded solution as $\tau = [\tilde{\tau}]_{[0,1]}$. As long as the function is well-behaved, we can use gradient-based solvers to identify roots. 
+
+If the function is not well-behaved, we may still use $h(z, \tau)$ to detect boundary solutions in some instances. Assume for instance that $f(\tau) >0$ for all $\tau\in[0,1]$, but that $\partial f/\partial \tau <0$. In this case a gradient-based algorithm would have a hard time identifying a solution staring in the interior, as it would suggest trying out lower values of $\tau$. However, note that for $\tau\geq 1$, the method still works and identifies $\tilde{\tau} = 1+1/a_1$ and thus the boundary solution of $\tau = 1$. Similarly, assume that $f(\tau)<0$ for all $\tau\in[0,1]$ and  that $\partial f/\partial \tau >0$. In this case, the same problem exists for a gradient-based solver in the interior, but searching outside the bounds still ensure that we identify the correct root $\tilde{\tau} = -1/a_0$ and thus $\tau = 0$. 
+
+
+
+
+
+\subsection{The politico-economic equilibrium with log}\label{\refsec:PEELOG}
+The politico-economic equilibrium is straightforward to solve with log preferences. Once again, the problem could be set up and solved in many different ways. In the following, we go through a couple of different options that trades off speed with robustness. We refer to these as "algorithms" here to have a clear reference, but it may be more suitable to think of them as solution approaches.
+
+
+
+\begin{alg}[Gradient-based roots for the politico-economic equilibrium with log preferences]
+\label{\refalg:LOG:fast}
+This is barely an algorithm, in the sense that we do not include fallback options, but simply presume that the first order condition is well-behaved. Let $\tilde{\bm{\tau}} \in \mathbb{R}^{T}$ be a candidate vector of policies and $\bm{\tau}$ the bounded version where each $\tau_t \in [l, u]$ and where $l\geq 0$ and $u\leq 1$ are some stable boundaries within the unit interval where it is safe to evaluate all relevant functions. 
+
+Let $z_t$ denote the marginal effect of bounded policies, for each $t$ defined as
+\begin{align}\label{\refeq:LOG:fast}
+    z_t &= \omega\sum_{j}\left(\gamma_{t-1,j}p_{t-1,j}\mu_{t-1,j} \frac{d\upsilon_{2,t}^j}{d\tau_t}\right)+\nu_t\sum\left(\gamma_{t,j}\mu_{t,j} \frac{d\upsilon_{1,t}^j}{d\tau_t}\right), 
+\end{align}
+where the marginal effect on indirect utilities are defined by equations \eqref{\refmodeleq:PEELOG} for $t<T$ and \eqref{\refmodeleq:terminalPEELOG} for $t=T$. We solve for the vector by identifying the $\tilde{\bm{\tau}}$ vector that solves \eqref{\refeq:root} and then $\bm{\tau}$ as the bounded version.
+\end{alg}
+
+\smalltitle{The recursive structure of the first order condition.}
+Before turning to more robust alternatives, it is worth recording a property of \eqref{\refeq:LOG:fast} that the vectorized formulation in Algorithm \ref{\refalg:LOG:fast} does not exploit. Inspecting the marginal effects in \eqref{\refmodeleq:PEELOG}, the two young terms $d\upsilon_{1,t}^i/d\tau_t$ and $d\upsilon_{1,t}^0/d\tau_t$ depend on $\tau_t$ alone. The old formal term $d\upsilon_{2,t}^i/d\tau_t$ depends on $\tau_t$ directly and through $s_{t-1}^i/s_{t-1}$, which is itself a closed-form function of $\tau_t$ (as noted in section \ref{\refmodelsec:PEE}). The old informal term $d\upsilon_{2,t}^0/d\tau_t$ additionally involves the level of $\Theta_{h,t}$, which by \eqref{\refeq:auxiliary:Thetah} depends on $\tau_t$ and on $\tau_{t+1}$ through $\Gamma_{s,t}$. No term depends on any lag of $\tau$. Hence
+\begin{align}\label{\refeq:recursive}
+    z_t = z_t\left(\tau_t, \tau_{t+1}\right), \qquad\text{and}\qquad z_T = z_T(\tau_T),
+\end{align}
+the latter because the terminal period uses $\Theta_{h,T}(\tau_T)$ from \eqref{\refeq:auxiliary:ThetahT} in place of \eqref{\refeq:auxiliary:Thetah}.
+
+The system is therefore triangular: it can be solved exactly by a \emph{backward recursion} in which each period is a \emph{scalar} problem in $\tau_t\in[l,u]$, given the already-solved $\tau_{t+1}$. This is what makes robust one-dimensional methods available at all, and it removes the dependence on an initial guess for the entire path. Note that the property relies on $\theta_t$ and $\epsilon_t$ being exogenous; if pension characteristics are chosen alongside $\tau_t$, the argument has to be revisited.
+
+\smalltitle{Behaviour at the boundaries.}
+Both $d\upsilon_{1,t}^j/d\tau_t$ and $\partial \ln(\Theta_{h,t})/\partial\tau_t$ carry a factor $1/(1-\tau_t)$, so $z_t\rightarrow -\infty$ as $\tau_t\rightarrow 1$. We therefore always evaluate on $[l,u]$ with $u<1$ strictly. The divergence makes it easy to choose $u$ close enough to $1$ that $z_t(u)<0$, and we assume this throughout. Two consequences follow: the upper corner is then never selected, and $z_t(l)>0$ guarantees by continuity that at least one interior downward crossing exists. The substantive difficulty is thus not existence, but (i) detecting a lower-corner solution and (ii) choosing between several interior crossings when they occur. Both are worth verifying numerically rather than assuming, since $z_t(u)<0$ is a property of the calibration, not an identity.
+
+\smalltitle{The extended grid.}
+Let $\mathcal{T} = \left\lbrace \tau^{(1)},...,\tau^{(M)}\right\rbrace$ with $\tau^{(1)} = l$ and $\tau^{(M)} = u$ denote a grid on the interior, and let the \emph{extended} grid $\tilde{\mathcal{T}}$ add two outer nodes
+\begin{align}\label{\refeq:extendedGrid}
+    \tilde{\tau}^{(0)} = l-\frac{1}{a_0}-\delta, \qquad \tilde{\tau}^{(M+1)} = u+\frac{1}{a_1}+\delta,
+\end{align}
+for a small $\delta>0$. The outer nodes sit at (a hair beyond) the two boundary solutions of \eqref{\refeq:root}. Evaluating $h$ at $\tilde{\tau} = l-1/a_0$ gives $h = f(l)+\left|f(l)\right|$, which is identically zero whenever $f(l)<0$; at $\tilde{\tau} = u+1/a_1$ it gives $h = f(u)-\left|f(u)\right|$, identically zero whenever $f(u)>0$. A corner solution is thus encoded as an \emph{exact} zero at an outer node rather than as a sign change, and a pure sign-change test would not detect it. The offset $\delta$ shifts the node just outside the root so that the outermost cell does exhibit a sign change; since $h$ is affine in $\tilde\tau$ outside $[l,u]$, linear interpolation on that cell returns $\tilde\tau = l-1/a_0$ (resp. $u+1/a_1$) exactly, and hence $\tau = l$ (resp. $\tau = u$) after bounding. Note that $a_0, a_1$ thereby serve double duty -- as the penalty slopes in \eqref{\refeq:root} and as the placement of the outer nodes -- and the two uses must be kept consistent.
+
+\smalltitle{Selecting among several roots.}
+Solving $z_t = 0$ is only a necessary condition for the political optimum: an upward crossing of $z_t$ is a local \emph{minimum} of $\mathcal{W}_t$, and when several downward crossings exist the first one located need not be the global maximum. Since a grid search delivers $z_t$ everywhere on $\mathcal{T}$ in any case, we can restore the maximization without any additional evaluations of $z_t$.
+
+Let $\hat{z}_t$ denote the piecewise-linear interpolant of $z_t$ through the nodes of $\mathcal{T}$ -- the same interpolant that is used to locate crossings -- and define
+\begin{align}\label{\refeq:objectiveProfile}
+    \hat{\mathcal{V}}_t(\tau) = \int_l^{\tau}\hat{z}_t(x)\mbox{ }dx.
+\end{align}
+Because $z_t = d\mathcal{W}_t/d\tau_t$, $\hat{\mathcal{V}}_t$ approximates the political objective up to an additive constant. It is piecewise quadratic and continuously differentiable with $\hat{\mathcal{V}}_t' = \hat{z}_t$, so its interior local maxima are exactly the downward crossings of $\hat{z}_t$, and
+\begin{align}\label{\refeq:candidates}
+    \arg\max_{\tau\in[l,u]}\hat{\mathcal{V}}_t(\tau)\in\mathcal{C}_t \equiv \left\lbrace l,u \right\rbrace\cup\left\lbrace \tau\in(l,u)\mbox{ }:\mbox{ }\hat{z}_t(\tau) = 0\text{ and }\hat{z}_t\text{ crosses from above}\right\rbrace.
+\end{align}
+The candidate set $\mathcal{C}_t$ is finite and cheap to construct, and $\hat{\mathcal{V}}_t$ is evaluated on it \emph{exactly}: at the nodes by the trapezoidal rule,
+\begin{align*}
+    \hat{\mathcal{V}}_t\left(\tau^{(k+1)}\right) = \hat{\mathcal{V}}_t\left(\tau^{(k)}\right)+\frac{1}{2}\left(z_t\left(\tau^{(k)}\right)+z_t\left(\tau^{(k+1)}\right)\right)\left(\tau^{(k+1)}-\tau^{(k)}\right),
+\end{align*}
+and, for a crossing $\tau^*$ located inside the cell $\left[\tau^{(k)},\tau^{(k+1)}\right]$, by adding the triangle $\frac{1}{2}z_t\left(\tau^{(k)}\right)\left(\tau^*-\tau^{(k)}\right)$. Setting $\tau_t = \arg\max_{\tau\in\mathcal{C}_t}\hat{\mathcal{V}}_t(\tau)$ resolves multiplicity and corner solutions under a single criterion: $l$ and $u$ compete with the interior crossings on the same footing, so the rule subsumes the boundary check rather than supplementing it. The accuracy demanded of \eqref{\refeq:objectiveProfile} is only that it rank well-separated candidates correctly, which is a far weaker requirement than the accuracy demanded of the located roots themselves.
+
+\begin{alg}[Iterative grid search with initial boundary check]\label{\refalg:LOG:gridsearch}
+Fix $\bm{\theta},\bm{\epsilon}$ and a global grid $\mathcal{T}$, extended to $\tilde{\mathcal{T}}$ as in \eqref{\refeq:extendedGrid}. Exploiting \eqref{\refeq:recursive}, we solve backwards.
+
+\smallskip\noindent\emph{Terminal period.} Evaluate $z_T$ on all of $\mathcal{T}$. \emph{Initial boundary check}: if $z_T<0$ throughout, set $\tau_T = l$; if $z_T>0$ throughout, set $\tau_T = u$. Otherwise construct $\mathcal{C}_T$ from \eqref{\refeq:candidates} and set $\tau_T = \arg\max_{\mathcal{C}_T}\hat{\mathcal{V}}_T$.
+
+\smallskip\noindent\emph{Recursion, $t = T-1,...,1$.} Given the solved $\tau_{t+1}$:
+\begin{enumerate}
+    \item \emph{Refine.} Let $\mathcal{T}_t\subseteq\mathcal{T}$ consist of the nodes from $\Delta^-$ below to $\Delta^+$ above the node nearest $\tau_{t+1}$. The window need not be symmetric: where the policy path is known to be monotone, $\Delta^-\neq\Delta^+$ saves evaluations.
+    \item \emph{Evaluate and select.} Evaluate $z_t(\cdot,\tau_{t+1})$ on $\mathcal{T}_t$ and apply the terminal-period rule to obtain a candidate $\tau_t$.
+    \item \emph{Expand.} If the selected $\tau_t$ falls on an endpoint of $\mathcal{T}_t$ that is not also an endpoint of $\mathcal{T}$, the window may have excluded the maximum. Widen $\mathcal{T}_t$ in that direction and return to step 2, re-using the nodes already evaluated.
+\end{enumerate}
+The cost is $O(T\cdot M)$ evaluations of closed-form expressions, with no derivatives and no initial guess. The resulting path may optionally be polished by Algorithm \ref{\refalg:LOG:fast}, started at the $\tilde{\bm{\tau}}$ implied by $\bm{\tau}$; this is the recommended default, using the grid search to locate the correct branch and the gradient step to attain machine precision.
+\end{alg}
+
+
+
+\subsection{The politico-economic equilibrium with CRRA}\label{\refsec:PEE}
+With CRRA preferences, the past savings level $s_{t-1}$ becomes a relevant state variable for the political problem. To this end, we need a couple of additional grid structure. 
+
+\smalltitle{Grids.} Let $\mathcal{S} = \left\lbrace s^{(1)}, ..., s^{(M_s)} \right\rbrace$ with $s^{(1)}$ = $l_s>0$ and $s^{(M_s)} = u_s>l_s$ denote a grid of states. One way to obtain realistic ranges for the grid is to look into steady state dynamics, where it is straightforward to verify that $s^*(\tau)$ is monotonically decreasing in $\tau$. Using this, we have that $s^* \rightarrow 0$ as $\tau \rightarrow 1$, thus $l_s$ should be some low value that serves the purpose of ensuring numerical stability. For the upper bound, we could use e.g. $u_s = 1.25 \times s^*(0)$. Furthermore, let $\mathcal{S\tilde{T}}$ denote the Cartesian grid of the two grids.
+
+For $t<T$ we additionally need a grid of \emph{candidate} values for the endogenous state $s_t$ itself; call it $\mathcal{S}'$. It plays a different role from $\mathcal{S}$ --- $\mathcal{S}$ indexes the predetermined states we solve \emph{at}, while $\mathcal{S}'$ is searched \emph{over} to locate an equilibrium --- so although the two may hold the same values, it is worth keeping them separate, not least because the accuracy of the search below is governed by $\mathcal{S}'$ alone and may warrant a finer spacing.
+
+\smalltitle{The economic equilibrium at $t<T$ is a fixed point in $s_t$.}
+Suppose we have solved period $t+1$ and hold continuation policies $\tau^{t+1}(\cdot)$ and $h^{t+1}(\cdot)$, both functions of the state $s_t$ entering $t+1$. For a candidate current tax $\tau_t$ and a candidate state $s_t$, the auxiliary equations \eqref{\refeq:auxiliary} can be evaluated in one forward pass:
+\begin{subequations}\label{\refeq:stateApprox}
+\begin{align}
+    \bm{B}_{t+1} &= \bm{B}_{t+1}\left(s_t,\, h^{t+1}(s_t)\right), \label{\refeq:stateApprox:B}\\
+    \Gamma_{s,t} &= \Gamma_{s,t}\left(\bm{B}_{t+1},\, \tau^{t+1}(s_t)\right), \label{\refeq:stateApprox:Gammas}\\
+    \Theta_{h,t} &= \Theta_{h,t}\left(\tau_t,\, \tau^{t+1}(s_t),\, \theta_{t+1},\, \Gamma_{s,t}\right), \label{\refeq:stateApprox:Thetah}\\
+    \Theta_{s,t} &= \Theta_{s,t}\left(\Theta_{h,t},\, \Gamma_{s,t}\right). \label{\refeq:stateApprox:Thetas}
+\end{align}
+\end{subequations}
+The candidate $s_t$ is an equilibrium at $s_{t-1}$ precisely when it reproduces itself through \eqref{\refeq:auxiliary:s}. Defining the residual
+\begin{align}\label{\refeq:stateResidual}
+    \mathcal{R}_t\left(\tau_t, s_t;\, s_{t-1}\right) \equiv \Theta_{s,t}\left(\tau_t, s_t\right)\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}-s_t,
+\end{align}
+the state policy function $s_t(\tau_t, s_{t-1})$ is the root of \eqref{\refeq:stateResidual} in its second argument. This is a genuine root-finding problem in $s_t$ --- not a recursion we can unroll --- because $s_t$ enters the right-hand side through $\bm{B}_{t+1}$ and the continuation policies. Note that it is a \emph{root} problem, not a maximisation: any crossing is a solution, so the direction-filtering and objective-integration apparatus of \eqref{\refeq:candidates} is not used here.
+
+\smalltitle{The fixed point is two-dimensional, not three.}
+Read \eqref{\refeq:stateApprox} again and note that \emph{none} of $\bm{B}_{t+1}$, $\Gamma_{s,t}$, $\Theta_{h,t}$, $\Theta_{s,t}$ depends on $s_{t-1}$: the predetermined state enters \eqref{\refeq:stateResidual} only through the explicit factor $(s_{t-1}/\nu_t)^{\alpha(1+\xi)/(1+\alpha\xi)}$. The costly part of the state approximation is therefore a function of $(\tau_t, s_t)$ alone, evaluated once on $\tilde{\mathcal{T}}\times\mathcal{S}'$, after which the residual for \emph{every} $s_{t-1}\in\mathcal{S}$ follows by multiplying $\Theta_{s,t}$ by a scalar and subtracting $s_t$. What looks like a three-dimensional problem thus costs a two-dimensional one plus a broadcast, which is what keeps the approach affordable as $\mathcal{S}$ is refined.
+
+\smalltitle{Feasibility.}
+The root of \eqref{\refeq:stateResidual} need not lie inside $\mathcal{S}'$. For a given $s_{t-1}$, large $\tau_t$ depresses savings enough that the implied $s_t$ falls below $l_s$, and conversely at small $\tau_t$; outside that window no equilibrium is located and every object downstream of $s_t$ is undefined. We therefore carry an explicit feasibility mask over $\tilde{\mathcal{T}}\times\mathcal{S}$, marking the pairs $(\tau_t, s_{t-1})$ for which a root was found, and require at least two feasible $\tau_t$ per state before attempting to select a maximum there. Since $s_t(\tau_t)$ is decreasing in $\tau_t$, the feasible set is expected to be a contiguous interval in $\tau_t$ --- as the earlier statement of this algorithm assumed --- but we do not rely on that: masking infeasible cells individually is no harder and does not silently mis-handle a non-monotone case, which is worth checking numerically rather than assuming.
+
+\smalltitle{Which derivatives may be taken on the grid.}
+Once $s_t(\tau_t,s_{t-1})$ is known, all four marginal indirect utilities take the form (level)$^{1-1/\rho}\times$(log-derivative):
+\begin{subequations}\label{\refeq:PEEcrraTerms}
+\begin{align}
+    \frac{d\upsilon_{1,t}^i}{d\tau_t} &= \left(\hat{c}_{1,t}^i\right)^{1-1/\rho}\frac{d\ln\left(\hat{c}_{1,t}^i\right)}{d\tau_t}, &
+    \frac{d\upsilon_{1,t}^0}{d\tau_t} &= \beta_{t,0}\left(\tilde{c}_{2,t+1}^0\right)^{1-1/\rho}\frac{d\ln\left(\tilde{c}_{2,t+1}^0\right)}{d\tau_t}, \\
+    \frac{d\upsilon_{2,t}^i}{d\tau_t} &= \left(c_{2,t}^i\right)^{1-1/\rho}\frac{d\ln\left(c_{2,t}^i\right)}{d\tau_t}, &
+    \frac{d\upsilon_{2,t}^0}{d\tau_t} &= \left(\tilde{c}_{2,t}^0\right)^{1-1/\rho}\frac{d\ln\left(\tilde{c}_{2,t}^0\right)}{d\tau_t}.
+\end{align}
+\end{subequations}
+The young informal term uses that $\tilde{c}_{1,t}^0$ depends on $s_{t-1}$ only (see \eqref{\refmodeleq:EE:c0}), so its own derivative vanishes and only the $\tilde{c}_{2,t+1}^0$ channel survives.
+
+For the young formal households, the discount factor $B_{t+1}^i$ is itself a function of $\tau_t$ through $s_t$, so the factor $(1+B_{t+1}^i)$ in $\upsilon_{1,t}^i$ cannot be held fixed while differentiating. It is convenient to absorb it into the consumption level, defining
+\begin{align}\label{\refeq:hatc1i}
+    \hat{c}_{1,t}^i \equiv \left(1+B_{t+1}^i\right)^{\frac{1}{1-1/\rho}}\tilde{c}_{1,t}^i \qquad\Longrightarrow\qquad \upsilon_{1,t}^i = \frac{\left(\hat{c}_{1,t}^i\right)^{1-1/\rho}}{1-1/\rho},
+\end{align}
+so that a single numerical derivative of $\ln(\hat{c}_{1,t}^i)$ picks up both channels at once.\footnote{In implementation $\hat{c}_{1,t}^i$ is never formed as a level. Only two things are ever needed from it, and both avoid the $1/(1-1/\rho)$ power: $\left(\hat{c}_{1,t}^i\right)^{1-1/\rho} = \left(1+B_{t+1}^i\right)\left(\tilde{c}_{1,t}^i\right)^{1-1/\rho}$ and $\ln\left(\hat{c}_{1,t}^i\right) = \ln\left(1+B_{t+1}^i\right)/(1-1/\rho)+\ln\left(\tilde{c}_{1,t}^i\right)$. This matters as $\rho\rightarrow 1$: the literal definition raises $1+B_{t+1}^i$ to a power that diverges, overflowing in double precision well before $\rho$ reaches $1$ (at $\rho = 1.001$ the exponent is already $1001$), whereas neither expression above does.}
+
+Three of the log-derivatives in \eqref{\refeq:PEEcrraTerms} --- those of $h_t$, $\hat{c}_{1,t}^i$ and $\tilde{c}_{2,t+1}^0$ --- are approximated numerically along the $\tau_t$ dimension of the solution grid, since each depends on $\tau_t$ through the continuation policies and has no closed form. The remaining two do \emph{not} follow that route:
+\begin{itemize}
+    \item $d\ln(c_{2,t}^i)/d\tau_t$ \textbf{must} be taken from its closed form, given in \eqref{\refmodeleq:PEE}. Differentiating it numerically along the grid would be wrong, not merely imprecise: $s_{t-1,i}/s_{t-1}$ varies along that grid, and the policy maker takes it as predetermined, so the grid derivative would include a channel that does not belong in the first order condition.
+    \item $d\ln(\tilde{c}_{2,t}^0)/d\tau_t$ \emph{may} be taken either way; we use its closed form for consistency with the above.
+\end{itemize}
+Both closed forms are exactly the expressions already used in the log case, \eqref{\refmodeleq:PEELOG}, with one substitution: the analytical $\partial\ln(\Theta_{h,t})/\partial\tau_t$ is replaced by the numerically obtained $d\ln(h_t)/d\tau_t$. Since $h_t = \Theta_{h,t}(s_{t-1}/\nu_t)^{\alpha\xi/(1+\alpha\xi)}$ and $s_{t-1}$ is held fixed under $\partial/\partial\tau_t$, the two coincide, and the log and CRRA cases share one formula rather than two.
+
+\begin{alg}[Iterative grid search with boundary and feasibility checks]
+\label{\refalg:CRRA:grid}
+Fix $\bm{\theta},\bm{\epsilon}$ and global grids. The following identifies a sequence of policy functions as well as state policy functions $s_t(\tau_t, s_{t-1})$ that determines the economic state as a function of current taxes and the state along a politico-economic equilibrium path. As for the log case, the algorithm exploits the specific structure and iterates backwards starting from the terminal period $t=T$.
+
+
+\smallskip\noindent\emph{Terminal period.}
+Recall from section \ref{\refmodelsec:finitehorizon} that the marginal effect of $\tau_t$ on the political objective can be computed in closed-form once we know $s_{t-1}, \tau_t$. Thus on the full grid $\mathcal{S}\tilde{\mathcal{T}}$, compute the following and store in a solution dictionary: $d \ln(h_t)/d \tau_t$ (closed-form for $t=T$), $\Theta_{h,t}$ (closed-form for $t=T$), $h_t$, $B_t^i$, $\Gamma_{s,t-1}$, $s_{t-1,i}/s_{t-1}$, $c_{2,t}^i$, $\tilde{c}_{2,t}^0$, and $\tilde{c}_{1,t}^i$ (closed-form for $t=T$).
+
+Given all these auxiliary objects, we can now evaluate the derivatives $dv_{x,t}^j/d\tau_t$ relevant for the first order condition. Given a vector of first order conditions $z$ evaluated on the entire Cartesian grid, we repeat a vectorized version of the grid search approach in algorithm \ref{\refalg:LOG:gridsearch} that checks for boundary solutions and necessary and sufficient conditions for identifying maxima. This identifies a vector of taxes on the grid of states $\tau_t(s_{t-1})$ for the terminal period.
+
+In addition, in order to iterate backwards, on the grid of states only now with $\tau_t = \tau_t(s_{t-1})$, we compute the same auxiliary variables as we used to evaluate the first order condition, and in addition we define two policy functions that evaluate the politico-economic equilibrium taxes and labour supply as a function of $s_{t-1}$.
+
+\smallskip\noindent\emph{Iterating backwards for $t<T$.} Assume that we have a solution for $t+1$ resulting in gridded solutions for all the relevant variables outlined above (on the grid of $s_t$) and policy functions along the PEE for $h_{t+1}(s_t)$ and $\tau_{t+1}(s_t)$ that we can access with a candidate $s_t$ chosen endogenously at $t$. Each period then proceeds in four steps.
+
+\begin{enumerate}
+    \item \emph{State approximation.} On the Cartesian grid $\tilde{\mathcal{T}}\times\mathcal{S}'$ evaluate the forward pass \eqref{\refeq:stateApprox}, retaining $\Theta_{s,t}$ (and $\Theta_{h,t}$, $\Gamma_{s,t}$, $\tau^{t+1}$, $h^{t+1}$, $\bm{B}_{t+1}$ for later use). Form the residual \eqref{\refeq:stateResidual} for every $s_{t-1}\in\mathcal{S}$ by broadcasting, and locate its root along the $s_t$ dimension, giving $s_t(\tau_t, s_{t-1})$ on $\tilde{\mathcal{T}}\times\mathcal{S}$ together with the feasibility mask. This is the only step that touches $\mathcal{S}'$.
+
+    \item \emph{Current-period objects.} With $s_t$ resolved, evaluate on $\tilde{\mathcal{T}}\times\mathcal{S}$: $h_t\left(\Theta_{h,t}, s_{t-1}\right)$, then $R_t$, $\bm{B}_t$, $\Gamma_{s,t-1}\left(\bm{B}_t, \tau_t\right)$ and $s_{t-1,i}/s_{t-1}$ --- the last two evaluated at the previous period's parameter vintage, exactly as in the log case. Then the consumption levels entering \eqref{\refeq:PEEcrraTerms}: $\hat{c}_{1,t}^i$ from \eqref{\refeq:hatc1i}, $c_{2,t}^i$, $\tilde{c}_{2,t}^0$, and $\tilde{c}_{2,t+1}^0$ (a function of $s_t$, $\tau^{t+1}(s_t)$ and $h^{t+1}(s_t)$).
+
+    \item \emph{Derivatives and the first order condition.} Approximate $d\ln(h_t)/d\tau_t$, $d\ln(\hat{c}_{1,t}^i)/d\tau_t$ and $d\ln(\tilde{c}_{2,t+1}^0)/d\tau_t$ numerically along $\tau_t$, separately for each $s_{t-1}$; take $d\ln(c_{2,t}^i)/d\tau_t$ and $d\ln(\tilde{c}_{2,t}^0)/d\tau_t$ from their closed forms as described above. Assemble $z_t$ on $\tilde{\mathcal{T}}\times\mathcal{S}$ via \eqref{\refeq:PEEcrraTerms} and the political weights of \eqref{\refeq:LOG:fast}, leaving infeasible cells undefined.
+
+    \item \emph{Selection and reporting.} Apply the selection rule \eqref{\refeq:candidates} along $\tau_t$ for each $s_{t-1}$, skipping infeasible cells, to obtain $\tau_t(s_{t-1})$. Re-evaluate steps 1--2 at the selected taxes to obtain the solution dictionary on $\mathcal{S}$, and construct the interpolants $\tau_t(s_{t-1})$ and $h_t(s_{t-1})$ that the previous period will call. A light smoothing of the selected $\tau_t(s_{t-1})$ before interpolation is advisable, since the profile inherits small kinks from the interpolated continuation policies.
+\end{enumerate}
+
+Steps 1--4 are stated for the whole grid $\mathcal{S}$ at once rather than for one $s_{t-1}$ at a time. Nothing forces this --- the states are independent and could equally be looped over --- but the grid evaluations dominate the cost only through the number of \emph{calls}, not the number of gridpoints, so handling all states in one pass is materially cheaper than looping, at the price of carrying the feasibility mask explicitly rather than subsetting the grid per state.
+\end{alg}
+
+
+
+
+
+\subsection{Calibration}\label{\refsec:calibration}
+The calibration procedure is essentially nested fixed point procedure. In the inner part, we solve for the full politico-economic equilibrium path. The calibration target then proceeds to solve the following system of equations (repeated from the calibration subsection \ref{\refmodelsec:calibration}):
+\begin{subequations}\label{\refeq:calibration}
+    \begin{align}
+        \hat{\text{sr}}_{t_0} &= \frac{s_{t_0}}{\left(s_{t_0-1}/\nu_{t_0}\right)^{\alpha} h_{t_0}^{1-\alpha}} \\ 
+        \hat{\tau}_{t_0} &= \tau_{t_0} \\ 
+        \hat{\eta}_{0} &= \frac{z_0^{\eta}}{z_0^x}\frac{(1-\alpha)(1-\tau_{t_0})}{\Theta_{h,t_0}^{\alpha}\left(\frac{1-\alpha}{\Gamma_{h,t_0}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}} \label{\refeq:calibration:eta0}\\
+        \hat{X}_{0} &= \hat{\eta}_{0}\frac{\left(\frac{1-\alpha}{\Gamma_{h,t_0}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}}{\left(\Theta_{h,t_0}z_0^x\right)^{1/\xi}} \label{\refeq:calibration:X0}
+    \end{align}
+\end{subequations}
+where the "hats" reflect exogenous targets and $t_0$ indicates a specific baseline year. In our main specification, we assume that $\beta_{t,j} = \beta$ is constant over time and across types. Similarly, we assume that most exogenous parameters do not change over time except for the ageing population reflected by $\nu_t$. Thus, our main calibration targets the four as follows: We adjust $\beta$ to target the savings rate, $\omega$ for the tax rate, $\eta_0, X_0$ to achieve the targets for informal income and labour. 
+
+The full calibration procedure proceeds as follows: In an inner loop, given a set of parameter values, we first update all auxiliary parameter definitions to make sure that parameters like $\kappa$ are up to date. Then, we resolve the entire PEE path. An outer loop searches the parameter space for $\beta, \omega, \eta_0, X_0$ to ensure that the system holds \eqref{\refeq:calibration}.
+
+
+
+% \printbibliography[
+% heading=bibintoc,
+% title={References},
+% category=cited]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                      Appendices                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \begin{appendices}
+% \end{appendices}
+
+
+\end{document}
