@@ -165,6 +165,40 @@ class Base:
         return self._bcast(h) * self.hRatio(t)
 
     #######################################################################
+    ##########   2b. The pension-design wedge A(θ)/B(θ) (app:ESC)  #########
+    #######################################################################
+    # Benefits are b_t^i = [A(θ_t)·h_{t-1,i}η_{t-1,i} + B(θ_t)·h_{t-1}]·bbar_t. Without a wedge
+    # (A,B) = (θ, 1-θ) and every formula below is the docs' own. With one, a share of contributions is
+    # lost to the deadweight cost of redistributive transfers, f(θ) = φ+(1-φ)θ^p, f' > 0:
+    #
+    #   'scale'  A = f(θ)θ,  B = f(θ)(1-θ)   the appendix's live spec: bbar itself carries f(θ)
+    #   'flat'   A = θ,      B = f(θ)(1-θ)   MGE's variant: only the FLAT component is costly
+    #
+    # THE ONE RULE THAT MAKES THIS SMALL: in every equilibrium object, θ_{t+1} appears only multiplying
+    # (1-α)/α·τ_{t+1} (the discounted earnings-related return to an hour) and (1-θ_{t+1}) only multiplying
+    # the same factor (the flat component). So the wedge is exactly the substitution θ->A(θ), (1-θ)->B(θ)
+    # in Γs, Θh, si_s, c1i, tildec1i, c2i, dlnc2i_dτ, ΓsCap and BSteadyState -- and NOWHERE else. In
+    # particular bbar is untouched: it stays GROSS revenue per unit h_{t-1}, with the lost share implicit
+    # in A+B < 1. Verified against the appendix's own Γs/Θh/si_s in test_esc.py.
+    #
+    # Read from db (they are 0-D parameters, constant across t and j), not passed as arguments, unlike
+    # θ/τ: they are primitives of the political environment, not objects any solver chooses.
+    def fWedge(self, θ):
+        """ f(θ) = φ + (1-φ)θ^p, the share of contributions that reaches beneficiaries. 1 with no wedge. """
+        if self.db.get('wedgeSpec') is None:
+            return 1.
+        φ, p = self.db['wedgePhi'], self.db['wedgeP']
+        return φ + (1-φ)*np.asarray(θ, dtype = float)**p
+
+    def wedgeA(self, θ):
+        """ The coefficient on own past earnings h_{t-1,i}η_{t-1,i} in the benefit formula. """
+        return θ if self.db.get('wedgeSpec') in (None, 'flat') else self.fWedge(θ)*θ
+
+    def wedgeB(self, θ):
+        """ The coefficient on the flat component h_{t-1}. """
+        return (1-θ) if self.db.get('wedgeSpec') is None else self.fWedge(θ)*(1-θ)
+
+    #######################################################################
     ##########   3. Pension system / government budget (eq:governmentBudget)  ###
     ##########      τ, θ, ε are always explicit -- to be endogenized later     ###
     #######################################################################
@@ -185,7 +219,7 @@ class Base:
         θ, bbar = period-t contributive-incentive parameter / benefit level (explicit -- θ will be endogenized).
         h_ = h_{t-1} (aggregate, lagged). """
         hiη_ = self._bcast(h_) * self.hηRatio(t, lag = '[t-1]')
-        bracket = self._bcast(θ)*hiη_ + self._bcast((1-θ)*h_)
+        bracket = self._bcast(self.wedgeA(θ))*hiη_ + self._bcast(self.wedgeB(θ)*h_)
         return bracket * self._bcast(bbar)
 
     def b0(self, ε, bbar, h_):
@@ -207,13 +241,13 @@ class Base:
         γi, auxProd = self.get('γi', t), self.auxProd(t)
         Bratio = B/(1+B)
         num = (γi*auxProd*Bratio).sum(axis = -1)/(1+ξ)
-        denom = 1 + (1-α)/α * p*τ1/κ * (θ1 + (1-θ1)*(γi/(1+B)).sum(axis = -1))
+        denom = 1 + (1-α)/α * p*τ1/κ * (self.wedgeA(θ1) + self.wedgeB(θ1)*(γi/(1+B)).sum(axis = -1))
         return num/denom
 
     def Θh(self, τ, τ1, θ1, Γs, t = None):
         """ Eq (auxiliary:Thetah): Θ_{h,t}(τ_t, τ_{t+1}, θ_{t+1}, Γ_{s,t}). """
         α, ξ, p, κ, Γh = self.get('α', t), self.get('ξ', t), self.get('p', t), self.get('κ', t), self.Γh(t)
-        return Γh**((1+ξ)/(1+α*ξ)) * ((1-α)*(1-τ)/(Γh - (1-α)/α*p*θ1*τ1/κ*Γs))**(ξ/(1+α*ξ))
+        return Γh**((1+ξ)/(1+α*ξ)) * ((1-α)*(1-τ)/(Γh - (1-α)/α*p*self.wedgeA(θ1)*τ1/κ*Γs))**(ξ/(1+α*ξ))
 
     def ΘhTerminal(self, τ, t = None):
         """ Eq (auxiliary:ThetahT): terminal-period Θ_{h,T}(τ_T). """
@@ -274,8 +308,8 @@ class Base:
         α, p, κ = self.get('α', t), self.get('p', t), self.get('κ', t)
         auxProd, Bratio = self.auxProd(t), B/(1+B)
         term1 = Bratio*auxProd / self._bcast((1+self.get('ξ', t))*Γs)
-        term2 = -(1/(1+B)) * self._bcast((1-α)/α * p*(1-θ1)/κ*τ1)
-        term3 = -self.hηRatio(t) * self._bcast((1-α)/α * p*θ1/κ*τ1)
+        term2 = -(1/(1+B)) * self._bcast((1-α)/α * p*self.wedgeB(θ1)/κ*τ1)
+        term3 = -self.hηRatio(t) * self._bcast((1-α)/α * p*self.wedgeA(θ1)/κ*τ1)
         return term1 + term2 + term3
 
     #######################################################################
@@ -286,7 +320,7 @@ class Base:
         ξ, α, p, κ = self.get('ξ', t), self.get('α', t), self.get('p', t), self.get('κ', t)
         auxProd, Bratio = self.auxProd(t), B/(1+B)
         smooth = auxProd * self._bcast((h/self.Γh(t))**((1+ξ)/ξ)) * (1 - Bratio/self._bcast(1+ξ))
-        pension = self._bcast(s)/(1+B) * self._bcast((1-α)/α*p*τ1*(1-θ1)/κ)
+        pension = self._bcast(s)/(1+B) * self._bcast((1-α)/α*p*τ1*self.wedgeB(θ1)/κ)
         return smooth + pension
 
     def tildec1i(self, h, B, τ1, θ1, Γs, t = None):
@@ -294,7 +328,7 @@ class Base:
         ξ, α, p, κ = self.get('ξ', t), self.get('α', t), self.get('p', t), self.get('κ', t)
         auxProd = self.auxProd(t)
         hΓh = self._bcast((h/self.Γh(t))**((1+ξ)/ξ))
-        bracket = auxProd/self._bcast(1+ξ) + self._bcast(Γs*(1-α)/α*p*τ1*(1-θ1)/κ)
+        bracket = auxProd/self._bcast(1+ξ) + self._bcast(Γs*(1-α)/α*p*τ1*self.wedgeB(θ1)/κ)
         return hΓh/(1+B) * bracket
 
     # ĉ_{1,t}^i ≡ (1+B_{t+1}^i)^{1/(1-1/ρ)}·tilde-c_{1,t}^i (docs eq:hatc1i) folds B_{t+1}^i's own τ_t
@@ -327,7 +361,8 @@ class Base:
         explicit rather than read from db (mirrors θ/τ convention). """
         α, ν, p_, κ_ = self.get('α', t), self.get('ν', t), self.get('p[t-1]', t), self.get('κ[t-1]', t)
         A = (1-α)/α * p_*τ/κ_
-        inner = siRatio_ + self._bcast(A) * (1 + self._bcast(θ)*(self.hηRatio(t, lag = '[t-1]') - 1))
+        inner = siRatio_ + self._bcast(A) * (self._bcast(self.wedgeA(θ))*self.hηRatio(t, lag = '[t-1]')
+                                             + self._bcast(self.wedgeB(θ)))
         outer = α * (ν/p_) * h**(1-α) * (s_/ν)**α
         return self._bcast(outer) * inner
 
@@ -399,7 +434,7 @@ class Base:
         BSteadyState is only actually needed for the CRRA (ρ≠1) solve. """
         α, ρ, p, κ, ν, Γh = self.get('α', t), self.get('ρ', t), self.get('p', t), self.get('κ', t), self.get('ν', t), self.Γh(t)
         ρc = self._bcast(ρ)
-        inner = (α/p) * (Γh - (1-α)/α * p*θ*τ/κ * Γs) / ((1-α)*(1-τ)) * (ν/Γs)
+        inner = (α/p) * (Γh - (1-α)/α * p*self.wedgeA(θ)*τ/κ * Γs) / ((1-α)*(1-τ)) * (ν/Γs)
         return self.get('βi', t)**ρc * self._bcast(inner)**(ρc-1)
 
     def ΓsCap(self, τ, θ, t = None):
@@ -417,7 +452,7 @@ class Base:
         (a positive informal mass) but is exactly one here. At the US calibration the cap falls to ≈0.58
         as τ→1, i.e. BELOW the constant 0.75 upper bound those models hard-code -- so that constant is
         safe there by parameter values, not by construction. See steadyState_CRRA_bounds. """
-        denom = (1-self.get('α', t))*self.get('p', t)*θ*τ
+        denom = (1-self.get('α', t))*self.get('p', t)*self.wedgeA(θ)*τ
         cap = self.Γh(t)*self.get('α', t)*self.get('κ', t)/np.where(denom == 0, np.nan, denom)
         return np.where(np.isnan(cap), np.inf, cap)[()]
 
@@ -484,7 +519,8 @@ class Base:
         closed form here holds siRatio_ fixed by construction. """
         α, p_, κ_ = self.get('α', t), self.get('p[t-1]', t), self.get('κ[t-1]', t)
         A0 = (1-α)/α * p_/κ_
-        bracket = 1 + self._bcast(θ)*(self.hηRatio(t, lag = '[t-1]') - 1)
+        bracket = (self._bcast(self.wedgeA(θ))*self.hηRatio(t, lag = '[t-1]')
+                   + self._bcast(self.wedgeB(θ)))
         num = self._bcast(A0) * bracket
         denom = siRatio_ + self._bcast(A0*τ)*bracket
         return self._bcast((1-α)*dlnh_dτ) + num/denom

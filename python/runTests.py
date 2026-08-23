@@ -46,6 +46,7 @@ SUITES = [
     ('US/test_fr.py',                             False, '~20 s: ModelFR -- imposed β, US-referenced h̄'),
     ('US/test_eu.py',                             False, 'the FR/UK workbooks end to end through ModelFR'),
     ('US/test_createCopyFromt0.py',               False, 'model copies from t0 -- the shock machinery'),
+    ('US/test_esc.py',                            False, '~30 s: the theta wedge and the leaded choice'),
     ('informalAnalytical/test_calibration.py',    True,  'nested-fixed-point calibration'),
     ('InformalSavings/test_calibration.py',       True,  '~12 min: four LOG calibrations and one CRRA'),
     ('InformalSavings/test_calibrationGrid.py',   True,  '~45 min: three real calibrations over a ρ grid'),

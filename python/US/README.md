@@ -382,7 +382,20 @@ calibration variants, `ModelFR`'s France/UK protocol, ρ sweeps for all four cal
 the UK up to one common factor on `X_i`. The shock tables reproduce the paper's τ and savings rate on
 every row.
 
-Not implemented, and the next piece of work: endogenous choice of `θ` (sequential, permanent, leaded, and
-the `f(θ)` deadweight-loss formulation). See
-`writing/Paper/Appendix/EndogenousSystemCharacteristics.tex`. Open smaller items: the workweek column's
+**Endogenous `θ`** (2026-08-23): the *leaded* choice under the `f(θ)` deadweight wedge — appendix
+`EndogenousSystemCharacteristics.tex`'s "A+B" combination, which the appendix itself never runs — is
+implemented and calibrated. `base.py`'s `wedgeA`/`wedgeB`, `policyESC.py` (`LeadedLOG` complete,
+`LeadedCRRA` path-iteration), `modelESC.py` (`ModelESC`), `test_esc.py`, drivers `runESC.py` /
+`runESCcrra.py`, results in `results/esc/`. See `RESEARCH_LOG.md` for the findings; the short version is
+that the wedge does escape the `θ = 0` corner and calibrates to p = 0.402 (against the appendix's 0.41
+from the sequential timing), ageing moves the design the right way, but the model ties `θ` far more
+tightly to inequality than figure 1.1's cross-section does.
+
+Three properties the code relies on, all *measured* in `test_esc.py`, not assumed: `z_t` depends on
+`(τ_t, θ_t)` alone (so `τ_t = τPolicy_t(θ_t)` is static and the two choices at `t` are separable); under
+LOG the leaded choice has **no state at all** — `θPolicy_t` is constant across the whole `θ` grid, because
+`W_t = A(τ_t) + B(θ_{t+1})` in logs; and the choice is invariant to `s_{t-1}`. All three fail under CRRA,
+which is why `LeadedCRRA` solves the path and reports `stateSensitivity`.
+
+The sequential and permanent timings are still not implemented. Open smaller items: the workweek column's
 full-effect gap against the paper (above), and the UK's `X_i` scale.

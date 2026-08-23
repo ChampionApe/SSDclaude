@@ -250,3 +250,91 @@ Anything drawn *into* a figure needs plain formatting.
 - The live `US_CRRA_Ageing.tex` disagrees with the live `US_Ageing.tex` at ρ=1 for the same scenario
   (16.33% vs 18.45% for mild ageing). This code gives 18.45%, siding with the LOG table; the ρ=0.5 row of
   the CRRA table (18.62%/23.47%) it reproduces exactly. Mixed vintages within one table.
+
+## 2026-08-23 — endogenous `θ`: the leaded choice under a deadweight wedge (A+B)
+
+The appendix (`writing/Paper/Appendix/EndogenousSystemCharacteristics.tex`) reports that the sequential,
+leaded and permanent choices of `θ` all corner at `θ = 0`, and that only the deadweight-wedge formulation
+is interior. This session implemented the **leaded choice with the wedge** — the combination the appendix
+never runs — and measured what it delivers.
+
+### What was built
+
+`base.py` gained two hooks, `wedgeA(θ)`/`wedgeB(θ)`, and nothing else changed there. The whole wedge is the
+substitution `θ → A(θ)`, `(1-θ) → B(θ)` in `Γs`, `Θh`, `si_s`, `c1i`, `tildec1i`, `c2i`, `dlnc2i_dτ`,
+`ΓsCap`, `BSteadyState` — because in *every* equilibrium object `θ_{t+1}` appears only multiplying
+`(1-α)/α·τ_{t+1}`. `bbar` stays gross; the lost share is implicit in `A+B < 1`. Two specs:
+
+| | `A(θ)` | `B(θ)` | |
+|---|---|---|---|
+| `scale` | `f(θ)θ` | `f(θ)(1-θ)` | the appendix's live spec |
+| `flat` | `θ` | `f(θ)(1-θ)` | MGE's commented variant |
+
+`policyESC.py` (`LeadedLOG`, `LeadedCRRA`), `modelESC.py` (`ModelESC`), `test_esc.py` (22 checks, in
+`runTests.py`), drivers `runESC.py` / `runESCcrra.py`, results in `results/esc/`.
+
+### Three structural findings, all measured rather than assumed
+
+1. **`z_t` depends on `(τ_t, θ_t)` alone**, wedge or no wedge: `θ_{t+1}` reaches the FOC only through
+   `Θ_{h,t}` → `dv20`, whose weight is `γ_0 = 0`. So `τ_t = τPolicy_t(θ_t)` is a *static* scalar problem and
+   the two choices at `t` are separable. This is what makes the LOG leaded solve cheap.
+2. **Under LOG the leaded choice has no state at all.** `θPolicy_t(θ_t)` comes back constant across the
+   whole `[0,1]` state grid, to machine precision, at every period. `ln h_t`, `ln c̃_{1,t}^i` and
+   `ln R_{t+1}` are each *additively* separable in `τ_t` and `θ_{t+1}`, so `W_t = A(τ_t) + B(θ_{t+1})`, and
+   `θ_t` reaches `W_t` only through `τ_t`. The appendix treats `θ_t` as a state under this timing; under
+   LOG it is not one.
+3. The choice is invariant to `s_{t-1}` (the appendix's own normalisation), verified numerically.
+
+### The wedge does escape the corner, and calibrates to the appendix's own number
+
+Without a wedge the leaded choice is `θ = 0` at every state — the appendix's result, reproduced
+independently. With it, `θPolicy_{t0}(θ*) = θ*` calibrates cleanly (residual 4.9e-8) at
+
+| spec | φ=0.25 | φ=0.5 | φ=0.75 |
+|---|---|---|---|
+| `scale` | 0.257 | **0.402** | 0.942 |
+| `flat` | 0.438 | 0.702 | 1.854 |
+
+`scale`/φ=0.5 gives **p = 0.402 against the appendix's 0.41** from the *sequential* calibration — the two
+timings need almost the same wedge. The nested calibration's own approximation (β,ω calibrated at
+exogenous `θ`) is verified by `targetDrift`: 9e-15 in τ, 2.6e-9 in R.
+
+`flat` is the better-behaved spec: `scale` reaches the `θ=1` corner by p≈0.7, so its calibrated point sits
+close to a boundary in p-space, while `flat` stays interior across the whole scanned range. Under `flat`,
+θ is jointly identified with p (f does not cancel in the replacement-rate ratio) and `getθ` becomes a
+scalar root — `θ* = 0.716` at φ=0.5 rather than 0.738.
+
+### What it predicts — and where it fails
+
+**Ageing raises `θ`, as figure 1.1 and the paper's own conjecture say.** Along the calibrated path
+(`scale`, φ=0.5) `ν` falls 1.34 → 1.07 and the chosen design rises 0.738 → 0.754 → 0.764. Acute ageing
+dated 2020 moves the 2050 design to 0.775.
+
+**But the magnitudes are the wrong way round.** Sweeping one axis at a time (`stageFig1`):
+
+| axis | range | `θ` chosen |
+|---|---|---|
+| `ν` (population growth) | 1.55 → 0.95 | 0.723 → 0.780 |
+| inequality (`η` spread) | `η_H/η_L` 3.73 → 2.44 | 0.738 → **1.000** |
+
+At France's `η_H/η_L = 2.44` the model picks `θ = 1.00`, which is exactly France's observed design — but it
+gets there through **inequality**, and moving `ν` from the US's 1.34 to France's 0.97 buys only +0.05 of the
++0.26 US→France gap. Figure 1.1 reports the opposite ranking: a clear cross-country relation of `θ` with
+population growth and **none** with the Gini.
+
+So the mechanism reproduces the CondeRuizP07-style prediction that the paper's own introduction says the
+data reject. French voting patterns push the other way (`θ` → 0.536 alone; the two together give 1.000
+under `scale`, 0.828 under `flat`), so the offsetting story is real but does not rescue the ranking.
+
+**Cross-country, one common wedge does not order the three countries.** With the US-calibrated p = 0.402:
+France chooses `θ = 1.00` (data 1.00 ✓), the UK chooses `θ = 1.00` (data 0.56 ✗). Matching the UK needs its
+own, much smaller wedge (p = 0.186 vs 0.402). France's own p has no interior solution — its choice is at the
+corner for every p in the bracket, which `calibrateWedge` reports rather than papering over.
+
+### Open
+
+- The inequality-vs-ageing magnitude problem above is the substantive obstacle, not a numerical one.
+  Any mechanism whose force is within-cohort redistribution will tie `θ` to inequality; matching figure 1.1
+  needs one whose primary driver is the age structure.
+- The UK under a common wedge.
+- CRRA: see the next entry / `results/esc/*CRRA*`.
