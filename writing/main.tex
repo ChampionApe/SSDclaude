@@ -1,0 +1,40 @@
+\documentclass[a4paper]{article}
+\input{Packages.tex}
+\begin{document}
+\title{Technical Note: \\
+\emph{Social Security Design and Its Political Support}}
+
+\title{Technical Note: \\
+\emph{Social Security Design and Its Political Support}}
+
+\author{Rasmus K.\ Berg\thanks{University of Copenhagen. Oster Farimagsgade 5, 1353 Copenhagen K, Denmark. E-mail: \texttt{rasmus.kehlet.berg@econ.ku.dk}.}
+\and
+Mart\'{\i}n Gonzalez-Eiras\thanks{University of Bologna. Piazza Scaravilli 2, 40126 Bologna. E-mail: \texttt{mge@alum.mit.edu}. Web: \texttt{alum.mit.edu/www/mge}.}}
+\maketitle
+
+\begin{abstract}
+\noindent
+The note formally presents a number of different models used in the paper \textit{Social Security Design and Its Political Support}. In many instances, the note is more general than in the final paper. 
+
+Each model is documented in two stages: The first one describes and characterizes both the economic equilibrium and the politico-economic equilibrium. In the second stage, we go through more carefully how we solve the model numerically, including the solution algorithms we apply throughout. All model documentations are self-contained, with no cross-references. This means that a lot of the text will naturally be identical across model types.
+
+At the current stage, models include the following overall variations: The analytical-informal model, the informal savings model, and the US model. For each of the three, we currently implement a number of different solutions. First, we have one set of implementations with one common $X$ across all types and one with type-specific ones, $X_j$. Second, we have one where pension characteristics are fixed (exogenous), one where they are chosen permanently in one period, and one where characteristics are chosen without commitment equivalent to the tax rate.
+\end{abstract}
+
+
+\listofmodels
+
+% First model
+\subimport{informalAnalytical/}{main}
+
+% Reset numbering:
+\resetdocumentnumbering
+\subimport{informalSavings/}{main}
+
+% Reset numbering:
+\resetdocumentnumbering
+\subimport{US/}{main}
+
+
+
+\end{document}

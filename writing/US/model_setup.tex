@@ -1,0 +1,85 @@
+\subsection{The model}\label{\refsec:model}
+We consider an economy populated by overlapping generations of workers and retirees. Within each generational cohort, we consider $J$ different household types indexed $i = 1,...,J$. All households are formal: they supply $h_{t,i}\eta_{t,i}$ units of labour when young with $\eta_{t,i}$ denoting labour productivity, pay taxes on their labour income, consume, and save. We let $\gamma_{t,i}$ denote sizes of working households with $\sum_i \gamma_{t,i} = 1$.
+
+As young, households are endowed with a unit of time that is allocated between labour and leisure. Households survive and retire with probability $p_t$, common across types. Lost savings are insured within-type.
+
+The government runs a pay-as-you-go (PAYG) pension system with a balanced budget. Each period, the government imposes a tax on labour income and transfers the collected amount directly to retirees. Since all workers qualify for benefits, the systems we consider differ along one dimension only: the type of benefits provided --- either tied to earnings or flat-rate.
+
+Policy decisions are taken by a government that acts in the interest of voters, but lacks commitment.
+
+\smalltitle{Technology.}
+\begin{subequations}\label{\refeq:aggregateStates}
+A continuum of firms transforms aggregate capital and labour into output. We define aggregate labour and capital from
+\begin{align}
+    H_t =& n_th_t, & h_t&\equiv \sum_{i}\gamma_{t,i}\eta_{t,i}h_{t,i} \
+    K_t =& n_{t-1} s_{t-1}, & s_{t-1}&\equiv \sum_i\gamma_{t-1,i}s_{t-1,i},
+\end{align}
+\end{subequations}
+where $n_t$ denotes the number of young households and $\nu_t \equiv n_t/n_{t-1}$. The representative firm produces output using labour and capital and a conventional Cobb-Douglas technology
+\begin{align*}
+    Y_t = A_t K_t^{\alpha}H_t^{1-\alpha}.
+\end{align*}
+In equilibrium this implies the following factor prices:
+\begin{align}\label{\refeq:factorPrices}
+    R_t = \alpha \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha-1}, \qquad w_t = (1-\alpha)A_t \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha}.
+\end{align}
+
+
+\smalltitle{Preferences and Household Choices.}
+Workers and retirees in period $t$ value consumption, $c_{1,t}^i$ and $c_{2,t}^i$ respectively. Workers discount the future at factor $\beta_{t,i}\in[0,1)$ where the survival probability $p_t$ is included.
+
+For the young households, the expected utilities are given by
+\begin{align}\label{\refeq:util}
+    &\max\mbox{ } U_{t,i}\left(c_{1,t}^i, h_{t,i}, c_{2,t+1}^i\right) = u_{t,i}\left(c_{1,t}^i, h_{t,i}\right) +\beta_{t,i}u_{t,i}\left(c_{2,t+1}^i,0\right)
+\end{align}
+where we use CRRA-GHH preferences
+\begin{align*}
+    u_{t,i}(c,h) = \left\lbrace\begin{array}{ll} \dfrac{1}{1-1/\rho}\left(\tilde{c}_{t}^i\right)^{1-1/\rho}, & \text{for }\rho \neq 1 \
+    \ln\left(\tilde{c}_{t}^i\right) , & \text{for }\rho = 1
+    \end{array}\right. , \qquad \tilde{c}_t^i \equiv c-\dfrac{\xi}{1+\xi}X_{t,i}\left(h\right)^{\frac{1+\xi}{\xi}}
+\end{align*}
+where $\rho>0$ is the intertemporal elasticity of substitution, $\xi$ is the Frisch elasticity, and $X_{t,i}$ is a parameter that measures the disutility of labour. We consider two variants of the model that differ only in the treatment of $X_{t,i}$: one with a full vector of type-specific $X_{t,i}$, and one imposing a common $X_{t,i} = X_t$ across types. The distinction plays no role until we reach the calibration in \cref{\refsec:calibration}: every equation below covers both, the second being the restriction $X_{t,i} = X_t$.
+
+\begin{subequations}\label{\refeq:budget}
+The household receives wages, pays social security taxes $\tau_t$, saves $s_{t,i}$, and consumes when young, and consumes their savings including pension benefits $b_{t+1}^i$ when old:
+\begin{align}
+    c_{1,t}^i &= w_t\eta_{t,i} h_{t,i}(1-\tau_t)-s_{t,i} \
+    c_{2,t+1}^i &= s_{t,i}R_{t+1}/p_t+ b_{t+1}^i(h_{t,i}).
+\end{align}
+\end{subequations}
+
+
+\smalltitle{Social Security System.}
+Every period, the government taxes labour income and transfers the sum directly to current retirees. Benefits are given by
+\begin{subequations} \label{\refeq:governmentBudget}
+\begin{align}
+    b_t^i =& \left[\theta_th_{t-1,i} \eta_{t-1,i}+(1-\theta_t)h_{t-1}\right] \overline{b}_t,
+\end{align}
+where $\theta_t$ measures contributive incentives: with $\theta_t = 1$ benefits are purely earnings-related (Bismarckian), with $\theta_t = 0$ they are flat-rate (Beveridgean).
+
+The average contribution of young households at time $t$ is $w_t\tau_t\sum_i\gamma_{t,i}\eta_{t,i}h_{t,i} = w_t\tau_th_t$. Taking mortality into consideration, the balanced budget requires that
+\begin{align*}
+    n_t w_t\tau_th_t = n_{t-1}p_{t-1}\sum_i \gamma_{t-1,i} b_t^i.
+\end{align*}
+The left hand side measures contributions, the right hand side beneficiaries. Because the design weights average to unity, $\sum_i\gamma_{t-1,i}b_t^i = h_{t-1}\overline{b}_t$ irrespective of $\theta_t$, and the level of pension rates is
+\begin{align}\label{\refeq:governmentBudget:bbar}
+    \overline{b}_t & \equiv \dfrac{\nu_t w_th_t\tau_t}{h_{t-1}p_{t-1}}.
+\end{align}
+In the models with an informal sector, the same step leaves a coefficient $\kappa_{t-1}$ in place of $p_{t-1}$ that also collects the size of the informal group and the universal pension parameter; here the two coincide, since all households contribute and all retirees draw benefits from the same formula.
+
+Using \eqref{\refeq:factorPrices}, discounted average benefits take a form that recurs throughout:
+\begin{align}\label{\refeq:governmentBudget:discounted}
+    \dfrac{\overline{b}_{t+1}}{R_{t+1}/p_t} = \dfrac{1-\alpha}{\alpha}\dfrac{s_t}{h_t}\tau_{t+1}.
+\end{align}
+\end{subequations}
+
+
+\bigskip
+\begin{subequations}\label{\refeq:formalOpt}
+With CRRA-GHH preferences, households maximize \eqref{\refeq:util} subject to the budgets \eqref{\refeq:budget}. Labour supply and savings are then given by (given factor prices and policies):
+\begin{align}
+    h_{t,i} &= \left[\frac{\eta_{t,i}}{X_{t,i}}\left(w_t(1-\tau_t)+\theta_{t+1}\dfrac{\overline{b}_{t+1}}{R_{t+1}/p_t}\right)\right]^{\xi} \
+    s_{t,i} &= \dfrac{B_{t+1}^i}{1+B_{t+1}^i}\left[w_t\left(1-\tau_t\right)h_{t,i}\eta_{t,i}-\dfrac{X_{t,i}\xi}{1+\xi}\left(h_{t,i}\right)^{\frac{1+\xi}{\xi}}\right]-\dfrac{b_{t+1}^i/(R_{t+1}/p_t)}{1+B_{t+1}^i}
+\end{align}
+\end{subequations}
+where we have used the shorthand $B_{t+1}^i \equiv \left(\beta_{t,i}\right)^{\rho}(R_{t+1}/p_t)^{\rho-1}$. Only the earnings-related component of benefits enters the labour supply decision: a marginal hour raises own benefits through $\theta_{t+1}h_{t,i}\eta_{t,i}\overline{b}_{t+1}$ only.

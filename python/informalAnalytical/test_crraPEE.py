@@ -23,12 +23,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 import test as testmod
 from model import ModelInformalAnalytical
 
-ok = True
-def check(name, cond, extra = ''):
-    global ok
-    print(('PASS' if cond else 'FAIL') + '  ' + name + ' ' + extra)
-    if not cond:
-        ok = False
+from gridsearch.testing import check, report
 
 m = ModelInformalAnalytical(pars = testmod.pars | {'ρ': 1.5}, **testmod.kwargs)
 th, eps = m.db['θ'].values, m.db['eps'].values
@@ -81,6 +76,4 @@ diff = np.abs(solCRRA['τ'].values - solLOG['policy']['τ'].values)
 check('ρ=1.02 CRRA PEE is close to LOG (ρ=1) PEE', diff.max() < 0.05,
       '-> max|diff|={:.4f}'.format(diff.max()))
 
-print()
-print('ALL PASS' if ok else 'SOME FAILURES')
-sys.exit(0 if ok else 1)
+report()

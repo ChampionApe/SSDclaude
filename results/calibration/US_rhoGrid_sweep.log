@@ -1,0 +1,21 @@
+﻿grid: 16 points, 0.5 to 2.0 step 0.1
+variant: vector X_i,  anchor rho=1.0,  tau nodes 101,  state nodes 150,  verify at 151/225
+out: results\calibration\US_rhoGrid.csv
+  rho=1.0    LOG  max|res|=1.23e-13  verify=1.23e-13  nfev=13    1.2s  β=0.76062 ω=1.45363  sr=0.1537
+  rho=1.1    CRRA max|res|=7.93e-14  verify=2.21e-04  nfev=10   18.5s  β=0.71775 ω=1.38984  sr=0.1529
+  rho=1.2    CRRA max|res|=2.15e-14  verify=1.94e-04  nfev=9    17.1s  β=0.68442 ω=1.34836  sr=0.1522
+  rho=1.3    CRRA max|res|=4.86e-14  verify=1.40e-04  nfev=9    16.9s  β=0.65750 ω=1.31509  sr=0.1516
+  rho=1.4    CRRA max|res|=4.33e-14  verify=2.13e-04  nfev=9    17.0s  β=0.63530 ω=1.28772  sr=0.1511
+  rho=1.5    CRRA max|res|=3.66e-15  verify=1.53e-04  nfev=9    17.0s  β=0.61678 ω=1.26521  sr=0.1506
+  rho=1.6    CRRA max|res|=4.59e-12  verify=1.52e-04  nfev=8    15.3s  β=0.60100 ω=1.24618  sr=0.1501
+  rho=1.7    CRRA max|res|=2.73e-12  verify=1.81e-04  nfev=8    16.0s  β=0.58749 ω=1.23001  sr=0.1496
+  rho=1.8    CRRA max|res|=3.81e-12  verify=1.90e-04  nfev=8    15.4s  β=0.57573 ω=1.21607  sr=0.1492
+  rho=1.9    CRRA max|res|=6.62e-12  verify=1.94e-04  nfev=8    15.4s  β=0.56543 ω=1.20401  sr=0.1489
+  rho=2.0    CRRA max|res|=2.87e-12  verify=1.77e-04  nfev=8    15.1s  β=0.55633 ω=1.19339  sr=0.1485
+  rho=0.9    CRRA max|res|=1.03e-12  verify=9.45e-04  nfev=10   18.7s  β=0.81520 ω=1.51273  sr=0.1545
+  rho=0.8    CRRA max|res|=6.06e-14  verify=2.43e-04  nfev=9    17.0s  β=0.89028 ω=1.60853  sr=0.1555
+  rho=0.7    CRRA max|res|=7.08e-13  verify=3.26e-05  nfev=9    17.0s  β=0.99736 ω=1.74651  sr=0.1566
+  rho=0.6    CRRA max|res|=3.02e-12  verify=6.05e-04  nfev=9    17.2s  β=1.16117 ω=1.95856  sr=0.1578
+  rho=0.5    CRRA max|res|=8.88e-15  verify=6.23e-04  nfev=10   18.5s  β=1.43536 ω=2.31563  sr=0.1591
+
+16 of 16 points solved -> results\calibration\US_rhoGrid.csv

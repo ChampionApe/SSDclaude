@@ -1,6 +1,6 @@
 # informalAnalytical
 
-Analytical informal-sector model: overlapping generations with `J+1` household types (type 0 = informal/hand-to-mouth, types `i>0` = formal). With log preferences the politico-economic equilibrium reduces to closed form (no continuation policy needed). Full derivation in `writing/informalAnalytical_docs.tex` (part I = model/equilibrium definitions, part II = numerical solution approach — tex labels like `eq:auxiliary:Gammas` are referenced throughout the code's docstrings).
+Analytical informal-sector model: overlapping generations with `J+1` household types (type 0 = informal/hand-to-mouth, types `i>0` = formal). With log preferences the politico-economic equilibrium reduces to closed form (no continuation policy needed). Full derivation in `writing/informalAnalytical/` (`model*.tex` = model/equilibrium definitions, `num*.tex` = numerical solution approach — tex labels like `eq:auxiliary:Gammas` are referenced throughout the code's docstrings).
 
 ## Timing convention
 Docs: time runs `t=1,...,T`; `t=0` is a pre-determined state taken as given (or via a steady-state assumption), not part of the decision horizon. Code: `db['t']` defaults to `0,...,T-1`.
@@ -15,12 +15,18 @@ Docs: time runs `t=1,...,T`; `t=0` is a pre-determined state taken as given (or 
 Two db entries share names with the above by coincidence, not relation: `db['s0']` is a calibration target for the savings **rate**, unrelated to the `s0` savings-**level** argument; `db['t0']` is the *index* of the calibration baseline year, unrelated to `Base.tFirst`. Code comments saying "`t=0`"/"`t=T-1`" mean code's own `db['t']`-relative indexing (one less than the docs' for the same period) unless stated otherwise.
 
 ## Files
+Every `test_*.py` is a standalone script: it prints one PASS/FAIL line per assertion and exits nonzero on
+any failure, via the shared harness in `gridsearch/testing.py` (which also forces UTF-8 stdout — the tests
+print Greek). Run them individually, or through `python/runTests.py` (`--all` to include the slow ones).
+
 - `model.py` — `ModelInformalAnalytical`. Database (`self.db`) and parameter scaffolding (§0-2); **EE solve given a policy path** (§3); **steady state solve** (§4); **initial (pre-determined) state solve** (§5). Instantiates `self.B`/`self.BG`/`self.BT` (`base.py`) and `self.LOG`/`self.CRRA` (`policy.py`).
 - `base.py` — `Base`/`BaseGrid`/`BaseTime`: the economic-equilibrium equations, each method named after its tex doc label. `Base` = scalar/single-year, `BaseGrid` = single year/grid-valued, `BaseTime` = vectorized over all `t`.
 - `policy.py` — `LOG`/`CRRA`: identifies the policy sequence (politico-economic equilibrium). Scoped to *identifying `τ`* only — never solves the full economic equilibrium itself; the model class calls `EE_*_solve`/`EE_report` separately with the returned `τ`.
 - `test.py` — loads `data/ArgentinaTest.xlsx` and builds `mLOG = ModelInformalAnalytical(pars=pars, **kwargs)` with the real Argentina calibration. Standard way to get a non-degenerate model instance for testing (a bare `ModelInformalAnalytical()` has identical household types, giving `NaN`/`inf` `θ`/`κ`/`ε` — expected).
-- `test_cacheParams.py` — regression test for `base.py`'s parameter cache (see "Base conventions"). Imports `test.py` for the model instance; exits nonzero on failure.
-- `test_crraTerminal.py` — regression test for `policy.py`'s `CRRA.solveTerminal` (see "CRRA politico-economic equilibrium — terminal period" below). Imports `test.py`; exits nonzero on failure.
+- `test_cacheParams.py` — regression test for `base.py`'s parameter cache (see "Base conventions"). Imports `test.py` for the model instance. 17 checks.
+- `test_crraTerminal.py` — regression test for `policy.py`'s `CRRA.solveTerminal` (see "CRRA politico-economic equilibrium — terminal period" below). Imports `test.py`. 31 checks.
+- `test_ee.py` — the economic equilibrium against its *primitive* conditions: rebuilds every consumption level from the household FOCs and raw budgets (`eq:formalOpt`/`formalBudget`/`informalBudget`), plus the PAYG balance and the aggregation identities `∑γ_iη_ih_i = h` / `∑γ_i(s_i/s) = 1`. 22 checks, at `ρ=1` and `ρ=1.15`. Added 2026-08-10 after `hi`/`bi` were found wrong (see the research log) — every other test targets the FOC/policy machinery, and none of them could see that class of bug.
+- `test_createCopyFromt0.py` — `_sliceDb` on synthetic db entries (restriction + 0-based renumbering, every index shape); `createCopyFromt0`'s structural consistency (`db`/`T`/`tFirst`/`x0`/`db['t0']`) on the real calibrated instance, including both `db['t0']` branches and the out-of-range `ValueError`; a behavioral round trip — with no actual shock, `mt0.solvePEE_LOG(**stateAtT0(...))` reproduces the baseline's own tail at `t0` and later; and that `LOG.solveRobust` genuinely runs on the copy (warm-start caches cleared, not stale-shaped). 31 checks.
 
 ## Base conventions (`base.py`)
 - **Parameter caching (`cacheParams()`).** Every db read goes through a pandas `.xs()`. Measured on the Argentina calibration that is **~43% of one FOC grid evaluation**, and it is per-*call* overhead, so it is **flat in grid size** — `M=101` and `M=501` cost the same (~1.8ms). Two derived aggregates dominate: `Γh` (~164µs) and `auxProd` (~108µs). `with self.BG.cacheParams():` memoises reads for the block; **~6.5x** per evaluation. Keys are `(symbol, resolved year, lag)`, so one block covers a period *and* its lag without either being declared, and lookups memoise lazily — a new db read in any method picks up caching automatically. Deliberately **opt-in and block-scoped, not always-on**: `model.py` rewrites whole db symbols during calibration, and a cache surviving that would return stale parameters *silently*. Outside a block every read hits db exactly as before. Nests safely (inner block reuses the outer cache; only the outermost exit clears). Wired into `LOG.solveBackward` (whole recursion) and `LOG.solveVectorized` (around the scipy call). Guarded by `test_cacheParams.py`, which checks bitwise-identical results, year non-collision, nesting, and that db writes outside a block are visible. Note `Γh` is still *computed*, not read from `db['Γh']` (same value, via `paramsFromFuncs`): `db['Γh']` is only refreshed by `updateAuxPars`, so reading it would go stale mid-calibration exactly when `ηi`/`Xi` are being solved for — caching gets the speed without that risk.
@@ -28,6 +34,7 @@ Two db entries share names with the above by coincidence, not relation: `db['s0'
 - **Explicit vs. db-sourced.** Primitives (`α, ξ, ν, γ, η, X, β, p, κ, Γh, ...`) are read from db via `self()`/`self.get()`. Anything solve/policy-dependent — `τ`, `θ`/`ε`, `s`/`h` and their lags/leads, discount factors `B` — is always an explicit argument, never read from db. Known gap: `κ(ε1, t)` exists as an explicit function, but its 9 consumers (`bbar`, `Γs`, `Θh`, `si_s`, `c1i`, `tildec1i`, `c2i`, `c20`, `tildec20`) still read a cached `db['κ']` — harmless while `ε`/`θ` are calibration-fixed, revisit once `policy.py` varies `ε` mid-solve.
 - **`FH_*` methods (`BaseTime`, §8).** Several quantities need a genuinely different formula at the terminal period (`t=T-1`, no continuation) than for `t<T-1`. `FH_h`/`FH_c1i`/`FH_tildec1i`/`FH_dv1i_LOG`/`FH_dv10_LOG` own that stacking once. Where the terminal formula is provably a special case of the general one (feeding `B=0`/`Γs=0`/`β=0`), padding is used instead of branching — verified algebraically and numerically in each case.
 - **Political weights (`ω1i`/`ω2i`/`ω10`/`ω20`, §0).** `μ` attaches to a *generation*, not a period: the old-generation term uses `μ_{t-1,i}` (their share when young), the young-generation term uses current `μ_{t,i}`.
+- **`hRatio` vs `hηRatio` (§0) — keep them apart.** Two ratios differing by a factor `η_{t,i}`: `hRatio = h_{t,i}/h_t = (η_i/X_i)^ξ/Γh` (doc `eq:EE:hi`) and `hηRatio = h_{t,i}η_{t,i}/h_t = auxProd/Γh`. `hi` needs the first; `si_s`'s third term, `c2i` and `dlnc2i_dτ` need the second (the doc writes `η^{1+ξ}/X^ξ` over `Γh` in all three). Conflating them was a live bug until 2026-08-10 — `hRatio` computed the second while claiming to be the first, so `hi` returned `h_iη_i` and `bi` double-counted `η`. Reporting-only in effect (nothing else consumed them), but see the research log before touching either. Sanity checks: `∑γ_iη_i·hRatio_i = 1`, `∑γ_i·hηRatio_i = 1`; both are asserted in `test_ee.py`.
 - **`BaseTime.Γh()` returns a plain `ndarray`, not a `Series`** — several formulas index it positionally without `_bcast`. Keep this in mind for any new `Base` method touching `self.Γh(t)`.
 
 ## EE solve (`model.py` §3) — style guide for numerical problems
@@ -136,16 +143,45 @@ Converges in ~4s / 36 PEE solves on Argentina (LOG); CRRA at `ρ=0.98/1.02` (war
 faster variants that were tried and reverted — one cost more than the 4-D root, the other broke scipy's
 finite-difference Jacobian by mutating parameters inside the residual).
 
+## Model copies for shock experiments (`model.py` §9, `createCopyFromt0`)
+For an "unexpected shock at `t0`" experiment: solve the baseline PEE over the full horizon, call
+`m.createCopyFromt0(t0)` to get an independent model whose `db['t']` is restricted to `>= t0` and
+**renumbered to start at 0**, then re-solve on the copy seeded with `m.stateAtT0(baseline_report, t0)`.
+
+- **Renumbering, not just restriction.** `EE_LOG_solve`/`EE_CRRA_solve`/`EE_report`/`initialState_solve`
+  index a caller's `τ`/`θ`/`ε` arrays *positionally* via `self.B.tFirst`, which is only correct when
+  `db['t']` is the native 0-based range a fresh instance builds — so `tFirst` must come back out as `0` on
+  the copy. `_sliceDb` (module-level helper, shared with `InformalSavings`) does both the restriction and
+  the shift, in place, for every db entry indexed wholly or via one level by `'t'` (plain `Index`,
+  `MultiIndex`, `Series`/`DataFrame` and their `[t±1]` siblings) — scalars and type-only (`j`/`i`/`u`)
+  objects pass through untouched.
+- **Mutates `db` in place, does not rebind it.** `createCopyFromt0` relies on `self.B`/`self.BG`/`self.BT`/
+  `self.LOG`/`self.CRRA` all sharing the same dict object post-`deepcopy`; replacing `db` with a fresh dict
+  would silently orphan that aliasing.
+- **`db['t0']`** (the calibration-baseline-year position — unrelated to this method's `t0` argument) is
+  shifted by `-t0` if the calibration year still falls inside the new horizon, else set to `None` rather
+  than silently resolving to the wrong year. Recalibrating a copy needs a caller-supplied `db['t0']`.
+- **Warm-start caches** (`x0`, `LOG.x0`, `CRRA.x0`) are cleared (stale/wrong length for the new horizon);
+  `LOG.GS`/`CRRA.GS` (state-space grids, not time-indexed) are left as-is.
+- **State seeding is deliberately not done inside `createCopyFromt0`.** `s0` (and, in `InformalSavings`,
+  `ι0`) stay explicit arguments to `solvePEE_LOG`/`solvePEE_CRRA` on the copy, exactly as for any other
+  instance — `stateAtT0(report, t0)` is the helper that reads them off an already-solved baseline report.
+- Verified end to end (`test_createCopyFromt0.py`): with no actual shock, re-solving the copy from
+  `stateAtT0` reproduces the baseline's own tail at `t0` and later to ~1e-11–1e-13.
+
 ## Implementation status
 - **Parameter/database scaffolding** (§0-2): done.
 - **Simple calibration** (§2): eigenvector step for `ηi`/`Xi`/`θ`/`ε`, real values against `test.py`'s
   Argentina data (`θ≈0.839`, `ε≈0.284`, `κ≈1.091`).
-- **Economic equilibrium building blocks** (`base.py`): complete.
+- **Economic equilibrium building blocks** (`base.py`): complete, and verified against the primitive
+  FOCs/budgets by `test_ee.py` (added 2026-08-10, which is when `hi`/`bi` were found and fixed).
 - **EE solve given policy** (§3), **steady state solve** (§4), **initial state solve** (§5): complete and tested.
 - **Politico-economic equilibrium** (`policy.py`): `LOG` (`solveVectorized`/`solveBackward`/`solveRobust`) and `CRRA` (terminal period **and** `t<T` backward recursion, `solveBackward`) both implemented and verified — see the sections above.
 - **End-to-end PEE solve** (`model.py` §6-7): `solvePEE_LOG` and `solvePEE_CRRA` both implemented and tested.
 - **Nested-fixed-point calibration** (§8): implemented for LOG and near-LOG CRRA (`ρ` within ~0.02 of 1);
   untested at `ρ` far from 1 (see Known limitations).
+- **Model copies for shock experiments** (§9, `createCopyFromt0`/`stateAtT0`): implemented and verified —
+  see the section above.
 - **`gridsearch`**: `robustRoot`, `roots1d` (incl. NaN/infeasibility handling), `cartesian`, `interp` (incl. `griddedSmooth1D`/`griddedGradient1D`) — all implemented and unit-tested.
 
 ## Known limitations / open items

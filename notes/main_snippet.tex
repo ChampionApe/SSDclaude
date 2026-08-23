@@ -1,0 +1,34 @@
+\documentclass[a4paper]{article}
+\input{packages.tex}
+\begin{document}
+
+
+
+\input{titlepage}
+\input{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                  Main sections                   %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{Sections/1_Introduction}
+
+
+\clearpage
+\printbibliography[
+heading=bibintoc,
+title={References},
+category=cited]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                      Appendices                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\clearpage
+\begin{appendices}
+\setcounter{page}{1}
+\renewcommand{\theequation}{\thesection.\arabic{equation}}
+\input{Appendix/theorems}
+\end{appendices}
+\end{document}

@@ -1,0 +1,22 @@
+country: FR,  variant: common X
+grid: 16 points, 0.5 to 2.0 step 0.1
+anchor rho=1.0,  tau nodes 101,  state nodes 150,  verify at 151/225
+out: results\calibration\FR_rhoGridCommonX.csv
+  rho=1.0    LOG  max|res|=1.39e-16  verify=1.39e-16  drift=nan  nfev=9     0.9s  β=0.76062 ω=1.41806 X=7.0935  R=2.0865 sr=0.1344
+  rho=1.1    CRRA max|res|=9.16e-16  verify=1.55e-04  drift=nan  nfev=8    23.2s  β=0.71775 ω=1.35770 X=7.0352  R=2.1091 sr=0.1328
+  rho=1.2    CRRA max|res|=2.78e-16  verify=9.42e-05  drift=nan  nfev=8    23.6s  β=0.68442 ω=1.31679 X=6.9899  R=2.1272 sr=0.1315
+  rho=1.3    CRRA max|res|=1.94e-16  verify=3.19e-04  drift=nan  nfev=9    26.8s  β=0.65750 ω=1.28472 X=6.9496  R=2.1435 sr=0.1303
+  rho=1.4    CRRA max|res|=4.16e-16  verify=2.19e-04  drift=nan  nfev=7    22.1s  β=0.63530 ω=1.25808 X=6.9136  R=2.1583 sr=0.1292
+  rho=1.5    CRRA max|res|=4.44e-16  verify=2.41e-04  drift=nan  nfev=7    22.5s  β=0.61678 ω=1.23630 X=6.8816  R=2.1715 sr=0.1283
+  rho=1.6    CRRA max|res|=8.05e-16  verify=2.65e-04  drift=nan  nfev=7    17.2s  β=0.60100 ω=1.21821 X=6.8522  R=2.1838 sr=0.1274
+  rho=1.7    CRRA max|res|=1.42e-15  verify=2.30e-04  drift=nan  nfev=7    18.6s  β=0.58749 ω=1.20273 X=6.8261  R=2.1949 sr=0.1267
+  rho=1.8    CRRA max|res|=1.11e-15  verify=2.39e-04  drift=nan  nfev=7    30.7s  β=0.57573 ω=1.18942 X=6.8021  R=2.2051 sr=0.1260
+  rho=1.9    CRRA max|res|=1.28e-15  verify=2.77e-04  drift=nan  nfev=7    17.9s  β=0.56543 ω=1.17798 X=6.7802  R=2.2145 sr=0.1253
+  rho=2.0    CRRA max|res|=9.44e-16  verify=2.81e-04  drift=nan  nfev=7    18.2s  β=0.55633 ω=1.16796 X=6.7599  R=2.2232 sr=0.1247
+  rho=0.9    CRRA max|res|=7.22e-16  verify=2.60e-04  drift=nan  nfev=8    38.3s  β=0.81520 ω=1.47882 X=7.1451  R=2.0664 sr=0.1361
+  rho=0.8    CRRA max|res|=9.99e-16  verify=9.86e-05  drift=nan  nfev=8    72.6s  β=0.89028 ω=1.57367 X=7.2131  R=2.0408 sr=0.1381
+  rho=0.7    CRRA max|res|=3.33e-16  verify=2.92e-04  drift=nan  nfev=8    56.0s  β=0.99736 ω=1.71163 X=7.2912  R=2.0121 sr=0.1405
+  rho=0.6    CRRA max|res|=7.22e-16  verify=1.03e-04  drift=nan  nfev=8    46.4s  β=1.16117 ω=1.92203 X=7.3824  R=1.9797 sr=0.1433
+  rho=0.5    CRRA max|res|=2.78e-17  verify=1.49e-04  drift=nan  nfev=8    23.1s  β=1.43536 ω=2.27214 X=7.4848  R=1.9442 sr=0.1465
+
+16 of 16 points solved -> results\calibration\FR_rhoGridCommonX.csv

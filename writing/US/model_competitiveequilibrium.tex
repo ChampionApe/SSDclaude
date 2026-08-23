@@ -1,0 +1,105 @@
+\subsection{The Competitive Equilibrium}\label{\refsec:EE}
+In the competitive equilibrium firms and households maximize, the government runs a balanced budget, and the markets clear. We can collect these in the definition of aggregate states \eqref{\refeq:aggregateStates}, factor prices \eqref{\refeq:factorPrices}, household budgets \eqref{\refeq:budget}, the government budget \eqref{\refeq:governmentBudget}, and household choices \eqref{\refeq:formalOpt}. The following derives closed form representations of the core model variables \emph{given} the generalized discount factor $B_{t+1}^i$.
+
+
+\bigskip
+\begin{subequations}\label{\refeq:EE}
+Using equilibrium conditions for wages, interest rates, and pension benefits, the labour supply for type $i$ can in equilibrium be written as
+\begin{align*}
+    h_{t,i} = \left(\dfrac{\eta_{t,i}}{X_{t,i}}\right)^{\xi}\left(\dfrac{1}{h_t}\right)^{\xi}\left((1-\alpha)(1-\tau_t)\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha}h_t^{1-\alpha}+\dfrac{1-\alpha}{\alpha}\theta_{t+1} s_t\tau_{t+1}\right)^{\xi}.
+\end{align*}
+The only type-specific term is $(\eta_{t,i}/X_{t,i})^{\xi}$; this shows that the ratio $h_{t,i}/h_t$ is only a function of parameters, namely that
+\begin{align}\label{\refeq:EE:hi}
+    \dfrac{h_{t,i}}{h_t} = \dfrac{(\eta_{t,i}/X_{t,i})^{\xi}}{\Gamma_{h,t}}, \qquad \Gamma_{h,t} = \sum_i\frac{\gamma_{t,i}\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}.
+\end{align}
+
+
+Next, we can use the wage rate and individual labour supply functions to write
+\begin{align*}
+    w_t(1-\tau_t)h_{t,i}\eta_{t,i}-\dfrac{X_{t,i}\xi}{1+\xi}\left(h_{t,i}\right)^{\frac{1+\xi}{\xi}} = \dfrac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{1}{\Gamma_{h,t}}\left[(1-\alpha)(1-\tau_t)h_t^{1-\alpha}\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha}-\dfrac{\xi}{1+\xi}\frac{h_t^{\frac{1+\xi}{\xi}}}{\Gamma_{h,t}^{1/\xi}}\right]
+\end{align*}
+Using the expression for $h_{t,i}$ and $h_{t,i}/h_t$, we can rewrite this as:
+\begin{align*}
+    (1-\alpha)(1-\tau_t)h_t^{1-\alpha}\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha} = \frac{h_t^{\frac{1+\xi}{\xi}}}{\Gamma_{h,t}^{1/\xi}} - \dfrac{1-\alpha}{\alpha}\theta_{t+1} s_t\tau_{t+1},
+\end{align*}
+From this and discounted pension benefits in equilibrium, we then finally have that
+\begin{align}\label{\refeq:EE:si}
+    s_{t,i} =& \dfrac{1}{1+B_{t+1}^i}\left[B_{t+1}^i\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}}\frac{1}{1+\xi}-\frac{1-\alpha}{\alpha}\left(1-\theta_{t+1}\right)s_t\tau_{t+1}\right]\\
+    -&\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}\Gamma_{h,t}}\frac{1-\alpha}{\alpha}\theta_{t+1}s_t\tau_{t+1} \notag
+\end{align}
+Aggregating over the different types, the savings state can then be defined as
+\begin{align}\label{\refeq:EE:s(h)}
+    s_t = \left(\frac{h_t}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}}\underbrace{\frac{1}{1+\xi}\frac{\sum_i \frac{\gamma_{t,i}\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{B_{t+1}^i}{1+B_{t+1}^i}}{1+\frac{1-\alpha}{\alpha}\tau_{t+1}\left(\theta_{t+1}+(1-\theta_{t+1})\sum_i\frac{\gamma_{t,i}}{1+B_{t+1}^i}\right)}}_{\equiv \Gamma_{s,t}}
+\end{align}
+Importantly, note that the savings ratios $s_{t,i}/s_t$ can be written as a function of parameters and \emph{future} policy $\tau_{t+1}$ (independent e.g.\ of $\tau_t$ and given the generalized discount function $B$). Formally we have:
+\begin{align}\label{\refeq:EE:si_s}
+    \frac{s_{t,i}}{s_t} = &\frac{\frac{B_{t+1}^i}{1+B_{t+1}^i}\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}}{\sum_{j} \frac{\gamma_{t,j}\eta_{t,j}^{1+\xi}}{X_{t,j}^{\xi}}\frac{B_{t+1}^j}{1+B_{t+1}^j}}\left[1+\frac{1-\alpha}{\alpha}\tau_{t+1}\left(\theta_{t+1}+(1-\theta_{t+1})\sum_{j}\frac{\gamma_{t,j}}{1+B_{t+1}^j}\right)\right] \\
+    -&\frac{1}{1+B_{t+1}^i}\frac{1-\alpha}{\alpha}(1-\theta_{t+1})\tau_{t+1} - \frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{h,t}}\frac{1-\alpha}{\alpha}\theta_{t+1}\tau_{t+1}\notag
+\end{align}
+We note that when discount rates are identical across types, i.e.\ when $\beta_{t,i} = \beta_t$ and $B_{t+1}^i = B_{t+1}$, this simplifies to
+\begin{align*}
+    \frac{s_{t,i}}{s_t} = \frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{h,t}}+\frac{1-\alpha}{\alpha}\tau_{t+1}\frac{1-\theta_{t+1}}{1+B_{t+1}}\left(\frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{h,t}}-1\right).
+\end{align*}
+This is the sense in which a lower $\theta_{t+1}$ redistributes: the second term pulls every type towards the average, and more strongly the more Beveridgean the system is.
+
+
+Finally, we can combine $s_t, h_t$ to yield closed form expressions. Start from the definition of $h_t$ and use that $s_t$ is proportional to $h_t^{(1+\xi)/\xi}$ to write
+\begin{align}\label{\refeq:EE:h}
+    h_t = \underbrace{\left(\Gamma_{h,t}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{(1-\alpha)(1-\tau_t)}{\Gamma_{h,t}-\frac{1-\alpha}{\alpha}\theta_{t+1}\tau_{t+1}\Gamma_{s,t}}\right)^{\frac{\xi}{1+\alpha\xi}}}_{\equiv \Theta_{h,t}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}}.
+\end{align}
+Naturally, we can use this in the expression for $s_t$ to write savings as
+\begin{align}\label{\refeq:EE:s}
+    s_t &= \left(\frac{\Theta_{h,t}}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}}\Gamma_{s,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}.
+\end{align}
+\end{subequations}
+
+
+Given discount functions, $B^i$, equations \eqref{\refeq:EE} identify aggregate states $s_t$ and $h_t$ as complicated parameter and policy functions $\Theta_{x,t}$ times the lagged state $s_{t-1}$ raised to some power $\sigma_x$.
+
+
+\smalltitle{Scale invariance.}
+The equilibrium is homogeneous in the labour aggregator $\Gamma_{h,t}$, and this is worth recording explicitly because the calibration in \cref{\refsec:calibration} rests on it. Fix $\lambda>0$ and rescale the disutility parameters as $X_{t,i}\rightarrow \lambda^{-1/\xi}X_{t,i}$ for all $i$ and $t$, so that $\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}\rightarrow \lambda\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}$ and hence $\Gamma_{h,t}\rightarrow\lambda\Gamma_{h,t}$. Then \eqref{\refeq:EE:h} gives $\Theta_{h,t}\rightarrow \lambda^{1/(1+\alpha\xi)}\Theta_{h,t}$, and provided the initial state is rescaled with it, $s_0\rightarrow\lambda s_0$, an induction on \eqref{\refeq:EE:s} yields
+\begin{align}\label{\refeq:scaleInvariance}
+    \left(h_t, h_{t,i}, s_t, s_{t,i}, c_{1,t}^i, c_{2,t}^i, Y_t\right)\rightarrow \lambda\cdot\left(h_t, h_{t,i}, s_t, s_{t,i}, c_{1,t}^i, c_{2,t}^i, Y_t\right),
+\end{align}
+while $R_t$, $w_t$, $B_{t+1}^i$, the ratios $h_{t,i}/h_t$ and $s_{t,i}/s_t$, and the savings rate $s_t/\left[(s_{t-1}/\nu_t)^{\alpha}h_t^{1-\alpha}\right]$ are all unchanged. Because $B_{t+1}^i$ is invariant, the argument is self-consistent under CRRA as well as log preferences, and \cref{\refsec:PEELOG} shows that equilibrium policy inherits the invariance.
+
+Two consequences follow. First, $\Gamma_{h,t}$ is a units convention for labour: one normalization of it is free, and we spend it, imposing $\Gamma_h = 1$ at the calibration stage in both model variants of \cref{\refsec:calibration}. Second, no ratio of aggregates --- the savings rate, the interest rate, the equilibrium tax --- carries any information about $\lambda$; only the levels listed in \eqref{\refeq:scaleInvariance} do. Note that the invariance requires the initial state to be scaled along with the parameters; this holds when $s_0$ is set at the model's own steady state --- our default --- but not when $s_0$ is imposed exogenously.
+
+
+\smalltitle{The units of individual hours.}
+A second and independent indeterminacy concerns individual rather than aggregate hours, and it is the one our two model variants actually differ over. Write
+\begin{align}\label{\refeq:yDefs}
+    y_{t,i}^{\eta}\equiv \frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}, \qquad y_{t,i}^{x}\equiv \left(\frac{\eta_{t,i}}{X_{t,i}}\right)^{\xi},
+\end{align}
+and note that everything above involves $\eta_{t,i}$ and $X_{t,i}$ only through these two objects --- and almost everything through $y^{\eta}$ alone. Indeed $\Gamma_{h,t}$, $\Gamma_{s,t}$, the savings ratios \eqref{\refeq:EE:si_s} and the consumption functions \eqref{\refeq:EE:ci} all use $y^{\eta}$; the sole appearance of $y^x$ is the ratio $h_{t,i}/h_t$ in \eqref{\refeq:EE:hi}. Now fix $\mu>0$ and rescale $y_{t,i}^x\rightarrow\mu y_{t,i}^x$ holding $y_{t,i}^{\eta}$ fixed, which by \eqref{\refeq:yDefs} means
+\begin{align}\label{\refeq:hoursUnit}
+    \eta_{t,i}\rightarrow \frac{\eta_{t,i}}{\mu}, \qquad X_{t,i}\rightarrow \mu^{-\frac{1+\xi}{\xi}}X_{t,i}.
+\end{align}
+Then $h_{t,i}\rightarrow\mu h_{t,i}$ for every type, while efficiency units $\eta_{t,i}h_{t,i}$, the aggregate $h_t$, and \emph{every other object in the model} are unchanged. Productivity and hours trade off one for one: the model pins down how much labour is supplied in efficiency units, not the clock time it takes to supply it.
+
+Data on \emph{relative} hours cannot identify $\mu$, being ratios; the observed \emph{level} of average hours can. Writing the model counterpart of the average workweek as
+\begin{align}\label{\refeq:avgHours}
+    \overline{h}_t \equiv \sum_i\gamma_{t,i}h_{t,i} = h_t\sum_i\gamma_{t,i}\frac{y_{t,i}^x}{\Gamma_{h,t}},
+\end{align}
+we have $\overline{h}_t\rightarrow\mu\overline{h}_t$ under \eqref{\refeq:hoursUnit}. Note that $\overline{h}_t$ is an unweighted average and is not the aggregate $h_t$, which weights by productivity; the two differ except in the degenerate case of a single type, and only the former is comparable to an observed workweek.
+
+
+\smalltitle{Closed form consumption functions.}
+We note that if we know $s_t$, $h_t$, $B^i$, and $s_{t-1}$, it is straightforward to identify all other variables directly: individual labour supply and savings decisions from \eqref{\refeq:EE:hi} and \eqref{\refeq:EE:si}, factor prices from \eqref{\refeq:factorPrices}, pension benefits from \eqref{\refeq:governmentBudget}, and finally consumption simply from budgets \eqref{\refeq:budget}. However, in particular in the analytical log case, it is useful to derive \emph{equilibrium} consumption functions as well; all consumption functions can be written on the form $x_t = \Theta_{x,t}(s_{t-1}/\nu_t)^{\sigma_x}$ with
+\begin{align}\label{\refeq:EE:sigma_ci}
+    \sigma_{c_1,t}^i &= \sigma_{c_2,t}^i = \sigma_{\tilde{c}_1,t}^i = \dfrac{\alpha(1+\xi)}{1+\alpha\xi},
+    \qquad \sigma_{c_2,t+1}^i = \left(\dfrac{\alpha(1+\xi)}{1+\alpha\xi}\right)^2.
+\end{align}
+This is essentially what ensures that the political objective function is log-separable in the state $s_{t-1}/\nu_t$.
+
+\begin{subequations}\label{\refeq:EE:ci}
+The coefficient functions (that also generally depend on policy) are derived using the aggregate states in the functions above. For completeness, we have the following:
+\begin{align}
+    c_{1,t}^i &= \frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}}\left(1-\frac{B_{t+1}^i}{(1+B_{t+1}^i)(1+\xi)}\right)+\frac{s_t}{1+B_{t+1}^i}\frac{1-\alpha}{\alpha}\tau_{t+1}(1-\theta_{t+1}) \\
+    c_{2,t}^i &= \alpha \frac{\nu_t}{p_{t-1}}h_t^{1-\alpha}\left(\frac{s_{t-1}}{\nu_t}\right)^{\alpha}\left(\frac{s_{t-1,i}}{s_{t-1}}+\frac{1-\alpha}{\alpha}\tau_t\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)\right) \\
+    \tilde{c}_{1,t}^i &= \frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}}\frac{1}{(1+\xi)(1+B_{t+1}^i)}+\frac{s_t}{1+B_{t+1}^i}\frac{1-\alpha}{\alpha}\tau_{t+1}(1-\theta_{t+1}) \notag \\
+    &= \left(\frac{h_t}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}}\frac{1}{1+B_{t+1}^i}\left(\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{1}{1+\xi}+\Gamma_{s,t}\frac{1-\alpha}{\alpha}\tau_{t+1}(1-\theta_{t+1})\right)
+\end{align}
+Since households do not supply labour in retirement, we simply have $\tilde{c}_{2,t}^i = c_{2,t}^i$.
+\end{subequations}

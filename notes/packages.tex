@@ -1,0 +1,153 @@
+\usepackage[T1]{fontenc}
+\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=3cm]{geometry}
+\usepackage[multiple,bottom]{footmisc}
+\usepackage{booktabs}
+\usepackage{mathrsfs}
+\newcommand\bmmax{0}
+\newcommand\hmmax{0}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{bm}
+\usepackage{xfrac}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\usepackage{titlesec}
+\usepackage{xcomment}
+\usepackage[x11names]{xcolor}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+%\usepackage[justification=centering]{subfig}
+\usepackage[toc,page]{appendix}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{fancyhdr}
+\usepackage{array}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\usepackage{url}
+\usepackage{dcolumn}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{tagging}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsthm}
+\usepackage{lmodern,textcomp}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage[nameinlink]{cleveref}
+\usepackage{pdfpages}
+\usepackage{arydshln}
+\usepackage{threeparttable}
+\usepackage{rotating} %begin{sidewaysfigure}
+
+
+
+%Allow long equation blocks to skip page
+\allowdisplaybreaks
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% References %%%%%%%%%%%%%%%%%%%%%%%%%
+
+%The three types of citations are \cite, \textcite og \parencite
+
+%Packages
+    \usepackage[style = authoryear, backend = biber, hyperref = true, url = false, doi = false, uniquename = false, dashed = false, maxcitenames=2]{biblatex}
+    \usepackage{csquotes} %Removess error message. Must be loaded after \usepackage{inputenc}
+    
+%Declare filename of the references list (.bib)    
+    \addbibresource{references.bib} %Angiv filen som består af referencer
+
+        
+%Increase vertical spacing between entries in the list of references     
+%    \setlength\bibitemsep{0.5\baselineskip}
+
+%Dynamically divide references into "cited" and "non-cited".
+%    \DeclareBibliographyCategory{cited}
+ %   \AtEveryCitekey{\addtocategory{cited}{\thefield{entrykey}}}
+
+%Show non-cited references in the list of references    
+    % \nocite{*}
+    
+%Text commands
+    \newcommand{\CO}[1]{CO\textsubscript{#1}}%
+    \newcommand{\SO}[1]{SO\textsubscript{#1}}%
+    \newcommand{\NOx}{NO\textsubscript{x} }%
+
+
+%Math operators
+\DeclareMathOperator{\E}{\mathbb{E}}
+
+% Begin algorithmic packages:
+\usepackage{float}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{algpascal}
+
+\usepackage{textpos}
+
+% End algorithmic packages
+
+% Theorem, definitions, collary, proof environments: 
+%\usepackage{chngcntr}
+\usepackage{apptools}
+\AtAppendix{\counterwithin{lemma}{section}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+% \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{lemma}{Lemma}
+
+\newtheoremstyle{algorithmStyle}
+    {3pt} % Space above 
+    {3pt} % Space below 
+    {\normalfont} % Body font (non-italic) 
+    {} % Indent 
+    {\bfseries} % Head font 
+    {.} % Punctuation after head 
+    {1em} % Space after head
+    {\thmname{#1}\thmnumber{ #2}\hspace{1em}\thmnote{#3}} % head spec
+
+\theoremstyle{algorithmStyle}
+\newtheorem{alg}{Algorithm}
+\AtEndEnvironment{alg}{\hfill$\triangleleft$}
+
+
+\theoremstyle{plain}
+\newtheorem{assumption}{Assumption}
+\newtheorem{definition}{Definition}
+\newtheorem{problem}{Problem}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+\theoremstyle{plain}
+% Style of small title
+\newcommand{\smalltitle}[1]{\bigskip\noindent\textbf{#1}$\mbox{ }\mbox{ }$}
+
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\renewcommand{\theenumi   }{\roman{enumi}}
+\renewcommand{\theenumii  }{\roman{enumii}}
+\renewcommand{\theenumiii }{\roman{enumiii}}
+\numberwithin{figure}{section}
+\linespread{1.5}
+
+% Style for referencing software, functions and code following the convention used by the Journal of Statistical Software:
+\newcommand{\pkg}[1]{{\normalfont\fontseries{b}\selectfont #1}}
+\let\proglang=\textsf
+\let\code=\texttt
+
+%Packages:
+    % \usepackage[disable]{todonotes} %Create notes and corresponding todo-list with \todo. [disable] is an option.
+    \usepackage[]{todonotes} %Create notes and corresponding todo-list with \todo. [disable] is an option.
+    \usepackage{setspace} %Brug af \begin{spacing} til at angive linjeafstand
+
+%Define \tinytodo which is more appropriate than the standard \todo
+    \newcommand{\tinytodo}[2][]{\todo[caption={#2}, size=\footnotesize, #1]{\begin{spacing}{0.5}#2\end{spacing}}}
+
+%Give todo-notes more width
+    \setlength{\marginparwidth}{2cm} 
+
+%Move todo-notes from left margin to right margin
+    \reversemarginpar

@@ -1,0 +1,67 @@
+\subsection{Calibration}\label{\refsec:calibration}
+This first model is used to match the case of Argentina only. The full procedure and a description of the data can be found in the main paper. The main application in the paper uses constant parameter values across $t$ for almost all parameters. Thus, when we drop the $t$-subscript in the following, we assume constant parameters.  
+
+\smalltitle{Data.} 
+We follow previous literature and let $t$ represent 30-year intervals (this helps with the assumption that capital fully depreciates between time steps). We find population data including projections to determine $\nu_t$ from 1950 to 2070 and amend the data with $t = 1920, 2100$  with constant extrapolation.
+
+We use a household survey to split up the population into $J+1 = 5$ household types. This household survey provides shares $\gamma$, hours worked, and income. In addition, we have data on voting shares represented by $\mu_j$ in the political problem and survival rates $(p_j)$ (where $p_i = p$ is common across $i>0$ types). 
+
+We use the capital income share to identify $\alpha$, set the labour supply elasticity at a baseline value $\xi = 0.3$, identify the savings rate in a baseline year $t=2010$ to be 18.4\%, and the pension tax rate $\tau_t$ to be 12.5\% in the baseline year as well. 
+
+We use OECD data to define ratio of replacement rates $RR$ at half mean wages and mean wages (represented by groups $j=1, j=3$ in our data). This will help us identify $\theta$ (we do not work with endogenous pension characteristics for Argentina). 
+
+In the Argentina case, we exploit a pension reform around $t=2010$ that drastically changed the degree of universal pensions $\epsilon$. This does not, however, yield a static calibration target, as we see below.
+
+
+\smalltitle{Calibration.}
+Several of the model parameters are set directly using the data. This covers the parts that are not set directly, but have to solved in one way or another.
+
+First, we calibrate the income distribution and relative working hours across the income distribution using $\eta_j$ and $X_j$. Specifically, let $z_j^{\eta}$ and $z_j^{x}$ denote income and working hours relative to the average formal household. With labour supply following $h_t^i/h_t = \eta_iX_i^{\xi}$ for formal households, we solve the system
+\begin{align*}
+        z_i^{\eta} &= \dfrac{w_t(1-\tau_t)h_t^i \eta_i}{w_t(1-\tau_t)h_t} = \dfrac{\eta_i^{1+\xi}/X_i^{\xi}}{\sum_{j>0} \left(\gamma_ j\eta_j^{1+\xi}/X_j^{\xi}\right)},  \\
+        z_i^{x} &= \frac{h_{t,i}}{\sum_i\gamma_i h_{t,i}} = \frac{\eta_i^{\xi}/X_i^{\xi}}{\sum_i \gamma_i(\eta_i/X_i)^{\xi}},
+\end{align*}
+where we normalize $\Gamma_h \equiv \sum_i \gamma_i\eta_i^{1+\xi}/X_i^{\xi} = 1$ in the calibration stage. Using $y_i^{\eta} = \eta_i^{1+\xi}/X_i^{\xi}$ and $y_i^x = (\eta_i/X_i)^{\xi}$ as shorthand, we can set up the conditions as linear systems instead:
+\begin{align*}
+    \left(\bm{z}_i^{\eta} \times \bm{\gamma}_i'-\bm{I}\right)\times \bm{y}_i^{\eta} &= \bm{0} \\
+    \left(\bm{z}_i^{x} \times \bm{\gamma}_i'-\bm{I}\right)\times \bm{y}_i^{x} &= \bm{0},
+\end{align*}
+where the bold-notation indicates vectors and matrices. We note that the $\bm{y}_i$ vectors are actually eigenvectors, which allows us to compute vectors of productivity and disutility of leisure as
+\begin{align} 
+    \bm{\eta}_i &= \frac{\bm{y}^{\eta}_i}{\bm{y}_i^x \left(\bm{y}_i^{\eta} \cdot \bm{y}_i\right)} \label{\refeq:calibration:etai} \\
+    \bm{X}_i &= \frac{\bm{\eta}_i}{(\bm{y}_i^x)^{1/\xi}}, \label{\refeq:calibration:Xi}
+\end{align}
+where $\bm{y}_i^{\eta} = \text{Eigvec}(\bm{z}_i^{\eta}\times \bm{\gamma}_i')$ and $\bm{y}_i^{x} = \text{Eigvec}(\bm{z}_i^{x}\times \bm{\gamma}_i')$ are eigenvectors.
+
+To capture the relative income and working hours of the informal/hand-to-mouth households, requires a bit more. First, the ratio of income and working hours can still be written as:
+\begin{align*}
+    z_0^{\eta} &= \frac{w_t^0h_{1,t}^0\eta_{0}}{w_t(1-\tau_t)h_t} \\
+    z_0^x &= \dfrac{h_{t,1}^0}{\sum_i \gamma_{i} h_{t,i}}
+\end{align*}
+We can combine and rearrange the terms to get the following expressions for $\eta_0, X_0$:
+\begin{align}
+    \eta_{0} &= \frac{z_0^{\eta}}{z_0^x}\frac{(1-\alpha)(1-\tau_t)}{\Theta_{h,t}^{\alpha}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}} \label{\refeq:calibration:eta0}\\
+    X_{0} &= \eta_{0}\frac{\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}}{\left(\Theta_{h,t}z_0^x\right)^{1/\xi}} \label{\refeq:calibration:X0}
+\end{align}
+We note that all of this is evaluated at $t=2010$, our baseline year. However, while we can identify most of the terms, the coefficient function $\Theta_{h,t}$ still has to be solved for us to get this. Thus, we add these two conditions determining $\eta_0, X_0$ as targets that we have to solve alongside the politico-economic equilibrium (to get $\Theta_{h,t}$ in the baseline year). 
+
+
+
+Given vectors of productivities and disutility of labour for formal households, $\bm{\eta}_i, \bm{X}_i$, we can determine $\theta$ from the ratio of replacement rates. In particular, we solve for $\theta$ (constant across $t$ in this calibration) from the requirement:
+ \begin{align*}
+        RR \equiv \dfrac{\theta+(1-\theta)\frac{h_t}{\eta_3 h_{t,3}}}{\theta+(1-\theta)\frac{h_t}{\eta_1 h_{t,1}}} = \frac{\theta + (1-\theta)\frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}}{\theta+(1-\theta)\frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}}},
+\end{align*}
+where we have data on $RR$ from OECD data, and the two groups $j=1, 3$ represent half-mean and mean wages in our data for Argentina. Given that we know $\eta_i, X_i$ for formal households already, we can simply compute $\theta$ from
+\begin{align}
+    \theta = \frac{RR \frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}} - \frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}}{1-\frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}-RR\left(1-\frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}}\right)}
+\end{align}
+
+
+
+Finally, we need to determine parameters $\omega$ and discount parameters $\beta$. Note that we assume that they are identical across time and household types in the calibration. They are identified by ensuring that the politico-economic equilibrium replicates a pension tax of 12.5\% and a savings rate of 18.5\% in the baseline year 2010. With the Cobb-Douglas production, the savings rate is given by
+\begin{align*}
+    \text{Savings rate}_t = \frac{s_t}{\left(s_{t-1}/\nu_t\right)^{\alpha} h_t^{1-\alpha}}.
+\end{align*}
+
+
+Most parameters can be calibrated initially, assuming values for parameters $\xi, \rho$. There are, however, four parameters that cannot be calibrated without knowing the politico-economic equilibrium path: $\omega, \beta, \eta_0, X_0$. As the politico-economic equilibrium cannot be solved without these parameters, the final bit of calibration is solved as a nested fixed point problem. In \cref{\refnumsec} we describe this calibration procedure in more detail. 

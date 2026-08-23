@@ -32,17 +32,9 @@ class LOG:
     #######################################################################
     ##########   Named grid-problem structure (self.GS)                ####
     #######################################################################
-    # One dict entry per named political problem: solGrids (variables solved for), stateGrids
-    # (predetermined variables the solution is a function of), gridSettings (per-problem, so a future
-    # second named problem can use different l/u/n/Δl/Δu). LOG's one problem, 'PEE', has no state (its
-    # FOC never depends on the savings level); CRRA.initGS extends the same 'PEE' entry with one, rather
-    # than a separate name, so the terminal solve and the t<T recursion share one place to look.
-    #
-    # `stateGrids['s_']` is a settable *override slot*, not an auto-populated cache: its bounds are
-    # data-dependent (CRRA.defaultSGrid needs θ, only known at solve time), and caching a computed
-    # default would risk the same silent staleness base.py's cacheParams() is built to avoid. None
-    # recomputes a fresh default every solve; set it explicitly to fix one grid across many solves (the
-    # t<T recursion's use case).
+    # See README's "Named grid-problem structure" for the design (why one dict per named problem, why
+    # CRRA extends 'PEE' rather than adding a second name, why stateGrids['s_'] is a settable override
+    # slot and not a cache).
     def initGS(self, grid = None):
         """ LOG's only named problem, 'PEE': solGrids={'τ': ...} from this entry's own gridSettings
         (_gridSettings' defaults, overridable via `grid`), no state. CRRA.initGS extends this entry. """

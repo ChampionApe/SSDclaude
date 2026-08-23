@@ -295,9 +295,14 @@ def selectMax(x, f, tol = 0.0):
     xg, fm, wasFlat = _checkInputs(x, f)
     n = fm.shape[1]
 
-    # Ragged columns take a per-column path on their own feasible sub-grid; the rest stay fully
-    # vectorized. Splitting rather than looping everything keeps the common all-feasible case at full
-    # speed, and the loop only ever runs over states, never over grid nodes.
+    # Ragged columns are handled per *feasibility pattern*, not per column: all columns sharing a NaN
+    # pattern share the sub-grid xg[ok], so one vectorized call serves the whole group. This matters
+    # because the patterns are far from all-distinct in practice -- a policy grid search's feasibility
+    # usually depends on some of the state coordinates and not others, so a 2-D state grid typically
+    # produces one or two patterns across hundreds of columns (measured: 1-2 per period over 900 columns
+    # in informalSavings' CRRA recursion, where the mask is built on (τ,s_) and is near-constant in ι_).
+    # Per column, the result is bitwise what a single-column call gives -- allRoots routes 1-column and
+    # many-column inputs through the same _matrixCrossings, whose every step is column-independent.
     nanCols = np.isnan(fm).any(axis = 0)
     if nanCols.any():
         out = {'x': np.full(n, np.nan), 'nMax': np.zeros(n, dtype = int),
@@ -307,12 +312,16 @@ def selectMax(x, f, tol = 0.0):
             sub = selectMax(xg, fm[:, clean], tol = tol)
             for k in out:
                 out[k][clean] = sub[k]
-        for j in np.flatnonzero(nanCols):
-            ok = ~np.isnan(fm[:, j])
+        ragged = np.flatnonzero(nanCols)
+        pats, inv = np.unique(np.isnan(fm[:, ragged]), axis = 1, return_inverse = True)
+        for p in range(pats.shape[1]):
+            ok = ~pats[:, p]
             if ok.sum() < 2:
                 continue                        # no feasible interval to maximise over
-            sub = selectMax(xg[ok], fm[ok, j], tol = tol)
-            out['x'][j], out['nMax'][j], out['atBound'][j] = sub['x'], sub['nMax'], sub['atBound']
+            cols = ragged[np.flatnonzero(inv == p)]
+            sub = selectMax(xg[ok], fm[np.ix_(ok, cols)], tol = tol)
+            for k in out:
+                out[k][cols] = sub[k]
         return {k: v[0] for k, v in out.items()} if wasFlat else out
     V = objectiveProfile(xg, fm)
     roots = allRoots(xg, fm, kind = 'down', tol = tol)   # (K,N), NaN-padded

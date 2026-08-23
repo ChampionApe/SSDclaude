@@ -1,0 +1,89 @@
+\subsection{The Competitive Equilibrium}\label{\refsec:EE}
+In the competitive equilibrium firms and households maximize, the government runs a balanced budget, and the markets clear. We can collect these in definition of aggregate states \eqref{\refeq:aggregateStates}, factor prices \eqref{\refeq:factorPrices}, household budgets \eqref{\refeq:formalBudget} and \eqref{\refeq:informalBudget}, government budgets \eqref{\refeq:governmentBudget}, and household choices \eqref{\refeq:formalOpt} and \eqref{\refeq:informalOpt}. The following derives closed form representations of the core model variables \emph{given} the generalized discount factor $B_{t+1}^j$. 
+
+
+\bigskip
+\begin{subequations}\label{\refeq:EE}
+Using equilibrium conditions for wages, interest rates, and pension benefits, the labour supply for type $i$ can in equilibrium be written as
+\begin{align*}
+    h_{t,i} = \left(\dfrac{\eta_{t,i}}{X_{t,i}}\right)^{\xi}\left(\dfrac{1}{h_t}\right)^{\xi}\left((1-\alpha)(1-\tau_t)\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha}h_t^{1-\alpha}+\dfrac{1-\alpha}{\alpha}\dfrac{p_t \theta_{t+1}}{\kappa_t} s_t\tau_{t+1}\right)^{\xi}.
+\end{align*}
+The only type-specific term is $(\eta_{t,i}/X_{t,i})^{\xi}$; this shows that the ratio $h_{t,i}/h_t$ is only a function of parameters, namely that
+\begin{align}\label{\refeq:EE:hi}
+    \dfrac{h_{t,i}}{h_t} = \dfrac{(\eta_{t,i}/X_{t,i})^{\xi}}{\Gamma_{t,h}}, \qquad \Gamma_{t,h} = \sum_i\frac{\gamma_{t,i}\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}.
+\end{align}
+
+
+Next, we can use the wage rate and individual labour supply functions to write
+\begin{align*}
+    w_t(1-\tau_t)h_{t,i}\eta_{t,i}-\dfrac{X_{t,i}\xi}{1+\xi}\left(h_{t,i}\right)^{\frac{1+\xi}{\xi}} = \dfrac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{1}{\Gamma_{t,h}}\left[(1-\alpha)(1-\tau_t)h_t^{1-\alpha}\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha}-\dfrac{\xi}{1+\xi}\frac{h_t^{\frac{1+\xi}{\xi}}}{\Gamma_{t,h}^{1/\xi}}\right]
+\end{align*}
+Using the expression for $h_{t,i}$ and $h_{t,i}/h_t$, we can rewrite this as:
+\begin{align*}
+    (1-\alpha)(1-\tau_t)h_t^{1-\alpha}\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha} = \frac{h_t^{\frac{1+\xi}{\xi}}}{\Gamma_{t,h}^{1/\xi}} - \dfrac{1-\alpha}{\alpha}\dfrac{p_t \theta_{t+1}}{\kappa_t} s_t\tau_{t+1},
+\end{align*}
+From this and discounted pension benefits in equilibrium, we then finally have that
+\begin{align}\label{\refeq:EE:si}
+    s_{t,i} =& \dfrac{1}{1+B_{t+1}^i}\left[B_{t+1}^i\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\frac{1}{1+\xi}-\frac{1-\alpha}{\alpha}\frac{p_t\left(1-\theta_{t+1}\right)}{\kappa_t}s_t\tau_{t+1}\right]\\
+    -&\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}\Gamma_{t,h}}\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}}{\kappa_t}s_t\tau_{t+1} \notag
+\end{align}
+Aggregating over the different types, the savings state can then be defined as
+\begin{align}\label{\refeq:EE:s(h)}
+    s_t = \left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\underbrace{\frac{1}{1+\xi}\frac{\sum_i \frac{\gamma_{t,i}\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{B_{t+1}^i}{1+B_{t+1}^i}}{1+\frac{1-\alpha}{\alpha}\frac{p_t\tau_{t+1}}{\kappa_t}\left(\theta_{t+1}+(1-\theta_{t+1})\sum_i\frac{\gamma_{t,i}}{1+B_{t+1}^i}\right)}}_{\equiv \Gamma_{s,t}}
+\end{align}
+Importantly, note that the savings ratios $s_{t,i}/s_t$ can be written as a function of parameters and \emph{future} policy $\tau_{t+1}$ (independent e.g. of $\tau_t$ and given the generalized discount function $B$). Formally we have:
+\begin{align}\label{\refeq:EE:si_s}
+    \frac{s_{t,i}}{s_t} = &\frac{\frac{B_{t+1}^i}{1+B_{t+1}^i}\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}}{\sum_{j>0} \frac{\gamma_{t,j}\eta_{t,j}^{1+\xi}}{X_{t,j}^{\xi}}\frac{B_{t+1}^j}{1+B_{t+1}^j}}\left[1+\frac{1-\alpha}{\alpha}\frac{p_t\tau_{t+1}}{\kappa_t}\left(\theta_{t+1}+(1-\theta_{t+1})\sum_{j>0}\frac{\gamma_{t,j}}{1+B_{t+1}^j}\right)\right] \\
+    -&\frac{1}{1+B_{t+1}^i}\frac{1-\alpha}{\alpha}\frac{p_t(1-\theta_{t+1})}{\kappa_t}\tau_{t+1} - \frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{t,h}}\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}}{\kappa_t}\tau_{t+1}\notag
+\end{align}
+We note that when discount rates are identical across types, i.e. when $\beta_{t,i} = \beta_t$ and $B_{t+1}^i = B_{t+1}$, this simplifies to 
+\begin{align*}
+    \frac{s_{t,i}}{s_t} = \frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{t,h}}+\frac{1-\alpha}{\alpha}\frac{p_t\tau_{t+1}}{\kappa_t}\frac{1-\theta_{t+1}}{1+B_{t+1}}\left(\frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{t,h}}-1\right).
+\end{align*}
+
+
+
+Finally, we can combine $s_t, h_t$ to yield closed form expression given the generalized discount functions: Start from the definition of $h_t$, use that $s_t$ is proportional to $h_t^{(1+\xi)/\xi}$ to write:
+Furthermore, note that we can combine equations for $s_t, h_t$ to yield a closed form expressions \begin{align}\label{\refeq:EE:h}
+    h_t = \underbrace{\left(\Gamma_{h,t}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{(1-\alpha)(1-\tau_t)}{\Gamma_{h,t}-\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}\tau_{t+1}}{\kappa_t}\Gamma_{s,t}}\right)^{\frac{\xi}{1+\alpha\xi}}}_{\equiv \Theta_{h,t}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}}.
+\end{align}
+Naturally, we can use this in the expression for $s_t$ to write savings as
+\begin{align}\label{\refeq:EE:s}
+    s_t &= \left(\frac{\Theta_{h,t}}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\Gamma_{s,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}.
+\end{align}
+\end{subequations}
+
+
+Given discount functions, $B^i$, equations \eqref{\refeq:EE} identify aggregate states $s_t$ and $h_t$ as complicated parameter and policy functions $\Theta_{x,t}$ times the lagged state $s_{t-1}$ raised to some power $\sigma_x$. 
+
+
+\smalltitle{Closed form consumption functions.}
+We note that if we know $s_t$ $h_t$, $B^i$, and $s_{t-1}$, it is straightforward to identify all other variables directly: Individual labour supply and savings decisions from \eqref{\refeq:EE:hi} and \eqref{\refeq:EE:si}, factor prices from \eqref{\refeq:factorPrices}, pension benefits from \eqref{\refeq:governmentBudget}, and finally consumption simply from budgets \eqref{\refeq:formalBudget} and \eqref{\refeq:informalBudget}. However, in particular in the analytical log case, it can be useful to derive \emph{equilibrium} consumption functions as well; All consumption functions can be written on the form $x_t = \Theta_{x,t}(s_{t-1}/\nu_t)^{\sigma_x}$ with 
+\begin{align}\label{\refeq:EE:sigma_ci}
+    \sigma_{c_1,t}^i &= \sigma_{c_2,t}^i = \sigma_{\tilde{c}_1,t}^i = \dfrac{\alpha(1+\xi)}{1+\alpha\xi}, 
+    \qquad \sigma_{c_2,t+1}^i = \left(\dfrac{\alpha(1+\xi)}{1+\alpha\xi}\right)^2.
+\end{align}
+This is essentially what ensures that the political objective function is log-separable in the state $s_{t-1}/\nu_t$. 
+
+\begin{subequations}\label{\refeq:EE:ci}
+The coefficient functions (that also generally depends on policy) are derived using the aggregate states in the functions above. For completeness, we have the following:
+\begin{align}
+    c_{1,t}^i &= \frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\left(1-\frac{B_{t+1}^i}{(1+B_{t+1}^i)(1+\xi)}\right)+\frac{s_t}{1+B_{t+1}^i}\frac{1-\alpha}{\alpha}\frac{p_t \tau_{t+1}(1-\theta_{t+1})}{\kappa_t} \\
+    c_{2,t}^i &= \alpha \frac{\nu_t}{p_{t-1}}h_t^{1-\alpha}\left(\frac{s_{t-1}}{\nu_t}\right)^{\alpha}\left(\frac{s_{t-1,i}}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)\right) \\
+    \tilde{c}_{1,t}^i &= \frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\frac{1}{(1+\xi)(1+B_{t+1}^i)}+\frac{s_t}{1+B_{t+1}^i}\frac{1-\alpha}{\alpha}\frac{p_t \tau_{t+1}(1-\theta_{t+1})}{\kappa_t} \notag \\ 
+    &= \left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}\frac{1}{1+B_{t+1}^i}\left(\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{1}{1+\xi}+\Gamma_{s,t}\frac{1-\alpha}{\alpha}\frac{p_t \tau_{t+1}(1-\theta_{t+1})}{\kappa_t}\right)
+\end{align}
+For the formal households that do not supply labour in retirement, we simply have $\tilde{c}_{2,t}^i = c_{2,t}^i$. \end{subequations}
+
+For the informal households that consume hand-to-mouth, relevant equilibrium consumption functions are given by\footnote{Recall informal workers are assumed to receive an endowment proportional to wages of formal workers when they retire. For tractability we define this as if they were making a labour supply decision. The relevant parameter determining the size of the endowment is $\chi_t$.}
+\begin{subequations}\label{\refeq:EE:c0}
+\begin{align}
+    c_{1,t}^0 &= \frac{\eta_{t,0}^{1+\xi}}{X_{t,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}} \\ 
+    \tilde{c}_{1,t}^0 &=\frac{c_{1,t}^0}{1+\xi}
+\end{align}
+Consumption when old is then given by
+\begin{align}
+    c_{2,t}^0 &= \frac{\left(\chi_{t-1}\eta_{t-1,0}\right)^{1+\xi}}{X_{t-1,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}+\dfrac{(1-\alpha)\nu_t\epsilon_t\tau_t}{\kappa_{t-1}}\left(\frac{s_{t-1}}{\nu_t}\right)^\alpha h_t^{1-\alpha} \\
+    \tilde{c}_{2,t}^0 &= \frac{\left(\chi_{t-1}\eta_{t-1,0}\right)^{1+\xi}}{(1+\xi)X_{t-1,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}+\dfrac{(1-\alpha)\nu_t\epsilon_t\tau_t}{\kappa_{t-1}}\left(\frac{s_{t-1}}{\nu_t}\right)^\alpha h_t^{1-\alpha}.
+\end{align}
+\end{subequations}

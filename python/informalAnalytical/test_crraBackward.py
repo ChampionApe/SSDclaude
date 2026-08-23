@@ -24,12 +24,7 @@ import test as testmod
 from model import ModelInformalAnalytical
 from gridsearch import CartesianGrid, roots1d
 
-ok = True
-def check(name, cond, extra = ''):
-    global ok
-    print(('PASS' if cond else 'FAIL') + '  ' + name + ' ' + extra)
-    if not cond:
-        ok = False
+from gridsearch.testing import check, report
 
 m = testmod.mLOG                                  # rho = 1
 th, eps = m.db['θ'].values, m.db['eps'].values
@@ -175,6 +170,4 @@ try:
 except ValueError as e:
     check('rho=1 t<T solve raises ValueError naming LOG', 'LOG' in str(e))
 
-print()
-print('ALL PASS' if ok else 'SOME FAILURES')
-sys.exit(0 if ok else 1)
+report()

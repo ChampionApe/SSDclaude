@@ -1,0 +1,39 @@
+\subsection{Finite Horizon Terminal state.}\label{\refsec:finitehorizon}
+\smalltitle{Economic equilibrium.}
+In the finite horizon version of the model, the economic equilibrium simplifies to (with $s_t = s_{t,j} = 0$):
+\begin{subequations}\label{\refeq:TerminalEE}
+\begin{align}
+    h_t &= \left(\Gamma_{h,t}\right)^{\frac{1}{1+\alpha\xi}}\left((1-\alpha)(1-\tau_t)\right)^{\frac{\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}} \\
+    h_t^i &= h_t\frac{(\eta_{t,i}/X_{t,i})^{\xi}}{\Gamma_{h,t}} \\ 
+    c_{1,t}^i &= \dfrac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}} \\ 
+    \tilde{c}_{1,t}^i &= \frac{c_{1,t}^i}{1+\xi} \\
+    c_{1,t}^0 &= \frac{\eta_{t,0}^{1+\xi}}{X_{t,0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}} \\
+    \tilde{c}_{1,t}^0 &= \dfrac{c_{1,t}^0}{1+\xi}.
+\end{align}
+\end{subequations}
+
+\smalltitle{Politico-economic equilibrium with log preferences.}
+The politico-economic equilibrium similarly simplifies, because we per construction do not have a continuation policy. In the log case, this simplifies to:
+\begin{subequations}\label{\refeq:terminalPEELOG}
+\begin{align}
+    \dfrac{d v_{1,t}^i}{d \tau_t} =& - \frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi} \\
+    \dfrac{d v_{1,t}^0}{d \tau_t} =& 0 \\
+    \frac{d\upsilon_{2,t}^i}{d\tau_t} =& (1-\alpha)\frac{d\ln\left(h_t\right)}{d \tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{p_{t-1}}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)}{\frac{s_{t-1}^i}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)} \\ 
+    \frac{d\upsilon_{2,t}^0}{d\tau_t} =& (1-\alpha)\frac{d\ln\left(h_t\right)}{d \tau_t}+\frac{\frac{1-\alpha}{\chi_t^R\alpha}\frac{p_{t-1,0}\epsilon_t}{\kappa_{t-1}}}{\frac{s_{t-1,0}}{s_{t-1}}+\frac{1-\alpha}{\chi_t^R\alpha}\frac{p_{t-1,0}\epsilon_t\tau_t}{\kappa_{t-1}}}.
+\end{align}
+where the $d \ln\left(h_t\right)/d \tau_t = -\frac{\xi}{1+\alpha\xi}\frac{1}{1-\tau_t}$ for this terminal state only. 
+\end{subequations}
+
+\smalltitle{Politico-economic equilibrium with CRRA preferences.}
+In the CRRA case with $\rho\neq 1$, the savings level $s_{t-1}$ is now a relevant state variable. Furthermore, we need to compute consumption levels in order to evaluate marginal utilities from changed policy. However, beyond this, we can use the log formulation and write the first order condition directly (instead of relying on numerical grid searches):
+\begin{subequations}\label{\refeq:terminalPEECRRA}
+\begin{align}
+    \dfrac{d v_{1,t}^i}{d \tau_t} =& - \frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi}\left(\tilde{c}_{1,t}^i\right)^{1-1/\rho}  \\
+    \dfrac{d v_{1,t}^0}{d \tau_t} =& 0 \\
+    \frac{d\upsilon_{2,t}^i}{d\tau_t} =& \left(c_{2,t}^i\right)^{1-1/\rho}\left[(1-\alpha)\frac{d\ln\left(h_t\right)}{d \tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{p_{t-1}}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)}{\frac{s_{t-1}^i}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)} \right]\\ 
+    \frac{d\upsilon_{2,t}^0}{d\tau_t} =& \left(c_{2,t}^0\right)^{1-1/\rho}\left[(1-\alpha)\frac{d\ln\left(h_t\right)}{d \tau_t}+\frac{\frac{1-\alpha}{\chi_t^R\alpha}\frac{p_{t-1,0}\epsilon_t}{\kappa_{t-1}}}{\frac{s_{t-1,0}}{s_{t-1}}+\frac{1-\alpha}{\chi_t^R\alpha}\frac{p_{t-1,0}\epsilon_t\tau_t}{\kappa_{t-1}}}\right],
+\end{align}
+where again $d \ln\left(h_t\right)/d \tau_t = -\frac{\xi}{1+\alpha\xi}\frac{1}{1-\tau_t}$ for this terminal state only. 
+\end{subequations}
+
+

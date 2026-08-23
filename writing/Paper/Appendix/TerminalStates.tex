@@ -1,0 +1,36 @@
+\section{Terminal states}\label{app:T}\setcounter{equation}{0}
+We consider two different terminal states of the model: A finite horizon version where the economy ends after $t=T$ and a steady state version.
+
+\smalltitle{Finite Horizon.}
+In the finite horizon, consumption functions and indirect utility in economic equilibrium are all identical to years prior $t<T$. For the young generations at time $T$, we simply say that 
+\begin{align*}
+    u_{T, j} = u_j\left(c_{1,T}^j, h_{T,j}\right).
+\end{align*}
+In this case, the economic equilibrium reduces to the general formulation only with $\beta_j = \tau_{t+1} = s_t = s_t^j= 0$. Specifically:
+\begin{align}
+    h_t &= \left(\Gamma_{h}\right)^{\frac{1}{1+\alpha\xi}}\left((1-\alpha)(1-\tau_t)\right)^{\frac{\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}} \\
+    h_{t,i} &= h_t\frac{(\eta_{i}/X_{i})^{\xi}}{\Gamma_{h}} \\ 
+    \tilde{c}_{1,t}^i &= \frac{1}{1+\xi}\dfrac{\eta_{i}^{1+\xi}}{X_{i}^{\xi}}\left(\frac{h_t}{\Gamma_{t,h}}\right)^{\frac{1+\xi}{\xi}}  \\
+    \tilde{c}_{1,t}^0 &= \dfrac{1}{1+\xi}\dfrac{\eta_{0}^{1+\xi}}{X_{0}^{\xi}}\left(w_t^0\right)^{1+\xi}.
+\end{align}
+For the retired generation, the relevant consumption functions are unchanged. 
+
+For the politico-economic equilibrium, the marginal effects of $\tau_t$ is still equivalent for retirees (to the case where $t<T$). For working households, the effects are much simpler, namely:
+\begin{align}
+    \mathcal{E}_{1,t}^i &= \left(\tilde{c}_{1,t}^i\right)^{1-1/\rho} \frac{1+\xi}{\xi} \frac{\partial \ln\left(h_t\right)}{\partial \tau_t} \\
+    \mathcal{E}_{1,t}^0 &= 0
+\end{align}
+
+
+\smalltitle{Steady state, infinite horizon.}
+In steady state, we combine equations for aggregate labor supply and savings states to write:
+\begin{align}
+    s^* =& \Gamma_h^{1+\xi}\left[\left(\frac{(1-\alpha)(1-\tau)}{\Gamma_h-\frac{1-\alpha}{\alpha}\frac{\theta\tau}{1+\gamma_0\epsilon}\Gamma_s}\right)^{1+\xi}\frac{\Gamma_s^{1+\alpha\xi}}{\nu^{\alpha(1+\xi)}}\right]^{\frac{1}{1-\alpha}} \\ 
+    \Gamma_s =& \frac{1}{1+\xi}\frac{\Gamma_h B }{1+B+\frac{1-\alpha}{\alpha}\frac{\tau}{1+\gamma_0\epsilon}\left(1+\theta B\right)} \\
+    B^i =& \left(\beta\right)^{\rho} \left(\frac{\alpha}{p}\left(\frac{s^*}{\nu h^*}\right)^{\alpha-1}\right)^{\rho-1} \notag \\ 
+    \frac{s^*}{\nu h^*} =& \frac{(s^*)^{\frac{1}{1+\xi}}\Gamma_s^{\frac{\xi}{1+\xi}}}{\nu \Gamma_h} = \left(\frac{(1-\alpha)(1-\tau)}{\Gamma_h-\frac{1-\alpha}{\alpha}\frac{\theta\tau}{1+\gamma_0\epsilon}\Gamma_s}\frac{\Gamma_s}{\nu}\right)^{\frac{1}{1-\alpha}}
+\end{align}
+We can use this to write the discount function as
+\begin{align}
+    B = \left(\beta\right)^{\rho} \left(\alpha\frac{\Gamma_h-\frac{1-\alpha}{\alpha}\frac{\theta\tau}{1+\gamma_0\epsilon}\Gamma_s}{(1-\alpha)(1-\tau)}\frac{\nu}{\Gamma_s}   \right)^{\rho-1}
+\end{align}

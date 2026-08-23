@@ -1,0 +1,118 @@
+\subsection{The model}\label{\refsec:model}
+We consider an economy populated by overlapping generations of workers and retirees. Within each generational cohort, we consider $J+1$ different household types indexed $j= 0,...,J$. We refer to type $j=0$ households as "informal"; they work in informal markets and do not have access to any savings vehicle. Households of type $i>0$ are "formal" households; they supply $h_{t,i}\eta_{t,i}$ units of labour when young with $\eta_{t,i}$ denoting labour productivity. We let $\gamma_{t,j}$ denote sizes of working households with $\sum_i \gamma_{t,i} = 1$.
+
+As young, households are endowed with a unit of time that is allocated between labour and leisure. Formal workers pay taxes on their labour income, consume, and save; informal workers consume and save through an informal technology. Households survive and retire with probability $p_{t,j}$; all formal households survive with the same probability $p_
+{t,i}= p_t$. Lost savings are insured within-type.
+
+The government runs a pay-as-you-go (PAYG) pension system with a balanced budget. Each period, the government imposes a tax on labour supplied in the formal sector and transfers the collected amount directly to retirees. We consider social security systems that differ along two dimensions: whether workers need to qualify to receive full benefits or not, and the type of benefits provided - either tied to earnings or 
+at-rate.
+
+Policy decisions are taken by a government that acts in the interest of voters, but lacks commitment. 
+
+\smalltitle{Technology.}
+\begin{subequations}\label{\refeq:aggregateStates}
+In the formal sector, a continuum of firms transforms aggregate capital and labour into output. We define aggregate labour and capital from
+\begin{align}
+    H_t =& n_th_t, & h_t&\equiv \sum_{i}\gamma_{t,i}\eta_{t,i}h_{t,i} \\ 
+    K_t =& n_{t-1} s_{t-1}, & s_{t-1}&\equiv \sum_i\gamma_{t-1,i}s_{t-1,i}.
+\end{align}
+\end{subequations}
+They do not include informal households. The representative firm produces output using labour and capital and a conventional Cobb-Douglas technology
+\begin{align*}
+    Y_t = A_t K_t^{\alpha}H_t^{1-\alpha}.    
+\end{align*}
+In equilibrium this implies the following factor prices:
+\begin{align}\label{\refeq:factorPrices}
+    R_t = \alpha \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha-1}, \qquad w_t = (1-\alpha)A_t \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha},
+\end{align}
+
+
+\bigskip
+Informal households employ a linear production technology with return $w_t^0$. For simplicity, we model $w_t^0$ as proportional to the formal wage rate absent taxes. Specifically, this means (as we can verify later) that the informal wage rate is given by\footnote{We can verify that this is the formal wage rate with $h_t$ evaluated around $\tau_t = \tau_{t+1} = 0$; this simplification ties the wage rate to the general development of the economy (through $s_{t_1}$), but does not allow it to respond directly to taxes.}
+\begin{align}\label{\refeq:w0}
+    w_t^0 = \left(\frac{1-\alpha}{\Gamma_{t,h}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}} \left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha}{1+\alpha\xi}}
+\end{align}
+
+
+
+\smalltitle{Preferences and Household Choices.}
+Workers and retirees in period $t$ value consumption, $c_{1,t}^j$ and $c_{2,t}^j$ respectively. Workers discount the future at factor $\beta_{t,j}\in[0,1)$ where the survival probability $p_t^j$ is included.
+
+For the young households, the expected utilities are given by
+\begin{subequations}\label{\refeq:util}
+\begin{align}
+    &\max\mbox{ } U_{t,i}\left(c_{1,t}^i, h_{t,i}, c_{2,t+1}^i\right) = u_{t,i}\left(c_{1,t}^i, h_{t,i}\right) +\beta_{t,i}u_{t,i}\left(c_{2,t+1}^i,0\right), \quad \text{for }i>0 \\ 
+    &\max\mbox{ } U_{t,0}\left(c_{1,t}^0, h_{1,t}^0, c_{2,t+1}^0\right) = u_{t,0}\left(c_{1,t}^0, h_{1,t}^0\right) +\beta_{t,0}u_{t,0}\left(c_{2,t+1}^0,h_{2,t+1}^0\right)
+\end{align}
+\end{subequations}
+where we use CRRA-GHH preferences
+\begin{align*}
+    u_{t,j}(c,h) = \left\lbrace\begin{array}{ll} \dfrac{1}{1-1/\rho}\left(\tilde{c}_{t}^j\right)^{1-1/\rho}, & \text{for }\rho \neq 1 \\ 
+    \ln\left(\tilde{c}_{t}^i\right) , & \text{for }\rho = 1
+    \end{array}\right. , \qquad \tilde{c}_t^j \equiv \Bigg(\underbrace{c-\dfrac{\xi}{1+\xi}X_{t,j}\left(h\right)^{\frac{1+\xi}{\xi}}}_{\equiv \tilde{c}_{t}^j}\Bigg)^{1-1/\rho}
+\end{align*}
+where $\rho>0$ is the intertemporal elasticity of substitution, $\xi$ is the Frisch elasticity, and $X_{t,j}$ is a parameter that measures the disutility of labour. 
+
+\begin{subequations}\label{\refeq:formalBudget}
+The formal household receives wages, pay social security taxes $\tau_t$, save $s_{t,i}$, and consume when young, and consume their savings including pension benefits $b_{t+1}^i$ when old:
+\begin{align}
+    c_{1,t}^i &= w_t\eta_{t,i} h_{t,i}(1-\tau_t)-s_{t,i} \\
+    c_{2,t+1}^i &= s_{t,i}R_{t+1}/p_t+ b_{t+1}^i(h_{t,i}).
+\end{align}
+\end{subequations}
+
+\begin{subequations}\label{\refeq:informalBudget}
+Informal households consume their informal wages when young and old, pays no social security taxes, and receives only universal pensions $b_{t+1}^0$:
+\begin{align}
+    c_{1,t}^0 &= w_t^0\eta_{t,0}h_{1,t}^0 \\
+    c_{2,t+1}^0 &= w_{t+1}^0\chi_{t} \eta_{t,0}h_{2,t+1}^0+b_{t+1}^0,
+\end{align}
+where $\chi_{t}>0$ measures the relative productivity of the informal worker when old (indexed by the generation, matching $h_{2,t+1}^0$ in \eqref{\refeq:informalOpt} below).
+\end{subequations}
+
+
+
+\smalltitle{Social Security System.}
+The government runs a pay-as-you-go pension system with a balanced budget. Every period, the government taxes labour income in the formal sector and transfers the sum directly to current retirees. 
+
+
+Benefits are given by
+\begin{subequations} \label{\refeq:governmentBudget}
+\begin{align}
+    b_t^i =& \left[\theta_th_{t-1,i} \eta_{t-1,i}+(1-\theta_t)h_{t-1}\right] \overline{b}_t \\
+    b_t^0 =& \epsilon_t h_{t-1} \overline{b}_t
+\end{align}
+where $\epsilon_t$ measures universal pensions and $\theta_t$ measures contributive incentives. 
+
+
+
+We note that the shares $\sum_j\gamma_{t,j} = 1+\gamma_{t,0}$ to have a unit mass of formal households (convenient to have for definition of aggregate states). Thus, the average contribution of young households at time $t$ is
+\begin{align*}
+    \text{Avg. contribution from formal} = w_t\tau_t\sum_{i>0}\gamma_{t,i}\eta_{t,i}h_t^i = w_t\tau_th_t.
+\end{align*}
+Letting $n_t$ denote total number of young households, the number of formal households are $n_t/(1+\gamma_{t,0})$. Similarly, without mortality, the share of retired households of type $j$ would be $\gamma_{t-1,j}/(1+\gamma_{t-1,0})$. Taking mortality into consideration, the balanced budget requires that 
+\begin{align*}
+    \dfrac{n_t}{1+\gamma_{t,0}} w_t\tau_th_t = \dfrac{n_{t-1}}{1+\gamma_{t-1,0}}\sum_j \gamma_{t-1,j}p_{t-1}^j b_t^j
+\end{align*}
+The left hand side measures contributions, the right hand side measures beneficiaries. Using the structure of the pension design, this identifies the level in pension rates $\overline{b}_t$ as:
+\begin{align}\label{\refeq:governmentBudget:bbar}
+    \overline{b}_t & \equiv \dfrac{\nu_t w_th_t\tau_t}{h_{t-1}\kappa_{t-1}}, \qquad\kappa_t \equiv \frac{1+\gamma_{t,0}}{1+\gamma_{t+1,0}}(\epsilon_{t+1}\gamma_{t,0}p_t^0+p_t)
+\end{align}
+\end{subequations}
+
+
+\bigskip
+\begin{subequations}\label{\refeq:formalOpt}
+With CRRA-GHH preferences, households maximize \eqref{\refeq:util} subject to budgets \eqref{\refeq:formalBudget} and \eqref{\refeq:informalBudget}. The labour supply and savings of formal households are then given by (given factor prices and policies):
+\begin{align}
+    h_{t,i} &= \left[\frac{\eta_{t,i}}{X_{t,i}}\left(w_t(1-\tau_t)+\theta_{t+1}\overline{b}_{t+1}\right)\right]^{\xi} \\ 
+    s_{t,i} &= \dfrac{B_{t+1}^i}{1+B_{t+1}^i}\left[w_t\left(1-\tau_t\right)h_{t,i}\eta_{t,i}-\dfrac{X_{t,i}\xi}{1+\xi}\left(h_{t,i}\right)^{\frac{1+\xi}{\xi}}\right]-\dfrac{b_{t+1}^i/(R_{t+1}/p_t)}{1+B_{t+1}^i}
+\end{align}
+\end{subequations}
+where we have used the shorthand $B_{t+1}^i \equiv \left(\beta_{t,i}\right)^{\rho}(R_{t+1}/p_t)^{\rho-1}$. For the informal households, there is no active savings decision, but a labour supply decision in both periods:
+\begin{subequations}\label{\refeq:informalOpt}
+\begin{align}
+    h_{1,t}^0 &= \left(\frac{\eta_{t,0}}{X_{t,0}}w_t^0\right)^{\xi} \\ 
+    h_{2,t+1}^0 &= \left(\frac{\chi_t\eta_{t,0}}{X_{t,0}}w_{t+1}^0\right)^{\xi}
+\end{align}
+\end{subequations}

@@ -1,0 +1,305 @@
+
+
+\begin{thebibliography}{xx}
+
+
+
+\harvarditem[Alesina]{Alesina}{2005}{Alesinaa1} Alesina, A., Glaeser, E., \harvardand\ Sacerdote, B. \harvardleft2005\harvardright, `Work and Leisure in the United States and Europe: Why So Different?', {\em NBER Macroeconomics Annual}, {\bf 20},~1--64.
+
+%\harvarditem[Amuendo-Dorantes et~al.]{Amuendo-Dorantes, Juarez, \harvardand\
+ % Alonso}{2012}{Amuendo}
+%Amuendo-Dorantes, C., Juarez, L. \harvardand\ Alonso, J.  \harvardyearleft
+ % 2012\harvardyearright , `The Effect of Noncontributory Pensions on Saving in Mexico', {\em Economic Inquiry}
+  %{\bf 57}(2),~931--952.
+
+ \harvarditem{Bansal \harvardand\ Yaron}{2023}{BansalYa1} Bansal, R.\ 
+\harvardand\ Yaron, A.   \harvardyearleft
+  2004\harvardyearright , `Risks for the Long Run: A Potential Resolution of Asset Pricing Puzzles', {\em Journal of Finance}
+  {\bf 59}(4),~1481--1509.
+
+%\harvarditem{Attanasio  \harvardand\
+ % Rohwedder}{2003}{Attanasio}
+%Attanasio O.\ P., \harvardand\ Rohwedder, S.  \harvardyearleft
+ % 2003\harvardyearright , `Pension Wealth and Household Saving: Evidence from Pension Reforms in the United Kingdom', {\em American Economic Review}
+  %{\bf 93}(5),~1499--1521.
+  
+\harvarditem[Barro]{Barro}{2009}{Barroa1}
+Barro, R. \harvardyearleft
+  2009\harvardyearright , `Rare Disasters, Asset Prices, and Welfare Costs', {\em American Economic Review}
+  {\bf 99}(1),~243--264.
+
+%\harvarditem{Barillas \harvardand\ Fern\'andez-Villaverde}{2007}{bar_villaverde}
+%Barillas, F. \harvardand\ Fern\'andez-Villaverde, J. \harvardyearleft 2007\harvardyearright
+% , 'A generalization of the endogenous grid method', {\em Journal of Economic Dynamics \& Control} {\bf 31},~2698--2712
+
+\harvarditem{Berg \harvardand\ Gonzalez-Eiras}{2023}{BergGEwp} Berg, R.\ K.\
+\harvardand\ Gonzalez-Eiras, M.   \harvardyearleft
+  2023\harvardyearright , `Social Security Design and its Political Support', working paper.
+
+%\harvarditem[Bertranou et~al.]{Bertranou, Cetr\'angolo, Grushka \harvardand\
+%  Casanova}{2012}{Bertranou}
+%Bertranou, F., Cetr\'angolo, O. \harvardand\ Casanova, L.  \harvardyearleft
+ % 2012\harvardyearright , `M\'as all\'a de la privatizaci\'on y la reestatizaci\'on del sistema previsional de Argentina: cobertura, fragmentaci\'on y sostenibilidad', {\em Desarrollo Econ\'omico}
+  %{\bf 52}(205),~3--30.
+
+\harvarditem[Blanchard]{Blanchard}{2004}{Blancharda1}
+Blanchard, O. \harvardyearleft
+  2004\harvardyearright , `The Economic Future of Europe', {\em Journal of Economic Perspectives}
+  {\bf 18}(4),~3--26.
+
+
+%\harvarditem{Bosch \harvardand\ Guajardo}{2012}{Bosch}
+%Bosch, M. \harvardand\ Guajardo, J. \harvardyearleft 2012\harvardyearright
+ %, 'Labor market impacts of non-contributory pensions:
+%The case of Argentina's moratorium', IDB Working Paper Series, No.\ IDB-WP-366
+
+%\harvarditem{Caggia \harvardand\ Schclarek}{2014}{CaggiaS}
+%Caggia, A. \harvardand\ Schclarek, M.  \harvardyearleft
+ % 2016\harvardyearright , `Household Saving and Labor Informality: The Case of Chile', {\em Inter-American Development Bank} WP 581.
+
+
+%\harvarditem[Carroll]{Carroll}{2006}{Carroll06a1}
+%Carroll, C. \harvardyearleft
+%  2006\harvardyearright , `The method of endogenous gridpoints for solving dynamic stochastic optimization problems', {\em Economic Letters}
+%  {\bf 91}(1),~312--320.
+
+
+\harvarditem[Casamatta et~al.]{Casamatta, Cremer, \harvardand\
+  Pestieau}{2000}{Casamattaa1}
+Casamatta, G., Cremer, H. \harvardand\ Pestieau, P.
+  \harvardyearleft 2000\harvardyearright , `The political economy of social security', {\em Scandinavian Journal of Economics} {\bf
+  102}(3),~503--522.
+
+
+%\harvarditem{Cavallo \harvardand\ Serebrisky}{2016}{CavalloS}
+%Cavallo, E. \harvardand\ Serebrisky, T.  \harvardyearleft
+ % 2016\harvardyearright , `Saving for Development: How Latin Americans Can Save More and Better', {\em Inter-American Development Bank}. 
+
+
+
+\harvarditem{Cetr\'angolo \harvardand\ Grushka}{2016}{CetrangoloG}
+Cetr\'angolo, O. \harvardand\ Grushka. C.  \harvardyearleft
+  2016\harvardyearright , `El sistema de pensiones en la Argentina: Institucionalidad, gasto p\'ublico y sostenibilidad financiera', {\em ECLAC}, Serie Macroeconom\'ia del Desarrollo No.\ 208.
+
+%\harvarditem[Chetty et~al.]{Chetty, Guren, Manoli, \harvardand\
+%  Weber}{2013}{Chettya1}
+%Chetty R., Guren A., Manoli D., \harvardand\ Weber, A.
+%  \harvardyearleft 2012\harvardyearright , `Does Indivisible Labor Explain the Difference between Micro and Macro Elasticities? A Meta-Analysis of Extensive Margin Elasticities', {\em NBER Macroeconomics Annual}
+%  {\bf 27},~1--56.
+
+
+\harvarditem{Conde-Ruiz \harvardand\
+  Profeta}{2007}{CondeRuizP07a1}
+Conde-Ruiz J.\ I., \harvardand\ Profeta, P.  \harvardyearleft
+  2007\harvardyearright , `The Redistributive Design of Social Security Systems', {\em The Economic Journal}
+  {\bf 117}(520),~686--712.
+  
+
+\harvarditem{Cooley \harvardand\
+  Soares}{1999}{CooleyS99a1}
+Cooley T.\ F., \harvardand\ Soares, J.  \harvardyearleft
+  1999\harvardyearright , `A Positive Theory of Social Security Based on Reputation', {\em Journal of Public Economics}
+  {\bf 107}(1),~135--160.
+  
+%\harvarditem[Figliuoli et~al.]{Figliuoli, Flamini, Galdamez, Lambert, Bogdan, Mowatt, Puig, Klemm,
+%Soto, Thomas, Freudenberg  \harvardand\
+%  Orthofer}{2018}{IMFpen}
+%Figliuoli, L. Flamini, M. Galdamez, F. Lambert, M. Li, L. Bogdan, R. Mowatt, J. Puig. A. Klemm,
+%M. Soto, S. Thomas, C. Freudenberg, C. \harvardand\ Orthofer, A.
+%  \harvardyearleft 2018\harvardyearright , `Growing Pains, Is Latin America prepared for population ageing?', Departmental Paper No.\ 18/05, International Monetary Fund.
+
+
+\harvarditem[Forni]{Forni}{2005}{Forni05a1}
+Forni, L. \harvardyearleft
+  2005\harvardyearright , `Social security as Markov equilibrium in OLG models', {\em Review of Economic Dynamics}
+  {\bf 8}(1),~178--194.
+
+
+\harvarditem[Frankema]{Frankema}{2010}{Frankema}
+Frankema, E. \harvardyearleft
+  2010\harvardyearright , `Reconstructing Labor Income Shares in Argentina, Brazil and Mexico, 1870-2000', {\em Revista de Historia Econ\'omica - Journal of Iberian and Latin American Economic History}
+  {\bf 28}(2),~343--374.
+  
+
+\harvarditem[Galasso]{Galasso}{1999}{Galasso99a1}
+Galasso, V. \harvardyearleft
+  1999\harvardyearright , `The U.S. Social Security System: What Does Political Sustainability Imply?', {\em Review of Economic Dynamics}
+  {\bf 2}(3),~698--730.
+
+
+%\harvarditem[Galiani et~al.]{Galiani, Gertler \harvardand\ Bando}{2016}{Galiani}
+%Galiani, S., Gertler, P. %\harvardand\ Bando, R.  \harvardyearleft
+ % 2016\harvardyearright , `Non-contributory pensions', {\em Labor Economics}
+%  {\bf 38},~47--58. 
+
+  
+%\harvarditem{Gasparini \harvardand\ Tornarolli}{2009}{GaspariniTa1}
+%Gasparini, L. \harvardand\ Tornarolli, L.  \harvardyearleft
+%  2009\harvardyearright , `Labor Informality in Latin America and the Caribbean: Patterns and Trends from Household Survey Microdata', {\em Revista Desarrollo y Sociedad}
+ % {\bf 63},~13--80. 
+
+
+\harvarditem[Gollin]{Gollin}{2002}{Gollina1}
+Gollin, W. \harvardyearleft
+  2002\harvardyearright , `Getting Income Shares Right', {\em Journal of Political Economy}
+  {\bf 110}(2),~458--474.
+
+
+\harvarditem{Gonzalez-Eiras \harvardand\ Niepelt}{2005}{mkvss05}
+Gonzalez-Eiras, M. \harvardand\ Niepelt, D.  \harvardyearleft
+  2005\harvardyearright , `Sustaining social security', Working Paper 1494,
+  CESifo.
+
+\harvarditem{Gonzalez-Eiras \harvardand\ Niepelt}{2008}{mkvss08}
+Gonzalez-Eiras, M. \harvardand\ Niepelt, D.  \harvardyearleft
+  2008\harvardyearright , `The future of social security', {\em Journal of
+  Monetary Economics} {\bf 55}(2),~197--218.
+
+\harvarditem{Gonzalez-Eiras \harvardand\ Niepelt}{2012}{ssvsde15}
+Gonzalez-Eiras, M. \harvardand\ Niepelt, D.  \harvardyearleft
+  2012\harvardyearright , `Ageing, government budgets, retirement, and growth', {\em European Economic Review} {\bf 56}(1),~97--115.
+
+%\harvarditem{Gonzalez-Eiras \harvardand\ Niepelt}{2015}{equiv15}
+%Gonzalez-Eiras, M. \harvardand\ Niepelt, D.  \harvardyearleft
+%  2015\harvardyearright , `Politico-Economic Equivalence', {\em Review of Economic Dynamics} {\bf 18},~843--862.
+
+\harvarditem{Gonzalez-Rozada \harvardand\ Ruffo}{2016}{Ruffo}
+Gonzalez-Rozada, M. \harvardand\ Ruffo, H.  \harvardyearleft 2016\harvardyearright
+  , `Non-Contributory Pensions and Savings:
+evidence from Argentina', {\it IDB Working Paper Series} IDB-WP-629, IADB.
+
+ 
+\harvarditem[Greenwood et~al.]{Greenwood, Hercowitz, \harvardand\
+  Huffman}{1988}{GreenwoodHH88a1}
+Greenwood, J., Hercowitz, Z. \harvardand\ Huffman, G.-W.
+  \harvardyearleft 1988\harvardyearright , `Investment, Capacity Utilization, and the Real Business Cycle', {\em American Economic Review} {\bf
+  78}(3),~402--417.
+
+
+
+\harvarditem[Guvenen]{Guvenen}{2006}{Guvenena1}
+Guvenen, F. \harvardyearleft
+  2006\harvardyearright , `Reconciling conflicting evidence on the elasticity of intertemporal substitution: A macroeconomic perspective', {\em Journal of Monetary Economics}
+  {\bf 53}(7),~1451--1472.
+
+
+\harvarditem{Imrohoro\u{g}lu  \harvardand\
+  Kitao}{2009}{Imrohoroglu}
+Imrohoro\u{g}lu O.\ S., \harvardand\ Kitao, S.  \harvardyearleft
+  2009\harvardyearright , `Labor supply elasticity and social security reform', {\em Journal of Public Economics}
+  {\bf 93}(7-8),~867--878.
+
+%\harvarditem{Judd}{1992}{Judd}
+%Judd, L. K. \harvardyearleft 1992\harvardyearright 
+% , 'Projection methods for solving aggregate growth models',
+% {\em Journal of Economic Theory} {\bf 58}(2), ~410--452.
+
+
+%\harvarditem{Judd}{1998}{Judd2}
+%Judd, L. K. \harvardyearleft 1998\harvardyearright 
+% , 'Numerical Methods in Economics', 
+ %{\em MIT Press, Cambridge}.
+
+
+%\harvarditem{Juhn \harvardand\ Potter}{1987}{JuhnP06a1}
+%Juhn, C. \harvardand\ Potter, S.  \harvardyearleft
+%  2006\harvardyearright , `Changes in Labor Force Participation in the United States', {\em Journal of Economic Perspectives} {\bf 20}(3),~27--46.
+
+%\harvarditem[Krusell et~al.]{Krusell, Quadrini \harvardand\
+%  R{\'{\i}}os-Rull}{1997}{KrusellQR97a1}
+%Krusell, P., Quadrini, V. \harvardand\ R{\'{\i}}os-Rull, J.-V.
+%  \harvardyearleft 1997\harvardyearright , `Politico-economic equilibrium and
+%  economic growth', {\em Journal of Economic Dynamics and Control} {\bf
+ % 21}(1),~243--272.
+
+
+%\harvarditem[Lee et~al.]{Lee, Park \harvardand\
+%  Shin}{2023}{LeePS23a1}
+%Lee, D., Park, J. \harvardand\ Shin, Y.
+%  \harvardyearleft 2023\harvardyearright , `Where are the Workers? From Great Resignation to Quiet Quitting', NBER working paper 30833.
+
+\harvarditem{Lindbeck \harvardand\ Weibull}{1987}{LindbeckW87a1}
+Lindbeck, A. \harvardand\ Weibull, J.~W.  \harvardyearleft
+  1987\harvardyearright , `Balanced-budget redistribution as the outcome of
+  political competition', {\em Public Choice} {\bf 52},~273--297.
+
+
+%\harvarditem[M\¨uller et~al.]{M\¨uller, Storesletten \harvardand\
+%  Zilibotti}{2016}{MullerSZ16a1}
+%M\¨uller, A., Storesletten K. \harvardand\ Zilibotti, F.
+%  \harvardyearleft 2016\harvardyearright , `The Political Color of Fiscal Responsibility', {\em Journal of the European Economic Association}
+%  {\bf 14}(1),~252--302.
+
+
+%\harvarditem[Maloney]{Maloney}{2004}{Maloneya1}
+%Maloney, W. \harvardyearleft
+ % 2004\harvardyearright , `Informality Revisited', {\em World Development}
+  %{\bf 32}(7),~1159--1178.
+
+
+%\harvarditem{Persson \harvardand\ Tabellini}{1996}{PerssonT96a1}
+%Persson, T. \harvardand\ Tabellini, G.  \harvardyearleft 1996\harvardyearright
+%  , `Federal fiscal constitutions: Risk sharing and redistribution', {\em
+ % Journal of Political Economy} {\bf 104}(5),~979--1009.
+
+
+\harvarditem{OECD}{2021}{OECDpen}
+OECD  \harvardyearleft
+  2021\harvardyearright , `Pensions at a Glance', Paris: OECD Publishing.
+
+%\harvarditem{Piketty \harvardand\ Saez}{2003}{PikettySa1}
+%Piketty, T. \harvardand\ Saez, E.  \harvardyearleft
+%  2003\harvardyearright , `Income Inequality in the United States, 1913--1998', {\em Quarterly Journal of Economics} {\bf 118}(1),~1--41.
+
+\harvarditem[Prescott]{Prescott}{2004}{Prescotta1}
+Prescott, E.\ C. \harvardyearleft
+  2004\harvardyearright , `Why do Americans work so much more than Europeans?', {\em FRB Minneaplis -- Quarterly Review}
+  {\bf 28}(1),~2--14.
+
+%\harvarditem[Restrepo-Echevarr\'{\i}a]{Restrepo-Echevarr\'{\i}a}{2017}{Restrepo}
+%Restrepo-Echevarr\'{\i}a, P. \harvardyearleft
+%  2017\harvardyearright , `Measuring Labor Share in Latin American Countries', {\em Federal Reserve Bank of St.\ Louis - On the Economy Blog}.
+  
+  
+
+\harvarditem{Rofman \harvardand\ Oliveri}{2012}{Roffman}
+Rofman, R. \harvardand\ Oliveri, M.~L.  \harvardyearleft
+  2012\harvardyearright , `Pension Coverage in Latin America: Trends and Determinants', {\em World Bank}, DP 1217.
+  
+%\harvarditem{Rogerson \harvardand\
+%  Wallenius}{2009}{RogersonW09a1}
+%Rogerson R., \harvardand\ Wallenius, J.  \harvardyearleft
+%  2007\harvardyearright , `Micro and macro elasticities in a life cycle model with taxes', {\em Journal of Economic Theory}
+%  {\bf 144}(6),~2277--2292.
+
+  
+%\harvarditem{Romer}{1986}{Romer}
+%Romer, P. M. \harvardyearleft 1986\harvardyearright 
+% , 'Increasing Returns and Long-Run Growth',
+% {\em Journal of Political Economy} {\bf 94}(5), ~1002--1037.
+
+%\harvarditem[Rust]{Rust}{1987}{Rust}
+%Rust, J. \harvardyearleft
+%  1987\harvardyearright , `Nested Fixed Point Algorithm Document Manual', unpublished manuscript.
+
+\harvarditem[Song]{Song}{2011}{Song12a1}
+Song, Z. \harvardyearleft
+  2011\harvardyearright , `The dynamics of inequality and social security in general equilibrium', {\em Review of Economic Dynamics}
+  {\bf 14}(4),~613--635.
+
+%\harvarditem[Song et~al.]{Song, Storesletten \harvardand\
+%  Zilibotti}{2012}{SongSZ12a1}
+%Song, Z., Storesletten, K. \harvardand\ Zilibotti, F.  \harvardyearleft
+%  2012\harvardyearright , `Rotten parents and disciplined children: A
+%  politico-economic theory of public expenditure and debt', {\em Econometrica}
+%  {\bf 80}(6),~2785--2803.
+
+
+\harvarditem{Uchida \harvardand\
+  Ono}{2024}{UchidaOa1}
+Uchida Y., \harvardand\ Ono, T.  \harvardyearleft
+  2024\harvardyearright , `Generational Distribution of Fiscal Burdens: A Positive Analysis', {\em International Economic Review} {\bf 65}(1),~393--430.
+
+\harvarditem[Whitman]{Whitman}{2011}{WhitmanRa1} Whitman, K., Reznik, G. L., \harvardand\ Shoffner, D. \harvardleft2011\harvardright, `Who Never Receives Social Security Benefits?', {\em Social Security Bulletin}, {\bf 71}(2),~17--24.
+
+

@@ -21,12 +21,7 @@ th, eps = m.db['θ'].values, m.db['eps'].values
 t, tLag = m.db['t'][5], m.db['t'][4]
 g = np.linspace(1e-4, 1 - 1e-4, 101)
 
-ok = True
-def check(name, cond, extra = ''):
-    global ok
-    print(('PASS' if cond else 'FAIL') + '  ' + name + ' ' + extra)
-    if not cond:
-        ok = False
+from gridsearch.testing import check, report
 
 def foc():
     return LOG.focGrid(LOG.stateGrid(g, t, th[5], tLag, False, 0.15, th[6]), t, th[5], eps[5], False)
@@ -114,6 +109,4 @@ tPlain, tCached = timeit(foc), timeit(cachedLoop, r = 20) / 10
 print('\nper FOC evaluation:  uncached {:7.1f} us   cached {:7.1f} us   speedup {:.1f}x'.format(
     tPlain, tCached, tPlain / tCached))
 
-print()
-print('ALL PASS' if ok else 'SOME FAILURES')
-sys.exit(0 if ok else 1)
+report()

@@ -1,0 +1,20 @@
+\edef\refsec{\refmodelsec}
+\edef\refeq{\refmodeleq}
+
+\section{US Model}\label{\refsec}
+This model is used for the rich OECD economies (the US, France, and the UK), where near-universal coverage makes informality a second-order concern. Structurally it is the analytical informal model with the informal household type removed: every household of the $J$ types is formal, so all households contribute, all retirees draw benefits from the same formula, and pension design is one-dimensional --- only $\theta_t$, the degree to which benefits are earnings-related, remains.
+
+
+\smalltitle{What removing the informal type changes.}
+Three consequences run through everything that follows. First, the coefficient that the informal models carry in the government budget collapses to the survival probability, so that every occurrence of the discounted pension term loses a factor and reads $\frac{1-\alpha}{\alpha}\tau_{t+1}s_t$; the universal-pension parameter $\epsilon_t$ and the informal factor prices $w_t^0, R_t^0$ disappear together with the type they belonged to.
+
+Second, and more consequentially for the numerical solution, the politico-economic equilibrium with log preferences \emph{decouples across time}. In the models with an informal sector, the indirect utility of the old informal household depends on the level of the labour supply coefficient, which in turn depends on next period's tax rate; the first order condition at $t$ therefore involves $\tau_{t+1}$ and the path has to be solved by backward recursion. Every term surviving here depends on $\tau_t$ alone, so the equilibrium path is $T$ independent scalar problems. \Cref{\refnumsec} exploits this.
+
+Third, the model inherits an exact scale invariance --- the labour disutility parameters fix the units in which hours are measured, and nothing else --- which is what makes two different calibration strategies available. We use both: one identifying a full vector $X_{t,i}$ from data on relative hours worked, and one imposing a common $X_t$ across types and calibrating its level to observed average hours. \Cref{\refsec:calibration} treats them together.
+
+
+\input{model_setup}
+\input{model_competitiveequilibrium}
+\input{model_PEE}
+\input{model_finitehorizon}
+\input{model_calibration}

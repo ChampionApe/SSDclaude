@@ -1,0 +1,38 @@
+\subsection{Unanticipated reform experiments}\label{\refsec:shock}
+The solution of \cref{\refsec:PEEpath} returns one equilibrium path for one parameterised pension system. A reform experiment asks a different question: what happens if the system changes at a date $t_0$ in a way nobody had priced in. This subsection sets out how such an experiment is constructed on top of the machinery already described, using as the leading case a \emph{universalisation} of the system at the calibration date --- the reform the Argentina calibration of \cref{\refsec:calibration} is built around.
+
+\smalltitle{What ``universal'' means, and why it is a pure parameter change.}
+Benefits in \eqref{\refmodeleq:governmentBudget} are
+\begin{align*}
+    b_t^i = \left[\theta_t h_{t-1,i}\eta_{t-1,i} + (1-\theta_t)h_{t-1}\right]\overline{b}_t,
+    \qquad\qquad b_t^0 = \epsilon_t h_{t-1}\overline{b}_t,
+\end{align*}
+so the level $\overline{b}_t$ and the aggregate $h_{t-1}$ are common to the informal and the formal benefit and cancel out of their ratio. Any statement of the form ``type $0$ should receive what type $j$ receives'' therefore pins $\epsilon_t$ as a function of parameters alone, with no equilibrium object in it. Using $h_{t-1,i}\eta_{t-1,i}/h_{t-1} = \eta_{t-1,i}^{1+\xi}/(X_{t-1,i}^{\xi}\Gamma_{h,t-1})$, the two readings we consider are
+\begin{subequations}\label{\refeq:shockEps}
+    \begin{align}
+        \epsilon_t &= \theta_t\frac{\eta_{t-1,j}^{1+\xi}}{X_{t-1,j}^{\xi}\Gamma_{h,t-1}} + (1-\theta_t)
+        &&\text{(type $0$ receives the whole benefit of type $j$),} \label{\refeq:shockEps:match}\\
+        \epsilon_t &= 1-\theta_t
+        &&\text{(type $0$ receives the non-contributive component only).} \label{\refeq:shockEps:flat}
+    \end{align}
+\end{subequations}
+In \eqref{\refeq:shockEps:match} the informal household is treated as though it had type $j$'s earnings history; in \eqref{\refeq:shockEps:flat} it receives only the part of the formal benefit that is proportional to aggregate hours and independent of any own history, which is the narrower reading of a universal pillar. Neither touches $\theta_t$: universality is a statement about who is covered, not about how contributive the formal benefit is. The two are worth running together because they need not lie on the same side of the status quo --- in our calibration they bracket it, \eqref{\refeq:shockEps:match} at $j=1$ raising $\epsilon$ by $62\%$ and \eqref{\refeq:shockEps:flat} cutting it by $52\%$, so every response reverses sign between them.
+
+\smalltitle{The experiment is a second model whose horizon starts at $t_0$.}
+Solve the baseline path of \cref{\refsec:PEEpath} over $t=1,\dots,T$ at the calibrated parameters. Then construct a second model that is identical except that its horizon is $t_0,\dots,T$, renumbered so that $t_0$ is its first active period, replace $\epsilon$ on it by \eqref{\refeq:shockEps}, and re-solve --- backward recursion and forward walk both --- taking as given the state
+\begin{align}\label{\refeq:shockState}
+    \left(s_{t_0-1},\ \iota_{t_0-1}\right) \quad\text{read off the \emph{baseline} path.}
+\end{align}
+Everything that makes the reform unanticipated is in \eqref{\refeq:shockState}. The generations that acted before $t_0$ did so under the old $\epsilon$, and their decisions are not revised; what they left behind is a pair of predetermined states, and those states are the only channel through which the pre-reform world reaches the post-reform one. From $t_0$ onward the reform is common knowledge and permanent: the copy's agents solve the whole remaining horizon under the new $\epsilon$, which is what the backward recursion on the copy delivers. The initial fixed point of \eqref{\refeq:initialFixedPoint} is \emph{not} used on the copy --- it encodes the steady-state assumption that the generation old in the first period always faced the policy it meets there, which is precisely what a surprise reform violates.
+
+Two points of care in reading \eqref{\refeq:shockState} off the baseline report. The savings state is reported lagged, so the entry at $t_0$ is already the state entering $t_0$; the informal ratio is reported contemporaneously as $\iota_t$, so the state entering $t_0$ is its entry at $t_0-1$. And if $t_0$ coincides with the first active period of the baseline itself, $\iota_{t_0-1}$ does not appear in the report at all and must be taken from the baseline's own initial-state fixed point.
+
+\smalltitle{$\epsilon$ does not enter only through the benefit formula.}
+It is tempting to treat the reform as a change to one exogenous path and pass the new $\epsilon$ wherever a policy path is passed. That is not sufficient. From \eqref{\refmodeleq:governmentBudget:bbar}, $\kappa_t$ is itself a function of $\epsilon_{t+1}$, and $\kappa$ enters $\Gamma_{s,t}$, $\Theta_{h,t}$, $s_{t,i}/s_t$, the coefficient $A_t$ of \eqref{\refeq:auxiliary:Ainf} and the benefit level $\overline{b}_t$ --- that is, essentially every equation of \eqref{\refeq:auxiliary}. A reform that updated $\epsilon$ but left $\kappa$ at its pre-reform value would solve the reformed household problem against the unreformed government budget, and would do so silently: nothing in the equilibrium conditions is violated by a mutually inconsistent $(\epsilon,\kappa)$ pair, because $\kappa$ appears everywhere as a given.
+
+The boundary deserves separate attention. The level $\overline{b}_{t_0}$ in \eqref{\refmodeleq:governmentBudget:bbar} is divided by $\kappa_{t_0-1}$, which by its definition depends on $\epsilon_{t_0}$ --- the reformed value, since the generation already old at $t_0$ is paid under the new rules. The copy inherits $\kappa_{t_0-1}$ from the baseline, where it was computed at the old $\epsilon$, so this one lagged value has to be rebuilt rather than inherited. It is easy to miss because it is invisible whenever $\epsilon$ and the demographic terms are constant over time, as they are in our calibration: the inherited value, the reformed value and the value a boundary convention would supply all coincide there, and stop coinciding as soon as either varies.
+
+\smalltitle{A control run before any reform number is read.}
+The construction above has three separable parts --- the state read off the baseline, the restriction and renumbering of the horizon, and the re-solve --- and an error in any of them would show up as a plausible-looking reform effect rather than as a failure. The check that separates them is to run the whole construction with $\epsilon$ \emph{unchanged}: the copy re-solved from \eqref{\refeq:shockState} must then reproduce the baseline path's own tail from $t_0$ onward, up to the tolerance of the re-solve. It agrees to order $10^{-10}$ in our calibration. Only the change in $\epsilon$ then distinguishes the reform run from a run already known to be exact.
+
+A second check follows from the reform's own definition. Since \eqref{\refeq:shockEps} was derived by cancelling $\overline{b}_t$ and $h_{t-1}$ between the two benefit formulas, the ratio $b_t^0/b_t^j$ on the \emph{solved} reform path must equal $\epsilon_t$ divided by the bracket in \eqref{\refeq:shockEps:match} --- exactly one under \eqref{\refeq:shockEps:match} itself. Read off the solved path rather than off the formula that produced $\epsilon$, this tests the whole chain: it fails if the reference type has been mis-indexed, and equally if $\epsilon$ and $\kappa$ have been left out of step with each other.

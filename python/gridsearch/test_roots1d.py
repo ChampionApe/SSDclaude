@@ -1,11 +1,7 @@
 import numpy as np
 from gridsearch import roots1d, robustRoot
 
-ok = True
-def check(name, cond, extra=''):
-    global ok
-    print(f"{'PASS' if cond else 'FAIL'}  {name} {extra}")
-    if not cond: ok = False
+from gridsearch.testing import check, report
 
 def _raises(fn, exc):
     """ True iff fn() raises exc -- for checking that bad input fails loudly rather than silently. """
@@ -314,5 +310,55 @@ selJ = roots1d.selectMax(xs2, fJump)
 check('selectMax: NaN gap does not manufacture an interior maximum',
       selJ['nMax'] == 0 and selJ['atBound'], f"-> nMax={selJ['nMax']}, x={selJ['x']}")
 
-print()
-print('ALL PASS' if ok else 'SOME FAILURES')
+# ---- 21. selectMax groups ragged columns by feasibility pattern (a speed optimisation that must not
+# change a single answer). The reference is the obvious per-column loop: build a matrix with many
+# columns but only a handful of distinct NaN patterns -- the case a policy grid search produces, where
+# feasibility depends on some state coordinates and not others -- and require agreement bitwise.
+rng = np.random.default_rng(20260811)
+xr = np.linspace(0., 1., 61)
+N, nPat = 240, 4
+patterns = []
+for p in range(nPat):
+    mask = np.zeros(xr.size, dtype = bool)          # True = infeasible
+    mask[:2 + 5*p] = True                           # a leading infeasible run of varying length
+    if p == nPat - 1:
+        mask[-4:] = True                            # one pattern infeasible at BOTH ends
+    patterns.append(mask)
+assign = rng.integers(0, nPat, N)
+Fr = np.empty((xr.size, N))
+for j in range(N):
+    Fr[:, j] = 1.5 - 3*xr + 0.4*rng.standard_normal(1) + 0.3*np.sin(6*xr + j)
+Fr[:, rng.permutation(N)[:20]] = np.abs(Fr[:, rng.permutation(N)[:20]])   # some columns never cross
+for j in range(N):
+    Fr[patterns[assign[j]], j] = np.nan
+Fr[:, :6] = np.where(np.isnan(Fr[:, :6]), 1.0, Fr[:, :6])                 # a few fully clean columns
+
+selG = roots1d.selectMax(xr, Fr)
+refG = {'x': np.full(N, np.nan), 'nMax': np.zeros(N, dtype = int), 'atBound': np.zeros(N, dtype = bool)}
+for j in range(N):
+    okj = ~np.isnan(Fr[:, j])
+    if okj.sum() < 2:
+        continue
+    s1 = roots1d.selectMax(xr[okj], Fr[okj, j])
+    refG['x'][j], refG['nMax'][j], refG['atBound'][j] = s1['x'], s1['nMax'], s1['atBound']
+xSame = (selG['x'] == refG['x']) | (np.isnan(selG['x']) & np.isnan(refG['x']))
+check('selectMax: pattern-grouped ragged columns match the per-column loop bitwise',
+      xSame.all() and np.array_equal(selG['nMax'], refG['nMax'])
+      and np.array_equal(selG['atBound'], refG['atBound']),
+      f'-> {N} columns, {len({m.tobytes() for m in np.isnan(Fr).T})} distinct patterns, '
+      f'{int((~xSame).sum())} mismatches')
+# every column distinct: the grouping must degenerate to the per-column case, not silently merge
+Fd = Fr.copy()
+for j in range(N):
+    Fd[2 + (j % (xr.size - 8)), j] = np.nan          # give each column its own extra hole
+selD = roots1d.selectMax(xr, Fd)
+refD = np.full(N, np.nan)
+for j in range(N):
+    okj = ~np.isnan(Fd[:, j])
+    if okj.sum() >= 2:
+        refD[j] = roots1d.selectMax(xr[okj], Fd[okj, j])['x']
+dSame = (selD['x'] == refD) | (np.isnan(selD['x']) & np.isnan(refD))
+check('selectMax: all-distinct patterns still match the per-column loop bitwise', dSame.all(),
+      f'-> {len({m.tobytes() for m in np.isnan(Fd).T})} distinct patterns over {N} columns')
+
+report()

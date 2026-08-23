@@ -6,6 +6,51 @@ from base import Base, BaseGrid, BaseTime
 from policy import LOG, CRRA
 
 
+def _shiftT(idx, t0, tName):
+    """ Row-wise: subtract t0 from the `tName` axis/level of a pandas Index/MultiIndex, leaving any
+    other level's values untouched. """
+    if isinstance(idx, pd.MultiIndex):
+        arrays = [idx.get_level_values(n) - t0 if n == tName else idx.get_level_values(n) for n in idx.names]
+        return pd.MultiIndex.from_arrays(arrays, names = idx.names)
+    return idx - t0
+
+
+def _sliceDb(db, t0, tName = 't'):
+    """ Restrict every db entry indexed (wholly or via one level) by `tName` to periods from t0 onward,
+    AND renumber that axis back to 0-based (subtract t0), mutating db IN PLACE.
+
+    Renumbering (not just restricting) is required, not cosmetic: model.py's EE_LOG_solve/
+    EE_CRRA_solve/EE_report/initialState_solve index the plain ndarrays a caller passes in (τ, θ, ε)
+    positionally via self.B.tFirst (e.g. `τ[self.B.tFirst]`), which is only correct when db['t'] is the
+    native 0-based range() a fresh instance's initIdxs() builds -- so tFirst must come back out as 0 on
+    the copy. Correspondingly, a caller's own τ/θ/ε arrays for the copy must themselves start at
+    position 0 = the original t0 (i.e. sliced off the front) -- solvePEE_LOG/CRRA's own θ=None/ε=None
+    defaults already get this for free, since db['θ']/db['eps'] are sliced+renumbered here too.
+
+    createCopyFromt0 relies on self.B/self.BG/self.BT/self.LOG/self.CRRA all sharing the same dict
+    object post-deepcopy -- rebinding db to a fresh dict here would silently orphan that aliasing, so
+    this mutates the existing dict's entries in place rather than returning a new one. Scalars,
+    type-indexed (j/i/u) objects, and eigenvector-calibration arrays pass through unchanged. Covers
+    db['t']/db['txE'] (plain Index), db['tj']/db['ti'] (MultiIndex), and every 1D/2D parameter plus its
+    [t+1]/[t-1] siblings (Series/DataFrame) in one pass. """
+    for k, v in db.items():
+        if isinstance(v, pd.MultiIndex):
+            if tName in v.names:
+                db[k] = _shiftT(v[v.get_level_values(tName) >= t0], t0, tName)
+        elif isinstance(v, pd.Index):
+            if v.name == tName:
+                db[k] = v[v >= t0] - t0
+        elif isinstance(v, (pd.Series, pd.DataFrame)):
+            idx = v.index
+            if isinstance(idx, pd.MultiIndex):
+                if tName in idx.names:
+                    sub = v[idx.get_level_values(tName) >= t0]
+                    db[k] = sub.set_axis(_shiftT(sub.index, t0, tName))
+            elif idx.name == tName:
+                sub = v[idx >= t0]
+                db[k] = sub.set_axis(sub.index - t0)
+
+
 class ModelInformalAnalytical:
     _BaseClass = Base
     _BaseGridClass = BaseGrid
@@ -287,23 +332,12 @@ class ModelInformalAnalytical:
     #######################################################################
     ##########   3. Economic equilibrium (EE) solve, given policy   ########
     #######################################################################
-    # Style per numerical problem: (i) a residual method, (ii) a solve method returning just the core
-    # solution ({'s','h','Γs','B'}), (iii) a shared report method expanding it via base.py. τ,θ,ε,s0
-    # always explicit (never read from db).
-    #
-    # Timing (README's "Timing convention" for the full version): db['t'] (0..T-1) is the docs' t=1..T.
-    # s0 (this section's argument, NOT db['s0'] -- an unrelated calibration target for the savings rate)
-    # is the state before db['t'][0] (docs' t=0). Terminal period is db['t'][-1] (docs' t=T).
-    #
-    # Terminal-period convention: Γs/B/si_s report at natural length T-1 (no Γ_{s,T}/B_T^i -- no period
-    # T+1 to look into); h/s stay length T (s_{T-1}=0 is a real terminal condition, not missing). Use
-    # base.py's FH_* methods wherever a T-length quantity needs Γs/B/si_s alongside it.
-    #
-    # EE_LOG_solve/EE_CRRA_solve/EE_report return plain ndarrays internally, wrapping into pd.Series/
-    # DataFrame only in the final return (_wrapVars, keyed off _t2vars/_txE2vars below) -- so the T-vs-T-1
-    # domain is visible from the index rather than an array's bare length, declared once here rather than
-    # per method. Not done inside base.py's own methods (incl. FH_*): those run inside EE_CRRA_solve's
-    # root-finding loop, where pandas' per-call overhead would be pure cost.
+    # See README's "EE solve (model.py §3)" for the residual/solve/report style, the timing convention,
+    # and the T-vs-T-1 domain split. One implementation note not in the README: EE_LOG_solve/EE_CRRA_solve/
+    # EE_report return plain ndarrays internally, wrapping into pd.Series/DataFrame only in the final
+    # return (_wrapVars, keyed off _t2vars/_txE2vars below) -- not done inside base.py's own methods (incl.
+    # FH_*), since those run inside EE_CRRA_solve's root-finding loop where pandas' per-call overhead would
+    # be pure cost.
 
     # Which pandas index a symbol reports over -- a fixed, once-per-model mapping.
     _t2vars = ('s', 'h', 's_', 'R', 'w', 'w0', 'hi', 'bbar', 'bi', 'b0',
@@ -464,10 +498,7 @@ class ModelInformalAnalytical:
     #######################################################################
     ##########   4. Steady state solve (docs §2.1, eq:steadystate_*)  ######
     #######################################################################
-    # Steady state = fixed point s_t=s_{t-1}=s* under a *constant* policy (τ,θ), at db['t'][0]'s
-    # parameters ("Initializing with steady state savings"). Default s0 for EE_LOG_solve/EE_CRRA_solve.
-    # steadyState_report exposes {'Γs','B','s','h','Θs'}, shared by both LOG and CRRA (same Θh/Θs/
-    # sSteadyState/h chain past Γs/B).
+    # See README's "Steady state solve". Default s0 source for EE_LOG_solve/EE_CRRA_solve.
     def steadyState_LOG_solve(self, τ, θ, t = None):
         """ Closed-form steady state given LOG preferences (ρ=1, so B^i=β_i is a pure primitive -- no
         root-finding, matching EE_LOG_solve). τ, θ: constant steady-state policy (scalars). """
@@ -506,14 +537,8 @@ class ModelInformalAnalytical:
     #######################################################################
     ##########   5. Initial (pre-determined) state (docs' t=0)        ######
     #######################################################################
-    # Identifies h_{-1}/s_{-1,i}/s_{-1} -- the generation already old at db['t'][0], per the docs' own
-    # fallback ("the pre-defined state we take as given, or identify using some steady state assumption").
-    #
-    #
-    # initialState_solve does NOT take s0: Γs/B (steadyState_CRRA_solve -- collapses to LOG's closed-form
-    # βi exactly at ρ=1, so one method serves both cases) and si_s are pure functions of (τ,θ) and
-    # primitives, never of the savings level. h_{-1} is the one exception that does need s0 (via
-    # Base.hFromS) -- computed separately in EE_report, not bundled here.
+    # See README's "Initial (pre-determined) state solve". initialState_solve does NOT take s0 -- only
+    # h_{-1} needs it (via Base.hFromS), computed separately in EE_report.
     def initialState_solve(self, τ, θ, t = None, **kwargs):
         """ Identify Γ_{s,-1}, B_{-1}^i, s_{-1,i}/s_{-1} -- see §5 header. τ, θ: scalars, db['t'][0]'s own
         policy. kwargs passed to steadyState_CRRA_solve. Returns {'Γs','B','si_s'} -- no h_{-1} (needs the
@@ -709,3 +734,42 @@ class ModelInformalAnalytical:
         if update:
             self.x0['calibration'] = res.x
         return {'pars': pars, 'x': res.x, 'residual': residual, 'report': report, 'scipyRes': res}
+
+    #######################################################################
+    ##########   9. Model copies for shock experiments (docs' t0)     ######
+    #######################################################################
+    # createCopyFromt0 produces a new, independent model instance whose horizon is restricted to
+    # db['t'] >= t0 -- for "unexpected shock" experiments: solve the baseline PEE over the full horizon,
+    # build the copy, then re-solve PEE on it with s0 (stateAtT0) read off the baseline's own report at
+    # t0. The copy's own db['t'] is renumbered to start at 0 again (see _sliceDb's docstring for why --
+    # model.py's own EE_LOG_solve/EE_CRRA_solve/EE_report/initialState_solve index a caller's τ/θ/ε
+    # ndarrays positionally via self.B.tFirst, which only works when tFirst is 0), so self.B.tFirst on
+    # the copy is 0, not t0 -- the original calendar year t0 is not retained anywhere on the copy.
+    # State seeding is deliberately NOT done here -- s0 stays an explicit argument to
+    # solvePEE_LOG/solvePEE_CRRA on the copy, exactly as for any other instance; see stateAtT0.
+    def createCopyFromt0(self, t0):
+        """ Return an independent copy of this model with its time horizon restricted to db['t'] >= t0
+        and renumbered to start at 0 (db['t'] runs 0..T-t0-1 on the copy, not t0..T-1).
+        Warm-start caches (self.x0, self.LOG.x0, self.CRRA.x0) are cleared (stale/wrong length for the
+        new horizon); self.LOG.GS/self.CRRA.GS (state-space grids, not time-indexed) are left as-is.
+        db['t0'] (the calibration-baseline-year *position* -- unrelated to this t0; see
+        default0DParams' docstring) is shifted by -t0 if the calibration year still falls inside the new
+        horizon, else set to None: a stale position would otherwise silently resolve to the wrong year
+        rather than failing loudly. Recalibrating a copy needs a caller-supplied db['t0']. """
+        if t0 not in self.db['t']:
+            raise ValueError(f"t0={t0!r} is not in db['t'] (={list(self.db['t'])}).")
+        mt0 = deepcopy(self)
+        _sliceDb(mt0.db, t0)
+        mt0.T = len(mt0.db['t'])
+        for baseIns in (mt0.B, mt0.BG, mt0.BT):
+            baseIns.tFirst = mt0.db['t'][0]
+        mt0.LOG.T = mt0.CRRA.T = mt0.T
+        mt0.x0, mt0.LOG.x0, mt0.CRRA.x0 = {}, {}, {}
+        mt0.addNamespaces()
+        mt0.db['t0'] = (self.db['t0'] - t0) if (self.db['t0'] is not None and self.db['t0'] >= t0) else None
+        return mt0
+
+    def stateAtT0(self, report, t0):
+        """ The state entering t0 in an already-solved report (solvePEE_LOG/solvePEE_CRRA's 'report'),
+        for seeding createCopyFromt0(t0)'s own solvePEE_LOG(s0=...)/solvePEE_CRRA(s0=...). """
+        return {'s0': report['s_'].xs(t0)}

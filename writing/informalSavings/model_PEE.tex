@@ -1,0 +1,62 @@
+\subsection{The politico-economic equilibrium with LOG preferences}\label{\refsec:PEELOG}
+\begin{subequations}\label{\refeq:PEELOG}
+Let $\upsilon_{1,t}^j$ and $\upsilon_{2,t}^j$ denote the indirect utilities of different households (types and generations). Policy is set without commitment, with elections each $t$ aggregating preferences using probabilistic voting that maximizes a weighted sum of indirect utilities. Let $\tau^{t+1}(z_t)$ denote a continuation policy with $z_t$ being a vector of states. The political problem can then be written as
+\begin{align*}
+    &\max_{\tau_t}\mbox{ }\mathcal{W}_t(z_{t-1}) \equiv \omega\sum_j\left(\gamma_{t-1,j} p_{t-1,j} \mu_{t-1,j} v_{2,t}^j\right)+\nu_t\sum_j\left(\gamma_{t,j}\mu_{t,j} v_{1,t}^j\right) \\
+    &\text{s.t. competitive equilibrium and }\tau_{t+1} = \tau^{t+1}(z_t),
+\end{align*}
+where $\tau^{t+1}(z_t)$ is identified by this process at $t+1$, $\omega$ is a weight reflecting relative political power of the older generation, $\mu_{t,j}$ reflects relative voting shares for different income groups (the old generation at $t$ votes with the voting shares $\mu_{t-1,j}$ they had when young, i.e. shares are attached to a generation, not a period). In general, the first order condition for $\tau_t$ is given by:
+\begin{align*}
+    \omega\sum_{j}\left(\gamma_{t-1,j}p_{t-1,j}\mu_{t-1,j} \frac{d\upsilon_{2,t}^j}{d\tau_t}\right)+
+    \nu_t\sum\left(\gamma_{t,j}\mu_{t,j} \frac{d\upsilon_{1,t}^j}{d\tau_t}\right) = 0,
+\end{align*}
+where the total derivatives (with "hard d") includes the partial effects of changing policy directly (through economic equilibrium functions), but also the indirect effects working through the continuation policy. 
+
+With $\rho = 1$, the discount function simplifies to $B_{t+1}^i = \beta_{t,i}$ and the continuation policy depends only on the endogenous state $s_{t,0}/s_t$.
+For the consumption smoothers, using the Euler condition, we have $\upsilon_{1,t}^i = (1+\beta_{t,i})\ln\left(\tilde{c}_{1,t}^i\right)+\beta_{t,i} \ln\left(R_{t+1}\right)+\beta_{t,i} \ln(\beta_{t,i}/p_{t,i})$. The marginal effect of taxes can then be written as
+\begin{align}
+    \frac{d\upsilon_{1,t}^i}{d\tau_t} = (1+\beta_{t,i})\frac{d\ln\left(\tilde{c}_{1,t}^i\right)}{d\tau_t} + \beta_{t,i} \frac{d\ln\left(R_{t+1}\right)}{d\tau_t}.
+\end{align}
+For the informal young, we can similarly use an Euler condition to simplify this as $\upsilon_{1,t}^0 = \left(1+\beta_{t,0}\right)\ln\left(\tilde{c}_{1,t}^0\right)+\beta_{t,0} \ln\left(R_{t+1}\right)+\beta_{t,0}\ln\left(\beta_{t,0}\chi_{t+1}^R/p_{t,0}\right)$, thus we have
+\begin{align}
+    \frac{d\upsilon_{1,t}^0}{d\tau_t} = (1+\beta_{t,0})\frac{d\ln\left(\tilde{c}_{1,t}^0\right)}{d\tau_t} + \beta_{t,0} \frac{d\ln\left(R_{t+1}\right)}{d\tau_t}.
+\end{align}
+
+
+
+For the older cohorts, the effect works through $\tilde{c}_{2,t}^j$ and, again being log-separable in $s_{t-1}$, this simplifies to
+\begin{align}
+    \frac{d\upsilon_{2,t}^i}{d\tau_t} =& (1-\alpha)\frac{d\ln\left(h_t\right)}{d \tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{p_{t-1}}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)}{\frac{s_{t-1}^i}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)} \\ 
+    \frac{d\upsilon_{2,t}^0}{d\tau_t} =& (1-\alpha)\frac{d\ln\left(h_t\right)}{d \tau_t}+\frac{\frac{1-\alpha}{\chi_t^R\alpha}\frac{p_{t-1,0}\epsilon_t}{\kappa_{t-1}}}{\frac{s_{t-1,0}}{s_{t-1}}+\frac{1-\alpha}{\chi_t^R\alpha}\frac{p_{t-1,0}\epsilon_t\tau_t}{\kappa_{t-1}}}.
+\end{align}
+As we show in \cref{\refnumsec}, we will rely on numerical methods that approximate these derivatives in combination with grid searches.
+\end{subequations}
+
+
+
+
+
+\subsection{The politico-economic equilibrium with CRRA preferences}\label{\refsec:PEE}
+With CRRA preferences, the general first order conditions largely remain the same, but with consumption levels now playing a role and total derivatives including effects through both endogenous state variables now. 
+
+\begin{subequations}\label{\refeq:PEE}
+Specifically, we now have for all household types (including $j=0$):
+\begin{align}
+    \upsilon_{1,t}^j = (1+B_{t+1}^j)\frac{\left(\tilde{c}_{1,t}^j\right)^{1-1/\rho}}{1-1/\rho}
+\end{align}
+
+
+Because the policy maker has to take past choices as given (such as savings and relative savings rates), we have to rely on first order conditions to efficiently identify their choices (to avoid searching over a full grid of states $s_{t-1,i}/s_{t-1}$). Whereas we can numerically approximate derivatives of $\upsilon_{1,t}^i$  and $\upsilon_{1,t}^0$ using simple grids, here we have to be a bit more careful. In particular, we have to use:
+\begin{align}
+    \dfrac{d v_{2,t}^i}{d \tau_t} =& \left(c_{2,t}^i\right)^{1-1/\rho}\dfrac{d\ln\left(c_{2,t}^i\right)}{d\tau_t} \\
+    \frac{d\ln\left(c_{2,t}^i\right)}{d\tau_t} =& (1-\alpha)\frac{d \ln\left(h_t\right)}{d \tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{p_{t-1}}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)}{\frac{s_{t-1}^i}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{p_{t-1}\tau_t}{\kappa_{t-1}}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)},
+\end{align}
+where the second line explicitly uses that $s_{t-1,i}/s_{t-1}$ is predetermined. However, as this ratio has a closed-form expression that relies on $\tau_t$, we do not have to evaluate on the entire grid, rather only on the selection that are actually consistent with economic equilibrium conditions. This is the exact trick that allows us to only use $s_{t-1}$ as a relevant state and not the entire distribution.
+
+
+Finally, for the old informal households, we similarly have to rely on the first order condition:
+\begin{align}
+    \dfrac{d v_{2,t}^0}{d \tau_t} &= \left(c_{2,t}^0\right)^{1-1/\rho} \dfrac{d\ln\left(c_{2,t}^0\right)}{d\tau_t} \\
+    \dfrac{d\ln\left(c_{2,t}^0\right)}{d\tau_t} &= (1-\alpha)\frac{d\ln\left(h_t\right)}{d \tau_t}+\frac{\frac{1-\alpha}{\chi_t^R\alpha}\frac{p_{t-1,0}\epsilon_t}{\kappa_{t-1}}}{\frac{s_{t-1,0}}{s_{t-1}}+\frac{1-\alpha}{\chi_t^R\alpha}\frac{p_{t-1,0}\epsilon_t\tau_t}{\kappa_{t-1}}}.
+\end{align}
+\end{subequations}

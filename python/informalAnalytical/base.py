@@ -5,7 +5,7 @@ def noneInit(x, fallBackValue):
 
 
 class Base:
-    """ Economic equilibrium building blocks (writing/informalAnalytical_docs.tex, part I + numerical §auxiliary).
+    """ Economic equilibrium building blocks (writing/informalAnalytical/, model*.tex + num_ee.tex §auxiliary).
 
     Convention: parameters (α, ξ, ν, γ, η, X, β, p, κ, Γh, ...) are read from the database via
     self()/self.get(). Objects that may change during a solve or be chosen by policy -- taxes τ,
@@ -24,15 +24,8 @@ class Base:
     #######################################################################
     ##########   Parameter caching (cacheParams)                  #########
     #######################################################################
-    # db reads go through pandas .xs(); measured at ~43% of one grid FOC evaluation (flat in grid size --
-    # per-call overhead, not per-gridpoint), hence worth memoising while a year is held fixed.
-    #
-    # Opt-in and block-scoped, not always-on: self.db is mutated during calibration (model.py's
-    # updateAuxPars/adjPar), and a cache surviving that would return stale parameters *silently*. Outside
-    # a `with` block, every read hits db exactly as before.
-    #
-    # Keys on the *resolved* year, so one block covers a period and its lag without either being declared
-    # up front, and memoises lazily -- a new db read in any method picks up caching automatically.
+    # Opt-in and block-scoped, not always-on -- a cache surviving a db rewrite (model.py's calibration)
+    # would return stale parameters silently. See README's "Base conventions" for the measurement/rationale.
     @contextmanager
     def cacheParams(self):
         """ Memoise db parameter reads for the duration of the block (see the §header comment above).
@@ -129,10 +122,21 @@ class Base:
         x = np.asarray(x)
         return x[:, None] if x.ndim else x
 
+    # Two distinct ratios that differ by a factor η_{t,i} -- keep them apart:
+    #   hRatio  = h_{t,i}/h_t          = (η_{t,i}/X_{t,i})^ξ / Γ_{h,t}     (eq EE:hi)
+    #   hηRatio = h_{t,i}η_{t,i}/h_t   = (η_{t,i}^{1+ξ}/X_{t,i}^ξ) / Γ_{h,t}
+    # hηRatio is what the doc's si_s/c2i/dv2i formulas carry (they all write η^{1+ξ}/X^ξ over Γh);
+    # hRatio is what individual labour supply and the benefit formula need. Both are parameters only
+    # (no solution state), so both memoise inside cacheParams() like their ingredients.
     def hRatio(self, t = None, lag = ''):
-        """ Eq (EE:hi) ratio component: h_{t,i}/h_t = (ηi^(1+ξ)/Xi^ξ)/Γh -- parameters only, no solution
-        state, so it memoises inside cacheParams() like its two ingredients. """
+        """ Eq (EE:hi): h_{t,i}/h_t = (η_{t,i}/X_{t,i})^ξ/Γ_{h,t}. Satisfies ∑_i γ_{t,i}η_{t,i}·hRatio_i=1. """
         return self._memo(('hRatio', lag, self._year(t)), lambda:
+            (self(f'ηi{lag}', t)/self(f'Xi{lag}', t)).pow(self(f'ξ{lag}', t), axis = 0).values
+            / self._bcast(self.Γh(t, lag = lag)))
+
+    def hηRatio(self, t = None, lag = ''):
+        """ h_{t,i}η_{t,i}/h_t = (η_{t,i}^{1+ξ}/X_{t,i}^ξ)/Γ_{h,t}. Satisfies ∑_i γ_{t,i}·hηRatio_i = 1. """
+        return self._memo(('hηRatio', lag, self._year(t)), lambda:
             self.auxProd(t, lag = lag) / self._bcast(self.Γh(t, lag = lag)))
 
     #######################################################################
@@ -180,7 +184,7 @@ class Base:
         """ Eq (governmentBudget): b_t^i = [θ_t h_{t-1,i} η_{t-1,i} + (1-θ_t) h_{t-1}] bbar_t.
         θ, bbar = period-t contributive-incentive parameter / benefit level (explicit -- θ will be endogenized).
         h_ = h_{t-1} (aggregate, lagged). """
-        hiη_ = self._bcast(h_) * self.hRatio(t, lag = '[t-1]') * self.get('ηi[t-1]', t)
+        hiη_ = self._bcast(h_) * self.hηRatio(t, lag = '[t-1]')
         bracket = self._bcast(θ)*hiη_ + self._bcast((1-θ)*h_)
         return bracket * self._bcast(bbar)
 
@@ -271,7 +275,7 @@ class Base:
         auxProd, Bratio = self.auxProd(t), B/(1+B)
         term1 = Bratio*auxProd / self._bcast((1+self.get('ξ', t))*Γs)
         term2 = -(1/(1+B)) * self._bcast((1-α)/α * p*(1-θ1)/κ*τ1)
-        term3 = -self.hRatio(t) * self._bcast((1-α)/α * p*θ1/κ*τ1)
+        term3 = -self.hηRatio(t) * self._bcast((1-α)/α * p*θ1/κ*τ1)
         return term1 + term2 + term3
 
     #######################################################################
@@ -323,7 +327,7 @@ class Base:
         explicit rather than read from db (mirrors θ/τ convention). """
         α, ν, p_, κ_ = self.get('α', t), self.get('ν', t), self.get('p[t-1]', t), self.get('κ[t-1]', t)
         A = (1-α)/α * p_*τ/κ_
-        inner = siRatio_ + self._bcast(A) * (1 + self._bcast(θ)*(self.hRatio(t, lag = '[t-1]') - 1))
+        inner = siRatio_ + self._bcast(A) * (1 + self._bcast(θ)*(self.hηRatio(t, lag = '[t-1]') - 1))
         outer = α * (ν/p_) * h**(1-α) * (s_/ν)**α
         return self._bcast(outer) * inner
 
@@ -374,12 +378,8 @@ class Base:
     #######################################################################
     ##########   8. Steady state (eq:steadystate_LOG, eq:steadystate_CRRA)  #
     #######################################################################
-    # Steady state = the fixed point s_t = s_{t-1} = s* under a *constant* policy (τ, θ), evaluated at a
-    # single year's parameters (t defaults to self.tFirst, i.e. db['t'][0] / docs' t=1, "the first period",
-    # per the doc's "Initializing with steady state savings"). Used by model.py's
-    # steadyState_LOG_solve/steadyState_CRRA_solve to get a default s0 rather than requiring the user to
-    # supply one by hand -- see README's "Timing convention" for how db['t'][0]/s0/db['t'][-1] map onto the
-    # docs' t=0..T.
+    # Fixed point s_t=s_{t-1}=s* under constant (τ,θ) at t=self.tFirst's parameters. See README's "Steady
+    # state solve" / "Timing convention".
     def sSteadyState(self, Θs, t = None):
         """ Eq (steadystate_LOG:s), generalized: the steady-state savings level s* solving the fixed point
         s* = Θs*(s*/ν_t)^power_s -- i.e. s_t = s_{t-1} = s* under a constant Θs_t = Θs. Algebraically
@@ -405,10 +405,8 @@ class Base:
     #######################################################################
     ##########   9. Political first-order condition (eq:fast, eq:PEELOG)  ##
     #######################################################################
-    # FOC: the generic combiner -- preference-agnostic, combines whatever dv1i/dv10/dv2i/dv20 a given
-    # preference case produced via the political weights. The `_LOG` methods below are LOG-specific
-    # (closed-form, valid only because LOG makes v1/v2 log-separable in s_{t-1}); CRRA's t<T equivalents
-    # need numerical derivatives instead (docs §PEE) -- see dlnc2i_dτ/dlnc20_dτ below.
+    # FOC is the preference-agnostic combiner; `_LOG` methods below are LOG-specific closed forms (see
+    # README's "Political first-order condition").
     def FOC(self, dv1i, dv10, dv2i, dv20, t = None):
         """ Eq (fast / the general FOC underlying eq:PEELOG, tex line ~269-273): z_t, the marginal
         political objective w.r.t. τ_t. Combines the young (dv1i,dv10) and old (dv2i,dv20) marginal
@@ -427,11 +425,9 @@ class Base:
         young = ν*((γi*ω1i*dv1i).sum(axis = -1) + γ0*ω10*dv10)
         return old + young
 
-    # Only the "simple" ones (the young generations' -- single closed-form terms, no Θh-derivative/si_s
-    # machinery needed). β/β0 explicit (not read from db): mirrors how Γs/c1i/si_s etc. always take B
-    # explicit even where, as here (LOG, ρ=1), B^i is just the primitive β_{t,i} -- keeps the formula
-    # agnostic to *how* its discount argument was obtained, and lets FH_dv1i_LOG/FH_dv10_LOG (BaseTime, §8)
-    # zero out the terminal entry by simply passing a modified β rather than needing a db-write.
+    # Young generations' closed-form terms (no Θh-derivative/si_s machinery needed). β/β0 explicit (not
+    # db-read): lets FH_dv1i_LOG/FH_dv10_LOG (BaseTime §8) zero the terminal entry by passing a modified β,
+    # no db-write needed.
     def dv1i_dτ_LOG(self, β, τ, t = None):
         """ Eq (PEELOG): dυ_{1,t}^i/dτ_t -- marginal indirect utility of the young formal type-i household
         w.r.t. the current tax τ_t. β = β_{t,i} (explicit, per type). """
@@ -454,12 +450,10 @@ class Base:
         ξ, α = self.get('ξ', t), self.get('α', t)
         return -1/(1-τ) * ξ/(1+α*ξ)
 
-    # dlnc2i_dτ/dlnc20_dτ: the old generations' dln(c)/dτ_t, preference-agnostic (no _LOG suffix) once
-    # dlnh_dτ is an explicit argument -- LOG and CRRA share these formulas exactly, differing only in how
-    # dln(h_t)/dτ_t itself is obtained (closed-form dlnΘh_dτ_LOG for LOG/CRRA-terminal; numerical grid
-    # derivative for CRRA t<T, since Θ_{h,t} then depends on the endogenous τ_{t+1} -- docs §PEE). Note
-    # dln(h_t)/dτ_t = dln(Θ_{h,t})/dτ_t exactly (s_{t-1} is held fixed under ∂/∂τ_t), so one argument slot
-    # serves both cases. dv2i_dτ_LOG/dv20_dτ_LOG below are thin LOG wrappers preserving old call sites.
+    # dlnc2i_dτ/dlnc20_dτ: old generations' dln(c)/dτ_t, preference-agnostic once dlnh_dτ is explicit --
+    # LOG and CRRA share these exactly, differing only in how dln(h_t)/dτ_t is obtained (closed form here
+    # vs. a numerical grid derivative for CRRA t<T, docs §PEE). dv2i_dτ_LOG/dv20_dτ_LOG below are thin LOG
+    # wrappers.
     def dlnc2i_dτ(self, dlnh_dτ, τ, θ, siRatio_, t = None):
         """ Eq (PEE)/(PEELOG): dln(c_{2,t}^i)/dτ_t, given dln(h_t)/dτ_t. Preference-agnostic -- see the
         §(c) note above. siRatio_ = s_{t-1}^i/s_{t-1} (explicit -- predetermined at t, but itself a
@@ -471,7 +465,7 @@ class Base:
         closed form here holds siRatio_ fixed by construction. """
         α, p_, κ_ = self.get('α', t), self.get('p[t-1]', t), self.get('κ[t-1]', t)
         A0 = (1-α)/α * p_/κ_
-        bracket = 1 + self._bcast(θ)*(self.hRatio(t, lag = '[t-1]') - 1)
+        bracket = 1 + self._bcast(θ)*(self.hηRatio(t, lag = '[t-1]') - 1)
         num = self._bcast(A0) * bracket
         denom = siRatio_ + self._bcast(A0*τ)*bracket
         return self._bcast((1-α)*dlnh_dτ) + num/denom

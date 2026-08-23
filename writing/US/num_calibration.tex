@@ -1,0 +1,24 @@
+\subsection{Calibration}\label{\refsec:calibration}
+The calibration procedure is essentially a nested fixed point procedure. In the inner part, we solve for the full politico-economic equilibrium path. The outer part then solves the following system of equations (repeated from \cref{\refmodelsec:calibration}):
+\begin{subequations}\label{\refeq:calibration}
+    \begin{align}
+        \hat{R}_{t_0} &= \alpha\left(\frac{s_{t_0-1}}{\nu_{t_0}h_{t_0}}\right)^{\alpha-1} \label{\refeq:calibration:R}\\
+        \hat{\tau}_{t_0} &= \tau_{t_0} \label{\refeq:calibration:tau}
+    \end{align}
+\end{subequations}
+where the ``hats'' reflect exogenous targets and $t_0$ indicates a specific baseline year. In our main specification, we assume that $\beta_{t,i} = \beta$ is constant over time and across types. Similarly, we assume that most exogenous parameters do not change over time except for the ageing population reflected by $\nu_t$. We adjust $\beta$ to target the interest rate and $\omega$ for the tax rate.
+
+The full calibration procedure proceeds as follows: in an inner loop, given a set of parameter values, we first update all auxiliary parameter definitions to make sure that derived parameters are up to date, and then resolve the entire PEE path. An outer loop searches the parameter space for $\beta, \omega$ to ensure that \eqref{\refeq:calibration} holds.
+
+\smalltitle{What the outer loop does not have to carry.}
+Two features make this outer problem smaller than the corresponding one for the models with an informal sector, where four parameters have to be solved jointly with the path.
+
+First, the pension characteristic $\theta$ is available in closed form from the replacement-rate ratio, \eqref{\refmodeleq:calibration:theta}, and depends only on the relative-income data $z_i^{\eta}$ --- not on $\Theta_{h,t_0}$ or any other equilibrium object. It is therefore computed once, before the loop starts, and never revisited. The same is true of $\bm{\eta}_i$ and $\bm{X}_i$: the eigenvector step of \cref{\refmodelsec:calibration:etaX} uses only survey data and $\xi$.
+
+Second, in variant B the parameter $X$ is not a third dimension of the search. By \eqref{\refmodeleq:calibration:yxCommonX} it enters no aggregate, so neither target in \eqref{\refeq:calibration} contains it; the loop runs without it and $X$ is recovered afterwards from the closed form \eqref{\refmodeleq:calibration:Xsolve}, with no re-solve. It is nevertheless worth verifying numerically that re-solving at the recovered $X$ leaves $\beta$, $\omega$, $\tau_{t_0}$ and $R_{t_0}$ bit-for-bit unchanged: the claim is an identity, not an approximation, so any drift at all is a defect --- most likely an $\eta_i$ or $X_i$ that has leaked into an aggregate expression through something other than $y_i^{\eta}$.
+
+\smalltitle{The interest rate target needs the path, not the baseline year.}
+Note that \eqref{\refeq:calibration:R} involves $s_{t_0-1}$, the savings state \emph{entering} the baseline year. It is not an observable and not a free parameter: it is produced by the equilibrium path from the initial condition onwards, so the inner solve cannot be shortened to the baseline period. This is what makes $\beta$ a genuinely global object in the calibration --- it moves $s_{t_0-1}$ through every preceding period as well as $h_{t_0}$ within the baseline year --- and it is the reason the two targets in \eqref{\refeq:calibration} cannot be assigned to $\beta$ and $\omega$ one at a time and solved separately.
+
+\smalltitle{Cost of the inner solve.}
+With log preferences the inner solve is cheap: by \eqref{\refmodeleq:PEELOG:decoupling} the PEE path is $T$ independent scalar problems whose solution does not depend on $\beta$ through any continuation policy, only through the period-$t$ weights in \eqref{\refeq:LOG:foc}, after which the economic equilibrium follows by the forward pass of \cref{\refsec:EE}. Under CRRA preferences the inner solve is the full backward recursion of Algorithm \ref{\refalg:CRRA:grid}, and the state grid $\mathcal{S}$ has to be rebuilt whenever a trial $\beta$ moves the steady state materially; a grid fixed once at the initial guess will silently degrade as the outer loop wanders.

@@ -1,0 +1,65 @@
+\subsection{The politico-economic equilibrium with log}\label{\refsec:PEELOG}
+The politico-economic equilibrium is straightforward to solve with log preferences. Once again, the problem could be set up and solved in many different ways. In the following, we go through a couple of different options that trades off speed with robustness. We refer to these as "algorithms" here to have a clear reference, but it may be more suitable to think of them as solution approaches.
+
+
+
+\begin{alg}[Gradient-based roots for the politico-economic equilibrium with log preferences]
+\label{\refalg:LOG:fast}
+This is barely an algorithm, in the sense that we do not include fallback options, but simply presume that the first order condition is well-behaved. Let $\tilde{\bm{\tau}} \in \mathbb{R}^{T}$ be a candidate vector of policies and $\bm{\tau}$ the bounded version where each $\tau_t \in [l, u]$ and where $l\geq 0$ and $u\leq 1$ are some stable boundaries within the unit interval where it is safe to evaluate all relevant functions. 
+
+Let $z_t$ denote the marginal effect of bounded policies, for each $t$ defined as
+\begin{align}\label{\refeq:LOG:fast}
+    z_t &= \omega\sum_{j}\left(\gamma_{t-1,j}p_{t-1,j}\mu_{t-1,j} \frac{d\upsilon_{2,t}^j}{d\tau_t}\right)+\nu_t\sum\left(\gamma_{t,j}\mu_{t,j} \frac{d\upsilon_{1,t}^j}{d\tau_t}\right), 
+\end{align}
+where the marginal effect on indirect utilities are defined by equations \eqref{\refmodeleq:PEELOG} for $t<T$ and \eqref{\refmodeleq:terminalPEELOG} for $t=T$. We solve for the vector by identifying the $\tilde{\bm{\tau}}$ vector that solves \eqref{\refeq:root} and then $\bm{\tau}$ as the bounded version.
+\end{alg}
+
+\smalltitle{The recursive structure of the first order condition.}
+Before turning to more robust alternatives, it is worth recording a property of \eqref{\refeq:LOG:fast} that the vectorized formulation in Algorithm \ref{\refalg:LOG:fast} does not exploit. Inspecting the marginal effects in \eqref{\refmodeleq:PEELOG}, the two young terms $d\upsilon_{1,t}^i/d\tau_t$ and $d\upsilon_{1,t}^0/d\tau_t$ depend on $\tau_t$ alone. The old formal term $d\upsilon_{2,t}^i/d\tau_t$ depends on $\tau_t$ directly and through $s_{t-1}^i/s_{t-1}$, which is itself a closed-form function of $\tau_t$ (as noted in section \ref{\refmodelsec:PEE}). The old informal term $d\upsilon_{2,t}^0/d\tau_t$ additionally involves the level of $\Theta_{h,t}$, which by \eqref{\refeq:auxiliary:Thetah} depends on $\tau_t$ and on $\tau_{t+1}$ through $\Gamma_{s,t}$. No term depends on any lag of $\tau$. Hence
+\begin{align}\label{\refeq:recursive}
+    z_t = z_t\left(\tau_t, \tau_{t+1}\right), \qquad\text{and}\qquad z_T = z_T(\tau_T),
+\end{align}
+the latter because the terminal period uses $\Theta_{h,T}(\tau_T)$ from \eqref{\refeq:auxiliary:ThetahT} in place of \eqref{\refeq:auxiliary:Thetah}.
+
+The system is therefore triangular: it can be solved exactly by a \emph{backward recursion} in which each period is a \emph{scalar} problem in $\tau_t\in[l,u]$, given the already-solved $\tau_{t+1}$. This is what makes robust one-dimensional methods available at all, and it removes the dependence on an initial guess for the entire path. Note that the property relies on $\theta_t$ and $\epsilon_t$ being exogenous; if pension characteristics are chosen alongside $\tau_t$, the argument has to be revisited.
+
+\smalltitle{Behaviour at the boundaries.}
+Both $d\upsilon_{1,t}^j/d\tau_t$ and $\partial \ln(\Theta_{h,t})/\partial\tau_t$ carry a factor $1/(1-\tau_t)$, so $z_t\rightarrow -\infty$ as $\tau_t\rightarrow 1$. We therefore always evaluate on $[l,u]$ with $u<1$ strictly. The divergence makes it easy to choose $u$ close enough to $1$ that $z_t(u)<0$, and we assume this throughout. Two consequences follow: the upper corner is then never selected, and $z_t(l)>0$ guarantees by continuity that at least one interior downward crossing exists. The substantive difficulty is thus not existence, but (i) detecting a lower-corner solution and (ii) choosing between several interior crossings when they occur. Both are worth verifying numerically rather than assuming, since $z_t(u)<0$ is a property of the calibration, not an identity.
+
+\smalltitle{The extended grid.}
+Let $\mathcal{T} = \left\lbrace \tau^{(1)},...,\tau^{(M)}\right\rbrace$ with $\tau^{(1)} = l$ and $\tau^{(M)} = u$ denote a grid on the interior, and let the \emph{extended} grid $\tilde{\mathcal{T}}$ add two outer nodes
+\begin{align}\label{\refeq:extendedGrid}
+    \tilde{\tau}^{(0)} = l-\frac{1}{a_0}-\delta, \qquad \tilde{\tau}^{(M+1)} = u+\frac{1}{a_1}+\delta,
+\end{align}
+for a small $\delta>0$. The outer nodes sit at (a hair beyond) the two boundary solutions of \eqref{\refeq:root}. Evaluating $h$ at $\tilde{\tau} = l-1/a_0$ gives $h = f(l)+\left|f(l)\right|$, which is identically zero whenever $f(l)<0$; at $\tilde{\tau} = u+1/a_1$ it gives $h = f(u)-\left|f(u)\right|$, identically zero whenever $f(u)>0$. A corner solution is thus encoded as an \emph{exact} zero at an outer node rather than as a sign change, and a pure sign-change test would not detect it. The offset $\delta$ shifts the node just outside the root so that the outermost cell does exhibit a sign change; since $h$ is affine in $\tilde\tau$ outside $[l,u]$, linear interpolation on that cell returns $\tilde\tau = l-1/a_0$ (resp. $u+1/a_1$) exactly, and hence $\tau = l$ (resp. $\tau = u$) after bounding. Note that $a_0, a_1$ thereby serve double duty -- as the penalty slopes in \eqref{\refeq:root} and as the placement of the outer nodes -- and the two uses must be kept consistent.
+
+\smalltitle{Selecting among several roots.}
+Solving $z_t = 0$ is only a necessary condition for the political optimum: an upward crossing of $z_t$ is a local \emph{minimum} of $\mathcal{W}_t$, and when several downward crossings exist the first one located need not be the global maximum. Since a grid search delivers $z_t$ everywhere on $\mathcal{T}$ in any case, we can restore the maximization without any additional evaluations of $z_t$.
+
+Let $\hat{z}_t$ denote the piecewise-linear interpolant of $z_t$ through the nodes of $\mathcal{T}$ -- the same interpolant that is used to locate crossings -- and define
+\begin{align}\label{\refeq:objectiveProfile}
+    \hat{\mathcal{V}}_t(\tau) = \int_l^{\tau}\hat{z}_t(x)\mbox{ }dx.
+\end{align}
+Because $z_t = d\mathcal{W}_t/d\tau_t$, $\hat{\mathcal{V}}_t$ approximates the political objective up to an additive constant. It is piecewise quadratic and continuously differentiable with $\hat{\mathcal{V}}_t' = \hat{z}_t$, so its interior local maxima are exactly the downward crossings of $\hat{z}_t$, and
+\begin{align}\label{\refeq:candidates}
+    \arg\max_{\tau\in[l,u]}\hat{\mathcal{V}}_t(\tau)\in\mathcal{C}_t \equiv \left\lbrace l,u \right\rbrace\cup\left\lbrace \tau\in(l,u)\mbox{ }:\mbox{ }\hat{z}_t(\tau) = 0\text{ and }\hat{z}_t\text{ crosses from above}\right\rbrace.
+\end{align}
+The candidate set $\mathcal{C}_t$ is finite and cheap to construct, and $\hat{\mathcal{V}}_t$ is evaluated on it \emph{exactly}: at the nodes by the trapezoidal rule,
+\begin{align*}
+    \hat{\mathcal{V}}_t\left(\tau^{(k+1)}\right) = \hat{\mathcal{V}}_t\left(\tau^{(k)}\right)+\frac{1}{2}\left(z_t\left(\tau^{(k)}\right)+z_t\left(\tau^{(k+1)}\right)\right)\left(\tau^{(k+1)}-\tau^{(k)}\right),
+\end{align*}
+and, for a crossing $\tau^*$ located inside the cell $\left[\tau^{(k)},\tau^{(k+1)}\right]$, by adding the triangle $\frac{1}{2}z_t\left(\tau^{(k)}\right)\left(\tau^*-\tau^{(k)}\right)$. Setting $\tau_t = \arg\max_{\tau\in\mathcal{C}_t}\hat{\mathcal{V}}_t(\tau)$ resolves multiplicity and corner solutions under a single criterion: $l$ and $u$ compete with the interior crossings on the same footing, so the rule subsumes the boundary check rather than supplementing it. The accuracy demanded of \eqref{\refeq:objectiveProfile} is only that it rank well-separated candidates correctly, which is a far weaker requirement than the accuracy demanded of the located roots themselves.
+
+\begin{alg}[Iterative grid search with initial boundary check]\label{\refalg:LOG:gridsearch}
+Fix $\bm{\theta},\bm{\epsilon}$ and a global grid $\mathcal{T}$, extended to $\tilde{\mathcal{T}}$ as in \eqref{\refeq:extendedGrid}. Exploiting \eqref{\refeq:recursive}, we solve backwards.
+
+\smallskip\noindent\emph{Terminal period.} Evaluate $z_T$ on all of $\mathcal{T}$. \emph{Initial boundary check}: if $z_T<0$ throughout, set $\tau_T = l$; if $z_T>0$ throughout, set $\tau_T = u$. Otherwise construct $\mathcal{C}_T$ from \eqref{\refeq:candidates} and set $\tau_T = \arg\max_{\mathcal{C}_T}\hat{\mathcal{V}}_T$.
+
+\smallskip\noindent\emph{Recursion, $t = T-1,...,1$.} Given the solved $\tau_{t+1}$:
+\begin{enumerate}
+    \item \emph{Refine.} Let $\mathcal{T}_t\subseteq\mathcal{T}$ consist of the nodes from $\Delta^-$ below to $\Delta^+$ above the node nearest $\tau_{t+1}$. The window need not be symmetric: where the policy path is known to be monotone, $\Delta^-\neq\Delta^+$ saves evaluations.
+    \item \emph{Evaluate and select.} Evaluate $z_t(\cdot,\tau_{t+1})$ on $\mathcal{T}_t$ and apply the terminal-period rule to obtain a candidate $\tau_t$.
+    \item \emph{Expand.} If the selected $\tau_t$ falls on an endpoint of $\mathcal{T}_t$ that is not also an endpoint of $\mathcal{T}$, the window may have excluded the maximum. Widen $\mathcal{T}_t$ in that direction and return to step 2, re-using the nodes already evaluated.
+\end{enumerate}
+The cost is $O(T\cdot M)$ evaluations of closed-form expressions, with no derivatives and no initial guess. The resulting path may optionally be polished by Algorithm \ref{\refalg:LOG:fast}, started at the $\tilde{\bm{\tau}}$ implied by $\bm{\tau}$; this is the recommended default, using the grid search to locate the correct branch and the gradient step to attain machine precision.
+\end{alg}

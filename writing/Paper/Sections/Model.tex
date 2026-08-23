@@ -1,0 +1,153 @@
+\section{The Model}\label{sec:model}
+\subsection{Demographics, Inequality, and Institutions}\label{sec:model:Demo}
+We consider an economy populated by overlapping generations of workers and retirees. Within each generational cohort, we consider $J+1$ household types indexed $j = 0, ..., J$. The $j>0$ household types allocate time between labor and leisure, pay taxes on labor income, consume, and save. When they reach retirement, they spend the return on their savings and any social security benefits they may receive, and die. Type $j=0$ households similarly allocate time between labor and leisure, consume, and save for retirement. However, they supply labor to an informal labor market, thus not subject to labor income taxes, and they save for retirement using an informal savings technology. The distribution of type $j>0$ households is given by $\gamma_j$ with $\sum_{j>0} \gamma_j = 1$, and the share of type $j=0$ households is $\gamma_0$. The ratio of workers to retirees in period $t$ follows a deterministic process, and is given by $\nu_t$. 
+
+
+The government runs a pay-as-you-go (PAYG) pension system with a balanced budget. Each period, the government imposes a tax on labor supplied in the formal sector and transfers the collected amount directly to retirees. We consider social security systems that differ along two dimensions: whether workers need to qualify to receive full benefits or not and the type of benefits provided - either tied to earnings or flat-rate. We describe the different systems in section \ref{sec:model:socialSecurity}. 
+
+Policy decisions are taken by a government that acts in the interest of voters, but lacks commitment. We consider both finite and infinite horizon economies.
+
+\subsection{Technology}
+\begin{subequations}\label{eq:model:aggStates}
+In the formal sector, a continuum of competitive firms transform aggregate capital and labor into output. We define the aggregate formal labor supply as 
+\begin{align}
+    H_t =& N_th_t, & h_t&\equiv \sum_{i>0}\gamma_{i}\eta_{i}h_{t,i}, 
+\end{align}
+where $N_t$ is the number of formal workers at time $t$, $h_{t,i}$ is time allocated to labor by household type $i$, and $\eta_i$ is their labor productivity, normalized such that $\sum_{i>0}\gamma_{i}\eta_{i}=1$. Capital is owned by formal retirees and fully depreciates after a period. The economy-wide capital stock per formal worker, $k_t$, therefore corresponds to the economy-wide per capita savings of formal workers in the previous period, $s_{t-1}$, normalized by $\nu_t$. We define the aggregate capital stock from
+\begin{align}
+    K_t =& N_{t-1} s_{t-1}, & s_{t-1}&\equiv \sum_{i>0}\gamma_{i}s_{t-1,i}.
+\end{align}
+\end{subequations}
+
+
+The representative firm produces output using labor and capital and a conventional Cobb-Douglas technology
+\begin{align}\label{eq:production}
+    Y_t = A_tK_t^{\alpha}H_t^{1-\alpha}
+\end{align} 
+In equilibrium this implies the following factor prices:
+\begin{align}\label{eq:factorPrices}
+    R_t = \alpha A_t \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha-1}, \qquad w_t = (1-\alpha)A_t \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha}.
+\end{align}
+
+In the informal sector, workers' wage is given by $w_t^0$ and retirees' return on savings is given by $R^0_t$. These are independent of informal workers' labor supply and aggregate savings, and proportional to formal sector's factor prices. 
+
+\subsection{Preferences and Household Choices}
+
+Households value consumption and leisure (i.e.\ they dislike working), and discount the future at factor $\beta \in(0,1)$. Representing utility by function $u(c,h)$ with $u'_c\geq 0, u'_h\leq, u''_{cc}\leq 0, u''_{hh}\geq0$, the welfare of a young household of type $i$ born in period $t$ is defined by
+\begin{align}
+    u \left(c_{1,t}^i, h_{t,i} \right) +\beta u \left(c_{2,t+1}^i, 0\right).
+\end{align}
+
+\begin{subequations}\label{eq:model:BC} The budget constraints for formal and informal workers are given by:
+\begin{align}
+    c_{1,t}^i &= w_t\eta_i h_{t,i}(1-\tau_t)-s_t^i, \ \ \ \ i>0, \\
+    c_{1,t}^0 &= w_t^0\eta_0h_{t,0} -s^0_t,
+\end{align}
+where $\tau_t$ is the social security tax rate. As retirees, households receive a pension $b_{t+1}^i$ that may depend on the individual household's contribution, and thus on their labor supply, $h^i_t$:
+\begin{align}
+    c_{2,t+1}^i &= s_t^iR_{t+1} + b_{t+1}^i(h_{t,i}), \ \ \ \ \ i>0 , \\
+     c_{2,t+1}^0 &= s_t^0 R^0_{t+1} + b_{t+1}^0(h_{t,0}) .
+\end{align}
+\end{subequations}
+
+
+\begin{subequations}\label{eq:model:formalFOCs}
+Optimization yields the first order conditions that represent a leisure/consumption tradeoff and a conventional Euler condition for intertemporal consumption smoothing:\footnote{We are using shorthand notation $u_i \equiv u(c_i,h_i)$ with timing implicit by the variable we take derivatives with respect to.}
+\begin{align}
+    -\dfrac{\partial u_i}{\partial h_{t,i} } &= \dfrac{\partial u_i}{\partial c_{1,t}^i}\left(w_t(1-\tau_t)\eta_i+\dfrac{\partial b_{t+1}^i/\partial h_{t,i} }{R_{t+1}}\right), \ \ \ \  i>0 \\ 
+    -\dfrac{\partial u_i}{\partial h_{t,0} } &= \dfrac{\partial u_i}{\partial c_{0,t}^i}\left(w^0_t \eta_0+\dfrac{\partial b_{t+1}^0/\partial h_{t,0} }{R^0_{t+1}}\right),  \\ 
+    \dfrac{\partial u_i}{\partial c_{1,t}^i} &= \beta R_{t+1}\dfrac{\partial u_{i}}{\partial c_{2,t+1}^i}, \ \ \ \ i>0 \\
+    \dfrac{\partial u_i}{\partial c_{1,t}^0} &= \beta R^0_{t+1}\dfrac{\partial u_{i}}{\partial c_{2,t+1}^0}.\label{6d}
+\end{align}
+\end{subequations}
+
+
+Optimal savings and labor supply decisions can, in general, be written as
+\begin{subequations}\label{eq:householdChoices}
+\begin{align}
+    h_t^i &= h_t^i\left(s_{t-1}, s_t, h_t, h_{t+1}, \tau_t, \tau_{t+1}\right) \\
+    s_t^i &= s_t^i\left(s_{t-1}, s_t, h_t, h_{t+1}, \tau_t, \tau_{t+1}\right),
+\end{align}
+\end{subequations}
+where the dependence on $h_{t+1}, \tau_{t+1}$ comes from the pension system. We consider two cases: An \textit{analytical} model with hand-to-mouth informal households (for which equation (\ref{6d}) need not hold), and a \textit{numerical} model with informal households saving for retirement.
+
+
+\subsection{Social Security System}\label{sec:model:socialSecurity}
+
+The government runs a pay-as-you-go pension system with a balanced budget. Every period, the government taxes labor income in the formal sector and pays pensions to current retirees. 
+
+We consider systems that differ along two dimensions. First, in {\it contributive} systems workers have to meet a contribution requirement to receive full pension benefits. In contrast, in a {\it universal} system  all workers are eligible to receive pensions upon retirement, regardless of whether they contributed to it or not.
+
+Second, pension schemes also differ according to the relationship between the level of contributions and benefits. {\it Bismarckian} systems provide earnings-related benefits; this gives workers an additional incentive to work as they perceive this increases their future pensions. In contrast, {\it Beveridgean} systems offer flat payments and lack this incentive. We model this by making benefits to consist of a common amount for all formal workers and a second component that is proportional to past labor income.\footnote{This formulation has been frequently used in the study of redistributive social security, see e.g.\ \textcite{Casamattaa1}.} 
+
+Benefits are thus given by:
+\begin{subequations} \label{eq:model:governmentBudget}
+\begin{align}
+    b_t^i =& \left[\theta h_{t-1,i} \eta_{i}+(1-\theta)h_{t-1}\right] \overline{b}_t \\
+    b_t^0 =& \epsilon h_{t-1} \overline{b}_t
+\end{align}
+where $\epsilon$ determines the level of universal pensions received by informal workers, $\theta$ measures how Bismarckian are the benefits of formal workers, and $\overline{b}_t$ is the average formal worker's pension benefits. With $\epsilon=0$ the system is purely contributive and there are no pensions for informal workers. With $\epsilon = 1-\theta$ they receive the basic common pension of formal workers, and with $\epsilon = 1-\theta+\theta \eta_1 h_{t-1,1}/h_{t-1}$ the system is purely universal in the sense that informal workers receive the same pensions as the type of formal working household with lowest productivity.  
+
+The balanced budget requirement implies that 
+\begin{align*}
+    \nu_t w_t\tau_th_t = \sum_{j \geq 0} \gamma_j b_t^j
+\end{align*}
+This implies that the average pension rate $\overline{b}_t$ is:% is defined only in terms aggregate states:
+\begin{align}
+    \overline{b}_t = \dfrac{\nu_tw_th_t\tau_t}{h_{t-1}(1+\gamma_0 \epsilon)}.
+\end{align}
+\end{subequations} 
+
+
+
+\subsection{Elections}
+
+Elections take place at the beginning of each period. We assume that preferences are aggregated through probabilistic voting.\footnote{See \textcite{LindbeckW87a1}.} Thus, policy maximizes a convex combination of the objective functions of all groups of voters, where the weights reflect the groups' sizes and their responsiveness to policy changes. We allow for age related variation in responsiveness, reflected in a per capita political influence weight of unity for young voters and a per capita weight of $\omega \geq 0$ for retired voters. 
+
+
+\subsection{Equilibrium}\label{sec:model:equilibrium}
+
+\smalltitle{Competitive Equilibrium.} 
+In economic equilibrium, firms and households optimize given factor prices, policies, and a vector of aggregate states $z_t$, which includes exogenous demographics as well as the distribution of states $\lbrace s_{t-1,j}, h_{t-1,j}\rbrace_j$. In a rational expectations equilibrium, the path of policies $\left\lbrace \tau_s\right\rbrace_{t\leq s \leq T}$ fully determines an allocation and price system. 
+
+Conditional on some initial states $z_0$ and a policy sequence $\lbrace \tau_t\rbrace_{0\leq t\leq T}$, a competitive equilibrium is given by an allocation and price system such that
+\begin{enumerate}
+    \item households optimize;
+    \item aggregate states are defined according to \eqref{eq:model:aggStates}, markets clear, and factor prices are determined according to \eqref{eq:factorPrices} for all $t$; and
+    \item the government budget constraints in \eqref{eq:model:governmentBudget} are satisfied for all $t$.
+\end{enumerate}
+
+
+\smalltitle{Politico-economic equilibrium.}
+In politico-economic equilibrium political decision makers optimally choose tax rates, taking all implications of their actions into account and forming rational expectations about future policy choices. We assume that these choices are Markov, i.e.\ they are functions of the fundamental state variables. The decision maker at date $t$ takes the distribution of states $\lbrace s_{t-1,j}, h_{t-1,j} \rbrace$ as well as the continuation policy $\tau^{+1}_t(z_t)$ as given. Furthermore, given the continuation tax function, the policymaker takes as given the following law of motion for the state variables as a function of current policy choices:
+\begin{align}\label{eq:model:lawOfMotion_General}
+    z_{t+1} = \zeta_t\left(z_t, \tau_t, \tau_t^{+1}\right).
+\end{align}
+Subject to \eqref{eq:factorPrices}, \eqref{eq:model:governmentBudget}, \eqref{eq:model:lawOfMotion_General}, the policymaker chooses $\tau_t$ to maximize 
+\begin{align}
+    \mathcal{W}_t\left(z_t, \tau_t; \tau_t^{+1}(z_{t+1})\right) \equiv & \sum_{j}\gamma_j \mu_j \left[\omega \mathcal{O}_j(z_t, \tau_t)+\nu_t \mathcal{Y}_j\left(z_t, \tau_t;\tau_t^{+1}(z_{t+1})\right)\right], \notag
+\end{align}
+where the objective function is the weighted sum of indirect utilities from retirees $\mathcal{O}_j$ and workers $\mathcal{Y}_j$, with weights reflecting relative population sizes through $\nu_t$ and $\gamma_j$, relative political weight of retirees $\omega$, and propensity to vote $\mu_j$.
+
+\begin{definition}\label{def:PEE}
+A \emph{politico-economic equilibrium} as of period $t$ conditional on $z_t$ consists of a sequence of tax functions, $\{ \tau_{\iota}(\cdot) \}_{\iota \geq t}$; a sequence of continuation tax functions, $\{ \tau_{\iota}^{+1}(\cdot) \}_{\iota \geq t}$; a sequence of laws of motion for the state variables, $\{ \zeta_{\iota}(\cdot) \}_{ \iota \geq t}$; policy choices, $\{\tau^{\star}_{{\iota}} \}_{ \iota \geq t}$; and a competitive equilibrium allocation such that
+\begin{enumerate}
+    \item tax functions are optimal subject to continuation tax functions:
+    \begin{align*}
+        \tau_{\iota}(z_{\iota}) \in \arg \max_{\tau_{\iota}} \mathcal{W}_{\iota} (z_{\iota},\tau_{\iota};\tau_{\iota}^{+1}(\cdot)) \ \mathrm{for\ all} \ z_{\iota}, \ \mathrm{s.t.} \ \eqref{eq:factorPrices}, \eqref{eq:model:governmentBudget}, \eqref{eq:model:lawOfMotion_General}, \ \iota \geq t;
+    \end{align*}
+    \item continuation tax functions are consistent with tax functions:\footnote{With a finite horizon, $\tau^{T+1}( z_{T})=\emptyset$.}
+    \begin{align*}
+        \tau_{\iota-1}^{+1}(z_{\iota}) = \tau_{\iota}\left(z_{\iota}, \tau_{\iota}^{+1}(z_{\iota+1}(\cdot))\right)  \mathrm{for\ all} \ z_{\iota} , \iota \geq t ;
+    \end{align*}
+    \item laws of motion are consistent with the policy and continuation policy functions according to \eqref{eq:model:lawOfMotion_General};
+    \item equilibrium tax choices are generated by the continuation tax function,
+    \begin{align*}
+        \{\tau^{\star}_{\iota} \}_{\iota \geq t} =\tau_{\iota-1}^{+1}(z_{\iota}) ,
+    \end{align*}
+    and $\{\tau^{\star}_{\iota} \}_{ \iota \geq t} $ implements a competitive equilibrium allocation.
+\end{enumerate}
+\end{definition}
+Note that for infinite horizon and a recursive time-autonomous structure, the policy and continuation policy functions are time-autonomous functions of the state as well, and conditions i.\ and ii.\ above are combined in a fixed point requirement. 
+
+

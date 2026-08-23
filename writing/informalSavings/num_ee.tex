@@ -1,0 +1,47 @@
+\subsection{The economic equilibrium}\label{\refsec:EE}
+
+\smalltitle{With log preferences.}
+Assume that we know the path of taxes $\tau_t$, pension characteristics $\theta_t, \epsilon_t$, and an initial exogenous level of savings $s_0$. In this case, recall that we simply have $B_{t+1}^i = \beta_{t,i}$. Given this, we can solve for the economic equilibrium without any numerical root finding: 
+\begin{itemize}
+    \item First compute $\Gamma_{s,t}$ from \eqref{\refeq:auxiliary:Gammas} (only defined for $t<T$).
+    \item Then, compute finite horizon $\Theta_{h,t}$ from stacking \eqref{\refeq:auxiliary:Thetah} for $t<T$ and \eqref{\refeq:auxiliary:ThetahT} for $t=T$. 
+    \item Then, compute $\Theta_{s,t}$ from \eqref{\refeq:auxiliary:Thetas} (only defined for $t<T$ as well).
+    \item Given $s_0$ and $\Theta_{s,t}$ we can iterate forward on \eqref{\refeq:auxiliary:s} to solve for $s_t$ for all $t<T$. For $t=T$ we have $s_T = 0$ per construction.
+\end{itemize}
+As explained in \cref{\refmodelsec}, this set of core variables allows us to solve for individual labour supply and savings, factor prices, pension benefits, and finally consumption levels (from budgets).
+
+We emphasize that the informal savings ratio $\iota_t$ is \emph{not} part of this core. Informal savings do not enter the formal capital stock, so none of $\Gamma_{s,t}, \Theta_{h,t}, \Theta_{s,t}, s_t, h_t$ depends on them, and the steps above are unaffected by the informal households' savings decision. Once the core is solved, $\iota_t$ follows in closed form from \eqref{\refeq:auxiliary:s0_s}, and is defined for $t<T$ only (at $t=T$ the informal, like the formal, save nothing). The same applies with CRRA preferences below, with $B_{t+1}^0$ evaluated at the solved $\left(s_t, h_{t+1}\right)$.
+
+
+
+
+\smalltitle{With CRRA preferences.}
+Assume that we know the path of taxes $\tau_t$, pension characteristics $\theta_t, \epsilon_t$, and an initial exogenous level of savings $s_0$. The core of the economic equilibrium can then be reduced to identifying vectors of $\Gamma_{s,t}, h_t, s_t$. The three vectors are identified by three set of conditions (we have a square system of nonlinear equations):
+\begin{itemize}
+    \item The finite horizon labour supply condition requires \eqref{\refeq:auxiliary:h} with $\Theta_{h,t}$ being computed using \eqref{\refeq:auxiliary:Thetah} for $t<T$ and \eqref{\refeq:auxiliary:ThetahT} for $t=T$. 
+    \item The finite horizon savings decision requires solving for $t<T$ (with $s_T = 0$); we use \eqref{\refeq:auxiliary:sFromH} for this. 
+    \item Finally, $\Gamma_{s,t}$ is also only defined for $t<T$; we use \eqref{\refeq:auxiliary:Gammas} for this with condition \eqref{\refeq:auxiliary:Gammas} evaluated with $B_{t+1}^i(s_t, h_{t+1})$.
+\end{itemize}
+Given a solution to this core of the economic equilibrium ($s_t, h_t, \Gamma_{s,t}$), the rest of the outcomes can be solved as in the log case. 
+    
+
+\smalltitle{Initializing with steady state savings.}
+When we solve for the economic equilibrium given vectors of $\tau_t, \theta_t$, and $\epsilon_t$, our default option for the initial exogenous level of savings $s_0$ is to solve for steady state levels using parameter values from the first period ($t=1$). 
+
+
+With Log preferences, we have that $B^i = \beta_i$ and then we can simply solve for $\Gamma_{s}$ directly in closed-form using the general equation \eqref{\refeq:auxiliary:Gammas}. Given this, we can then compute steady state savings from \eqref{\refeq:steadystate_LOG:s} (here just repeated from \cref{\refmodelsec}):
+\begin{subequations}\label{\refeq:steadystate_LOG}
+    \begin{align}
+        \Gamma_s =& \frac{1}{1+\xi}\frac{\sum_i \frac{\gamma_{i}\eta_{i}^{1+\xi}}{X_{i}^{\xi}}\frac{B^i}{1+B^i}}{1+\frac{1-\alpha}{\alpha}\frac{p\tau}{\kappa}\left(\theta+(1-\theta)\sum_i\frac{\gamma_{i}}{1+B^i}\right)} \label{\refeq:steadystate_LOG:Gammas}\\ 
+         s^* =& \Gamma_h^{1+\xi}\left[\left(\frac{(1-\alpha)(1-\tau)}{\Gamma_h-\frac{1-\alpha}{\alpha}\frac{p\theta\tau}{\kappa}\Gamma_s}\right)^{1+\xi}\frac{\Gamma_s^{1+\alpha\xi}}{\nu^{\alpha(1+\xi)}}\right]^{\frac{1}{1-\alpha}} \label{\refeq:steadystate_LOG:s}
+    \end{align}
+\end{subequations}
+
+With CRRA preferences, we have to identify $s^*$ numerically instead. This can be done technically in several ways, but we prefer the following as it allows us to solve the problem as a bounded scalar search where there are robust and fast algorithms available (e.g. golden-section search). Specifically, we solve for the $\Gamma_s$ that satisfies the following condition \eqref{\refeq:steadystate_CRRA:Gammas}
+\begin{subequations}\label{\refeq:steadystate_CRRA}
+\begin{align}
+    &\Gamma_s(1+\xi)\left[1+\frac{1-\alpha}{\alpha}\frac{p\tau}{\kappa}\left(\theta+(1-\theta)\sum_i\frac{\gamma_i}{1+B^i(\Gamma_s)}\right)\right] = \sum_i\frac{\gamma_i\eta_i^{1+\xi}}{X_i^{\xi}} \frac{B^i(\Gamma_s)}{1+B^i(\Gamma_s)}, \label{\refeq:steadystate_CRRA:Gammas} \\
+    &\text{where }B^i(\Gamma_s) = \left(\beta_i\right)^{\rho} \left(\frac{\alpha}{p}\frac{\Gamma_h-\frac{1-\alpha}{\alpha}\frac{p\theta\tau}{\kappa}\Gamma_s}{(1-\alpha)(1-\tau)}\frac{\nu}{\Gamma_s}   \right)^{\rho-1} \label{\refeq:steadystate_CRRA:Bi}
+\end{align}
+\end{subequations}
+It is relatively straightforward to define a bounded interval of $\Gamma^s$ to test out. For instance, with constant $B^i$ across types, we have that $\Gamma_s \in \left(0, B/((1+B)(1+\xi)) \right)$, which means that we can practically always use a golden section search with bounds $(0, 0.9)$ and be sure to identify the solution.

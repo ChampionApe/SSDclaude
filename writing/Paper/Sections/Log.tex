@@ -1,0 +1,75 @@
+\section{Logarithmic-GHH Preferences}\label{sec:LOG}
+In order to derive analytical solutions that allow us to gain intuition on the determinants of taxes and system characteristics, we follow \textcite{GreenwoodHH88a1} in this section and assume that 
+\begin{align}
+    u(c_{1,t},h_{1,t})= \ln\left(\tilde{c}_{1,t}^i\right), \qquad \tilde{c}_{1,t}^i \equiv c_{1,t}^i - \dfrac{X_i\xi}{1+\xi}\left(h_{t,i}\right)^{\frac{1+\xi}{\xi}}
+\end{align}
+where $\xi$ is the Frisch elasticity of the labor supply and $X_j$ is a type-specific leisure preference parameter. To derive analytical results for the determinants of taxes in politico-economic equilibrium, we further assume that informal households do not save and receive an endowment when old that is proportional to the wage rate in the formal sector absent labor income taxes. When performing quantitative analysis, we use the more general CRRA utility and allow for informal savings.
+
+
+\subsection{Economic Equilibrium}
+
+With log-GHH preferences, formal households $i$ supply labor and save according to
+\begin{subequations}\label{eq:LOG:formalSol_i}
+\begin{align}
+    h_{t,i} &= \left(\dfrac{\eta_iw_t(1-\tau_t)+\frac{\theta \overline{b}_{t+1} \eta_i}{R_{t+1}}}{X_i}\right)^{\xi} \\
+    s_{t,i} &= \dfrac{\beta}{1+\beta}\left[w_t\left(1-\tau_t\right)h_{t,i}\eta_{i}-\dfrac{X_{i}\xi}{1+\xi}\left(h_{t,i}\right)^{\frac{1+\xi}{\xi}}\right]-\dfrac{b_{t+1}^i/R_{t+1}}{1+\beta}.
+\end{align}
+\end{subequations}
+
+
+In appendix \ref{app:EE} we show that, in economic equilibrium, any relevant variable $x$ (savings, labor supply, and consumption) can be written as the aggregate savings $s_{t-1}$ raised to some power $(\sigma_x)$ times a coefficient $\Theta_{x,t}$ that is only a function of parameters and taxes. That is, for any variable
+\begin{align*}
+    x_t = \Theta_{x,t} \left(\dfrac{s_{t-1}}{\nu_t}\right)^{\sigma_x},
+\end{align*}
+where $\Theta_{x,t}$ can be a complicated function of parameters and -- potentially -- tax rates, and $\sigma_x$ is a function only of parameters. 
+
+\begin{proposition}\label{prop:LOG:EE}
+In economic equilibrium we have the following:
+\begin{enumerate}
+    \item Aggregate labor is decreasing in $\tau_t$, $\epsilon$ and $\gamma_0$ and increasing in $\tau_{t+1}, \theta$. Aggregate savings are decreasing in $\tau_t$, $\tau_{t+1}$, and $\theta$ and are increasing in $\epsilon$ and $\gamma_0$. 
+    \item Labor income inequality and relative labor supply is independent of pension policy and given by 
+    \begin{align}
+        \dfrac{\eta_ih_{t,i}}{h_t} = \frac{\eta_i^{1+\xi}}{X_i^{\xi}\Gamma_h}, \qquad \Gamma_h \equiv \sum_i \frac{\gamma_i\eta_i^{1+\xi}}{X_i^{\xi}}.
+    \end{align}
+    \item Savings of formal households relative to average savings are independent of $\tau_t$ and linear in $\tau_{t+1}$:
+    \begin{align}
+        \frac{s_{t,i}}{s_t} = \frac{\eta_i^{1+\xi}}{X_i^{\xi}} \frac{1}{\Gamma_h} + \frac{1-\alpha}{\alpha} \frac{\tau_{t+1}}{1+\gamma_0\epsilon}\frac{1-\theta}{1+\beta}\left(\frac{\eta_i^{1+\xi}}{X_i^{\xi}\Gamma_h}-1\right).
+    \end{align}
+    \item When $\tau_{t+1}=0$ or with fully Bismarckian pensions ($\theta = 1$), the heterogeneity in savings exactly matches labor income inequality. An increase in $\tau_{t+1}$ or a decrease in $\theta$ amplifies the spread in private savings.
+    \item Informal savings increase in $\tau_t$ and $\theta$ while they are decreasing in $\tau_{t+1}$ and $\epsilon$; the effect of $\gamma_0$ is ambiguous. Current taxes increase the ratio $s_{t,0}/s_t$ but the effect of future taxes is ambiguous. 
+\end{enumerate} 
+\end{proposition}
+
+
+Proposition \ref{prop:LOG:EE} shows some basic properties of the model and highlights important drivers of inequality and heterogeneity in the model. Part i.\ states that current taxes reduce labor supply and savings while future taxes increase labor supply as the higher expected benefits make working more attractive, while reducing the need for savings. For the same reason an increase in $\theta$ increases labor supply. With GHH preferences this increases the marginal utility with respect to $\tilde{c}_{1,t}$ implying, through the Euler equation, a reduction in the aggregate savings rate. An increase in $\epsilon$ implies that future tax receipts will be distributed more towards informal households reducing the expected benefit of formal workers; this increases savings of the formal workers. This expected reduction in benefits reduces the incentive to work. The effects of changes in the share of informal workers ($\gamma_0$) and degree of universal benefits ($\epsilon$) are identical.
+
+Part ii.\ and iii.\ will be important for allowing us to reduce the dimensionality of the state space when studying the politico-economic equilibrium. Part iv.\ implies that an increase in future taxes or a decrease in $\theta$ increases the dispersion in saving rates and thus in private wealth; this shows, as is well known, that savings rates are increasing in labor income with redistributive pensions. Finally, part v.\ states that the savings rate of informal workers is increasing in the current tax rate and $\theta$. This happens because informal workers are not taxed nor directly affected by $\theta$, but they perceive an increase in the return on their savings, since the reduced capital accumulation in the formal sector has a positive effect on the return to informal savings. An increase in future taxes or in $\epsilon$ reduce the incentive of formal workers to save while the effect of $\gamma_0$ is ambiguous as on the one hand this reduces the return on savings, but on the other this reduces the expected benefit.\footnote{The above-mentioned symmetry between $\epsilon$ and $\gamma_0$ only breaks down in the expression for $s^0_t$.}
+
+
+\subsection{Politico-Economic Equilibrium}
+
+In a Markov Perfect Equilibrium we have that in principle the distribution of past savings (and thus aggregate capital per worker) and the distribution of past labor supply choices are relevant state variables for the political choice of the tax rate. With log-GHH preferences the dimensionality of the state space is immediately reduced by proposition \ref{prop:LOG:EE} ii.\ according to which taxes have no impact on relative labor supply.\footnote{This convenient property of GHH preferences also holds when the utility function is CRRA, see appendix \ref{app:EE:CRRA}.}
+
+If we allow informal workers to save then their past savings choice is also a state variable, and one that is affected both by current and future taxes. Thus, in order to derive some analytical results for the politico-economic equilibrium, we consider the case that informal workers are hand-to-mouth such that only aggregate formal capital affects their indirect utility function through its effect on the endowment of goods they receive. As we make this endowment proportional to formal sector wages, an alternative interpretation is that informal workers continue working into retirement age, albeit at a lower productivity.\footnote{We follow the simplifying assumption that they receive an endowment of goods to keep the model as symmetric with the general case as possible.}
+
+
+With log-GHH preferences and hand-to-mouth informal households, the policymaker maximizes
+\begin{align}\label{eq:LOG:PolObj}
+    \mathcal{W}_t(z_t,\tau_t; \tau_t^{+1}(z_{t+1})) = \sum_i \gamma_i \mu_i&\left[\omega \ln\left(c_{2,t}^i\right)+\nu_t\left(\ln\left(\tilde{c}_{1,t}^i\right)+\beta\ln\left(c_{2,t+1}^i\right)\right)\right] \notag \\
+    +\gamma_0\mu_0&\left[\omega \ln\left(\tilde{c}_{2,t}^0\right)+\nu_t\left(\ln\left(\tilde{c}_{1,t}^0\right)+\beta \ln\left(c_{2,t+1}^0\right)\right)\right]
+\end{align}
+
+\begin{proposition}\label{prop:LOG:PEE}
+In politico-economic equilibrium with hand-to-mouth informal households, all consumption functions are log-separable in the endogenous state variables, making policy only a function of parameters, including system characteristics and demographics. Politico-economic equilibrium taxes are increasing in $\omega$, decreasing in $\nu_t$, and increasing in income inequality. Furthermore they are decreasing in $\theta$. There exists a threshold level $0<\bar{\gamma}_0<1$ such that an increase in $\epsilon$ reduces equilibrium taxes when $\gamma_0<\bar{\gamma}_0$ and increases it otherwise. 
+\end{proposition}
+
+
+In appendix \ref{app:EE:LOG} we show that the economic equilibrium is log-separable in aggregate states and in appendix \ref{app:PEE:LOG}, we show in addition that the only other relevant state variable, the distribution of formal households' savings, $s_{t-1,i}/s_{t-1}$, is a function solely of parameters and the current policy; this leaves the future distribution, $s_{t,i}/s_{t}$, independent of current policy choices. Proposition \ref{prop:LOG:PEE} states that despite the model featuring pension systems that differ along two dimensions and households being heterogeneous, under log-GHH preferences and hand-to-mouth informal households, the politico-economic equilibrium shares the property of Gonzalez-Eiras and Niepelt (2008) that policy is only a function of parameters and demographics. Naturally, the equilibrium relations are significantly more complex and can only be solved for numerically in most cases. 
+
+Notwithstanding the orthogonality of current policy with state variables, the trade-offs underlying the equilibrium tax rates are dynamic in nature as they relate contemporaneous policy decisions to capital accumulation and thus future wages and tax revenue. The tractability of the model comes from specifying functional forms that render the factor price elasticities and the derivatives of the indirect utility functions orthogonal to the capital stock and relative labor supply and relative savings decisions independent of current taxes. From equation \eqref{eq:LOG:PolObj} we can compute the marginal effects of taxes on the indirect utility function of different types of households in period $t$. This allows to see how different parameters, in particular system characteristics, income inequality, and demographics affect political preferences. 
+
+The comparative statics results on $\omega$ and $\nu_t$ mirror those in Gonzalez-Eiras and Niepelt (2008) and Song (2011). The latter study also shows that the equilibrium tax rate increases with income inequality. A distinct contribution to the politico-economic literature on social security is the prediction that moving toward a more Bismarckian benefit formula weakens political support for taxation relative to a more Beveridgean system. The reason for this is that an increase in $\theta$ benefits higher income households at the expense of lower income ones. Since the latter have a higher marginal utility they have a higher weight in the political process. Thus, in the aggregate, support for taxes from retirees declines when there is an increase in $\theta$. An increase in $\epsilon$ hurts formal retirees and benefits informal ones. Thus, when $\gamma_0$ is low an increase in $\epsilon$ will lower equilibrium taxes. Since realistically informal workers are poorer than formal workers, the intensity of preference from an increase in $\epsilon$ is stronger for the former than the average of the latter. Thus, when $\gamma_0 \approx 1$ an increase in $\epsilon$ increases equilibrium tax rates. 
+
+
+Under the assumption that informal households rely on an informal savings technology instead of receiving an endowment in retirement, there is a new state variable: $s_{t-1,0}/s_{t-1}$. The political objective function remains log-separable in $s_{t-1}$ and $h_{t-1}$ but we show in appendix \ref{app:EE:CRRA} that $s_{t-1,0}/s_{t-1}$ not only depends on past policy choices (as $\tau_{t-1}$ affects $\Theta_{s,t-1}$) but is forward looking as it depends explicitly on $\tau_t$. Appendix \ref{app:PEE:LOG_s0} derives first order conditions for the policymaker in this case and appendix \ref{app:numeric} describes a numerical strategy to solve the model.
+

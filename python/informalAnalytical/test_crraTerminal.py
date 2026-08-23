@@ -25,12 +25,7 @@ t = tIdx[-1]
 pos = tIdx.get_loc(t)
 tLag = tIdx[pos - 1]
 
-ok = True
-def check(name, cond, extra = ''):
-    global ok
-    print(('PASS' if cond else 'FAIL') + '  ' + name + ' ' + extra)
-    if not cond:
-        ok = False
+from gridsearch.testing import check, report
 
 # ---- 0. self.GS structure: symmetric between LOG and CRRA, correctly wired
 check("LOG.GS['PEE']['stateGrids'] is None (LOG's political FOC has no state)",
@@ -127,6 +122,4 @@ check('report_T re-run on its own output reproduces it exactly',
       np.array_equal(reportAgain['h'].values, res2['h'].values) and
       np.array_equal(reportAgain['Θh'], res2['Θh']))
 
-print()
-print('ALL PASS' if ok else 'SOME FAILURES')
-sys.exit(0 if ok else 1)
+report()

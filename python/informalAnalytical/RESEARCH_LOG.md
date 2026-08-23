@@ -84,3 +84,59 @@ first — this log is for history and open decisions, not current state).
 
 **Next**: `ρ` far from 1 (~0.5, ~2) is untested — the CRRA backward recursion + calibration root together
 may need a more robust solve strategy there (see "Known limitations" in README).
+
+
+## 2026-08-10 — `hi`/`bi` were wrong: `hRatio` was not the ratio its name claimed
+
+Found while writing primitive-budget tests for `InformalSavings`, which had inherited the same code; see
+the root log for the cross-module framing.
+
+**The bug.** `hRatio` returned `auxProd/Γh = (ηi^(1+ξ)/Xi^ξ)/Γh`, which is `h_{t,i}·η_{t,i}/h_t`, not
+`h_{t,i}/h_t = (ηi/Xi)^ξ/Γh` (doc `eq:EE:hi`) as its name and docstring claimed. Two consequences: `hi()`
+returned `h_i·η_i`, and `bi()` multiplied by `ηi[t-1]` a second time on top of an already η-weighted ratio.
+
+**Blast radius: reporting only.** `hi`/`bi` were called from `EE_report` and nowhere else
+(`base.py:161,183` ← `model.py:440,442`). The EE core, the PEE solve and the calibration never touched
+them, so no solved policy path or calibrated parameter was affected — but `bi`/`hi` in any saved report
+are. Diagnostics before the fix: `∑i γi·ηi·h_i − h = 0.73`, and the PAYG budget missed by 108% of
+contributions.
+
+**Why it survived.** The three FOC-critical consumers — `si_s`'s third term, `c2i`, `dlnc2i_dτ` —
+genuinely want `auxProd/Γh` (the doc writes `η^(1+ξ)/X^ξ` over `Γh` in all three), so every test that
+exercised the political machinery passed. Nothing asserted the primitive budget identities.
+
+**Fix.** Split into `hRatio` (`h_i/h`, doc's `eq:EE:hi`) and `hηRatio` (the old computation, `h_iη_i/h`);
+`hi` uses the first, the other four consumers the second. All five pre-existing test files still pass
+unchanged, confirming the fix is behavior-neutral outside `EE_report`.
+
+**Added `test_ee.py`** (22 checks at ρ=1 and ρ=1.15): rebuilds every consumption level from the primitive
+FOCs/budgets, plus the PAYG balance and the two aggregation identities (`∑γi·ηi·h_i = h`,
+`∑γi·(s_i/s) = 1`) that catch exactly this class of bug.
+
+**Doc fix.** `model_setup.tex`'s `eq:informalBudget` wrote `χ_{t+1}` for the old informal's productivity
+while `eq:informalOpt`'s `h_{2,t+1}^0` and `eq:EE:c0` both use `χ_t`; corrected the outlier to `χ_t`,
+which is what the code (`auxProd0χ(lag='[t-1]')`) already implements. No code change implied.
+
+## 2026-08-12 — `createCopyFromt0`: model copies for shock experiments
+
+Added `model.py`'s module-level `_shiftT`/`_sliceDb` and `ModelInformalAnalytical.createCopyFromt0`/
+`stateAtT0` (§9), for "unexpected shock at `t0`" experiments: solve the baseline PEE over the full horizon,
+copy the model with its horizon restricted to `t>=t0` and renumbered to start at 0, then re-solve the copy
+seeded from the baseline's own state at `t0`. Full design (why renumbering is required and not cosmetic,
+why `db` is mutated in place, the `db['t0']` shift/`None` rule, why state seeding stays outside the copy
+method) is in the README's new "Model copies for shock experiments" section — not repeated here.
+
+Same helper (`_sliceDb`) is shared verbatim with `InformalSavings`, which grew the same method plus the
+`ι0` half of `stateAtT0` (its extra state) the same session — see that module's log.
+
+**Verification (`test_createCopyFromt0.py`).** `_sliceDb` checked on synthetic db entries covering every
+index shape (plain `Index`, `MultiIndex`, `Series`/`DataFrame`, `[t-1]`-lagged siblings, scalars,
+type-only objects); `createCopyFromt0`'s structural invariants on the real calibrated instance (`db`/`T`/
+`tFirst`/`x0`/`db['t0']`, both the shifted and `None` branches, the out-of-range `ValueError`); and a
+behavioral round trip — with no actual shock, `mt0.solvePEE_LOG(**stateAtT0(...))` reproduces the
+baseline's own tail at `t0` and later to 1e-12–1e-13 — plus confirmation that `LOG.solveRobust` genuinely
+runs on the copy rather than reusing stale-shaped warm-start caches.
+
+**Session note.** This work (and its `InformalSavings` counterpart) was implemented in the prior session
+but the README/RESEARCH_LOG update was missed before that session ended — caught and filled in at the
+start of this one, from the code and tests already on disk rather than from conversation history.

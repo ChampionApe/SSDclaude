@@ -1,0 +1,30 @@
+\subsection{Robust root finding with bounds}\label{\refsec:RobustRoot}
+In the following subsection, we identify policies that maximize political objective function solving the first order condition as a root-finding problem instead of using the political objective function directly. This is paramount to avoid having the entire distribution of past savings as state variables for the political problem. Also, we will generally only work with $\tau \in[0,1]$ for numerical stability. To deal with these two points (that we work with first order conditions and only want to evaluate most functions on $\tau\in[0,1]$), we set up an auxiliary root-finding problem. 
+
+Notationally, let $z(\tau) = f\left([\tau]_{[0,1]}\right)$ denote the first order condition evaluated in the interior $[\tau]_{[0,1]} \equiv \min(1, \max(0,\tau))$. Instead of trying to solve for $f(\tau) = 0$, we suggest solving for 
+\begin{align}\label{\refeq:root}
+    h(z,\tau) = z - |z| \underbrace{\left[a_0\min\left(\tau,0\right) + a_1\left(\max(\tau,1)-1\right)\right]}_{\equiv g(\tau)} = 0,
+\end{align}
+where $a_0, a_1>0$ are some technical parameters. In this case we have three regions:
+\begin{align*}
+    h\left(z,\tau\right) = \left\lbrace \begin{array}{ll} f(0)-|f(0)| a_0 \tau, & \tau<0 \\
+    f(\tau), & \tau\in[0,1] \\ 
+    f(1)-|f(1)|a_1(\tau-1), & \tau>1\end{array}\right., && \dfrac{\partial h}{\partial \tau} = \left\lbrace \begin{array}{ll} -|f(0)|a_0, & \tau<0 \\
+    \dfrac{\partial f}{\partial \tau}, & \tau\in[0,1] \\ 
+    -|f(1)|a_1, & \tau>1\end{array}\right.
+\end{align*}
+
+
+If the function $f(\tau)$ is well behaved (i.e. identifies a maximum), we can solve simply using $h(z(\tilde{\tau}), \tilde{\tau}) = 0$ and then report the bounded solution as $\tau = [\tilde{\tau}]_{[0,1]}$. As long as the function is well-behaved, we can use gradient-based solvers to identify roots. 
+
+If the function is not well-behaved, we may still use $h(z, \tau)$ to detect boundary solutions in some instances. Assume for instance that $f(\tau) >0$ for all $\tau\in[0,1]$, but that $\partial f/\partial \tau <0$. In this case a gradient-based algorithm would have a hard time identifying a solution staring in the interior, as it would suggest trying out lower values of $\tau$. However, note that for $\tau\geq 1$, the method still works and identifies $\tilde{\tau} = 1+1/a_1$ and thus the boundary solution of $\tau = 1$. Similarly, assume that $f(\tau)<0$ for all $\tau\in[0,1]$ and  that $\partial f/\partial \tau >0$. In this case, the same problem exists for a gradient-based solver in the interior, but searching outside the bounds still ensure that we identify the correct root $\tilde{\tau} = -1/a_0$ and thus $\tau = 0$. 
+
+
+
+\smalltitle{The extended grid.}
+Let $\mathcal{T} = \left\lbrace \tau^{(1)},...,\tau^{(M)}\right\rbrace$ with $\tau^{(1)} = l$ and $\tau^{(M)} = u$ denote a grid on the interior, and let the \emph{extended} grid $\tilde{\mathcal{T}}$ add two outer nodes
+\begin{align}\label{\refeq:extendedGrid}
+    \tilde{\tau}^{(0)} = l-\frac{1}{a_0}-\delta, \qquad \tilde{\tau}^{(M+1)} = u+\frac{1}{a_1}+\delta,
+\end{align}
+for a small $\delta>0$. We record the construction for completeness and for use in any gradient-based polishing step, but the grid searches of \cref{\refsec:PEELOG} and \cref{\refsec:PEE} are stated on the interior grid $\mathcal{T}$ instead: their selection rule \eqref{\refeq:candidates} already places $l$ and $u$ in the candidate set on the same footing as the interior crossings, which is precisely what the outer nodes are for. The outer nodes sit at (a hair beyond) the two boundary solutions of \eqref{\refeq:root}. Evaluating $h$ at $\tilde{\tau} = l-1/a_0$ gives $h = f(l)+\left|f(l)\right|$, which is identically zero whenever $f(l)<0$; at $\tilde{\tau} = u+1/a_1$ it gives $h = f(u)-\left|f(u)\right|$, identically zero whenever $f(u)>0$. A corner solution is thus encoded as an \emph{exact} zero at an outer node rather than as a sign change, and a pure sign-change test would not detect it. The offset $\delta$ shifts the node just outside the root so that the outermost cell does exhibit a sign change; since $h$ is affine in $\tilde\tau$ outside $[l,u]$, linear interpolation on that cell returns $\tilde\tau = l-1/a_0$ (resp. $u+1/a_1$) exactly, and hence $\tau = l$ (resp. $\tau = u$) after bounding. Note that $a_0, a_1$ thereby serve double duty -- as the penalty slopes in \eqref{\refeq:root} and as the placement of the outer nodes -- and the two uses must be kept consistent.
+

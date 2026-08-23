@@ -44,6 +44,7 @@
 
 %Allow long equation blocks to skip page
 \allowdisplaybreaks
+\usepackage{import}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%% References %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -127,6 +128,74 @@
 \renewcommand{\theenumi   }{\roman{enumi}}
 \renewcommand{\theenumii  }{\roman{enumii}}
 \renewcommand{\theenumiii }{\roman{enumiii}}
+% Reset counters between self-contained inputs compiled in one document.
+\newcommand{\resetdocumentnumbering}{%
+    \setcounter{section}{0}%
+    \setcounter{subsection}{0}%
+    \setcounter{subsubsection}{0}%
+    \setcounter{paragraph}{0}%
+    \setcounter{subparagraph}{0}%
+    \setcounter{equation}{0}%
+    \setcounter{table}{0}%
+    \setcounter{figure}{0}%
+    \setcounter{footnote}{0}%
+    \setcounter{theorem}{0}%
+    \setcounter{corollary}{0}%
+    \setcounter{lemma}{0}%
+    \setcounter{assumption}{0}%
+    \setcounter{definition}{0}%
+    \setcounter{problem}{0}%
+    \setcounter{proposition}{0}%
+    \setcounter{alg}{0}%
+    \setcounter{enumi}{0}%
+    \setcounter{enumii}{0}%
+    \setcounter{enumiii}{0}%
+    \setcounter{enumiv}{0}%
+}
+\newcommand{\setmodelnamespace}[1]{%
+    \edef\refmodelsec{sec:#1:model}%
+    \edef\refmodeleq{eq:#1:model}%
+    \edef\refnumsec{sec:#1:num}%
+    \edef\refnumeq{eq:#1:num}%
+    \edef\refnumalg{alg:#1:num}%
+}
+\newcommand{\modelname}{}
+\newcommand{\modelsubtitle}{}
+\newcommand{\modeltitlebody}[2]{%
+    \null\vfill
+    \begin{center}
+        {\LARGE\bfseries #1\par}%
+        \if\relax\detokenize{#2}\relax
+        \else
+            \vspace{0.75\baselineskip}%
+            {\large\itshape #2\par}%
+        \fi
+    \end{center}
+    \vfill\null
+}
+\newcommand{\modeltitle}[2][]{%
+    \clearpage
+    \thispagestyle{empty}%
+    \modeltitlebody{#2}{#1}%
+    \clearpage
+}
+\makeatletter
+\newcommand{\startmodeldocumentation}[1]{%
+    \setmodelnamespace{#1}%
+    \clearpage
+    \phantomsection%
+    \addcontentsline{mdc}{section}{\modelname}%
+    \thispagestyle{empty}%
+    \modeltitlebody{\modelname}{\modelsubtitle}%
+    \clearpage
+}
+\newcommand{\listofmodels}{%
+    \clearpage
+    \section*{Contents}%
+    \@starttoc{mdc}%
+    \clearpage
+}
+\makeatother
 \numberwithin{figure}{section}
 \linespread{1.5}
 

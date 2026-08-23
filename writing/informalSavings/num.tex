@@ -1,0 +1,42 @@
+\edef\refsec{\refnumsec}
+\edef\refeq{\refnumeq}
+\edef\refalg{\refnumalg}
+
+\section{Numerical Solution}\label{\refsec}
+Before we outline the specific solutions, we start by collecting all relevant baseline equations in one with explicit reference to the arguments that may change during a solution (all of these are simply copies from \cref{\refmodelsec}, but collected here for simplicity). We reference them with explicit arguments for the parts that may change during solution/simulation/calibration stages: 
+\begin{subequations}\label{\refeq:auxiliary}
+    \begin{align}
+        \Gamma_{s,t}\left(\bm{B}_{t+1}, \tau_{t+1}, \theta_{t+1} \right) &= \frac{1}{1+\xi}\frac{\sum_i \frac{\gamma_{t,i}\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{B_{t+1}^i}{1+B_{t+1}^i}}{1+\frac{1-\alpha}{\alpha}\frac{p_t\tau_{t+1}}{\kappa_t}\left(\theta_{t+1}+(1-\theta_{t+1})\sum_i\frac{\gamma_{t,i}}{1+B_{t+1}^i}\right)},
+        \label{\refeq:auxiliary:Gammas} \\
+        \Theta_{h,t}\left(\tau_t, \tau_{t+1}, \theta_{t+1}, \Gamma_{s,t}\right) &= \left(\Gamma_{h,t}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{(1-\alpha)(1-\tau_t)}{\Gamma_{h,t}-\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}\tau_{t+1}}{\kappa_t}\Gamma_{s,t}}\right)^{\frac{\xi}{1+\alpha\xi}} 
+        \label{\refeq:auxiliary:Thetah} \\ 
+        \Theta_{h,T}\left(\tau_T\right) &= \left(\Gamma_{h,T}\right)^{\frac{1}{1+\alpha\xi}}\left((1-\alpha)(1-\tau_T)\right)^{\frac{\xi}{1+\alpha\xi}}
+        \label{\refeq:auxiliary:ThetahT} \\
+        \Theta_{s,t}\left(\Theta_{h,t}, \Gamma_{s,t}\right) &= \left(\frac{\Theta_{h,t}}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}} \Gamma_{s,t}
+        \label{\refeq:auxiliary:Thetas} \\
+        s_t(\Theta_{s,t}, s_{t-1}) &= \Theta_{s,t} \left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}} 
+        \label{\refeq:auxiliary:s} \\
+        h_t\left(\Theta_{h,t}, s_{t-1}\right) &= \Theta_{h,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}} \label{\refeq:auxiliary:h} \\ 
+        B_{t+1}^i\left(s_t, h_{t+1}\right) &=\left(\beta_{t,i}\right)^{\rho}\left[\frac{\alpha}{p_t}\left(\frac{s_t}{\nu_{t+1}h_{t+1}}\right)^{\alpha-1}\right]^{\rho-1}  
+        \label{\refeq:auxiliary:B} \\ 
+        R_{t+1}\left(s_t, h_{t+1}\right) &= \alpha \left(\frac{s_t}{\nu_{t+1}h_{t+1}}\right)^{\alpha-1} \label{\refeq:auxiliary:R} \\
+        R_{t+1}^0\left(s_t, h_{t+1}\right) &= \chi_{t+1}^R R_{t+1}\left(s_t, h_{t+1}\right) \label{\refeq:auxiliary:R0} \\
+        B_{t+1}^0\left(s_t, h_{t+1}\right) &= \left(\beta_{t,0}\right)^{\rho}\left[\frac{R_{t+1}^0\left(s_t, h_{t+1}\right)}{p_{t,0}}\right]^{\rho-1} \label{\refeq:auxiliary:B0} \\
+        s_t\left(h_t, \Gamma_{s,t}\right) &= \left(\frac{h_t}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}}\Gamma_{s,t}
+        \label{\refeq:auxiliary:sFromH} \\
+        \frac{s_{t,i}}{s_t}\Bigg(\bm{B}_{t+1}, \tau_{t+1}, \Gamma_{s,t}\Bigg) &=\frac{\frac{B_{t+1}^i}{1+B_{t+1}^i}\frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}}{\sum_{j>0} \frac{\gamma_{t,j}\eta_{t,j}^{1+\xi}}{X_{t,j}^{\xi}}\frac{B_{t+1}^j}{1+B_{t+1}^j}}\left[1+\frac{1-\alpha}{\alpha}\frac{p_t\tau_{t+1}}{\kappa_t}\left(\theta_{t+1}+(1-\theta_{t+1})\sum_{j>0}\frac{\gamma_{t,j}}{1+B_{t+1}^j}\right)\right] \notag \\
+        -&\frac{1}{1+B_{t+1}^i}\frac{1-\alpha}{\alpha}\frac{p_t(1-\theta_{t+1})}{\kappa_t}\tau_{t+1} - \frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{h,t}}\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}}{\kappa_t}\tau_{t+1} \label{\refeq:auxiliary:si_s} \\
+        A_t &= \frac{1-\alpha}{\chi_{t}^R\alpha}\frac{p_{t-1,0}\epsilon_{t}}{\kappa_{t-1}} \label{\refeq:auxiliary:Ainf} \\
+        \iota_t\Bigg(B_{t+1}^0, \Theta_{s,t}, \tau_{t+1}, \epsilon_{t+1}\Bigg) &= \frac{B_{t+1}^0}{1+B_{t+1}^0}\frac{\eta_{t,0}^{1+\xi}}{X_{t,0}^{\xi}(1+\xi)}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}
+        \frac{1}{\Theta_{s,t}}-\frac{A_{t+1}\tau_{t+1}}{1+B_{t+1}^0} \label{\refeq:auxiliary:s0_s},
+    \end{align}
+where have used the shorthand $\iota_t \equiv s_{t,0}/s_t$. The coefficient $A_t$ in \eqref{\refeq:auxiliary:Ainf} is the informal household's discounted pension term written per unit of $\tau$ and of aggregate savings; it is a pure parameter function, and it recurs throughout: $A_{t+1}$ is what multiplies $\tau_{t+1}s_t$ in $\iota_t$ and in $c_{1,t}^0, \tilde{c}_{1,t}^0$, while $A_t$ is what multiplies $\tau_t$ inside the bracket of $c_{2,t}^0$ in \eqref{\refmodeleq:EE:c0}.
+\end{subequations}
+
+\input{num_ee}
+\input{num_robustroot}
+\input{num_peeLOG}
+\input{num_peeCRRA}
+\input{num_peePath}
+\input{num_calibration}
+\input{num_shock}

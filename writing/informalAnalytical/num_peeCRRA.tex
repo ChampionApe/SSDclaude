@@ -1,0 +1,80 @@
+\subsection{The politico-economic equilibrium with CRRA}\label{\refsec:PEE}
+With CRRA preferences, the past savings level $s_{t-1}$ becomes a relevant state variable for the political problem. To this end, we need a couple of additional grid structure. 
+
+\smalltitle{Grids.} Let $\mathcal{S} = \left\lbrace s^{(1)}, ..., s^{(M_s)} \right\rbrace$ with $s^{(1)}$ = $l_s>0$ and $s^{(M_s)} = u_s>l_s$ denote a grid of states. One way to obtain realistic ranges for the grid is to look into steady state dynamics, where it is straightforward to verify that $s^*(\tau)$ is monotonically decreasing in $\tau$. Using this, we have that $s^* \rightarrow 0$ as $\tau \rightarrow 1$, thus $l_s$ should be some low value that serves the purpose of ensuring numerical stability. For the upper bound, we could use e.g. $u_s = 1.25 \times s^*(0)$. Furthermore, let $\mathcal{S\tilde{T}}$ denote the Cartesian grid of the two grids.
+
+For $t<T$ we additionally need a grid of \emph{candidate} values for the endogenous state $s_t$ itself; call it $\mathcal{S}'$. It plays a different role from $\mathcal{S}$ --- $\mathcal{S}$ indexes the predetermined states we solve \emph{at}, while $\mathcal{S}'$ is searched \emph{over} to locate an equilibrium --- so although the two may hold the same values, it is worth keeping them separate, not least because the accuracy of the search below is governed by $\mathcal{S}'$ alone and may warrant a finer spacing.
+
+\smalltitle{The economic equilibrium at $t<T$ is a fixed point in $s_t$.}
+Suppose we have solved period $t+1$ and hold continuation policies $\tau^{t+1}(\cdot)$ and $h^{t+1}(\cdot)$, both functions of the state $s_t$ entering $t+1$. For a candidate current tax $\tau_t$ and a candidate state $s_t$, the auxiliary equations \eqref{\refeq:auxiliary} can be evaluated in one forward pass:
+\begin{subequations}\label{\refeq:stateApprox}
+\begin{align}
+    \bm{B}_{t+1} &= \bm{B}_{t+1}\left(s_t,\, h^{t+1}(s_t)\right), \label{\refeq:stateApprox:B}\\
+    \Gamma_{s,t} &= \Gamma_{s,t}\left(\bm{B}_{t+1},\, \tau^{t+1}(s_t)\right), \label{\refeq:stateApprox:Gammas}\\
+    \Theta_{h,t} &= \Theta_{h,t}\left(\tau_t,\, \tau^{t+1}(s_t),\, \theta_{t+1},\, \Gamma_{s,t}\right), \label{\refeq:stateApprox:Thetah}\\
+    \Theta_{s,t} &= \Theta_{s,t}\left(\Theta_{h,t},\, \Gamma_{s,t}\right). \label{\refeq:stateApprox:Thetas}
+\end{align}
+\end{subequations}
+The candidate $s_t$ is an equilibrium at $s_{t-1}$ precisely when it reproduces itself through \eqref{\refeq:auxiliary:s}. Defining the residual
+\begin{align}\label{\refeq:stateResidual}
+    \mathcal{R}_t\left(\tau_t, s_t;\, s_{t-1}\right) \equiv \Theta_{s,t}\left(\tau_t, s_t\right)\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}-s_t,
+\end{align}
+the state policy function $s_t(\tau_t, s_{t-1})$ is the root of \eqref{\refeq:stateResidual} in its second argument. This is a genuine root-finding problem in $s_t$ --- not a recursion we can unroll --- because $s_t$ enters the right-hand side through $\bm{B}_{t+1}$ and the continuation policies. Note that it is a \emph{root} problem, not a maximisation: any crossing is a solution, so the direction-filtering and objective-integration apparatus of \eqref{\refeq:candidates} is not used here.
+
+\smalltitle{The fixed point is two-dimensional, not three.}
+Read \eqref{\refeq:stateApprox} again and note that \emph{none} of $\bm{B}_{t+1}$, $\Gamma_{s,t}$, $\Theta_{h,t}$, $\Theta_{s,t}$ depends on $s_{t-1}$: the predetermined state enters \eqref{\refeq:stateResidual} only through the explicit factor $(s_{t-1}/\nu_t)^{\alpha(1+\xi)/(1+\alpha\xi)}$. The costly part of the state approximation is therefore a function of $(\tau_t, s_t)$ alone, evaluated once on $\tilde{\mathcal{T}}\times\mathcal{S}'$, after which the residual for \emph{every} $s_{t-1}\in\mathcal{S}$ follows by multiplying $\Theta_{s,t}$ by a scalar and subtracting $s_t$. What looks like a three-dimensional problem thus costs a two-dimensional one plus a broadcast, which is what keeps the approach affordable as $\mathcal{S}$ is refined.
+
+\smalltitle{Feasibility.}
+The root of \eqref{\refeq:stateResidual} need not lie inside $\mathcal{S}'$. For a given $s_{t-1}$, large $\tau_t$ depresses savings enough that the implied $s_t$ falls below $l_s$, and conversely at small $\tau_t$; outside that window no equilibrium is located and every object downstream of $s_t$ is undefined. We therefore carry an explicit feasibility mask over $\tilde{\mathcal{T}}\times\mathcal{S}$, marking the pairs $(\tau_t, s_{t-1})$ for which a root was found, and require at least two feasible $\tau_t$ per state before attempting to select a maximum there. Since $s_t(\tau_t)$ is decreasing in $\tau_t$, the feasible set is expected to be a contiguous interval in $\tau_t$ --- as the earlier statement of this algorithm assumed --- but we do not rely on that: masking infeasible cells individually is no harder and does not silently mis-handle a non-monotone case, which is worth checking numerically rather than assuming.
+
+\smalltitle{Which derivatives may be taken on the grid.}
+Once $s_t(\tau_t,s_{t-1})$ is known, all four marginal indirect utilities take the form (level)$^{1-1/\rho}\times$(log-derivative):
+\begin{subequations}\label{\refeq:PEEcrraTerms}
+\begin{align}
+    \frac{d\upsilon_{1,t}^i}{d\tau_t} &= \left(\hat{c}_{1,t}^i\right)^{1-1/\rho}\frac{d\ln\left(\hat{c}_{1,t}^i\right)}{d\tau_t}, &
+    \frac{d\upsilon_{1,t}^0}{d\tau_t} &= \beta_{t,0}\left(\tilde{c}_{2,t+1}^0\right)^{1-1/\rho}\frac{d\ln\left(\tilde{c}_{2,t+1}^0\right)}{d\tau_t}, \\
+    \frac{d\upsilon_{2,t}^i}{d\tau_t} &= \left(c_{2,t}^i\right)^{1-1/\rho}\frac{d\ln\left(c_{2,t}^i\right)}{d\tau_t}, &
+    \frac{d\upsilon_{2,t}^0}{d\tau_t} &= \left(\tilde{c}_{2,t}^0\right)^{1-1/\rho}\frac{d\ln\left(\tilde{c}_{2,t}^0\right)}{d\tau_t}.
+\end{align}
+\end{subequations}
+The young informal term uses that $\tilde{c}_{1,t}^0$ depends on $s_{t-1}$ only (see \eqref{\refmodeleq:EE:c0}), so its own derivative vanishes and only the $\tilde{c}_{2,t+1}^0$ channel survives.
+
+For the young formal households, the discount factor $B_{t+1}^i$ is itself a function of $\tau_t$ through $s_t$, so the factor $(1+B_{t+1}^i)$ in $\upsilon_{1,t}^i$ cannot be held fixed while differentiating. It is convenient to absorb it into the consumption level, defining
+\begin{align}\label{\refeq:hatc1i}
+    \hat{c}_{1,t}^i \equiv \left(1+B_{t+1}^i\right)^{\frac{1}{1-1/\rho}}\tilde{c}_{1,t}^i \qquad\Longrightarrow\qquad \upsilon_{1,t}^i = \frac{\left(\hat{c}_{1,t}^i\right)^{1-1/\rho}}{1-1/\rho},
+\end{align}
+so that a single numerical derivative of $\ln(\hat{c}_{1,t}^i)$ picks up both channels at once.\footnote{In implementation $\hat{c}_{1,t}^i$ is never formed as a level. Only two things are ever needed from it, and both avoid the $1/(1-1/\rho)$ power: $\left(\hat{c}_{1,t}^i\right)^{1-1/\rho} = \left(1+B_{t+1}^i\right)\left(\tilde{c}_{1,t}^i\right)^{1-1/\rho}$ and $\ln\left(\hat{c}_{1,t}^i\right) = \ln\left(1+B_{t+1}^i\right)/(1-1/\rho)+\ln\left(\tilde{c}_{1,t}^i\right)$. This matters as $\rho\rightarrow 1$: the literal definition raises $1+B_{t+1}^i$ to a power that diverges, overflowing in double precision well before $\rho$ reaches $1$ (at $\rho = 1.001$ the exponent is already $1001$), whereas neither expression above does.}
+
+Three of the log-derivatives in \eqref{\refeq:PEEcrraTerms} --- those of $h_t$, $\hat{c}_{1,t}^i$ and $\tilde{c}_{2,t+1}^0$ --- are approximated numerically along the $\tau_t$ dimension of the solution grid, since each depends on $\tau_t$ through the continuation policies and has no closed form. The remaining two do \emph{not} follow that route:
+\begin{itemize}
+    \item $d\ln(c_{2,t}^i)/d\tau_t$ \textbf{must} be taken from its closed form, given in \eqref{\refmodeleq:PEE}. Differentiating it numerically along the grid would be wrong, not merely imprecise: $s_{t-1,i}/s_{t-1}$ varies along that grid, and the policy maker takes it as predetermined, so the grid derivative would include a channel that does not belong in the first order condition.
+    \item $d\ln(\tilde{c}_{2,t}^0)/d\tau_t$ \emph{may} be taken either way; we use its closed form for consistency with the above.
+\end{itemize}
+Both closed forms are exactly the expressions already used in the log case, \eqref{\refmodeleq:PEELOG}, with one substitution: the analytical $\partial\ln(\Theta_{h,t})/\partial\tau_t$ is replaced by the numerically obtained $d\ln(h_t)/d\tau_t$. Since $h_t = \Theta_{h,t}(s_{t-1}/\nu_t)^{\alpha\xi/(1+\alpha\xi)}$ and $s_{t-1}$ is held fixed under $\partial/\partial\tau_t$, the two coincide, and the log and CRRA cases share one formula rather than two.
+
+\begin{alg}[Iterative grid search with boundary and feasibility checks]
+\label{\refalg:CRRA:grid}
+Fix $\bm{\theta},\bm{\epsilon}$ and global grids. The following identifies a sequence of policy functions as well as state policy functions $s_t(\tau_t, s_{t-1})$ that determines the economic state as a function of current taxes and the state along a politico-economic equilibrium path. As for the log case, the algorithm exploits the specific structure and iterates backwards starting from the terminal period $t=T$.
+
+
+\smallskip\noindent\emph{Terminal period.}
+Recall from section \ref{\refmodelsec:finitehorizon} that the marginal effect of $\tau_t$ on the political objective can be computed in closed-form once we know $s_{t-1}, \tau_t$. Thus on the full grid $\mathcal{S}\tilde{\mathcal{T}}$, compute the following and store in a solution dictionary: $d \ln(h_t)/d \tau_t$ (closed-form for $t=T$), $\Theta_{h,t}$ (closed-form for $t=T$), $h_t$, $B_t^i$, $\Gamma_{s,t-1}$, $s_{t-1,i}/s_{t-1}$, $c_{2,t}^i$, $\tilde{c}_{2,t}^0$, and $\tilde{c}_{1,t}^i$ (closed-form for $t=T$).
+
+Given all these auxiliary objects, we can now evaluate the derivatives $dv_{x,t}^j/d\tau_t$ relevant for the first order condition. Given a vector of first order conditions $z$ evaluated on the entire Cartesian grid, we repeat a vectorized version of the grid search approach in algorithm \ref{\refalg:LOG:gridsearch} that checks for boundary solutions and necessary and sufficient conditions for identifying maxima. This identifies a vector of taxes on the grid of states $\tau_t(s_{t-1})$ for the terminal period.
+
+In addition, in order to iterate backwards, on the grid of states only now with $\tau_t = \tau_t(s_{t-1})$, we compute the same auxiliary variables as we used to evaluate the first order condition, and in addition we define two policy functions that evaluate the politico-economic equilibrium taxes and labour supply as a function of $s_{t-1}$.
+
+\smallskip\noindent\emph{Iterating backwards for $t<T$.} Assume that we have a solution for $t+1$ resulting in gridded solutions for all the relevant variables outlined above (on the grid of $s_t$) and policy functions along the PEE for $h_{t+1}(s_t)$ and $\tau_{t+1}(s_t)$ that we can access with a candidate $s_t$ chosen endogenously at $t$. Each period then proceeds in four steps.
+
+\begin{enumerate}
+    \item \emph{State approximation.} On the Cartesian grid $\tilde{\mathcal{T}}\times\mathcal{S}'$ evaluate the forward pass \eqref{\refeq:stateApprox}, retaining $\Theta_{s,t}$ (and $\Theta_{h,t}$, $\Gamma_{s,t}$, $\tau^{t+1}$, $h^{t+1}$, $\bm{B}_{t+1}$ for later use). Form the residual \eqref{\refeq:stateResidual} for every $s_{t-1}\in\mathcal{S}$ by broadcasting, and locate its root along the $s_t$ dimension, giving $s_t(\tau_t, s_{t-1})$ on $\tilde{\mathcal{T}}\times\mathcal{S}$ together with the feasibility mask. This is the only step that touches $\mathcal{S}'$.
+
+    \item \emph{Current-period objects.} With $s_t$ resolved, evaluate on $\tilde{\mathcal{T}}\times\mathcal{S}$: $h_t\left(\Theta_{h,t}, s_{t-1}\right)$, then $R_t$, $\bm{B}_t$, $\Gamma_{s,t-1}\left(\bm{B}_t, \tau_t\right)$ and $s_{t-1,i}/s_{t-1}$ --- the last two evaluated at the previous period's parameter vintage, exactly as in the log case. Then the consumption levels entering \eqref{\refeq:PEEcrraTerms}: $\hat{c}_{1,t}^i$ from \eqref{\refeq:hatc1i}, $c_{2,t}^i$, $\tilde{c}_{2,t}^0$, and $\tilde{c}_{2,t+1}^0$ (a function of $s_t$, $\tau^{t+1}(s_t)$ and $h^{t+1}(s_t)$).
+
+    \item \emph{Derivatives and the first order condition.} Approximate $d\ln(h_t)/d\tau_t$, $d\ln(\hat{c}_{1,t}^i)/d\tau_t$ and $d\ln(\tilde{c}_{2,t+1}^0)/d\tau_t$ numerically along $\tau_t$, separately for each $s_{t-1}$; take $d\ln(c_{2,t}^i)/d\tau_t$ and $d\ln(\tilde{c}_{2,t}^0)/d\tau_t$ from their closed forms as described above. Assemble $z_t$ on $\tilde{\mathcal{T}}\times\mathcal{S}$ via \eqref{\refeq:PEEcrraTerms} and the political weights of \eqref{\refeq:LOG:fast}, leaving infeasible cells undefined.
+
+    \item \emph{Selection and reporting.} Apply the selection rule \eqref{\refeq:candidates} along $\tau_t$ for each $s_{t-1}$, skipping infeasible cells, to obtain $\tau_t(s_{t-1})$. Re-evaluate steps 1--2 at the selected taxes to obtain the solution dictionary on $\mathcal{S}$, and construct the interpolants $\tau_t(s_{t-1})$ and $h_t(s_{t-1})$ that the previous period will call. A light smoothing of the selected $\tau_t(s_{t-1})$ before interpolation is advisable, since the profile inherits small kinks from the interpolated continuation policies.
+\end{enumerate}
+
+Steps 1--4 are stated for the whole grid $\mathcal{S}$ at once rather than for one $s_{t-1}$ at a time. Nothing forces this --- the states are independent and could equally be looped over --- but the grid evaluations dominate the cost only through the number of \emph{calls}, not the number of gridpoints, so handling all states in one pass is materially cheaper than looping, at the price of carrying the feasibility mask explicitly rather than subsetting the grid per state.
+\end{alg}

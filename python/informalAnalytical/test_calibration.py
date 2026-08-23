@@ -23,12 +23,7 @@ import test as testmod
 from model import ModelInformalAnalytical
 from base import Base
 
-ok = True
-def check(name, cond, extra = ''):
-    global ok
-    print(('PASS' if cond else 'FAIL') + '  ' + name + ' ' + extra)
-    if not cond:
-        ok = False
+from gridsearch.testing import check, report
 
 def newModel(**over):
     return ModelInformalAnalytical(pars = testmod.pars | over, **testmod.kwargs)
@@ -152,6 +147,4 @@ check('a parameter rewrite between solves genuinely changes the answer (no stale
       '-> τ(t0) {:.6f} -> {:.6f} after β +10%'.format(first, second))
 
 
-print()
-print('ALL PASS' if ok else 'SOME FAILURES')
-sys.exit(0 if ok else 1)
+report()
