@@ -53,12 +53,53 @@ def buildUS(ρ, wedge = None, nθCandCRRA = 13):
     return m
 
 
+def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21):
+    """ The permanent choice under CRRA, traced in rho.
+
+    This is where the permanent timing turns out to be fragile in a way the appendix does not report. With
+    no wedge the objective is essentially MONOTONE in theta, so the choice is always a corner -- and WHICH
+    corner flips inside the paper's own rho range: theta = 0 for rho <~ 1.3 (the appendix's result, found
+    at rho = 1) and theta = 1 above it. The gaps W(0) - W(1) are recorded so the flatness is visible rather
+    than inferred from the argmax alone. """
+    rows = []
+    for ρ in ρs:
+        for spec in specs:
+            for phi in phis:
+                w = None if wedgeP is None else {'spec': spec, 'phi': phi, 'p': wedgeP}
+                for label, wedge in (('none', None), ('calibrated', w)):
+                    if wedge is None and label == 'calibrated':
+                        continue
+                    try:
+                        m = buildUS(ρ, wedge, nθCandCRRA = 13)
+                        m.ESCPC.nθCand = nCand
+                        m.ESCPC.θCand = np.linspace(0., 1., nCand)
+                        m.calibrate()
+                        pref = 'LOG' if ρ == 1.0 else 'CRRA'
+                        tic = time.time()
+                        r = m.solvePermanent(pref, verbose = False)
+                        W = np.asarray(r['W'], dtype = float)
+                        W = W - np.nanmax(W)
+                        rows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'wedge': label,
+                                     'p': np.nan if wedge is None else wedge['p'],
+                                     'θStar': float(m.db['θ'].xs(m.t0Year)), 'θPerm': r['θ'],
+                                     'atBound': r['atBound'], 'W0gap': W[0], 'W1gap': W[-1],
+                                     'τAtChoice': r['τAtChoice']})
+                        print('  rho={:<5} {:<6} wedge={:<11} θ_perm={:.4f}  corner={:<5} '
+                              'W(0)-max={:+.5f} W(1)-max={:+.5f}  [{:.0f}s]'.format(
+                                  ρ, spec, label, r['θ'], str(r['atBound']), W[0], W[-1], time.time()-tic))
+                    except Exception as e:
+                        print('  rho={} {} {} FAILED {}: {}'.format(ρ, spec, label, type(e).__name__, e))
+                    pd.DataFrame(rows).to_csv(out, index = False)
+    return pd.DataFrame(rows)
+
+
 def main():
     p = argparse.ArgumentParser(description = 'Endogenous theta under CRRA.')
     p.add_argument('--rho', type = float, nargs = '*', default = [2.0])
     p.add_argument('--spec', nargs = '*', default = ['scale', 'flat'])
     p.add_argument('--phi', type = float, nargs = '*', default = [0.5])
-    p.add_argument('--stage', nargs = '*', default = ['calib', 'path', 'sens', 'shocks'])
+    p.add_argument('--stage', nargs = '*', default = ['calib', 'path', 'sens', 'shocks'],
+                   help = "add 'permanent' for the permanent-choice trace in rho")
     p.add_argument('--bracket', type = float, nargs = 2, default = [0.01, 0.6])
     p.add_argument('--nScan', type = int, default = 10)
     p.add_argument('--nCand', type = int, default = 13)
@@ -69,6 +110,14 @@ def main():
     fCal = os.path.join(OUTDIR, f'escCalibrationCRRA{a.tag}.csv')
     fPath = os.path.join(OUTDIR, f'escPathCRRA{a.tag}.csv')
     fShk = os.path.join(OUTDIR, f'escShocksCRRA{a.tag}.csv')
+
+    if 'permanent' in a.stage:
+        print('=== the permanent choice under CRRA, traced in rho ===')
+        stagePermanentCRRA(a.rho, a.spec, a.phi, os.path.join(OUTDIR, f'escPermanentCRRA{a.tag}.csv'))
+        if a.stage == ['permanent']:
+            print()
+            print('-> {}'.format(os.path.relpath(OUTDIR, REPO)))
+            return 0
 
     calRows, pathRows, shkRows = [], [], []
     for ρ in a.rho:

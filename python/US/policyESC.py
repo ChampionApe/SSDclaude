@@ -163,13 +163,18 @@ class LeadedLOG(LeadedBase):
         return float(τ[0])
 
     # ------------------------------------------------------------------ the objective
-    def objective(self, t, tLag, t1, τt, θt, θ1, cont, s_ = 1.):
+    def objective(self, t, tLag, t1, τt, θt, θ1, cont, s_ = 1., siRatio_ = None):
         """ W_t over a mesh of (state theta_t, candidate theta1), all arguments flattened to (M,).
 
         cont: {'τ1': tau_{t+1}(theta1), 'θ2': theta_{t+2}(theta1), 'τ2': tau_{t+2}(theta2),
                'terminal1': whether t+1 is the terminal period} -- the continuation, already evaluated at
         theta1 by solveBackward. s_ = s_{t-1}; the argmax does not depend on it (module docstring), and it
         defaults to the appendix's own normalisation.
+
+        siRatio_: s_{t-1,i}/s_{t-1}, shape (ni,) or (M,ni). None (the leaded default) recomputes it from
+        the candidate (tau_t, theta_t), matching LOG.stateGrid. PermanentLOG passes it explicitly, because
+        there theta_t is the object being chosen and letting the predetermined state move with it would
+        fold a channel into the choice that the policy maker takes as given (see base.dlnc2i_dτ).
 
         Returns (W, parts) with W shape (M,). """
         BG = self.BG
@@ -194,9 +199,10 @@ class LeadedLOG(LeadedBase):
         # --- indirect utilities. The old: c_{2,t}^i at the predetermined s_{t-1,i}/s_{t-1}, a function of
         # (tau_t, theta_t) -- NOT of theta1, so it shifts W_t's level without touching the argmax.
         # Computed exactly anyway: it costs nothing and makes W_t the actual objective.
-        Γs_ = BG.Γs(BG.get('βi', tLag), τt, θt, tLag)
-        si_s_ = BG.si_s(BG.get('βi', tLag), τt, θt, Γs_, tLag)
-        c2 = BG.c2i(h, s_, τt, θt, si_s_, t)
+        if siRatio_ is None:
+            Γs_ = BG.Γs(BG.get('βi', tLag), τt, θt, tLag)
+            siRatio_ = BG.si_s(BG.get('βi', tLag), τt, θt, Γs_, tLag)
+        c2 = BG.c2i(h, s_, τt, θt, siRatio_, t)
         tc1 = BG.tildec1i(h, βi, τ1, θ1, Γs, t)
 
         v2 = np.log(c2)
@@ -435,3 +441,156 @@ class LeadedCRRA(LeadedBase):
         (chLo, θLo), (chHi, θHi) = got['lo'], got['hi']
         slope = (chHi - chLo)/(θHi - θLo) if θHi != θLo else np.nan
         return {'slope': float(slope), 'choiceLo': chLo, 'choiceHi': chHi, 'θLo': θLo, 'θHi': θHi}
+
+
+class PermanentLOG(LeadedLOG):
+    r""" The PERMANENT choice of theta (app:ESC, "Permanent choice of theta"), LOG case.
+
+    At the reform date t0 the electorate chooses a theta expected to hold forever: theta_t = theta for
+    every t >= t0. It therefore enters THREE channels at once, where the leaded choice enters one:
+
+        the sequential channel   theta_{t0} re-splits the CURRENT retirees' benefits (the appendix's
+                                 E_{2,t}^{i,theta}), which is what corners the sequential choice at zero;
+        the leaded channel       theta_{t0+1} moves h_{t0}, hence every period-t0 quantity;
+        the continuation         theta_{t0+k} moves tau_{t0+k} and the whole future path.
+
+    TWO THINGS MAKE THIS CHEAPER THAN THE APPENDIX'S RECIPE, and both are worth stating because they are
+    not obvious from the write-up, which proposes a two-dimensional grid over (tau_{t0}, theta).
+
+    1. THE JOINT CHOICE CONCENTRATES. dW/dtau = 0 is the ordinary tau first-order condition evaluated at
+       theta_t = theta -- the permanent choice adds nothing to it, since theta is not a function of tau.
+       So the optimal tau at any candidate theta is just tauPolicy_{t0}(theta), already available, and what
+       is left is a ONE-dimensional maximisation over theta. The 2-D grid is not wrong, only redundant.
+
+    2. tau_t FOR t > t0 IS THE ORDINARY PEE AT CONSTANT theta. Nothing about the continuation is special:
+       once theta is fixed forever, later periods face exactly the exogenous-theta problem tauPolicy
+       already solves. There is no recursion to run.
+
+    THE ONE THING THAT MUST NOT BE GOT WRONG. s_{t0-1,i}/s_{t0-1} is a PREDETERMINED state, and here theta
+    enters it (through theta_{t0}) in a way it never does in the leaded problem. Maximising W over theta
+    while letting that ratio move with the candidate would fold into the choice a channel the policy maker
+    takes as given -- the same error base.dlnc2i_dτ's docstring forbids for tau. So it is pinned at its
+    equilibrium value under the INCUMBENT design, which is also what makes this the "unanticipated
+    permanent reform" the appendix describes and matches shocks.py's convention for every other
+    counterfactual in the module. ModelESC.solvePermanent exposes the other reading as a diagnostic; the
+    gap between the two is reported rather than assumed small. """
+
+    def τPath(self, θ, tFrom = None):
+        """ tau_t for every t >= tFrom at a constant design theta (scalar): the ordinary PEE, period by
+        period, since z_t depends on (tau_t, theta_t) alone. Periods before tFrom are left NaN -- they are
+        not part of this experiment and must not be read. """
+        tIdx = self.db['t']
+        out = np.full(len(tIdx), np.nan)
+        start = 0 if tFrom is None else tIdx.get_loc(tFrom)
+        for pos, t in enumerate(tIdx):
+            if pos >= start:
+                out[pos] = self.τAt(t, θ)
+        return out
+
+    def objectiveOverθ(self, t0, siRatio_, θCand = None, s_ = 1.):
+        """ W_{t0} over a grid of candidate permanent designs, fully vectorised.
+
+        siRatio_: the pinned predetermined state, shape (ni,). See the class docstring for why it is an
+        argument rather than something recomputed here. """
+        th = self.θCand if θCand is None else np.asarray(θCand, dtype = float)
+        tIdx = self.db['t']
+        pos = tIdx.get_loc(t0)
+        tLag = tIdx[pos-1] if pos > 0 else self.B.tFirst
+        t1 = tIdx[pos+1]
+        terminal1 = (t1 == tIdx[-1])
+
+        τ0, _, _ = self.τOfθ(t0, th, tLag, terminal = False)
+        τ1, _, _ = self.τOfθ(t1, th, t0, terminal = terminal1)
+        if terminal1:
+            τ2 = None
+        else:
+            t2 = tIdx[pos+2]
+            τ2, _, _ = self.τOfθ(t2, th, t1, terminal = (t2 == tIdx[-1]))
+        cont = {'τ1': τ1, 'θ2': th, 'τ2': τ2, 'terminal1': terminal1}
+        W, parts = self.objective(t0, tLag, t1, τ0, th, th, cont, s_ = s_, siRatio_ = siRatio_)
+        return {'θ': th, 'W': W, 'τ0': τ0, 'τ1': τ1, 'parts': parts}
+
+    def solve(self, t0, siRatio_, θCand = None, s_ = 1.):
+        """ The permanent design chosen at t0, given the predetermined s_{t0-1,i}/s_{t0-1}.
+
+        nTurning counts sign changes in the gradient of W over the candidate grid, so a multi-peaked
+        objective is visible rather than silently resolved by argmax. """
+        self._requireZeroMass()
+        with self.BG.cacheParams():
+            d = self.objectiveOverθ(t0, siRatio_, θCand = θCand, s_ = s_)
+        thStar, atBound = self._argmax(d['θ'], d['W'])
+        turns = int(np.sum(np.diff(np.sign(np.diff(d['W']))) != 0))
+        return {'θ': thStar, 'atBound': atBound, 'W': d['W'], 'θCand': d['θ'],
+                'τAtChoice': float(np.interp(thStar, d['θ'], d['τ0'])), 'nTurning': turns}
+
+
+class PermanentCRRA(LeadedBase):
+    r""" The permanent choice under CRRA.
+
+    Simpler than LeadedCRRA, not harder: a permanent theta means a CONSTANT design path, so each candidate
+    is one ordinary solvePEE_CRRA call and there is no path to iterate. PermanentLOG's concentration
+    argument carries over unchanged -- tau is whatever the CRRA politico-economic equilibrium delivers at
+    that design -- so the whole problem is a one-dimensional grid search over theta.
+
+    s_{t0-1,i}/s_{t0-1} is pinned for the same reason as in the LOG case, and here it must be supplied from
+    a solved baseline: under CRRA it is a genuine equilibrium object, not a closed form. """
+
+    def __init__(self, m, nθCand = 21, **kwargs):
+        self.m = m
+        self.B, self.BG, self.BT = m.B, m.BG, m.BT
+        self.db = m.db
+        self.ni, self.T = m.ni, m.T
+        self.nθCand = nθCand
+        self.θCand = np.linspace(0., 1., nθCand)
+        self.kwargs = kwargs
+
+    def W(self, out, pos, siRatio_):
+        """ W_{t0} from a solved constant-theta equilibrium, with c_{2,t0}^i rebuilt at the PINNED
+        predetermined ratio rather than read off the report, whose own si_s moved with the candidate. """
+        t = self.db['t'][pos]
+        rep = out['report']
+        rho = float(self.BG.get('ρ', t))
+        q = 1 - 1/rho
+        c1 = rep['tildec1i'].xs(t).values.astype(float)
+        B = rep['B'].xs(t).values.astype(float)
+        h, s_ = float(rep['h'].xs(t)), float(rep['s_'].xs(t))
+        τ = float(out['τ'].xs(t)) if hasattr(out['τ'], 'xs') else float(np.asarray(out['τ'])[pos])
+        θv = float(self.db['θ'].xs(t))
+        c2 = np.asarray(self.BG.c2i(h, s_, τ, θv, siRatio_, t), dtype = float)
+        v1 = (1+B)*c1**q/q
+        v2 = c2**q/q
+        old, young = self.weights(t)
+        return float((old*v2).sum() + (young*v1).sum())
+
+    def solve(self, t0, siRatio_, s0 = None, θCand = None, solveKwargs = None, verbose = True):
+        """ Grid-search the permanent design under CRRA. One full solvePEE_CRRA per candidate.
+
+        db['theta'] is written for each candidate, not just passed to the solver: Base.ΓsCap and the
+        CRRA steady-state bracket read it from db, and leaving them on the incumbent design while the
+        solver used a candidate would be silently inconsistent (shocks.shockTheta's own warning). It is
+        restored in a finally block, so a failed candidate cannot leave db on the wrong design. """
+        self._requireZeroMass()
+        ths = self.θCand if θCand is None else np.asarray(θCand, dtype = float)
+        pos = self.db['t'].get_loc(t0)
+        ε = self.db['eps'].values.astype(float)
+        Ws = np.full(len(ths), -np.inf)
+        τs = np.full(len(ths), np.nan)
+        thSave = self.db['θ'].values.astype(float).copy()
+        try:
+            for k, cand in enumerate(ths):
+                self.db.update(self.m.adjPar('θ', float(cand)))
+                try:
+                    out = self.m.solvePEE_CRRA(θ = np.full(self.T, float(cand)), ε = ε, s0 = s0,
+                                               **(solveKwargs or {}))
+                    Ws[k] = self.W(out, pos, siRatio_)
+                    τs[k] = float(out['τ'].xs(t0))
+                except Exception as e:
+                    if verbose:
+                        print('      theta={:.3f}: failed ({}: {})'.format(cand, type(e).__name__, e))
+        finally:
+            self.db.update(self.m.adjPar('θ', thSave))
+        if not np.any(np.isfinite(Ws)):
+            raise RuntimeError('PermanentCRRA: every candidate failed to solve.')
+        thStar, atBound = self._argmax(ths, Ws)
+        return {'θ': thStar, 'atBound': atBound, 'W': Ws, 'θCand': ths,
+                'τAtChoice': float(np.interp(thStar, ths, τs))}

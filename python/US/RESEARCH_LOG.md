@@ -338,3 +338,93 @@ corner for every p in the bracket, which `calibrateWedge` reports rather than pa
   needs one whose primary driver is the age structure.
 - The UK under a common wedge.
 - CRRA: see the next entry / `results/esc/*CRRA*`.
+
+## 2026-08-23 (cont.) — CRRA, and the permanent choice
+
+### CRRA (`LeadedCRRA`, ρ = 2)
+
+None of the LOG simplifications survive CRRA, so the solver iterates on the equilibrium **path**,
+re-solving the whole PEE at every candidate design (which is also what makes the envelope logic right: τ_t
+is re-optimised at each candidate). Its one assumption — that the choice at t+1 does not respond to the
+design it inherits — is measured, not asserted: `dθ_{t+2}/dθ_{t+1} = −0.009` (`scale`), `−0.004` (`flat`).
+Under LOG it is exactly zero, so the shortcut is sound at ρ = 2.
+
+Validated against its own limit: as ρ → 1 the CRRA choice converges on `LeadedLOG`'s at a clean
+first-order rate — gaps 0.0903 / 0.0448 / 0.0188 at ρ = 1.10 / 1.05 / 1.02, so gap/(ρ−1) = 0.90, 0.90,
+0.94. Two solvers sharing only the objective's weights, agreeing where they must. Pinned in
+`test_escCRRA.py` (slow suite).
+
+| | LOG (ρ=1) | CRRA (ρ=2) |
+|---|---|---|
+| calibrated p (`scale`, φ=0.5) | 0.402 | **0.086** |
+| θ chosen, 2080 | 0.7535 | 0.7834 |
+| acute ageing → θ at t₀+1 | 0.7747 | **0.8149** |
+
+A higher EIS needs **4.7× less wedge** to reach an interior design — the factor the `thetaStakes.py`
+decomposition predicted from an entirely separate calculation — and roughly **doubles the ageing
+response**. ρ = 2 helps the mechanism on both counts without changing the inequality-vs-ageing verdict.
+
+*A test that passed for the wrong reason.* The first version of `test_escCRRA.py`'s state-sensitivity
+check used the LOG-calibrated wedge at ρ = 2, which sits on the θ=1 corner — both perturbations return
+1.0 and the slope is trivially zero. It now runs at ρ = 2's own p behind an explicit interiority
+assertion. Worth remembering as a pattern: a *corner* makes any sensitivity check vacuous.
+
+### The permanent choice (`PermanentLOG`, `PermanentCRRA`)
+
+Two things make this cheaper than the appendix's recipe, and neither is obvious from the write-up (which
+proposes a two-dimensional grid over `(τ_{t0}, θ)`):
+
+1. **The joint choice concentrates.** `dW/dτ = 0` is the ordinary τ first-order condition evaluated at
+   `θ_t = θ` — the permanent choice adds nothing to it, since θ is not a function of τ. So `τ*(θ) =
+   τPolicy_{t0}(θ)`, already available, and what remains is a **one-dimensional** maximisation over θ.
+   Verified in `test_esc.py`: τ at the chosen design equals `τPolicy(θ)` to 1e-6.
+2. **τ_t for t > t₀ is the ordinary PEE at constant θ.** Once θ is fixed forever there is no recursion.
+
+**The one thing that must not be got wrong.** `s_{t0-1,i}/s_{t0-1}` is predetermined, and here θ enters it
+(through θ_{t0}) in a way it never does in the leaded problem. Maximising W while letting it move with the
+candidate folds in a channel the policy maker takes as given — the same error `dlnc2i_dτ`'s docstring
+forbids for τ. **It is not a small difference: 0.773 pinned against 0.910 moving**, at the same wedge. The
+pinned reading is the default and is also what makes this the "unanticipated permanent reform" the
+appendix describes; the other is exposed as a diagnostic and recorded in the output.
+
+**Results.** Without a wedge the permanent choice corners at θ = 0 — the appendix's finding, reproduced.
+With one it is interior, and the calibrated wedge is close to the other two timings:
+
+| timing | p (`scale`, φ=0.5) | p (`flat`, φ=0.5) |
+|---|---|---|
+| sequential (the appendix's own) | 0.41 | — |
+| leaded | 0.402 | 0.702 |
+| **permanent** | **0.375** | **0.664** |
+
+So **the required wedge is essentially timing-invariant** (~0.375–0.41), and at a common wedge the two
+implemented timings deliver designs within ~0.04 of each other. The timing is second order; the wedge is
+what does the work. That is worth saying in the appendix, which currently presents the timings as
+alternatives with qualitatively different outcomes — they differ only in the *absence* of a wedge.
+
+### The permanent timing is fragile in ρ, and the appendix does not report this
+
+With no wedge the permanent objective is essentially **monotone** in θ (`nTurning = 0`), so the choice is
+always a corner — and *which* corner flips inside the paper's own ρ range:
+
+| ρ | 1.1 | 1.2 | 1.3 | 1.4 | 1.5 | 2.0 |
+|---|---|---|---|---|---|---|
+| θ permanent | 0 | 0 | 0 | **1** | **1** | **1** |
+| W(1) − W(0) | −0.0065 | −0.0026 | −0.0005 | +0.0007 | +0.0014 | +0.0024 |
+
+The appendix reports the θ = 0 corner because it works at ρ = 1. Above ρ ≈ 1.35 the sign reverses: with a
+high EIS the young's resistance to taxation is low (the paper's own `Quant.tex` makes this point), so the
+permanent choice's dominant channel is the future path of τ and capital — permanently higher θ means
+permanently lower τ and more capital — and that beats the redistribution motive. Note the objective is
+nearly flat between the corners near the flip (gaps of 5e-4), so this is a near-tie, not a sharp switch.
+
+**Consequence for the wedge:** at ρ = 2 the permanent choice is already at θ = 1 *without* a wedge, and a
+wedge that penalises Beveridgean design pushes it further that way. So under permanent + CRRA the wedge
+cannot deliver an interior solution at all — the binding problem there is the opposite corner, and would
+need something that penalises *Bismarckian* design instead.
+
+### Open
+
+- Sequential timing still not implemented (only its FOC appears in the appendix; the leaded and permanent
+  solvers here would make it a small addition).
+- The ρ-flip above deserves a decision: it makes the permanent specification unattractive as the paper's
+  headline, since its qualitative result depends on a parameter the paper treats as robustness.

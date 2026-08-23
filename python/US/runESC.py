@@ -295,6 +295,55 @@ def stageCountry(specs, phis, calib, out):
     return pd.DataFrame(rows)
 
 
+# ---------------------------------------------------------------- stage: the permanent choice
+
+def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None):
+    """ The PERMANENT choice of theta (app:ESC), calibrated in its own right and compared with the leaded
+    one at the same wedge.
+
+    Three rows per (spec, phi): the no-wedge case (which the appendix reports as a corner and which this
+    reproduces), the leaded-calibrated wedge evaluated under the permanent timing, and the permanent
+    timing's OWN calibrated p. The last is the number that belongs beside the appendix's 0.41.
+
+    Also records the moving-siRatio reading. That is the WRONG object -- it lets the policy maker
+    internalise a predetermined state -- but the gap between it and the pinned one is ~0.14 in theta at the
+    calibrated wedge, so it is worth having on the record rather than in a comment. """
+    rows = []
+    for spec in specs:
+        for phi in phis:
+            # (a) no wedge
+            m = buildUS(None, ρ = ρ)
+            m.calibrate()
+            r = m.solvePermanent('LOG', movingSiRatio = True, θCand = θCand)
+            rows.append({'spec': 'none', 'phi': np.nan, 'p': np.nan, 'source': 'none',
+                         'θStar': float(m.db['θ'].xs(m.t0Year)), 'θPerm': r['θ'],
+                         'atBound': r['atBound'], 'nTurning': r['nTurning'],
+                         'θPermMovingSi': r['siRatioMoving'],
+                         'θLeaded': m.leadedChoiceAtT0(m.ESC.solveBackward()),
+                         'τAtChoice': r['τAtChoice']})
+            print('[{}, φ={}] no wedge: θ_perm={:.4f} (corner={}, turns={})'.format(
+                spec, phi, r['θ'], r['atBound'], r['nTurning']))
+
+            # (b) the permanent timing's own calibrated p
+            m = buildUS({'spec': spec, 'phi': phi, 'p': 0.4}, ρ = ρ)
+            try:
+                rec = m.calibrateWedge(spec = spec, phi = phi, preferences = 'permLOG', verbose = False)
+            except Exception as e:
+                print('  own-p calibration FAILED {}: {}'.format(type(e).__name__, e))
+                rec = {'converged': False, 'p': np.nan, 'message': str(e)}
+            if rec['converged']:
+                r = m.solvePermanent('LOG', movingSiRatio = True, θCand = θCand)
+                rows.append({'spec': spec, 'phi': phi, 'p': rec['p'], 'source': 'permanent',
+                             'θStar': rec['θ'], 'θPerm': r['θ'], 'atBound': r['atBound'],
+                             'nTurning': r['nTurning'], 'θPermMovingSi': r['siRatioMoving'],
+                             'θLeaded': m.leadedChoiceAtT0(m.ESC.solveBackward()),
+                             'τAtChoice': r['τAtChoice']})
+                print('  own p={:.4f}: θ_perm={:.4f} (target {:.4f}), leaded at the same wedge={:.4f}'.format(
+                    rec['p'], r['θ'], rec['θ'], rows[-1]['θLeaded']))
+            pd.DataFrame(rows).to_csv(out, index = False)
+    return pd.DataFrame(rows)
+
+
 # ---------------------------------------------------------------- stage: the model's figure 1.1
 
 def stageFig1(specs, phis, calib, out, ρ = 1.0):
@@ -361,8 +410,9 @@ def stageFig1(specs, phis, calib, out, ρ = 1.0):
 
 def main():
     p = argparse.ArgumentParser(description = 'Endogenous theta: leaded choice under the deadweight wedge.')
-    p.add_argument('--stage', nargs = '*', default = ['calib', 'path', 'shocks', 'country', 'fig1'],
-                   choices = ('calib', 'path', 'shocks', 'country', 'fig1'))
+    p.add_argument('--stage', nargs = '*', default = ['calib', 'path', 'shocks', 'country', 'fig1',
+                                                     'permanent'],
+                   choices = ('calib', 'path', 'shocks', 'country', 'fig1', 'permanent'))
     p.add_argument('--spec', nargs = '*', default = ['scale', 'flat'])
     p.add_argument('--phi', type = float, nargs = '*', default = [0.5, 0.25, 0.75])
     p.add_argument('--rho', type = float, default = 1.0)
@@ -384,6 +434,8 @@ def main():
         stageCountry(a.spec, a.phi, calib, f('escCountry'))
     if 'fig1' in a.stage:
         stageFig1(a.spec, a.phi, calib, f('escFig1'), ρ = a.rho)
+    if 'permanent' in a.stage:
+        stagePermanent(a.spec, a.phi, f('escPermanent'), ρ = a.rho)
     print('\n-> {}'.format(os.path.relpath(OUTDIR, REPO)))
     return 0
 

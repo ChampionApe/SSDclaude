@@ -401,5 +401,12 @@ LOG the leaded choice has **no state at all** — `θPolicy_t` is constant acros
 `W_t = A(τ_t) + B(θ_{t+1})` in logs; and the choice is invariant to `s_{t-1}`. All three fail under CRRA,
 which is why `LeadedCRRA` solves the path and reports `stateSensitivity`.
 
-The sequential and permanent timings are still not implemented. Open smaller items: the workweek column's
-full-effect gap against the paper (above), and the UK's `X_i` scale.
+Two things about the permanent timing are worth knowing before using it. Its joint `(τ_{t0}, θ)` choice
+**concentrates** — `dW/dτ = 0` is the ordinary τ FOC at `θ_t = θ`, so the appendix's two-dimensional grid
+collapses to a one-dimensional search, and `τ*(θ) = τPolicy(θ)` is checked in `test_esc.py`. And
+`s_{t0-1,i}/s_{t0-1}` **must be pinned** while maximising: θ enters it there (through `θ_{t0}`) in a way it
+never does in the leaded problem, and letting it move gives 0.910 instead of 0.773. Only the *sequential*
+timing is still unimplemented.
+
+Open smaller items: the workweek column's full-effect gap against the paper (above), and the UK's `X_i`
+scale.

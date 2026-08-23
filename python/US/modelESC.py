@@ -36,19 +36,22 @@ approximation held at this parameter point, and it costs nothing.
 import numpy as np, pandas as pd
 from scipy import optimize
 from model import ModelUS
-from policyESC import LeadedLOG, LeadedCRRA
+from policyESC import LeadedLOG, LeadedCRRA, PermanentLOG, PermanentCRRA
 
 
 class ModelESC(ModelUS):
     _defaultWedge = {'spec': None, 'phi': 0.5, 'p': 1.0}
 
-    def __init__(self, *args, wedge = None, nθ = 41, nθCand = 121, nθCandCRRA = 13, **kwargs):
+    def __init__(self, *args, wedge = None, nθ = 41, nθCand = 121, nθCandCRRA = 13,
+                 nθCandPerm = 21, **kwargs):
         """ wedge: {'spec': None|'scale'|'flat', 'phi': float, 'p': float}. spec=None reproduces ModelUS
         exactly (Base.wedgeA/wedgeB are then the identity), which is what test_esc.py pins. """
         self._wedge0 = self._defaultWedge | (wedge or {})
         super().__init__(*args, **kwargs)
         self.ESC = LeadedLOG(self, nθ = nθ, nθCand = nθCand)
         self.ESCC = LeadedCRRA(self, nθCand = nθCandCRRA)
+        self.ESCP = PermanentLOG(self, nθ = nθ, nθCand = nθCand)
+        self.ESCPC = PermanentCRRA(self, nθCand = nθCandPerm)
 
     def initPars(self, pars = None):
         """ Write the wedge parameters BEFORE the parent fills db: updateAuxPars runs inside the parent's
@@ -148,7 +151,7 @@ class ModelESC(ModelUS):
         with everything else and its db/B/BG/BT already point at the copy's own objects, but its cached T
         would still describe the original horizon. """
         mt0 = super().createCopyFromt0(t0)
-        mt0.ESC.T = mt0.ESCC.T = mt0.T
+        mt0.ESC.T = mt0.ESCC.T = mt0.ESCP.T = mt0.ESCPC.T = mt0.T
         return mt0
 
     def leadedChoiceAtT0_CRRA(self, s0 = None, solveKwargs = None):
@@ -188,6 +191,73 @@ class ModelESC(ModelUS):
                               'τ': float(rec['out']['τ'].xs(t0)) - float(self.db['τ0'])}
         return rec
 
+    # ------------------------------------------------------------------ the permanent choice
+    def predeterminedSiRatio(self, base = None, preferences = 'LOG'):
+        """ s_{t0-1,i}/s_{t0-1} from the incumbent equilibrium -- the predetermined state the permanent
+        choice must hold fixed (see PermanentLOG's docstring).
+
+        Read off the baseline report at the period BEFORE t0: EE_report's 'si_s' is computed at vintage t
+        and gives s_{t,i}/s_t, so the row at t0-1 is exactly what c_{2,t0}^i consumes. base: a solved
+        solvePEE_* return; solved here if not supplied. """
+        t0 = self.t0Year
+        pos = self.db['t'].get_loc(t0)
+        if pos == 0:
+            raise ValueError('predeterminedSiRatio: t0 is the first period of the horizon, so there is no '
+                             'predetermined ratio to read -- use initialState_solve instead.')
+        if base is None:
+            base = getattr(self, f'solvePEE_{preferences}')()
+        return base['report']['si_s'].xs(self.db['t'][pos-1]).values.astype(float)
+
+    def solvePermanent(self, preferences = 'LOG', base = None, movingSiRatio = False, s0 = None,
+                       θCand = None, verbose = False):
+        """ The permanent design chosen at t0, and the equilibrium it implies.
+
+        movingSiRatio: recompute s_{t0-1,i}/s_{t0-1} at each candidate instead of pinning it. That is the
+        WRONG object -- it lets the policy maker internalise a state it takes as given -- and is exposed
+        only so the size of the error is reportable rather than assumed. LOG only.
+
+        Returns {'θ', 'atBound', 'τ', 'sol', 'report', 'W', 'θCand', 'siRatioMoving'}. """
+        t0 = self.t0Year
+        if base is None:
+            base = getattr(self, f'solvePEE_{preferences}')()
+        siRatio_ = self.predeterminedSiRatio(base = base)
+        if preferences == 'LOG':
+            rec = self.ESCP.solve(t0, siRatio_, θCand = θCand)
+            if movingSiRatio:
+                recMove = self.ESCP.solve(t0, None, θCand = θCand)
+                rec['siRatioMoving'] = recMove['θ']
+        else:
+            if s0 is None:
+                s0 = float(base['report']['s_'].xs(t0))
+            rec = self.ESCPC.solve(t0, siRatio_, s0 = s0, θCand = θCand, verbose = verbose)
+            rec['siRatioMoving'] = np.nan
+
+        # the equilibrium at the chosen permanent design, from t0 onward
+        θ = np.full(self.T, rec['θ'])
+        ε = self.db['eps'].values.astype(float)
+        θSave = self.db['θ'].values.astype(float).copy()
+        try:
+            self.db.update(self.adjPar('θ', float(rec['θ'])))
+            τ = (self.ESCP.τPath(rec['θ']) if preferences == 'LOG'
+                 else self.solvePEE_CRRA(θ = θ, ε = ε)['τ'].values.astype(float))
+            s0e = self.steadyState_LOG_solve(τ[self.B.tFirst], θ[self.B.tFirst], t = self.B.tFirst)['s']                   if preferences == 'LOG' else None
+            sol = getattr(self, f'EE_{preferences}_solve')(τ, θ, ε, s0e)
+            report = self.EE_report(sol, τ, θ, ε, s0e if s0e is not None else float(sol['s'].iloc[0]))
+        finally:
+            self.db.update(self.adjPar('θ', θSave))
+        return rec | {'τ': pd.Series(τ, index = self.db['t']), 'sol': sol, 'report': report}
+
+    def permanentChoiceAtT0(self, preferences = 'LOG', base = None, verbose = False):
+        """ Just the chosen permanent design -- what calibrateWedge targets under the permanent timing. """
+        t0 = self.t0Year
+        if base is None:
+            base = getattr(self, f'solvePEE_{preferences}')()
+        siRatio_ = self.predeterminedSiRatio(base = base)
+        if preferences == 'LOG':
+            return self.ESCP.solve(t0, siRatio_)['θ']
+        s0 = float(base['report']['s_'].xs(t0))
+        return self.ESCPC.solve(t0, siRatio_, s0 = s0, verbose = verbose)['θ']
+
     # ------------------------------------------------------------------ calibrating the wedge
     def wedgeResidual(self, p, spec, phi, calKwargs = None, preferences = 'LOG'):
         """ (the leaded choice at t0) - theta* at wedge parameter p, with (beta, omega) recalibrated to
@@ -196,7 +266,10 @@ class ModelESC(ModelUS):
         self.setWedge(spec = spec, phi = phi, p = float(p))
         self.calibrate(**(calKwargs or {}))
         θStar = float(self.db['θ'].xs(self.t0Year))
-        choice = self.leadedChoiceAtT0() if preferences == 'LOG' else self.leadedChoiceAtT0_CRRA()
+        choice = {'LOG':      lambda: self.leadedChoiceAtT0(),
+                  'CRRA':     lambda: self.leadedChoiceAtT0_CRRA(),
+                  'permLOG':  lambda: self.permanentChoiceAtT0('LOG'),
+                  'permCRRA': lambda: self.permanentChoiceAtT0('CRRA')}[preferences]()
         return choice - θStar
 
     def calibrateWedge(self, spec = 'scale', phi = 0.5, bracket = (0.05, 3.0), nScan = 12,

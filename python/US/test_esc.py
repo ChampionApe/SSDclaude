@@ -187,4 +187,34 @@ for spec, moves in (('scale', False), ('flat', True)):
     check(f"'{spec}': theta {'moves with' if moves else 'is unchanged by'} p",
           (abs(θs - θ0) > 1e-3) == moves, '-> theta={:.4f} vs {:.4f}'.format(θs, θ0))
 
+# ---- 8. the PERMANENT choice (PermanentLOG)
+mNo.calibrate()
+permNo = mNo.solvePermanent('LOG', movingSiRatio = True)
+check('WITHOUT a wedge the PERMANENT choice is also a corner (app:ESC)', permNo['atBound'],
+      '-> theta={:.6f}, turning points={}'.format(permNo['θ'], permNo['nTurning']))
+check('...and at rho=1 it is the theta=0 corner specifically', permNo['θ'] == 0.,
+      '-> theta={:.6f}'.format(permNo['θ']))
+
+permW = mW.solvePermanent('LOG', movingSiRatio = True)
+check('WITH the wedge the permanent choice is interior', 0. < permW['θ'] < 1.,
+      '-> theta={:.6f} (leaded gives {:.6f})'.format(permW['θ'], chW))
+
+# tau at the chosen design must be the ORDINARY PEE tax there -- that is the concentration argument the
+# solver rests on (dW/dtau = 0 is the same first-order condition, so the 2-D grid the appendix proposes
+# collapses to this 1-D one). If it ever stops holding, PermanentLOG.solve is solving the wrong problem.
+τConc = mW.ESCP.τAt(mW.t0Year, permW['θ'])
+check('tau at the permanent choice == tauPolicy(theta) (the concentration argument)',
+      abs(τConc - permW['τAtChoice']) < 1e-6,
+      '-> concentrated={:.8f} solver={:.8f}'.format(τConc, permW['τAtChoice']))
+
+# The predetermined ratio must be PINNED, not recomputed per candidate. This is not a nicety: the two
+# readings differ by ~0.14 in theta at the calibrated wedge.
+check('pinning s_{t-1,i}/s_{t-1} matters, so the convention is load-bearing',
+      abs(permW['siRatioMoving'] - permW['θ']) > 1e-3,
+      '-> pinned={:.4f} vs moving={:.4f}'.format(permW['θ'], permW['siRatioMoving']))
+siPin = mW.predeterminedSiRatio()
+check('the pinned ratio is the baseline equilibrium value at t0-1, and sums correctly',
+      siPin.shape == (mW.ni,) and abs(float((mW.B.get('γi', t0)*siPin).sum()) - 1.) < 1e-9,
+      '-> sum(gamma_i * si_s) = {:.12f}'.format(float((mW.B.get('γi', t0)*siPin).sum())))
+
 report()
