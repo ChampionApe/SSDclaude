@@ -24,3 +24,13 @@ C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:537: RuntimeWarni
   baseline  pin=True  θ_t1=0.7382  τ_t0=0.1444 τ_t1=0.1910 sr_t1=0.1979  [1s]
   baseline  pin=False θ_t1=0.7390  τ_t0=0.1444 τ_t1=0.1915 sr_t1=0.1975  [194s]
   mild      pin=True  θ_t1=0.7382  τ_t0=0.1809 τ_t1=0.2054 sr_t1=0.1917  [1s]
+  mild      pin=False θ_t1=0.7704  τ_t0=0.1812 τ_t1=0.2059 sr_t1=0.1912  [230s]
+  acute     pin=True  θ_t1=0.7382  τ_t0=0.2213 τ_t1=0.2204 sr_t1=0.1855  [2s]
+  acute     pin=False θ_t1=0.8149  τ_t0=0.2221 τ_t1=0.2207 sr_t1=0.1850  [259s]
+
+=== [rho=2.0, flat, phi=0.5] calibrating p under CRRA ===
+    p=0.0100: θ*=0.7379  choice-θ* = -0.53555
+    p=0.0158: θ*=0.7378  choice-θ* = -0.46710
+    p=0.0248: θ*=0.7375  choice-θ* = -0.38836
+    p=0.0391: θ*=0.7371  choice-θ* = -0.29938
+    p=0.0617: θ*=0.7364  choice-θ* = -0.20439

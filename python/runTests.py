@@ -50,6 +50,7 @@ SUITES = [
     ('informalAnalytical/test_calibration.py',    True,  'nested-fixed-point calibration'),
     ('InformalSavings/test_calibration.py',       True,  '~12 min: four LOG calibrations and one CRRA'),
     ('InformalSavings/test_calibrationGrid.py',   True,  '~45 min: three real calibrations over a ρ grid'),
+    ('US/test_escCRRA.py',                        True,  '~4 min: LeadedCRRA against its own LOG limit'),
 ]
 
 
