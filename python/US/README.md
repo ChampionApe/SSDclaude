@@ -10,11 +10,15 @@ numerical solution); docstrings reference its labels by short name (`eq:calibrat
 ## Files
 `base.py` / `policy.py` / `model.py` — copied from `informalAnalytical` and adjusted, per the repo's
 self-contained-per-module convention. `modelFR.py` adds `ModelFR(ModelUS)`, the France/UK calibration
-protocol (below). `shocks.py` holds the counterfactual machinery. `test.py` loads
-`data/USMain_test.xlsx`; `testEU.py` loads `data/FRMain.xlsx` and `data/UKMain.xlsx`
-(`testEU.model('FR')`, `testEU.model('UK')`, `testEU.model('UK', grouping='US')`). Seven test suites, all
-fast (~36 s total), registered in `python/runTests.py`. Drivers: `calibrateRhoGrid.py` (US),
-`calibrateRhoGridEU.py` (FR/UK), `runShocksUS.py` (all counterfactuals).
+protocol (below). `shocks.py` holds the counterfactual machinery. `policyESC.py`/`modelESC.py` add the
+endogenous-`θ` layer (`LeadedLOG`, `LeadedCRRA`, `ModelESC`); `thetaStakes.py` is the diagnostic that
+preceded them, decomposing who gains and loses from a marginal change in `θ_{t+1}` without solving for `θ`
+at all — it is what established that the leaded choice needs a wedge before any solver was written.
+`test.py` loads `data/USMain_test.xlsx`; `testEU.py` loads `data/FRMain.xlsx` and `data/UKMain.xlsx`
+(`testEU.model('FR')`, `testEU.model('UK')`, `testEU.model('UK', grouping='US')`). Eight test suites, all
+fast (~55 s total), registered in `python/runTests.py`. Drivers: `calibrateRhoGrid.py` (US),
+`calibrateRhoGridEU.py` (FR/UK), `runShocksUS.py` (all counterfactuals), `runESC.py` / `runESCcrra.py`
+(endogenous `θ`).
 
 ## The ρ sweep
 

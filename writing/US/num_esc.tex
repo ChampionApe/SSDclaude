@@ -1,0 +1,49 @@
+\subsection{Endogenous system characteristics: the leaded choice under a deadweight wedge}\label{\refsec:ESC}
+
+This section documents the numerical solution of the \emph{leaded} choice of $\theta_{t+1}$ combined with the deadweight wedge on redistributive benefits --- the combination appendix \ref{app:ESC} sets up but does not solve. The model side is stated there; here we record only what the code does and the three structural properties it exploits.
+
+\smalltitle{The wedge.} Benefits are written
+\begin{align}\label{\refeq:esc:benefits}
+    b_t^i = \left[A(\theta_t) h_{t-1,i}\eta_{t-1,i} + B(\theta_t)h_{t-1}\right]\overline{b}_t, \qquad f(\theta) \equiv \phi + (1-\phi)\theta^{p},
+\end{align}
+with $\left(A,B\right) = \left(\theta, 1-\theta\right)$ in the baseline model and, with a wedge,
+\begin{align}\label{\refeq:esc:AB}
+    \text{\texttt{scale}:}\quad \left(A,B\right) &= \left(f(\theta)\theta,\; f(\theta)(1-\theta)\right), &
+    \text{\texttt{flat}:}\quad \left(A,B\right) &= \left(\theta,\; f(\theta)(1-\theta)\right).
+\end{align}
+The first is the appendix's live specification, in which $\overline{b}_t$ itself carries $f(\theta_t)$; the second scales only the flat component, so that the earnings-related part of the system carries no deadweight loss.
+
+The reason this is a two-line change to the code rather than a re-derivation is that in \emph{every} equation of \eqref{\refeq:auxiliary}, $\theta_{t+1}$ appears only multiplying $\frac{1-\alpha}{\alpha}\tau_{t+1}$, and $(1-\theta_{t+1})$ only multiplying the same group. The wedge is therefore exactly the substitution $\theta \mapsto A(\theta)$, $(1-\theta)\mapsto B(\theta)$ in $\Gamma_{s,t}$, $\Theta_{h,t}$, $s_{t,i}/s_t$, $c_{1,t}^i$, $\tilde{c}_{1,t}^i$, $c_{2,t}^i$ and $\mathrm{d}\ln(c_{2,t}^i)/\mathrm{d}\tau_t$, and in nothing else. In particular $\overline{b}_t$ is left \emph{gross}: the resources lost are implicit in $A+B<1$.
+
+\smalltitle{Identification of $\theta$ is not innocent under \texttt{flat}.} The OECD replacement-rate ratio pins the \emph{ratio} of the two coefficients in \eqref{\refeq:esc:benefits},
+\begin{align}\label{\refeq:esc:RR}
+    \frac{B(\theta)}{A(\theta)} = \frac{1-RR_0}{RR_0 h_1 - h_2}, \qquad h_j \equiv \frac{\Gamma_h X_{j}^{\xi}}{\eta_{j}^{1+\xi}},
+\end{align}
+and nothing else. Under \texttt{scale} the common $f(\theta)$ cancels and $\theta$ is the same number as in the exogenous-$\theta$ model. Under \texttt{flat} it does not: $B/A = (1-\theta)f(\theta)/\theta$, so $\theta$ solves a scalar root that moves with $p$, and $\theta$ and the wedge are jointly identified. The code brackets that root by a scan rather than handing it to a root finder, because $(1-\theta)/\theta$ is decreasing while $f$ is increasing and the product need not be monotone.
+
+\smalltitle{Three properties that make the LOG problem small.} All three are verified numerically rather than assumed.
+\begin{enumerate}
+    \item \emph{$z_t$ does not see $\theta_{t+1}$.} The tax first-order condition depends on $\left(\tau_t, \theta_t\right)$ alone. $\theta_{t+1}$ reaches $z_t$ only through the level of $\Theta_{h,t}$, which enters only the old informal household's term, whose weight is $\gamma_{t-1,0}=0$ in this model. Hence $\tau_t = \mathcal{T}_t(\theta_t)$ is a \emph{static} scalar problem and the two choices at $t$ are separable: the political objective can be maximised over $\theta_{t+1}$ taking $\tau_t$ as given.
+    \item \emph{The choice does not depend on $s_{t-1}$.} $\ln(s_{t-1})$ enters every term of $\mathcal{W}_t$ additively with coefficients that involve no policy, so it shifts the objective's level and not its argmax. This is the appendix's own normalisation, and the code evaluates at $s_{t-1}=1$.
+    \item \emph{The choice does not depend on $\theta_t$ either.} $\ln(h_t)$, $\ln(\tilde{c}_{1,t}^i)$ and $\ln(R_{t+1})$ are each additively separable in $\tau_t$ and $\theta_{t+1}$, so $\mathcal{W}_t = \mathcal{A}(\tau_t)+\mathcal{B}(\theta_{t+1})$. Since $\theta_t$ reaches $\mathcal{W}_t$ only through $\tau_t$, it cannot move the maximiser: under \textsc{log}, $\theta_t$ is \emph{not} a state variable despite the leaded timing. The solver still tabulates the policy on a grid of $\theta_t$, which is what makes this measurable, and reports the spread across it.
+\end{enumerate}
+
+\smalltitle{Algorithm (\textsc{log}).} Backwards over $t$, with a grid $\Theta$ over the state and a grid $\Theta'$ over candidates:
+\begin{enumerate}
+    \item At the terminal period, solve $\mathcal{T}_{T-1}(\theta)$ for every $\theta\in\Theta$ from the terminal first-order condition (\eqref{\refeq:terminalPEELOG}'s $\beta_{T,j}=0$ convention).
+    \item At $t<T-1$: evaluate $z_t$ on the flattened $\Theta\times\mathcal{T}$ mesh in one call, select the maximiser among $\{l,u\}$ and the downward crossings as in \eqref{\refeq:candidates}, and \emph{polish} each interior selection with a bracketed scalar root find. The grid selection alone is $O(\text{spacing}^2)$ accurate, and $\tau_{t_0}$ is a calibration target matched at $10^{-8}$.
+    \item For each $\theta_t \in \Theta$, evaluate $\mathcal{W}_t(\theta';\theta_t)$ for every $\theta'\in\Theta'$ --- using $\tau_{t+1}=\mathcal{T}_{t+1}(\theta')$, $\theta_{t+2}=\Theta_{t+1}(\theta')$ and $\tau_{t+2}=\mathcal{T}_{t+2}(\theta_{t+2})$ from the previous steps --- and take the argmax, refined parabolically when interior. A corner is returned \emph{as} a corner: whether the choice is interior is the object of the exercise and must never be interpolated away.
+\end{enumerate}
+Interpolation between nodes is piecewise linear throughout, for the reasons recorded in \cref{\refsec:PEECRRA} about knot placement and overshoot: a policy function that is about to be maximised over must not carry interpolation wiggles.
+
+\smalltitle{Calibration.} Three targets and three parameters. $\left(\beta,\omega\right)$ are calibrated to $\left(R_{t_0}, \tau_{t_0}\right)$ exactly as in \cref{\refsec:calibration}, with the wedge installed and $\theta$ held at $\theta^{\ast}$; $p$ is then chosen (with $\phi$ imposed) so that the leaded choice reproduces the observed design,
+\begin{align}\label{\refeq:esc:calibration}
+    \Theta_{t_0}\left(\theta^{\ast}\right) = \theta^{\ast},
+\end{align}
+i.e.\ so that in the baseline year the electorate re-elects the system it has. Everything after $t_0$ is then a prediction. The two blocks are nested rather than simultaneous, which is an approximation: $\left(\beta,\omega\right)$ are calibrated along the path with $\theta$ held fixed, not along the endogenous-$\theta$ path. At the calibrated $p$ the two paths agree at $t_0$ and $t_0+1$ by construction and drift only later, and the code reports the residual distance of the endogenous path from its own $\left(R,\tau\right)$ targets rather than asserting it away.
+
+The scan in \eqref{\refeq:esc:calibration} is a scan and not a bracketed root find because the residual is \emph{flat at a corner}: wherever the choice sits at $\theta=0$ or $\theta=1$ it does not move with $p$ at all, and a root finder handed such a bracket would report spurious convergence at whichever endpoint it happened to evaluate.
+
+\smalltitle{The CRRA case.} None of the three properties survives: $\left(\tilde{c}\right)^{1-1/\rho}$ does not turn products into sums, so $\mathcal{W}_t$ is not additively separable and both $s_{t-1}$ and $\theta_t$ enter the choice. The Markov object is a policy function over the two-dimensional state $\left(s_{t-1},\theta_t\right)$. The code instead iterates on the equilibrium \emph{path}: at each $t$ it evaluates $\mathcal{W}_t$ over a grid of candidate $\theta_{t+1}$, re-solving the whole CRRA equilibrium for each candidate while holding $\theta_{t+2},\dots$ at the current iterate, and sweeps forward to a fixed point. Re-solving at every candidate is also what makes the envelope logic right: $\tau_t$ is re-optimised, so its own response to $\theta_{t+1}$ contributes nothing to first order.
+
+Holding $\theta_{t+2}$ fixed is exact if the choice at $t+1$ does not respond to the design it inherits --- which is property 3 above, and therefore not an approximation at all under \textsc{log}. Under CRRA it is one, and the code measures it directly, reporting $\mathrm{d}\theta_{t+2}/\mathrm{d}\theta_{t+1}$ alongside every path it returns.
