@@ -39,10 +39,10 @@ REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, HERE)
 os.chdir(HERE)                                  # test.py resolves data/ relative to the repo root
 
-# The RETUNED partial sweep, not the 2026-08-12 one: its rho=0.7/0.8/0.9/1.0 rows and pickles are the only
-# converged points that carry both smoothKnots=4 and the new grid rule, so they are the only ones a
-# diagnostic run under those settings is comparable to.
-CSV    = os.path.join(REPO, 'results', 'calibration', 'informalSavings_rhoGrid_fixedKnots_retuned.csv')
+# The live sweep. A diagnostic run is only comparable to points carrying the same solver settings, so if
+# this is ever pointed at another csv, check it was solved at BASE below (crossCuttingFindings #8: a
+# default filename that was correct when written is not evidence it still is).
+CSV    = os.path.join(REPO, 'results', 'calibration', 'informalSavings_rhoGrid.csv')
 PKLDIR = os.path.join(REPO, 'results', 'calibration', 'instances')
 PARS = ('β', 'ω', 'η0', 'X0')
 ROWS = ('sr', 'τ', 'η0', 'X0')

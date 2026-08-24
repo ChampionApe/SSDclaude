@@ -1,27 +1,59 @@
 # SSDclaude
-Code repository for *Social Security Design and Its Political Support* (2026).
 
-See `CLAUDE.md` for full project conventions. This file is just a map of the repo.
+Code repository for *Social Security Design and Its Political Support* (2026). See `CLAUDE.md` for project
+conventions; this file is a map. The paper itself is on Overleaf:
+https://da.overleaf.com/project/6a4b74c7259adae491b45669
 
 ## Layout
-- `data/` — raw and processed data (not results). `ArgentinaTest.xlsx`, `USMain_test.xlsx`, `FRMain.xlsx`, `UKMain.xlsx` (the last also carries a US-percentile regrouping of the UK data, for counterfactual comparability).
-- `python/` — model code, one subfolder per model variant plus a shared numerical utility package. Each subfolder has its own `README.md` (purpose, files, implementation status) and `RESEARCH_LOG.md` (model-specific session log).
-    - `runTests.py` — the repo-wide test runner. `python/runTests.py` runs the 19 fast suites (~70 s), `--all` adds the three slow calibration suites (~1 h), `--list` shows the registry, `-k <pattern>` filters. Every suite is also runnable on its own.
-    - `InformalSavings/` — informal savings model variant, where the informal type saves rather than being hand-to-mouth. **Furthest along**: economic equilibrium, both PEE solvers (LOG and CRRA), path solve, calibration, calibration across a parameter grid, and unanticipated-reform experiments are all implemented and verified. **The calibration targets Argentina's capital–output ratio** (2026-08-24; it targeted the savings rate before — see `notes/argentina_calibrationTarget.md` for why the two are not the same object), and the whole `ρ` grid, the reform experiments and the paper's Argentina outputs were re-run on it.
-    - `informalAnalytical/` — analytical (log-preference, closed-form) informal-sector model.
-    - `US/` — US model variant (US/France/UK): `informalAnalytical` without the informal household type (`γ_0 = 0`). Economic equilibrium, LOG and CRRA PEE, both calibration variants (vector `X_i` vs common `X`), `ModelFR` (France/UK: US `β` imposed, hours targeted relative to the US), ρ sweeps for all four calibrations, and the three counterfactual families (pension design, ageing, French characteristics) — all implemented and tested, and wired to `paper/`. **Every US counterfactual is a new equilibrium path read at 2020** (2026-08-24): the changed characteristics hold over the whole horizon and the economy starts at its own steady state, so a row is a country that has always had this mix rather than the US surprised in 2020 — which is what makes the rows commensurable with France's own calibrated path, now carried as the tables' endpoint. Documented in `writing/US/`. **Endogenous `θ`** (the leaded choice under a deadweight wedge) is implemented under LOG and CRRA — `policyESC.py`/`modelESC.py`/`runESC.py`, results in `results/esc/`, findings in the module's `RESEARCH_LOG.md`. Under CRRA both the exact 2-D `(s, θ)`-state solver (`LeadedCRRA2D`) and the certified path iteration exist; the wedge is calibrated and the counterfactuals run at `ρ ∈ {0.5, 1, 2}` for both cost specs, feeding the paper's ESC appendix through `paper/`. The counterfactuals are new paths **read at 2020** rather than at 2050, and the wedge target moved one period back with them — `p` now makes the design *in force* in 2020 the observed one (`ModelESC.leadedDesignAtT0`), which is what puts the baseline row on the datum.
-    - `paper/` — the pipeline that builds `writing/Paper`'s tables and figures from solved models, in three stages. **Two model arms**: Argentina (`runCalibration.py`, `runShocks.py`) and US/France/UK (`runCalibrationUS.py`, `runShocksUS.py`), sharing `config.py` and one stage (iii), `build.py`. Stage (iii) reads only `results/` and takes seconds. 22 outputs wired — the five Argentina ones, twelve US/UK/FR tables and figures, and the five endogenous-`θ` appendix tables (`US_ESC_*`, run through all three stages; see `python/paper/README.md`). Nothing in `writing/Paper` remains unwired.
-    - `gridsearch/` — homemade numerical package for gridsearch-based solving: bounded-root reparameterization, 1-D root selection, Cartesian grids, gridded interpolation/smoothing/differentiation, and an anchored parameter march for sequences of calibrations. Also carries `testing.py`, the shared PASS/FAIL harness every test file in the repo imports (it is the only importable package, so shared test scaffolding has nowhere else to live).
-- `results/` — output tables, figures, model instances, and solution databases (`calibration/` holds the parameter sweeps and one pickled instance per solved point — `informalSavings_*`/`instances*` for Argentina, `US_rhoGrid{,CommonX}.csv`/`instancesUS*` for the US and `{FR,UK,UKUS}_rhoGrid{,CommonX}.csv`/`instances{FR,UK,UKUS}*` for the European variants, each sweep with its own pickle directory since the filenames are the `ρ` alone; `shocks/` the counterfactual paths, full-effect and economic-equilibrium-only; `sweeps/` the cartesian `(ε, θ)` comparative statics; `boundary/` the `ρ=1` diagnostics; `esc/` the endogenous-`θ` runs; `diagnostics/` the `θ`-stake decompositions; `paper/` the built tables and figures plus the hand-written originals they superseded). Superseded runs live in a subdirectory (`preInterpFix/`, `preNewPath/`), never beside the live ones — see `notes/crossCuttingFindings.md` #8. Run logs belong here too, not at the repo root.
-- `notes/` — working notes, and the place longer findings live so the READMEs can stay short:
-    - `crossCuttingFindings.md` — findings that recurred across modules, written once and linked to. Read #3–#5 before diagnosing any outer solver that stalls (and note #4's own advice: on the `informalAnalytical`/`US` lineage, check #5's knot count first), #6 after fixing one, #7 before keying a fix or a diagnostic to one solver/branch/range — or before trusting a hard-coded bound in a module that began as a copy — and #8 before leaving a superseded result file beside the live ones, #9 before writing a parameter that the model also derives from data — a counterfactual that comes back at the baseline is the symptom — #10 before trusting a sensitivity check whose subject might be sitting on a boundary, and #11 before grid-maximising an objective over an instrument that also enters a predetermined state.
-    - `informalSavings_numericalDeviations.md` — where `InformalSavings`' code departs from the `num_*.tex` specs, with the measurement behind each.
-    - `informalSavings_resolvedIssues.md` — the `ρ≈0.7` calibration failure: diagnosis, fix, and the grid retune that followed.
-    - `informalSavings_resolvedIssues.md` — the `ρ=1` LOG/CRRA boundary artifact: why it is the LOG anchor's interpolant rather than the two recursions, the one-line fix, and what re-running it did and did not need to touch (applied 2026-08-20).
-    - `argentina_calibrationTarget.md` — why the Argentina calibration gives `β > 1` at low `ρ`, with ranked fixes — **read together with its follow-up**, `argentina_calibrationTarget.md`, which audited the 18.4% datum and overturned part of the first note: the defect is the target's *time dimension* (an annual flow imposed on a 30-year stock-to-flow moment), not its denominator. **Acted on 2026-08-24**: the calibration now targets Argentina's capital–output ratio (`db['KY0'] = 3.2313`, PWT 11.0 at the calibration year) and everything downstream was re-run — `β = 0.808` at `ρ=1`, crossing 1 between `ρ=0.8` and `0.9` rather than at `ρ≈1.15`. `argentina_calibrationTarget.md` is the runbook that was executed.
-    - `esc_experiments_acrossRho.md` — the endogenous-`θ` counterfactuals across `ρ ∈ {0.5, 1, 2}`: the cross-ρ table and the findings the paper's ESC appendix presents.
-- `writing/` — tex documentation: `main.tex` plus one **subfolder per model variant** (`informalAnalytical/`, `informalSavings/`, `US/`), each with `model*.tex` (model and equilibrium definitions) and `num*.tex` (numerical solution). `US/model_esc.tex` and `US/num_esc.tex` document the endogenous choice of `θ`. **subfolder `Paper/`** contains latest draft of the final paper. Compiled locally by the user, not by agents.
-- `RESEARCH_LOG.md` — cross-cutting/structural session log (repo organization, decisions spanning modules). Model-specific logs live under `python/<module>/`.
-- `pyenv.md` — required python packages and versions.
 
-The final output is a research paper in Overleaf: https://da.overleaf.com/project/6a4b74c7259adae491b45669.
+**`data/`** — raw and processed inputs (not results). `ArgentinaTest.xlsx`, `USMain_test.xlsx`,
+`FRMain.xlsx`, `UKMain.xlsx` (the last also carries a US-percentile regrouping of the UK data, for
+counterfactual comparability), plus `argentina_*.csv`, the calibration targets
+`python/paper/dataTargets.py` derives from the Penn World Table.
+
+**`python/`** — three model variants, a shared numerical package, and the paper pipeline. Each subfolder
+has its own `README.md` (purpose, files, status) and `RESEARCH_LOG.md`.
+
+| | |
+|---|---|
+| `informalAnalytical/` | the analytical (log-preference) informal-sector model, and the **ancestor** of the other two — the shared conventions are documented there |
+| `InformalSavings/` | the variant where the informal type saves rather than being hand-to-mouth. Calibrated to Argentina, targeting its capital-output ratio |
+| `US/` | `informalAnalytical` without the informal type (`γ_0 = 0`), for the US, France and the UK. Also carries the endogenous-`θ` work |
+| `gridsearch/` | bounded-root reparameterization, 1-D root selection, Cartesian grids, gridded interpolation/smoothing/differentiation, and an anchored parameter march. Also `testing.py`, the shared PASS/FAIL harness — it lives here because `gridsearch` is the only importable package |
+| `paper/` | the three-stage pipeline that builds `writing/Paper`'s tables and figures from `results/` |
+| `runTests.py` | the repo-wide runner: 22 fast suites (~160 s), `--all` adds the four slow suites (~1 h), `--list`, `-k <pattern>`. Every suite also runs on its own |
+
+**`results/`** — solved output. `calibration/` holds the parameter sweeps and one pickled instance per
+solved point, each sweep with its **own** pickle directory since the filenames are the `ρ` alone
+(`instances/` for Argentina, `instancesUS*`, `instances{FR,UK,UKUS}*`); `shocks/` the counterfactual paths,
+full-effect and economic-equilibrium-only; `sweeps/` the cartesian `(ε, θ)` comparative statics; `esc/` the
+endogenous-`θ` runs; `paper/` the built tables and figures. Superseded runs go in a subdirectory, never
+beside the live ones — `notes/crossCuttingFindings.md` #8.
+
+**`notes/`** — working notes, and where longer findings live so the READMEs can stay short.
+
+| | |
+|---|---|
+| `crossCuttingFindings.md` | twelve findings that recurred across modules, written once and cited by number. Read #3–#5 before diagnosing any outer solver that stalls (and note #4: on the `informalAnalytical`/`US` lineage check #5's knot count first), #6 after fixing one, #7 before keying a fix or a diagnostic to one solver/branch/range — or before trusting a hard-coded bound in a module that began as a copy, #9 before writing a parameter the model also derives from data, #10 before trusting a sensitivity check whose subject might sit on a boundary, #11 before grid-maximising over an instrument that also enters a predetermined state, and #12 before adopting a calibration target |
+| `informalSavings_numericalDeviations.md` | where `InformalSavings`' code departs from the `num_*.tex` specs, with the measurement behind each |
+| `informalSavings_resolvedIssues.md` | two resolved calibration defects and the still-live settings they justify |
+| `argentina_calibrationTarget.md` | why the calibration targets K/Y rather than the savings rate, and the map from target to `β` |
+| `esc_experiments_acrossRho.md` | the endogenous-`θ` counterfactuals across `ρ ∈ {0.5, 1, 2}` |
+| `todo_escPermanentTiming.md` | the one piece of open ESC work |
+| `archive/` | measurements and results demoted out of the module READMEs |
+
+**`writing/`** — tex documentation: `main.tex` plus one subfolder per model variant, each with
+`model*.tex` (model and equilibrium definitions) and `num*.tex` (numerical solution).
+`US/model_esc.tex` / `num_esc.tex` document the endogenous choice of `θ`. **`writing/Paper/`** holds the
+current draft. Compiled locally by the user, not by agents; do not hand-edit a generated `.tex` there —
+it carries a `%% GENERATED` banner and the next `build.py` overwrites it.
+
+**`RESEARCH_LOG.md`** — cross-cutting session log (repo organization, decisions spanning modules).
+Model-specific logs live under `python/<module>/`. **`pyenv.md`** — required packages and versions.
+
+## Status
+
+All three model variants solve, calibrate and run their counterfactuals, and all 23 paper outputs are
+wired end to end. The endogenous-`θ` layer (leaded and permanent timings, LOG and CRRA) is implemented and
+calibrated; only the *sequential* timing is not. Per-module detail and open items are in the module
+READMEs.
