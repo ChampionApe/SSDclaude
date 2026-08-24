@@ -208,4 +208,22 @@ check('default (knots=None) reproduces the adaptive fit bitwise -- existing resu
       np.array_equal(griddedSmooth1D(xs5, base+noise, s = 1e-5),
                      griddedSmooth1D(xs5, base+noise, s = 1e-5, knots = None)))
 
+# ---- 6. griddedGradient1D: exact where the spline can be, and NaN exactly where the input was ---------
+from gridsearch import griddedGradient1D
+xq = np.linspace(0., 2., 81)
+yq = 3*xq**2 - 2*xq + 1                      # derivative 6x-2, exactly representable by a cubic spline
+check('exact on a quadratic', np.allclose(griddedGradient1D(xq, yq, s=0.0), 6*xq - 2, atol=1e-8))
+gq2 = griddedGradient1D(xq, np.column_stack([yq, -yq]), s=0.0)
+check('a trailing axis is differentiated column by column',
+      gq2.shape == (81, 2) and np.allclose(gq2[:, 0], 6*xq - 2, atol=1e-8)
+      and np.allclose(gq2[:, 1], -(6*xq - 2), atol=1e-8))
+yNan = yq.copy(); yNan[[10, 11, 60]] = np.nan
+gNan = griddedGradient1D(xq, yNan, s=0.0)
+check('NaN comes back exactly where the input had it, and nowhere else',
+      np.array_equal(np.isnan(gNan), np.isnan(yNan)))
+check('the surviving points are still accurate (a NaN does not poison the fit)',
+      np.allclose(gNan[~np.isnan(gNan)], (6*xq - 2)[~np.isnan(yNan)], atol=1e-6))
+check('too few valid points -> all NaN rather than a bogus low-order fit',
+      np.all(np.isnan(griddedGradient1D(xq, np.where(np.arange(81) < 3, yq, np.nan), s=0.0))))
+
 report()

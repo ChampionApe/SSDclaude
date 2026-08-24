@@ -142,14 +142,10 @@ check('the state grid genuinely moves with eta0, so rebuilding is not a formalit
           gridA[0], gridA[-1], gridB[0], gridB[-1]))
 
 # ---- 5. the outer finite-difference step --------------------------------------------------------------
-# docs num_calibration, "The outer residual is only piecewise smooth", predicts that a sqrt(machine eps)
-# step "will be far below [a grid cell] and will return noise". MEASURED, THAT IS NOT WHAT HAPPENS on this
-# calibration: the difference quotient is flat to ~4 decimals from 1e-9 up to 1e-5, and it is the LARGE
-# steps that wobble. The reason is that tau_t is located by interpolation INSIDE a cell of 𝒯 and the
-# policy interpolants are piecewise linear in the state, so a small step stays on one linear piece and
-# returns that piece's slope -- which is what Newton wants -- while a large step averages across kinks.
-# The hazard the doc describes is real but intermittent (a step that straddles a kink, or an argmax that
-# switches), not a systematic noise floor. Pinned here so the finding is not quietly lost.
+# The doc predicted that a sqrt(machine eps) step "will return noise". It does not: the difference
+# quotient is flat to ~4 decimals from 1e-9 to 1e-5 and it is the LARGE steps that wobble, because tau_t
+# is located by interpolation inside a cell of the tax grid and a small step stays on one linear piece.
+# Measurements: deviations note item 11. Pinned here so the finding is not quietly lost.
 x0 = cal['x']
 r0 = m.calibration_residual(x0, 'LOG')
 def slope(k, h):
@@ -197,25 +193,12 @@ check('the initial fixed point is a single crossing at the calibrated parameters
 
 # ---- 8. CRRA just above rho=1, warm-started from LOG --------------------------------------------------
 # The two solvers share no code path, so agreement near rho=1 tests both. Warm start means both halves:
-# the converged LOG parameters installed in db (so the very first inner solve starts from the LOG
-# equilibrium) and x0 starting the outer root at the same point.
+# the converged LOG parameters installed in db, and x0 starting the outer root at the same point.
 #
-# NONE OF THESE SETTINGS ARE THE PEE SOLVE'S DEFAULTS, and which of them is load-bearing changed on
-# 2026-08-19 (deviations note item 12). Measured at rho=1.02, warm-started from the LOG parameters:
-#
-#   linear + adaptive smoother, scipy's default step   2.02e-07 in 32 nfev   (1881 s)
-#   linear + adaptive smoother, eps=1e-4               2.21e-07 in 30 nfev   (2028 s)
-#   cubic  + smoothKnots=4,     scipy's default step   1.71e-12 in 11 nfev   ( 263 s)
-#
-# The two un-pinned rows FAIL at any step, ~30 evaluations of cycling apiece: the adaptive smoother's knot
-# count flips as a parameter moves, putting jumps in the outer residual, and a root inside a jump does not
-# exist in the discretized problem -- so no step size reaches it (crossCuttingFindings.md #5). This is why
-# the outer step is NOT what this section pins: it was eps=1e-4 here until item 17, and the middle row is
-# the measurement that shows that override was never what carried this check.
-#
-# What carries it is smoothKnots + cubic, which is what all calibration work uses. 45x45 is retained but
-# is no longer the sharp part: since item 17, 30x30 lands within ~2e-4 of it in the parameters rather than
-# on the displaced root item 12 reported.
+# NONE OF THESE SETTINGS ARE THE PEE SOLVE'S DEFAULTS. What carries the check is smoothKnots + cubic:
+# un-pinned knots FAIL here at any outer step, ~30 evaluations of cycling apiece (crossCuttingFindings #5).
+# 45x45 is retained on much weaker grounds than it was adopted on -- deviations note items 11-13 have the
+# measurements and the two readings they retired.
 ρC = 1.02
 CRRAGRID = {'nι': 45, 'ns': 45, 'interpKind': 'cubic', 'smoothKnots': 4}
 mC = newModel(ρ = ρC)
@@ -230,9 +213,8 @@ check('CRRA (ρ={}) parameters land near the LOG ones'.format(ρC), gap < 0.05,
       '-> ' + ', '.join('{}={:.5f} ({:+.2%})'.format(k, calC['pars'][k], calC['pars'][k]/cal['pars'][k]-1)
                         for k in m._calPars))
 
-# The answer must be a property of the model, not of the grid it was found on. Vary ONLY the grid here:
-# initGS() with no argument would reset interpKind and smoothKnots to their defaults as well, which is a
-# different experiment (see the table above) and would confound this one.
+# The answer must be a property of the model, not of the grid it was found on. Vary ONLY the grid:
+# initGS() with no argument would reset interpKind and smoothKnots too, which is a different experiment.
 mC.CRRA.initGS(CRRAGRID | {'nι': 60, 'ns': 60})
 rFine = np.max(np.abs(mC.calibration_residual(calC['x'], 'CRRA')))
 mC.CRRA.initGS(CRRAGRID | {'nι': 30, 'ns': 30})
@@ -241,10 +223,9 @@ mC.CRRA.initGS(CRRAGRID)
 check('the calibrated CRRA point survives grid refinement', rFine < 1e-3,
       '-> max|residual| at 60x60 = {:.2e} (vs {:.2e} on its own 45x45 grid)'.format(
           rFine, np.max(np.abs(calC['residual']))))
-# Item 12 asserted a factor of 10+ here, on the reading that 30x30 held a displaced root. Item 17 retired
-# that reading: the gap is now a resolution effect of about 3x, so what is checked is the DIRECTION (the
-# coarse grid is genuinely worse, i.e. 45x45 is not an arbitrary pick) with the ratio reported rather than
-# bounded from below. If this ever inverts, 45x45 has no remaining justification and should be dropped.
+# Only the DIRECTION is checked -- the coarse grid must be genuinely worse, i.e. 45x45 is not an arbitrary
+# pick -- with the ratio reported rather than bounded. If this ever inverts, 45x45 has no justification
+# left and should be dropped.
 check('coarsening the inner grid to the PEE default degrades the residual', rCoarse > rFine,
       '-> max|residual| at 30x30 = {:.2e}, {:.1f}x the 60x60 value'.format(rCoarse, rCoarse/rFine))
 

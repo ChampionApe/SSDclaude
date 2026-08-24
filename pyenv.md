@@ -21,6 +21,10 @@ Python: 3.14.6 (`C:\Python314\python.exe`)
 - gridsearch==0.0.1 — this repo's own homemade package (`python/gridsearch/`), editable-installed from `python/pyproject.toml` (added 2026-08-05).
 - matplotlib==3.11.1 — figures (added 2026-08-19, `InformalSavings/plotUniversalShock.py`; also `python/paper/figures.py`, which sets the `Agg` backend explicitly so a build never depends on a display). Pulls in contourpy, cycler, fonttools, kiwisolver, packaging, pillow, pyparsing.
 
+No package is needed for the one network-touching script: `python/paper/dataTargets.py` uses
+`urllib.request` from the standard library, and its output is committed to `data/`, so no other stage
+ever reaches the network.
+
 ## Setup from scratch
 ```
 python -m venv .venv

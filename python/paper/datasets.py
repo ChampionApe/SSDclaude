@@ -257,8 +257,7 @@ def escExperiments():
     The t0 columns are what the tables read. Every scenario is a NEW EQUILIBRIUM PATH -- the shocked
     parameters hold over the whole horizon and the political choice binds from the first period -- so
     theta_{t0} is an equilibrium outcome and 2020 already carries the design response. (Under the
-    superseded copy-from-2020 convention it did not, and the tables read t0+1; results/esc/preNewPath/
-    holds those csvs.) The scenario 'France' is France's own calibrated path, not a shock on the US
+    superseded copy-from-2020 convention it did not, and the tables read t0+1.) The scenario 'France' is France's own calibrated path, not a shock on the US
     model, and carries only the pinned reading. """
     return pd.read_csv(_need(os.path.join(C.ESCDIR, 'escExperiments.csv')))
 

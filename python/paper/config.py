@@ -93,7 +93,7 @@ US = {
     # counterfactual tables report at t0: every scenario is a new equilibrium path whose political choice
     # binds from the first period, so 2020's design is an outcome and already carries the response.
     # (The superseded convention -- an unanticipated 2020 reform with the design pinned through 2020 --
-    # had to report t0+1; results/esc/preNewPath/ holds those csvs.)
+    # had to report t0+1.)
     'esc': {
         'spec':      'scale',
         'altSpec':   'flat',

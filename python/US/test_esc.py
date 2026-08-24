@@ -263,7 +263,7 @@ check('the reported design path is kinked at t0, not constant at the choice',
       and np.allclose(θPath[mOff.db['t0']:], permOff['θ']),
       '-> before t0={:.6f} from t0={:.6f}'.format(θPath[0], θPath[mOff.db['t0']]))
 
-# ---- 9. leadedDesignAtT0: the object the counterfactual tables read and the wedge calibrates on
+# ---- 10. leadedDesignAtT0: the object the counterfactual tables read and the wedge calibrates on
 # theta_t is a STATE chosen at t-1, so the design in force in 2020 is thetaPolicy_{1990}, not the choice
 # made in 2020. The two are different numbers and the calibration targets the first; a regression that
 # quietly swapped them would move every appendix table by ~0.01 in theta and leave everything looking
@@ -293,7 +293,7 @@ check('at the calibrated p the FREE path reproduces theta* at t0', rec['converge
 check('...and the tax target is still hit there', abs(led['targetDrift']['τ']) < 1e-6,
       '-> tauDrift={:.2e} RDrift={:.2e}'.format(led['targetDrift']['τ'], led['targetDrift']['R']))
 
-# ---- 10. the new-path convention: a shocked model is the full horizon, not a copy from t0
+# ---- 11. the new-path convention: a shocked model is the full horizon, not a copy from t0
 # shockedCopy must leave the horizon, the calendar and t0's POSITION alone -- the readout sits at
 # db['t0'], so a copy that renumbered periods would silently report the wrong year.
 import shocks as sh                                                                  # noqa: E402

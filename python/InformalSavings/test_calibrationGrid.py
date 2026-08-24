@@ -26,21 +26,10 @@ from gridsearch.testing import check, report
 def newModel(**over):
     return ModelInformalSavings(pars = testmod.pars | over, **testmod.kwargs)
 
-# Keyed by solver on purpose: 45x45 is the CRRA calibration's resolved grid, and imposing it on LOG would
-# move that solver off its own documented default (nι=50) and off the README's calibrated numbers.
-#
-# interpKind='cubic' for CRRA is not a preference. At 'linear' the rho=1.1 calibration does not converge
-# at all -- it stalls around 3e-5 after 60+ evaluations, because the piecewise-linear kinks leave the
-# outer residual surface too rough for Newton -- and refining the grid at the stalled point makes the
-# residual GROW (3.3e-5 -> 1.5e-4 -> 2.9e-4 at 45/60/75), i.e. the answer is not grid-converged. Under
-# 'cubic' the same point reaches 1.3e-11 in 12 evaluations and the refinement trend reverses to
-# 1.3e-11 -> 1.7e-4 -> 5.1e-5, which is the grid-converging shape.
-# smoothKnots and interpKind are keyed on BOTH solvers, matching calibrateRhoGrid.py -- both are
-# well-posedness rather than resolution choices, so keying either by solver is a bug (see that script's
-# comments, and notes/crossCuttingFindings.md #7). interpKind joined smoothKnots on 2026-08-20: at
-# 'linear' the LOG solve does not converge in nι but jitters, and since tau(t0) is a calibration target
-# the parameters were being fitted to one realisation of it. The grid SIZES stay CRRA-only -- those are a
-# resolution choice and legitimately differ.
+# Grid SIZES are keyed by solver -- a resolution choice, and 45x45 on LOG would move it off its own
+# documented default. interpKind and smoothKnots are given to BOTH, matching calibrateRhoGrid.py: they are
+# well-posedness rather than resolution choices, so keying either by solver is a bug
+# (crossCuttingFindings #7; measurements in deviations note items 12-13).
 GRIDS  = {'CRRA': {'nι': 45, 'ns': 45, 'interpKind': 'cubic', 'smoothKnots': 4},
           'LOG': {'smoothKnots': 4, 'interpKind': 'cubic'}}
 VERIFY = {'CRRA': {'nι': 60, 'ns': 60, 'interpKind': 'cubic'}, 'LOG': {'nι': 75}}
@@ -53,11 +42,9 @@ m.db.update(m.adjPar('ρ', 1.3))
 check('_calPreferences selects CRRA once rho moves off 1', m._calPreferences() == 'CRRA',
       '-> rho={:.2f}'.format(float(m.db['ρ'].xs(t0))))
 m.db.update(m.adjPar('ρ', 1))
-# The outer finite-difference step: BOTH solvers now run at scipy's default. The CRRA override (eps=1e-4)
-# was retired on 2026-08-19 -- it defended against an eta0 Jacobian column that came out ~5x its resolved
-# value, which turned out to be the adaptive smoother's residual jumps being straddled at that step rather
-# than a property of the residual, and is gone at smoothKnots=4. The hook is kept, so this asserts the
-# dict is EMPTY rather than absent: a reintroduced per-solver step should have to restate its measurement.
+# BOTH solvers run at scipy's default outer step (deviations note item 11). The hook is kept, so this
+# asserts the dict is EMPTY rather than absent: a reintroduced per-solver step should have to restate its
+# own measurement.
 check('neither solver overrides scipy\'s outer FD step', m._calOuterKwargs == {})
 
 tStart = time.time()
@@ -72,20 +59,10 @@ check('the anchor converged', anchor['residual'] < 1e-6, '-> max|res|={:.2e}'.fo
 check("the record's x is the unbounded image of the record's parameters",
       all(np.isclose(m._calFromX(anchor['x'])[k], anchor[k], rtol = 1e-10) for k in m._calPars),
       '-> ' + ', '.join('{}={:.5f}'.format(k, anchor[k]) for k in m._calPars))
-# This reference moves whenever a solver-side setting moves, and is updated rather than loosened -- the
-# point of the check is that the anchor lands where the README says it does. History: β=1.212188,
-# ω=2.638654 before the retuned grid rule (deviations item 16); β=1.211615, ω=2.636787 before smoothKnots
-# was keyed on LOG as well as CRRA, which moved it a further -0.057%/+0.32%; β=1.210923, ω=2.645212
-# before interpKind was too (2026-08-20); and beta=1.211968, omega=2.641368 while the calibration
-# targeted the savings rate, which the capital-output target replaced on 2026-08-24 -- that one is not a
-# solver-side move at all, it is a different moment, and it is the largest of them by two orders of
-# magnitude (-33%/-12%).
-#
-# That last move is the one with an independent check on it, and it is worth stating because no other
-# entry in this history has one: the four CRRA points of a fine grid rho in {0.98,...,1.02} predict
-# β=1.211956, ω=2.641327 at rho=1 by extrapolation onto their own gap. The pre-fix anchor missed that by
-# -1.03e-3/+3.88e-3; this one lands on it to 1.2e-5/4.1e-5. So the reference below is not merely "what the
-# solver currently returns" -- it is where four independent calibrations say the anchor belongs.
+# This reference moves whenever a solver-side setting or the calibration target moves, and is UPDATED
+# rather than loosened -- the point of the check is that the anchor lands where the README says it does.
+# The history of moves, and the fine-grid extrapolation that independently confirms one of them, are in
+# notes/archive/informalSavings_results.md.
 check('the anchor reproduces the LOG calibration documented in the README',
       np.isclose(anchor['β'], 0.807610, rtol = 1e-4) and np.isclose(anchor['ω'], 2.327810, rtol = 1e-4),
       '-> β={:.6f}, ω={:.6f}'.format(anchor['β'], anchor['ω']))

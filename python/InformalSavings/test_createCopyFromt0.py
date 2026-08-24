@@ -11,39 +11,15 @@ import pandas as pd
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 import test as testmod
-from model import _sliceDb
 
 m = testmod.mLOG
 
 from gridsearch.testing import check, report
 
-# ---- 1. _sliceDb on synthetic db entries: restricted AND renumbered to 0-based
-t = pd.Index(range(6), name = 't')
-j = pd.Index(range(3), name = 'j')
-db = {
-    't': t,
-    'txE': pd.Index(range(5), name = 't'),
-    'j': j,
-    'tj': pd.MultiIndex.from_product([t, j]),
-    'x': pd.Series(np.arange(10.0, 16.0), index = t),
-    'x[t-1]': pd.Series(np.arange(9.0, 15.0), index = t),
-    'df': pd.DataFrame(np.arange(12).reshape(6, 2), index = t, columns = [0, 1]),
-    'scalar': 3.14,
-    'typeOnly': pd.Series([1., 2., 3.], index = j),
-}
-_sliceDb(db, 3)
-check('t sliced+renumbered', list(db['t']) == [0, 1, 2])
-check('txE sliced+renumbered', list(db['txE']) == [0, 1])
-check('tj level renumbered', sorted(db['tj'].get_level_values('t').unique()) == [0, 1, 2])
-check('x sliced+renumbered (values preserved, not recomputed)',
-      list(db['x'].index) == [0, 1, 2] and list(db['x'].values) == [13.0, 14.0, 15.0])
-check('x[t-1] sliced+renumbered (its own already-lagged values, untouched)',
-      list(db['x[t-1]'].values) == [12.0, 13.0, 14.0])
-check('df sliced+renumbered', list(db['df'].index) == [0, 1, 2])
-check('scalar untouched', db['scalar'] == 3.14)
-check('type-only (j-indexed) series untouched',
-      list(db['typeOnly'].index) == [0, 1, 2] and list(db['typeOnly'].values) == [1., 2., 3.])
-check('j index (non-t) untouched', list(db['j']) == [0, 1, 2])
+# ---- 1. _sliceDb: covered once, in informalAnalytical/test_createCopyFromt0.py
+# The helper is byte-identical in all three modules (it is module-level and shared verbatim), so the
+# synthetic-db checks are run there rather than three times over the same code. What IS per-module is
+# everything below: createCopyFromt0 wires this class's own attributes, and stateAtT0 differs by model.
 
 # ---- 2. createCopyFromt0: structural consistency on the real calibrated instance
 T = len(m.db['t'])

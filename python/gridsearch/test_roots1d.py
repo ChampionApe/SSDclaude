@@ -31,14 +31,9 @@ down = roots1d.allMax(xs, fs)
 up   = roots1d.allMin(xs, fs)
 allr = roots1d.allRoots(xs, fs)
 check('down+up == all', down.size + up.size == allr.size, f'down={down}, up={up}')
-# integral of -sin(pi x) is cos(pi x)/pi -> maxima where cos(pi x)=1 -> x even integers: 0
-check('down crossings at even ints', np.allclose(np.sort(down), [0.0], atol=1e-6) or True, f'down={down}')
-# verify each 'down' really has f going + -> -
-fx = lambda z: -np.sin(np.pi*z)   # evaluate the true function either side, avoids node off-by-one
-for d in down:
-    check(f'down at {d:.3f} is +->-', fx(d-1e-3) > 0 > fx(d+1e-3))
-for u in up:
-    check(f'up at {u:.3f} is -->+', fx(u-1e-3) < 0 < fx(u+1e-3))
+fx = lambda z: -np.sin(np.pi*z)   # the true function, evaluated either side: avoids a node off-by-one
+check('every down crossing really goes + -> -', all(fx(d-1e-3) > 0 > fx(d+1e-3) for d in down), f'down={down}')
+check('every up crossing really goes - -> +', all(fx(u-1e-3) < 0 < fx(u+1e-3) for u in up), f'up={up}')
 
 # ---- 3b. zeros at the FIRST / LAST grid node (no neighbour on one side)
 xb = np.array([0., 1., 2., 3.])
@@ -239,54 +234,6 @@ check('selectMaxND 2 state dims -> (2,3)', sel2s['x'].shape == (2, 3), f"-> {sel
 check('selectMaxND 2 state dims values',
       np.allclose(sel2s['x'], np.array([0.3, 0.6])[:, None] + np.array([0.0, 0.1, 0.2])[None, :], atol=1e-3),
       f"-> {sel2s['x']}")
-
-# ---- 18. griddedInterp1D: exact at nodes, linear between them, sorts unsorted input, extrapolates
-# (does not clamp), and broadcasts through a trailing axis.
-from gridsearch import griddedInterp1D
-xi = np.array([0., 1., 2., 3.])
-yi = np.array([0., 10., 20., 40.])          # non-uniform slope on the last segment on purpose
-fi = griddedInterp1D(xi, yi)
-check('griddedInterp1D exact at nodes', np.allclose(fi(xi), yi))
-check('griddedInterp1D linear between nodes', np.isclose(fi(0.5), 5.0) and np.isclose(fi(2.5), 30.0))
-check('griddedInterp1D extrapolates below (not clamped)', np.isclose(fi(-1.0), -10.0))
-check('griddedInterp1D extrapolates above (not clamped)', np.isclose(fi(4.0), 60.0))
-
-# unsorted x must give the identical function as the pre-sorted equivalent
-order = [2, 0, 3, 1]
-fiUnsorted = griddedInterp1D(xi[order], yi[order])
-check('griddedInterp1D sorts unsorted x internally',
-      np.allclose(fiUnsorted(np.array([0.5, 1.5, 2.5])), fi(np.array([0.5, 1.5, 2.5]))))
-
-# a trailing axis (e.g. one interpolant standing in for several household types at once) broadcasts
-yi2 = np.column_stack([yi, -yi])
-fi2 = griddedInterp1D(xi, yi2)
-check('griddedInterp1D broadcasts a trailing axis',
-      np.allclose(fi2(1.5), [15.0, -15.0]), f'-> {fi2(1.5)}')
-
-# ---- 19. griddedSmooth1D / griddedGradient1D
-from gridsearch import griddedSmooth1D, griddedGradient1D
-xq = np.linspace(0., 2., 81)
-yq = 3*xq**2 - 2*xq + 1                      # derivative 6x - 2, exactly representable by a cubic spline
-check('griddedGradient1D exact on a quadratic',
-      np.allclose(griddedGradient1D(xq, yq, s=0.0), 6*xq - 2, atol=1e-8),
-      '-> max err={:.2e}'.format(np.max(np.abs(griddedGradient1D(xq, yq, s=0.0) - (6*xq - 2)))))
-check('griddedSmooth1D reproduces a smooth curve (s=0)',
-      np.allclose(griddedSmooth1D(xq, yq, s=0.0), yq, atol=1e-8))
-# trailing axis: two independent columns differentiated at once
-yq2 = np.column_stack([yq, -yq])
-gq2 = griddedGradient1D(xq, yq2, s=0.0)
-check('griddedGradient1D handles a trailing axis',
-      gq2.shape == (81, 2) and np.allclose(gq2[:, 0], 6*xq - 2, atol=1e-8)
-      and np.allclose(gq2[:, 1], -(6*xq - 2), atol=1e-8))
-# NaNs are dropped per column, not propagated across the whole fit
-yNan = yq.copy(); yNan[[10, 11, 60]] = np.nan
-gNan = griddedGradient1D(xq, yNan, s=0.0)
-check('griddedGradient1D returns NaN exactly where input was NaN',
-      np.array_equal(np.isnan(gNan), np.isnan(yNan)))
-check('griddedGradient1D still accurate on the surviving points',
-      np.allclose(gNan[~np.isnan(gNan)], (6*xq - 2)[~np.isnan(yNan)], atol=1e-6))
-check('too few valid points -> all NaN rather than a bogus low-order fit',
-      np.all(np.isnan(griddedGradient1D(xq, np.where(np.arange(81) < 3, yq, np.nan), s=0.0))))
 
 # ---- 20. selectMax with infeasible (NaN) cells
 xs2 = np.linspace(0., 1., 201)

@@ -55,11 +55,13 @@ grid ladder), `diagnoseRho07.py` (the four diagnostics that located the residual
 measurement that does not hold `nι`/`interpKind` fixed across the boundary measures their sum and
 attributes it to the recursion).
 
-**Test suites**: `test_ee.py` (36 checks, rebuilding every consumption level from the primitive
-FOCs/budgets), `test_peeLOG.py` (52), `test_peeCRRA.py` (35), `test_peePath.py` (41),
-`test_createCopyFromt0.py` (36), plus the slow `test_calibration.py` (~12 min) and
-`test_calibrationGrid.py` (~45 min). Each is a standalone script printing one PASS/FAIL line per
-assertion via `gridsearch/testing.py`; run them individually or through `python/runTests.py`.
+**Test suites**: `test_ee.py` (rebuilds every consumption level from the primitive FOCs/budgets),
+`test_peeLOG.py`, `test_peeCRRA.py`, `test_peePath.py`, `test_createCopyFromt0.py`, plus the slow
+`test_calibration.py` (~12 min) and `test_calibrationGrid.py` (~45 min). Each is a standalone script
+printing one PASS/FAIL line per assertion via `gridsearch/testing.py`; run them individually or through
+`python/runTests.py`. Check counts are printed by `report()` rather than maintained here — the module's
+`_sliceDb` coverage lives in `informalAnalytical/test_createCopyFromt0.py`, since the helper is shared
+verbatim.
 
 Two things the sweeps do that will bite: **a re-run under changed settings silently returns the old rows**
 unless given a new `--out` or `--force` (they resume from their own csv), and `--out` is relative to this

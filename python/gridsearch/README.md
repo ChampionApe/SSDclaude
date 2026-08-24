@@ -115,11 +115,11 @@ and is not part of the numerical API.
 
 ## Tests
 
-`test_roots1d.py` (79 assertions on `roots1d`/`cartesian`/`interp`, including the vectorized-vs-oracle
-sweep and `robustRoot`'s corner encoding end to end), `test_interp.py` (41, concentrated on the NaN
-semantics the non-linear kinds had to preserve), `test_continuation.py` (29, run against deliberately
-*fake* solves so the checks are about warm-start quality and failure recovery, which a real solve would
-hide behind its own convergence).
+`test_roots1d.py` covers `roots1d` and `cartesian` — including the vectorized-vs-oracle sweep and
+`robustRoot`'s corner encoding end to end. `test_interp.py` owns **all** of `interp`, concentrated on the
+NaN semantics the non-linear kinds had to preserve. `test_continuation.py` runs against deliberately
+*fake* solves, so its checks are about warm-start quality and failure recovery, which a real solve would
+hide behind its own convergence. Counts are printed by `report()` rather than maintained here.
 
 ## Status
 
