@@ -390,7 +390,9 @@ every row.
 `EndogenousSystemCharacteristics.tex`'s "A+B" combination, which the appendix itself never runs — is
 implemented and calibrated. `base.py`'s `wedgeA`/`wedgeB`, `policyESC.py` (`LeadedLOG` complete,
 `LeadedCRRA` path-iteration), `modelESC.py` (`ModelESC`), `test_esc.py`, drivers `runESC.py` /
-`runESCcrra.py`, results in `results/esc/`. See `RESEARCH_LOG.md` for the findings; the short version is
+`runESCcrra.py`, results in `results/esc/`. Documented in `writing/US/model_esc.tex` (the cost, the three
+timings, and the two propositions the solvers rest on) and `writing/US/num_esc.tex` (the algorithms, the
+calibration, and the checks). See `RESEARCH_LOG.md` for the findings; the short version is
 that the wedge does escape the `θ = 0` corner and calibrates to p = 0.402 (against the appendix's 0.41
 from the sequential timing), ageing moves the design the right way, but the model ties `θ` far more
 tightly to inequality than figure 1.1's cross-section does.

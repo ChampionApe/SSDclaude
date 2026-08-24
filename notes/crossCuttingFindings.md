@@ -330,3 +330,63 @@ refresh"; it is that the refresh's inputs decide.
 - **Distinguish "derived from data that the shock changed" from "derived from data it did not."** The
   first must be refreshed and the change reported; the second must be left alone. Both look like the same
   line of code.
+
+## 10. A corner makes any sensitivity check vacuous
+
+Found in `US/test_escCRRA.py`, but the shape is general: a test that measures how much *A* moves when *B*
+is perturbed proves nothing if *A* sits at a boundary, because the answer is zero for a reason that has
+nothing to do with the mechanism under test.
+
+The concrete case. `LeadedCRRA` iterates on the design path holding `θ_{t+2}` fixed while `θ_{t+1}` varies,
+which is exact only if the choice at `t+1` ignores the design it inherits. That assumption is worth a test,
+so the suite perturbs `θ_{t+1}` and re-optimises `θ_{t+2}`. It reported `dθ_{t+2}/dθ_{t+1} = +0.0000` and
+passed — while the production run, at the same ρ, reported `−0.0092`.
+
+The difference was the wedge parameter. The test reused the *LOG-calibrated* `p = 0.402`; at ρ = 2 that
+puts the choice on the `θ = 1` corner, where both perturbations return exactly 1.0 and the slope is
+identically zero. The test was measuring the boundary, not the model. It now runs at ρ = 2's own calibrated
+`p = 0.086` — and gets `−0.0092`, agreeing with the production run.
+
+**Why this is easy to miss.** The vacuous result is *more* reassuring than the real one: 0.0000 looks like
+a clean pass, `−0.0092` looks like something to think about. A test whose failure mode is "returns an even
+better number than expected" will not be re-examined.
+
+**The habit.**
+- **Assert interiority before measuring a derivative.** One line, in front of the check that needs it:
+  `check('the choice is interior, so the next check is not vacuous', 0.02 < x < 0.98)`. Without it, the
+  sensitivity check silently degrades into a boundary check.
+- **Reuse of a calibrated parameter across a regime change is the usual cause.** `p` calibrated under LOG
+  is not `p` under CRRA — a higher EIS needs 4.7× less of it — and a parameter carried across without
+  recalibration will often land on a boundary rather than merely being slightly off.
+- **When a test and a production run disagree about the same quantity, the test is the suspect**, even
+  when the test is the one showing the tidier number.
+
+
+## 11. Maximising over a policy that also enters a predetermined state
+
+`base.dlnc2i_dτ`'s docstring already forbids taking `dln(c_2)/dτ` numerically off a solution grid: the
+policy maker treats `s_{t-1,i}/s_{t-1}` as predetermined, the ratio moves along such a grid, and a grid
+derivative therefore folds in a channel that does not belong in the first order condition. That warning was
+written for τ. It applies verbatim to any *other* instrument that reaches the same state, and the
+endogenous-θ work found one.
+
+The leaded choice of θ is safe: `θ_{t+1}` does not appear in the date-`t-1` savings ratio, so maximising
+the objective over it on a grid is legitimate. The **permanent** choice is not: there θ enters through
+`θ_{t0}`, and a grid maximisation that recomputes the ratio at each candidate credits the electorate with
+internalising a state it takes as given. The two readings are not close — **θ = 0.773 pinned against 0.910
+moving**, at the same wedge — so this is a modelling error large enough to change conclusions, not a
+numerical nicety.
+
+The asymmetry is what makes it dangerous: the same objective function, maximised over a different argument,
+is correct in one case and wrong in the other. The leaded implementation established the pattern, and
+copying it to the permanent case would have carried the bug.
+
+**The habit.**
+- **Before grid-maximising an objective over an instrument, list the predetermined states the instrument
+  appears in.** If the list is non-empty, pin them and pass them in explicitly — an argument, not a
+  recomputation. `PermanentLOG.solve` takes `siRatio_` as a required argument for exactly this reason.
+- **A closed-form FOC hides the question; a grid maximisation exposes it.** Differentiating analytically
+  holds the state fixed automatically, because you simply do not differentiate it. Moving from a FOC to a
+  grid search silently changes what is being held constant, and that change has to be made deliberately.
+- **Report both readings once.** The gap is the measure of how much the convention matters; recording it
+  is cheaper than re-deriving it the next time someone asks.

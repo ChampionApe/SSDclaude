@@ -1,0 +1,104 @@
+\subsection{Endogenous system characteristics}\label{\refsec:ESC}
+Everything up to this point treats the pension design $\theta_t$ as a parameter, calibrated from the observed dispersion of replacement rates. This section makes it a political outcome. Two ingredients are needed, and they are logically independent: a \emph{cost} that keeps the choice off the boundary, and a \emph{timing} convention that says when the design is chosen and what it is expected to bind for.
+
+The cost matters because without one the choice is degenerate. Under any of the timings below, $\theta_t$ redistributes a fixed pot among retirees whose marginal utilities differ, and a utilitarian aggregator with equal weights always prefers the flat system: the political objective is monotone and the equilibrium is the corner $\theta_t = 0$. This is not a numerical accident but a property of the objective, and it survives every timing convention we have examined.
+
+
+\smalltitle{The deadweight cost of redistributive benefits.}
+We assume that converting contributions into \emph{non-contributory} benefits is costly, in a reduced form that leaves the structure of the model intact. Write the benefit formula as
+\begin{align}\label{\refeq:esc:benefits}
+    b_t^i = \left[A(\theta_t)h_{t-1,i}\eta_{t-1,i} + B(\theta_t)h_{t-1}\right]\overline{b}_t,
+\end{align}
+with $\overline{b}_t$ still given by \eqref{\refeq:governmentBudget:bbar}. The baseline model is $\left(A,B\right) = \left(\theta,1-\theta\right)$, where the two coefficients sum to one and \eqref{\refeq:esc:benefits} reduces to the formula in \eqref{\refeq:governmentBudget}. With a cost, they sum to less than one:
+\begin{align}\label{\refeq:esc:AB}
+    f(\theta) &\equiv \phi + (1-\phi)\theta^{p}, & \phi &\in (0,1), \quad p>0, \\
+    \text{\emph{proportional}:}\quad \left(A,B\right) &= \left(f(\theta)\theta,\; f(\theta)(1-\theta)\right), &
+    \text{\emph{flat-only}:}\quad \left(A,B\right) &= \left(\theta,\; f(\theta)(1-\theta)\right). \notag
+\end{align}
+Under the first, the whole system carries the cost and the surviving share is $A+B = f(\theta)$; under the second, only the flat component does, and $A+B = \theta + (1-\theta)f(\theta)$. Both deliver the same endpoints --- a share $1-\phi$ of contributions is lost in a purely Beveridgean system, nothing is lost in a purely Bismarckian one --- and differ in the interior. Since $f' > 0$, the wedge is larger the more redistributive the system, which is the economic content of the assumption. The government's budget is unchanged in form: it collects $\nu_t w_t \tau_t h_t$ and delivers $\left(A+B\right)h_{t-1}\overline{b}_tp_{t-1}$ per contributor, so $\overline{b}_t$ should be read as \emph{gross} revenue per unit of past labour and the fraction $1-A-B$ as the resources that do not arrive.
+
+We do not take a stand on the microfoundation, and the reduced form is compatible with several: administrative cost that scales with the redistributive component, an avoidance or informality margin that responds to the part of the contribution that is a pure tax rather than deferred pay, or imperfect targeting of a means-tested benefit. The paper's own Argentine model contains a formality margin of exactly this kind, which is the closest structural analogue available to us.
+
+
+\smalltitle{What the cost changes, and what it does not.}
+Very little of the model needs rewriting, for a reason worth stating explicitly.
+
+\begin{proposition}\label{prop:esc:substitution}
+In every equation of the economic equilibrium, the design enters only through the two groups $\frac{1-\alpha}{\alpha}\tau_{t+1}\theta_{t+1}$ and $\frac{1-\alpha}{\alpha}\tau_{t+1}(1-\theta_{t+1})$ (and their date-$t$ counterparts in the benefit formula). The cost is therefore \emph{exactly} the substitution $\theta \mapsto A(\theta)$ and $(1-\theta)\mapsto B(\theta)$ in those groups, and changes nothing else.
+\end{proposition}
+
+The claim can be read off \eqref{\refnumeq:auxiliary}: $\theta_{t+1}$ appears in $\Gamma_{s,t}$, $\Theta_{h,t}$ and $s_{t,i}/s_t$ and nowhere else, and always in one of the two groups. Applying the substitution,
+\begin{subequations}\label{\refeq:esc:auxiliary}
+\begin{align}
+    \Gamma_{s,t} &= \frac{1}{1+\xi}\frac{\sum_i \gamma_{t,i}y_{t,i}^{\eta}\frac{B_{t+1}^i}{1+B_{t+1}^i}}{1+\frac{1-\alpha}{\alpha}\tau_{t+1}\left(A(\theta_{t+1})+B(\theta_{t+1})\sum_i\frac{\gamma_{t,i}}{1+B_{t+1}^i}\right)},
+    \label{\refeq:esc:auxiliary:Gammas} \\
+    \Theta_{h,t} &= \left(\Gamma_{h,t}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{(1-\alpha)(1-\tau_t)}{\Gamma_{h,t}-\frac{1-\alpha}{\alpha}A(\theta_{t+1})\tau_{t+1}\Gamma_{s,t}}\right)^{\frac{\xi}{1+\alpha\xi}},
+    \label{\refeq:esc:auxiliary:Thetah}
+\end{align}
+and, in the log case where $B_{t+1}^i = \beta$ is common,
+\begin{align}
+    \frac{s_{t,i}}{s_t} &= \frac{y_{t,i}^{\eta}}{\Gamma_{h,t}} + \frac{1-\alpha}{\alpha}\frac{B(\theta_{t+1})\tau_{t+1}}{1+\beta}\left(\frac{y_{t,i}^{\eta}}{\Gamma_{h,t}}-1\right).
+    \label{\refeq:esc:auxiliary:si}
+\end{align}
+\end{subequations}
+Second-period consumption picks up the substitution at date $t$ rather than $t+1$: the bracket $1+\theta_t\left(y_{t-1,i}^{\eta}/\Gamma_{h,t-1}-1\right)$ appearing in \eqref{\refeq:EE:ci} and in $\mathrm{d}\ln(c_{2,t}^i)/\mathrm{d}\tau_t$ becomes $A(\theta_t)y_{t-1,i}^{\eta}/\Gamma_{h,t-1} + B(\theta_t)$. Note that the two coincide when $A+B=1$, so the baseline is nested exactly and not merely as a limit.
+
+A consequence of \cref{prop:esc:substitution} that matters for the propositions below: the cost does \emph{not} disturb the decoupling result of \eqref{\refeq:PEELOG:decoupling}. The first order condition for $\tau_t$ still involves $\theta_{t+1}$ only through the level of $\Theta_{h,t}$, which reaches it only through the old informal household --- absent here --- so $z_t$ remains a function of $\left(\tau_t,\theta_t\right)$ alone.
+
+
+\smalltitle{Identification of $\theta$ is not innocent.}
+The replacement-rate ratio that identifies $\theta$ in \eqref{\refeq:calibration:theta} pins the \emph{ratio} of the two coefficients in \eqref{\refeq:esc:benefits} and nothing else:
+\begin{align}\label{\refeq:esc:RR}
+    \frac{B(\theta)}{A(\theta)} = \frac{1-RR_0}{RR_0\,h_1 - h_2}, \qquad h_j \equiv \frac{\Gamma_{h,t_0}X_{t_0,j}^{\xi}}{\eta_{t_0,j}^{1+\xi}},
+\end{align}
+where $j=1,2$ index the half-mean and mean-income groups. Under the proportional specification the common factor $f(\theta)$ cancels from \eqref{\refeq:esc:RR} and $\theta$ is the same number as in the exogenous-design model. Under the flat-only specification it does not: $B/A = (1-\theta)f(\theta)/\theta$, so the same datum implies a different $\theta$ for every $p$, and the design parameter and the cost parameter are jointly identified. The object being matched is $RR_0$, not any particular value of $\theta$.
+
+
+\subsubsection{Three timings}\label{\refsec:ESC:timing}
+Let $\mathcal{W}_t$ denote the political objective of \cref{\refsec:PEELOG}, evaluated with the same weights that determine $\tau_t$. We consider three conventions for when the design is chosen. Throughout, $s_{t-1,i}/s_{t-1}$ is \emph{predetermined} at $t$: the electorate takes the inherited distribution of savings as given, exactly as it does when choosing $\tau_t$.
+
+\smalltitle{Sequential.} $\theta_t$ is chosen at $t$ alongside $\tau_t$, and binds for that period only. Because benefits at $t$ are paid on labour supplied at $t-1$, and because current labour supply responds to $\theta_{t+1}$ rather than $\theta_t$, the design has no effect on any date-$t$ quantity other than the split of a fixed pot among retirees. The marginal effect is therefore
+\begin{align}\label{\refeq:esc:seqFOC}
+    \dfrac{\partial \mathcal{W}_t}{\partial \theta_t} = \omega\sum_i\gamma_{t-1,i}p_{t-1}\mu_{t-1,i}\,
+    \frac{\frac{1-\alpha}{\alpha}\tau_t\left[A'(\theta_t)\frac{y_{t-1,i}^{\eta}}{\Gamma_{h,t-1}} + B'(\theta_t)\right]}
+         {\frac{s_{t-1,i}}{s_{t-1}}+\frac{1-\alpha}{\alpha}\tau_t\left[A(\theta_t)\frac{y_{t-1,i}^{\eta}}{\Gamma_{h,t-1}}+B(\theta_t)\right]}.
+\end{align}
+Without a cost, $A' = 1$ and $B' = -1$, the numerator is proportional to $y_{t-1,i}^{\eta}/\Gamma_{h,t-1}-1$ and averages to zero across types, while the denominator is increasing in the same object. The sum is then negative for every $\theta_t\in[0,1]$ and the choice is the corner $\theta_t=0$: lowering $\theta$ moves resources from retirees with low marginal utility to retirees with high marginal utility, and nothing offsets it. With a cost, $A'+B' = f'(\theta)>0$ in the proportional case, and the sign is no longer determined by the distribution alone.
+
+\smalltitle{Leaded.} $\theta_{t+1}$ is chosen at $t$ and becomes a state at $t+1$. The design now reaches current labour supply, and through it every date-$t$ quantity, but it no longer touches the benefits of current retirees:
+\begin{align}\label{\refeq:esc:leadFOC}
+    \dfrac{d\upsilon_{2,t}^i}{d\theta_{t+1}} &= (1-\alpha)\dfrac{d\ln\left(\Theta_{h,t}\right)}{d\theta_{t+1}}, &
+    \dfrac{d\upsilon_{1,t}^i}{d\theta_{t+1}} &= (1+\beta_{t,i})\dfrac{d\ln\left(\tilde{c}_{1,t}^i\right)}{d\theta_{t+1}} + \beta_{t,i}\dfrac{d\ln\left(R_{t+1}\right)}{d\theta_{t+1}},
+\end{align}
+where each total derivative includes the response of the continuation policy $\tau_{t+1}$, and of $\theta_{t+2}$, to the design being chosen. Retirees are unanimous here --- the first expression does not depend on $i$ --- and favour a more contributive system, since a higher $\theta_{t+1}$ raises the return to an hour worked at $t$ and hence $h_t$, on which their benefits are levied. The young are divided, and the sign of the aggregate is a quantitative matter.
+
+\smalltitle{Permanent.} At a reform date $t_0$ the electorate chooses a design expected to hold forever, $\theta_t = \theta$ for all $t\geq t_0$. All three channels operate at once: the sequential re-split of \eqref{\refeq:esc:seqFOC}, the labour-supply channel of \eqref{\refeq:esc:leadFOC}, and the continuation, which now moves the entire future path of taxes rather than one period of it. The marginal effects add,
+\begin{align}\label{\refeq:esc:permFOC}
+    \dfrac{d\upsilon_{2,t_0}^i}{d\theta} &= (1-\alpha)\dfrac{d\ln\left(\Theta_{h,t_0}\right)}{d\theta} + \mathcal{E}_{2,t_0}^{i,\theta}, &
+    \dfrac{d\upsilon_{1,t_0}^i}{d\theta} &= (1+\beta_{t_0,i})\dfrac{d\ln\left(\tilde{c}_{1,t_0}^i\right)}{d\theta} + \beta_{t_0,i}\dfrac{d\ln\left(R_{t_0+1}\right)}{d\theta},
+\end{align}
+with $\mathcal{E}_{2,t_0}^{i,\theta}$ the summand of \eqref{\refeq:esc:seqFOC}. The electorate chooses $\tau_{t_0}$ and $\theta$ together, which appears to make the problem two-dimensional. It does not:
+
+\begin{proposition}\label{prop:esc:concentration}
+Under the permanent timing, the optimal tax at any candidate design is the ordinary politico-economic equilibrium tax at that design, $\tau^{\ast}(\theta) = \mathcal{T}_{t_0}(\theta)$, and the joint problem concentrates to a one-dimensional maximisation over $\theta$.
+\end{proposition}
+
+The argument is immediate once stated: $\partial\mathcal{W}_{t_0}/\partial\tau_{t_0} = 0$, taken with $s_{t_0-1,i}/s_{t_0-1}$ held fixed, \emph{is} the first order condition $z_{t_0}=0$ evaluated at $\theta_{t_0}=\theta$. The permanent timing adds nothing to it, because $\theta$ is not a function of $\tau$. Likewise, for $t>t_0$ the design is fixed and the continuation is the ordinary equilibrium of \cref{\refsec:PEELOG} at a constant $\theta$ --- there is no recursion in the design to solve.
+
+
+\subsubsection{Two structural properties of the log case}\label{\refsec:ESC:separability}
+The log specification buys more than tractability here; it removes state variables from the design problem altogether.
+
+\begin{proposition}\label{prop:esc:separability}
+Under log preferences, the date-$t$ political objective is additively separable,
+\begin{align}\label{\refeq:esc:separability}
+    \mathcal{W}_t = \mathcal{A}\left(\tau_t,\theta_t\right) + \mathcal{B}\left(\theta_{t+1}\right) + \mathcal{C}\left(s_{t-1}\right),
+\end{align}
+where $\mathcal{C}$ depends on no policy. Consequently the leaded choice of $\theta_{t+1}$ depends on neither $s_{t-1}$ nor $\theta_t$: the maximiser of \eqref{\refeq:esc:separability} is the maximiser of $\mathcal{B}$ alone.
+\end{proposition}
+
+To see \eqref{\refeq:esc:separability}, note that $\Theta_{h,t}$ in \eqref{\refeq:esc:auxiliary:Thetah} is a product of a factor in $\tau_t$ and a factor in $\left(\tau_{t+1},\theta_{t+1}\right)$, so $\ln h_t$ is a sum of a term in $\tau_t$, a term in $\theta_{t+1}$, and $\frac{\alpha\xi}{1+\alpha\xi}\ln(s_{t-1}/\nu_t)$. The same then holds for $\ln \tilde c_{1,t}^i = \frac{1+\xi}{\xi}\ln h_t + \ln\left[\cdot\right]$, whose bracket involves $\theta_{t+1}$ only, and for $\ln R_{t+1}$, which is affine in $\ln s_t$ and $\ln h_{t+1}$ and hence again in $\ln \Theta_{h,t}$ plus objects dated $t+1$ and later. Finally $\ln c_{2,t}^i = (1-\alpha)\ln h_t + \ln\left[s_{t-1,i}/s_{t-1} + \frac{1-\alpha}{\alpha}\tau_t\left(A(\theta_t)y^{\eta}_{t-1,i}/\Gamma_{h,t-1} + B(\theta_t)\right)\right] + \alpha\ln(s_{t-1}/\nu_t) + \text{const}$, whose second term involves $\left(\tau_t,\theta_t\right)$ and not $\theta_{t+1}$. Every dependence on $\theta_{t+1}$ therefore arrives through $\ln h_t$, additively.
+
+\Cref{prop:esc:separability} is worth emphasising because it contradicts the natural reading of the leaded timing. One would expect $\theta_t$ to be a state variable at $t$, since it is chosen a period in advance and inherited; and it \emph{is} a state for the tax, through $z_t\left(\tau_t,\theta_t\right)$. It is not a state for the design: the electorate's preferred $\theta_{t+1}$ is the same whatever system it inherits. The property is specific to log preferences --- under CRRA the powers do not separate and both $s_{t-1}$ and $\theta_t$ re-enter --- and it is verified numerically rather than relied upon, in \cref{\refnumsec:ESC}.
+
+\Cref{prop:esc:separability} does not extend to the permanent timing, where $\theta$ appears in $\mathcal{A}$ and $\mathcal{B}$ at once. There the predetermined ratio $s_{t_0-1,i}/s_{t_0-1}$ requires care: it is a function of the incumbent design, and the electorate takes it as given. Holding it fixed while varying the candidate is not an approximation but the definition of the problem, and \cref{\refnumsec:ESC} reports what is at stake in getting it wrong.

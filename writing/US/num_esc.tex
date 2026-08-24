@@ -1,49 +1,73 @@
-\subsection{Endogenous system characteristics: the leaded choice under a deadweight wedge}\label{\refsec:ESC}
+\subsection{Endogenous system characteristics}\label{\refsec:ESC}
+This section documents how the design choices of \cref{\refmodelsec:ESC} are solved. Two solvers are described, one per timing --- the sequential choice needs none, since \eqref{\refmodeleq:esc:seqFOC} is a scalar first order condition of the same form as the tax one --- together with the calibration of the cost parameter and the checks that establish the structural claims rather than assuming them.
 
-This section documents the numerical solution of the \emph{leaded} choice of $\theta_{t+1}$ combined with the deadweight wedge on redistributive benefits --- the combination appendix \ref{app:ESC} sets up but does not solve. The model side is stated there; here we record only what the code does and the three structural properties it exploits.
+Throughout, $\Theta = \left\lbrace \theta^{(1)},\dots,\theta^{(M_{\theta})}\right\rbrace$ denotes a grid on $[0,1]$ and $\mathcal{T}_t(\theta)$ the ordinary equilibrium tax at date $t$ given a design $\theta$, i.e.\ the solution of $z_t(\tau,\theta)=0$ selected as in \eqref{\refeq:candidates}. By the decoupling property this is a \emph{static} scalar problem, one root per node, with no dependence on $s_{t-1}$ and no recursion --- which is what makes the log case cheap.
 
-\smalltitle{The wedge.} Benefits are written
-\begin{align}\label{\refeq:esc:benefits}
-    b_t^i = \left[A(\theta_t) h_{t-1,i}\eta_{t-1,i} + B(\theta_t)h_{t-1}\right]\overline{b}_t, \qquad f(\theta) \equiv \phi + (1-\phi)\theta^{p},
-\end{align}
-with $\left(A,B\right) = \left(\theta, 1-\theta\right)$ in the baseline model and, with a wedge,
-\begin{align}\label{\refeq:esc:AB}
-    \text{\texttt{scale}:}\quad \left(A,B\right) &= \left(f(\theta)\theta,\; f(\theta)(1-\theta)\right), &
-    \text{\texttt{flat}:}\quad \left(A,B\right) &= \left(\theta,\; f(\theta)(1-\theta)\right).
-\end{align}
-The first is the appendix's live specification, in which $\overline{b}_t$ itself carries $f(\theta_t)$; the second scales only the flat component, so that the earnings-related part of the system carries no deadweight loss.
+\smalltitle{Why a grid and not a first order condition.} The question being asked is whether the choice is interior. A solver built on $\mathrm{d}\mathcal{W}/\mathrm{d}\theta = 0$ answers it only by failing to converge, and a corner is then indistinguishable from a badly behaved residual. We therefore evaluate the objective itself on $\Theta$, take the maximiser, and refine it by fitting a parabola through the three nodes around it when the maximum is interior. A corner is returned \emph{as} a corner. The cost is one objective evaluation per node; the benefit is that the central result of the exercise is observed rather than inferred.
 
-The reason this is a two-line change to the code rather than a re-derivation is that in \emph{every} equation of \eqref{\refeq:auxiliary}, $\theta_{t+1}$ appears only multiplying $\frac{1-\alpha}{\alpha}\tau_{t+1}$, and $(1-\theta_{t+1})$ only multiplying the same group. The wedge is therefore exactly the substitution $\theta \mapsto A(\theta)$, $(1-\theta)\mapsto B(\theta)$ in $\Gamma_{s,t}$, $\Theta_{h,t}$, $s_{t,i}/s_t$, $c_{1,t}^i$, $\tilde{c}_{1,t}^i$, $c_{2,t}^i$ and $\mathrm{d}\ln(c_{2,t}^i)/\mathrm{d}\tau_t$, and in nothing else. In particular $\overline{b}_t$ is left \emph{gross}: the resources lost are implicit in $A+B<1$.
 
-\smalltitle{Identification of $\theta$ is not innocent under \texttt{flat}.} The OECD replacement-rate ratio pins the \emph{ratio} of the two coefficients in \eqref{\refeq:esc:benefits},
-\begin{align}\label{\refeq:esc:RR}
-    \frac{B(\theta)}{A(\theta)} = \frac{1-RR_0}{RR_0 h_1 - h_2}, \qquad h_j \equiv \frac{\Gamma_h X_{j}^{\xi}}{\eta_{j}^{1+\xi}},
-\end{align}
-and nothing else. Under \texttt{scale} the common $f(\theta)$ cancels and $\theta$ is the same number as in the exogenous-$\theta$ model. Under \texttt{flat} it does not: $B/A = (1-\theta)f(\theta)/\theta$, so $\theta$ solves a scalar root that moves with $p$, and $\theta$ and the wedge are jointly identified. The code brackets that root by a scan rather than handing it to a root finder, because $(1-\theta)/\theta$ is decreasing while $f$ is increasing and the product need not be monotone.
+\subsubsection{The leaded choice}\label{\refsec:ESC:leaded}
+The design chosen at $t$ is a state at $t+1$, so the object to identify is a pair of sequences of policy functions, $\mathcal{T}_t(\theta_t)$ and $\Theta_t(\theta_t)$. \Cref{prop:esc:separability} says the second is constant in its argument, but the algorithm does not use that: it tabulates the policy on $\Theta$ precisely so that the claim can be measured.
 
-\smalltitle{Three properties that make the LOG problem small.} All three are verified numerically rather than assumed.
+\begin{alg}\label{\refalg:esc:leaded}
+\emph{Leaded choice, log preferences.} Iterate backwards over $t = T-1,\dots,1$.
 \begin{enumerate}
-    \item \emph{$z_t$ does not see $\theta_{t+1}$.} The tax first-order condition depends on $\left(\tau_t, \theta_t\right)$ alone. $\theta_{t+1}$ reaches $z_t$ only through the level of $\Theta_{h,t}$, which enters only the old informal household's term, whose weight is $\gamma_{t-1,0}=0$ in this model. Hence $\tau_t = \mathcal{T}_t(\theta_t)$ is a \emph{static} scalar problem and the two choices at $t$ are separable: the political objective can be maximised over $\theta_{t+1}$ taking $\tau_t$ as given.
-    \item \emph{The choice does not depend on $s_{t-1}$.} $\ln(s_{t-1})$ enters every term of $\mathcal{W}_t$ additively with coefficients that involve no policy, so it shifts the objective's level and not its argmax. This is the appendix's own normalisation, and the code evaluates at $s_{t-1}=1$.
-    \item \emph{The choice does not depend on $\theta_t$ either.} $\ln(h_t)$, $\ln(\tilde{c}_{1,t}^i)$ and $\ln(R_{t+1})$ are each additively separable in $\tau_t$ and $\theta_{t+1}$, so $\mathcal{W}_t = \mathcal{A}(\tau_t)+\mathcal{B}(\theta_{t+1})$. Since $\theta_t$ reaches $\mathcal{W}_t$ only through $\tau_t$, it cannot move the maximiser: under \textsc{log}, $\theta_t$ is \emph{not} a state variable despite the leaded timing. The solver still tabulates the policy on a grid of $\theta_t$, which is what makes this measurable, and reports the spread across it.
+    \item \emph{Terminal period.} Solve $\mathcal{T}_{T-1}(\theta)$ for every $\theta\in\Theta$ from the terminal first order condition, i.e.\ \eqref{\refmodeleq:PEELOG} evaluated with $\beta_{T,j}=0$. There is no $\theta_T$ to choose.
+    \item \emph{Taxes.} At $t<T-1$, evaluate $z_t$ on the flattened mesh $\Theta\times\tilde{\mathcal{T}}$ in a single call --- $z_t$ is elementwise in both arguments, so the mesh costs one evaluation rather than $M_{\theta}$ --- and select the maximiser at each node as in \eqref{\refeq:candidates}. \emph{Polish} each interior selection by a bracketed scalar root find within one grid cell.
+    \item \emph{Design.} For each $\theta_t\in\Theta$, evaluate
+    \begin{align}\label{\refeq:esc:leadedObjective}
+        \mathcal{W}_t\left(\theta';\theta_t\right) = \sum_i \gamma_{t-1,i}\omega p_{t-1}\mu_{t-1,i}\ln\left(c_{2,t}^i\right) + \nu_t\sum_i \gamma_{t,i}\mu_{t,i}\left[(1+\beta_{t,i})\ln\left(\tilde{c}_{1,t}^i\right)+\beta_{t,i}\ln\left(R_{t+1}\right)\right]
+    \end{align}
+    at every candidate $\theta'\in\Theta$, using $\tau_t = \mathcal{T}_t(\theta_t)$ from step 2 and the continuation $\tau_{t+1} = \mathcal{T}_{t+1}(\theta')$, $\theta_{t+2} = \Theta_{t+1}(\theta')$, $\tau_{t+2} = \mathcal{T}_{t+2}(\theta_{t+2})$ from the periods already solved. Set $\Theta_t(\theta_t)$ to the refined maximiser.
 \end{enumerate}
+\end{alg}
 
-\smalltitle{Algorithm (\textsc{log}).} Backwards over $t$, with a grid $\Theta$ over the state and a grid $\Theta'$ over candidates:
-\begin{enumerate}
-    \item At the terminal period, solve $\mathcal{T}_{T-1}(\theta)$ for every $\theta\in\Theta$ from the terminal first-order condition (\eqref{\refeq:terminalPEELOG}'s $\beta_{T,j}=0$ convention).
-    \item At $t<T-1$: evaluate $z_t$ on the flattened $\Theta\times\mathcal{T}$ mesh in one call, select the maximiser among $\{l,u\}$ and the downward crossings as in \eqref{\refeq:candidates}, and \emph{polish} each interior selection with a bracketed scalar root find. The grid selection alone is $O(\text{spacing}^2)$ accurate, and $\tau_{t_0}$ is a calibration target matched at $10^{-8}$.
-    \item For each $\theta_t \in \Theta$, evaluate $\mathcal{W}_t(\theta';\theta_t)$ for every $\theta'\in\Theta'$ --- using $\tau_{t+1}=\mathcal{T}_{t+1}(\theta')$, $\theta_{t+2}=\Theta_{t+1}(\theta')$ and $\tau_{t+2}=\mathcal{T}_{t+2}(\theta_{t+2})$ from the previous steps --- and take the argmax, refined parabolically when interior. A corner is returned \emph{as} a corner: whether the choice is interior is the object of the exercise and must never be interpolated away.
-\end{enumerate}
-Interpolation between nodes is piecewise linear throughout, for the reasons recorded in \cref{\refsec:PEECRRA} about knot placement and overshoot: a policy function that is about to be maximised over must not carry interpolation wiggles.
+Three implementation points are worth recording, because each of them was capable of producing a plausible wrong answer.
 
-\smalltitle{Calibration.} Three targets and three parameters. $\left(\beta,\omega\right)$ are calibrated to $\left(R_{t_0}, \tau_{t_0}\right)$ exactly as in \cref{\refsec:calibration}, with the wedge installed and $\theta$ held at $\theta^{\ast}$; $p$ is then chosen (with $\phi$ imposed) so that the leaded choice reproduces the observed design,
+\emph{The polish is not optional.} The grid selection alone is $O(\text{spacing}^2)$ accurate, roughly $10^{-4}$ at the resolutions used, while $\tau_{t_0}$ is a calibration target matched at $10^{-8}$. Without the refinement the cost parameter would be calibrated against grid noise. Corners are never polished: $z_t \neq 0$ there is the correct answer, not a residual.
+
+\emph{$s_{t-1}$ is set to one.} By \cref{prop:esc:separability} the maximiser does not depend on it. The normalisation is convenient rather than necessary and is verified numerically, by re-maximising \eqref{\refeq:esc:leadedObjective} at savings levels spanning two orders of magnitude and confirming the argument does not move.
+
+\emph{Interpolation is piecewise linear throughout.} A policy function that is about to be maximised over must not carry interpolation artefacts; the cautions recorded in \cref{\refsec:PEE} about adaptive knot placement and cubic overshoot apply with more force here than in their original setting, because the object being interpolated feeds an argmax rather than a root.
+
+
+\subsubsection{The permanent choice}\label{\refsec:ESC:permanent}
+Here the design is chosen once, at $t_0$, and the electorate chooses $\tau_{t_0}$ alongside it. \Cref{prop:esc:concentration} reduces what looks like a two-dimensional grid search over $\left(\tau_{t_0},\theta\right)$ to a one-dimensional one, and the reduction is what makes the exercise cheap:
+
+\begin{alg}\label{\refalg:esc:permanent}
+\emph{Permanent choice.} For each $\theta\in\Theta$: (i) obtain $\tau_t = \mathcal{T}_t(\theta)$ for every $t\geq t_0$ --- for $t>t_0$ this is the ordinary equilibrium at a constant design, with no recursion in $\theta$ to solve; (ii) evaluate \eqref{\refeq:esc:leadedObjective} at $t_0$ with $\theta_{t_0}=\theta'=\theta$ and the predetermined ratio held at its incumbent value. Take the refined maximiser over $\Theta$.
+\end{alg}
+
+\smalltitle{The predetermined ratio must be held fixed.} This is the one place where the permanent timing differs from the leaded one in substance rather than in bookkeeping. Under the leaded timing, $\theta_{t+1}$ does not appear in $s_{t_0-1,i}/s_{t_0-1}$, so the question never arises. Under the permanent timing $\theta$ does appear there, through $\theta_{t_0}$, and maximising $\mathcal{W}_{t_0}$ while letting the ratio move with the candidate would credit the electorate with internalising a state it takes as given. This is the same error that \cref{\refsec:PEE} forbids for $\tau_t$ --- differentiating $\ln(c_{2,t}^i)$ along a solution grid rather than using its closed form --- arriving in a new guise, and it is not a small one: at the calibrated cost the two readings give designs of $0.773$ and $0.910$. We take the ratio from the equilibrium under the incumbent design, which is also what makes the experiment the unanticipated permanent reform it is meant to be, and report the alternative alongside rather than discarding it.
+
+\smalltitle{Verification.} \Cref{prop:esc:concentration} is checked rather than trusted: the tax at the chosen design must equal $\mathcal{T}_{t_0}$ evaluated there, and does, to $10^{-6}$. Were the concentration to fail --- because some channel made $\theta$ a function of $\tau$ --- \cref{\refalg:esc:permanent} would be solving the wrong problem, and this is the check that would say so.
+
+
+\subsubsection{CRRA preferences}\label{\refsec:ESC:crra}
+None of the log simplifications survive. The powers in $\left(\tilde{c}\right)^{1-1/\rho}$ do not turn products into sums, so \eqref{\refmodeleq:esc:separability} fails, both $s_{t-1}$ and $\theta_t$ re-enter the design choice, and the Markov object is a policy function over the two-dimensional state $\left(s_{t-1},\theta_t\right)$ --- a second dimension on top of the grid machinery of \cref{\refsec:PEE}.
+
+For the permanent timing this costs nothing: a permanent design means a \emph{constant} $\theta$ path, each candidate is one ordinary CRRA equilibrium solve, and \cref{\refalg:esc:permanent} goes through unchanged. For the leaded timing we solve the equilibrium \emph{path} rather than the policy function:
+
+\begin{alg}\label{\refalg:esc:crraPath}
+\emph{Leaded choice, CRRA preferences.} Given a design path $\bm{\theta}$ with $\theta_t$ fixed at the incumbent value for $t\leq t_0$: sweep forward over $t \geq t_0$; at each $t$, evaluate the CRRA analogue of \eqref{\refeq:esc:leadedObjective} at every candidate $\theta_{t+1}\in\Theta$, re-solving the whole politico-economic equilibrium for each candidate while holding $\theta_{t+2},\dots$ at the current iterate; replace $\theta_{t+1}$ by the maximiser. Repeat the sweep until the path stops moving.
+\end{alg}
+
+Re-solving at every candidate is what makes the envelope logic right: $\tau_t$ is re-optimised at each design, so its own response to $\theta_{t+1}$ contributes nothing to first order and the objective is evaluated at the equilibrium tax rather than a stale one.
+
+\smalltitle{What \cref{\refalg:esc:crraPath} assumes, and how far it is true.} Holding $\theta_{t+2}$ fixed while $\theta_{t+1}$ varies is exact if the choice at $t+1$ does not respond to the design it inherits. Under log preferences that is \cref{prop:esc:separability} and no approximation at all. Under CRRA it is an approximation, and we measure it directly: perturbing $\theta_{t+1}$ and re-optimising $\theta_{t+2}$ at each perturbation gives $\mathrm{d}\theta_{t+2}/\mathrm{d}\theta_{t+1}$ of $-0.009$ at $\rho=2$. The residual state dependence is two orders of magnitude below the movements being studied, so the path iteration is adequate here; at a calibration where it is not, the two-dimensional grid becomes necessary and this shortcut has to go.
+
+\smalltitle{Validation against the log limit.} The CRRA solver has no closed form to check against, so it is held to continuity: as $\rho\rightarrow1$ its answer must converge on the log solver's, and at a first-order rate, since nothing in the problem is kinked at $\rho=1$. Holding the cost parameter and the calibration fixed, the gap is $0.0903$, $0.0448$ and $0.0188$ at $\rho = 1.10$, $1.05$ and $1.02$, so the ratio $\text{gap}/(\rho-1)$ is $0.90$, $0.90$, $0.94$. The two solvers share the weights of \eqref{\refeq:esc:leadedObjective} and nothing else --- one maximises a closed form on a state grid by backward recursion, the other iterates on a path of full equilibrium solves --- so their agreement in the limit is informative.
+
+
+\subsubsection{Calibrating the cost}\label{\refsec:ESC:calibration}
+Three targets and three parameters. $\left(\beta,\omega\right)$ are calibrated to $\left(R_{t_0},\tau_{t_0}\right)$ exactly as in \cref{\refsec:calibration}, with the cost installed and the design held at $\theta^{\ast}$; $\phi$ is imposed; and $p$ is chosen so that the design the electorate picks at the baseline year reproduces the observed one,
 \begin{align}\label{\refeq:esc:calibration}
-    \Theta_{t_0}\left(\theta^{\ast}\right) = \theta^{\ast},
+    \Theta_{t_0}\left(\theta^{\ast}\right) = \theta^{\ast}.
 \end{align}
-i.e.\ so that in the baseline year the electorate re-elects the system it has. Everything after $t_0$ is then a prediction. The two blocks are nested rather than simultaneous, which is an approximation: $\left(\beta,\omega\right)$ are calibrated along the path with $\theta$ held fixed, not along the endogenous-$\theta$ path. At the calibrated $p$ the two paths agree at $t_0$ and $t_0+1$ by construction and drift only later, and the code reports the residual distance of the endogenous path from its own $\left(R,\tau\right)$ targets rather than asserting it away.
+Read in words: in the baseline year the electorate re-elects the system it has. Everything after $t_0$ is then a prediction, and the drift of the design as $\nu_t$ falls is the object of interest.
 
-The scan in \eqref{\refeq:esc:calibration} is a scan and not a bracketed root find because the residual is \emph{flat at a corner}: wherever the choice sits at $\theta=0$ or $\theta=1$ it does not move with $p$ at all, and a root finder handed such a bracket would report spurious convergence at whichever endpoint it happened to evaluate.
+\smalltitle{The nesting is an approximation, and is reported as one.} $\left(\beta,\omega\right)$ are calibrated along the path with the design held fixed, not along the endogenous-design path. At the calibrated $p$ the two agree at $t_0$ and $t_0+1$ by construction and drift only later, so the error is second order --- but it is an error, and the solved endogenous path is therefore checked back against the $\left(R,\tau\right)$ targets it was calibrated to. The residuals are $9\times10^{-15}$ and $2.6\times10^{-9}$, which is what licenses treating the two blocks as separable.
 
-\smalltitle{The CRRA case.} None of the three properties survives: $\left(\tilde{c}\right)^{1-1/\rho}$ does not turn products into sums, so $\mathcal{W}_t$ is not additively separable and both $s_{t-1}$ and $\theta_t$ enter the choice. The Markov object is a policy function over the two-dimensional state $\left(s_{t-1},\theta_t\right)$. The code instead iterates on the equilibrium \emph{path}: at each $t$ it evaluates $\mathcal{W}_t$ over a grid of candidate $\theta_{t+1}$, re-solving the whole CRRA equilibrium for each candidate while holding $\theta_{t+2},\dots$ at the current iterate, and sweeps forward to a fixed point. Re-solving at every candidate is also what makes the envelope logic right: $\tau_t$ is re-optimised, so its own response to $\theta_{t+1}$ contributes nothing to first order.
+\smalltitle{Why \eqref{\refeq:esc:calibration} is scanned and not bracketed.} The residual is \emph{flat at a corner}: wherever the choice sits at $\theta=0$ or $\theta=1$ it does not move with $p$ at all. A root finder handed such a bracket reports spurious convergence at whichever endpoint it happened to evaluate. We therefore scan $p$ on a logarithmic grid, locate a genuine sign change, and only then bracket. A run that finds no interior crossing reports that fact rather than returning a number --- which is the correct outcome for France, whose observed design is itself at the boundary.
 
-Holding $\theta_{t+2}$ fixed is exact if the choice at $t+1$ does not respond to the design it inherits --- which is property 3 above, and therefore not an approximation at all under \textsc{log}. Under CRRA it is one, and the code measures it directly, reporting $\mathrm{d}\theta_{t+2}/\mathrm{d}\theta_{t+1}$ alongside every path it returns.
+\smalltitle{Two consequences of the identification.} Under the flat-only specification, \eqref{\refmodeleq:esc:RR} makes $\theta^{\ast}$ a function of $p$, so the target in \eqref{\refeq:esc:calibration} moves with the parameter being calibrated. This is handled by re-deriving $\theta^{\ast}$ from $RR_0$ at every trial $p$ --- the datum is the replacement-rate ratio, not the design --- and the inversion is bracketed by a scan, since $(1-\theta)/\theta$ is decreasing while $f$ is increasing and their product need not be monotone. Second, the required cost turns out to be nearly the same under all three timings, which is itself a useful check that the two solvers are solving the same economic problem.

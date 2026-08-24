@@ -508,3 +508,36 @@ shape as `getEps` raising on `γ_0 > 0`: a plausible-looking inherited number is
 **Test count.** 21 fast suites (~75 s), up from 19: `US/test_fr.py` (the `ModelFR` protocol, data-free by
 construction), `US/test_eu.py` (the FR/UK workbooks end to end) and `US/test_createCopyFromt0.py` (the
 shock machinery, which the `US` README had flagged as inherited-and-untested).
+
+## 2026-08-24 — endogenous `θ`: what belongs here rather than in the module log
+
+The substance of this work is `US`-specific and lives in `python/US/RESEARCH_LOG.md`. Three things are
+cross-cutting enough to record at the root.
+
+**Two new entries in `notes/crossCuttingFindings.md`.** #10, *a corner makes any sensitivity check
+vacuous* — a test measuring `dθ_{t+2}/dθ_{t+1}` passed with `+0.0000` because the parameter it reused put
+the choice on a boundary, while the production run at the same `ρ` gave `−0.0092`; the vacuous answer was
+the more reassuring one, which is why it survived review. And #11, *maximising over a policy that also
+enters a predetermined state* — `base.dlnc2i_dτ`'s existing warning, written for `τ`, turns out to apply
+verbatim to any instrument reaching the same state, and the permanent choice of `θ` is one. Worth 0.14 in
+the answer.
+
+Both are the same species as #3–#9: not bugs in an algorithm, but ways for a defensible-looking number to
+be the wrong number.
+
+**A structural result that changes how the docs should read.** Under log preferences the political
+objective is additively separable, `W_t = A(τ_t, θ_t) + B(θ_{t+1})`, so the leaded choice of `θ` has **no
+state at all** — not a weak dependence on the inherited design, an exactly zero one, measured across the
+whole state grid. The appendix sets that problem up with `θ_t` as a state; it is one for the tax and not
+for the design. Documented as a proposition in `writing/US/model_esc.tex` rather than left as a numerical
+curiosity, because it is what makes the solver a sequence problem instead of a recursion.
+
+**Documentation convention held.** The new material split model-side (`writing/US/model_esc.tex`: the cost,
+the three timings, two propositions) from numerical (`writing/US/num_esc.tex`: algorithms, calibration,
+verification), matching every other section of the module rather than accumulating in one file. Equation
+labels follow the `\refeq:esc:*` pattern and the `.py` docstrings reference them by name, so the usual
+rename discipline applies.
+
+**Test count.** 22 fast suites (~75 s) plus a new slow one: `US/test_esc.py` (28 checks — the wedge against
+the appendix's own closed forms, the three structural properties, both timings) and `US/test_escCRRA.py`
+(slow, ~4 min: the CRRA solver against its log limit).
