@@ -1,9 +1,0 @@
-  calibrating France at rho=2.0 for the French scenarios ...
-  frBoth    pin=True  θ_t0=0.4953  τ_t0=0.1417 sr_t0=0.2145 ww_t0=40.25  (θ_t1=0.4953, 2s)
-  frBoth    pin=False θ_t0=0.7068  τ_t0=0.1445 sr_t0=0.2122 ww_t0=40.47  (θ_t1=0.7263, 739s)
-  France    pin=True  θ_t0=1.0000  τ_t0=0.2129 sr_t0=0.1782 ww_t0=35.45  [31s]
-  frBoth    pin=True  θ_t0=0.4795  τ_t0=0.1381 sr_t0=0.2157 ww_t0=40.32  (θ_t1=0.4795, 3s)
-  frBoth    pin=False θ_t0=0.7222  τ_t0=0.1445 sr_t0=0.2121 ww_t0=40.48  (θ_t1=0.7286, 477s)
-  France FAILED ValueError: getθ: the no-wedge inversion gives θ=1.0, outside (0,1); B/A is not identified.
-
--> results\esc
