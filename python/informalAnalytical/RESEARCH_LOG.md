@@ -140,3 +140,17 @@ runs on the copy rather than reusing stale-shaped warm-start caches.
 **Session note.** This work (and its `InformalSavings` counterpart) was implemented in the prior session
 but the README/RESEARCH_LOG update was missed before that session ended — caught and filled in at the
 start of this one, from the code and tests already on disk rather than from conversation history.
+## 2026-08-24 — the calibration's starting guess, and what it exposed
+
+The Argentina calibration target moved from the savings rate to the capital-output ratio (that work is in
+`python/InformalSavings/RESEARCH_LOG.md` and `notes/argentina_calibrationTarget.md`). This variant shares
+the target, so `test_calibration.py` moved with it — and it was **the only suite in the repo that failed**.
+
+Not a defect in the change: it failed to converge *from its shipped starting guess* of `β = 0.6`, tuned for
+the old target, walking into a region where the whole-path policy solve returns a NaN `τ` and the
+steady-state `brentq` then dies at its own lower bracket. Every start in `[0.7, 1.0]` reaches the same root
+(`β = 0.84424, ω = 2.19679`), so the guess moved to 0.85 and the root is not in doubt.
+
+**Worth recording as a limitation of this variant**: its outer search has **no globalization**, so a start
+far from the root fails rather than converging slowly. `InformalSavings` took the same change from the same
+guess without complaint. Any future change of target or data should expect to re-tune this guess.
