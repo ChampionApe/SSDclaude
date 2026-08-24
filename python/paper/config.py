@@ -38,7 +38,7 @@ ARG = {
     # Grid settings. calibrateRhoGrid.py gives BOTH solvers interpKind/smoothKnots and only the grid
     # SIZES to CRRA; LOG keeps its own documented nι=50. Anything re-solving a calibrated instance must
     # mirror that split or it solves under a different interpolant than it was fitted under
-    # (notes/informalSavings_logCrraBoundary.md). loadCalibrated() enforces it; do not bypass.
+    # (notes/informalSavings_resolvedIssues.md). loadCalibrated() enforces it; do not bypass.
     'gridSettings': {'interpKind': 'cubic', 'smoothKnots': 4, 'nι': 45, 'ns': 45},
 }
 

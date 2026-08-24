@@ -2,7 +2,7 @@ r""" Recalibrate the Argentina (informalSavings) model across a grid of values f
 
 Run:  .venv\Scripts\python.exe python\InformalSavings\retargetCalibration.py [--par KY0] [--targets ...]
 
-Context: `notes/argentina_savingsTargetAudit.md`, which is what moved the target from the savings rate
+Context: `notes/argentina_calibrationTarget.md`, which is what moved the target from the savings rate
 (`s0`) to the capital-output ratio (`KY0`). `--par` names the db key that moves; everything else is held,
 including rho, which `--rho` fixes and which also selects the calibrated instance the march starts from
 (`results/calibration/instances/rho_*.pkl` -- `calibrateRhoGrid.py` writes them). Each point is one

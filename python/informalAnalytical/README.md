@@ -140,7 +140,7 @@ relative and `τ` level, since `K/Y ≈ 3.2` against `τ = 0.125`.
 
 **The target changed on 2026-08-24**: `db['KY0'] = 3.2313` (Argentina's 2010 capital-output ratio, PWT
 11.0 via `python/paper/dataTargets.py`) replaced the savings rate `db['s0'] = 0.184`, in this variant as
-in `InformalSavings`. `notes/argentina_savingsTargetAudit.md` is the argument; the savings rate is still
+in `InformalSavings`. `notes/argentina_calibrationTarget.md` is the argument; the savings rate is still
 computed and reported. This variant calibrates to `β = 0.844, ω = 2.197` at `ρ=1` — above `InformalSavings`'
 0.808, as it must be, since hand-to-mouth informal households leave the formal block to hold the whole
 capital stock.

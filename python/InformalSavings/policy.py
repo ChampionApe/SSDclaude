@@ -65,7 +65,7 @@ class LOG:
         outer residual continuous in the model parameters. None selects the adaptive-knot smoothing
         spline instead, whose knot COUNT is chosen from the data and therefore flips discontinuously as a
         parameter moves -- ~3.5e-6 jumps in the calibration's outer residual, which is what made ρ≈0.7
-        uncalibratable (deviations note item 15).
+        uncalibratable (deviations note item 3).
 
         Defaulted to 4 on 2026-08-19, having previously defaulted to None so that pre-2026-08-19 results
         reproduced bitwise. Those results are all superseded, every calibration path was overriding it

@@ -1,477 +1,293 @@
 # Cross-cutting findings
 
-Findings that recurred across module sessions and were previously written out in full in more than one
-place (root `RESEARCH_LOG.md` and a module's own README/`RESEARCH_LOG.md`). Recorded once here; other
-files should link to the relevant section below rather than restate it.
+Findings that recurred across modules. Recorded once here; other files link to a number rather than
+restate it. Each entry is the statement, the tell, and the habit. Long-form versions of the ones that
+came with a full investigation are in `notes/archive/`.
 
 ## 1. Bitwise reproducibility holds within a process, not across processes
 
-Re-running an unchanged solve in a fresh interpreter differs from its own saved baseline by up to ~1e-13
-(measured: 464 of 611 recorded arrays in `InformalSavings`), because numpy's SIMD dispatch varies with
-array size and memory alignment. Within one process it is bitwise identical (0 of 546/561 checked, in two
-separate measurements).
+A fresh interpreter reproduces an unchanged solve only to ~1e-13 (464 of 611 arrays differed in
+`InformalSavings`); within one process it is bitwise identical. numpy's SIMD dispatch varies with array
+size and alignment.
 
-**Consequence for every module here**: an old-vs-new comparison for a refactor must run both
-implementations **in the same process** to assert bitwise identity — a saved `.npz`/baseline compared
-across runs can only ever assert ~1e-13, which is too loose to catch a subtly wrong reuse, and is
-*especially* too loose for a refactor that changes array sizes (that legitimately shifts last bits on its
-own). The pattern that works: paste the pre-change functions verbatim into a scratch module, monkeypatch
-them in, run both in one process, compare — and check the reference path's own call counts to confirm it
-was actually exercised. Used this way in `InformalSavings`' CRRA speed refactor (561 arrays, bitwise
-identical, 2026-08-11).
+**Habit.** An old-vs-new comparison for a refactor must run both implementations **in the same process** —
+monkeypatch the pre-change functions in and compare there. A saved baseline compared across runs asserts
+only ~1e-13, which is too loose to catch a subtly wrong reuse, and far too loose for a refactor that
+changes array sizes. Check the reference path's call counts too, to confirm it was exercised.
 
 ## 2. A clip that manufactures a bracket also manufactures a root
 
-Every bounded policy function in this project is evaluated as `clip(τ(·), l, u)`. Closing any fixed point
-through one gives a residual that is bracketed on `[l,u]` for free — and therefore also has an *exact*
-root at whichever endpoint the extrapolated policy overshoots, which a bracketed solver (e.g. `brentq`)
-will return in preference to the interior one. This is a property of the clip, not of any one model, so it
-should be checked wherever a fixed point is closed through a bounded policy.
+Every bounded policy here is evaluated as `clip(τ(·), l, u)`. A fixed point closed through one is
+bracketed on `[l,u]` for free — and has an *exact* root at whichever endpoint the extrapolated policy
+overshoots, which `brentq` returns in preference to the interior one.
 
-**Concrete instance**: `InformalSavings.model.initialStatePEE`'s `eq:initialFixedPoint` residual
-`τ - clip(τ¹(·), l, u)`. At `τ=u` the steady state degenerates, the implied `ι_0` leaves the state grid by
-three orders of magnitude, and the extrapolated policy clips back to `u` — residual exactly zero, and a
-bare `brentq` on `[l,u]` returns that degenerate endpoint. Whether the trap fires is luck, not structure:
-at `ρ=1.15` the extrapolation overshoots `u` and the trap fires; at `ρ=1` (LOG) it undershoots `l` instead
-and there is no spurious root — so the LOG case "worked" first and supplied false confidence in an
-untested code path. Fixed by scanning the interior grid with the out-of-grid region masked to `NaN`,
-taking the lowest surviving sign change, and bracketing only inside that cell — multiplicity reported
-rather than resolved silently. **Do not simplify this back to a bare bracketed solve on `[l,u]`.**
+**Tell.** The returned root sits exactly on a bound and the state it implies is far outside the grid.
+Whether it fires is luck: at `ρ=1.15` `InformalSavings.initialStatePEE` overshot `u` and trapped; at
+`ρ=1` it undershot `l` and the LOG case "worked", supplying false confidence in an untested path.
+
+**Habit.** Scan the interior grid with the out-of-grid region masked to NaN, take the lowest surviving
+sign change, bracket inside that cell, and report multiplicity rather than resolving it silently. **Do
+not simplify this back to a bare bracketed solve on `[l,u]`.**
 
 ## 3. "Converged" and "small residual" can both be true at the wrong answer
 
-A nested numerical solve (outer root over parameters, inner solve/grid search over a state) can report
-success with a small residual while sitting at a point displaced from the true answer, because the inner
-solve's own discretization error gets silently absorbed into the outer parameters. Nothing errors; scipy's
-`success` flag and a tight outer tolerance are both consistent with the wrong answer.
+A nested solve (outer root over parameters, inner grid search over a state) absorbs the inner solve's
+discretization error into the outer parameters. Nothing errors; `success` and a tight tolerance are both
+consistent with the wrong answer.
 
-**The diagnostic, general to every nested solve in this repo**: hold the outer-converged parameters fixed,
-refine the inner grid, and ask whether the residual decays or plateaus. A plateau means the refined
-problem is already well resolved and its root is genuinely elsewhere — the outer answer is wrong, not
-imprecise. A decaying residual means the coarse grid was fine. One extra evaluation, and no amount of
-tightening the outer tolerance is a substitute for it.
+**The diagnostic.** Hold the outer-converged parameters fixed, refine the inner grid, read the trend:
 
-**Concrete instance**: `InformalSavings`' CRRA calibration (§8) at the PEE solve's default `30×30` inner
-grid: the outer 4-D root converges, reports success, and lands on a point where holding parameters fixed
-and refining the inner grid gives `6.6e-4 → 3.13e-3 → 3.14e-3` (plateau at ~1% displacement in `β`). At
-`45×45` the same refinement gives `1e-12 → 1.0e-4 → 4.4e-5` (healthy decay). Fix: the CRRA *calibration*
-uses a finer inner grid (`nι=ns=45`) than the CRRA *solve* itself needs (`30×30` is fine for the PEE solve
-alone, and is what `test_peeCRRA.py`/`test_peePath.py` assert their spacing tolerances against — the two
-defaults are deliberately not unified).
+| residual under refinement | meaning |
+|---|---|
+| decays | the coarse grid was fine |
+| plateaus | the refined problem is well resolved and its root is genuinely elsewhere — the outer answer is *wrong*, not imprecise |
+| grows | not grid-converged at any resolution tried; the error is not resolution (see #4, #5) |
 
-**A third outcome, added 2026-08-11: the residual can *grow* under refinement.** The rule above has two
-cases; there is a worse one. At `ρ=1.1` with piecewise-linear interpolants the same diagnostic gives
-`3.3e-5 → 1.5e-4 → 2.9e-4` — monotonically increasing, meaning the model's computed targets are still
-moving at the finest grid tried and the answer is not grid-converged at *any* of them. Refining further
-does not help, because the error is not resolution: see #4.
+Measured: `InformalSavings`' CRRA calibration plateaued at `6.6e-4 → 3.13e-3 → 3.14e-3` on a 30×30 inner
+grid (~1% displacement in `β`) and decayed `1e-12 → 1.0e-4 → 4.4e-5` at 45×45. Hence the CRRA
+*calibration* uses a finer inner grid than the CRRA *solve* — the two defaults are deliberately not
+unified.
 
-**A fourth variant, added 2026-08-12: the plateau shows up as resistance to warm-starting, not just to
-refinement.** The diagnostic above holds the *outer* parameters fixed and refines the inner grid. The same
-signature appears one level up, before an outer point has even converged: in `InformalSavings`' `ρ` sweep,
-`ρ=0.775` was attempted three times with progressively closer warm starts (from `ρ=0.8`, then `ρ=0.7875`,
-then `ρ=0.78125` — a final gap of 0.00625) and landed at the same ~3.3–3.7e-6 residual every time. A
-start 100× closer bought nothing, which is the same tell as a refinement that does not decay: the point is
-not merely hard to reach, it is sitting at what `45×45` can resolve. A neighbouring point in the same
-pocket (`ρ=0.78125`) needed 37 evaluations against the sweep's usual ~10–13, a second independent symptom
-of the same limit. Full detail: `InformalSavings/RESEARCH_LOG.md`, 2026-08-12.
-
----
+**The same signature one level up.** Before an outer point converges, a plateau shows as *resistance to
+warm-starting*: `ρ=0.775` was retried from starts 100× closer and landed on the same 3.3e-6 residual
+every time. A closer start buying nothing is the same tell as a refinement that does not decay.
 
 ## 4. When refinement does not help, suspect the interpolant, not the grid
 
-A grid search whose policy is stored as a **piecewise-linear** interpolant produces an outer objective that
-is continuous but only piecewise `C¹`, with kinks at every cell boundary. Refining the grid moves the kinks
-closer together without removing them, so a Newton-type outer solver keeps hitting them at any resolution.
-The symptom is a solver that stalls at a residual far above its tolerance while each individual inner solve
-looks fine, and (per #3) a refinement trend with the wrong sign.
+A policy stored as a **piecewise-linear** interpolant makes the outer objective continuous but only
+piecewise `C¹`, with kinks at every cell boundary. Refining moves the kinks closer together without
+removing them, so a Newton-type outer solver stalls at any resolution.
 
-**The fix is the interpolation kind, not the node count.** In `InformalSavings`' CRRA calibration at
-`ρ=1.1`, switching the continuation interpolants from linear to cubic took the outer solve from *stalling
-near `3e-5` after 60+ evaluations* to **`1.3e-11` in 12 evaluations**, and reversed the refinement trend to
-`1.3e-11 → 1.7e-4 → 5.1e-5`. The located parameters differed by only 0.016% in `β` — so the linear answer
-was never badly displaced; the solver simply could not descend to it. This is a different failure from #3
-and needs a different fix, though the two present almost identically.
+**The fix is the interpolation kind, not the node count.** At `ρ=1.1`, linear → cubic took the outer solve
+from stalling near `3e-5` after 60+ evaluations to `1.3e-11` in 12. The located parameters differed by
+0.016% in `β` — the linear answer was never badly displaced, the solver just could not descend to it.
 
-Two cautions, both learned the expensive way:
-- **Comparing schemes at a fixed point is not a comparison.** Evaluating scheme B at the point scheme A
-  converged to measures how far B's root has moved, not which scheme is better — done that way, cubic looks
-  *worse* than linear. Re-solve under each scheme and compare the refinement behaviour of each answer.
-- **Monotone (PCHIP) is the principled choice and may be unaffordable.** A plain cubic can overshoot where
-  a policy is flat at a bound (`[-0.088, 3.105]` on data spanning `[0,3]` in a measured case), which
-  matters for any quantity not independently clipped. But `scipy`'s `RegularGridInterpolator` rebuilds
-  pchip splines on every call — 1400× slower than linear — so using it in 2-D needs a precomputed
-  bicubic-Hermite evaluator that nobody has written yet.
+Three cautions:
+- **Comparing schemes at a fixed point is not a comparison.** Evaluating B at A's converged point measures
+  how far B's root has moved. Re-solve under each scheme and compare *refinement behaviour*.
+- **Monotone (PCHIP) is the principled choice and may be unaffordable.** Plain cubic can overshoot where a
+  policy is flat at a bound. `RegularGridInterpolator` rebuilds pchip splines on every call (~1400× slower
+  than linear), so 2-D use needs a precomputed bicubic-Hermite evaluator nobody has written.
+- **On the `informalAnalytical`/`US` lineage, check #5 first.** Swept over `ρ`, `US`' calibration was
+  fixed by pinning the smoother's knots, not by the interpolant kind; `cubic` failed to converge in 2 of 8
+  measured cells and `pchip` failed on coarse grids.
 
-**Checked on the `informalAnalytical` lineage (2026-08-21), and the binding defect there was #5, not #4.**
-`US` (a copy of that module) was swept over `ρ` and its calibration would not resolve; pinning the
-smoother's knots fixed it, while the interpolant kind did not. `cubic` failed to converge in 2 of 8
-measured `(ρ, ns)` cells — the overshoot caution above — and `pchip`, which **is** affordable in that
-module because every interpolant there is 1-D, agreed with linear once resolved but failed on coarse
-grids. So: check #5 first on this lineage, and treat the interpolant kind as the second hypothesis rather
-than the first. Details in `python/US/RESEARCH_LOG.md`.
-
-Two refinements to the diagnostic itself, learned there:
-- **Judge by the trend, not the spread.** A converging sequence spans a *wider* range than a jittering
-  band does, so ranking settings by spread-of-answers prefers the broken one. The signal is the shape of
-  the sequence (see #3), never its width.
-- **A band with no trend is the absence of information, not a small error bar.** The adaptive smoother put
-  every node count inside one 0.3% band, which looked like a converged answer with a modest uncertainty
-  and was actually refinement telling you nothing — the coarsest grid in that band was 2.4% off.
+**Judge by the trend, not the spread.** A converging sequence spans a *wider* range than a jittering band,
+so ranking settings by spread-of-answers prefers the broken one. A band with no trend is the absence of
+information, not a small error bar — the adaptive smoother's 0.3% band hid a coarsest grid 2.4% off.
 
 ## 5. A discrete choice inside a differentiated residual is a discontinuity
 
-#3 and #4 both describe an outer solver that stalls while every inner solve looks fine. There is a third
-cause with the same presentation, and it is the one that is invisible to refinement *and* to a better
-interpolant: somewhere inside the inner solve, a **library routine chooses an integer from the data**.
-Adaptive knot counts, adaptive quadrature orders, `argmax` over a candidate set, a root-count branch, an
-active-set choice — any of them flips as a parameter moves, and the residual jumps.
+Third cause with #3/#4's presentation, and the one invisible to both refinement and a better interpolant:
+somewhere inside the inner solve a **library routine chooses an integer from the data** — adaptive knot
+counts, adaptive quadrature orders, an `argmax` over candidates, a root-count branch. It flips as a
+parameter moves and the residual jumps by `J`; a root falling inside a jump does not exist in the
+discretized problem, so `|residual|` cannot go below `J`.
 
-Once the residual has jumps of size `J`, a root can fall *inside* one, in which case it does not exist in
-the discretized problem and `|residual|` cannot be driven below `J`. That is why the diagnostic signature
-is **a plateau that does not improve under a better warm start** — #3's signature — but the fix is neither
-#3's resolution nor #4's interpolant kind.
+Measured: `UnivariateSpline(s=…)`'s FITPACK knot count put ~3.5e-6 jumps in a residual with a 1e-6
+tolerance and made one `ρ` uncalibratable across six attempts. Fixed-knot `LSQUnivariateSpline`
+(`gridsearch.interp`'s `knots`) removed every jump; the point solved in 11 evaluations.
 
-**The measured instance.** `InformalSavings`' policy smoother used `UnivariateSpline(s=…)`, whose FITPACK
-knot count is chosen from the data. That put ~3.5e-6 jumps in a calibration residual with a 1e-6 tolerance
-and made one `ρ` uncalibratable across six attempts. Replacing it with a fixed-knot `LSQUnivariateSpline`
-(`gridsearch.interp`'s `knots`) removed every jump and the point solved in 11 evaluations.
-Full chain: `notes/informalSavings_rho07_resolved.md`.
+**How to tell it apart, cheaply.** Fine-scan the residual along one parameter *at a converged point* and
+compare successive differences to their median: smooth curvature gives a flat ratio, this gives isolated
+spikes. Two corollaries: a finite-difference step that disagrees with both a smaller and a larger one is
+straddling a jump (a jump contributes `J/h`), and aggregate counters will not find it — diff the
+*per-period* arrays and find where a perturbation stops propagating smoothly.
 
-**How to tell it apart from #3/#4, cheaply.** Take a fine scan of the residual along one parameter, at a
-*converged* point, and look at successive differences against their median. Smooth curvature gives a flat
-ratio; this gives isolated spikes. Two corollaries worth knowing before running it:
-- **The step size that looks worst is diagnostic.** A finite-difference step that disagrees with both a
-  smaller and a larger one is straddling a jump — a jump `J` contributes `J/h`, dominating at the step that
-  first spans it and diluting tenfold a decade up. A step anomalous on *both* sides is not truncation error.
-- **Aggregate counters will not find it.** Feasibility totals, root counts and selection counts can all be
-  unchanged across the jump. Diff the *per-period* solution arrays instead and find the period where a
-  perturbation stops propagating smoothly.
-
-**The design rule that follows.** Anything inside a residual that will be differentiated should be a
-**linear map of its input** for fixed structure, or its structural choice should be pinned from outside.
-This is also the argument against auto-tuning grids or bounds from a previous run: it makes the residual
-depend on solve history, which is this bug wearing different clothes.
-
----
+**The design rule.** Anything inside a residual that will be differentiated should be a **linear map of
+its input** for fixed structure, or its structural choice pinned from outside. This is also the argument
+against auto-tuning grids or bounds from a previous run: that makes the residual depend on solve history.
 
 ## 6. Settings adopted as defences against an undiagnosed defect must be re-derived, not inherited
 
-Companion to #5, and the step most likely to be skipped after a bug like it is found. While a defect is
-present, every setting adopted to work around it *is* justified by measurement — the measurements are not
-wrong, and re-reading them will not reveal anything. What is wrong is the attribution: the measurement
-reports the defect as a property of the thing being measured. Fixing the defect therefore silently
-invalidates the *reason* for every such setting, while leaving the settings in place and their
-documentation reading as if it still applied.
+While a defect is present, every workaround setting *is* justified by measurement. The measurements are
+not wrong — the attribution is: they report the defect as a property of the thing measured. Fixing the
+defect invalidates the reason for every such setting while leaving it in place, documented as if it still
+applied.
 
-**The measured instance.** `InformalSavings` had two settings adopted against the smoother's residual
-jumps: a per-solver finite-difference step (a Jacobian column read 5× its resolved value at scipy's
-default) and a doubled inner grid (the coarse grid appeared to converge to a *displaced* root). Both were
-correctly measured and both were re-derived once the jumps were gone. They did not fall the same way — the
-step was removed outright, while the grid survived on an argument an order of magnitude weaker than the
-one that had established it (deviations note item 17). Neither outcome was predictable from the original
-measurement, which is the reason to re-derive rather than reason about it.
+Measured: `InformalSavings`' two defences against the smoother's jumps fell differently once re-derived —
+the per-solver finite-difference step was removed outright, the doubled inner grid survived on an argument
+an order of magnitude weaker than the one that established it. Neither outcome was predictable, which is
+the reason to re-derive rather than reason about it.
 
-**What to re-derive, and how to find the list.** Anything whose written justification cites a symptom
-rather than a mechanism — "column X was corrupted", "the sequence plateaued", "it did not converge". A
-setting justified by a mechanism ("the profile diverges like 1/(1-τ), so differentiate in log") is not at
-risk. In practice the list is short and the note that records the settings is where it lives, which is an
-argument for recording the measurement behind each setting rather than only its value.
+**What to re-derive.** Anything whose written justification cites a *symptom* ("column X was corrupted",
+"the sequence plateaued") rather than a *mechanism* ("the profile diverges like 1/(1-τ), so differentiate
+in log"). Recording the measurement behind each setting, not just its value, is what makes this list
+findable.
 
-**Two traps in the re-derivation itself.**
-- *Measure at converged points.* This is #5's process note and it recurs: a diagnostic taken off-root
-  cannot distinguish a defect in the residual from being in the wrong place.
-- *A diagnostic whose verdict never varies is worse than none.* The grid re-measurement's first version
-  classified the refinement ladder's shape including the rung at the calibration's own grid, where the
-  residual is ~1e-12 by construction — so every ladder "rose" and the label fired on every row. It invites
-  reading the label instead of the numbers. Check that a summary statistic can actually come out both ways
-  on the data it will see.
+**Two traps in the re-derivation.** Measure at converged points (#5). And check that a summary statistic
+can come out both ways on the data it will see — a classifier that fired on every row because the ladder
+included the calibration's own grid invites reading the label instead of the numbers.
 
 ## 7. A fix keyed to where a defect was found, rather than to where it applies
 
-**General statement.** When a defect is diagnosed in one configuration and the fix is applied *there* —
-keyed to the solver, the branch, the parameter range where it happened to surface — every other
-configuration that shares the defect keeps it, and now keeps it in a codebase that reads as though the
-problem is solved. The written record makes this worse rather than better: it says the finding was
-understood and acted on, so the natural next question ("does this apply anywhere else?") looks answered.
+A defect diagnosed in one configuration and fixed *there* — keyed to the solver, branch, or parameter
+range where it surfaced — persists in every other configuration that shares it, now in a codebase that
+reads as though the problem is solved. The *diagnostic* usually gets keyed the same way, so the
+configuration still carrying the defect is also the one exempt from the check that would catch it.
 
-The companion failure is that the *diagnostic* usually gets keyed the same way, so the configuration still
-carrying the defect is also the one exempt from the check that would catch it.
+Measured: `interpKind='cubic'` (#4) was keyed to `'CRRA'`. LOG kept `'linear'`, so `ρ=1` — the single LOG
+point of every sweep — ran the interpolant the module had concluded was inadequate, jittering 2.4e-3 in
+`τ(t0+1)` against 2.5e-5 under cubic. The calibration fitted four parameters to one realisation of that
+jitter and the shock response inherited a +10.6%-of-scale displacement, read for a session as a
+LOG-vs-CRRA "solver-transition artifact". The `verify` refinement check was keyed identically, so every
+LOG row of every sweep carried `verifyResidual = NaN`.
 
-**The measured instance.** `InformalSavings` established (#4) that piecewise-linear continuation
-interpolants leave an outer residual only piecewise `C¹` and stall the calibration, and adopted
-`interpKind='cubic'`. It was keyed to `'CRRA'`, because that is where the stall had appeared. The LOG
-solver kept `'linear'` as a class default nobody revisited — so `ρ=1`, the single LOG point of every
-sweep, was the one point solved on the interpolant the module had already concluded was inadequate. Its
-answer does not converge in `nι`; it jitters by 2.4e-3 in `τ(t0+1)` against 2.5e-5 under cubic. The
-calibration then fitted its four parameters to hit `τ(t0)=0.125` at one realisation of that jitter, and
-the universalisation response at `t0+1` inherited a displacement of **+10.6% of scale** — read for a
-session as a candidate LOG-vs-CRRA "solver-transition artifact". The two recursions in fact agree to
-0.2% of a grid cell. Full chain: `notes/informalSavings_logCrraBoundary.md`.
+**Why it is hard to see.** The defective configuration is internally consistent: it converges, its
+residual is *tighter* than the fixed configuration's (1.6e-11 vs 1.1e-9), and it hits its targets exactly.
+A tight residual at a jittered answer is the solver descending precisely onto the wrong number.
 
-The `verify` refinement check was keyed the same way: `{'CRRA': ...}`, so **every LOG row of every sweep
-carries `verifyResidual = NaN`**. The one point running the unconverged interpolant is the one point with
-no resolution check.
-
-**Why it was hard to see.** The defective configuration is internally consistent — it converges, its
-residual is *tighter* than the fixed configuration's (1.6e-11 against 1.1e-9), and it hits its calibration
-targets exactly. A tight residual at a jittered answer is the solver descending precisely onto the wrong
-number, and nothing local can tell the two apart. It becomes visible only when a second method computes
-the same object and the two are compared as a *series*, which is what a fine grid straddling the boundary
-buys.
-
-**The habit.** When a fix is keyed to a configuration, write down what the key is *for*. Two keys look
-identical in code and are opposites in kind: a **resolution** choice legitimately differs per solver (the
-CRRA calibration needs a finer grid than LOG), while a **well-posedness** choice — is this object even
-converged? — cannot, and keying it is a bug. `InformalSavings` had already drawn exactly this distinction
-for `smoothKnots`, which is applied to both solvers for stated well-posedness reasons; `interpKind` is the
-same kind of choice and was keyed anyway.
-
-**Fixed 2026-08-20**, and the shape of the fix is part of the finding. The repair was *not* to correct the
-class default — `CRRA._gridSettings` inherits `interpKind` from `LOG`, so flipping it there moves both
-solvers' defaults and trips two suites whose assertions were themselves measured at `'linear'`
-(`test_peeCRRA`'s bound-overshoot tolerance, and `test_peePath`'s "re-solving beats interpolating", which
-stops holding once the interpolant is `C¹` — worth knowing on its own: that penalty was largely a linear
-artifact). The repair was at the **call site that keyed it**, which is also where the mistake was: give
-both solvers `interpKind`, keep the grid sizes per-solver. A defect introduced by keying is usually
-repaired by un-keying it there, not by changing what it was keyed away from — the default may have other
-consumers, and the tests written against it are evidence about the default, not about the bug.
-
-The companion repair matters as much: the `verify` refinement check was keyed the same way and now covers
-LOG too. It reports 5.73e-6 at the anchor — a number that had been `NaN` in every sweep ever run.
+**The habit.** When keying a fix to a configuration, write down what the key is *for*. A **resolution**
+choice legitimately differs per solver; a **well-posedness** choice — is this object even converged? —
+cannot, and keying it is a bug. Repair at the **call site that keyed it**, not by changing the class
+default: the default has other consumers, and tests written against it are evidence about the default,
+not about the bug.
 
 **A diagnostic that generalises.** To test whether a boundary between two methods is real, calibrate a
-*fine* grid straddling it and ask whether the odd point out lies on the curve the others trace — fit
-through everything except it and extrapolate in. Second differences make the answer unambiguous without a
-fit: a series with one displaced point reads `[+d, −2d, +d]` exactly, which is what `η0` and `X0` gave to
-two significant figures on two grids ten-fold apart in spacing. And subtract the trend before reading a
-gap: the raw difference between the two methods is dominated by the true slope in the parameter, so the
-statistic has to be the central average `½[x(1+δ)+x(1−δ)] − x(1)`, which cancels it and leaves the jump.
+fine grid straddling it and ask whether the odd point lies on the curve the others trace. Second
+differences make it unambiguous without a fit: one displaced point reads `[+d, −2d, +d]` exactly. Subtract
+the trend before reading a gap — use the central average `½[x(1+δ)+x(1−δ)] − x(1)`.
 
-**A weaker cousin: a constant that was never keyed to anything.** (`US`, 2026-08-21.) The CRRA steady
-state carried a hard-coded search bracket `(1e-6, 0.75)`. The feasibility limit it stands in for —
-`Γ_h·α·κ/((1-α)·p·θ·τ)`, where `Θ_h`'s denominator vanishes — scales with `α/(1-α)` and `κ/p`, both of
-which differ between modules. At `α = 0.43` with a positive informal mass the limit sits above 0.75 for
-every `τ`; at `α = 0.30` with `κ = p` it falls to ≈0.58, and the solver died on a NaN while reporting a
-solver problem rather than an infeasible interval. Unlike the cases above, the constant was not keyed to
-the configuration where a defect surfaced — it was correct once, silently, and travelled with a file copy.
-**When a copied module changes a structural parameter, every hard-coded bound in it is a hypothesis that
-needs re-testing.** Fix by deriving the bound from the model, not by retuning the number: retuning only
-moves the parameter value at which it reappears, and a test written against the new number would assert
-the wrong thing. The test to write asserts that the bound *tracks* the model quantity.
+**A weaker cousin: a constant that was never keyed to anything.** `US` inherited a hard-coded CRRA steady
+state bracket `(1e-6, 0.75)`. The feasibility limit it stands in for, `Γ_h·α·κ/((1-α)·p·θ·τ)`, scales with
+`α/(1-α)` and `κ/p` — above 0.75 everywhere at Argentina's parameters, ≈0.58 at the US's, where the solver
+died on a NaN while reporting a solver problem. **When a copied module changes a structural parameter,
+every hard-coded bound in it is a hypothesis that needs re-testing.** Derive the bound from the model;
+retuning the number only moves the parameter value at which it reappears, and the test to write asserts
+that the bound *tracks* the model quantity.
 
-**The same constant failed again, in the opposite direction, three days later.** (`US`, 2026-08-24.) The
-fix above was `min(0.75, 0.99·Γs_cap)` — the cap bounds it from above. But `Γs_cap` carries `θτ` in its
-denominator, so at **`θ = 0` it is infinite** and the `min` falls back to the bare 0.75, with nothing
-tying it to the model at all. That configuration had never been reached, because the `θ = 0`
-counterfactual ran on a copy seeded from the baseline's savings and so never called the steady state;
-when the counterfactuals became new equilibrium paths starting at their own steady state, it was reached
-immediately, and at `ρ = 2` the root sits *above* 0.75. The residual was negative at both ends and brentq
-reported a bracket error.
-
-Two lessons on top of the ones above. **A bound derived from the model is only derived where the
-derivation is finite** — check the degenerate limits of the expression you tie it to, because that is
-precisely where it silently reverts to the constant you were replacing. And **a change of experimental
-convention is a change of the input distribution to every solver downstream**: this bug was latent for as
-long as the old convention kept `θ = 0` away from the steady-state solver. The repair pattern that
-generalises: expand the bracket geometrically, and *only when the default has already failed to bracket*,
-so a repair can never alter a call that already worked.
+**The same constant failed again, in the opposite direction.** The fix was `min(0.75, 0.99·Γs_cap)`, but
+`Γs_cap` carries `θτ` in its denominator, so at **`θ = 0` it is infinite** and the `min` reverts to the
+bare constant. That configuration became reachable only when the counterfactuals started at their own
+steady state. Two further lessons: **a bound derived from the model is only derived where the derivation
+is finite** — check the degenerate limits — and **a change of experimental convention is a change of the
+input distribution to every solver downstream**. The repair pattern: expand the bracket geometrically, and
+only when the default has already failed, so it can never alter a call that worked.
 
 ## 8. A superseded file left beside the live ones is an input to anything that globs
 
-**General statement.** Backups, variants and dated copies kept in the same directory as the data they
-supersede are not inert. Any reader that discovers its inputs by pattern — a glob, a directory listing, a
-"load everything matching" helper — will pick them up, and the resulting extra rows are usually *well
-formed*, because they were produced by the same code that produced the live ones. Nothing looks broken.
-The plot simply has a point that should not be there, or a series is silently doubled, or a mean is taken
-over two vintages of the same experiment.
+Backups, variants and dated copies in the same directory as the data they supersede are not inert. Any
+reader that discovers inputs by pattern picks them up, and the extra rows are usually *well formed*,
+because the same code produced them. It is worst when the reader takes the record's **key from the file's
+contents** rather than its name — then the superseded row sorts into the right place and renaming no
+longer protects you.
 
-The failure is worst when the reader takes the record's **key from the file's contents** rather than from
-its name. Then the superseded row carries a legitimate key, sorts into the right place, and is
-indistinguishable from a real observation. Renaming the file no longer protects you; only excluding it does.
-
-**The measured instance.** `InformalSavings` backed up `universal_match_rho1.0000.csv` as
-`universal_match_rho1.0000_preInterpFix.csv` in place, minutes before regenerating it.
-`plotUniversalShock.py` globs `universal_<rule>_rho*.csv` and reads `ρ` from each file's own `ρ` column, so
-the backup contributed a second, perfectly well-formed point at `ρ=1` — the pre-fix anchor (6.089%) plotted
-beside the post-fix one (5.488%). The figure showed a before/after comparison while purporting to show a
-single series, and it was published before anyone noticed. The prose alongside it was correct, because that
-analysis had filtered the backup out explicitly; the two disagreed and only the figure was wrong.
-
-This is the third instance of the same shape in one module, which is why it is here rather than in a module
-note. The other two: `shockUniversal.py`'s `--csv` default still naming a sweep a fresher one had
-superseded (so it would have walked a stale CSV against instances already overwritten in place); and
-`COLUMNS` declaring `occupancyι`/`occupancys` that the row-builder never copied out of the record, writing
-blanks for every point across several sweeps.
+Measured: `universal_match_rho1.0000_preInterpFix.csv` was backed up in place minutes before its live
+twin was regenerated. `plotUniversalShock.py` globs `universal_<rule>_rho*.csv` and reads `ρ` from each
+file's own column, so the figure showed the pre-fix anchor (6.089%) beside the post-fix one (5.488%) while
+purporting to show one series — and was published before anyone noticed.
 
 **The habit.**
-- **Superseded runs go in a subdirectory**, never beside the live ones (`results/shocks/preInterpFix/`,
-  `results/calibration/instances_preInterpFix/`). A non-recursive glob then cannot reach them, whatever
-  they are called.
-- **Match the filename pattern exactly** — `rho<number>.csv`, anchored — rather than `rho*`, and say out
-  loud what was skipped.
+- **Superseded runs go in a subdirectory**, never beside the live ones. A non-recursive glob then cannot
+  reach them, whatever they are called.
+- **Match the filename pattern exactly** — `rho<number>.csv`, anchored — and say out loud what was skipped.
 - **A duplicate key is an error, not something to resolve.** Averaging, first-wins and last-wins all hide
-  it. Raise, and name both files: the ambiguity is real and the reader cannot know which vintage is wanted.
-- Corollary already recorded under #7's companion: a column present in a schema is not evidence it is
-  populated, and a default filename that was correct when written is not evidence it still is. All three
-  are the same defect — **a pipeline trusting the shape of its inputs instead of their provenance.**
+  it. Raise, and name both files.
+- Same defect, other clothes: a column present in a schema is not evidence it is populated, and a default
+  filename correct when written is not evidence it still is. **A pipeline trusting the shape of its inputs
+  instead of their provenance.**
 
 ## 9. A derived parameter silently undoes any experiment that sets it
 
-**General statement.** When a model keeps a list of parameters that are *recomputed from data* whenever
-the deep parameters move — `paramsFromFuncs` here — every one of them is a trap for a counterfactual that
-wants to set it directly. Write the value, call the refresh, and the refresh puts the calibrated value
-back. Nothing raises; nothing is NaN; the run completes and every other number in it is internally
-consistent, because the model really did solve — it just solved the baseline again.
+When a model recomputes parameters from data whenever the deep parameters move (`paramsFromFuncs` here),
+every one is a trap for a counterfactual that sets it directly: write the value, call the refresh, and the
+refresh puts the calibrated value back. Nothing raises, and the run is internally consistent — it solved
+the baseline again.
 
-What makes this hard to catch is that the *null result is plausible*. A counterfactual that returns the
-baseline reads as "this characteristic does not matter", which is exactly the kind of conclusion these
-experiments exist to produce. The absence of an effect is not evidence of a bug the way a NaN is.
+**What makes it hard to catch is that the null result is plausible.** A counterfactual returning the
+baseline reads as "this characteristic does not matter", which is the kind of conclusion these experiments
+exist to produce. Measured: `shocks.shockTheta` set `db['θ']` then called `updateAuxPars()` for tidiness;
+both `θ = 0` and `θ = 1` returned the calibrated path to every printed digit.
 
-**The measured instance.** `python/US/shocks.shockTheta` set `db['θ']` and then called `updateAuxPars()`
-for tidiness. `θ` is in `paramsFromFuncs`, so `updateAuxPars` re-derived it through `getθ` from the
-replacement-rate data. Both `θ = 0` and `θ = 1` returned the calibrated `θ = 0.7382` path — τ, the savings
-rate and the workweek all came back at the baseline to every printed digit. Two polar pension systems
-producing identical equilibria is not subtle once stated, but on screen it was three tidy rows of numbers.
+The same refresh is *required* two functions away — `shockIncomeDistribution` changes `η`, and `Γ_h` and
+`θ` are genuine functions of `η`, so there it moves `θ` from 0.738 to 0.495, a real part of the experiment.
+The rule is not "never refresh"; the refresh's inputs decide.
 
-The same refresh is *required* two functions away: `shockIncomeDistribution` changes `η`, and `Γ_h` and
-`θ` are both genuine functions of `η`, so there it must be called — and it moves `θ` from 0.738 to 0.495,
-which is a real part of that experiment rather than a side effect to suppress. So the rule is not "never
-refresh"; it is that the refresh's inputs decide.
-
-**The habit.**
-- **Know which parameters are derived before writing one.** If it is on the recompute list, set it *after*
-  the refresh, and say so where it is set.
-- **A counterfactual that returns the baseline exactly is a failed run until proven otherwise.** Polar
-  cases are the cheap check: `θ = 0` and `θ = 1` must not agree with each other, whatever they do relative
-  to the baseline. An assertion that two scenarios *differ* costs nothing and catches this whole class.
-- **Distinguish "derived from data that the shock changed" from "derived from data it did not."** The
-  first must be refreshed and the change reported; the second must be left alone. Both look like the same
-  line of code.
+**The habit.** Know which parameters are derived before writing one, and set it *after* the refresh. **A
+counterfactual that returns the baseline exactly is a failed run until proven otherwise** — polar cases
+are the cheap check, since `θ = 0` and `θ = 1` must not agree with each other whatever they do relative to
+the baseline. Distinguish "derived from data the shock changed" from "derived from data it did not"; both
+look like the same line of code.
 
 ## 10. A corner makes any sensitivity check vacuous
 
-Found in `US/test_escCRRA.py`, but the shape is general: a test that measures how much *A* moves when *B*
-is perturbed proves nothing if *A* sits at a boundary, because the answer is zero for a reason that has
-nothing to do with the mechanism under test.
+A test measuring how much *A* moves when *B* is perturbed proves nothing if *A* sits at a boundary: the
+answer is zero for a reason unrelated to the mechanism under test.
 
-The concrete case. `LeadedCRRA` iterates on the design path holding `θ_{t+2}` fixed while `θ_{t+1}` varies,
-which is exact only if the choice at `t+1` ignores the design it inherits. That assumption is worth a test,
-so the suite perturbs `θ_{t+1}` and re-optimises `θ_{t+2}`. It reported `dθ_{t+2}/dθ_{t+1} = +0.0000` and
-passed — while the production run, at the same ρ, reported `−0.0092`.
+Measured: `test_escCRRA.py` perturbed `θ_{t+1}` and re-optimised `θ_{t+2}`, reporting `+0.0000` and
+passing, while the production run at the same ρ reported `−0.0092`. The test reused the *LOG-calibrated*
+`p = 0.402`; at ρ = 2 that puts the choice on the `θ = 1` corner, where both perturbations return 1.0. At
+ρ = 2's own calibrated `p = 0.086` it gets `−0.0092` and agrees.
 
-The difference was the wedge parameter. The test reused the *LOG-calibrated* `p = 0.402`; at ρ = 2 that
-puts the choice on the `θ = 1` corner, where both perturbations return exactly 1.0 and the slope is
-identically zero. The test was measuring the boundary, not the model. It now runs at ρ = 2's own calibrated
-`p = 0.086` — and gets `−0.0092`, agreeing with the production run.
+**Why it is easy to miss.** The vacuous result is *more* reassuring than the real one. A test whose
+failure mode is "returns an even better number than expected" will not be re-examined.
 
-**Why this is easy to miss.** The vacuous result is *more* reassuring than the real one: 0.0000 looks like
-a clean pass, `−0.0092` looks like something to think about. A test whose failure mode is "returns an even
-better number than expected" will not be re-examined.
-
-**The habit.**
-- **Assert interiority before measuring a derivative.** One line, in front of the check that needs it:
-  `check('the choice is interior, so the next check is not vacuous', 0.02 < x < 0.98)`. Without it, the
-  sensitivity check silently degrades into a boundary check.
-- **Reuse of a calibrated parameter across a regime change is the usual cause.** `p` calibrated under LOG
-  is not `p` under CRRA — a higher EIS needs 4.7× less of it — and a parameter carried across without
-  recalibration will often land on a boundary rather than merely being slightly off.
-- **When a test and a production run disagree about the same quantity, the test is the suspect**, even
-  when the test is the one showing the tidier number.
-
+**The habit.** Assert interiority in front of any derivative check (`0.02 < x < 0.98`). Reuse of a
+calibrated parameter across a regime change is the usual cause — `p` under LOG is not `p` under CRRA, a
+higher EIS needs 4.7× less of it. And **when a test and a production run disagree about the same quantity,
+the test is the suspect**, even when the test shows the tidier number.
 
 ## 11. Maximising over a policy that also enters a predetermined state
 
-`base.dlnc2i_dτ`'s docstring already forbids taking `dln(c_2)/dτ` numerically off a solution grid: the
-policy maker treats `s_{t-1,i}/s_{t-1}` as predetermined, the ratio moves along such a grid, and a grid
-derivative therefore folds in a channel that does not belong in the first order condition. That warning was
-written for τ. It applies verbatim to any *other* instrument that reaches the same state, and the
-endogenous-θ work found one.
+`base.dlnc2i_dτ`'s docstring forbids taking `dln(c_2)/dτ` numerically off a solution grid: the policy
+maker treats `s_{t-1,i}/s_{t-1}` as predetermined, the ratio moves along such a grid, and a grid
+derivative folds in a channel that does not belong in the FOC. That warning was written for τ and applies
+verbatim to any other instrument reaching the same state.
 
-The leaded choice of θ is safe: `θ_{t+1}` does not appear in the date-`t-1` savings ratio, so maximising
-the objective over it on a grid is legitimate. The **permanent** choice is not: there θ enters through
-`θ_{t0}`, and a grid maximisation that recomputes the ratio at each candidate credits the electorate with
-internalising a state it takes as given. Savings made at `t0-1` are *sunk* when the vote happens at `t0` —
-a voter comparing two candidates does not face different savings under each. The two readings are not
-close — **θ = 0.775 pinned against 0.910 moving** at `p = 0.4` — so this is a modelling error large enough
-to change conclusions, not a numerical nicety. There is a second, independent tell that the moving reading
-is wrong: the ratio depends on `τ_{t0}` as well as `θ_{t0}`, while the τ it is paired with solves `z = 0`,
-which is *built* holding the ratio fixed. Letting it move for one instrument and not the other is not an
-equilibrium, and it takes the concentration result with it.
+The **leaded** choice of θ is safe — `θ_{t+1}` does not appear in the date-`t-1` savings ratio. The
+**permanent** choice is not: θ enters through `θ_{t0}`, and a grid maximisation that recomputes the ratio
+per candidate credits the electorate with internalising a state it takes as given. Savings made at `t0-1`
+are sunk when the vote happens. The readings are not close — **θ = 0.775 pinned against 0.910 moving** at
+`p = 0.4`. Second, independent tell: the ratio depends on `τ_{t0}` too, while the τ it is paired with
+solves `z = 0`, which is *built* holding the ratio fixed.
 
-The asymmetry is what makes it dangerous: the same objective function, maximised over a different argument,
-is correct in one case and wrong in the other. The leaded implementation established the pattern, and
-copying it to the permanent case would have carried the bug.
+The asymmetry is the danger: the same objective, maximised over a different argument, is correct in one
+case and wrong in the other, so copying the leaded implementation carries the bug.
 
 ### 11b. Pinning is one decision; *what value* to pin at is a second one
 
-The first version got the pinning right and the value wrong, and the two look like one question. The
-permanent choice was pinned at the **incumbent** design's ratio, on the stated grounds that this makes the
+The first version pinned at the **incumbent** design's ratio, on the grounds that this makes the
 experiment an unanticipated reform. But the experiment is not unanticipated: households arrive at `t0`
-knowing a design will be chosen, so the savings they made at `t0-1` were made against the design that
-*wins*. Rational expectations make the answer a fixed point,
+knowing a design will be chosen, so savings made at `t0-1` were made against the design that *wins*.
+Rational expectations make it a fixed point, `θ* = argmax_θ W(θ ; siRatio(θ*))`; the incumbent is the seed.
 
-    θ* = argmax_θ W(θ ; siRatio(θ*)),
+**What made this survive review.** The two readings coincide *exactly* wherever the chosen design
+reproduces the incumbent one — precisely the condition the wedge calibration targets. Every calibrated
+number was right and `p` unchanged; the error shows only away from the calibration (0.775 vs 0.773 at
+`p = 0.4`, 0.542 vs 0.549 at `p = 0.25`).
 
-not a single maximisation against the incumbent's ratio. `PermanentLOG.solveFixedPoint` iterates it from
-the incumbent, which is the seed rather than the answer.
-
-**What made this survive review for a session.** The two readings coincide *exactly* wherever the chosen
-design reproduces the incumbent one — and that is precisely the condition the wedge calibration targets.
-So every calibrated number was right, the calibrated `p` was and remains unchanged, and the error was
-invisible at every point anyone had looked at. It shows up only away from the calibration: 0.775 against
-0.773 at `p = 0.4`, 0.542 against 0.549 at `p = 0.25`. A convention that is a no-op at the calibration
-point and binds everywhere else will not be caught by a test written at the calibration point.
-
-**The habit.**
-- **Before grid-maximising an objective over an instrument, list the predetermined states the instrument
-  appears in.** If the list is non-empty, pin them and pass them in explicitly — an argument, not a
-  recomputation. `PermanentLOG.solve` takes `siRatio_` as a required argument for exactly this reason.
-- **Then ask separately what the pinned value is.** Pinning answers "does the electorate internalise
-  this?"; the timing answers "what did the agents who set this state believe?". A predetermined state that
-  the *chosen* policy feeds back into makes the equilibrium a fixed point, and the seed is not the answer.
-- **A closed-form FOC hides both questions; a grid maximisation exposes them.** Differentiating
-  analytically holds the state fixed automatically, because you simply do not differentiate it. Moving
-  from a FOC to a grid search silently changes what is being held constant, and that change has to be made
-  deliberately.
-- **Test the convention away from the point where it is a no-op.** See #10: a check run where the two
-  readings must agree measures nothing.
-- **Report all readings once.** The gaps are the measure of how much the conventions matter; recording
-  them is cheaper than re-deriving them the next time someone asks.
-
+**The habit.** Before grid-maximising over an instrument, list the predetermined states it appears in; if
+non-empty, pin them and pass them in as an **argument, not a recomputation**. Then ask *separately* what
+the pinned value is — pinning answers "does the electorate internalise this?", the timing answers "what
+did the agents who set this state believe?". A closed-form FOC hides both questions (it holds the state
+fixed automatically); moving to a grid search changes what is held constant, and that change must be
+deliberate. Test the convention away from the point where it is a no-op (#10), and report all readings
+once — the gaps are the measure of how much the convention matters.
 
 ## 12. A calibration target has units on both sides, and only one side is in the code
 
-**Where it came from.** The Argentina calibration targeted a savings rate of 18.4% and returned a 30-year
-discount factor of 1.212. The model's period is 30 years with capital fully depreciating between periods,
-so `Y_t` is thirty years of output and `s_t` is the end-of-period capital *stock*: the moment
-`s_t/Y_t` is `K_{t+1}/Y_t`, a stock over a period's flow. The datum was an annual national-accounts
-saving flow — a different and larger object, because an annual gross flow also replaces the capital that
-depreciates *within* the window, which a one-purchase-per-period model does not have. The target asked
-for about half again the capital Argentina has, and β absorbed it.
+The Argentina calibration targeted a savings rate of 18.4% and returned a 30-year discount factor of
+1.212. The period is 30 years with full depreciation, so `s_t/Y_t` is `K_{t+1}/Y_t` — a stock over a
+period's flow. The datum was an *annual* national-accounts saving flow, a larger object, because an annual
+gross flow also replaces capital depreciating *within* the window. The target asked for about half again
+the capital Argentina has, and β absorbed it.
 
-**Why it survived years of review.** Four things, and each is the generalisable part:
+**Why it survived years of review**, each part generalisable:
+- **The convention lived only in prose.** "A period is 30 years" appeared in the documentation and nowhere
+  in the code, so no test could check it. It is now a parameter (`yearsPerPeriod`) the target equation
+  carries explicitly.
+- **The neighbouring target was converted correctly** (7.1% of GDP ÷ (1-α) = 0.125), which made the
+  calibration look internally careful.
+- **Both readings were plausible numbers.** A units error between two plausible quantities has no symptom
+  except the parameter it lands in.
+- **The provenance was one sentence, in the paper, and wrong** — sector, denominator and comparability all
+  incorrect, with no series id, vintage or window in the workbook.
 
-- **The convention lived only in prose.** "A period is 30 years" appeared in the documentation and
-  nowhere in the code. Nothing in the model could contradict it, so no test could check it, and the
-  factor of 30 that separates the model's ratio from the data's had no home. It is now a parameter
-  (`yearsPerPeriod`) that the target equation carries explicitly.
-- **The neighbouring target was converted correctly.** Pension spending of 7.1% of GDP ÷ (1-α) = 0.125
-  is exactly right, which made the calibration look internally careful and drew attention away.
-- **Both readings were plausible numbers.** 18.4% is a believable saving rate; the 4.0 capital-output
-  ratio it implied is a believable capital-output ratio. Neither side announced itself as wrong. A
-  units error between two plausible quantities has no symptom except the parameter it lands in.
-- **The provenance was one sentence, in the paper, and wrong.** The workbook carried the bare number
-  with no series id, vintage or window; the paper described it as a "private savings rate ... relative
-  to GDP per capita", of which the sector, the denominator and the comparability were all incorrect.
-
-**What to do.** For every calibration target, record in the repo, beside the number: what the data
-series is, over what window, retrieved when, and **the units of both sides of the equation it is being
-matched to**. Where the datum is derived rather than typed — a mean, a ratio, a reading at a year — let
-a script derive it and write that record itself, and have it write the readings it did *not* adopt
-beside the one it did, so the next person sees the choice as well as the value
+**What to do.** Beside every calibration target record the series, the window, when it was retrieved, and
+**the units of both sides of the equation**. Where the datum is derived rather than typed, let a script
+derive it and write that record itself, including the readings it did *not* adopt
 (`python/paper/dataTargets.py`).
 
-**The tell, if you are looking for others.** A target whose model side is a ratio of two objects at
-*different time aggregations* — a stock over a flow, a per-period quantity over a per-year one — is
-where this hides. The check is cheap: convert the model's moment into the data's units by hand, once,
-and see whether the number you get is one anybody would have written down.
+**The tell.** A target whose model side is a ratio of two objects at *different time aggregations* — a
+stock over a flow, a per-period quantity over a per-year one. Convert the model's moment into the data's
+units by hand, once, and see whether the number is one anybody would have written down.

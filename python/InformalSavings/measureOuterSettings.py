@@ -1,11 +1,11 @@
 r""" Re-measure the two CRRA calibration settings that predate smoothKnots and the retuned grid rule
 (README, "The CRRA calibration's three settings"): the outer finite-difference step `eps`
-(deviations note item 13) and the inner grid size nι=ns=45 (item 12). Not a test -- a measurement script.
+(deviations note item 11) and the inner grid size nι=ns=45 (item 12). Not a test -- a measurement script.
 
 Run:  .venv\Scripts\python.exe python\InformalSavings\measureOuterSettings.py --test all
 
 Both settings were established under the ADAPTIVE-knot smoother and the OLD grid rule, i.e. against an
-outer residual that had ~3.5e-6 jumps in it (notes/informalSavings_rho07_resolved.md). Item 13's step and
+outer residual that had ~3.5e-6 jumps in it (notes/informalSavings_resolvedIssues.md). Item 13's step and
 item 12's grid are each a defence against a symptom that the two 2026-08-19 changes may have removed at
 source, so both numbers are re-derived here rather than carried:
 

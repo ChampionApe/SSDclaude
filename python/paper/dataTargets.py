@@ -6,7 +6,7 @@ The one target this produces is Argentina's **capital-output ratio** $K/Y$ in an
 is what identifies $\beta$ (`eq:calibration:KY`). The target is the ratio **at the calibration year**,
 which is where the model's other aggregate targets are measured; the mean over the thirty years ending
 there -- one model period of data -- is written out beside it as the sensitivity, and `--target window`
-selects it instead. See `notes/argentina_savingsTargetAudit.md` for why the calibration targets this
+selects it instead. See `notes/argentina_calibrationTarget.md` for why the calibration targets this
 ratio at all.
 
 Source: Penn World Table 11.0, capital stock and GDP at constant national prices (`rnna`, `rgdpna`), as

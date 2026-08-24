@@ -135,7 +135,7 @@ class ModelInformalAnalytical:
         The default 3.2313 is Argentina's ratio in 2010 from Penn World Table 11.0 -- the calibration
         year, where every other target in eq:calibration is also measured.
         data/argentina_calibrationTargets.csv is the record and python/paper/dataTargets.py rebuilds it. It replaced the savings rate 's0' as the
-        target on 2026-08-24 -- notes/argentina_savingsTargetAudit.md for why; 's0' is now reported
+        target on 2026-08-24 -- notes/argentina_calibrationTarget.md for why; 's0' is now reported
         only. """
         return {'τ0': .125, 'RR0': 0.678/0.803, 's0': 0.184, 'KY0': 3.2313, 'yearsPerPeriod': 30,
                 'RRGroups': (1,2), 't0': 2}

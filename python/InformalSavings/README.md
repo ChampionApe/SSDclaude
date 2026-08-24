@@ -87,7 +87,7 @@ print Greek). Run them individually, or through `python/runTests.py` (`--all` to
   everything else (not a test). `--par KY0` by default; each point is a full calibration warm started
   from the previous one, ~8 s per point at ρ=1. It is what makes the target's consequence legible rather
   than asserted — `results/calibration/informalSavings_KYGrid.csv` is the β(K/Y) map behind the choice of
-  reading in `notes/argentina_savingsTargetAudit.md`. Loads a pickled instance and fills in any 0-D
+  reading in `notes/argentina_calibrationTarget.md`. Loads a pickled instance and fills in any 0-D
   parameter added since it was pickled, so it still runs against instances from before `KY0` existed.
 - `shockUniversal.py` — the unanticipated-universalisation experiment (not a test; docs `num_shock.tex`).
   Baseline solve → `stateAtT0` → `createCopyFromt0(t0)` → new `ε` → re-solve from that state. The default
@@ -143,7 +143,7 @@ print Greek). Run them individually, or through `python/runTests.py` (`--all` to
 - `measureOuterSettings.py` — offline re-measurement of the calibration's solver settings (not a test):
   `--test jac` the outer Jacobian across finite-difference steps at converged points, `--test eps` a real
   calibration at each candidate step from a common start, `--test grid` a calibration at each inner grid
-  size plus the refinement ladder at fixed parameters. Produced deviations note item 17; re-run it after
+  size plus the refinement ladder at fixed parameters. Produced deviations note items 11-12; re-run it after
   any change that could alter the outer residual's smoothness.
 - `measureGrids.py` — offline measurement feeding the grid rule (not a test): reachable box, occupancy,
   feasibility/`atBound`, and the anchor comparison, across pickled calibrations. `--legacy` reproduces the
@@ -234,7 +234,7 @@ print Greek). Run them individually, or through `python/runTests.py` (`--all` to
   `smoothKnots=None` now *disables* pinned knots rather than requesting the default. A caller threading an
   optional argument must omit the key when it has nothing to say — `calibrateRhoGrid.py` (which would have
   selected adaptive) and `diagnoseRho07.py` (which would have inherited 4 and lost its own baseline) were
-  both inverted by the flip, in opposite directions. Full chain: `notes/informalSavings_rho07_resolved.md`.
+  both inverted by the flip, in opposite directions. Full chain: `notes/informalSavings_resolvedIssues.md`.
 - **`interpKind` and `smoothKnots` go to BOTH solvers; only the grid sizes are keyed** (2026-08-20).
   Both are well-posedness choices, not resolution ones, and keying either by solver is a bug: at
   `'linear'` the LOG solve does not converge in `nι` at all — `τ(t0)` spans 9.6e-4 across `nι ∈ [45,120]`
@@ -248,7 +248,7 @@ print Greek). Run them individually, or through `python/runTests.py` (`--all` to
   the real bound; `s*(0)` is *perfectly anti-correlated* with the reachable set across `ρ`. Both anchors
   are now measured to be stable (`min ι*` to 0.045%, `s*(0.3)` to 1.5%), occupancy went 49–52% → 78–80%
   (`ι`), and `capι` survives as an inert backstop. `padι[0]` must not be raised further without
-  re-measuring `atBound` — see deviations note items 4 and 16.
+  re-measuring `atBound` — see deviations note item 4.
 - **A superseded result file left beside the live ones is an input to anything that globs.** Three
   instances now: `shockUniversal.py`'s `--csv` default pointing at a superseded sweep; `COLUMNS` declaring
   occupancy columns `toRow` never populated; and a `universal_match_rho1.0000_preInterpFix.csv` backup
@@ -277,7 +277,7 @@ print Greek). Run them individually, or through `python/runTests.py` (`--all` to
   grouping to a tolerance.
 - **The CRRA calibration's two settings, neither of them the PEE solve's defaults** (it was three until
   2026-08-19 — see below). Measured, with their numbers in
-  `notes/informalSavings_numericalDeviations.md` rather than restated here: `interpKind='cubic'` (item 14 —
+  `notes/informalSavings_numericalDeviations.md` rather than restated here: `interpKind='cubic'` (item 13 —
   at `'linear'` the calibration does **not converge at all** away from `ρ=1`; `'pchip'` is better in
   principle but 1400× slower in `RegularGridInterpolator`); and `nι=ns=45` set explicitly before
   `calibrate` (items 12+17; `test_peeCRRA.py`/`test_peePath.py` assert their spacing tolerances against the
@@ -360,7 +360,7 @@ print Greek). Run them individually, or through `python/runTests.py` (`--all` to
   `ρ ∈ {0.98,…,1.02}` predicted `β=1.211956, ω=2.641327` at `ρ=1` by extrapolation onto their own gap, and
   the patched anchor landed on that to 1.2e-5/4.1e-5 where the previous one missed by −1.03e-3/+3.88e-3.
   The earlier `1.5e-11` was the solver converging *precisely* onto a jittering answer — see
-  `notes/informalSavings_logCrraBoundary.md`. That fine grid has not been re-run on the current target;
+  `notes/informalSavings_resolvedIssues.md`. That fine grid has not been re-run on the current target;
   the anchor's standing now rests on `test_calibration.py`'s cold solve and the sweep agreeing to 1e-6.
   CRRA at `ρ=1.02`, warm-started from that, converges to `1e-12` — but **only on a refined inner grid**,
   see Conventions. Away from `ρ=1` it additionally needs `interpKind='cubic'`.
@@ -431,7 +431,7 @@ here, since this module has a second state:
 `results/calibration/instances/`. The 2026-08-24 sweep over `ρ ∈ [0.5, 2.0]` at the current settings
 (`smoothKnots=4` and `interpKind='cubic'` on both solvers, `nι=ns=45`, scipy's default outer step — see
 Conventions), and **on the capital-output target** `KY0 = 3.2313` that replaced the savings rate that day
-(`notes/argentina_savingsTargetAudit.md`; log in `rhoGrid_sweep_2026-08-24_KYtarget.log`).
+(`notes/argentina_calibrationTarget.md`; log in `rhoGrid_sweep_2026-08-24_KYtarget.log`).
 
 - **16 of 16 points solved, first attempt, no step-halving.** `KY` = 3.2313 to 1.6e-10 and `τ` = 0.125 to
   3.6e-10 at every point; `residual` ≤ 1.6e-10, `nRoots=1` everywhere. ≈2 h total (430–560 s/point on
@@ -442,7 +442,7 @@ Conventions), and **on the capital-output target** `KY0 = 3.2313` that replaced 
 - **`β` crosses 1 between `ρ=0.8` and `ρ=0.9`** (1.086 and 0.921), against `ρ≈1.15` on the savings-rate
   target. The whole curve is ≈0.65× its old self at every `ρ`, so the retarget shrank the `β>1` region
   without removing it: `ρ<0.85` still calibrates to a 30-year discount factor above 1. That is a result
-  about the low-EIS end, not a numerical problem — `notes/argentina_betaCalibration.md`.
+  about the low-EIS end, not a numerical problem — `notes/argentina_calibrationTarget.md`.
 - **`verifyResidual` degrades down the low-`ρ` tail**: ~6e-6 at `ρ=1`, 1.0e-4 at `ρ=0.8`, 4.9e-4 at
   `ρ=0.6`, 1.2e-3 at `ρ=0.5`. Those bottom two rows are converged on their own 45×45 grid but **not
   resolved** on the 60×60 verification grid, and should be read as indicative. Refining the low-`ρ` tail
@@ -461,7 +461,7 @@ smoother/grid-rule fixes, failed at `ρ=0.7`), both `informalSavings_rhoGrid_fix
 are comparable to the current series or to each other.
 
 `ρ=0.7`'s failure and its fix (a library routine choosing an integer from the data inside a differentiated
-residual, not grid resolution): `notes/informalSavings_rho07_resolved.md`, transferable form
+residual, not grid resolution): `notes/informalSavings_resolvedIssues.md`, transferable form
 `notes/crossCuttingFindings.md` #5. The `ρ=1.0→1.1` `Δτ` dip: diagnosed and fixed 2026-08-20 by the
 anchor patch above — the two recursions themselves agree to **0.0016 τ-grid cells**, so it was never a
 solver-transition artifact.

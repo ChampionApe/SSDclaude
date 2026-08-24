@@ -194,7 +194,7 @@ any more.
 ## 2026-08-24 (cont.) — stage (0), and the Argentina arm re-run end to end
 
 The Argentina calibration target moved from the savings rate to the capital-output ratio
-(`notes/argentina_savingsTargetAudit.md`; the model-side story is in `python/InformalSavings/RESEARCH_LOG.md`).
+(`notes/argentina_calibrationTarget.md`; the model-side story is in `python/InformalSavings/RESEARCH_LOG.md`).
 Three things changed here, and then everything Argentina was rebuilt from scratch.
 
 **`dataTargets.py` is a new stage (0), and the only part of the pipeline that touches the network.** It

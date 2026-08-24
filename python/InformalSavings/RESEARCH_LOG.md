@@ -204,7 +204,7 @@ ended and was filled in from the code and tests on disk rather than from convers
 
 First full run of `calibrateRhoGrid.py --lo 0.5 --hi 2.0 --step 0.1`. 15 of 16 points solved cleanly;
 `ρ=0.7` did not, across six attempts and four strategies. **This entry's conclusion was wrong** — see
-2026-08-19 below and `notes/informalSavings_rho07_resolved.md`. Kept for the two parts that survive.
+2026-08-19 below and `notes/informalSavings_resolvedIssues.md`. Kept for the two parts that survive.
 
 *What the ladder actually ruled out.* The march's own extrapolation/carry/step-halving; a warm start
 interpolated from the solved `ρ=0.6`/`0.8` neighbours (residual there 4.4e-3, component-wise bracketed,
@@ -241,7 +241,7 @@ where a root fell inside a jump it **did not exist in the discretized problem** 
 reach it. The planned refinement would have cost half an hour and closed nothing.
 
 Full measurement chain, the two provocations that fail to find the bug, and the numbers:
-`notes/informalSavings_rho07_resolved.md`. Transferable form: `notes/crossCuttingFindings.md` #5, which is
+`notes/informalSavings_resolvedIssues.md`. Transferable form: `notes/crossCuttingFindings.md` #5, which is
 where the diagnostic recipe belongs — it is not specific to this model or to splines.
 
 **Two process notes worth keeping.**
@@ -481,7 +481,7 @@ The `Δτ` dip at `ρ=1.0→1.1` in the `t0+1` shock response (README Open, prev
 CRRA grid at `ρ=1.1` — would have found nothing: measured, that moves `Δτ` by ~6e-5, about 100× less than
 the displacement it was meant to explain.
 
-Full chain, all numbers, and the recommended one-line fix: `notes/informalSavings_logCrraBoundary.md`.
+Full chain, all numbers, and the recommended one-line fix: `notes/informalSavings_resolvedIssues.md`.
 Transferable form: `notes/crossCuttingFindings.md` #7. Headlines:
 
 **The two recursions agree; the settings do not.** Crossing `ρ=1` changes four things at once, because
@@ -543,7 +543,7 @@ on speed rather than accuracy.
 ## 2026-08-20 — the boundary fix applied; a one-row patch instead of a sweep; a backup that became a datapoint
 
 Follow-on from the previous entry, at the user's call to keep the fix. Diagnosis and all measurements are
-in `notes/informalSavings_logCrraBoundary.md`; this entry is what changed and what it cost.
+in `notes/informalSavings_resolvedIssues.md`; this entry is what changed and what it cost.
 
 **The fix, at the call site rather than the class default.** `calibrateRhoGrid.py` now passes `interpKind`
 to **both** solvers (`logGS = {'smoothKnots': knots, 'interpKind': args.interpKind}`); the grid sizes stay
@@ -711,7 +711,7 @@ the move. Both deleted files were untracked, so this is not recoverable from git
 ## 2026-08-24 — why the calibrated β exceeds 1, and the ranked fixes (analysis only)
 
 The ρ sweep's β is above 1 for every ρ below ~1.15 (1.21 at ρ = 1, 4.28 at ρ = 0.5). Diagnosis and a
-ranked list of fixes are in `notes/argentina_betaCalibration.md`; the short version: the 18.4% savings
+ranked list of fixes are in `notes/argentina_calibrationTarget.md`; the short version: the 18.4% savings
 datum is targeted as s/Y while the labor share is only 1−α = 0.57, so the young must save 32% of gross
 labor income — half again what the US arm delivers with β = 0.76 — and β is the only free parameter
 left to do it. The past calibration that targeted savings/labor-income imposed roughly half the saving
@@ -722,7 +722,7 @@ saving, not national-accounts gross saving. No recalibration was run.
 
 ## 2026-08-24 (cont.) — the audit ran, and it corrects the entry above
 
-`notes/argentina_savingsTargetAudit.md` carried out the previous entry's "then audit the datum" step,
+`notes/argentina_calibrationTarget.md` carried out the previous entry's "then audit the datum" step,
 and the outcome supersedes that entry's recommendation. What changed: the 18.4% is a World Bank gross
 national-accounts saving rate (nearest current-vintage series 17.0–17.7%; the exact number is
 unrecoverable post-rebasing, and the workbook records no series id); the household-vs-national sector

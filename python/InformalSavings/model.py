@@ -760,7 +760,7 @@ class ModelInformalSavings:
     #
     # Kept as an empty dict rather than deleted: the per-solver hook is the right place for the next such
     # finding, and an empty one records that the split between LOG and CRRA was retracted on evidence
-    # rather than never considered. deviations note items 11+13, now one finding.
+    # rather than never considered. deviations note item 11.
     _calOuterKwargs = {}
 
     @property

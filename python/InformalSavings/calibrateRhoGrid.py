@@ -159,7 +159,7 @@ def main():
     # four parameters were being fitted to one realisation of that jitter at one nι, displacing the rho=1
     # anchor off the curve its CRRA neighbours trace and putting a +10.6%-of-scale spike in the
     # universalisation response at t0+1. It was keyed on CRRA only because that is where
-    # crossCuttingFindings #4 surfaced -- see #7, and notes/informalSavings_logCrraBoundary.md for the
+    # crossCuttingFindings #4 surfaced -- see #7, and notes/informalSavings_resolvedIssues.md for the
     # full chain. nι stays per-solver: THAT one is a resolution choice and legitimately differs.
     logGS = {'smoothKnots': knots, 'interpKind': args.interpKind}
     gridSettings = {'CRRA': crraGS, 'LOG': dict(crraGS) if args.common else logGS}

@@ -201,7 +201,7 @@ check('the initial fixed point is a single crossing at the calibrated parameters
 # equilibrium) and x0 starting the outer root at the same point.
 #
 # NONE OF THESE SETTINGS ARE THE PEE SOLVE'S DEFAULTS, and which of them is load-bearing changed on
-# 2026-08-19 (deviations note item 17). Measured at rho=1.02, warm-started from the LOG parameters:
+# 2026-08-19 (deviations note item 12). Measured at rho=1.02, warm-started from the LOG parameters:
 #
 #   linear + adaptive smoother, scipy's default step   2.02e-07 in 32 nfev   (1881 s)
 #   linear + adaptive smoother, eps=1e-4               2.21e-07 in 30 nfev   (2028 s)

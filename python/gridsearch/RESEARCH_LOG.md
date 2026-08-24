@@ -150,7 +150,7 @@ its place in robustness at larger steps and in surviving a failed point, not in 
 anyone extends it.
 
 **`interp.py` — `kind`, and NaN.** The kind of interpolant turned out to be the binding constraint on
-`InformalSavings`' CRRA calibration, not the resolution of the grids (item 14 of
+`InformalSavings`' CRRA calibration, not the resolution of the grids (item 13 of
 `notes/informalSavings_numericalDeviations.md` has the numbers). Making non-linear kinds usable needed two
 distinct fixes, and the second is the interesting one:
 1. The spline methods refuse to be *constructed* over the NaN a policy surface carries at its infeasible
@@ -186,7 +186,7 @@ That is harmless for a one-off denoise and severe for this package's actual call
 solves whose output is finite-differenced with respect to a model parameter. In `InformalSavings` it put
 ~3.5e-6 discontinuities in a calibration residual with a 1e-6 tolerance, which made one `ρ` uncalibratable
 across six attempts and was misdiagnosed for a session as a grid-resolution limit. Full chain:
-`notes/informalSavings_rho07_resolved.md`; the transferable version is `notes/crossCuttingFindings.md` #5.
+`notes/informalSavings_resolvedIssues.md`; the transferable version is `notes/crossCuttingFindings.md` #5.
 
 **The change.** `knots=None` (default) keeps the adaptive spline and reproduces every prior result bitwise.
 `knots=m` fits `LSQUnivariateSpline` with interior knots at every `m`-th **valid** node. Two properties do

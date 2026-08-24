@@ -165,7 +165,7 @@ fixed structure, or have its structural choice pinned from outside. That rule is
 auto-tuning grids or bounds from a previous run — it makes the residual depend on solve history, which is
 the same defect wearing different clothes.
 
-Details in `notes/informalSavings_rho07_resolved.md`; `informalAnalytical` shares `gridsearch.interp` and
+Details in `notes/informalSavings_resolvedIssues.md`; `informalAnalytical` shares `gridsearch.interp` and
 has **not** been checked for this (same status as #4).
 
 **A Windows trap that cost two aborted runs.** Every module's test files and sweep scripts print Greek
@@ -217,7 +217,7 @@ would have looked like a result.
 
 `InformalSavings`' `ρ=1` boundary artifact turned out to be `crossCuttingFindings.md` #4 recurring in the
 one place nobody looked. Module detail is in `python/InformalSavings/RESEARCH_LOG.md`; the full chain is
-`notes/informalSavings_logCrraBoundary.md`. Recorded repo-wide as **#7** because two parts generalise.
+`notes/informalSavings_resolvedIssues.md`. Recorded repo-wide as **#7** because two parts generalise.
 
 **Keying a fix by configuration leaves the configurations that did not surface it.** `interpKind='cubic'`
 was adopted against #4 and keyed to `'CRRA'`, since that is where the calibration had stalled. LOG kept
@@ -243,7 +243,7 @@ dominated by the true slope in the parameter and looks like a large artifact; th
 ## 2026-08-20 — the boundary fix kept; scoping a re-run to what a change can reach
 
 `InformalSavings`' `ρ=1` interpolant fix was applied (module log and
-`notes/informalSavings_logCrraBoundary.md` have the substance). Two process points generalise, and a third
+`notes/informalSavings_resolvedIssues.md` have the substance). Two process points generalise, and a third
 finding was added to `notes/crossCuttingFindings.md`.
 
 **Repair a keying mistake where it was keyed.** The obvious fix — correct `policy.LOG._gridSettings`'
@@ -337,7 +337,7 @@ had been split into `writing/informalAnalytical/` but was still cited in `gridse
 
 **Four loose `.txt` run logs deleted from the repo root** (`jac_rho07_log.txt`, `rho07_attempt_log.txt`,
 `results_sweep_log*.txt`) — raw stdout from the superseded 2026-08-12 `ρ=0.7` failure, referenced by
-nothing, and fully superseded by `notes/informalSavings_rho07_resolved.md`. The root `README.md` now says
+nothing, and fully superseded by `notes/informalSavings_resolvedIssues.md`. The root `README.md` now says
 run logs belong in `results/`, which is where every log written since 2026-08-19 already goes.
 
 ## 2026-08-21 — a paper pipeline: three stages, and a normalisation mistaken for a result

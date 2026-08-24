@@ -117,7 +117,7 @@ def loadCalibrated(ρ, settings, commonSettings = False, pkldir = None):
     gets interpKind/smoothKnots and keeps its own nι=50. Solving a calibrated instance under a different
     interpolant than it was fitted under is precisely the defect this split exists to prevent -- it moved
     the rho=1 anchor off the curve its CRRA neighbours trace and put a +10.6%-of-scale spike in the
-    t0+1 response (notes/informalSavings_logCrraBoundary.md).
+    t0+1 response (notes/informalSavings_resolvedIssues.md).
 
     commonSettings: give LOG the grid sizes too. Diagnostic only -- use it when comparing the two
     recursions with every setting held identical, not for a run whose instances were calibrated without it.
