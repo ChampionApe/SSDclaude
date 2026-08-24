@@ -8,7 +8,8 @@ What is checked:
   2. LOG calibration converges and hits all four eq:calibration targets at db['t0'].
   3. Idempotent: re-running from the converged point does not move the parameters.
   4. Failure restores db (forced via tol=0).
-  5. beta is not capped at 1 -- guards against reintroducing that bound (see model.py's _calBounds).
+  5. no parameter is capped from above -- guards against reintroducing that bound (model.py's
+     _calBounds); beta must stay free to cross 1 in either direction.
   6. CRRA calibrates at one rho just below and one just above 1, landing near the LOG parameters. Only
      these two easy points -- rho ~ 0.5/~2 wait for a later, more robust test.
   7. Parameter rewriting mid-calibration does not interact with base.py's cacheParams().
@@ -43,8 +44,8 @@ check('calibrate returns the expected keys', set(cal) == {'pars', 'x', 'residual
 check('all four residuals below tol', np.max(np.abs(cal['residual'])) < 1e-8,
       '-> max|residual|={:.2e}'.format(np.max(np.abs(cal['residual']))))
 rep = cal['report']
-check('savings-rate target hit at t0', np.isclose(rep['sr'], m.db['s0'], rtol = 1e-7),
-      '-> sr={:.6f} vs target {:.6f}'.format(rep['sr'], m.db['s0']))
+check('capital-output target hit at t0', np.isclose(rep['KY'], m.db['KY0'], rtol = 1e-7),
+      '-> K/Y={:.6f} vs target {:.6f}'.format(rep['KY'], m.db['KY0']))
 check('tax-rate target hit at t0', np.isclose(rep['τ'], m.db['τ0'], rtol = 1e-7),
       '-> τ={:.6f} vs target {:.6f}'.format(rep['τ'], m.db['τ0']))
 check('eta0 self-consistent with Theta_h(t0)', np.isclose(rep['η0'], cal['pars']['η0'], rtol = 1e-7),
@@ -79,11 +80,12 @@ check('db parameters restored after a failed calibration',
       all(np.isclose(m.calibrationPars[k], before[k], rtol = 1e-14) for k in m._calPars))
 check('db auxiliary parameters (eps) restored too', np.allclose(m.db['eps'].values, epsBefore, rtol = 1e-14))
 
-# ---- 5. beta is not capped at 1 (the bound that made the first version stall)
-check('calibrated beta exceeds 1 on this calibration', cal['pars']['β'] > 1,
+# ---- 5. no parameter is capped from above (the bound that made the first version stall)
+# beta used to land above 1 here and that was the evidence; under the capital-output target it lands
+# below, so only the bound structure is asserted and beta's value is reported rather than required.
+check('no _calBounds entry caps a parameter from above (beta must be free to cross 1)',
+      all(np.isinf(u) for _, u in m._calBounds.values()),
       '-> β={:.5f}'.format(cal['pars']['β']))
-check('no _calBounds entry caps a parameter from above',
-      all(np.isinf(u) for _, u in m._calBounds.values()))
 
 # ---- 6. CRRA either side of rho=1, fully warm-started from the *calibrated* LOG model.
 # Warm start means both halves: _calSetPars installs LOG's converged (β,ω,η0,X0) into the fresh instance's

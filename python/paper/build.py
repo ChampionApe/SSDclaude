@@ -54,6 +54,13 @@ OUTPUTS = {
     'US_taxOverview':         ('figure', figuresUS.usTaxOverview,    'Figs/US_taxOverview.pdf'),
     'USX_taxOverview':        ('figure', lambda: figuresUS.usTaxOverview(commonX = True),
                                'Figs/USX_taxOverview.pdf'),
+    # --- Endogenous system characteristics (app:ESC) ---
+    'US_ESC_Calibration':     ('table', tablesUS.escCalibrationTable, 'Tables/US_ESC_Calibration.tex'),
+    'US_ESC_Ageing':          ('table', tablesUS.escAgeing,           'Tables/US_ESC_Ageing.tex'),
+    'US_ESC_IncomeDistr':     ('table', tablesUS.escIncomeDistr,      'Tables/US_ESC_IncomeDistr.tex'),
+    'US_ESC_Leisure':         ('table', tablesUS.escLeisure,          'Tables/US_ESC_Leisure.tex'),
+    'US_ESC_Voting':          ('table', tablesUS.escVoting,           'Tables/US_ESC_Voting.tex'),
+    'US_ESC_FrenchAll':       ('table', tablesUS.escFrenchAll,        'Tables/US_ESC_FrenchAll.tex'),
 }
 
 

@@ -15,6 +15,7 @@ CALIBDIR  = os.path.join(RESULTS, 'calibration')
 INSTDIR   = os.path.join(CALIBDIR, 'instances')
 SHOCKDIR  = os.path.join(RESULTS, 'shocks')
 SWEEPDIR  = os.path.join(RESULTS, 'sweeps')
+ESCDIR    = os.path.join(RESULTS, 'esc')
 PAPERDIR  = os.path.join(RESULTS, 'paper')          # stage (iii) writes here first
 PAPERTEX  = os.path.join(REPO, 'writing', 'Paper')  # ... then copies here unless --no-copy
 
@@ -83,6 +84,26 @@ US = {
     'extraSweeps': ('UKUS',),
     'gridSettings': {'interpKind': 'linear', 'smoothKnots': 4, 'n': 101, 'ns': 150,
                      'verify': 225, 'verifyN': 151},
+    # --- Endogenous system characteristics (app:ESC): the leaded choice of theta under a deadweight
+    # wedge on redistributive funds. 'spec' is the paper's headline cost formulation (the wedge scales
+    # the whole benefit; f cancels from the replacement-rate ratio, so theta* stays the data's own);
+    # 'altSpec' is the benefit-side variant, calibrated and run everywhere as robustness. phi is
+    # imposed, p is calibrated per (rho, spec) so the design IN FORCE in 2020 on a freely simulated path
+    # is the observed one (ModelESC.leadedDesignAtT0, results/esc/escCalibration{,CRRA}.csv). The
+    # counterfactual tables report at t0: every scenario is a new equilibrium path whose political choice
+    # binds from the first period, so 2020's design is an outcome and already carries the response.
+    # (The superseded convention -- an unanticipated 2020 reform with the design pinned through 2020 --
+    # had to report t0+1; results/esc/preNewPath/ holds those csvs.)
+    'esc': {
+        'spec':      'scale',
+        'altSpec':   'flat',
+        'phi':       0.5,
+        'ρTable':    [0.5, 1.0, 2.0],
+        # escExperiments.csv scenario keys -> the labels the appendix tables print.
+        'scenarios': {'acute': 'Acute ageing', 'frIncome': 'Income distribution',
+                      'frLeisure': 'Leisure preferences', 'frVoting': 'Voting',
+                      'frAll': 'All French characteristics'},
+    },
 }
 
 # Which sweep csv belongs to which country and calibration variant. The US is calibrated on its own

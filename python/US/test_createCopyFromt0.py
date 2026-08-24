@@ -1,4 +1,9 @@
-r""" createCopyFromt0 on the US model -- the machinery every shock experiment runs on.
+r""" createCopyFromt0 on the US model.
+
+No longer what the counterfactual tables run on -- shocks.py builds new equilibrium paths over the full
+horizon (shocks.shockedCopy) since 2026-08-24. Still live and still worth pinning: thetaStakes.py uses it
+for the marginal-stake decomposition, where an unanticipated local perturbation is the right object, and
+the other two model modules' shock scripts are built on it.
 
 Run:  .venv\Scripts\python.exe python\US\test_createCopyFromt0.py
 

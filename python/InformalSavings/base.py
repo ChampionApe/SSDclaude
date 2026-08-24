@@ -594,9 +594,21 @@ class Base:
     # calibrationη0/X0 read z_0^η/z_0^x (db['zη0']/db['zx0']) but NOT db['η0']/db['X0']: they compute the
     # *implied* η0/X0 that model.py's calibration loop compares against the current ones.
     def savingsRate(self, s, s_, h, t = None):
-        """ Eq (calibration): s_t / ((s_{t-1}/ν_t)^α h_t^{1-α}). s, s_=s_{t-1}, h explicit. """
+        """ Eq (calibration:sr): s_t / ((s_{t-1}/ν_t)^α h_t^{1-α}). s, s_=s_{t-1}, h explicit.
+        Reported, not targeted -- capitalOutputRatio identifies β (see it). """
         α = self.get('α', t)
         return s / ((s_/self.get('ν', t))**α * h**(1-α))
+
+    def capitalOutputRatio(self, s_, h, t = None):
+        """ Eq (calibration:KY): K_t/Y_t in ANNUAL output units, = yearsPerPeriod·(K_t/h_t)^{1-α} with
+        K_t = s_{t-1}/ν_t. s_ = s_{t-1}, h = h_t.
+
+        The factor is not cosmetic: Y_t is one 30-year period's output, so K_t/Y_t is a *thirtieth* of the
+        capital-output ratio the data report and the two are not comparable without it. Equivalent to the
+        US arm's R_{t0} target by K/Y = yearsPerPeriod·α/R (Cobb-Douglas), which is why this target needs
+        no s_t: it prices the predetermined stock, not the flow into it. """
+        α = self.get('α', t)
+        return self.db['yearsPerPeriod'] * (s_/self.get('ν', t)/h)**(1-α)
 
     def calibrationη0(self, Θh, τ, t = None):
         """ Eq (calibration:eta0): η_0 implied by z_0^η/z_0^x at a given Θ_{h,t}, τ_t. """

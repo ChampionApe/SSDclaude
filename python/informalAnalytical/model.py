@@ -120,15 +120,25 @@ class ModelInformalAnalytical:
     def default0DParams(self):
         """ scalars. NOTE two names here collide (in spelling only) with unrelated timing concepts used
         throughout §3/§4 -- see README's "Timing convention":
-        - 's0' here is a *calibration target for the aggregate savings rate* (a ratio, e.g. 0.184 = 18.4%,
-          matched at db['t0'] below) -- NOT the `s0` function argument used throughout EE_LOG_solve/
+        - 's0' here is the *aggregate savings rate* at db['t0'] (a ratio, e.g. 0.184 = 18.4%). It was the
+          target that identified β until 2026-08-24 and is now REPORTED ONLY -- 'KY0' replaced it. It is
+          NOT the `s0` function argument used throughout EE_LOG_solve/
           EE_CRRA_solve/steadyState_*/policy.py (the *level* of savings at the pre-determined period before
           db['t'][0], i.e. docs' s_0).
         - 't0' here is the *index into db['t'] of the calibration baseline year* (e.g. 2010 in the real
           Argentina calibration; defaults to 2, an arbitrary early index) -- NOT self.B.tFirst (=db['t'][0],
           the model's first active/endogenous period, docs' t=1) and NOT the pre-determined period before
-          the horizon (docs' t=0). All three are genuinely different things. """
-        return {'τ0': .125, 'RR0': 0.678/0.803, 's0': 0.184, 'RRGroups': (1,2), 't0': 2}
+          the horizon (docs' t=0). All three are genuinely different things.
+
+        'KY0' is the capital-output ratio target (eq:calibration:KY), in ANNUAL output units, and
+        'yearsPerPeriod' is what puts it there -- the model period is 30 years (docs, model_calibration).
+        The default 3.2313 is Argentina's ratio in 2010 from Penn World Table 11.0 -- the calibration
+        year, where every other target in eq:calibration is also measured.
+        data/argentina_calibrationTargets.csv is the record and python/paper/dataTargets.py rebuilds it. It replaced the savings rate 's0' as the
+        target on 2026-08-24 -- notes/argentina_savingsTargetAudit.md for why; 's0' is now reported
+        only. """
+        return {'τ0': .125, 'RR0': 0.678/0.803, 's0': 0.184, 'KY0': 3.2313, 'yearsPerPeriod': 30,
+                'RRGroups': (1,2), 't0': 2}
 
     @property
     def default1Dparams(self):
@@ -694,17 +704,27 @@ class ModelInformalAnalytical:
         h, s, s_ = rep['h'].xs(t0), rep['s'].xs(t0), rep['s_'].xs(t0)
         Θh = self.B.ΘhFromH(h, s_, t0)
         η0 = self.B.calibrationη0(Θh, τ, t0)
-        return {'sr': self.B.savingsRate(s, s_, h, t0), 'τ': τ, 'Θh': Θh,
+        return {'KY': self.B.capitalOutputRatio(s_, h, t0), 'τ': τ, 'Θh': Θh,
+                'sr': self.B.savingsRate(s, s_, h, t0),
                 'η0': η0, 'X0': self.B.calibrationX0(η0, Θh, t0), 'PEE': out}
 
+    def _calResidual(self, report, pars):
+        """ eq:calibration's four targets as a residual on an already-evaluated calibration_report. One
+        entry per element of _calPars, same order.
+
+        KY enters relatively and τ as a level gap, so the two carry the same O(0.1) magnitude and the root
+        finder cannot trade accuracy in one for the other -- KY is O(3.6), so a level gap there would
+        swamp the tax target. η0/X0 are relative for the same reason.
+
+        Split out so a change of targets happens in exactly one place: `calibrate` re-forms the residual
+        at the converged point and the two must not be able to drift apart. """
+        return np.array([report['KY']/self.db['KY0'] - 1, report['τ'] - self.db['τ0'],
+                         report['η0']/pars['η0'] - 1, report['X0']/pars['X0'] - 1])
+
     def calibration_residual(self, x, preferences, solveKwargs = None):
-        """ eq:calibration as a residual on the unbounded vector. sr/τ enter as level gaps (same O(0.1)
-        magnitude); η0/X0 enter relatively (η0≈0.2, X0≈2.6 -- level gaps would let the root finder trade
-        accuracy in one for the other). """
+        """ eq:calibration as a residual on the unbounded vector -- one full PEE solve per evaluation. """
         pars = self._calFromX(x)
-        d = self.calibration_report(pars, preferences, solveKwargs)
-        return np.array([d['sr'] - self.db['s0'], d['τ'] - self.db['τ0'],
-                         d['η0']/pars['η0'] - 1, d['X0']/pars['X0'] - 1])
+        return self._calResidual(self.calibration_report(pars, preferences, solveKwargs), pars)
 
     def calibrate(self, preferences = None, x0 = None, tol = 1e-8, update = True,
                   solveKwargs = None, **kwargs):
@@ -724,8 +744,7 @@ class ModelInformalAnalytical:
             res = optimize.root(self.calibration_residual, x0, args = (preferences, solveKwargs), **kwargs)
             pars = self._calFromX(res.x)
             report = self.calibration_report(pars, preferences, solveKwargs)
-            residual = np.array([report['sr'] - self.db['s0'], report['τ'] - self.db['τ0'],
-                                 report['η0']/pars['η0'] - 1, report['X0']/pars['X0'] - 1])
+            residual = self._calResidual(report, pars)
             self._checkConverged(residual, tol = tol, name = 'calibrate', scipyRes = res)
         except Exception:
             self.db.clear() # self.B/BG/BT hold a reference to this dict, so restore in place

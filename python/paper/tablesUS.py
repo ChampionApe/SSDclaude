@@ -23,14 +23,17 @@ from tables import BANNER, LQ, RQ
 
 
 def _xwrap(name, src, caption, label, colspec, header, body, note = None):
-    """ One threeparttable around a tabularx, matching the hand-written US tables' layout. """
+    """ One threeparttable around a tabularx, matching the hand-written US tables' layout. `header` is a
+    list of cells for one row, or a pre-formatted string when a table needs more than one header row
+    (escCalibrationTable's grouped columns). """
     tn = ('\\begin{tablenotes}\n\\footnotesize\n' + note + '\n\\end{tablenotes}\n') if note else ''
+    head = header if isinstance(header, str) else ' & '.join(header)
     return (BANNER.format(name = name, src = src)
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
             + '\\caption{' + caption + '}\n\\label{' + label + '}\n'
             + '\\renewcommand{\\arraystretch}{1.25}\n'
             + '\\begin{tabularx}{.9\\textwidth}{' + colspec + '}\n\\toprule\n'
-            + ' & '.join(header) + ' \\\\\n\\midrule \n'
+            + head + ' \\\\\n\\midrule \n'
             + body + '\n\\bottomrule\n\\end{tabularx}\n' + tn
             + '\\end{threeparttable}\n\\end{table}\n')
 
@@ -80,10 +83,12 @@ def usAgeing():
     body = _shockRows(D.usShocks(), ρ,
                       [(r'Mild ageing\tnote{a}', 'Mild ageing'),
                        (r'Acute ageing\tnote{b}', 'Acute ageing')], 'Baseline')
-    note = (r'\item[a] The ' + LQ + 'mild ageing' + RQ + r' scenario refers to the case with $\nu_t$ set '
-            r'at $(1+\nu_t^{base})/2$ from ' + str(year0) + ' and onward.\n'
-            r'\item[b] The ' + LQ + 'acute ageing' + RQ + r' scenario refers to $\nu_t = 1$ from '
-            + str(year0) + ' and onward.')
+    note = (r'\item Each scenario is a separate equilibrium path: the demography holds throughout and '
+            r'the economy starts from its own steady state, so the capital stock brought into '
+            + str(year0) + r' is the counterfactual one rather than the baseline\textquotesingle s.' '\n'
+            r'\item[a] The ' + LQ + 'mild ageing' + RQ + r' scenario refers to the case with $\nu_t$ set '
+            r'at $(1+\nu_t^{base})/2$ throughout.' '\n'
+            r'\item[b] The ' + LQ + 'acute ageing' + RQ + r' scenario refers to $\nu_t = 1$ throughout.')
     return _xwrap('US_Ageing', 'results/shocks/US_shocks.csv',
                   'The effect of ageing in US -- {}'.format(year0),
                   'table:US:ageing', 'p{3cm}YYY', SHOCKHEAD, body, note)
@@ -95,18 +100,32 @@ def usOtherShocks():
 
     Full effect only, following the paper, which reports that the two effects are not informative apart
     for these three -- they work in the same direction and are quantitatively minor. The
-    economic-equilibrium rows ARE in results/shocks/US_shocks.csv if that judgement is revisited. """
+    economic-equilibrium rows ARE in results/shocks/US_shocks.csv if that judgement is revisited.
+
+    Two rows beyond the paper's original three: all three characteristics at once, and France's own
+    calibrated path. Together they say how far the observable characteristics take the US towards France
+    and how much is left for the political weight -- the comparison the new-path convention exists to
+    make (python/US/runShocksUS.franceReference). """
     ρ = C.US['ρBaseline']
     df = D.usShocks()
     rows = [' & '.join(['Baseline'] + _cells(D.usBaseline(df, ρ))) + r' \\']
     for lab in ('Income distribution', 'Leisure preferences', 'Voting'):
         rows.append(' & '.join([lab] + _cells(D.usShockRow(df, ρ, lab, 'full'))) + r' \\')
-    note = (r'\item $\rho = ' + C.num(ρ, 1) + r'$, full effect. Leisure preferences rescales every '
-            r'$X_i$ to France''s population-weighted mean $X$, which is a pure change of the hours '
+    rows.append(' & '.join(['All three'] + _cells(D.usShockRow(df, ρ, 'All French characteristics',
+                                                               'full'))) + r' \\[.5em]\hline\\[-.75em]')
+    rows.append(' & '.join(['France (own calibration)']
+                           + _cells(D.usShockRow(df, ρ, 'France (own calibration)', 'full'))) + r' \\')
+    note = (r'\item $\rho = ' + C.num(ρ, 1) + r'$, full effect. Each row is a separate equilibrium path: '
+            r'the borrowed characteristics hold throughout and the economy starts from its own steady '
+            r'state, so the row describes a country that has always had this mix rather than the US hit '
+            r'by a surprise in 2020. Leisure preferences rescales every '
+            r'$X_i$ to France\textquotesingle s population-weighted mean $X$, which is a pure change of the hours '
             r'unit, so the tax and savings rates stay exactly at baseline and only hours move. Income '
-            r'distribution replaces $\eta_i$ with France''s while holding $X_i$; $\theta$ is then '
+            r'distribution replaces $\eta_i$ with France\textquotesingle s while holding $X_i$; $\theta$ is then '
             r're-derived from the unchanged replacement-rate ratio and falls, so this row bundles a '
-            r'pension-design change with the inequality change (see python/US/shocks.py).')
+            r'pension-design change with the inequality change (see python/US/shocks.py). The last row '
+            r'is France\textquotesingle s own calibrated path, which carries its own $\omega$ as well as '
+            r'its own characteristics; its workweek is a calibration target, not a prediction.')
     return _xwrap('US_OtherShocks', 'results/shocks/US_shocks.csv',
                   'French income distribution, leisure preferences, and voting patterns in US',
                   'table:US:otherShocks', 'lYYY', SHOCKHEAD, '\n'.join(rows), note)
@@ -238,3 +257,136 @@ def frHouseholdHeterogeneity():
 
 def ukHouseholdHeterogeneity():
     return _householdHeterogeneity('UK', 'UK_householdheterogeneity', 'table:a_US:CalibUK')
+
+
+# ---------------------------------------------------------------------------------------------------
+# Endogenous system characteristics (app:ESC). All four experiment tables share one builder: rows
+# grouped by rho, four readings per group -- the endogenous-theta baseline, the counterfactual with
+# theta PINNED at its exogenous value, the counterfactual with theta CHOSEN, and (in the French tables)
+# France's own calibrated path as the endpoint. Reported at t0 (2020): every counterfactual is a new
+# equilibrium path whose political choice binds from the first period, so the design in force in 2020
+# is itself an outcome (python/US/runESC.py's shocks stage).
+# ---------------------------------------------------------------------------------------------------
+ESCHEAD = [r'\textbf{Scenario}', r'\textbf{CRRA} ($\rho$)', r'$\bm{\theta}$ \textbf{(2020)}',
+           r'\textbf{Tax rate}', r'\textbf{Savings rate}', r'\textbf{Avg. workweek}']
+
+
+def _escCells(r):
+    """ The design in force at t0 and the three t0 outcomes of one escExperiments row. """
+    return [C.num(r['θ_t0']), C.pct(r['τ_t0']), C.pct(r['sr_t0']), C.num(r['ww_t0'])]
+
+
+def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False):
+    df = D.escExperiments()
+    spec, ρs = C.US['esc']['spec'], C.US['esc']['ρTable']
+    mid = len(ρs)//2
+    readings = [('Baseline', 'baseline', False),
+                (r'Exogenous $\theta$', scenarioKey, True),
+                (r'Endogenous $\theta$', scenarioKey, False)]
+    if france:
+        readings.append(('France', 'France', True))
+    out = []
+    for lab, scen, pinned in readings:
+        for k, ρ in enumerate(ρs):
+            r = D.escRow(df, ρ, spec, scen, pinned)
+            out.append(' & '.join([lab if k == mid else '', C.num(ρ, 1)] + _escCells(r))
+                       + r' \\' + ('[.5em]\\hline\\\\[-.75em]' if k == len(ρs)-1 else ''))
+    note = (r'\item Deadweight-cost specification: the proportional cost $f(\theta)$ with $\phi = '
+            + C.num(C.US['esc']['phi'], 1) + r'$ and $p$ calibrated per $\rho$ '
+            r'(\cref{table:US_ESC:calibration}). Every counterfactual is a separate equilibrium path: '
+            r'the changed parameters hold throughout, the economy starts from its own steady state, and '
+            r'the political choice binds from the first period of the horizon, so the design in force in '
+            r'2020 is itself an outcome rather than an inherited datum. All rows are read at 2020. '
+            r'$\theta$ (2020) is the design in force there; in the exogenous rows it is the value the '
+            r'replacement-rate data imply under the changed characteristics. Each $\rho$ is separately '
+            r'calibrated and its workweek normalised against its own baseline.' + extraNote)
+    if france:
+        note += (r' The France row is not a counterfactual on the US model: France carries its own '
+                 r'characteristics \emph{and} its own calibrated $\omega$, so the distance between it '
+                 r'and the endogenous row is what the observable characteristics do not explain. Its '
+                 r"workweek is France's own calibration target, not a prediction.")
+    return _xwrap(name, 'results/esc/escExperiments.csv', caption, label, 'p{2.6cm}YYYYY',
+                  ESCHEAD, '\n'.join(out), note)
+
+
+def escAgeing():
+    r""" Table \ref{table:US_ESC:ageing}. """
+    return _escTable('US_ESC_Ageing', 'acute',
+                     'Endogenous design and ' + LQ + 'acute ageing' + RQ + ' in US',
+                     'table:US_ESC:ageing',
+                     r' The ' + LQ + 'acute ageing' + RQ + r' scenario sets $\nu_t = 1$ throughout, so '
+                     r'the counterfactual economy is one whose demography has always been stationary '
+                     r'rather than the US surprised by ageing in 2020.')
+
+
+def escIncomeDistr():
+    r""" Table \ref{table:US_ESC:incomeDistr}. """
+    return _escTable('US_ESC_IncomeDistr', 'frIncome',
+                     'Endogenous design and the French income distribution in US',
+                     'table:US_ESC:incomeDistr',
+                     r' In the exogenous rows $\theta$ is re-derived from the unchanged replacement-rate '
+                     r'ratio under the French $\eta_i$ (0.50 against the US 0.74), so that row bundles a '
+                     r'design change with the change in inequality; the endogenous rows let the '
+                     r'electorate choose instead.', france = True)
+
+
+def escLeisure():
+    r""" Table \ref{table:US_ESC:leisure}. """
+    return _escTable('US_ESC_Leisure', 'frLeisure',
+                     'Endogenous design and French leisure preferences in US',
+                     'table:US_ESC:leisure', france = True)
+
+
+def escVoting():
+    r""" Table \ref{table:US_ESC:voting}. """
+    return _escTable('US_ESC_Voting', 'frVoting',
+                     'Endogenous design and French voting patterns in US',
+                     'table:US_ESC:voting', france = True)
+
+
+def escFrenchAll():
+    r""" Table \ref{table:US_ESC:frenchAll}: all three French characteristics at once, against France.
+
+    The table the new-path convention is for. The single-characteristic tables ask what one borrowed
+    feature does; this one asks how far the observable characteristics take the US towards France, and
+    the France row says how much is left over for the political weight and the design. """
+    return _escTable('US_ESC_FrenchAll', 'frAll',
+                     'Endogenous design and all French characteristics in US',
+                     'table:US_ESC:frenchAll',
+                     r' The scenario replaces the US $\eta_i$, the level of $X_i$ and the voting weights '
+                     r'$\mu_i$ with France\textquotesingle s simultaneously.', france = True)
+
+
+def escCalibrationTable():
+    r""" Table \ref{table:US_ESC:calibration}: the calibrated cost parameter p per (rho, spec), with the
+    design theta* the electorate re-elects. Under the proportional cost f cancels from the
+    replacement-rate ratio, so theta* is the data's 0.738 at every rho; under the benefit-side variant
+    theta and p are jointly identified and theta* moves with rho. """
+    cal = D.escCalibration()
+    ρs = C.US['esc']['ρTable']
+    spec, alt = C.US['esc']['spec'], C.US['esc']['altSpec']
+    rows = []
+    for ρ in ρs:
+        cells = [C.num(ρ, 1)]
+        for s in (spec, alt):
+            if (ρ, s) not in cal:
+                raise D.MissingInput('escCalibration ({}, {})'.format(ρ, s))
+            r = cal[(ρ, s)]
+            cells += [C.num(float(r['p']), 3), C.num(float(r['θStar']), 3)]
+        rows.append(' & '.join(cells) + r' \\')
+    header = (' & \\multicolumn{2}{c}{\\textbf{Proportional cost}} & '
+              '\\multicolumn{2}{c}{\\textbf{Redistributive-only cost}} \\\\\n'
+              '\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\n'
+              + ' & '.join([r'\textbf{CRRA} ($\rho$)', '$p$', r'$\theta^{\ast}$',
+                            '$p$', r'$\theta^{\ast}$']))
+    note = (r'\item $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = ' + C.num(C.US['esc']['phi'], 1)
+            + r'$ imposed; $p$ is calibrated so the design \emph{in force} in 2020 --- on a path where the '
+            r'political choice binds from the first period --- is the observed one, '
+            r'with $(\beta, \omega)$ recalibrated at each trial value. Under the proportional cost the '
+            r"wedge cancels from the replacement-rate ratio, so $\theta^{\ast}$ is the data's own at "
+            r'every $\rho$; under the redistributive-only cost $\theta^{\ast}$ and $p$ are jointly '
+            r'identified. Without the cost the choice corners at $\theta = 0$ at every $\rho$.')
+    return _xwrap('US_ESC_Calibration', 'results/esc/escCalibration{,CRRA}.csv',
+                  'The calibrated cost of redistributive funds',
+                  'table:US_ESC:calibration', 'YYYYY', header, '\n'.join(rows), note)
+

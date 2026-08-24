@@ -76,7 +76,10 @@ check("the record's x is the unbounded image of the record's parameters",
 # point of the check is that the anchor lands where the README says it does. History: β=1.212188,
 # ω=2.638654 before the retuned grid rule (deviations item 16); β=1.211615, ω=2.636787 before smoothKnots
 # was keyed on LOG as well as CRRA, which moved it a further -0.057%/+0.32%; β=1.210923, ω=2.645212
-# before interpKind was too (2026-08-20).
+# before interpKind was too (2026-08-20); and beta=1.211968, omega=2.641368 while the calibration
+# targeted the savings rate, which the capital-output target replaced on 2026-08-24 -- that one is not a
+# solver-side move at all, it is a different moment, and it is the largest of them by two orders of
+# magnitude (-33%/-12%).
 #
 # That last move is the one with an independent check on it, and it is worth stating because no other
 # entry in this history has one: the four CRRA points of a fine grid rho in {0.98,...,1.02} predict
@@ -84,7 +87,7 @@ check("the record's x is the unbounded image of the record's parameters",
 # -1.03e-3/+3.88e-3; this one lands on it to 1.2e-5/4.1e-5. So the reference below is not merely "what the
 # solver currently returns" -- it is where four independent calibrations say the anchor belongs.
 check('the anchor reproduces the LOG calibration documented in the README',
-      np.isclose(anchor['β'], 1.211968, rtol = 1e-4) and np.isclose(anchor['ω'], 2.641368, rtol = 1e-4),
+      np.isclose(anchor['β'], 0.807610, rtol = 1e-4) and np.isclose(anchor['ω'], 2.327810, rtol = 1e-4),
       '-> β={:.6f}, ω={:.6f}'.format(anchor['β'], anchor['ω']))
 check('the inner grid actually used is recorded with the point',
       anchor['gridSettings']['nι'] == 50,
@@ -142,10 +145,10 @@ check('the march returns a history usable as a warm start for a later, finer swe
 for ρ, r in sorted(byRho.items()):
     check('rho={}: all four residuals below tol'.format(ρ), r['residual'] < 1e-6,
           '-> max|res|={:.2e} in {:.0f}s, nfev={}'.format(r['residual'], r['time'], r['nfev']))
-    check('rho={}: savings-rate and tax targets hit at t0'.format(ρ),
-          np.isclose(r['sr'], m2.db['s0'], rtol = 1e-5) and np.isclose(r['τ'], m2.db['τ0'], rtol = 1e-5),
-          '-> sr={:.6f} (target {:.6f}), τ={:.6f} (target {:.6f})'.format(
-              r['sr'], m2.db['s0'], r['τ'], m2.db['τ0']))
+    check('rho={}: capital-output and tax targets hit at t0'.format(ρ),
+          np.isclose(r['KY'], m2.db['KY0'], rtol = 1e-5) and np.isclose(r['τ'], m2.db['τ0'], rtol = 1e-5),
+          '-> K/Y={:.6f} (target {:.6f}), τ={:.6f} (target {:.6f})'.format(
+              r['KY'], m2.db['KY0'], r['τ'], m2.db['τ0']))
     check('rho={}: iota at t0 is a genuine savings ratio in (0,1)'.format(ρ), 0 < r['ι'] < 1,
           '-> ι={:.6f}'.format(r['ι']))
     check('rho={}: the initial fixed point is a single crossing'.format(ρ), r['nRoots'] == 1,

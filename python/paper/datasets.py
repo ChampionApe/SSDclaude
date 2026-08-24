@@ -222,3 +222,54 @@ def usSweep(country, commonX = False):
     """ One country's calibration sweep, deduplicated on rho keeping the last. """
     df = pd.read_csv(_need(C.usSweepCsv(country, commonX)))
     return df.drop_duplicates('ρ', keep = 'last').sort_values('ρ').reset_index(drop = True)
+
+
+# ---------------------------------------------------------------------------------------------------
+# Endogenous system characteristics (results/esc/)
+# ---------------------------------------------------------------------------------------------------
+def escCalibration():
+    """ The calibrated deadweight wedge, {(rho, spec): record} with p, thetaStar, beta, omega.
+
+    Two files because two solvers produced them: escCalibration.csv is the LOG case (rho = 1; also
+    carries the no-wedge row under spec 'none', keyed here as (1.0, 'none')), escCalibrationCRRA.csv the
+    CRRA rows with their own rho column. Only converged rows at config.US['esc']['phi'] are returned --
+    an unconverged calibration must surface as a missing key, not as a NaN cell. """
+    phi = C.US['esc']['phi']
+    out = {}
+    log = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCalibration.csv')))
+    for rec in log.to_dict('records'):
+        if rec['spec'] == 'none':
+            out[(1.0, 'none')] = rec
+        elif bool(rec['converged']) and np.isclose(float(rec['phi']), phi):
+            out[(1.0, rec['spec'])] = rec
+    crra = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCalibrationCRRA.csv')))
+    for rec in crra.to_dict('records'):
+        if bool(rec['converged']) and np.isclose(float(rec['phi']), phi):
+            out[(float(rec['ρ']), rec['spec'])] = rec
+    return out
+
+
+def escExperiments():
+    """ collectESCexperiments.py's merged long csv: one row per (rho, spec, scenario, reading), with the
+    design, tax, savings rate and workweek at t0 AND t0+1. `θpinned` True is the exogenous-theta reading
+    (design held at the shocked model's own exogenous value), False the endogenous one.
+
+    The t0 columns are what the tables read. Every scenario is a NEW EQUILIBRIUM PATH -- the shocked
+    parameters hold over the whole horizon and the political choice binds from the first period -- so
+    theta_{t0} is an equilibrium outcome and 2020 already carries the design response. (Under the
+    superseded copy-from-2020 convention it did not, and the tables read t0+1; results/esc/preNewPath/
+    holds those csvs.) The scenario 'France' is France's own calibrated path, not a shock on the US
+    model, and carries only the pinned reading. """
+    return pd.read_csv(_need(os.path.join(C.ESCDIR, 'escExperiments.csv')))
+
+
+def escRow(df, ρ, spec, scenario, pinned):
+    """ One (rho, spec, scenario, reading) row, raising rather than returning an empty frame -- same
+    contract as usShockRow. """
+    hit = df[np.isclose(df['ρ'], ρ) & (df['spec'] == spec) & (df['scenario'] == scenario)
+             & (df['θpinned'].astype(bool) == bool(pinned))
+             & np.isclose(df['phi'], C.US['esc']['phi'])]
+    if hit.empty:
+        raise MissingInput('{} (ρ={}, {}, pinned={}) in results/esc/escExperiments.csv'
+                           .format(scenario, ρ, spec, pinned))
+    return hit.iloc[-1]

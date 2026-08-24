@@ -259,6 +259,23 @@ needs re-testing.** Fix by deriving the bound from the model, not by retuning th
 moves the parameter value at which it reappears, and a test written against the new number would assert
 the wrong thing. The test to write asserts that the bound *tracks* the model quantity.
 
+**The same constant failed again, in the opposite direction, three days later.** (`US`, 2026-08-24.) The
+fix above was `min(0.75, 0.99·Γs_cap)` — the cap bounds it from above. But `Γs_cap` carries `θτ` in its
+denominator, so at **`θ = 0` it is infinite** and the `min` falls back to the bare 0.75, with nothing
+tying it to the model at all. That configuration had never been reached, because the `θ = 0`
+counterfactual ran on a copy seeded from the baseline's savings and so never called the steady state;
+when the counterfactuals became new equilibrium paths starting at their own steady state, it was reached
+immediately, and at `ρ = 2` the root sits *above* 0.75. The residual was negative at both ends and brentq
+reported a bracket error.
+
+Two lessons on top of the ones above. **A bound derived from the model is only derived where the
+derivation is finite** — check the degenerate limits of the expression you tie it to, because that is
+precisely where it silently reverts to the constant you were replacing. And **a change of experimental
+convention is a change of the input distribution to every solver downstream**: this bug was latent for as
+long as the old convention kept `θ = 0` away from the steady-state solver. The repair pattern that
+generalises: expand the bracket geometrically, and *only when the default has already failed to bracket*,
+so a repair can never alter a call that already worked.
+
 ## 8. A superseded file left beside the live ones is an input to anything that globs
 
 **General statement.** Backups, variants and dated copies kept in the same directory as the data they
@@ -373,20 +390,88 @@ endogenous-θ work found one.
 The leaded choice of θ is safe: `θ_{t+1}` does not appear in the date-`t-1` savings ratio, so maximising
 the objective over it on a grid is legitimate. The **permanent** choice is not: there θ enters through
 `θ_{t0}`, and a grid maximisation that recomputes the ratio at each candidate credits the electorate with
-internalising a state it takes as given. The two readings are not close — **θ = 0.773 pinned against 0.910
-moving**, at the same wedge — so this is a modelling error large enough to change conclusions, not a
-numerical nicety.
+internalising a state it takes as given. Savings made at `t0-1` are *sunk* when the vote happens at `t0` —
+a voter comparing two candidates does not face different savings under each. The two readings are not
+close — **θ = 0.775 pinned against 0.910 moving** at `p = 0.4` — so this is a modelling error large enough
+to change conclusions, not a numerical nicety. There is a second, independent tell that the moving reading
+is wrong: the ratio depends on `τ_{t0}` as well as `θ_{t0}`, while the τ it is paired with solves `z = 0`,
+which is *built* holding the ratio fixed. Letting it move for one instrument and not the other is not an
+equilibrium, and it takes the concentration result with it.
 
 The asymmetry is what makes it dangerous: the same objective function, maximised over a different argument,
 is correct in one case and wrong in the other. The leaded implementation established the pattern, and
 copying it to the permanent case would have carried the bug.
 
+### 11b. Pinning is one decision; *what value* to pin at is a second one
+
+The first version got the pinning right and the value wrong, and the two look like one question. The
+permanent choice was pinned at the **incumbent** design's ratio, on the stated grounds that this makes the
+experiment an unanticipated reform. But the experiment is not unanticipated: households arrive at `t0`
+knowing a design will be chosen, so the savings they made at `t0-1` were made against the design that
+*wins*. Rational expectations make the answer a fixed point,
+
+    θ* = argmax_θ W(θ ; siRatio(θ*)),
+
+not a single maximisation against the incumbent's ratio. `PermanentLOG.solveFixedPoint` iterates it from
+the incumbent, which is the seed rather than the answer.
+
+**What made this survive review for a session.** The two readings coincide *exactly* wherever the chosen
+design reproduces the incumbent one — and that is precisely the condition the wedge calibration targets.
+So every calibrated number was right, the calibrated `p` was and remains unchanged, and the error was
+invisible at every point anyone had looked at. It shows up only away from the calibration: 0.775 against
+0.773 at `p = 0.4`, 0.542 against 0.549 at `p = 0.25`. A convention that is a no-op at the calibration
+point and binds everywhere else will not be caught by a test written at the calibration point.
+
 **The habit.**
 - **Before grid-maximising an objective over an instrument, list the predetermined states the instrument
   appears in.** If the list is non-empty, pin them and pass them in explicitly — an argument, not a
   recomputation. `PermanentLOG.solve` takes `siRatio_` as a required argument for exactly this reason.
-- **A closed-form FOC hides the question; a grid maximisation exposes it.** Differentiating analytically
-  holds the state fixed automatically, because you simply do not differentiate it. Moving from a FOC to a
-  grid search silently changes what is being held constant, and that change has to be made deliberately.
-- **Report both readings once.** The gap is the measure of how much the convention matters; recording it
-  is cheaper than re-deriving it the next time someone asks.
+- **Then ask separately what the pinned value is.** Pinning answers "does the electorate internalise
+  this?"; the timing answers "what did the agents who set this state believe?". A predetermined state that
+  the *chosen* policy feeds back into makes the equilibrium a fixed point, and the seed is not the answer.
+- **A closed-form FOC hides both questions; a grid maximisation exposes them.** Differentiating
+  analytically holds the state fixed automatically, because you simply do not differentiate it. Moving
+  from a FOC to a grid search silently changes what is being held constant, and that change has to be made
+  deliberately.
+- **Test the convention away from the point where it is a no-op.** See #10: a check run where the two
+  readings must agree measures nothing.
+- **Report all readings once.** The gaps are the measure of how much the conventions matter; recording
+  them is cheaper than re-deriving them the next time someone asks.
+
+
+## 12. A calibration target has units on both sides, and only one side is in the code
+
+**Where it came from.** The Argentina calibration targeted a savings rate of 18.4% and returned a 30-year
+discount factor of 1.212. The model's period is 30 years with capital fully depreciating between periods,
+so `Y_t` is thirty years of output and `s_t` is the end-of-period capital *stock*: the moment
+`s_t/Y_t` is `K_{t+1}/Y_t`, a stock over a period's flow. The datum was an annual national-accounts
+saving flow — a different and larger object, because an annual gross flow also replaces the capital that
+depreciates *within* the window, which a one-purchase-per-period model does not have. The target asked
+for about half again the capital Argentina has, and β absorbed it.
+
+**Why it survived years of review.** Four things, and each is the generalisable part:
+
+- **The convention lived only in prose.** "A period is 30 years" appeared in the documentation and
+  nowhere in the code. Nothing in the model could contradict it, so no test could check it, and the
+  factor of 30 that separates the model's ratio from the data's had no home. It is now a parameter
+  (`yearsPerPeriod`) that the target equation carries explicitly.
+- **The neighbouring target was converted correctly.** Pension spending of 7.1% of GDP ÷ (1-α) = 0.125
+  is exactly right, which made the calibration look internally careful and drew attention away.
+- **Both readings were plausible numbers.** 18.4% is a believable saving rate; the 4.0 capital-output
+  ratio it implied is a believable capital-output ratio. Neither side announced itself as wrong. A
+  units error between two plausible quantities has no symptom except the parameter it lands in.
+- **The provenance was one sentence, in the paper, and wrong.** The workbook carried the bare number
+  with no series id, vintage or window; the paper described it as a "private savings rate ... relative
+  to GDP per capita", of which the sector, the denominator and the comparability were all incorrect.
+
+**What to do.** For every calibration target, record in the repo, beside the number: what the data
+series is, over what window, retrieved when, and **the units of both sides of the equation it is being
+matched to**. Where the datum is derived rather than typed — a mean, a ratio, a reading at a year — let
+a script derive it and write that record itself, and have it write the readings it did *not* adopt
+beside the one it did, so the next person sees the choice as well as the value
+(`python/paper/dataTargets.py`).
+
+**The tell, if you are looking for others.** A target whose model side is a ratio of two objects at
+*different time aggregations* — a stock over a flow, a per-period quantity over a per-year one — is
+where this hides. The check is cheap: convert the model's moment into the data's units by hand, once,
+and see whether the number you get is one anybody would have written down.

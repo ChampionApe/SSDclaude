@@ -66,6 +66,34 @@ EXPERIMENTS = {
         'outputs': lambda: [os.path.join(C.SHOCKDIR, 'US_shocks_pinTheta.csv')],
         'note':    'French income distribution with theta pinned',
     },
+    # --- Endogenous system characteristics (app:ESC). The counterfactuals on the LEADED-choice model
+    # at the calibrated wedge, each run twice (theta pinned at the calibrated design vs chosen), at
+    # every rho in config.US['esc']['ρTable']. Requires the wedge calibrations from stage (i)
+    # (runCalibrationUS.py's escMissing step). The CRRA legs are the expensive ones: each chosen-theta
+    # scenario is a path iteration of full equilibrium solves, ~4-6 min per (rho, spec, scenario).
+    'escShocks': {
+        'script':  'runESC.py',
+        'args':    ['--stage', 'shocks', '--spec', C.US['esc']['spec'], C.US['esc']['altSpec'],
+                    '--phi', str(C.US['esc']['phi'])],
+        'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocks.csv')],
+        'note':    'endogenous-theta counterfactuals, LOG (rho = 1)',
+    },
+    'escShocksCRRA': {
+        'script':  'runESCcrra.py',
+        'args':    (['--stage', 'shocks', '--rho']
+                    + [str(r) for r in C.US['esc']['ρTable'] if r != C.US['ρAnchor']]
+                    + ['--spec', C.US['esc']['spec'], C.US['esc']['altSpec'],
+                       '--phi', str(C.US['esc']['phi'])]),
+        'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksCRRA.csv')],
+        'note':    'endogenous-theta counterfactuals, CRRA (the other rho)',
+    },
+    # The merge stage (iii) reads. Listed last so a --force run rebuilds it after the two producers.
+    'escExperiments': {
+        'script':  'collectESCexperiments.py',
+        'args':    [],
+        'outputs': lambda: [os.path.join(C.ESCDIR, 'escExperiments.csv')],
+        'note':    'merge the LOG and CRRA legs into one long table',
+    },
 }
 
 

@@ -1,0 +1,44 @@
+PASS  _calPreferences selects LOG at rho=1
+PASS  _calPreferences selects CRRA once rho moves off 1  -> rho=1.30
+PASS  neither solver overrides scipy's outer FD step
+   (anchor calibrated in 19.8s)
+PASS  calibratePoint writes the parameter it was given into db
+PASS  calibratePoint returns a flat record carrying x and the four parameters
+PASS  the anchor used the LOG solver
+PASS  the anchor converged  -> max|res|=2.31e-10
+PASS  the record's x is the unbounded image of the record's parameters  -> β=0.80761, ω=2.32781, η0=0.32609, X0=0.41407
+PASS  the anchor reproduces the LOG calibration documented in the README  -> β=0.807610, ω=2.327810
+PASS  the inner grid actually used is recorded with the point  -> nι=50 (LOG keeps its own default, not the CRRA calibration grid)
+PASS  keyed gridSettings leave the solver that was not named at its defaults
+PASS  a flat gridSettings dict still applies to whichever solver runs
+PASS  the refined verification restores the working grid afterwards  -> nι=50
+PASS  the verification residual is recorded and finite  -> max|res| at 60x60 = 6.44e-06 (vs 2.31e-10 on its own grid)
+   rho=1.0   ok, 20s, nfev=25
+   rho=1.1   ok, 372s, nfev=12
+   rho=0.9   ok, 388s, nfev=12
+   (3-point march in 945.0s)
+PASS  every requested rho is calibrated  -> solved [0.9, 1.0, 1.1]
+PASS  the anchor is solved first and with LOG; the flanks with CRRA
+PASS  onPoint fired once per attempted point
+PASS  the march returns a history usable as a warm start for a later, finer sweep
+PASS  rho=0.9: all four residuals below tol  -> max|res|=1.60e-11 in 388s, nfev=12
+PASS  rho=0.9: capital-output and tax targets hit at t0  -> K/Y=3.231300 (target 3.231300), τ=0.125000 (target 0.125000)
+PASS  rho=0.9: iota at t0 is a genuine savings ratio in (0,1)  -> ι=0.363603
+PASS  rho=0.9: the initial fixed point is a single crossing  -> nRoots=1
+PASS  rho=0.9: the calibrated point survives inner-grid refinement  -> max|res| at 60x60 = 9.21e-06
+PASS  rho=1.0: all four residuals below tol  -> max|res|=1.86e-10 in 20s, nfev=25
+PASS  rho=1.0: capital-output and tax targets hit at t0  -> K/Y=3.231300 (target 3.231300), τ=0.125000 (target 0.125000)
+PASS  rho=1.0: iota at t0 is a genuine savings ratio in (0,1)  -> ι=0.364964
+PASS  rho=1.0: the initial fixed point is a single crossing  -> nRoots=1
+PASS  rho=1.0: the calibrated point survives inner-grid refinement  -> max|res| at 60x60 = 6.44e-06
+PASS  rho=1.1: all four residuals below tol  -> max|res|=1.82e-11 in 372s, nfev=12
+PASS  rho=1.1: capital-output and tax targets hit at t0  -> K/Y=3.231300 (target 3.231300), τ=0.125000 (target 0.125000)
+PASS  rho=1.1: iota at t0 is a genuine savings ratio in (0,1)  -> ι=0.366027
+PASS  rho=1.1: the initial fixed point is a single crossing  -> nRoots=1
+PASS  rho=1.1: the calibrated point survives inner-grid refinement  -> max|res| at 60x60 = 1.86e-05
+PASS  the calibrated parameters move with rho  -> β spread 26.99%, ω spread 18.46%, η0 spread 0.01%, X0 spread 0.10%
+PASS  beta is monotone in rho over this range (a smooth path is what extrapolation assumes)  -> β = 0.92110, 0.80761, 0.72532
+PASS  the warm-started march reaches the same calibrated point as a cold solve  -> β: cold 0.72532 vs warm 0.72532, ω: cold 2.15639 vs warm 2.15639, η0: cold 0.32611 vs warm 0.32611, X0: cold 0.41427 vs warm 0.41427
+PASS  the warm start costs no more residual evaluations than a cold one  -> nfev warm 12 (372s) vs cold 12 (417s)
+
+ALL PASS  (37 passed, 0 failed)

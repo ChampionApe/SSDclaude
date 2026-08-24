@@ -14,7 +14,14 @@ The leaded-choice objective at t (probabilistic voting, same weights as the tau 
 with υ_{1,t}^i = (1+β_i)ln(tilde-c_{1,t}^i) + β_i ln R_{t+1} (LOG) or (1+B_{t+1}^i)(tilde-c_{1,t}^i)^{1-1/ρ}/(1-1/ρ)
 (CRRA), and υ_{2,t}^i = ln c_{2,t}^i or (c_{2,t}^i)^{1-1/ρ}/(1-1/ρ) (docs model_PEE.tex). Every derivative
 is a finite difference of the model's own equilibrium objects across two solves with θ_{t+1} = θ1 ± δ on
-a createCopyFromt0(t0) seeded from the baseline state, in two readings (shocks.py's convention):
+a createCopyFromt0(t0) seeded from the baseline state, in two readings:
+
+    NOTE this is deliberately NOT shocks.py's convention any more. shocks.py now builds new equilibrium
+    paths (the change over the whole horizon, own steady state) because the counterfactual tables compare
+    countries. This file asks a different question -- what one electorate's marginal stake in the NEXT
+    period's design is, at the state it actually inherits -- and that stake is by construction local and
+    unanticipated: the savings entering t are sunk, and perturbing them along with θ would be measuring
+    a different derivative. The copy convention is the right one here and should stay.
 
     ee     tau held at the baseline path           -> the direct (economic-equilibrium) channels
     full   tau_{t+1}, ... re-optimised politically  -> adds the "size" channel, dτ_{t+1}/dθ_{t+1}

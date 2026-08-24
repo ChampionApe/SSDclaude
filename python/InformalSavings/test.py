@@ -34,7 +34,14 @@ pars = {'α': dfc['Capital income share'], 'ξ': dfc['Labor supply elasticity'],
         'zxj': (dfj['Hours'].values/(dfj['Hours'].values.mean())).astype(float), 
         'zηj': (dfj['Income'].values/(dfj['Income'].values.mean())).astype(float)}
 pars['h0'] = workweek / (7*12) # estimate of share of time spend on labor
-pars['s0'] = dfc['Savings rate']
+pars['s0'] = dfc['Savings rate']   # reported only; the target that identifies beta is KY0 below
+
+# The capital-output target does NOT live in the workbook: it is a window mean over an external series,
+# so python/paper/dataTargets.py derives it and this csv is the record (target, window, source, date).
+# The workbook's 'Savings rate' is what it superseded -- notes/argentina_savingsTargetAudit.md.
+TARGETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data',
+                       'argentina_calibrationTargets.csv')
+pars['KY0'] = float(pd.read_csv(TARGETS).set_index('target').loc['capitalOutputRatio', 'value'])
 
 
 

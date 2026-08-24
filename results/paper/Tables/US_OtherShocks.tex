@@ -12,14 +12,16 @@
 \textbf{Scenario} & \textbf{Tax rate} & \textbf{Savings rate} & \textbf{Avg. workweek} \\
 \midrule 
 Baseline & 14.43\% & 21.96\% & 39.39 \\
-Income distribution & 13.28\% & 22.75\% & 40.32 \\
-Leisure preferences & 14.43\% & 21.96\% & 35.10 \\
-Voting & 15.32\% & 21.51\% & 39.31 \\
+Income distribution & 13.28\% & 22.75\% & 40.47 \\
+Leisure preferences & 14.43\% & 21.96\% & 34.74 \\
+Voting & 15.32\% & 21.51\% & 39.19 \\
+All three & 14.30\% & 22.22\% & 35.49 \\[.5em]\hline\\[-.75em]
+France (own calibration) & 21.29\% & 19.19\% & 35.44 \\
 \bottomrule
 \end{tabularx}
 \begin{tablenotes}
 \footnotesize
-\item $\rho = 1.0$, full effect. Leisure preferences rescales every $X_i$ to Frances population-weighted mean $X$, which is a pure change of the hours unit, so the tax and savings rates stay exactly at baseline and only hours move. Income distribution replaces $\eta_i$ with Frances while holding $X_i$; $	heta$ is then re-derived from the unchanged replacement-rate ratio and falls, so this row bundles a pension-design change with the inequality change (see python/US/shocks.py).
+\item $\rho = 1.0$, full effect. Each row is a separate equilibrium path: the borrowed characteristics hold throughout and the economy starts from its own steady state, so the row describes a country that has always had this mix rather than the US hit by a surprise in 2020. Leisure preferences rescales every $X_i$ to France\textquotesingle s population-weighted mean $X$, which is a pure change of the hours unit, so the tax and savings rates stay exactly at baseline and only hours move. Income distribution replaces $\eta_i$ with France\textquotesingle s while holding $X_i$; $\theta$ is then re-derived from the unchanged replacement-rate ratio and falls, so this row bundles a pension-design change with the inequality change (see python/US/shocks.py). The last row is France\textquotesingle s own calibrated path, which carries its own $\omega$ as well as its own characteristics; its workweek is a calibration target, not a prediction.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

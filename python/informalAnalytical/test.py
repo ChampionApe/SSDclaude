@@ -34,12 +34,24 @@ pars = {'α': dfc['Capital income share'], 'ξ': dfc['Labor supply elasticity'],
         'zxj': (dfj['Hours'].values/(dfj['Hours'].values.mean())).astype(float), 
         'zηj': (dfj['Income'].values/(dfj['Income'].values.mean())).astype(float)}
 pars['h0'] = workweek / (7*12) # estimate of share of time spend on labor
-pars['s0'] = dfc['Savings rate']
+pars['s0'] = dfc['Savings rate']   # reported only; the target that identifies beta is KY0 below
+
+# The capital-output target does NOT live in the workbook: it is a window mean over an external series,
+# so python/paper/dataTargets.py derives it and this csv is the record (target, window, source, date).
+# The workbook's 'Savings rate' is what it superseded -- notes/argentina_savingsTargetAudit.md.
+TARGETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data',
+                       'argentina_calibrationTargets.csv')
+pars['KY0'] = float(pd.read_csv(TARGETS).set_index('target').loc['capitalOutputRatio', 'value'])
 
 
 
 # Initialize LOG model with some parameter values:
-pars.update({'ρ': 1, 'ω': 2, 'β': .6})
+# beta/omega here are the outer search's STARTING point, not calibrated values -- calibrate() overwrites
+# both. They have to be in the right neighbourhood: the residual is only piecewise smooth (see
+# num_calibration.tex), and from beta=0.6 -- the guess that suited the superseded savings-rate target --
+# the search walks into a region where the whole-path policy solve returns a NaN tau and the steady-state
+# brentq then fails at its own lower bracket. Every start in [0.7, 1.0] converges to the same root.
+pars.update({'ρ': 1, 'ω': 2.2, 'β': .85})
 mLOG = ModelInformalAnalytical(pars = pars, **kwargs)
 mLOG.db['dates'] = dates
 mLOG.db['workweek'] = workweek

@@ -2,12 +2,14 @@
 The calibration procedure is essentially nested fixed point procedure. In the inner part, we solve for the full politico-economic equilibrium path. The calibration target then proceeds to solve the following system of equations (repeated from the calibration subsection \ref{\refmodelsec:calibration}):
 \begin{subequations}\label{\refeq:calibration}
     \begin{align}
-        \hat{\text{sr}}_{t_0} &= \frac{s_{t_0}}{\left(s_{t_0-1}/\nu_{t_0}\right)^{\alpha} h_{t_0}^{1-\alpha}} \\ 
+        \widehat{K/Y}_{t_0} &= n_{\text{yr}}\frac{s_{t_0-1}/\nu_{t_0}}{\left(s_{t_0-1}/\nu_{t_0}\right)^{\alpha} h_{t_0}^{1-\alpha}} = n_{\text{yr}}\frac{\alpha}{R_{t_0}} \\ 
         \hat{\tau}_{t_0} &= \tau_{t_0} \\ 
         \hat{\eta}_{0} &= \frac{z_0^{\eta}}{z_0^x}\frac{(1-\alpha)(1-\tau_{t_0})}{\Theta_{h,t_0}^{\alpha}\left(\frac{1-\alpha}{\Gamma_{h,t_0}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}} \label{\refeq:calibration:eta0}\\
         \hat{X}_{0} &= \hat{\eta}_{0}\frac{\left(\frac{1-\alpha}{\Gamma_{h,t_0}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}}{\left(\Theta_{h,t_0}z_0^x\right)^{1/\xi}} \label{\refeq:calibration:X0}
     \end{align}
 \end{subequations}
-where the "hats" reflect exogenous targets and $t_0$ indicates a specific baseline year. In our main specification, we assume that $\beta_{t,j} = \beta$ is constant over time and across types. Similarly, we assume that most exogenous parameters do not change over time except for the ageing population reflected by $\nu_t$. Thus, our main calibration targets the four as follows: We adjust $\beta$ to target the savings rate, $\omega$ for the tax rate, $\eta_0, X_0$ to achieve the targets for informal income and labour. 
+where the "hats" reflect exogenous targets and $t_0$ indicates a specific baseline year. In our main specification, we assume that $\beta_{t,j} = \beta$ is constant over time and across types. Similarly, we assume that most exogenous parameters do not change over time except for the ageing population reflected by $\nu_t$. Thus, our main calibration targets the four as follows: We adjust $\beta$ to target the capital--output ratio, $\omega$ for the tax rate, $\eta_0, X_0$ to achieve the targets for informal income and labour.
+
+The first target carries the factor $n_{\text{yr}}=30$, the years in a model period, and that factor is its whole content: $Y_{t_0}$ is thirty years of output while $s_{t_0-1}/\nu_{t_0}$ is a stock, so the model's own $K_{t_0}/Y_{t_0}$ is a thirtieth of the capital--output ratio the data report. The savings rate $s_{t_0}/\left[\left(s_{t_0-1}/\nu_{t_0}\right)^{\alpha}h_{t_0}^{1-\alpha}\right]$ is reported but not targeted: with capital fully depreciating between periods it equals $K_{t_0+1}/Y_{t_0}$, a stock over a period's flow, and not the annual saving rate the national accounts measure. 
 
 The full calibration procedure proceeds as follows: In an inner loop, given a set of parameter values, we first update all auxiliary parameter definitions to make sure that parameters like $\kappa$ are up to date. Then, we resolve the entire PEE path. An outer loop searches the parameter space for $\beta, \omega, \eta_0, X_0$ to ensure that the system holds \eqref{\refeq:calibration}.

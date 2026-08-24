@@ -707,3 +707,73 @@ two independently written installation paths — the real content of the check, 
 file it ran against is gone. The three helpers the grid script had imported from it (`installTheta`,
 `atT0`, `buildGrid`) were inlined first; `installTheta` lost its now-meaningless `tracksEps` argument in
 the move. Both deleted files were untracked, so this is not recoverable from git.
+
+## 2026-08-24 — why the calibrated β exceeds 1, and the ranked fixes (analysis only)
+
+The ρ sweep's β is above 1 for every ρ below ~1.15 (1.21 at ρ = 1, 4.28 at ρ = 0.5). Diagnosis and a
+ranked list of fixes are in `notes/argentina_betaCalibration.md`; the short version: the 18.4% savings
+datum is targeted as s/Y while the labor share is only 1−α = 0.57, so the young must save 32% of gross
+labor income — half again what the US arm delivers with β = 0.76 — and β is the only free parameter
+left to do it. The past calibration that targeted savings/labor-income imposed roughly half the saving
+(s/Y ≈ 0.105) and that is the whole reason it produced β < 1. Recommended: re-target as s/(wh) behind
+a flag (consistent with the s/(wh) convention `shocks.srPaper` already uses for the paper's tables),
+then audit what the 18.4% actually measures — the model's s is the young cohort's net retirement
+saving, not national-accounts gross saving. No recalibration was run.
+
+## 2026-08-24 (cont.) — the audit ran, and it corrects the entry above
+
+`notes/argentina_savingsTargetAudit.md` carried out the previous entry's "then audit the datum" step,
+and the outcome supersedes that entry's recommendation. What changed: the 18.4% is a World Bank gross
+national-accounts saving rate (nearest current-vintage series 17.0–17.7%; the exact number is
+unrecoverable post-rebasing, and the workbook records no series id); the household-vs-national sector
+argument does NOT apply, because households own the whole capital stock here; and the re-denomination
+fix (target s/(wh)) is retired — the τ target was already converted into the model's denominator, so
+the denominators were consistent all along, and the s/(wh) reading implies a capital–output ratio below
+anything measured. The real defect is the TIME dimension: with 30-year periods and full depreciation
+the model's moment is `s_t/Y_t = K_{t+1}/Y_t`, a stock over 30 years of output, while the datum is an
+annual flow — a different and larger object. Revised recommendation: set the target so the implied
+capital–output ratio matches PWT (`s0 ≈ 0.15`), giving β = 0.81–0.97 at ρ = 1 with no new datum needed;
+β crosses 1 at K/Y ≈ 3.68, which is the US arm's own implied ratio.
+
+
+## 2026-08-24 (cont.) — the target moved, and everything downstream was re-run
+
+The previous entry's recommendation was implemented, with one change of reading. `db['KY0']` replaces
+`db['s0']` as the moment that identifies β, through a new `Base.capitalOutputRatio` (`eq:calibration:KY`)
+in both Argentina variants, and `yearsPerPeriod = 30` is now a model parameter rather than a convention
+living only in the documentation — that convention being exactly what the error turned on. The residual
+is formed once, in `_calResidual`, with K/Y relative and τ level (K/Y is O(3.2) against τ's O(0.125), so
+a level gap there would swamp the tax target); the savings rate is still computed and reported, because
+the paper's tables quote it.
+
+**The datum is the calibration year, not a window mean.** The audit measured against 1994-2007 (3.5752);
+the value adopted is 2010 alone, **3.2313**, on the grounds that every other target in eq:calibration —
+the tax rate, the replacement-rate ratio, the coverage share, the household survey — is measured at or
+around 2010, and Argentina's K/Y moves too much over the preceding decades (4.28 in 1990, 3.17 in 2007,
+mostly through the denominator) for an average to describe the same economy. It also matters for the
+question that opened all this: β crosses 1 at K/Y ≈ 3.64, so the 30-year mean (3.6606) would have left
+β at 1.0126 while 2010 gives 0.8076. `python/paper/dataTargets.py` derives both readings from PWT 11.0
+every run and names only one of them `capitalOutputRatio`; `--target` chooses which.
+
+**Full re-run, ~4 h of machine time**, all 16 ρ: sweep, universalisation (both readings), the
+economic-equilibrium-only decomposition, the (ε,θ) grid, the paper rebuild, and `runTests.py --all`.
+Results in this README's "Results" sections. The three findings worth keeping:
+
+1. **β crosses 1 between ρ=0.8 and ρ=0.9**, against ρ≈1.15 before. The whole curve is ≈0.65× its old
+   self at every ρ, so the retarget shrank the β>1 region rather than removing it — ρ<0.85 still
+   calibrates above 1. That is a statement about the low-EIS end, not about the target.
+2. **The ρ≈0.7 pocket is gone.** Under the savings-rate target ρ ∈ [0.7, 0.775] would not converge and
+   needed `diagnoseRho07.py`; here ρ=0.7 solves in 12 evaluations at a 4.5e-14 residual. Not separated
+   from the different β it lands on, so not claimed as a fix.
+3. **verifyResidual degrades down the low-ρ tail** — 6e-6 at ρ=1, 4.9e-4 at ρ=0.6, 1.2e-3 at ρ=0.5. The
+   bottom two rows are converged but not resolved and should be read as indicative. Open.
+
+Two test failures came out of the re-run, both stale references rather than defects. `test_calibrationGrid`
+pins the anchor's (β,ω) against the README and was updated, as its own comment prescribes. More
+interesting: `informalAnalytical/test_calibration.py` failed to converge *from its shipped starting
+guess* — β=0.6, tuned for the old target — walking into a region where the whole-path policy solve
+returns a NaN τ and the steady-state brentq then dies at its own lower bracket. From every start in
+[0.7, 1.0] it converges to the same root (β=0.84424, ω=2.19679), so the guess moved to 0.85 and the root
+is not in doubt. Worth recording as a limitation of that variant: its outer search has no globalization,
+so a start far from the root fails rather than converging slowly. The InformalSavings arm took the same
+change from the same guess without complaint.

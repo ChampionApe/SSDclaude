@@ -28,8 +28,9 @@ assumption). Code: `db['t']` defaults to `0,...,T-1`.
 | `t=1` (first active period) | `db['t'][0]` = `Base.tFirst` |
 | `t=T` (terminal period) | `db['t'][-1]` |
 
-Two db entries share names with the above by coincidence: `db['s0']` is a calibration target for the
-savings **rate**; `db['t0']` is the *index* of the calibration baseline year.
+Two db entries share names with the above by coincidence: `db['s0']` is the savings **rate** at the
+baseline year (reported; it identified `β` until 2026-08-24, when `db['KY0']`, the capital-output ratio,
+replaced it as the target); `db['t0']` is the *index* of the calibration baseline year.
 
 ## Files
 Every `test_*.py` is a standalone script: it prints one PASS/FAIL line per assertion and exits nonzero on
@@ -82,11 +83,17 @@ print Greek). Run them individually, or through `python/runTests.py` (`--all` to
   or it will silently return the old rows**. `--out` is relative to this directory (the script `chdir`s so
   `test.py` finds `data/`). Run `--help` for options; `--interpKind` defaults to `cubic` for the reason in
   Conventions; `--smoothKnots` now defaults to 4, with `0` the way back to the adaptive smoother.
+- `retargetCalibration.py` — β (and ω, η0, X0) as a function of ONE calibration target, holding
+  everything else (not a test). `--par KY0` by default; each point is a full calibration warm started
+  from the previous one, ~8 s per point at ρ=1. It is what makes the target's consequence legible rather
+  than asserted — `results/calibration/informalSavings_KYGrid.csv` is the β(K/Y) map behind the choice of
+  reading in `notes/argentina_savingsTargetAudit.md`. Loads a pickled instance and fills in any 0-D
+  parameter added since it was pickled, so it still runs against instances from before `KY0` existed.
 - `shockUniversal.py` — the unanticipated-universalisation experiment (not a test; docs `num_shock.tex`).
   Baseline solve → `stateAtT0` → `createCopyFromt0(t0)` → new `ε` → re-solve from that state. The default
   run is `--rule match --refType 1` (`b^0 = b^1`); `--rule flat` is `ε = 1-θ`, the non-contributive
   component only, which on this calibration falls on the *other* side of the status quo, so the two
-  bracket it rather than differing in degree (`ε`: 0.337 → 0.546 vs → 0.161, and every response flips
+  bracket it rather than differing in degree (`ε`: 0.305 → 0.546 vs → 0.161, and every response flips
   sign). Two things it must do that a bare `ε=` argument to `solvePEE_*` would not — rewrite `db['eps']`
   **and** `db['κ']` (the `κ` staleness under "Known limitations" below is live here, not latent), and
   rebuild `db['κ[t-1]']` at the copy's first period from the *new* `ε_{t0}`, since `_sliceDb` restricts
@@ -339,18 +346,22 @@ print Greek). Run them individually, or through `python/runTests.py` (`--all` to
   `Δρ=0.1` once the interpolants are `C¹`** — warm and cold both converge in 12 evaluations to identical
   parameters, so its value is robustness at larger steps and surviving a failure, not speed.
 - **Calibration** (§8): **done and verified** (`test_calibration.py`). At `smoothKnots=4` and
-  `interpKind='cubic'` LOG converges from `test.py`'s starting parameters in 25 evaluations / ~14 s to
-  `max|residual| = 1.0e-9`: **`β=1.211968, ω=2.641368, η0=0.325550, X0=0.408138`**. (History, since each
-  solver-side change moves this and the size of the move is the scale to read any of them at:
-  `β=1.212188, ω=2.638654` under the pre-2026-08-19 grid rule; `β=1.211615, ω=2.636787` after the retune
-  but with the anchor still on the adaptive smoother; `β=1.210923, ω=2.645212, η0=0.325559, X0=0.408241`
-  with pinned knots but the anchor still on **linear** interpolants, until 2026-08-20.
-  `test_calibrationGrid.py` pins the current pair.)
-  **This last move is the only one in that history with an independent check on it**, and it is the reason
-  the looser residual is not a regression: the four CRRA points of a fine grid `ρ ∈ {0.98,…,1.02}` predict
-  `β=1.211956, ω=2.641327` at `ρ=1` by extrapolation onto their own gap, and the current anchor lands on
-  that to 1.2e-5/4.1e-5 where the previous one missed by −1.03e-3/+3.88e-3. The old `1.5e-11` was the
-  solver converging *precisely* onto a jittering answer — see `notes/informalSavings_logCrraBoundary.md`.
+  `interpKind='cubic'` LOG converges from `test.py`'s starting parameters in 25 evaluations / ~26 s to
+  `max|residual| = 1.6e-10`: **`β=0.807610, ω=2.327810, η0=0.326087, X0=0.414067`**, on the
+  capital-output target `KY0=3.2313`. (History. The 2026-08-24 change of target is the largest move in it
+  by two orders of magnitude and is not a solver-side move at all — it is a different moment: under the
+  savings-rate target the anchor read `β=1.211968, ω=2.641368, η0=0.325550, X0=0.408138`. Before that,
+  and all under the old target: `β=1.212188, ω=2.638654` under the pre-2026-08-19 grid rule;
+  `β=1.211615, ω=2.636787` after the retune but with the anchor still on the adaptive smoother;
+  `β=1.210923, ω=2.645212` with pinned knots but the anchor still on **linear** interpolants, until
+  2026-08-20. `test_calibrationGrid.py` pins the current pair.)
+  **The 2026-08-20 interpolant move is the only entry in that history with an independent check on it**,
+  and it is the reason a looser residual there was not a regression: the four CRRA points of a fine grid
+  `ρ ∈ {0.98,…,1.02}` predicted `β=1.211956, ω=2.641327` at `ρ=1` by extrapolation onto their own gap, and
+  the patched anchor landed on that to 1.2e-5/4.1e-5 where the previous one missed by −1.03e-3/+3.88e-3.
+  The earlier `1.5e-11` was the solver converging *precisely* onto a jittering answer — see
+  `notes/informalSavings_logCrraBoundary.md`. That fine grid has not been re-run on the current target;
+  the anchor's standing now rests on `test_calibration.py`'s cold solve and the sweep agreeing to 1e-6.
   CRRA at `ρ=1.02`, warm-started from that, converges to `1e-12` — but **only on a refined inner grid**,
   see Conventions. Away from `ρ=1` it additionally needs `interpKind='cubic'`.
   `solvePEE_*` now also return `init` (§6's dict) so the calibration can watch its `nRoots`.
@@ -417,26 +428,33 @@ here, since this module has a second state:
 
 ## Results: the `ρ` sweep
 **Live file: `results/calibration/informalSavings_rhoGrid.csv`** + one pickled instance per point in
-`results/calibration/instances/`. The 2026-08-19 sweep over `ρ ∈ [0.5, 2.0]` at the current settings
+`results/calibration/instances/`. The 2026-08-24 sweep over `ρ ∈ [0.5, 2.0]` at the current settings
 (`smoothKnots=4` and `interpKind='cubic'` on both solvers, `nι=ns=45`, scipy's default outer step — see
-Conventions), with the `ρ=1` row patched 2026-08-20.
+Conventions), and **on the capital-output target** `KY0 = 3.2313` that replaced the savings rate that day
+(`notes/argentina_savingsTargetAudit.md`; log in `rhoGrid_sweep_2026-08-24_KYtarget.log`).
 
-- **16 of 16 points solved, first attempt, no step-halving** — including `ρ=0.7`, which took six failed
-  attempts across four strategies in the superseded 2026-08-12 sweep.
-- `residual` ≤ 3.1e-11, `verifyResidual` ≤ 1.5e-4, `nRoots=1` everywhere; ≈75 min total
-  (≈300 s/point on CRRA, 14 s at the LOG anchor).
-- `β`/`ω` move smoothly and monotonically (`β`: 4.28 at `ρ=0.5` → 0.65 at `ρ=2.0`); `η0`/`X0` stay
-  near-flat (0.3256±0.0001, 0.4082–0.4091), per §8.1. `occupancyι`/`occupancys` 78–88% / 62–71%,
-  confirming the retuned grid rule holds across the whole range and not only near `ρ=1`.
-- **The `ρ=1` row is the only one that changed on 2026-08-20.** It is the sole LOG point and had been
-  running on `interpKind='linear'`, which put the four parameters off the curve the CRRA points trace by
-  −0.083%/+0.144%/+9.3e-6/+1.02e-4. It now reads `β=1.211968, ω=2.641368, η0=0.325550, X0=0.408138`, with
-  `verifyResidual = 5.7e-6` where every prior LOG row carried `NaN`. Only the anchor was re-solved, and
-  that this was sufficient was verified rather than assumed (8 CRRA points re-solved both ways, identical
-  to 6 significant figures) — 30 s against ~2.5 h. `RESEARCH_LOG.md` 2026-08-20;
-  `notes/informalSavings_logCrraBoundary.md`.
+- **16 of 16 points solved, first attempt, no step-halving.** `KY` = 3.2313 to 1.6e-10 and `τ` = 0.125 to
+  3.6e-10 at every point; `residual` ≤ 1.6e-10, `nRoots=1` everywhere. ≈2 h total (430–560 s/point on
+  CRRA, 26 s at the LOG anchor) — the ~75 min quoted before predates `--verify`.
+- `β`/`ω` move smoothly and monotonically (`β`: 2.63 at `ρ=0.5` → 0.81 at `ρ=1` → 0.45 at `ρ=2.0`);
+  `η0`/`X0` stay near-flat (0.3260–0.3263, 0.4135–0.4160), per §8.1. `occupancyι`/`occupancys`
+  78–80% / 64–80%.
+- **`β` crosses 1 between `ρ=0.8` and `ρ=0.9`** (1.086 and 0.921), against `ρ≈1.15` on the savings-rate
+  target. The whole curve is ≈0.65× its old self at every `ρ`, so the retarget shrank the `β>1` region
+  without removing it: `ρ<0.85` still calibrates to a 30-year discount factor above 1. That is a result
+  about the low-EIS end, not a numerical problem — `notes/argentina_betaCalibration.md`.
+- **`verifyResidual` degrades down the low-`ρ` tail**: ~6e-6 at `ρ=1`, 1.0e-4 at `ρ=0.8`, 4.9e-4 at
+  `ρ=0.6`, 1.2e-3 at `ρ=0.5`. Those bottom two rows are converged on their own 45×45 grid but **not
+  resolved** on the 60×60 verification grid, and should be read as indicative. Refining the low-`ρ` tail
+  (a larger `nι`/`ns` there, or a coarser `ρ` grid with a finer inner one) is open.
+- **The `ρ≈0.7` pocket is gone.** Under the savings-rate target `ρ ∈ [0.7, 0.775]` would not converge and
+  needed its own diagnostic (`diagnoseRho07.py`); on this target `ρ=0.7` solves in 12 function
+  evaluations with a 4.5e-14 residual. Whether that is the target or the different `β` it lands on has
+  not been separated.
 
-**Superseded — read only `informalSavings_rhoGrid.csv`.** The 2026-08-12 sweep (predates the
+**Superseded — read only `informalSavings_rhoGrid.csv`.** Everything below the 2026-08-24 sweep was
+calibrated to the savings-rate target and is not comparable to it in any column. Also: the 2026-08-12
+sweep (predates the
 smoother/grid-rule fixes, failed at `ρ=0.7`), both `informalSavings_rhoGrid_fixedKnots*.csv` (predate the
 `occupancy*` columns; `_retuned`'s anchor was solved on the adaptive smoother), and
 `informalSavings_rhoGrid_preInterpFix.csv` + `instances_preInterpFix/` (the pre-2026-08-20 anchor). None
@@ -459,37 +477,41 @@ Open:
 
 ## Results: the universalisation shock
 LOG at `ρ=1`, CRRA elsewhere: `results/shocks/universal_match_rho{ρ}.csv` for the full `ρ ∈ [0.5, 2.0]`
-grid (16 points, 2026-08-19; `ρ=1` re-solved 2026-08-20 with the anchor patch, pre-fix row kept in
-`results/shocks/preInterpFix/`) plus `universal_flat_rho1.0000.csv` at the anchor only. Reform at `t0`;
-`ε` changes only, `θ` fixed. `b^0/b^{refType}` matches its target to ≤3.3e-16 at every `match` point,
-confirming `installEps`'s `db['κ']`/`db['κ[t-1]']` rewrite stayed consistent across the whole grid.
+grid (16 points, 2026-08-24, on the capital-output target) plus `universal_flat_rho1.0000.csv` at the
+anchor only. Reform at `t0`; `ε` changes only, `θ` fixed. `b^0/b^{refType}` matches its target to
+≤2.3e-16 at every `match` point, confirming `installEps`'s `db['κ']`/`db['κ[t-1]']` rewrite stayed
+consistent across the whole grid.
 
 **`match` (`b^0=b^1`), impact-period response relative to baseline** (`τ_0=0.125` throughout; the
-calibrated `ε` falls from 0.461 at `ρ=0.5` to 0.289 at `ρ=2.0`, while the universal target `ε^U=0.546` is
-near-flat in `ρ`):
+calibrated `ε` is 0.305 at `ρ=1`, and the universal target `ε^U=0.546` is near-flat in `ρ`):
 
 | `ρ` | `Δτ` | `Δs` | `Δι` | `Δc^{1,0}` | `Δc^{2,0}` |
 |---|---|---|---|---|---|
-| 0.5 | +1.06% | −0.07% | −2.51% | +1.48% | +7.09% |
-| 1.0 | +7.22% | −1.13% | −5.33% | +3.93% | +11.31% |
-| 1.3 | +7.75% | −1.14% | −5.88% | +4.32% | +11.92% |
-| 2.0 | +6.62% | −0.83% | −6.59% | +4.63% | +11.87% |
+| 0.5 | +3.12% | −0.54% | −4.73% | +2.33% | +8.34% |
+| 1.0 | +11.49% | −2.09% | −7.33% | +4.11% | +12.29% |
+| 1.3 | +12.10% | −2.06% | −7.94% | +4.30% | +12.65% |
+| 2.0 | +11.05% | −1.62% | −8.74% | +4.35% | +12.26% |
+
+Every response is **larger than on the superseded savings-rate target** — `Δτ` at `ρ=1` is +11.49%
+against +7.22% — and in the same direction. A less patient electorate (β 1.212 → 0.808) leans harder on
+the pension system when the informal block is brought into it.
 
 **`Δc^{1,0}` and `Δc^{2,0}` at `t0` are contaminated — do not quote them.** The `EE_report` proxy-state
 defect under Known limitations puts ~+5.5% of level into `c20`'s impact-period response, so the `Δc^{2,0}`
 column above is roughly half artifact. `Δτ`/`Δs`/`Δι` and every column from `t0+1` on are clean.
 
-`Δι` and the two consumption responses are monotone in `ρ` across the whole grid; `Δτ` and `Δs` are not —
-both rise from `ρ=0.5`, turn over around `ρ≈1.3`, and `Δτ` falls back to 6.62% by `ρ=2.0`. A `ρ=1`-only
-result could not show that hump, since `ρ=1` sits near the peak rather than on a monotone limb. **Not yet
-investigated mechanically.** At `t0+1` the same hump appears (peak ≈6.0% near `ρ≈1.4-1.5`); the small dip
-that used to sit at `ρ=1.0→1.1` was the anchor's interpolant and is gone (`5.157% → 5.488% → 5.722%` is
-now monotone). Plotted: `plotUniversalShock.py --series d_τ [--period 0|1]`.
+`Δι` is monotone in `ρ` across the whole grid; `Δτ` and `Δs` are not — both rise from `ρ=0.5`, turn over
+around `ρ≈1.3` (`Δs` at `ρ≈1.1`), and `Δτ` falls back to 11.05% by `ρ=2.0`. A `ρ=1`-only result could not
+show that hump, since `ρ=1` sits on the near side of the peak rather than on a monotone limb. **Not yet
+investigated mechanically.** The hump survived the change of target unmoved in location — it peaked at
+`ρ≈1.3` on the savings-rate target too — which is evidence it is a property of the recursion rather than
+of the calibration. At `t0+1` the same shape appears, peaking near `ρ≈1.5`. Plotted:
+`plotUniversalShock.py --series d_τ [--period 0|1]`.
 
 **The two readings bracket the status quo rather than differing in degree.** `match` (`b^0=b^1`) raises
-`ε` 0.337 → 0.546; `flat` (`ε=1-θ`, the non-contributive component only) cuts it to 0.161. Every response
-reverses sign: on impact `τ` `0.1250 → 0.1344` against `→ 0.1131`, `Δι` −5.3% against +3.8%, `Δs` −1.2%
-against +1.7%, `Δc^{1,0}` +4.0% against −3.4%. Either reading alone would have looked like a result.
+`ε` 0.305 → 0.546; `flat` (`ε=1-θ`, the non-contributive component only) cuts it to 0.161. Every response
+reverses sign: on impact `τ` `0.1250 → 0.1394` against `→ 0.1112`, `Δι` −7.3% against +3.3%, `Δs` −2.1%
+against +2.3%, `Δc^{1,0}` +4.1% against −2.5%. Either reading alone would have looked like a result.
 
 Two things worth knowing before reading more into it. `match` against `j=1` **is still a benefit rise**
 even though it equalises type 0 to the *lowest* formal type: the calibrated `ε` is
@@ -505,13 +527,15 @@ Both produced 2026-08-21 for `python/paper/`; see `RESEARCH_LOG.md` for that ses
 
 **Economic-equilibrium-only reform** (`shockEEOnly.py`): `results/shocks/eeOnly_match_rho{ρ}.csv`, all 16
 `ρ`, run with `--control`. Taxes held at the baseline path, `ε` at the universal value. At `ρ=1` the
-savings rate goes `18.400% → 18.532%` against the full effect's `→ 18.222%`: **the pure equilibrium effect
+savings rate goes `14.725% → 14.862%` against the full effect's `→ 14.446%`: **the pure equilibrium effect
 is positive and the full effect negative, at every `ρ` on the grid**, so the tax response is what turns
-the sign. Labour supply moves the same way in both, with the equilibrium part ≈1/3 of the total. Cheap
+the sign. That survived the 2026-08-24 change of target unchanged in sign and close to unchanged in size,
+which is the strongest single piece of evidence that the decomposition is a property of the model rather
+than of the calibration. Labour supply moves the same way in both, with the equilibrium part ≈1/3 of the total. Cheap
 enough (<1 min for the grid) to re-run whenever the baseline moves.
 
-**`(ε, θ)` grid** (`sweepEpsThetaGrid.py`): `results/sweeps/epsThetaGrid_rho1.0000.csv`, 27 `ε` × 14 `θ` =
-378 points at `ρ=1` with the calibrated parameters pinned, `nRoots == 1` everywhere. Level signs: `τ` ↑ in
+**`(ε, θ)` grid** (`sweepEpsThetaGrid.py`): `results/sweeps/epsThetaGrid_rho1.0000.csv`, 28 `ε` × 14 `θ` =
+392 points at `ρ=1` with the calibrated parameters pinned, `nRoots == 1` everywhere. Level signs: `τ` ↑ in
 `ε` and ↓ in `θ`; savings rate and hours the reverse; `ι` ↓ in both. Marginal effects shrink in `ε` for
 `τ`/savings/hours and grow in `θ` — **except `ι`, whose marginal effect in `ε` grows monotonically**,
 contradicting `Quant.tex`'s "in all cases" (a wording fix in the paper, not a code issue).

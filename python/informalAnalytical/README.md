@@ -12,7 +12,7 @@ Docs: time runs `t=1,...,T`; `t=0` is a pre-determined state taken as given (or 
 | `t=T` (terminal period) | `db['t'][-1]` (defaults to `T-1`) |
 | `t=1,...,T` (full horizon) | `db['t']` |
 
-Two db entries share names with the above by coincidence, not relation: `db['s0']` is a calibration target for the savings **rate**, unrelated to the `s0` savings-**level** argument; `db['t0']` is the *index* of the calibration baseline year, unrelated to `Base.tFirst`. Code comments saying "`t=0`"/"`t=T-1`" mean code's own `db['t']`-relative indexing (one less than the docs' for the same period) unless stated otherwise.
+Two db entries share names with the above by coincidence, not relation: `db['s0']` is the savings **rate** at the baseline year, unrelated to the `s0` savings-**level** argument (it identified `β` until 2026-08-24, when `db['KY0']` — the capital-output ratio — replaced it as the target; it is now reported only); `db['t0']` is the *index* of the calibration baseline year, unrelated to `Base.tFirst`. Code comments saying "`t=0`"/"`t=T-1`" mean code's own `db['t']`-relative indexing (one less than the docs' for the same period) unless stated otherwise.
 
 ## Files
 Every `test_*.py` is a standalone script: it prints one PASS/FAIL line per assertion and exits nonzero on
@@ -131,10 +131,26 @@ Both `LOG` and `CRRA` hold `self.GS`, a dict of named political problems, each `
 
 ## Calibration (`model.py` §8, docs §calibration/eq:calibration)
 Nested fixed point: `calibrate` root-finds `(β, ω, η0, X0)` (unbounded log/logit reparameterization,
-positivity only — β is **not** capped at 1, since `simpleβ` sets `βj=β·p_j`, the actual discount factor;
-the Argentina data needs `β≈1.18`) against four targets at `db['t0']` — savings rate, tax rate, and
-`η0`/`X0` self-consistency (`base.py`'s `savingsRate`/`calibrationη0`/`calibrationX0`, plus `ΘhFromH` to
-recover `Θ_{h,t0}` from a solved path regardless of LOG/CRRA/terminal origin). Each residual evaluation is
+positivity only — β is **not** capped at 1, since `simpleβ` sets `βj=β·p_j`, the actual discount factor,
+and this model's calibration has landed either side of 1 depending on the target) against four targets at
+`db['t0']` — **capital-output ratio**, tax rate, and `η0`/`X0` self-consistency (`base.py`'s
+`capitalOutputRatio`/`calibrationη0`/`calibrationX0`, plus `ΘhFromH` to recover `Θ_{h,t0}` from a solved
+path regardless of LOG/CRRA/terminal origin). The residual is formed once, in `_calResidual`: `K/Y`
+relative and `τ` level, since `K/Y ≈ 3.2` against `τ = 0.125`.
+
+**The target changed on 2026-08-24**: `db['KY0'] = 3.2313` (Argentina's 2010 capital-output ratio, PWT
+11.0 via `python/paper/dataTargets.py`) replaced the savings rate `db['s0'] = 0.184`, in this variant as
+in `InformalSavings`. `notes/argentina_savingsTargetAudit.md` is the argument; the savings rate is still
+computed and reported. This variant calibrates to `β = 0.844, ω = 2.197` at `ρ=1` — above `InformalSavings`'
+0.808, as it must be, since hand-to-mouth informal households leave the formal block to hold the whole
+capital stock.
+
+**`test.py`'s `β`/`ω` are a starting point, not a calibration**, and they had to move with the target: from
+`β=0.6` the outer search walks into a region where the whole-path policy solve returns a NaN `τ` and the
+steady-state `brentq` then fails at its own lower bracket. Every start in `[0.7, 1.0]` converges to the
+same root, so the guess is now `β=0.85, ω=2.2`. Worth knowing as a limitation of this variant: its outer
+search has no globalization, so a start far from the root fails outright rather than converging slowly —
+`InformalSavings` took the same change of target from the same `β=0.6` guess without complaint. Each residual evaluation is
 a full `solvePEE_LOG`/`solvePEE_CRRA` solve via `calibration_report`. `preferences` defaults to `'LOG'` iff
 `ρ=1`. On failure db is restored to its pre-call state (never left holding a trial point); `_calSetPars`'s
 db rewrites happen strictly outside any `cacheParams()` block, so the two don't interact.

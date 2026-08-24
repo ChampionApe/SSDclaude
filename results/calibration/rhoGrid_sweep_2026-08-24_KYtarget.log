@@ -1,0 +1,40 @@
+grid: 16 points, 0.5 to 2.0 step 0.1
+anchor rho=1.0, inner grid 45x45, verify at 60/75, smoothKnots=4, interpKind=cubic (both solvers), LOG grid own nι=50
+  rho=1.0    LOG  max|res|=1.56e-10  verify=6.44e-06  nfev=25  26s  β=0.80761 ω=2.32781 η0=0.32609 X0=0.41407
+  rho=1.1    CRRA max|res|=1.79e-11  verify=1.86e-05  nfev=12  527s  β=0.72532 ω=2.15639 η0=0.32611 X0=0.41427
+  rho=1.2    CRRA max|res|=5.91e-14  verify=2.51e-05  nfev=11  502s  β=0.66327 ω=2.02277 η0=0.32612 X0=0.41448
+  rho=1.3    CRRA max|res|=4.00e-13  verify=1.05e-05  nfev=11  511s  β=0.61500 ω=1.91608 η0=0.32614 X0=0.41469
+  rho=1.4    CRRA max|res|=2.74e-14  verify=1.17e-05  nfev=11  475s  β=0.57648 ω=1.82906 η0=0.32616 X0=0.41490
+  rho=1.5    CRRA max|res|=8.66e-14  verify=3.12e-05  nfev=11  427s  β=0.54510 ω=1.75695 η0=0.32618 X0=0.41510
+  rho=1.6    CRRA max|res|=2.31e-14  verify=2.66e-05  nfev=11  428s  β=0.51906 ω=1.69627 η0=0.32620 X0=0.41530
+  rho=1.7    CRRA max|res|=1.37e-13  verify=4.12e-05  nfev=11  440s  β=0.49717 ω=1.64463 η0=0.32621 X0=0.41549
+  rho=1.8    CRRA max|res|=5.54e-13  verify=2.72e-05  nfev=11  440s  β=0.47852 ω=1.60020 η0=0.32623 X0=0.41568
+  rho=1.9    CRRA max|res|=1.63e-13  verify=5.94e-05  nfev=11  501s  β=0.46243 ω=1.56157 η0=0.32625 X0=0.41586
+  rho=2.0    CRRA max|res|=4.16e-14  verify=6.08e-05  nfev=11  434s  β=0.44840 ω=1.52760 η0=0.32626 X0=0.41604
+  rho=0.9    CRRA max|res|=1.58e-11  verify=9.21e-06  nfev=12  473s  β=0.92110 ω=2.55450 η0=0.32607 X0=0.41387
+  rho=0.8    CRRA max|res|=1.22e-10  verify=1.02e-04  nfev=11  443s  β=1.08566 ω=2.86631 η0=0.32605 X0=0.41370
+  rho=0.7    CRRA max|res|=4.46e-14  verify=1.77e-04  nfev=12  529s  β=1.34217 ω=3.31889 η0=0.32604 X0=0.41356
+  rho=0.6    CRRA max|res|=3.74e-12  verify=4.92e-04  nfev=12  527s  β=1.77874 ω=4.02287 η0=0.32604 X0=0.41350
+  rho=0.5    CRRA max|res|=9.55e-15  verify=1.24e-03  nfev=13  563s  β=2.63147 ω=5.24546 η0=0.32604 X0=0.41360
+
+16 solved (16 requested, 0 inserted by step-halving), 0 failed
+csv: results\calibration\informalSavings_rhoGrid.csv
+
+WARNING: 1 point(s) converged but did not survive grid refinement -- do not read these as results, re-run them with a larger --nι/--ns:
+  ρ     residual  verifyResidual
+0.5 9.547918e-15        0.001244
+calibrating 16 point(s): [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0]
+  C:\Users\sxj477\Documents\GitHub\SSDclaude\.venv\Scripts\python.exe C:\Users\sxj477\Documents\GitHub\SSDclaude\python\InformalSavings\calibrateRhoGrid.py --lo 0.5 --hi 2.0 --step 0.1 --anchor 1.0 --nι 45 --ns 45 --interpKind cubic --smoothKnots 4 --force
+
+written: results\paper\calibrationSummary.csv
+  ρ      1.0
+  β      0.8076100253617613
+  ω      2.327810299874641
+  η0     0.32608676975160256
+  X0     0.41406665142030663
+  ε      0.3050254617135535
+  θ      0.8390642747245566
+  KY     3.231300000503912
+  sr     0.1472465818561205
+  τ      0.1249999999554199
+  residual 1.5594703306476276e-10

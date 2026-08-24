@@ -52,7 +52,7 @@ PKLDIR = os.path.join(OUTDIR, 'instances')
 # Ordered so the csv reads as: what was solved, what it cost, whether to believe it, then the answer.
 COLUMNS = ['ρ', 'preferences', 'requested', 'residual', 'verifyResidual', 'occupancyι', 'occupancys',
            'β', 'ω', 'η0', 'X0',
-           'sr', 'τ', 'ι', 'nRoots', 'nfev', 'time', 'nι', 'ns', 'nτ', 'x0', 'x1', 'x2', 'x3',
+           'KY', 'sr', 'τ', 'ι', 'nRoots', 'nfev', 'time', 'nι', 'ns', 'nτ', 'x0', 'x1', 'x2', 'x3',
            'commit', 'timestamp']
 # occupancy* sit beside verifyResidual because they answer the same kind of question and neither is
 # asserted: verifyResidual catches a point that is converged but not resolved, occupancy catches a state
@@ -74,8 +74,8 @@ def toRow(rec, requested, commit):
     """ calibratePoint's record -> one flat csv row. """
     g = rec['gridSettings']
     row = {k: rec.get(k) for k in ('ρ', 'preferences', 'residual', 'verifyResidual', 'occupancyι',
-                                   'occupancys', 'β', 'ω', 'η0', 'X0', 'sr', 'τ', 'ι', 'nRoots', 'nfev',
-                                   'time')}
+                                   'occupancys', 'β', 'ω', 'η0', 'X0', 'KY', 'sr', 'τ', 'ι', 'nRoots',
+                                   'nfev', 'time')}
     row |= {'requested': requested, 'nι': g.get('nι'), 'ns': g.get('ns'), 'nτ': g.get('n'),
             'commit': commit, 'timestamp': datetime.datetime.now().isoformat(timespec = 'seconds')}
     row |= {f'x{i}': v for i, v in enumerate(rec['x'])}

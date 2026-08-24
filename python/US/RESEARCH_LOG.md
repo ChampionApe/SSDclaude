@@ -428,3 +428,188 @@ need something that penalises *Bismarckian* design instead.
   solvers here would make it a small addition).
 - The ρ-flip above deserves a decision: it makes the permanent specification unattractive as the paper's
   headline, since its qualitative result depends on a parameter the paper treats as robustness.
+
+## 2026-08-24 — the true leaded CRRA solution (`LeadedCRRA2D`), and the counterfactuals across ρ
+
+**The 2-D solver.** `policyESC.LeadedCRRA2D` computes the Markov object `LeadedCRRA`'s path iteration
+approximates: policy functions `τ_t(s_{t-1}, θ_t)` and `θPolicy_t(s_{t-1}, θ_t)` by one direct backward
+pass — terminal condition plus recursion, no warm start, no convergence tolerance. Design decisions
+worth recording:
+
+- It **subclasses `policy.CRRA` and overrides exactly one method** (`stateApprox_t`, the continuation
+  evaluation) plus the assembly around it. The state fixed point, FOC assembly and selection are the
+  parent's own, so the two solvers cannot drift apart. The `θ_t` axis is not carried through the big
+  grid: `θ_t` enters only the current old's `dv2i` term, so the expensive numerical τ-derivatives are
+  computed once per period and only that one term is rebuilt per `θ_t` node.
+- **Pinning lives in the recursion, not the simulation.** Under CRRA `τ_t` responds to `θ_{t+1}`, so
+  periods where the design is history (t ≤ t0) must be solved with the candidate set collapsed to the
+  inherited design — the LOG habit of pinning only in `simulate()` would evaluate τ off the pinned
+  continuation. This is also what makes the pinned-everywhere recursion collapse exactly to the
+  exogenous-θ solver, which became check (b) in `test_escCRRA.py` (max|Δτ| < 5e-3 against
+  `solvePEE_CRRA`, testing everything except the choice layer against production code).
+- The planned warm start from the approximation was **not needed**: a direct recursion has no seed.
+  The approximation's role inverted — it is the cheap method being *certified*, not the certifier.
+
+**What the validation found (ρ = 2, calibrated wedge p = 0.0856, scale φ = 0.5).** The choice at t0 is
+0.743–0.746 across grid refinements vs the path iteration's 0.738; long-run design 0.79–0.81 vs 0.795;
+τ agrees to 2e-4 throughout. The W objective is flat enough near its maximum that *either* method pins
+the design only to ±0.01 — consistent with the stake decomposition's finding that the design stakes
+are second-order — and they agree within that band, so the path iteration is certified for the tables.
+The grid sensitivities are the useful surprise: the s-grid is immaterial (choice moves 4e-4 from
+ns=50→150; the choice is *nearly* state-independent in s even under CRRA), but the θ-STATE grid is not
+(7 nodes misplace the choice by 0.02, 13 suffice). Cost ~70 s/period at ns=150, ~12 s at ns=50 —
+cheaper per solve than one path iteration, but the path iteration is still cheaper inside shock loops
+because copies shorten the horizon. Documented in `writing/US/num_esc.tex` (alg:esc:crra2D).
+
+**Wedge calibrations at ρ = 0.5** (both specs, φ = 0.5, ~26/32 min): p = 0.9484 (scale, θ* = 0.7382),
+p = 1.4447 (flat, θ* = 0.6911). With ρ = 2's 0.0856/0.169 and LOG's 0.402/0.702 this completes a clean
+monotone picture: the wedge needed for an interior re-election of the observed design falls steeply in
+the EIS. Merged into `results/esc/escCalibrationCRRA.csv`.
+
+**Counterfactuals across ρ ∈ {0.5, 1, 2} × {scale, flat}** (acute ageing, French income distribution,
+leisure, voting, and income+voting): ρ = 1 was already on disk (`escShocks.csv`, 2026-08-23);
+the CRRA legs run via `runESCcrra.py --stage shocks` with the French scenarios newly wired in
+(`SHOCKS_ESC` + `runShocksUS.frenchData` at the same ρ under CRRA, cached per ρ). Each leg writes its
+own tagged `escShocksCRRA_exp*.csv` so concurrent runs cannot clobber one another (finding #8);
+`collectESCexperiments.py` merges everything into `results/esc/escExperiments.csv` and prints the
+per-spec pivots. Re-run the collector after any leg finishes — it is idempotent.
+
+At ρ = 1 the pattern worth flagging: under `scale` the French income distribution drives the *chosen*
+design to the θ = 1 corner (data-implied θ* is 0.495 — the electorate un-does the flattening entirely),
+French voting weights pull it down to 0.536, and the two together still corner at 1 — the design
+responds to inequality far more strongly than the cross-section does, now visible in the
+counterfactuals themselves and not only in the fig-1.1 trace.
+
+**Addendum (end of session): all legs finished.** 12/12 (ρ, spec) × scenario × reading combinations on
+disk; merged table `results/esc/escExperiments.csv`, findings written up in
+`notes/esc_experiments_acrossRho.md`. The cross-ρ headlines: acute ageing moves the chosen design
+Bismarckian at every EIS (+0.04 at ρ=0.5 to +0.08 at ρ=2, scale); the French income distribution
+corners the choice at θ=1 at *every* ρ under scale (data-implied θ* is 0.495) and erases most of the
+pinned reading's savings-rate gain; the French voting profile is the one experiment whose strength is
+sharply ρ-dependent (−0.07/−0.20/−0.46 across ρ), so the income+voting net effect flips from the θ=1
+corner at ρ≤1 to interior 0.69 at ρ=2 — whether "French characteristics" raise or lower the
+Bismarckian index is an EIS question. Leisure is a placebo at every ρ, as scale invariance requires.
+
+**Addendum (pipeline session, same day).** Three module-side changes made for the paper pipeline (the
+pipeline story itself is in `python/paper/RESEARCH_LOG.md`): (i) `runESC.mergeWrite`, used by both ESC
+drivers' calib/path/shocks writes, so a run over one `(ρ, spec)` no longer clobbers the rest of a
+shared csv — the defect behind this morning's tagged-file workaround; (ii) the tagged
+`escShocksCRRA_exp*` csvs consolidated into one canonical `escShocksCRRA.csv` (80-row merge with the
+pre-session mild/acute rows, deduped preferring the new runs; inputs preserved under
+`results/esc/superseded/`); (iii) `collectESCexperiments.py` now reads exactly
+`escShocks.csv` + `escShocksCRRA.csv` and is declared as the paper pipeline's `escExperiments` stage —
+its output is the only file stage (iii) reads for the four experiment tables.
+
+**Addendum 2 — the permanent-timing log entry `notes/todo_escPermanentTiming.md` item 3 asked for.**
+The 2026-08-23 entry below justified pinning `s_{t0-1,i}/s_{t0-1}` at the incumbent design as an
+"unanticipated permanent reform"; that justification is corrected here rather than by editing the dated
+entry. The vote at `t0` is anticipated, so the savings made at `t0-1` were made against the design that
+wins, and the equilibrium is the fixed point `θ* = argmax W(θ; siRatio(θ*))` — `solveFixedPoint`, now
+`solvePermanent`'s default, with the incumbent pinning kept as the diagnostic and seed. Pinning itself
+stays right (savings are sunk at the vote; a moving ratio breaks the concentration result); only the
+value pinned at was wrong, and it is a no-op exactly at the calibration point, which is why every
+calibrated `p` is common to both readings (0.375032266276 to 12 digits) and only counterfactuals
+separate them. Full story: `notes/crossCuttingFindings.md` #11/#11b, `writing/US/num_esc.tex`
+§ESC:permanent, root `RESEARCH_LOG.md` (cont. 2). Still open from that todo: `PermanentCRRA` has never
+been executed since its restructuring, and `results/esc/escPermanent{,CRRA}.csv` are the
+pre-timing-change vintage (`θPerm` there is the incumbent-pinned reading; the `converged`/
+`θPermIncumbent` columns are missing) — regenerate via `runESC.py --stage permanent` /
+`runESCcrra.py --stage permanent` before using any permanent-timing number.
+
+## 2026-08-24 — every US counterfactual becomes a new equilibrium path, read at 2020
+
+Decision, from the user: the US counterfactuals should not be unanticipated shocks. A row should describe
+a country that has *always* had its mix of characteristics — mostly US, partly France — so that it is
+commensurable with France's own calibrated path. That comparison is the point; a 2020 surprise is not
+comparable with an equilibrium. Applied to both arms, the exogenous-θ main-text tables and the
+endogenous-θ appendix, and the appendix tables now report at 2020 rather than 2050.
+
+**What replaced what.** `shocks.shockedCopy` (`deepcopy`, warm starts cleared) instead of
+`createCopyFromt0(t0)` seeded with `stateAtT0`; the changed parameters over the whole 1960–2200 horizon
+instead of from 2020 on; the economy's own steady state instead of the baseline's savings; the readout at
+`db['t0']` instead of the copy's renumbered position 0. `createCopyFromt0` itself stays — `thetaStakes.py`
+wants exactly the local unanticipated perturbation, and the other two modules build on it.
+
+**Measured before deciding, and it made the change cheap.** At ρ = 1 the convention moves the workweek
+column and nothing else: τ and the savings rate agree to every printed digit across all seven scenarios.
+Under LOG/Cobb-Douglas both are rate objects independent of the inherited capital stock, while the level
+of hours responds to the wage and so to `k_2020`. The main-text tables are ρ = 1, so their headline
+numbers did not move at all. This does not survive to CRRA and the ρ ∈ {0.5, 2} rows do move.
+
+**It also resolved a standing discrepancy.** The leisure row is a pure `rescaleX`, and the scale
+invariance requires `s_0` at the model's own steady state — which an unanticipated shock cannot have. It
+used to give 35.10 against the paper's 34.72; the new path gives 34.74. The remaining full-effect workweek
+gaps (up to ~2%) are still unattributed but are now known *not* to be the initial condition.
+
+**The wedge calibration had to move one period back with the reporting.** `θ_t` is a state chosen at
+`t-1`, so the design in force in 2020 is `θPolicy_1990`, not the choice made in 2020, and only the first
+is what a 2020 table reads. On the old target (`θPolicy_{t0}(θ*) = θ*`) the freely simulated path came
+back at **0.727** against the observed 0.738 — a 1.1pp miss in the baseline row of every comparison table.
+`calibrateWedge` now targets `ModelESC.leadedDesignAtT0` (LOG) / `leadedDesignAtT0_CRRA` (CRRA, the same
+13-candidate approximation relocated one slot). `p` moves 0.40220 → **0.40761** under `scale`, φ = 0.5,
+ρ = 1; τ and R still land on target (drifts 2e-10, 5e-4). Under LOG the retarget is free of any fixed
+point in the design's own history, because `prop:esc:separability` makes the policy state-free.
+
+**What the 2020 tables now say** (`scale`, φ = 0.5, ρ = 1; exogenous θ → endogenous θ): acute ageing
+0.738 → 0.778, mild 0.738 → 0.752, French voting 0.738 → 0.533, and the French income distribution — with
+everything containing it — goes to the **θ = 1 corner**. The corner is a result: under France's flatter
+distribution the electorate wants a fully Bismarckian system, which is where France's observed design
+sits. France's own path is carried as the endpoint row under `scale`; under `flat` it fails by
+construction, since that spec's joint `(θ, p)` inversion is not identified at `θ = 1`.
+
+**The comparison the whole change is for** (ρ = 1, full effect, exogenous θ):
+
+| | τ | savings rate | workweek | θ |
+|---|---|---|---|---|
+| US baseline | 14.43% | 21.96% | 39.39 | 0.738 |
+| + all three French characteristics | 14.30% | 22.22% | 35.49 | 0.495 |
+| France, own calibration | 21.29% | 19.19% | 35.44 | 1.000 |
+
+The characteristics reproduce France's workweek almost exactly and close essentially none of the 7pp tax
+gap. What is left over is France's own `ω` and its `θ = 1` design — a sharper statement than the previous
+tables could make, and the reason the France row and the `frAll` row were added.
+
+**One real bug fell out** (`model.steadyState_CRRA_bounds`, `notes/crossCuttingFindings.md` #7). With
+`s0` no longer seeded, `solvePEE_CRRA` calls `steadyStatePEE_CRRA`, which searches τ over all of `[l, u]`.
+At `θ = 0` — the θ = 0 counterfactual, now over the whole horizon — `ΓsCap` is infinite, so the
+`min(0.75, 0.99·ΓsCap)` bound reverted to the bare constant, and at ρ = 2 the root sits above it. The
+bound now expands geometrically, and only when the default has already failed to bracket, so it cannot
+change a call that worked. Latent for as long as the old convention kept θ = 0 away from that solver.
+
+Superseded results: `results/{shocks,esc}/preNewPath/`. Docs: `writing/US/num_esc.tex`
+§ESC:counterfactuals (new) and §ESC:calibration (retargeted).
+
+**Addendum — the CRRA re-run, and two defects it exposed.** All six wedge calibrations were recomputed
+under the new target. `p` rises by 1.5–2% uniformly: 0.9484 → **0.9648**, 0.4022 → **0.4076**, 0.0856 →
+**0.0901** under `scale` at ρ = 0.5, 1, 2, and 1.4447 → **1.4609**, 0.7022 → **0.7086**, 0.1692 →
+**0.1775** under `flat`. The design response at 2020 turns out **monotone in ρ**: acute ageing takes θ
+from 0.738 to 0.766 / 0.778 / 0.846, French voting drives it to 0.662 / 0.533 / 0.285, and the French
+income distribution corners at θ = 1 at every ρ. Same ordering as the calibrated cost itself — a higher
+elasticity strengthens the young's forward-looking stake, so the same characteristic change moves the
+political outcome further and less friction is needed to hold the choice off the corner.
+
+Two defects, both mine, both of the same kind — a registry or an interval that was correct only for the
+case it was written against:
+
+1. `shocks.shockedCopy` looked names up in `shocks.SHOCKS`, but `frBoth` lives only in
+   `runESC.SHOCKS_ESC`. The old CRRA code called `SHOCKS_ESC[name][1]` directly; routing it through the
+   new helper lost the registry and every `frBoth` row failed `KeyError` at ρ = 2. `shockedCopy` now
+   takes an optional `registry`. Backfilled. The LOG driver was never affected — it passes the apply
+   function in.
+2. `runESCcrra`'s `--bracket` defaulted to `[0.01, 0.6]`, tuned at ρ = 2, and the ρ = 0.5 root is near
+   1.0. Both specs reported "no sign change" — the scan doing exactly what `calibrateWedge`'s corner
+   guard is for, rather than returning an endpoint. Default widened to `[0.01, 3.0]`, `nScan` 10 → 14.
+   Worth noting the previous vintage of this csv had ρ = 0.5 rows, so someone had passed a wider bracket
+   by hand and the default had been wrong the whole time.
+
+The backfill gave a free check nothing was asserting: `frAll` and `frBoth` differ only by the leisure
+scale, which is a pure `rescaleX`, so they must agree on design and tax and differ only in hours. At
+ρ = 2 both give θ = 0.70676 and τ = 14.45%, with workweeks 36.04 and 40.47 — the scale invariance
+holding through the endogenous-θ layer under CRRA.
+
+Docs refreshed against the new runs: `writing/US/num_esc.tex` §The calibrated cost across ρ (all six
+`p`), §CRRA (the 2-D-vs-path comparison re-measured at p = 0.0901: 0.759 vs 0.761, pinned reproduction
+3.2e-5, drifts 3.2e-4/3.1e-4) and §scanned-not-bracketed (the interval must span every ρ). The
+grid-refinement study behind the ±0.01 flatness claim was NOT re-run — it is a property of the
+discretisation rather than of `p`, and both the tex and the README now say so instead of implying it was
+measured at the current wedge.

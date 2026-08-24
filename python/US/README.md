@@ -18,7 +18,10 @@ at all — it is what established that the leaded choice needs a wedge before an
 (`testEU.model('FR')`, `testEU.model('UK')`, `testEU.model('UK', grouping='US')`). Eight test suites, all
 fast (~55 s total), registered in `python/runTests.py`. Drivers: `calibrateRhoGrid.py` (US),
 `calibrateRhoGridEU.py` (FR/UK), `runShocksUS.py` (all counterfactuals), `runESC.py` / `runESCcrra.py`
-(endogenous `θ`).
+(endogenous `θ`), `collectESCexperiments.py` (merges the two ESC shock csvs into
+`results/esc/escExperiments.csv`, the file the paper pipeline reads). The ESC drivers **merge into
+their csvs rather than overwriting** (`runESC.mergeWrite`), so a run over one `(ρ, spec)` preserves the
+rest of the file — which is what lets `python/paper/` re-run exactly the missing combinations.
 
 ## The ρ sweep
 
@@ -319,16 +322,43 @@ rate drifts gently 0.1591 → 0.1485. Three checks fell out of running both vari
 .venv\Scripts\python.exe python\US\runShocksUS.py --family theta --rho 1
 ```
 
-Every experiment is an **unanticipated, permanent** change dated at the calibration year, run on
-`createCopyFromt0(t0)` seeded from the baseline's own state, and reported twice: **full effect** (τ
-re-optimised, `solvePEE_*`) and **economic-equilibrium effect** (τ held at the baseline path, `EE_*_solve`
-— no political problem, so seconds). Three families:
+Every experiment is a **new equilibrium path** (2026-08-24): the changed parameters hold over the whole
+1960–2200 horizon, the economy starts at its **own steady state** (`solvePEE_*`'s `s0` default), and the
+readout is at `db['t0']` = 2020. A row is a country that has *always* had this mix of characteristics —
+mostly US, partly France — not the US surprised in 2020. That is what makes the rows commensurable with
+France's own calibrated path, which the table now carries as its endpoint (`franceReference`).
+`shocks.shockedCopy` is the construction: `deepcopy` (not `createCopyFromt0`), warm starts cleared so
+experiments do not depend on run order.
+
+Each is reported twice: **full effect** (τ re-optimised, `solvePEE_*`) and **economic-equilibrium effect**
+(τ held at the baseline path, `EE_*_solve` — no political problem, so seconds; its `s0` is the shocked
+model's own steady state at the baseline's first-period tax, since there is no policy function to read a
+tax off). Three families plus the reference row:
 
 | Family | Scenarios |
 |---|---|
 | `theta` | `θ = 0`, `θ = 1` |
-| `ageing` | mild (`ν → (1+ν)/2` from 2020), acute (`ν → 1` from 2020) |
-| `french` | France's income distribution (`η`), leisure preferences (`X`), voting (`μ`) |
+| `ageing` | mild (`ν → (1+ν)/2` throughout), acute (`ν → 1` throughout) |
+| `french` | France's income distribution (`η`), leisure preferences (`X`), voting (`μ`), **all three at once** (`frAll`) |
+| — | **France, own calibration** (`franceReference`, `--noFrance` to skip) |
+
+**What the convention costs, measured at ρ = 1: the workweek column and nothing else.** τ and the savings
+rate come out identical to every printed digit under both conventions, on all seven scenarios. Under
+LOG/Cobb-Douglas both are rate objects independent of the inherited capital stock, while the *level* of
+hours responds to the wage and hence to `k_2020`. This does **not** survive to CRRA — τ responds to the
+state there, so the ρ ∈ {0.5, 2} rows do move. The superseded csvs are in `results/shocks/preNewPath/`.
+
+**The comparison the change is for** (ρ = 1, full effect):
+
+| | τ | savings rate | workweek | θ |
+|---|---|---|---|---|
+| US baseline | 14.43% | 21.96% | 39.39 | 0.738 |
+| + all three French characteristics | 14.30% | 22.22% | 35.49 | 0.495 |
+| France, own calibration | 21.29% | 19.19% | 35.44 | 1.000 |
+
+The characteristics reproduce France's workweek almost exactly and close essentially **none** of the 7pp
+tax gap; what is left over is France's own `ω` and its `θ = 1` corner. Note France's workweek cell is
+`ModelFR`'s calibration target, not a prediction — say so wherever it is printed.
 
 **Three reporting conventions, none of them arbitrary.**
 
@@ -338,9 +368,11 @@ re-optimised, `solvePEE_*`) and **economic-equilibrium effect** (τ held at the 
 - The **workweek is normalised against the baseline**, `workweek_data · h̄/h̄_base`, per ρ. Under vector `X`
   the level of `h̄` is not identified, so there is no expression that converts it — `h̄·84` is 31.54 at the
   baseline, not 39.39. Only the ratio is a result.
-- **A copy's `db['dates']` is stale, not absent** — it keeps the full original calendar against a shorter,
-  renumbered horizon, because `Index.union` drops the name so `_sliceDb` never sees it. Pinned in
-  `test_createCopyFromt0.py`; never label a copy's periods with it.
+- **Everything is read at `db['t0']`**, the calibration year's position in the full horizon (2 = 2020).
+  The new-path models keep the baseline's calendar, so `db['dates']` is valid on them — that was *not*
+  true of the `createCopyFromt0` copies these experiments used to run on, where `Index.union` drops the
+  name so `_sliceDb` never sliced it (still pinned in `test_createCopyFromt0.py`, since `thetaStakes.py`
+  and the other modules still use that machinery).
 
 **What the French counterfactuals mean, and why the obvious alternatives collapse.** Under vector `X` the
 eigenvector identification makes `y^η ∝ z^η`, and every aggregate uses `y^η` alone — so *"swap `z^η` and
@@ -359,12 +391,15 @@ is the default; `--pinTheta` runs the alternative.
 ### Validation against the paper (ρ = 1)
 
 **τ and the savings rate reproduce the paper exactly on all 14 rows** of `US_PensChars`, `US_Ageing` and
-`US_OtherShocks` — including the baseline (14.43% / 21.96% / 39.39). The workweek column matches on the
-ageing EE rows (39.84, 40.36) and differs by 0.4–2.5% on full-effect rows; since τ and sr are
-hours-unit-invariant and match everywhere, that gap is in how `h̄` was converted to a workweek, not in the
-equilibrium. Unattributed. For the leisure row specifically the cause *is* known: 34.74 is the pure-scale
-answer and 35.10 is what an inherited `s_{t0-1}` gives, and the scale invariance requires `s_0` at the
-model's own steady state, which an unanticipated shock cannot have.
+`US_OtherShocks` — including the baseline (14.43% / 21.96% / 39.39) — and the new-path convention leaves
+both untouched at ρ = 1, so that agreement is unchanged by the rewrite.
+
+**The workweek column improved, and the reason identifies what the old gap was.** The leisure row is the
+diagnostic case: the scale invariance requires `s_0` at the model's own steady state, which an
+unanticipated shock cannot have, so the pure-scale answer was unreachable under the old convention. It
+gave 35.10 against the paper's 34.72; the new path gives **34.74**. The remaining full-effect rows still
+differ from the paper by up to ~2%, and that residual is still unattributed — but it is now known not to
+be the initial condition.
 
 **A trap that cost a full run** (`notes/crossCuttingFindings.md` #9): `θ` is in `paramsFromFuncs`, so
 calling `updateAuxPars` after setting it re-derives it from the replacement-rate data and silently undoes
@@ -403,12 +438,75 @@ LOG the leaded choice has **no state at all** — `θPolicy_t` is constant acros
 `W_t = A(τ_t) + B(θ_{t+1})` in logs; and the choice is invariant to `s_{t-1}`. All three fail under CRRA,
 which is why `LeadedCRRA` solves the path and reports `stateSensitivity`.
 
-Two things about the permanent timing are worth knowing before using it. Its joint `(τ_{t0}, θ)` choice
+**The counterfactuals are new paths read at 2020, and the wedge target moved with them** (2026-08-24).
+`runESC.leadedNewPath` / `runESCcrra`'s shocks stage build the same object `shocks.shockedCopy` does — the
+change over the whole horizon, own steady state — and let the political choice bind from the first period
+(`solveLeaded(pinAtT0=False)`, `solveLeadedCRRA(pinAtT0=False)`), so `θ_2020` is an equilibrium outcome and
+the tables read t0 rather than t0+1.
+
+That forced the calibration target one period back. `θ_t` is a state chosen at `t-1`, so the design *in
+force* in 2020 is `θPolicy_1990`, not the choice made in 2020; `calibrateWedge` now targets the first
+(`ModelESC.leadedDesignAtT0` / `leadedDesignAtT0_CRRA`) so the baseline row sits on the observed 0.738. On
+the old target the free path came back at **0.727** — a 0.011 miss, small but enough to make every
+comparison in a 2020 table read against a number the model did not hit. `p` moves 0.4022 → **0.4076**
+under `scale`, φ = 0.5, ρ = 1 (0.7022 → 0.7086 under `flat`); τ and R still land on their targets
+(drifts 2e-10 and 5e-4). Under LOG the two objects coincide only if the policy function is time-invariant,
+which `ν_t` prevents; `leadedChoiceAtT0` is kept for the pinned reading and for the separability checks.
+Superseded csvs: `results/esc/preNewPath/`.
+
+**The CRRA driver's `--bracket` must span every ρ it is asked to run.** The required cost falls an order
+of magnitude across the sweep — `p` = 0.965 / 0.408 / 0.090 at ρ = 0.5 / 1 / 2 under `scale`, 1.461 /
+0.709 / 0.178 under `flat` — so the old default `[0.01, 0.6]`, chosen at ρ = 2, sits entirely *below* the
+root at ρ = 0.5 and the scan correctly reports no crossing instead of converging on its own endpoint.
+That default only ever worked because whoever ran ρ = 0.5 passed a wider bracket by hand. Now `[0.01, 3.0]`
+with `nScan` 14, which spans all three.
+
+**What the tables now show at 2020** (`scale`, φ = 0.5, ρ = 1, exogenous θ → endogenous θ): acute ageing
+0.738 → 0.778, mild 0.738 → 0.752, French voting 0.738 → 0.533, and the French income distribution — and
+every scenario containing it, `frBoth` and `frAll` — goes to the **θ = 1 corner**. That last one is a
+result, not a failure: under France's flatter distribution the electorate wants a fully Bismarckian
+system, which is where France's own observed design sits. France's own row (τ 21.29%, θ = 1) is carried
+beside them under `scale`; under `flat` it fails by construction, because that spec's joint `(θ, p)`
+inversion is not identified at `θ = 1` — the corner is reported, not worked around.
+
+**A bracket bug the convention exposed** (`model.steadyState_CRRA_bounds`). With `s0` no longer seeded
+from the baseline, `solvePEE_CRRA` calls `steadyStatePEE_CRRA`, which searches τ over the whole of
+`[l, u]`. At `θ = 0` — the `θ = 0` counterfactual, now over the whole horizon — `Base.ΓsCap` is infinite,
+so nothing tied the upper end of the `Γs` bracket to the model and the hard-coded 0.75 was simply too low
+at ρ = 2: the residual was negative at *both* ends and brentq raised a bracket error. The bound now
+expands geometrically, and only when the default bracket has already failed, so it cannot change a call
+that worked. `notes/crossCuttingFindings.md` #7.
+
+**The true CRRA solution** (2026-08-24): `LeadedCRRA2D` (`policyESC.py`) computes the honest Markov
+object the path iteration approximates — backward iteration over the 2-D state `(s_{t-1}, θ_t)` with
+2-D continuation policy interpolants (`Interp2D`), one direct backward pass, no warm start needed. It
+subclasses `policy.CRRA` and overrides only the continuation-evaluation step; pinned periods collapse
+the candidate grid to the inherited design *inside the recursion* (under CRRA `τ_t` responds to
+`θ_{t+1}`, so simulation-time pinning alone would be wrong — the LOG shortcut does not carry over).
+Wrappers: `ModelESC.solveLeaded2D` / `leadedChoiceAtT0_2D`. Validation (`test_escCRRA.py`, and
+`writing/US/num_esc.tex` §CRRA): pinned everywhere it reproduces the exogenous solver's tax path to
+3.2e-5; at ρ=2's calibrated wedge (p=0.0901) the choice at t0 is 0.759 vs the path iteration's 0.761 —
+a 0.002 gap — with τ still on target (drifts 3.2e-4 in τ, 3.1e-4 in R). The W objective is flat enough
+that either method pins the design only to ±0.01, and they agree well within that band, so the cheap
+path iteration is certified for the tables. Grid requirements measured, not guessed — and they are
+properties of the grids, not of `p`, so they carry across the recalibration: the `s` grid is immaterial
+(4e-4 from ns=50→150), the θ-*state* grid is not (7 nodes misplace the choice by 0.02; the default 13
+suffice). Cost: ~70 s/period at ns=150, ~12 s at ns=50.
+
+Three things about the permanent timing are worth knowing before using it. Its joint `(τ_{t0}, θ)` choice
 **concentrates** — `dW/dτ = 0` is the ordinary τ FOC at `θ_t = θ`, so the appendix's two-dimensional grid
-collapses to a one-dimensional search, and `τ*(θ) = τPolicy(θ)` is checked in `test_esc.py`. And
+collapses to a one-dimensional search, and `τ*(θ) = τPolicy(θ)` is checked in `test_esc.py`.
 `s_{t0-1,i}/s_{t0-1}` **must be pinned** while maximising: θ enters it there (through `θ_{t0}`) in a way it
-never does in the leaded problem, and letting it move gives 0.910 instead of 0.773. Only the *sequential*
-timing is still unimplemented.
+never does in the leaded problem, savings are sunk when the vote is taken, and letting it move gives 0.910
+instead of 0.775 (and would break the concentration result, since the ratio also depends on `τ_{t0}` while
+`z = 0` is built holding it fixed). And **what it is pinned at is the timing's answer, not the
+incumbent's**: the vote is anticipated, so the savings made at `t0-1` were made against the design that
+wins, and the equilibrium is the fixed point `θ* = argmax W(θ ; siRatio(θ*))` — `solveFixedPoint`, the
+default in `solvePermanent`. The incumbent pinning (an unanticipated reform) is kept as a diagnostic and is
+the seed. The two **coincide exactly wherever the choice reproduces the incumbent design**, which is what
+`calibrateWedge` targets, so every calibrated `p` is common to both and only the counterfactuals separate
+them: 0.775 vs 0.773 at p=0.4, 0.542 vs 0.549 at p=0.25. See `notes/crossCuttingFindings.md` #11/#11b.
+Only the *sequential* timing is still unimplemented.
 
 Open smaller items: the workweek column's full-effect gap against the paper (above), and the UK's `X_i`
 scale.

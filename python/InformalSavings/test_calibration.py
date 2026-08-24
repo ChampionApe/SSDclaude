@@ -73,6 +73,15 @@ srManual = s / ((s_/ν)**α * h**(1-α))
 check('savings rate == eq:calibration:sr rebuilt from the solved (s, s_, h)',
       np.isclose(rep['sr'], srManual, rtol = 1e-14),
       '-> {:.10f} vs {:.10f}'.format(rep['sr'], srManual))
+# The targeted moment. Rebuilt the long way -- through Y and the return -- rather than through
+# capitalOutputRatio's own (K/h)^(1-alpha) shortcut, so the test can see an error in that algebra. The
+# yearsPerPeriod factor is the whole point of the target: without it K/Y is a thirtieth of the data's.
+KYmanual = m.db['yearsPerPeriod'] * (s_/ν) / ((s_/ν)**α * h**(1-α))
+check('capital-output ratio == eq:calibration:KY rebuilt from K_t and Y_t',
+      np.isclose(rep['KY'], KYmanual, rtol = 1e-14),
+      '-> {:.10f} vs {:.10f}'.format(rep['KY'], KYmanual))
+check('capital-output ratio == yearsPerPeriod*alpha/R at t0 (the US arm target, rescaled)',
+      np.isclose(rep['KY'], m.db['yearsPerPeriod']*α/(α*(s_/ν)**(α-1)*h**(1-α)), rtol = 1e-13))
 check('Theta_h from ΘhFromH inverts Base.h exactly',
       np.isclose(m.B.h(rep['Θh'], s_, t0), h, rtol = 1e-13),
       '-> h {:.10f} vs {:.10f}'.format(float(m.B.h(rep['Θh'], s_, t0)), float(h)))
@@ -94,8 +103,8 @@ check('calibrate returns the expected keys', set(cal) == {'pars', 'x', 'residual
 check('all four residuals below tol', np.max(np.abs(cal['residual'])) < 1e-8,
       '-> max|residual|={:.2e}'.format(np.max(np.abs(cal['residual']))))
 calRep = cal['report']
-check('savings-rate target hit at t0', np.isclose(calRep['sr'], m.db['s0'], rtol = 1e-7),
-      '-> sr={:.6f} vs target {:.6f}'.format(calRep['sr'], m.db['s0']))
+check('capital-output target hit at t0', np.isclose(calRep['KY'], m.db['KY0'], rtol = 1e-7),
+      '-> K/Y={:.6f} vs target {:.6f}'.format(calRep['KY'], m.db['KY0']))
 check('tax-rate target hit at t0', np.isclose(calRep['τ'], m.db['τ0'], rtol = 1e-7),
       '-> τ={:.6f} vs target {:.6f}'.format(calRep['τ'], m.db['τ0']))
 check('eta0 self-consistent with Theta_h(t0)', np.isclose(calRep['η0'], cal['pars']['η0'], rtol = 1e-7),
@@ -105,8 +114,12 @@ check('X0 self-consistent with Theta_h(t0)', np.isclose(calRep['X0'], cal['pars'
 check('db holds the converged parameters afterwards',
       all(np.isclose(m.calibrationPars[k], cal['pars'][k], rtol = 1e-10) for k in m._calPars),
       '-> ' + ', '.join('{}={:.5f}'.format(k, cal['pars'][k]) for k in m._calPars))
-check('beta is not capped at 1 (the bound that would make the search stall on a constraint)',
-      cal['pars']['β'] > 1 and all(np.isinf(u) for _, u in m._calBounds.values()),
+# No _calPars entry may be bounded from above: the search has to be able to cross 1 in beta, in either
+# direction. It used to land above 1 on this calibration and that was taken as the evidence; under the
+# capital-output target it lands below, so only the bound structure is asserted -- beta's value is
+# reported, not required.
+check('no _calBounds entry caps a parameter from above (beta must be free to cross 1)',
+      all(np.isinf(u) for _, u in m._calBounds.values()),
       '-> β={:.5f}'.format(cal['pars']['β']))
 
 # ---- 4. the doc's step 2: state grids rebuilt at every residual evaluation ----------------------------

@@ -11,11 +11,13 @@ scripts. They share `config.py`, `results/`, and one stage (iii).
 
 | Stage | Argentina | US / France / UK | Writes | Cost (cold, ARG / US) |
 |---|---|---|---|---|
-| (i) calibration | `runCalibration.py` | `runCalibrationUS.py` | `results/calibration/`, `results/paper/*Summary.csv` | ~75 min / ~20 min |
+| (0) data targets | `dataTargets.py` | — | `data/argentina_*.csv` | seconds |
+| (i) calibration | `runCalibration.py` | `runCalibrationUS.py` | `results/calibration/`, `results/paper/*Summary.csv` | ~2 h / ~20 min |
 | (ii) experiments | `runShocks.py` | `runShocksUS.py` | `results/shocks/`, `results/sweeps/` | ~2.5 h / ~30 s |
 | (iii) build | `build.py` | `build.py` | `results/paper/{Tables,Figs}`, then `writing/Paper` | seconds |
 
 ```
+.venv\Scripts\python.exe python\paper\dataTargets.py
 .venv\Scripts\python.exe python\paper\runCalibration.py      .venv\Scripts\python.exe python\paper\runCalibrationUS.py
 .venv\Scripts\python.exe python\paper\runShocks.py           .venv\Scripts\python.exe python\paper\runShocksUS.py
 .venv\Scripts\python.exe python\paper\build.py
@@ -41,6 +43,14 @@ the settings the published numbers were produced at, so reproducing them is a ru
 archaeology. `config.py` is where a paper number's specification actually starts.
 
 ## Files
+- `dataTargets.py` — **stage (0), and the only part of the pipeline that touches the network.** Derives
+  Argentina's capital-output target from the Penn World Table (via FRED) and writes it to `data/`, not
+  `results/`: it is a calibration *input*, on the same footing as the workbook, and
+  `python/InformalSavings/test.py` reads it from there. It exists because that target is a reading of an
+  external series at a chosen year, not a number anyone typed — the derivation has to be reproducible.
+  Writes both the year and the window-mean reading every run and names only one of them
+  `capitalOutputRatio`; `--target` chooses which. Like every other stage it skips work whose output
+  exists, so a re-run costs nothing and the committed csv means no other stage ever needs the network.
 - `config.py` — paths, the `ARG` and `US` specifications (ρ grids, reform rule, grid settings), both
   calendars, and the unit conversions. Imports nothing from the model. Change a paper number here first.
 - `datasets.py` — the only module that knows the `results/` file layout and column names, for both arms.
@@ -68,9 +78,34 @@ archaeology. `config.py` is where a paper number's specification actually starts
 | `Tables/US_CRRA_{PensChars,Ageing,OtherShocks}.tex` | `US_shocks.csv`, ρ ∈ {0.5, 1, 2} |
 | `Figs/US_taxOverview.pdf` | `US_shocks.csv`, all ρ |
 | `Figs/USX_taxOverview.pdf` | `US_shocksCommonX.csv`, all ρ |
+| **Endogenous θ (app:ESC)** | |
+| `Tables/US_ESC_Calibration.tex` | `results/esc/escCalibration{,CRRA}.csv` |
+| `Tables/US_ESC_{Ageing,IncomeDistr,Leisure,Voting,FrenchAll}.tex` | `results/esc/escExperiments.csv`, ρ ∈ {0.5, 1, 2} |
 
-Not wired: everything under `writing/Paper/Appendix/EndogenousSystemCharacteristics.tex`, which needs
-endogenous `θ`.
+**The ESC leg runs through all three stages.** Stage (i) (`runCalibrationUS.py`) checks the wedge
+calibrations per (ρ, spec) at `config.US['esc']`'s φ and delegates the missing ones to
+`python/US/runESC.py` (LOG) / `runESCcrra.py` (CRRA) — expensive where missing (~25–30 min per CRRA
+combination). Stage (ii) (`runShocksUS.py`) declares the counterfactual runs (`escShocks`,
+`escShocksCRRA`) and the merge (`escExperiments`, via `python/US/collectESCexperiments.py`) whose csv is
+all stage (iii) reads. The ESC drivers **merge into their csvs rather than overwriting them**
+(`runESC.mergeWrite`), so the pipeline can re-run exactly a missing (ρ, spec) without clobbering the
+rest of the file — the other experiment scripts own their whole csv and do not need this.
+
+**Every US counterfactual is a new equilibrium path read at 2020** (2026-08-24) — the ESC appendix and
+the main-text tables alike. The changed characteristics hold over the whole horizon, the economy starts
+at its own steady state, and in the endogenous-θ runs the political choice binds from the first period,
+so θ_2020 is an outcome rather than an inherited datum. The ESC tables therefore read t0, not t0+1 as
+they did under the superseded unanticipated-reform convention, and the two legs are now on the same
+footing. `python/US/shocks.py` and `writing/US/num_esc.tex` §The counterfactuals carry the reasoning;
+`results/{shocks,esc}/preNewPath/` hold what it replaced.
+
+Two consequences for this pipeline. The wedge calibration moved one period back with the reporting —
+`p` is now the cost at which the design *in force* in 2020 is the observed one — so **every**
+`escCalibration{,CRRA}.csv` point had to be recomputed, not just the experiments. And the French tables
+carry two more rows: all three French characteristics at once (`frAll`), and France's own calibrated
+path, which is not a counterfactual on the US model and whose workweek is a calibration target rather
+than a prediction. Under the `flat` spec the France row fails by construction (its `(θ, p)` inversion is
+not identified at France's θ = 1 corner); the headline `scale` spec carries it.
 
 **The common-`X` shock run is a check as much as an output.** θ, ageing and voting must come back
 *identical* to the vector-`X` run — none of them touches `η` or `X`, and `β`/`ω`/`h` agree across variants

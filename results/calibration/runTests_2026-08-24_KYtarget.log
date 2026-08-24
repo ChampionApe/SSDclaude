@@ -1,0 +1,53 @@
+running 26 suites
+
+pass  gridsearch/test_roots1d.py                       2.1s
+pass  gridsearch/test_interp.py                        1.7s
+pass  gridsearch/test_continuation.py                  1.3s
+pass  informalAnalytical/test_ee.py                    2.7s
+pass  informalAnalytical/test_cacheParams.py           3.4s
+pass  informalAnalytical/test_crraTerminal.py          3.2s
+pass  informalAnalytical/test_crraBackward.py          4.6s
+pass  informalAnalytical/test_crraPEE.py               6.7s
+pass  informalAnalytical/test_createCopyFromt0.py      2.7s
+pass  InformalSavings/test_ee.py                       2.7s
+pass  InformalSavings/test_peeLOG.py                   4.1s
+pass  InformalSavings/test_peeCRRA.py                 14.2s
+pass  InformalSavings/test_peePath.py                 13.3s
+pass  InformalSavings/test_createCopyFromt0.py         3.3s
+pass  US/test_ee.py                                    3.2s
+pass  US/test_invariance.py                            5.2s
+pass  US/test_crra.py                                  9.0s
+pass  US/test_calibration.py                          12.3s
+pass  US/test_fr.py                                   19.9s
+pass  US/test_eu.py                                    9.3s
+pass  US/test_createCopyFromt0.py                      2.7s
+pass  US/test_esc.py                                 106.7s
+FAIL  informalAnalytical/test_calibration.py           6.1s
+       !                              ml, mu, epsfcn, factor, diag)
+       !   File "C:\Users\sxj477\Documents\GitHub\SSDclaude\.venv\Lib\site-packages\scipy\optimize\_root.py", line 216, in _wrapped_fun
+       !     return fun(*fargs)
+       !   File "C:\Users\sxj477\Documents\GitHub\SSDclaude\python\informalAnalytical\policy.py", line 119, in residual
+       !     z = self.focVectorized(self.stateVectorized(τtilde, θ, ε, l, u))
+       !                            ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+       !   File "C:\Users\sxj477\Documents\GitHub\SSDclaude\python\informalAnalytical\policy.py", line 88, in stateVectorized
+       !     init = self.m.initialState_solve(d['τ'][tFirst], θ[tFirst])
+       !            ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       !   File "C:\Users\sxj477\Documents\GitHub\SSDclaude\python\informalAnalytical\model.py", line 557, in initialState_solve
+       !     ss = self.steadyState_CRRA_solve(τ, θ, t = t, **kwargs)
+       !          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+       !   File "C:\Users\sxj477\Documents\GitHub\SSDclaude\python\informalAnalytical\model.py", line 531, in steadyState_CRRA_solve
+       !     Γs = optimize.brentq(self.steadyState_CRRA_residual, *bounds, args = (τ, θ, t), **kwargs)
+       !          ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       !   File "C:\Users\sxj477\Documents\GitHub\SSDclaude\.venv\Lib\site-packages\scipy\optimize\_zeros_py.py", line 858, in brentq
+       !     r = _zeros._brentq(f, a, b, xtol, rtol, maxiter, args, full_output, disp)
+       !   File "C:\Users\sxj477\Documents\GitHub\SSDclaude\.venv\Lib\site-packages\scipy\optimize\_zeros_py.py", line 115, in f_raise
+       !     raise err
+       ! ValueError: The function value at x=1e-06 is NaN; solver cannot continue.
+pass  InformalSavings/test_calibration.py            545.2s
+FAIL  InformalSavings/test_calibrationGrid.py       1567.5s
+       | FAIL  the anchor reproduces the LOG calibration documented in the README  -> β=0.807610, ω=2.327810
+       | FAILURES ABOVE  (36 passed, 1 failed)
+pass  US/test_escCRRA.py                             320.9s
+
+24 of 26 suites passed in 2674s
+failed: informalAnalytical/test_calibration.py, InformalSavings/test_calibrationGrid.py

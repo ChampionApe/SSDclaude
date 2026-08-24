@@ -541,3 +541,76 @@ rename discipline applies.
 **Test count.** 22 fast suites (~75 s) plus a new slow one: `US/test_esc.py` (28 checks — the wedge against
 the appendix's own closed forms, the three structural properties, both timings) and `US/test_escCRRA.py`
 (slow, ~4 min: the CRRA solver against its log limit).
+
+## 2026-08-24 (cont.) — the ESC leg reaches the paper; a csv-write convention; a tooling trap
+
+The day's substance is in the module logs (`python/US/RESEARCH_LOG.md`: the exact 2-D CRRA solver and
+the counterfactuals across ρ; `python/paper/RESEARCH_LOG.md`: the pipeline wiring and the appendix
+rewrite). Three things are structural enough for the root.
+
+**Endogenous θ now runs through all three pipeline stages**, spanning `python/US` (drivers +
+`collectESCexperiments.py`), `python/paper` (declarations in stages i/ii, five builders in stage iii),
+and `writing/Paper` (the rewritten `Appendix/EndogenousSystemCharacteristics.tex` plus five generated
+`US_ESC_*` tables). Nothing in `writing/Paper` remains unwired. The appendix defers derivations to the
+`writing/` docs — which formalizes what those docs are for: they are the "online technical
+documentation" the paper will cite, so their sections need to stay publishable, not just internal.
+
+**A convention worth naming: incremental drivers must merge into shared csvs, not overwrite them.**
+The ESC drivers write one csv from several independent (ρ, spec) runs; a plain `to_csv` after each run
+clobbers every row the current run did not produce, which is what forced this session's tagged-file
+workaround before `runESC.mergeWrite` (dedupe on the key columns, NaN keys compared equal) replaced it.
+The Argentina and US sweep scripts never had this problem because they own resume logic per csv — the
+rule generalises as: *any script that writes a csv other invocations of itself also write must read it
+back first.*
+
+**A session-tooling trap**: appending python through a quoted bash heredoc halved every `\` — fatal
+where a raw string then ended in a lone backslash, and silent where `\hline` became a still-parseable
+`\hline` inside emitted tex. Caught only because the syntax error fired first. Emit code that contains
+backslashes through Write/Edit, never through a heredoc.
+
+## 2026-08-24 (cont. 2) — the permanent timing's second decision (the entry `notes/todo_escPermanentTiming.md` was owed)
+
+Finding #11 said: do not let a predetermined state move with the instrument being maximised. The
+permanent-θ work surfaced a sequel worth its own statement, now `crossCuttingFindings.md` #11b:
+**pinning is one decision; *what value* to pin at is a second one, and it can be invisible.** The
+predetermined savings ratio was first pinned at the *incumbent* design — justified as an "unanticipated
+permanent reform" — but the vote is anticipated: households save at `t0-1` against the design that
+*wins*, so the right object is the fixed point `θ* = argmax W(θ; siRatio(θ*))`. What made the wrong
+value survive review is that the two readings coincide exactly wherever the choice reproduces the
+incumbent design — which is precisely what the wedge calibration targets — so every calibrated number
+was identical under both (p to 12 digits) and only the counterfactuals separate them (0.775 vs 0.773 at
+p=0.4; 0.542 vs 0.549 at p=0.25). A decision that is a no-op at the calibration point is a decision no
+calibration check can catch; it has to be found by asking what the timing *means*, which is the
+generalisable lesson.
+
+
+## 2026-08-24 — a calibration target's units, and where that class of error hides
+
+The Argentina arm targeted a savings rate of 18.4% and calibrated β = 1.212 at ρ=1, which is what
+prompted the question. The answer turned out not to be in the solver, the denominator, or the sector
+coverage of the datum, but in its **time dimension**, and the generalisable part is where that error was
+able to hide.
+
+The model's period is 30 years with capital fully depreciating between periods. So `Y_t` is thirty years
+of output, `s_t` is the end-of-period capital *stock*, and the moment `s_t/Y_t` is a stock-to-flow ratio
+— `K_{t+1}/Y_t` — not an annual saving rate. An annual national-accounts saving rate is a different and
+larger object, because it also replaces the capital that depreciates *inside* the thirty-year window,
+which a one-purchase-per-period convention does not have. Feeding one into the other asked the model to
+hold about half again as much capital as Argentina has, and β is what gave.
+
+**What let it survive.** The 30-year convention existed only in the documentation; no line of code
+mentioned it, so nothing in the model could be inconsistent with it and no test could see it. The
+neighbouring target had been converted correctly (pension spending 7.1% of GDP ÷ (1-α) = 0.125), which
+made the calibration look internally careful, and the resulting number was not absurd — 18.4% of output
+is a plausible saving rate, and the implied K/Y of 4.0 is a plausible capital-output ratio; they simply
+were not the same claim. Two plausible readings of one number, and nothing in the repo recording which
+was meant. **A convention that lives only in prose is a convention the code cannot be checked against**;
+`yearsPerPeriod` is now a model parameter for that reason, and `eq:calibration:KY` carries it explicitly.
+
+Transferable, and now `crossCuttingFindings.md` #12: **for every calibration target, write down the
+units of both sides and where the datum came from, in the repo, next to the number.** The workbook
+carried `Savings rate = 0.184` with no series id, no vintage and no window; the paper's one-sentence
+description of it turned out to be wrong on three counts (private, per-capita, and comparable to the
+model's moment). The replacement target is derived by a script (`python/paper/dataTargets.py`) that
+writes the value, its window, its source and its retrieval date into `data/`, and writes the alternative
+reading beside it — so the next person can see not only what was targeted but what was passed over.

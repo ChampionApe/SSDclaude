@@ -1,34 +1,40 @@
-scenarios: theta0, theta1, mild, acute, frIncome, frLeisure, frVoting
+scenarios: theta0, theta1, mild, acute, frIncome, frLeisure, frVoting, frAll
 workweek (data, 2020): 39.39271
 
-rho=0.5  CRRA baseline: tau=0.1443  sr=0.2273  workweek=39.39  theta=0.7382   (2s to solve)
+rho=0.5  CRRA baseline: tau=0.1443  sr=0.2273  workweek=39.39  theta=0.7382   (3s to solve)
   French: Xbar_FR/Xbar_US=1.5776 (17.16 vs 10.88), max|gamma_FR-gamma_US|=2.6e-04
-  theta0                 full: tau=0.1962 sr=0.2047 ww=37.80   |   EE-only: tau=0.1443 sr=0.2361 ww=38.45   1s
-  theta1                 full: tau=0.1145 sr=0.2444 ww=39.95   |   EE-only: tau=0.1443 sr=0.2244 ww=39.70   1s
-  mild                   full: tau=0.1862 sr=0.2137 ww=39.36   |   EE-only: tau=0.1443 sr=0.2333 ww=39.86   1s
-  acute                  full: tau=0.2347 sr=0.1984 ww=39.27   |   EE-only: tau=0.1443 sr=0.2400 ww=40.41   1s
-  frIncome               full: tau=0.1347 sr=0.2364 ww=40.29   |   EE-only: tau=0.1443 sr=0.2302 ww=40.19   1s
-  frLeisure              full: tau=0.1418 sr=0.2313 ww=34.78   |   EE-only: tau=0.1443 sr=0.2301 ww=34.76   1s
-  frVoting               full: tau=0.1470 sr=0.2255 ww=39.37   |   EE-only: tau=0.1443 sr=0.2273 ww=39.39   1s
+  theta0                 full: tau=0.2023 sr=0.1962 ww=36.80   |   EE-only: tau=0.1443 sr=0.2367 ww=38.54   4s
+  theta1                 full: tau=0.1121 sr=0.2493 ww=40.55   |   EE-only: tau=0.1443 sr=0.2242 ww=39.66   4s
+  mild                   full: tau=0.1876 sr=0.2116 ww=39.08   |   EE-only: tau=0.1443 sr=0.2372 ww=40.50   4s
+  acute                  full: tau=0.2375 sr=0.1941 ww=38.68   |   EE-only: tau=0.1443 sr=0.2484 ww=41.82   5s
+  frIncome               full: tau=0.1338 sr=0.2383 ww=40.52   |   EE-only: tau=0.1443 sr=0.2303 ww=40.21   5s
+  frLeisure              full: tau=0.1441 sr=0.2274 ww=34.36   |   EE-only: tau=0.1443 sr=0.2273 ww=34.36   5s
+  frVoting               full: tau=0.1475 sr=0.2249 ww=39.30   |   EE-only: tau=0.1443 sr=0.2273 ww=39.39   5s
+  frAll                  full: tau=0.1386 sr=0.2345 ww=35.22   |   EE-only: tau=0.1443 sr=0.2303 ww=35.07   5s
+  France                 full: tau=0.2128 sr=0.2094 ww=35.45   |   theta=1.0000 omega=2.2721   46s
 
 rho=1.0  LOG  baseline: tau=0.1443  sr=0.2196  workweek=39.39  theta=0.7382   (0s to solve)
   French: Xbar_FR/Xbar_US=1.5200 (16.53 vs 10.88), max|gamma_FR-gamma_US|=2.6e-04
-  theta0                 full: tau=0.1852 sr=0.2064 ww=37.98   |   EE-only: tau=0.1443 sr=0.2255 ww=38.50   0s
-  theta1                 full: tau=0.1228 sr=0.2288 ww=39.86   |   EE-only: tau=0.1443 sr=0.2176 ww=39.69   0s
-  mild                   full: tau=0.1845 sr=0.2054 ww=39.37   |   EE-only: tau=0.1443 sr=0.2196 ww=39.84   0s
-  acute                  full: tau=0.2311 sr=0.1899 ww=39.30   |   EE-only: tau=0.1443 sr=0.2196 ww=40.36   0s
-  frIncome               full: tau=0.1328 sr=0.2275 ww=40.32   |   EE-only: tau=0.1443 sr=0.2215 ww=40.20   0s
-  frLeisure              full: tau=0.1443 sr=0.2196 ww=35.10   |   EE-only: tau=0.1443 sr=0.2196 ww=35.10   0s
-  frVoting               full: tau=0.1532 sr=0.2151 ww=39.31   |   EE-only: tau=0.1443 sr=0.2196 ww=39.39   0s
+  theta0                 full: tau=0.1852 sr=0.2064 ww=37.52   |   EE-only: tau=0.1443 sr=0.2255 ww=38.54   0s
+  theta1                 full: tau=0.1228 sr=0.2288 ww=40.13   |   EE-only: tau=0.1443 sr=0.2176 ww=39.67   0s
+  mild                   full: tau=0.1845 sr=0.2054 ww=39.08   |   EE-only: tau=0.1443 sr=0.2196 ww=40.12   0s
+  acute                  full: tau=0.2311 sr=0.1899 ww=38.66   |   EE-only: tau=0.1443 sr=0.2196 ww=40.99   0s
+  frIncome               full: tau=0.1328 sr=0.2275 ww=40.47   |   EE-only: tau=0.1443 sr=0.2215 ww=40.20   0s
+  frLeisure              full: tau=0.1443 sr=0.2196 ww=34.74   |   EE-only: tau=0.1443 sr=0.2196 ww=34.74   0s
+  frVoting               full: tau=0.1532 sr=0.2151 ww=39.19   |   EE-only: tau=0.1443 sr=0.2196 ww=39.39   0s
+  frAll                  full: tau=0.1430 sr=0.2222 ww=35.49   |   EE-only: tau=0.1443 sr=0.2215 ww=35.46   1s
+  France                 full: tau=0.2129 sr=0.1919 ww=35.44   |   theta=1.0000 omega=1.4181   3s
 
-rho=2.0  CRRA baseline: tau=0.1443  sr=0.2122  workweek=39.39  theta=0.7382   (2s to solve)
+rho=2.0  CRRA baseline: tau=0.1443  sr=0.2122  workweek=39.39  theta=0.7382   (3s to solve)
   French: Xbar_FR/Xbar_US=1.4723 (16.01 vs 10.88), max|gamma_FR-gamma_US|=2.6e-04
-  theta0                 full: tau=0.1532 sr=0.2128 ww=38.44   |   EE-only: tau=0.1443 sr=0.2153 ww=38.55   1s
-  theta1                 full: tau=0.1371 sr=0.2135 ww=39.73   |   EE-only: tau=0.1443 sr=0.2111 ww=39.67   1s
-  mild                   full: tau=0.1808 sr=0.1973 ww=39.40   |   EE-only: tau=0.1443 sr=0.2057 ww=39.81   1s
-  acute                  full: tau=0.2211 sr=0.1820 ww=39.39   |   EE-only: tau=0.1443 sr=0.1987 ww=40.30   1s
-  frIncome               full: tau=0.1307 sr=0.2180 ww=40.35   |   EE-only: tau=0.1443 sr=0.2132 ww=40.21   1s
-  frLeisure              full: tau=0.1451 sr=0.2094 ww=35.40   |   EE-only: tau=0.1443 sr=0.2096 ww=35.41   1s
-  frVoting               full: tau=0.1617 sr=0.2063 ww=39.23   |   EE-only: tau=0.1443 sr=0.2122 ww=39.39   1s
+  theta0                 full: tau=0.1521 sr=0.2136 ww=38.38   |   EE-only: tau=0.1443 sr=0.2153 ww=38.55   4s
+  theta1                 full: tau=0.1372 sr=0.2131 ww=39.79   |   EE-only: tau=0.1443 sr=0.2111 ww=39.67   4s
+  mild                   full: tau=0.1801 sr=0.1996 ww=39.08   |   EE-only: tau=0.1443 sr=0.2058 ww=39.80   4s
+  acute                  full: tau=0.2199 sr=0.1866 ww=38.72   |   EE-only: tau=0.1443 sr=0.1988 ww=40.28   4s
+  frIncome               full: tau=0.1308 sr=0.2172 ww=40.45   |   EE-only: tau=0.1443 sr=0.2132 ww=40.21   4s
+  frLeisure              full: tau=0.1443 sr=0.2122 ww=35.08   |   EE-only: tau=0.1443 sr=0.2122 ww=35.08   4s
+  frVoting               full: tau=0.1612 sr=0.2073 ww=39.11   |   EE-only: tau=0.1443 sr=0.2122 ww=39.39   4s
+  frAll                  full: tau=0.1501 sr=0.2116 ww=35.70   |   EE-only: tau=0.1443 sr=0.2132 ww=35.80   4s
+  France                 full: tau=0.2129 sr=0.1782 ww=35.44   |   theta=1.0000 omega=1.1680   51s
 
 -> results\shocks\US_shocks.csv

@@ -88,7 +88,7 @@ def summarise(ρ = None):
     if row.empty:
         raise SystemExit('rho={} is not in informalSavings_rhoGrid.csv -- run the sweep first.'.format(ρ))
     row = row.iloc[-1]
-    for k in ('β', 'ω', 'sr', 'τ', 'ι', 'residual', 'verifyResidual', 'commit', 'timestamp'):
+    for k in ('β', 'ω', 'KY', 'sr', 'τ', 'ι', 'residual', 'verifyResidual', 'commit', 'timestamp'):
         rec[k] = row[k]
     # eta0/X0 are calibrated AND on the instance; they must agree, and a mismatch means the pickle and
     # the csv row came from different runs.
@@ -129,7 +129,7 @@ def main():
     out = os.path.join(C.PAPERDIR, 'calibrationSummary.csv')
     pd.DataFrame([rec]).to_csv(out, index = False)
     print('\nwritten: ' + os.path.relpath(out, C.REPO))
-    for k in ('ρ', 'β', 'ω', 'η0', 'X0', 'ε', 'θ', 'sr', 'τ', 'residual'):
+    for k in ('ρ', 'β', 'ω', 'η0', 'X0', 'ε', 'θ', 'KY', 'sr', 'τ', 'residual'):
         print('  {:<6} {}'.format(k, rec[k]))
 
 

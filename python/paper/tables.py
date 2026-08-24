@@ -50,7 +50,7 @@ def argentinaCalibration():
         [r'$\alpha$',   '$' + C.num(c['α']) + '$', 'Factor income shares'],
         [r'$\nu_t$',    '$' + C.vec([ν[0], ν[nDated-1]], 2) + '$', '30-year gross population growth rates'],
         [r'$\xi$',      '$' + C.num(c['ξ']) + '$', 'Elasticity of labor supply'],
-        [r'$\beta$',    '$' + C.num(c['β']) + '$', 'Private savings rate of $' + C.pct(c['sr'], 1) + '$'],
+        [r'$\beta$',    '$' + C.num(c['β']) + '$', 'Capital--output ratio of $' + C.num(c['KY'], 2) + '$'],
         [r'$X_i$',      '$' + C.vec(c['Xi'], 1) + '$', 'Relative working hours'],
         [r'$\eta_i$',   '$' + C.vec(c['ηi'], 1) + '$', 'Income distribution'],
         [r'$\gamma_0$', '$' + C.num(c['γ0']) + '$', 'Recipients of basic pension'],

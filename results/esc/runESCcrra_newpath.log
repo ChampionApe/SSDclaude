@@ -1,0 +1,139 @@
+
+=== [rho=2.0, scale, phi=0.5] calibrating p under CRRA ===
+    p=0.0100: θ*=0.7382  choice-θ* = -0.57392
+    p=0.0158: θ*=0.7382  choice-θ* = -0.51612
+    p=0.0248: θ*=0.7382  choice-θ* = -0.42926
+    p=0.0391: θ*=0.7382  choice-θ* = -0.31301
+    p=0.0617: θ*=0.7382  choice-θ* = -0.16122
+    p=0.0972: θ*=0.7382  choice-θ* = +0.03712
+    p=0.1533: θ*=0.7382  choice-θ* = +0.26177
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:540: RuntimeWarning: invalid value encountered in power
+  dv10 = BG.get('\u03b20', t) * d['tc20_1']**p * dln(d['tc20_1'])
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:537: RuntimeWarning: invalid value encountered in log
+  dln = lambda x: grad(np.log(x))
+    p=0.2415: θ*=0.7382  choice-θ* = +0.26177
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:540: RuntimeWarning: invalid value encountered in power
+  dv10 = BG.get('\u03b20', t) * d['tc20_1']**p * dln(d['tc20_1'])
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:537: RuntimeWarning: invalid value encountered in log
+  dln = lambda x: grad(np.log(x))
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\gridsearch\interp.py:212: UserWarning: 
+The maximal number of iterations maxit (set to 20 by the program)
+allowed for finding a smoothing spline with fp=s has been reached: s
+too small.
+There is an approximation returned but the corresponding weighted sum
+of squared residuals does not satisfy the condition abs(fp-s)/s < tol.
+  sp = interpolate.UnivariateSpline(xs[ok], col[ok], s = s, k = k)
+    p=0.3807: θ*=0.7382  choice-θ* = +0.26177
+    p=0.6000: θ*=0.7382  choice-θ* = +0.26177
+  -> p=0.09006781847452243  (calibrated)  [1300s]
+
+=== [rho=2.0, scale, phi=0.5] design path (p=0.0901, θ*=0.7382) ===
+    iter 0: max|dθ|=0.12975  θ=0.7382 0.6085 0.7393 0.7608 0.8054 0.8179
+    iter 1: max|dθ|=0.00025  θ=0.7382 0.6085 0.7394 0.7609 0.8056 0.8181
+  θ path: 0.7382  0.6085  0.7394  0.7609  0.8056  0.8181  0.8179   (converged=True, 679s)
+  calibrating France at rho=2.0 for the French scenarios ...
+  baseline  pin=True  θ_t0=0.7382  τ_t0=0.1443 sr_t0=0.2122 ww_t0=39.39  (θ_t1=0.7382, 3s)
+  baseline  pin=False θ_t0=0.7394  τ_t0=0.1445 sr_t0=0.2120 ww_t0=39.42  (θ_t1=0.7609, 593s)
+  acute     pin=True  θ_t0=0.7382  τ_t0=0.2201 sr_t0=0.1866 ww_t0=38.71  (θ_t1=0.7382, 3s)
+  acute     pin=False θ_t0=0.8460  τ_t0=0.2206 sr_t0=0.1859 ww_t0=38.83  (θ_t1=0.8439, 574s)
+  frIncome  pin=True  θ_t0=0.4953  τ_t0=0.1219 sr_t0=0.2202 ww_t0=40.62  (θ_t1=0.4953, 3s)
+  frIncome  pin=False θ_t0=1.0000  τ_t0=0.1440 sr_t0=0.2106 ww_t0=40.81  (θ_t1=1.0000, 586s)
+  frLeisure pin=True  θ_t0=0.7382  τ_t0=0.1443 sr_t0=0.2122 ww_t0=35.08  (θ_t1=0.7382, 3s)
+  frLeisure pin=False θ_t0=0.7394  τ_t0=0.1445 sr_t0=0.2120 ww_t0=35.10  (θ_t1=0.7609, 582s)
+  frVoting  pin=True  θ_t0=0.7382  τ_t0=0.1613 sr_t0=0.2073 ww_t0=39.10  (θ_t1=0.7382, 3s)
+  frVoting  pin=False θ_t0=0.2852  τ_t0=0.1746 sr_t0=0.2067 ww_t0=38.35  (θ_t1=0.2912, 939s)
+  frBoth pin=True FAILED KeyError: 'frBoth'
+  frBoth pin=False FAILED KeyError: 'frBoth'
+  frAll     pin=True  θ_t0=0.4953  τ_t0=0.1417 sr_t0=0.2145 ww_t0=35.84  (θ_t1=0.4953, 3s)
+  frAll     pin=False θ_t0=0.7068  τ_t0=0.1445 sr_t0=0.2122 ww_t0=36.04  (θ_t1=0.7263, 877s)
+  France    pin=True  θ_t0=1.0000  τ_t0=0.2129 sr_t0=0.1782 ww_t0=35.45  [36s]
+
+=== [rho=2.0, flat, phi=0.5] calibrating p under CRRA ===
+    p=0.0100: θ*=0.7379  choice-θ* = -0.55872
+    p=0.0158: θ*=0.7378  choice-θ* = -0.49612
+    p=0.0248: θ*=0.7375  choice-θ* = -0.41635
+    p=0.0391: θ*=0.7371  choice-θ* = -0.32341
+    p=0.0617: θ*=0.7364  choice-θ* = -0.22331
+    p=0.0972: θ*=0.7353  choice-θ* = -0.12307
+    p=0.1533: θ*=0.7337  choice-θ* = -0.02902
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:540: RuntimeWarning: invalid value encountered in power
+  dv10 = BG.get('\u03b20', t) * d['tc20_1']**p * dln(d['tc20_1'])
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:537: RuntimeWarning: invalid value encountered in log
+  dln = lambda x: grad(np.log(x))
+    p=0.2415: θ*=0.7310  choice-θ* = +0.05402
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:540: RuntimeWarning: invalid value encountered in power
+  dv10 = BG.get('\u03b20', t) * d['tc20_1']**p * dln(d['tc20_1'])
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:537: RuntimeWarning: invalid value encountered in log
+  dln = lambda x: grad(np.log(x))
+    p=0.3807: θ*=0.7267  choice-θ* = +0.12286
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:540: RuntimeWarning: invalid value encountered in power
+  dv10 = BG.get('\u03b20', t) * d['tc20_1']**p * dln(d['tc20_1'])
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:537: RuntimeWarning: invalid value encountered in log
+  dln = lambda x: grad(np.log(x))
+    p=0.6000: θ*=0.7197  choice-θ* = +0.17768
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:540: RuntimeWarning: invalid value encountered in power
+  dv10 = BG.get('\u03b20', t) * d['tc20_1']**p * dln(d['tc20_1'])
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:537: RuntimeWarning: invalid value encountered in log
+  dln = lambda x: grad(np.log(x))
+  -> p=0.17751543192863015  (calibrated)  [1151s]
+
+=== [rho=2.0, flat, phi=0.5] design path (p=0.1775, θ*=0.7329) ===
+    iter 0: max|dθ|=0.05072  θ=0.7329 0.6822 0.7331 0.7417 0.7592 0.7639
+    iter 1: max|dθ|=0.00004  θ=0.7329 0.6822 0.7331 0.7418 0.7592 0.7639
+  θ path: 0.7329  0.6822  0.7331  0.7418  0.7592  0.7639  0.7639   (converged=True, 605s)
+  baseline  pin=True  θ_t0=0.7329  τ_t0=0.1443 sr_t0=0.2122 ww_t0=39.39  (θ_t1=0.7329, 3s)
+  baseline  pin=False θ_t0=0.7331  τ_t0=0.1444 sr_t0=0.2121 ww_t0=39.40  (θ_t1=0.7418, 598s)
+  acute     pin=True  θ_t0=0.7329  τ_t0=0.2200 sr_t0=0.1866 ww_t0=38.72  (θ_t1=0.7329, 3s)
+  acute     pin=False θ_t0=0.7741  τ_t0=0.2202 sr_t0=0.1863 ww_t0=38.76  (θ_t1=0.7738, 627s)
+  frIncome  pin=True  θ_t0=0.4795  τ_t0=0.1181 sr_t0=0.2216 ww_t0=40.69  (θ_t1=0.4795, 3s)
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:540: RuntimeWarning: invalid value encountered in power
+  dv10 = BG.get('\u03b20', t) * d['tc20_1']**p * dln(d['tc20_1'])
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\US\policy.py:537: RuntimeWarning: invalid value encountered in log
+  dln = lambda x: grad(np.log(x))
+C:\Users\sxj477\Documents\GitHub\SSDclaude\python\gridsearch\interp.py:212: UserWarning: 
+The maximal number of iterations maxit (set to 20 by the program)
+allowed for finding a smoothing spline with fp=s has been reached: s
+too small.
+There is an approximation returned but the corresponding weighted sum
+of squared residuals does not satisfy the condition abs(fp-s)/s < tol.
+  sp = interpolate.UnivariateSpline(xs[ok], col[ok], s = s, k = k)
+  frIncome  pin=False θ_t0=1.0000  τ_t0=0.1408 sr_t0=0.2117 ww_t0=40.86  (θ_t1=1.0000, 687s)
+  frLeisure pin=True  θ_t0=0.7329  τ_t0=0.1443 sr_t0=0.2122 ww_t0=35.08  (θ_t1=0.7329, 3s)
+  frLeisure pin=False θ_t0=0.7331  τ_t0=0.1444 sr_t0=0.2121 ww_t0=35.09  (θ_t1=0.7418, 694s)
+  frVoting  pin=True  θ_t0=0.7329  τ_t0=0.1613 sr_t0=0.2073 ww_t0=39.10  (θ_t1=0.7329, 3s)
+  frVoting  pin=False θ_t0=0.4650  τ_t0=0.1681 sr_t0=0.2072 ww_t0=38.70  (θ_t1=0.4709, 711s)
+  frBoth pin=True FAILED KeyError: 'frBoth'
+  frBoth pin=False FAILED KeyError: 'frBoth'
+  frAll     pin=True  θ_t0=0.4795  τ_t0=0.1381 sr_t0=0.2157 ww_t0=35.90  (θ_t1=0.4795, 3s)
+  frAll     pin=False θ_t0=0.7222  τ_t0=0.1445 sr_t0=0.2121 ww_t0=36.05  (θ_t1=0.7286, 573s)
+  France FAILED ValueError: getθ: the no-wedge inversion gives θ=1.0, outside (0,1); B/A is not identified.
+
+=== [rho=0.5, scale, phi=0.5] calibrating p under CRRA ===
+    p=0.0100: θ*=0.7382  choice-θ* = -0.61679
+    p=0.0158: θ*=0.7382  choice-θ* = -0.61660
+    p=0.0248: θ*=0.7382  choice-θ* = -0.61630
+    p=0.0391: θ*=0.7382  choice-θ* = -0.61580
+    p=0.0617: θ*=0.7382  choice-θ* = -0.61499
+    p=0.0972: θ*=0.7382  choice-θ* = -0.61360
+    p=0.1533: θ*=0.7382  choice-θ* = -0.55996
+    p=0.2415: θ*=0.7382  choice-θ* = -0.49048
+    p=0.3807: θ*=0.7382  choice-θ* = -0.38785
+    p=0.6000: θ*=0.7382  choice-θ* = -0.24060
+  -> p=nan  (no sign change in the scanned bracket -- the choice never crosses θ*)  [516s]
+  [rho=0.5, scale, phi=0.5] no calibrated p -- skipping the remaining stages.
+
+=== [rho=0.5, flat, phi=0.5] calibrating p under CRRA ===
+    p=0.0100: θ*=0.7379  choice-θ* = -0.61645
+    p=0.0158: θ*=0.7378  choice-θ* = -0.61607
+    p=0.0248: θ*=0.7375  choice-θ* = -0.61546
+    p=0.0391: θ*=0.7371  choice-θ* = -0.61448
+    p=0.0617: θ*=0.7364  choice-θ* = -0.61290
+    p=0.0972: θ*=0.7353  choice-θ* = -0.60690
+    p=0.1533: θ*=0.7337  choice-θ* = -0.54094
+    p=0.2415: θ*=0.7310  choice-θ* = -0.46199
+    p=0.3807: θ*=0.7267  choice-θ* = -0.36056
+    p=0.6000: θ*=0.7197  choice-θ* = -0.24293
+  -> p=nan  (no sign change in the scanned bracket -- the choice never crosses θ*)  [598s]
+  [rho=0.5, flat, phi=0.5] no calibrated p -- skipping the remaining stages.
+
+-> results\esc

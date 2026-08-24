@@ -220,7 +220,7 @@ def diagnostics(m, x, j, offset, solveKwargs = None):
     xp = x.copy(); xp[j] += offset
     d = m.calibration_report(m._calFromX(xp), 'CRRA', solveKwargs)
     pee = d['PEE']
-    out = {'targets': np.array([d['sr'], d['τ'], d['η0'], d['X0']]),
+    out = {'targets': np.array([d['KY'], d['τ'], d['η0'], d['X0']]),
            'initNRoots': None if pee['init'] is None else int(pee['init']['nRoots']),
            'initS': None if pee['init'] is None else float(pee['init']['s']),
            'initI': None if pee['init'] is None else float(pee['init']['ι']),

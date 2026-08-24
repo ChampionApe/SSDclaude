@@ -19,6 +19,14 @@ Five things are worth pinning, and they are the five that would silently produce
      ln(s_{t-1}) enters W_t additively. Checked by re-maximising at a different s.
   5. tau FROM THE RECURSION IS tau FROM solvePEE_LOG. The leaded solver reaches the tax through its own
      grid+polish path; at a fixed theta it must land on what the production solver gives.
+
+Two more since the counterfactuals became new equilibrium paths read at 2020 (sections 9 and 10):
+
+  6. THE CALIBRATION TARGETS THE DESIGN IN FORCE AT t0, not the choice made there. theta_t is a state
+     chosen at t-1, so those are different numbers; swapping them moves every appendix table by ~0.01 in
+     theta and leaves everything looking reasonable.
+  7. A SHOCKED MODEL IS THE FULL HORIZON. shocks.shockedCopy must keep the calendar and db['t0'], and the
+     shock must reach the first period -- a copy that renumbered periods would report the wrong year.
 """
 import os, sys
 import numpy as np
@@ -189,15 +197,17 @@ for spec, moves in (('scale', False), ('flat', True)):
 
 # ---- 8. the PERMANENT choice (PermanentLOG)
 mNo.calibrate()
-permNo = mNo.solvePermanent('LOG', movingSiRatio = True)
+permNo = mNo.solvePermanent('LOG')
 check('WITHOUT a wedge the PERMANENT choice is also a corner (app:ESC)', permNo['atBound'],
       '-> theta={:.6f}, turning points={}'.format(permNo['θ'], permNo['nTurning']))
 check('...and at rho=1 it is the theta=0 corner specifically', permNo['θ'] == 0.,
       '-> theta={:.6f}'.format(permNo['θ']))
 
-permW = mW.solvePermanent('LOG', movingSiRatio = True)
+permW = mW.solvePermanent('LOG')
 check('WITH the wedge the permanent choice is interior', 0. < permW['θ'] < 1.,
       '-> theta={:.6f} (leaded gives {:.6f})'.format(permW['θ'], chW))
+check('the anticipated-vote fixed point converges', permW['converged'],
+      '-> iterates {}'.format(np.round(permW['iterates'], 6)))
 
 # tau at the chosen design must be the ORDINARY PEE tax there -- that is the concentration argument the
 # solver rests on (dW/dtau = 0 is the same first-order condition, so the 2-D grid the appendix proposes
@@ -208,13 +218,105 @@ check('tau at the permanent choice == tauPolicy(theta) (the concentration argume
       '-> concentrated={:.8f} solver={:.8f}'.format(τConc, permW['τAtChoice']))
 
 # The predetermined ratio must be PINNED, not recomputed per candidate. This is not a nicety: the two
-# readings differ by ~0.14 in theta at the calibrated wedge.
+# readings differ by ~0.13 in theta at the calibrated wedge.
 check('pinning s_{t-1,i}/s_{t-1} matters, so the convention is load-bearing',
-      abs(permW['siRatioMoving'] - permW['θ']) > 1e-3,
-      '-> pinned={:.4f} vs moving={:.4f}'.format(permW['θ'], permW['siRatioMoving']))
+      abs(permW['θMoving'] - permW['θ']) > 1e-3,
+      '-> pinned={:.4f} vs moving={:.4f}'.format(permW['θ'], permW['θMoving']))
 siPin = mW.predeterminedSiRatio()
 check('the pinned ratio is the baseline equilibrium value at t0-1, and sums correctly',
       siPin.shape == (mW.ni,) and abs(float((mW.B.get('γi', t0)*siPin).sum()) - 1.) < 1e-9,
       '-> sum(gamma_i * si_s) = {:.12f}'.format(float((mW.B.get('γi', t0)*siPin).sum())))
+
+# ---- 9. the anticipated vote: which value the ratio is pinned AT
+# siRatioAt's closed form must reproduce the solved equilibrium's own si_s at t0-1. That is what makes the
+# fixed point a scalar problem -- eq (EE:si_s) at vintage t0-1 depends on DATE-t0 policy alone, so the
+# kinked design path (incumbent before t0, chosen from t0) needs no separate solve to evaluate.
+siClosed = mW.ESCP.siRatioAt(t0, float(mW.db['θ'].xs(t0)))
+check('siRatioAt(incumbent) == the solved baseline si_s at t0-1',
+      float(np.max(np.abs(siClosed - siPin))) < 1e-12,
+      '-> max|diff| = {:.3e}'.format(float(np.max(np.abs(siClosed - siPin)))))
+
+# The two pinnings coincide EXACTLY wherever the choice reproduces the incumbent design -- which is what
+# calibrateWedge targets, so the calibrated p is common to both readings. The content of that claim is the
+# identity just checked, applied at the root. Here the fixed point is verified against its own equation
+# rather than against the loop that produced it.
+reFP = mW.ESCP.solve(t0, mW.ESCP.siRatioAt(t0, permW['θ']))['θ']
+check('the fixed point satisfies its own equation when re-solved at its ratio',
+      abs(reFP - permW['θ']) < 1e-8, '-> re-solved={:.9f} reported={:.9f}'.format(reFP, permW['θ']))
+
+# Away from a calibrated wedge the two pinnings must SEPARATE, or the timing is untested.
+mOff = build(ModelESC, {'spec': 'scale', 'phi': 0.5, 'p': 0.25})
+mOff.calibrate()
+permOff = mOff.solvePermanent('LOG')
+check('away from the calibrated wedge the choice leaves the incumbent design', 
+      abs(permOff['θ'] - float(mOff.db['θ'].xs(t0))) > 1e-2,
+      '-> chosen={:.6f} incumbent={:.6f}'.format(permOff['θ'], float(mOff.db['θ'].xs(t0))))
+check('...and there the two pinnings separate, so the timing is load-bearing',
+      0. < permOff['θ'] < 1. and abs(permOff['θ'] - permOff['θIncumbent']) > 1e-4,
+      '-> fixedPoint={:.6f} incumbent={:.6f} moving={:.6f}'.format(
+          permOff['θ'], permOff['θIncumbent'], permOff['θMoving']))
+
+# The reported path is the reform the timing describes: exogenous before t0, chosen from t0 on.
+θPath = permOff['θPath']
+check('the reported design path is kinked at t0, not constant at the choice',
+      np.allclose(θPath[:mOff.db['t0']], float(mOff.db['θ'].xs(t0)))
+      and np.allclose(θPath[mOff.db['t0']:], permOff['θ']),
+      '-> before t0={:.6f} from t0={:.6f}'.format(θPath[0], θPath[mOff.db['t0']]))
+
+# ---- 9. leadedDesignAtT0: the object the counterfactual tables read and the wedge calibrates on
+# theta_t is a STATE chosen at t-1, so the design in force in 2020 is thetaPolicy_{1990}, not the choice
+# made in 2020. The two are different numbers and the calibration targets the first; a regression that
+# quietly swapped them would move every appendix table by ~0.01 in theta and leave everything looking
+# reasonable, which is exactly what this pins.
+pos0 = mW.db['t0']
+design = mW.leadedDesignAtT0(solsW)
+θFree, _ = mW.ESC.simulate(solsW, float(mW.db['θ'].xs(t0)), tPin = None)
+check('leadedDesignAtT0 is the freely simulated path at t0', abs(design - θFree.iloc[pos0]) < 1e-14,
+      '-> {:.8f} vs {:.8f}'.format(design, θFree.iloc[pos0]))
+check('...and it is NOT the choice made at t0 (they differ by a period of nu_t)',
+      abs(design - chW) > 1e-3, '-> design_t0={:.6f} choice_at_t0={:.6f}'.format(design, chW))
+# Under LOG the policy has no state, so the design at t0 is thetaPolicy_{t0-1} evaluated anywhere.
+tPrev = mW.db['t'][pos0-1]
+check('...and under LOG it equals thetaPolicy_{t0-1} at any inherited design',
+      max(abs(design - mW.ESC.choiceAt(solsW, tPrev, x)) for x in (0.05, 0.5, 0.95)) < 1e-12,
+      '-> spread over inherited theta < 1e-12 (LOG has no state; see leadedDesignAtT0)')
+
+# At the CALIBRATED wedge the design at t0 must land on theta* -- that is what calibrateWedge solves for,
+# and it is what puts the baseline row of every counterfactual table on the observed design.
+mCal = build(ModelESC, {'spec': 'scale', 'phi': 0.5, 'p': 1.0})
+rec = mCal.calibrateWedge(spec = 'scale', phi = 0.5, verbose = False)
+led = mCal.solveLeaded(pinAtT0 = False)
+check('at the calibrated p the FREE path reproduces theta* at t0', rec['converged']
+      and abs(float(led['θ'].iloc[mCal.db['t0']]) - float(mCal.db['θ'].xs(t0))) < 1e-4,
+      '-> p={:.6f} theta_t0={:.6f} theta*={:.6f}'.format(
+          rec['p'], float(led['θ'].iloc[mCal.db['t0']]), float(mCal.db['θ'].xs(t0))))
+check('...and the tax target is still hit there', abs(led['targetDrift']['τ']) < 1e-6,
+      '-> tauDrift={:.2e} RDrift={:.2e}'.format(led['targetDrift']['τ'], led['targetDrift']['R']))
+
+# ---- 10. the new-path convention: a shocked model is the full horizon, not a copy from t0
+# shockedCopy must leave the horizon, the calendar and t0's POSITION alone -- the readout sits at
+# db['t0'], so a copy that renumbered periods would silently report the wrong year.
+import shocks as sh                                                                  # noqa: E402
+mBase = build(ModelESC, {'spec': 'scale', 'phi': 0.5, 'p': 0.4})
+mBase.calibrate()
+mShk, _ = sh.shockedCopy(mBase, 'acute', None)
+check('shockedCopy keeps the full horizon and the calibration position',
+      len(mShk.db['t']) == len(mBase.db['t']) and mShk.db['t0'] == mBase.db['t0']
+      and list(mShk.db['dates']) == list(mBase.db['dates']),
+      '-> T={} t0={} dates[0]={}'.format(len(mShk.db['t']), mShk.db['t0'], list(mShk.db['dates'])[0]))
+check('...and the shock reaches the FIRST period, not only t0 onward',
+      float(mShk.db['ν'].xs(mShk.db['t'][0])) == 1.0,
+      '-> nu[0]={:.4f} (baseline {:.4f})'.format(float(mShk.db['ν'].xs(mShk.db['t'][0])),
+                                                 float(mBase.db['ν'].xs(mBase.db['t'][0]))))
+check('...and the warm-start caches are cleared, so experiments do not depend on run order',
+      mShk.x0 == {} and mShk.LOG.x0 == {} and mShk.CRRA.x0 == {})
+# The unshocked new path IS the baseline: same parameters, same own-steady-state start.
+noShock, _ = sh.shockedCopy(mBase, 'frLeisure', {'xbarRatio': 1.0})
+# 1e-8, not machine precision: rescaleX(1) still runs updateAuxPars, which re-derives theta from eta/X
+# and reintroduces the inversion's own error. The point is that the construction adds nothing, not that
+# a no-op round trip is bit-exact.
+dτ = float(np.max(np.abs(noShock.solvePEE_LOG()['τ'].values - mBase.solvePEE_LOG()['τ'].values)))
+check('a null shock on a new path reproduces the baseline path', dτ < 1e-8,
+      '-> max|dtau|={:.2e}'.format(dτ))
 
 report()

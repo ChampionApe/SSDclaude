@@ -110,3 +110,126 @@ figure needs plain formatting; `config.pct` is for tex cells only.
 - The workweek column differs from the hand-written tables on full-effect rows (0.4–2.5%) while τ and the
   savings rate match exactly. Since τ and sr are hours-unit-invariant, the gap is in the conversion rather
   than the equilibrium; unattributed. See `python/US/RESEARCH_LOG.md`.
+
+## 2026-08-24 — the ESC leg: endogenous θ through all three stages, and the appendix rewritten
+
+The endogenous-θ appendix was the last unwired corner of `writing/Paper`. Now wired end to end:
+
+- **Stage (i)**: `runCalibrationUS.py` gained `escMissing()` — a per-(ρ, spec) check of the wedge
+  calibrations at `config.US['esc']`'s φ against `results/esc/escCalibration{,CRRA}.csv`, delegating
+  only the missing combinations to `python/US/runESC.py` / `runESCcrra.py`. Per-combination rather than
+  per-file because a CRRA calibration costs ~25–30 min; the check being cheap is what lets the stage
+  keep its "re-run costs seconds" property.
+- **Stage (ii)**: three new entries in `runShocksUS.py` — `escShocks` (LOG), `escShocksCRRA` (CRRA),
+  and `escExperiments` (the merge, `python/US/collectESCexperiments.py`), listed last so a `--force`
+  rebuilds it after its producers.
+- **Stage (iii)**: five builders in `tablesUS.py` — `US_ESC_Calibration` (p and θ* per ρ × both cost
+  specs, grouped header) and the four experiment tables, one shared `_escTable` (ρ-stacked, three
+  readings: baseline / exogenous θ / endogenous θ, all at t0+1). The hand-written US_ESC_* tables were
+  auto-preserved to `results/paper/superseded/` on first build. `_xwrap` now accepts a pre-formatted
+  header string for the one table that needs two header rows.
+
+Two supporting changes outside `python/paper/`:
+
+- **The ESC drivers now merge into their csvs instead of overwriting** (`runESC.mergeWrite`, used by
+  both drivers' calib/path/shocks writes, NaN keys compared as equal). Without this, stage (i)'s
+  "re-run exactly the missing (ρ, spec)" would clobber every other row in the file — the failure mode
+  that produced this session's tagged-file workaround in the first place. The tagged csvs
+  (`escShocksCRRA_exp*`) were consolidated into one canonical `escShocksCRRA.csv` (old + new rows,
+  deduped on (ρ, spec, φ, scenario, reading), new preferred) and the inputs moved to
+  `results/esc/superseded/`.
+- **A trap for the record**: appending python to a file through a quoted bash heredoc halved every
+  `\` in the tex-emitting builders — raw strings ending in what became a single backslash are a
+  syntax error, and worse, `\hline` silently becomes `\hline` where it still parses. The corrupted
+  block was truncated and rewritten through the Edit tool; don't emit tex-bearing python via heredoc.
+
+**The appendix itself** (`writing/Paper/Appendix/EndogenousSystemCharacteristics.tex`) was rewritten
+from the working-notes draft into a short paper section: the four variants (sequential / leaded /
+permanent timings, plus the deadweight cost), the one-corner lesson (costless redistribution corners
+all three timings at θ=0 — kept as the single retained derivation, eq the sequential FOC), why the
+preferred spec is leaded + proportional cost (Markov structure kept; f cancels from the
+replacement-rate ratio so θ* stays the data's own and p is separately identified; everything after t0
+is a prediction), the calibration table, a solution paragraph (exact 2-D CRRA recursion certifies the
+path iteration to ±0.01), and the four experiments at ρ ∈ {0.5, 1, 2} with the income+voting
+combination in text (corner at 1 for ρ≤1, interior 0.69 at ρ=2 — the EIS decides which French
+characteristic wins). Everything else is deferred to the online technical documentation (`writing/`),
+referenced in a footnote. All numbers in the text were checked against the built tables.
+
+## 2026-08-24 — the counterfactual convention changed under the pipeline
+
+`python/US` switched every US counterfactual from an unanticipated 2020 reform to a new equilibrium path
+read at 2020 (see that module's log). Three things followed on this side.
+
+**Stage (iii) reads t0 for the ESC tables now, not t0+1.** `_escCells` takes the `*_t0` columns, the
+"identical by construction at 2020" note is gone — it was true only while the design was pinned as
+history through 2020 — and `ESCHEAD` says θ (2020). The main-text and appendix legs are finally on the
+same dating.
+
+**Every ESC calibration point had to be recomputed, not just the experiments.** The wedge target moved one
+period back with the reporting (`p` is now the cost at which the design *in force* in 2020 is the observed
+one), so `escCalibration{,CRRA}.csv` are new files, not new rows. Stage (i)'s delegation to `runESC.py` /
+`runESCcrra.py` is unchanged; what changed is that a stale `p` is no longer merely old, it answers a
+different question.
+
+**Two new rows and one new table.** `frAll` (all three French characteristics at once) and France's own
+calibrated path join `US_OtherShocks` and the ESC French tables, and `US_ESC_FrenchAll` is registered in
+`build.py`. The France row is not a counterfactual on the US model — France brings its own `ω` — and its
+workweek is `ModelFR`'s calibration target rather than a prediction, which every note that prints it now
+says. Under the `flat` spec the row fails by construction (the `(θ, p)` inversion is not identified at
+France's `θ = 1`); the headline `scale` spec carries it.
+
+**Two string bugs fixed in `tablesUS.py` while the notes were being rewritten**, both silently wrong in
+the shipped tex. `r'...France''s...'` is not an escaped apostrophe — Python splits it into a raw part and
+a *non-raw* part, so the apostrophe vanished and the `\theta` that followed became a literal tab
+(`$	heta$` in `US_OtherShocks.tex`). And `\n` inside a raw string is a backslash-n, so one `\item`
+separator rendered literally. Both now use `\textquotesingle` and an explicit non-raw `'\n'`.
+
+**Unrelated, pre-existing, and broken at the time of writing:** a full `build.py` run died in the
+Argentina arm at `argentinaCalibration`, which reads a `KY` column that `results/paper/calibrationSummary.csv`
+did not carry. That was the half-applied capital-output retarget; **resolved the same day** by the
+Argentina re-run in the next entry, which put `KY` in the sweep csv and the summary. No workaround needed
+any more.
+
+
+## 2026-08-24 (cont.) — stage (0), and the Argentina arm re-run end to end
+
+The Argentina calibration target moved from the savings rate to the capital-output ratio
+(`notes/argentina_savingsTargetAudit.md`; the model-side story is in `python/InformalSavings/RESEARCH_LOG.md`).
+Three things changed here, and then everything Argentina was rebuilt from scratch.
+
+**`dataTargets.py` is a new stage (0), and the only part of the pipeline that touches the network.** It
+derives Argentina's `K/Y` from PWT 11.0 via FRED and writes it to `data/`, not `results/` — the target is
+a calibration *input*, on the same footing as the workbook, and `InformalSavings/test.py` reads it from
+there. It exists because that number is a reading of an external series at a chosen year rather than
+something anyone typed: the derivation has to be reproducible, and the record has to carry the window,
+the source and the retrieval date. It writes **both** the calibration-year and the window-mean reading
+every run and names only one of them `capitalOutputRatio` (`--target` chooses), so the choice that was
+made is visible next to the one that was not — the two are 13% apart and they straddle `β = 1`. The
+committed csv means no other stage ever needs the network.
+
+**Stage (i) and (iii) carry `KY` through.** `summarise()` copies it out of the sweep csv, and
+`tables.argentinaCalibration`'s `β` row now reads "Capital--output ratio of $3.23$" where it read
+"Private savings rate of $18.4\%$" — a label that was wrong on the concept, the sector *and* the
+denominator even for the old number. Both edits were made **before** the re-run rather than after, since
+on the old csvs they break the build; that ordering is now step 2 of the runbook.
+
+**`datasets.seedSavings` needed nothing**, which is worth recording as a design paying off: it recovers
+`s_{t0-1}` by inverting eq (calibration) at `t0`, but reads the *achieved* savings rate off the sweep csv
+instead of assuming the target's 0.184. A version that had hard-coded the target would have failed
+silently against a calibration that no longer targets it.
+
+**The re-run**: stage (i) 16/16 in ~2 h, stage (ii) all four experiments in ~40 min, `runTests.py --all`
+26/26, then `build.py`. The Argentina outputs all moved (the pre-reform savings rate reads 14.72% against
+18.40%); the US outputs moved only in the workweek column, from this session's own ageing-scenario
+change, not from anything Argentine.
+
+**Two notes for the next person driving this pipeline.** `--force` is not optional on either expensive
+stage: `calibrateRhoGrid.py`, `shockUniversal.py`, `shockEEOnly.py` and `sweepEpsThetaGrid.py` are each
+resumable on their own csv and will hand back the old rows without a word. And a bare `build.py` rebuilds
+*both* arms, so it publishes whatever in-progress US work is in the tree along with the Argentina
+numbers you meant to publish — `--only` the Argentina targets when that is not wanted.
+
+**The `r'...''s...'` trap above bit again**, in `Quant.tex` and both `model_calibration.tex` files this
+time: "Argentina''s" silently became "Argentinas". Same mechanism as the `tablesUS.py` case, different
+file type, caught by re-reading the rendered line rather than by any check. It is worth treating
+adjacent-literal concatenation inside `r'...'` as a repo-wide hazard rather than a `tablesUS.py` one.

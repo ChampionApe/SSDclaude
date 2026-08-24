@@ -5,17 +5,27 @@ Run:  .venv\Scripts\python.exe python\US\runShocksUS.py                      # r
       ... --family theta                         one family (theta | ageing | french | all)
       ... --commonX                              the common-X calibration variant
 
-Three families, each an unanticipated permanent change at the calibration year, each reported as a full
-effect (tau re-optimised) and an economic-equilibrium-only effect (tau held at the baseline path):
+Three families. Each scenario is a NEW EQUILIBRIUM PATH -- the shocked parameters hold over the whole
+1960-2200 horizon and the economy starts at its own steady state, not the US's -- read at 2020, and
+reported as a full effect (tau re-optimised) and an economic-equilibrium-only effect (tau held at the
+baseline path):
 
-    theta    theta = 0 and theta = 1              -> writing/Paper/Tables/US_PensChars.tex
-    ageing   mild (nu -> (1+nu)/2) and acute (nu -> 1), from 2020 onward   -> US_Ageing.tex
-    french   France's income distribution, leisure preferences, voting     -> US_OtherShocks.tex
+    theta    theta = 0 and theta = 1                              -> writing/Paper/Tables/US_PensChars.tex
+    ageing   mild (nu -> (1+nu)/2) and acute (nu -> 1), throughout -> US_Ageing.tex
+    french   France's income distribution, leisure preferences, voting, and all three at once
+                                                                  -> US_OtherShocks.tex
 
-See shocks.py for what each shock does and for the three reporting conventions (savings rate is s/(w*h),
-the workweek is expressed relative to the baseline, and a copy's db['dates'] must never be used to label
-periods). The French characteristics are read from data/FRMain.xlsx via testEU.py -- France's income
-groups are cut at US percentiles precisely so that these swaps are well defined.
+Plus a FRANCE reference row (--noFrance to skip): France's own calibrated path, read at its own 2020 with
+the US workweek reference, so the French-characteristics rows can be read against the country they are
+borrowed from. That row is the point of the new-path convention -- an unanticipated 2020 reform is not
+commensurable with a country's own equilibrium path, a counterfactual country that has always had these
+characteristics is. Note the France row's WORKWEEK is a calibration target (ModelFR targets hours
+relative to the US), not a prediction; only its tau and savings rate are results.
+
+See shocks.py for what each shock does and for the reporting conventions (savings rate is s/(w*h), the
+workweek is expressed relative to the US baseline, and everything is read at db['t0']). The French
+characteristics are read from data/FRMain.xlsx via testEU.py -- France's income groups are cut at US
+percentiles precisely so that these swaps are well defined.
 
 The calibration at each rho comes from the US sweep csv (results/calibration/US_rhoGrid{,CommonX}.csv),
 so this script never re-runs the outer root: it installs (beta, omega) and solves. That also means every
@@ -40,7 +50,7 @@ from model import ModelUS
 OUTDIR = os.path.join(REPO, 'results', 'shocks')
 
 FAMILIES = {'theta': ('theta0', 'theta1'), 'ageing': ('mild', 'acute'),
-            'french': ('frIncome', 'frLeisure', 'frVoting')}
+            'french': ('frIncome', 'frLeisure', 'frVoting', 'frAll')}
 
 
 def usRow(ρ, commonX):
@@ -90,6 +100,30 @@ def frenchData(m, ρ, preferences, gs = None, commonX = False):
             'θUS': float(m.db['θ'].xs(t0))}
 
 
+def franceReference(ρ, preferences, gs = None, commonX = False, workweekData = None, hbarRef = None):
+    """ France's own calibrated equilibrium at 2020, in the same three columns the US rows carry.
+
+    The endpoint of the "mostly US, partly France" scale: US_OtherShocks reads its French-characteristics
+    rows against this. It is NOT a shock on the US model -- France has its own eta, X, mu, nu AND its own
+    calibrated omega (ModelFR imposes the US beta and searches omega alone), so the gap between the
+    all-characteristics row and this one is exactly what the observable characteristics fail to explain.
+
+    hbarRef is the US baseline's hbar and workweekData the US workbook's own workweek, so the reported
+    number is France's hours on the US scale. That is the comparable object under vector X, where the
+    LEVEL of hbar is not identified -- and it is also ModelFR's own hours target, so this cell reproduces
+    France's observed workweek by construction rather than predicting it. Say so wherever it is printed.
+    """
+    mFR = testEU.model('FR', ρ = float(ρ), commonX = commonX)
+    if gs:
+        getattr(mFR, preferences).initGS(gs)
+    mFR.calibrate(preferences = preferences)
+    out = getattr(mFR, f'solvePEE_{preferences}')()
+    r = sh.readout(mFR, out['τ'], out['report'], workweekData, hbarRef, pos = mFR.db['t0'])
+    r['θ'] = float(mFR.db['θ'].xs(mFR.db['t'][mFR.db['t0']]))
+    r['ω'] = float(mFR.db['ω'].xs(mFR.db['t'][mFR.db['t0']]))
+    return r
+
+
 def main():
     p = argparse.ArgumentParser(description = 'US counterfactuals: theta, ageing, French characteristics.')
     p.add_argument('--rho', type = float, nargs = '*', default = [0.5, 1.0, 2.0])
@@ -103,6 +137,9 @@ def main():
                    help = "hold theta at the US value in the income-distribution counterfactual instead "
                           "of re-deriving it from RR0 (which is what reproduces the paper). See "
                           "shocks.shockIncomeDistribution.")
+    p.add_argument('--noFrance', action = 'store_true',
+                   help = "skip France's own calibrated path, the reference row the French-characteristics "
+                          'counterfactuals are read against. See franceReference.')
     p.add_argument('--out', default = None)
     a = p.parse_args()
 
@@ -161,6 +198,19 @@ def main():
                   'ww={:.2f}   {:.0f}s'.format(
                       name, r['full']['τ'], r['full']['sr'], r['full']['workweek'],
                       r['ee']['τ'], r['ee']['sr'], r['ee']['workweek'], time.time()-tic))
+            pd.DataFrame(rows).to_csv(out, index = False)
+
+        if not a.noFrance:
+            tic = time.time()
+            try:
+                f = franceReference(ρ, preferences, gsFR, a.commonX, workweek, hbarRef)
+                rows.append({'ρ': ρ, 'preferences': preferences, 'family': 'french',
+                             'scenario': 'France (own calibration)', 'effect': 'full', **f})
+                print('  {:<22} full: tau={:.4f} sr={:.4f} ww={:.2f}   |   theta={:.4f} omega={:.4f}'
+                      '   {:.0f}s'.format('France', f['τ'], f['sr'], f['workweek'], f['θ'], f['ω'],
+                                          time.time()-tic))
+            except Exception as e:
+                print(f'  France reference FAILED {type(e).__name__}: {e}')
             pd.DataFrame(rows).to_csv(out, index = False)
 
     pd.DataFrame(rows).to_csv(out, index = False)

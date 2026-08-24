@@ -15,18 +15,27 @@ closed form. LeadedCRRA therefore iterates on the PATH and this file budgets for
     each shock      one path solve per reading
 
 STAGES
-  calib   p such that the leaded choice at t0 reproduces theta*, per (rho, spec, phi). The bracket is
-          scanned an order of magnitude BELOW the LOG one: at rho = 2 the LOG-calibrated p = 0.402 already
-          puts the choice at the theta = 1 corner, which is the same ordering the stake decomposition
-          found (a higher EIS needs far less wedge to reach an interior choice).
+  calib   p such that the equilibrium design IN FORCE at t0 reproduces theta*, per (rho, spec, phi) --
+          ModelESC.leadedDesignAtT0_CRRA, the design chosen one period BEFORE 2020, which is what the
+          tables read. The bracket is scanned an order of magnitude BELOW the LOG one: at rho = 2 the
+          LOG-calibrated p = 0.41 already puts the choice at the theta = 1 corner, which is the same
+          ordering the stake decomposition found (a higher EIS needs far less wedge to reach an interior
+          choice).
   path    the full path iteration at the calibrated p, plus targetDrift.
   sens    stateSensitivity -- d(theta_{t+2})/d(theta_{t+1}), the quantity the path iteration assumes is
           zero. It IS zero under LOG (proved and measured); this reports what it is under CRRA. Any path
           result should be read next to this number.
-  shocks  ageing (mild, acute), theta pinned vs chosen, reported at t0 and t0+1.
+  shocks  counterfactuals, theta pinned vs chosen, each a NEW EQUILIBRIUM PATH (shocked parameters over
+          the whole horizon, own steady state, the choice binding from the first period) and REPORTED AT
+          t0. Default scenario set: acute ageing plus the French characteristics -- income distribution,
+          leisure, voting, their income+voting combination and all three at once -- the same set
+          runESC.py's LOG stage runs, selectable via --scenarios, plus France's own calibrated path as
+          the endpoint row. The French data are frenchData's (runShocksUS.py), calibrated at the SAME rho
+          under CRRA, computed once per rho and shared across specs.
 """
 import os, sys, argparse, time
 import numpy as np, pandas as pd
+from copy import deepcopy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
@@ -37,6 +46,8 @@ os.chdir(HERE)
 import test as testmod
 import shocks as sh
 from modelESC import ModelESC
+from runESC import SHOCKS_ESC, mergeWrite, buildEU, readout as escReadout
+from runShocksUS import frenchData
 
 OUTDIR = os.path.join(REPO, 'results', 'esc')
 GSC = {'n': 101, 'ns': 150, 'smoothKnots': 4, 'interpKind': 'linear'}
@@ -53,6 +64,25 @@ def buildUS(ρ, wedge = None, nθCandCRRA = 13):
     return m
 
 
+def franceRowCRRA(m, ρ, spec, phi, p, hbarRef):
+    """ runESC.franceRow at rho != 1: France's own calibrated equilibrium at 2020 under the same wedge,
+    exogenous theta, in escShocksCRRA's row schema. See runESC.franceRow for what the row means and why
+    its workweek is a target rather than a prediction. """
+    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, ρ = ρ)
+    mFR.CRRA.initGS(GSC)
+    mFR.calibrate(preferences = 'CRRA')
+    pos = mFR.db['t0']
+    out = mFR.solvePEE_CRRA()
+    ww = float(m.db['workweek'])
+    r0 = escReadout(mFR, out['τ'], out['report'], hbarRef, pos, workweekData = ww)
+    r1 = escReadout(mFR, out['τ'], out['report'], hbarRef, pos+1, workweekData = ww)
+    θ = mFR.db['θ'].values.astype(float)
+    return {'ρ': ρ, 'spec': spec, 'phi': phi, 'p': p, 'scenario': 'France', 'θpinned': True,
+            'θ_tm1': float(θ[pos-1]), 'θ_t0': float(θ[pos]), 'θ_t1': float(θ[pos+1]),
+            'τ_t0': r0['τ'], 'sr_t0': r0['sr'], 'ww_t0': r0['workweek'],
+            'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek']}
+
+
 def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21):
     """ The permanent choice under CRRA, traced in rho.
 
@@ -60,7 +90,11 @@ def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21):
     no wedge the objective is essentially MONOTONE in theta, so the choice is always a corner -- and WHICH
     corner flips inside the paper's own rho range: theta = 0 for rho <~ 1.3 (the appendix's result, found
     at rho = 1) and theta = 1 above it. The gaps W(0) - W(1) are recorded so the flatness is visible rather
-    than inferred from the argmax alone. """
+    than inferred from the argmax alone.
+
+    theta_perm is the anticipated vote's fixed point (modelESC.solvePermanent's default); the unanticipated
+    reading is recorded beside it. Every row here is a corner, where the two cannot differ -- which is
+    exactly the case finding #10 warns about, so the column is kept to make that visible."""
     rows = []
     for ρ in ρs:
         for spec in specs:
@@ -83,6 +117,8 @@ def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21):
                                      'p': np.nan if wedge is None else wedge['p'],
                                      'θStar': float(m.db['θ'].xs(m.t0Year)), 'θPerm': r['θ'],
                                      'atBound': r['atBound'], 'W0gap': W[0], 'W1gap': W[-1],
+                                     'converged': r['converged'],
+                                     'θPermIncumbent': r['θIncumbent'],
                                      'τAtChoice': r['τAtChoice']})
                         print('  rho={:<5} {:<6} wedge={:<11} θ_perm={:.4f}  corner={:<5} '
                               'W(0)-max={:+.5f} W(1)-max={:+.5f}  [{:.0f}s]'.format(
@@ -100,8 +136,16 @@ def main():
     p.add_argument('--phi', type = float, nargs = '*', default = [0.5])
     p.add_argument('--stage', nargs = '*', default = ['calib', 'path', 'sens', 'shocks'],
                    help = "add 'permanent' for the permanent-choice trace in rho")
-    p.add_argument('--bracket', type = float, nargs = 2, default = [0.01, 0.6])
-    p.add_argument('--nScan', type = int, default = 10)
+    p.add_argument('--scenarios', nargs = '*',
+                   default = ['baseline', 'acute', 'frIncome', 'frLeisure', 'frVoting', 'frBoth', 'frAll'],
+                   help = 'shock stage scenarios; any key of runESC.SHOCKS_ESC plus "baseline"')
+    # ONE bracket cannot serve every rho. The required cost falls steeply in the intertemporal
+    # elasticity -- p is about 0.95, 0.41, 0.09 at rho = 0.5, 1, 2 -- so the old default [0.01, 0.6],
+    # chosen for rho = 2, sits entirely BELOW the root at rho = 0.5 and the scan correctly reports no
+    # crossing rather than returning a number. Spanning all three costs only scan nodes, so the default
+    # spans them and nScan rises to keep the resolution per decade roughly what it was.
+    p.add_argument('--bracket', type = float, nargs = 2, default = [0.01, 3.0])
+    p.add_argument('--nScan', type = int, default = 14)
     p.add_argument('--nCand', type = int, default = 13)
     p.add_argument('--maxIter', type = int, default = 4)
     p.add_argument('--tag', default = '')
@@ -120,6 +164,7 @@ def main():
             return 0
 
     calRows, pathRows, shkRows = [], [], []
+    frDataCache = {}
     for ρ in a.rho:
         for spec in a.spec:
             for phi in a.phi:
@@ -144,7 +189,7 @@ def main():
                         print(f'  FAILED {type(e).__name__}: {e}')
                         calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'p': np.nan,
                                         'converged': False, 'message': f'{type(e).__name__}: {e}'})
-                    pd.DataFrame(calRows).to_csv(fCal, index = False)
+                    mergeWrite(fCal, calRows, ['ρ', 'spec', 'phi'])
                 else:
                     hit = pd.read_csv(fCal)
                     hit = hit[(hit['ρ'] == ρ) & (hit['spec'] == spec) & (hit['phi'] == phi)]
@@ -162,7 +207,9 @@ def main():
                     tic = time.time()
                     print(f'\n=== [{tag}] design path (p={pCal:.4f}, θ*={θStar:.4f}) ===')
                     try:
-                        led = m.solveLeadedCRRA(maxIter = a.maxIter)
+                        # pinAtT0 explicitly, not by default: the reported path is the free one, so that
+                        # theta_{t0} is the equilibrium design the shocks stage and the tables read.
+                        led = m.solveLeadedCRRA(maxIter = a.maxIter, pinAtT0 = False)
                         base = m.solvePEE_CRRA()
                         hbarRef = float(m.B.avgHours(base['report']['h'].xs(t0), t0))
                         dates = m.db['dates']
@@ -182,7 +229,7 @@ def main():
                         print('  θ path: {}   (converged={}, {:.0f}s)'.format(
                             '  '.join('{:.4f}'.format(x) for x in led['θ'].values[:7]),
                             led['converged'], time.time()-tic))
-                        pd.DataFrame(pathRows).to_csv(fPath, index = False)
+                        mergeWrite(fPath, pathRows, ['ρ', 'spec', 'phi', 'pos'])
                     except Exception as e:
                         print(f'  path FAILED {type(e).__name__}: {e}')
 
@@ -199,7 +246,8 @@ def main():
                         for r in calRows:
                             if (r['ρ'], r['spec'], r['phi']) == (ρ, spec, phi):
                                 r['stateSlope'] = sens['slope']
-                        pd.DataFrame(calRows).to_csv(fCal, index = False)
+                        if calRows:
+                            mergeWrite(fCal, calRows, ['ρ', 'spec', 'phi'])
                     except Exception as e:
                         print(f'  sens FAILED {type(e).__name__}: {e}')
 
@@ -207,39 +255,63 @@ def main():
                 if 'shocks' in a.stage:
                     base = m.solvePEE_CRRA()
                     hbarRef = float(m.B.avgHours(base['report']['h'].xs(t0), t0))
-                    seed = m.stateAtT0(base['report'], t0)
-                    for name in ('baseline', 'mild', 'acute'):
+                    pos0 = m.db['t0']
+                    frData = None
+                    if any(n.startswith('fr') for n in a.scenarios):
+                        if ρ not in frDataCache:
+                            print('  calibrating France at rho={} for the French scenarios ...'.format(ρ))
+                            frDataCache[ρ] = frenchData(m, ρ, 'CRRA', gs = GSC)
+                        frData = frDataCache[ρ]
+                    for name in a.scenarios:
                         for pin in (True, False):
                             tic = time.time()
                             try:
-                                mt = m.createCopyFromt0(t0)
-                                if name != 'baseline':
-                                    sh.SHOCKS[name][1](mt, None)
+                                # New equilibrium path, as runESC.leadedNewPath: the shock holds over the
+                                # whole horizon, the economy starts at its own steady state (no s0 seed),
+                                # and the design is chosen from the first period when pin is False.
+                                mt, _ = sh.shockedCopy(m, name, frData, SHOCKS_ESC) \
+                                        if name != 'baseline' else (deepcopy(m), None)
+                                if name == 'baseline':
+                                    mt.x0, mt.LOG.x0, mt.CRRA.x0 = {}, {}, {}
                                 if pin:
                                     θp = mt.db['θ'].values.astype(float)
-                                    o = mt.solvePEE_CRRA(θ = θp, ε = mt.db['eps'].values.astype(float),
-                                                         **seed)
+                                    o = mt.solvePEE_CRRA(θ = θp, ε = mt.db['eps'].values.astype(float))
                                     θPath, out = pd.Series(θp, index = mt.db['t']), o
                                 else:
-                                    rec = mt.solveLeadedCRRA(s0 = seed['s0'], maxIter = a.maxIter,
-                                                             verbose = False)
+                                    rec = mt.solveLeadedCRRA(maxIter = a.maxIter, verbose = False,
+                                                             pinAtT0 = False)
                                     θPath, out = rec['θ'], rec['out']
                                 r0 = sh.readout(mt, out['τ'], out['report'], float(mt.db['workweek']),
-                                                hbarRef, pos = 0)
+                                                hbarRef, pos = pos0)
                                 r1 = sh.readout(mt, out['τ'], out['report'], float(mt.db['workweek']),
-                                                hbarRef, pos = 1)
+                                                hbarRef, pos = pos0+1)
                                 shkRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'p': pCal,
                                                 'scenario': name, 'θpinned': pin,
-                                                'θ_t0': float(θPath.iloc[0]), 'θ_t1': float(θPath.iloc[1]),
-                                                'θ_t2': float(θPath.iloc[2]),
+                                                'θ_tm1': float(θPath.iloc[pos0-1]),
+                                                'θ_t0': float(θPath.iloc[pos0]),
+                                                'θ_t1': float(θPath.iloc[pos0+1]),
                                                 'τ_t0': r0['τ'], 'sr_t0': r0['sr'], 'ww_t0': r0['workweek'],
                                                 'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek']})
-                                print('  {:<9} pin={:<5} θ_t1={:.4f}  τ_t0={:.4f} τ_t1={:.4f} sr_t1={:.4f}'
-                                      '  [{:.0f}s]'.format(name, str(pin), float(θPath.iloc[1]),
-                                                           r0['τ'], r1['τ'], r1['sr'], time.time()-tic))
-                                pd.DataFrame(shkRows).to_csv(fShk, index = False)
+                                print('  {:<9} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} '
+                                      'ww_t0={:.2f}  (θ_t1={:.4f}, {:.0f}s)'.format(
+                                          name, str(pin), float(θPath.iloc[pos0]), r0['τ'], r0['sr'],
+                                          r0['workweek'], float(θPath.iloc[pos0+1]), time.time()-tic))
+                                mergeWrite(fShk, shkRows, ['ρ', 'spec', 'phi', 'scenario', 'θpinned'])
                             except Exception as e:
                                 print(f'  {name} pin={pin} FAILED {type(e).__name__}: {e}')
+
+                    # France's own calibrated path at this rho -- the endpoint the French-characteristics
+                    # rows are read against (runESC.franceRow's CRRA counterpart, exogenous theta).
+                    try:
+                        tic = time.time()
+                        f = franceRowCRRA(m, ρ, spec, phi, pCal, hbarRef)
+                        shkRows.append(f)
+                        print('  {:<9} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}'
+                              '  [{:.0f}s]'.format('France', 'True', f['θ_t0'], f['τ_t0'], f['sr_t0'],
+                                                   f['ww_t0'], time.time()-tic))
+                        mergeWrite(fShk, shkRows, ['ρ', 'spec', 'phi', 'scenario', 'θpinned'])
+                    except Exception as e:
+                        print(f'  France FAILED {type(e).__name__}: {e}')
     print('\n-> {}'.format(os.path.relpath(OUTDIR, REPO)))
     return 0
 

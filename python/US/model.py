@@ -621,17 +621,41 @@ class ModelUS:
         Scalar in/out, matching scipy.optimize.brentq's signature. """
         return Γs - self.B.Γs(self.B.BSteadyState(Γs, τ, θ, t), τ, θ, t)
 
-    def steadyState_CRRA_bounds(self, τ, θ, t = None, upper = 0.75, margin = 0.99, lower = 1e-6):
-        """ Bracket for steadyState_CRRA_solve's Γs search: (lower, min(upper, margin·Base.ΓsCap)).
+    def steadyState_CRRA_bounds(self, τ, θ, t = None, upper = 0.75, margin = 0.99, lower = 1e-6,
+                                maxExpand = 40):
+        """ Bracket for steadyState_CRRA_solve's Γs search: (lower, min(upper, margin·Base.ΓsCap)),
+        widened upward if that does not actually bracket a root.
 
-        `upper` alone -- the constant 0.75 the Argentina models use -- is NOT safe at US parameters. The
-        Θh denominator turns negative at Base.ΓsCap, which at this calibration falls below 0.75 once
-        τ ≳ 0.78, and steadyStatePEE_CRRA searches τ over the whole of [l,u]. brentq then evaluates a NaN
-        and raises "function value at x=0.75 is NaN" -- a failure that points at the solver rather than at
-        the infeasible bracket that caused it. Tying the bracket to the model removes the trap instead of
-        retuning the constant, which would only move the τ at which it reappears. """
+        `upper` alone -- the constant 0.75 the Argentina models use -- is NOT safe at US parameters, and
+        it fails in BOTH directions:
+
+        Too high. The Θh denominator turns negative at Base.ΓsCap, which at this calibration falls below
+        0.75 once τ ≳ 0.78, and steadyStatePEE_CRRA searches τ over the whole of [l,u]. brentq then
+        evaluates a NaN and raises "function value at x=0.75 is NaN" -- a failure that points at the
+        solver rather than at the infeasible bracket that caused it. min(upper, margin·ΓsCap) fixes that.
+
+        Too low. At θ = 0 -- the θ = 0 counterfactual, over the whole horizon -- ΓsCap is infinite
+        (eq:auxiliary:Thetah's denominator carries θτ), so NOTHING ties the upper end to the model and
+        0.75 is a bare guess. At ρ = 2 and τ near 1 the root sits above it: the residual is negative at
+        both ends and brentq raises "f(a) and f(b) must have different signs". Hence the expansion, which
+        runs only when the default bracket has failed, so it can never change a call that already worked.
+        Expanding rather than retuning the constant is the same choice as above -- a bigger constant would
+        only move the (ρ, θ, τ) at which it reappears. See notes/crossCuttingFindings.md #7. """
         t = self.B.tFirst if t is None else t
-        return (lower, min(upper, margin*self.B.ΓsCap(τ, θ, t)))
+        cap = self.B.ΓsCap(τ, θ, t)
+        hi = min(upper, margin*cap)
+        f = lambda x: self.steadyState_CRRA_residual(x, τ, θ, t)
+        brackets = lambda a, b: np.isfinite(a) and np.isfinite(b) and a*b < 0
+        fLo = f(lower)
+        if brackets(fLo, f(hi)):
+            return (lower, hi)
+        for _ in range(maxExpand):
+            hi = min(2*hi, margin*cap)
+            if brackets(fLo, f(hi)):
+                return (lower, hi)
+            if hi >= margin*cap:                 # nothing left to expand into
+                break
+        return (lower, min(upper, margin*cap))   # give up: let brentq report the original failure
 
     def steadyState_CRRA_solve(self, τ, θ, t = None, bounds = None, tol = 1e-11, **kwargs):
         """ Root-find the CRRA steady state Γs via brentq (bounded scalar search, per the doc's own
