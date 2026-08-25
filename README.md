@@ -1,8 +1,7 @@
 # SSDclaude
 
 Code repository for *Social Security Design and Its Political Support* (2026). See `CLAUDE.md` for project
-conventions; this file is a map. The paper itself is on Overleaf:
-https://da.overleaf.com/project/6a4b74c7259adae491b45669
+conventions; this file is a map.
 
 ## Layout
 
@@ -42,16 +41,16 @@ beside the live ones — `notes/crossCuttingFindings.md` #8.
 | `todo_escPermanentTiming.md` | the one piece of open ESC work |
 | `archive/` | measurements and results demoted out of the module READMEs |
 
-**`writing/`** — tex documentation: `main.tex` plus one subfolder per model variant, each with
+**`writing/`** 
+* Tex documentation: `main.tex` plus one subfolder per model variant, each with
 `model*.tex` (model and equilibrium definitions) and `num*.tex` (numerical solution).
-`US/model_esc.tex` / `num_esc.tex` document the endogenous choice of `θ`. The `num*.tex` sets are written
-as self-contained, final-state technical notes for the public repo: strategy overview and repo URL in
+* `US/model_esc.tex` / `num_esc.tex` document the endogenous choice of `θ`.
+* The `num*.tex` sets are written as self-contained, final-state technical notes for the public repo: strategy overview and repo URL in
 `num.tex`, the shared grid-search machinery stated once per model in `num_robustroot.tex`
 (`eq:extendedGrid`/`eq:objectiveProfile`/`eq:candidates` are defined there, not in `num_peeLOG.tex`), and
-no development history — that stays in `notes/` and the logs. Docstring-cited labels were preserved
-throughout the 2026-08-25 restructure; keep them stable, or follow a rename through the `.py` files. **`writing/Paper/`** holds the
-current draft. Compiled locally by the user, not by agents; do not hand-edit a generated `.tex` there —
-it carries a `%% GENERATED` banner and the next `build.py` overwrites it.
+no development history — that stays in `notes/` and the logs.
+* Docstring-cited labels were preserved throughout the 2026-08-25 restructure; keep them stable, or follow a rename through the `.py` files.
+* **`writing/Paper/`** holds the current draft. Compiled locally by the user, not by agents; do not hand-edit a generated `.tex` there — it carries a `%% GENERATED` banner and the next `build.py` overwrites it.
 
 **`RESEARCH_LOG.md`** — cross-cutting session log (repo organization, decisions spanning modules).
 Model-specific logs live under `python/<module>/`. **`pyenv.md`** — required packages and versions.
