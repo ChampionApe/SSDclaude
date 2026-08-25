@@ -30,12 +30,6 @@ def _wrap(name, src, caption, label, colspec, header, rows, note):
             + '\n\\end{tablenotes}\n\\end{threeparttable}\n\\end{table}\n')
 
 
-def _sci(x):
-    """ 1.05e-09 -> '1.0\\times 10^{-9}', for inside math mode. """
-    m, e = '{:.1e}'.format(x).split('e')
-    return m + r'\times 10^{' + str(int(e)) + '}'
-
-
 # ---------------------------------------------------------------------------------------------------
 def argentinaCalibration():
     r""" Table \ref{table:Arg:Calib}: the calibrated and fixed parameters, with the target each one is
@@ -59,10 +53,7 @@ def argentinaCalibration():
          r'Informal relative income, eq.\ \eqref{eq:calibration_eta}'],
         [r'$X_0$',      '$' + C.num(c['X0'], 3) + '$', 'Informal relative working hours'],
     ]
-    note = (r'\textit{Note:} Our default specification relies on $\rho=' + C.num(c['ρ'], 0) + r'$. '
-            r'$\beta$, $\omega$, $\eta_0$ and $X_0$ are solved jointly for the four targets shown; the '
-            r'remaining parameters are set outside the model. $\nu_t$ reports the first and last dated '
-            r'entry of the path. Maximum calibration residual $' + _sci(c['residual']) + r'$.')
+    note = r'\textit{Note:} Our default specification relies on $\rho=' + C.num(c['ρ'], 0) + r'$.'
     return _wrap('ArgentinaCalibration', 'results/paper/calibrationSummary.csv',
                  'Calibration, Argentina', 'table:Arg:Calib', 'lll',
                  [r'\textbf{Parameter}', r'\textbf{Value}', r'\textbf{Target}'], rows, note)

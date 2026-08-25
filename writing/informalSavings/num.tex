@@ -3,22 +3,30 @@
 \edef\refalg{\refnumalg}
 
 \section{Numerical Solution}\label{\refsec}
-Before we outline the specific solutions, we start by collecting all relevant baseline equations in one with explicit reference to the arguments that may change during a solution (all of these are simply copies from \cref{\refmodelsec}, but collected here for simplicity). We reference them with explicit arguments for the parts that may change during solution/simulation/calibration stages: 
+This section documents how the model is solved numerically. Three ideas organise the approach, and they recur throughout:
+\begin{enumerate}
+    \item \emph{Policies are identified from first order conditions, solved as root problems.} Combined with the result of \cref{\refmodelsec:PEE} that the predetermined savings shares $s_{t-1,i}/s_{t-1}$ are closed-form functions of the current tax, this keeps the entire distribution of past savings out of the political state space. What survives is small: under log preferences a single endogenous state, the informal savings ratio $\iota_{t-1}$; under CRRA preferences that ratio plus the aggregate savings level $s_{t-1}$. The political problem is accordingly solved as a backward recursion over policy \emph{functions} of these states, never over the distribution.
+    \item \emph{Root problems are solved on grids that handle corner solutions and multiple roots by construction.} Corners and multiplicity are resolved by reconstructing the political objective from the same grid evaluations that locate the roots, and those evaluations are reused once more to approximate the derivatives that have no closed form. \Cref{\refsec:RobustRoot} collects this machinery once; the subsections after it apply it.
+    \item \emph{Structure is exploited before brute force.} Under log preferences the state enters the first order condition through one additive term, so a state grid costs a rank-one correction (\cref{\refsec:PEELOG}); under CRRA preferences the two states unnest \emph{exactly} into two one-dimensional root problems, and the predetermined states enter only through broadcasts (\cref{\refsec:PEE}). The recursion delivers policy functions; a separate step (\cref{\refsec:PEEpath}) pins down the initial state, walks the functions forward, and re-solves the economic equilibrium exactly at the resulting policy path, so that reported allocations carry machine precision rather than grid accuracy.
+\end{enumerate}
+A complete implementation accompanies the paper in the online repository at \url{https://github.com/ChampionApe/SSDclaude}: the model-specific code is in \texttt{python/InformalSavings} and the generic grid-search routines in \texttt{python/gridsearch}. The presentation here is self-contained and does not presume familiarity with the code; conversely, the docstrings in the code cite the equation labels used below.
+
+Before we outline the specific solutions, we collect all relevant baseline equations in one place with explicit reference to the arguments that may change during a solution (all of these are simply copies from \cref{\refmodelsec}, but collected here for simplicity). We reference them with explicit arguments for the parts that may change during solution/simulation/calibration stages:
 \begin{subequations}\label{\refeq:auxiliary}
     \begin{align}
         \Gamma_{s,t}\left(\bm{B}_{t+1}, \tau_{t+1}, \theta_{t+1} \right) &= \frac{1}{1+\xi}\frac{\sum_i \frac{\gamma_{t,i}\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\frac{B_{t+1}^i}{1+B_{t+1}^i}}{1+\frac{1-\alpha}{\alpha}\frac{p_t\tau_{t+1}}{\kappa_t}\left(\theta_{t+1}+(1-\theta_{t+1})\sum_i\frac{\gamma_{t,i}}{1+B_{t+1}^i}\right)},
         \label{\refeq:auxiliary:Gammas} \\
-        \Theta_{h,t}\left(\tau_t, \tau_{t+1}, \theta_{t+1}, \Gamma_{s,t}\right) &= \left(\Gamma_{h,t}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{(1-\alpha)(1-\tau_t)}{\Gamma_{h,t}-\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}\tau_{t+1}}{\kappa_t}\Gamma_{s,t}}\right)^{\frac{\xi}{1+\alpha\xi}} 
-        \label{\refeq:auxiliary:Thetah} \\ 
+        \Theta_{h,t}\left(\tau_t, \tau_{t+1}, \theta_{t+1}, \Gamma_{s,t}\right) &= \left(\Gamma_{h,t}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{(1-\alpha)(1-\tau_t)}{\Gamma_{h,t}-\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}\tau_{t+1}}{\kappa_t}\Gamma_{s,t}}\right)^{\frac{\xi}{1+\alpha\xi}}
+        \label{\refeq:auxiliary:Thetah} \\
         \Theta_{h,T}\left(\tau_T\right) &= \left(\Gamma_{h,T}\right)^{\frac{1}{1+\alpha\xi}}\left((1-\alpha)(1-\tau_T)\right)^{\frac{\xi}{1+\alpha\xi}}
         \label{\refeq:auxiliary:ThetahT} \\
         \Theta_{s,t}\left(\Theta_{h,t}, \Gamma_{s,t}\right) &= \left(\frac{\Theta_{h,t}}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}} \Gamma_{s,t}
         \label{\refeq:auxiliary:Thetas} \\
-        s_t(\Theta_{s,t}, s_{t-1}) &= \Theta_{s,t} \left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}} 
+        s_t(\Theta_{s,t}, s_{t-1}) &= \Theta_{s,t} \left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}
         \label{\refeq:auxiliary:s} \\
-        h_t\left(\Theta_{h,t}, s_{t-1}\right) &= \Theta_{h,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}} \label{\refeq:auxiliary:h} \\ 
-        B_{t+1}^i\left(s_t, h_{t+1}\right) &=\left(\beta_{t,i}\right)^{\rho}\left[\frac{\alpha}{p_t}\left(\frac{s_t}{\nu_{t+1}h_{t+1}}\right)^{\alpha-1}\right]^{\rho-1}  
-        \label{\refeq:auxiliary:B} \\ 
+        h_t\left(\Theta_{h,t}, s_{t-1}\right) &= \Theta_{h,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}} \label{\refeq:auxiliary:h} \\
+        B_{t+1}^i\left(s_t, h_{t+1}\right) &=\left(\beta_{t,i}\right)^{\rho}\left[\frac{\alpha}{p_t}\left(\frac{s_t}{\nu_{t+1}h_{t+1}}\right)^{\alpha-1}\right]^{\rho-1}
+        \label{\refeq:auxiliary:B} \\
         R_{t+1}\left(s_t, h_{t+1}\right) &= \alpha \left(\frac{s_t}{\nu_{t+1}h_{t+1}}\right)^{\alpha-1} \label{\refeq:auxiliary:R} \\
         R_{t+1}^0\left(s_t, h_{t+1}\right) &= \chi_{t+1}^R R_{t+1}\left(s_t, h_{t+1}\right) \label{\refeq:auxiliary:R0} \\
         B_{t+1}^0\left(s_t, h_{t+1}\right) &= \left(\beta_{t,0}\right)^{\rho}\left[\frac{R_{t+1}^0\left(s_t, h_{t+1}\right)}{p_{t,0}}\right]^{\rho-1} \label{\refeq:auxiliary:B0} \\
@@ -30,7 +38,7 @@ Before we outline the specific solutions, we start by collecting all relevant ba
         \iota_t\Bigg(B_{t+1}^0, \Theta_{s,t}, \tau_{t+1}, \epsilon_{t+1}\Bigg) &= \frac{B_{t+1}^0}{1+B_{t+1}^0}\frac{\eta_{t,0}^{1+\xi}}{X_{t,0}^{\xi}(1+\xi)}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}
         \frac{1}{\Theta_{s,t}}-\frac{A_{t+1}\tau_{t+1}}{1+B_{t+1}^0} \label{\refeq:auxiliary:s0_s},
     \end{align}
-where have used the shorthand $\iota_t \equiv s_{t,0}/s_t$. The coefficient $A_t$ in \eqref{\refeq:auxiliary:Ainf} is the informal household's discounted pension term written per unit of $\tau$ and of aggregate savings; it is a pure parameter function, and it recurs throughout: $A_{t+1}$ is what multiplies $\tau_{t+1}s_t$ in $\iota_t$ and in $c_{1,t}^0, \tilde{c}_{1,t}^0$, while $A_t$ is what multiplies $\tau_t$ inside the bracket of $c_{2,t}^0$ in \eqref{\refmodeleq:EE:c0}.
+where we have used the shorthand $\iota_t \equiv s_{t,0}/s_t$. The coefficient $A_t$ in \eqref{\refeq:auxiliary:Ainf} is the informal household's discounted pension term written per unit of $\tau$ and of aggregate savings; it is a pure parameter function, and it recurs throughout: $A_{t+1}$ is what multiplies $\tau_{t+1}s_t$ in $\iota_t$ and in $c_{1,t}^0, \tilde{c}_{1,t}^0$, while $A_t$ is what multiplies $\tau_t$ inside the bracket of $c_{2,t}^0$ in \eqref{\refmodeleq:EE:c0}.
 \end{subequations}
 
 \input{num_ee}

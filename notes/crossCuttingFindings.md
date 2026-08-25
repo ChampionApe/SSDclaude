@@ -291,3 +291,44 @@ derive it and write that record itself, including the readings it did *not* adop
 **The tell.** A target whose model side is a ratio of two objects at *different time aggregations* — a
 stock over a flow, a per-period quantity over a per-year one. Convert the model's moment into the data's
 units by hand, once, and see whether the number is one anybody would have written down.
+
+## 13. A resumable producer is keyed on the question, not on what answered it
+
+A script that writes its output incrementally and skips points already on disk is resumable *within* one
+setup. Across a change in what produced the rows it is a **silent mixer**: the key is the parameter point,
+nothing in the row records the calibration, instance or settings behind it, and the resume logic cannot
+tell a point it computed yesterday from one computed under different parameters.
+
+Measured. `sweepEpsThetaGrid.py` keys on `(eps, theta)`. The 2026-08-24 K/Y retarget moved the calibrated
+`eps` from 0.336677 to 0.305025 and `beta` from 1.212 to 0.808. The sweep was re-run but not forced, so it
+**added** the new calibrated column and kept everything else: 378 of the resulting 392 rows were
+bit-identical to the pre-retarget file, `time` column included — proof they were never re-solved. The
+paper figure then showed one column of the current economy inside a surface of the old one, with a
+3.7 p.p. discontinuity in the savings-rate panel and the whole workweek panel rescaled against a reference
+that belonged to the fresh column alone.
+
+**Why every guard missed it.**
+- **The shape check passed.** The loader required a complete `eps x theta` rectangle. Staleness *adds* a
+  column, so 28x14 = 392 is as rectangular as 27x14 = 378. A shape check answers "is it finished", never
+  "is it about the current question".
+- **The rows were well formed and individually correct** — each is a true equilibrium, of a different
+  economy. Same trap as #8, one directory level down: there the mixed provenance was across files, here it
+  is across rows of one file.
+- **The one real tell was semantic**, not structural: the csv carried **two** rows flagged `statusQuo`,
+  because the pinned calibrated point is inserted into the grid and the old one was never removed. Nothing
+  looked at it, and the figure builder took `.iloc[0]` — which picked the right one only by sort order.
+- **The documented remedy was unreachable.** The pipeline's `--force` was never forwarded to the child, so
+  anyone who had followed the written advice would still have got the stale file.
+
+**The habit.**
+- **Give every resumable output a row that must agree with the current inputs**, and make the loader check
+  it. A distinguished point already in the grid (here `statusQuo`) is usually available for free; require
+  **exactly one**, and require it to match the calibration record.
+- **`--force` must reach the process that owns the skip.** A flag that only defeats the caller's own
+  bookkeeping is worse than none: it reads as compliance.
+- **State the invalidating event, not the invalidating setting.** The docstring warned about changed grid
+  settings and said nothing about a recalibration, which is the input that actually moved. Enumerate what
+  the rows depend on, then ask which of those the key records — the difference is the exposure.
+
+**The tell.** A producer whose skip key is a strict subset of what its rows depend on. Ask what the row
+would have to carry for the resume to be *safe*, and whether any column carries it.

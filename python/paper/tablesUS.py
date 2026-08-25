@@ -213,7 +213,7 @@ def usukfrCalibration():
     note = (r'\item $\rho = ' + C.num(C.US['ρBaseline'], 1) + r'$. $X$ is the population-weighted mean '
             r'of $X_i$; its level is the hours unit, pinned for France and the UK by targeting average '
             r'hours relative to the US rather than in levels. $\beta$ is calibrated for the US and '
-            r'imposed on the other two, which is why $\omega$ is their only searched parameter.')
+            r'imposed on the other two.')
     return (BANNER.format(name = 'USUKFRCalibration', src = 'results/paper/usCalibrationSummary.csv')
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
             + '\\caption{Calibration, US, UK, and France}\n\\label{table:US:Calib}\n'

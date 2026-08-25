@@ -79,10 +79,19 @@ def shockAtPeriod(period = 0, scenario = 'reform', rule = None, ρGrid = None):
 def epsThetaGrid(ρ = None):
     """ The Cartesian (eps, theta) grid at the calibration year, one row per pair.
 
-    Checked to be a COMPLETE rectangle before it is returned. figures.argLogFourInOne pivots this into
-    an eps x theta matrix and fills between adjacent theta columns; a missing pair becomes a NaN in the
-    matrix and fill_between drops that span silently, so a partially-resumed sweep would render as a
-    figure with holes rather than as an error. """
+    Two shape checks, because the producer is resumable on its own csv and so has two distinct ways of
+    handing back a file that is the wrong ANSWER rather than a missing one.
+
+    COMPLETE RECTANGLE. figures.argLogFourInOne pivots this into an eps x theta matrix and fills
+    between adjacent theta columns; a missing pair becomes a NaN in the matrix and fill_between drops
+    that span silently, so a partially-resumed sweep would render as a figure with holes.
+
+    ONE statusQuo ROW, AT THE CURRENT CALIBRATION. sweepEpsThetaGrid.py resumes on the (eps, theta)
+    key and pins the calibrated eps into its grid, so after a recalibration a resumed run ADDS the new
+    calibrated column and keeps every row solved at the old parameters. The rectangle check cannot see
+    that -- staleness adds a column rather than leaving a hole -- but the csv then carries two rows
+    flagged statusQuo, and a wholly stale csv carries one that does not match calibrationSummary. Both
+    are caught here. This was live: 378 of 392 rows survived the 2026-08-24 K/Y retarget. """
     ρ = C.ARG['ρBaseline'] if ρ is None else ρ
     path = _need(os.path.join(C.SWEEPDIR, 'epsThetaGrid_rho{:.4f}.csv'.format(ρ)))
     df = pd.read_csv(path)
@@ -90,6 +99,18 @@ def epsThetaGrid(ρ = None):
     if len(df) != nε * nθ:
         raise MissingInput('{} (incomplete grid: {} rows for {} eps x {} theta)'.format(
             path, len(df), nε, nθ))
+    sq = df[df['statusQuo'] == True]
+    if len(sq) != 1:
+        raise MissingInput('{} ({} statusQuo rows, expected 1 -- the sweep resumed across a '
+                           'recalibration and the csv mixes parameter sets; re-run it with --force)'
+                           .format(path, len(sq)))
+    cal = calibrationSummary()
+    if np.isclose(cal['ρ'], ρ) and not (np.isclose(float(sq['eps'].iloc[0]), cal['ε'])
+                                        and np.isclose(float(sq['theta'].iloc[0]), cal['θ'])):
+        raise MissingInput('{} (status quo at (eps, theta) = ({:.6f}, {:.6f}), but the calibration is '
+                           'at ({:.6f}, {:.6f}) -- the whole sweep predates it; re-run it with --force)'
+                           .format(path, float(sq['eps'].iloc[0]), float(sq['theta'].iloc[0]),
+                                   cal['ε'], cal['θ']))
     return df
 
 

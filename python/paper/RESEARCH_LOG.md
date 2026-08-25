@@ -155,3 +155,53 @@ The README lost its narrative sections to this log and to `notes/`, and gained a
 `writing/Paper` is not tracked by git, which is false (42 files are). That mattered, because it was the
 stated reason `results/paper/superseded/` had to be preserved indefinitely. The originals are in git at
 `bfba998:results/paper/superseded/` and the directory is gone from the working tree.
+
+## 2026-08-25 — a two-calibration sweep behind `ARG_LOG_FourInOne`, and the guards that now stop it
+
+**The figure was wrong on the page and had been since the retarget.** `results/sweeps/epsThetaGrid` is
+resumable on `(eps, theta)`, so the 2026-08-24 K/Y re-run *added* the new calibrated `eps` column and kept
+everything else: 378 of 392 rows were bit-identical to the pre-retarget file, `time` column included. The
+figure showed one column of the current economy inside a surface of the old one — a 3.7 p.p. notch in the
+savings-rate panel, and the whole workweek panel rescaled against an `hRef` that belonged only to the
+fresh column. Generalised as `crossCuttingFindings.md` #13; the archived file is
+`results/sweeps/superseded/epsThetaGrid_rho1.0000_preKYretarget.csv`.
+
+**Neither existing guard could have caught it, and that is the transferable part.** The rectangle check
+asks "is this finished", and staleness *adds a column* rather than leaving a hole — 28x14 is as
+rectangular as 27x14. The real tell was semantic: **two rows flagged `statusQuo`**, since the pinned
+calibrated point is inserted and the old one is never removed. `datasets.epsThetaGrid` now requires
+exactly one, **and** requires it to match `calibrationSummary` — the second check is the one that matters,
+because a *wholly* stale csv has exactly one `statusQuo` row and would pass the first. Tested against all
+four states (fresh, mixed, wholly stale, truncated).
+
+**`--force` was documentation, not behaviour.** It only ever defeated `runShocks.py`'s own skip; it was
+never appended to the child command. So the 2026-08-24 entry's "`--force` is not optional on either
+expensive stage" was unactionable — and also overstated: `sweepEpsThetaGrid.py` is the **only** one of the
+seven children across both arms that resumes from its own csv. The two Argentina shock scripts and
+`runShocksUS.py` `to_csv` outright; the ESC drivers `mergeWrite`, which replaces the keys the run produced.
+It is now declared per entry (`'force': ['--force']`) rather than assumed universal, since a flag the child
+does not parse would crash argparse.
+
+**A flag that reads as compliance but does nothing is worse than no flag.** Anyone who had followed the
+written advice would still have received the stale csv, and would have had more confidence in it.
+
+**Cost correction: the sweep is ~15 min, not ~5.** 378 points at ~2.4 s each. The old ~0.65 s/point came
+from the pre-retarget calibration's own `time` column, so the estimate was stale in the same way the rows
+were — a measurement inherited across the change that invalidated it.
+
+## 2026-08-25 (cont.) — the builders reconciled with hand edits to the draft
+
+Three tables in `writing/Paper` had been edited by hand; 17 others differed only in line endings. Diffing
+`results/paper/Tables/` against `writing/Paper/Tables/` isolates that in one pass and is the right tool
+here — `git status` cannot separate a content edit from a CRLF rewrite.
+
+The changes were pushed back to their sources, not to the tex: `config.ARG['ρTable']` `[0.8, 1.0, 2.0]` ->
+`[0.5, 1.0, 2.0]` (now equal to `US['ρTable']`, so both arms show the same three points), and two shortened
+note strings in `tables.py`/`tablesUS.py`. The `ArgentinaCalibration` note lost its residual, which
+orphaned `_sci` — removed, no other caller.
+
+**Verification against git, not against the rebuilt file.** After rebuilding, `writing/Paper` necessarily
+matches `results/paper` because build.py just copied it there; the question is whether it matches what the
+*user wrote*. The blob hashes were unchanged (`8060794`, `01c05af`), so the builders reproduce the hand
+edits byte for byte. Full rebuild: 23 built, 0 skipped, nothing backed up to `superseded/` — correct, since
+all three carried the `%% GENERATED` banner and so were recognised as build.py's own output.

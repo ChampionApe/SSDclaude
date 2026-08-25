@@ -104,12 +104,19 @@ the whole grid, so re-run it whenever the baseline moves.
 
 ## The `(ε, θ)` comparative statics — `results/sweeps/epsThetaGrid_rho1.0000.csv`
 
-28 `ε` × 14 `θ` = 392 points at ρ=1 with the calibrated parameters pinned, `nRoots == 1` everywhere. Level
+27 `ε` × 14 `θ` = 378 points at ρ=1 with the calibrated parameters pinned, `nRoots == 1` everywhere. Level
 signs: `τ` ↑ in `ε` and ↓ in `θ`; savings rate and hours the reverse; `ι` ↓ in both. Marginal effects
 shrink in `ε` for `τ`/savings/hours and grow in `θ` — **except `ι`, whose marginal effect in `ε` grows
-monotonically**, contradicting `Quant.tex`'s "in all cases" (a wording fix in the paper, not a code issue).
+monotonically** (0.036 → 0.108 across the grid at the calibrated `θ`, monotone in 11 of 14 `θ` columns).
+That used to contradict `Quant.tex`'s "in all cases"; the paragraph was rewritten on 2026-08-25 and no
+longer makes the claim, so this is a property of the surface rather than an outstanding discrepancy.
 
-**The `ε=ε^U` row is not the universalisation shock** and does not match it (τ +9.88% vs +7.22% at ρ=1):
+**The `ε=ε^U` row is not the universalisation shock** and does not match it (τ +15.10% vs +11.49% at ρ=1):
 the grid re-solves the whole horizon under the new `ε`, so the state entering `t0` has itself adjusted,
 while the shock is unanticipated and seeds from the pre-reform state. Two different experiments, both
 correct.
+
+**These figures are from the 2026-08-25 re-solve.** The `392`-point grid this section previously described
+was the two-calibration file — 28 `ε` columns because the pre-retarget calibrated `ε` was still in it, its
+numbers a mix of two parameter sets. A note that records a corrupted artefact's *shape* as a fact is how
+that state stayed invisible; `crossCuttingFindings.md` #13.

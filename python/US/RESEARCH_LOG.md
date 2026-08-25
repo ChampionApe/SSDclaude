@@ -296,3 +296,12 @@ stays right; only the value pinned at was wrong, and it is a no-op exactly at th
 is why every calibrated `p` is common to both readings and only counterfactuals separate them (#11b).
 Still open: `PermanentCRRA` has never been executed since its restructuring —
 `notes/todo_escPermanentTiming.md`.
+
+## 2026-08-25 — num docs restructured (detail in the root log)
+
+`writing/US/num*.tex` rewritten as final-state technical notes; `num_esc.tex` keeps every methodological
+innovation and loses only the backwards-looking framing (the "previously used" counterfactual convention
+is now a neutral comparison of the two constructions). Two latent defects fixed there: `\Eqref` (a macro
+defined nowhere in the preamble) and `\refeq:esc:auxiliary:si` (wrong prefix — the label lives in
+`model_esc.tex` under `\refmodeleq:`). `eq:extendedGrid`/`eq:objectiveProfile`/`eq:candidates` now live in
+`num_robustroot.tex`. `num_ee.tex`/`num_calibration.tex` untouched; all code-cited labels preserved.

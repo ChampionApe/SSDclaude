@@ -34,7 +34,7 @@ beside the live ones — `notes/crossCuttingFindings.md` #8.
 
 | | |
 |---|---|
-| `crossCuttingFindings.md` | twelve findings that recurred across modules, written once and cited by number. Read #3–#5 before diagnosing any outer solver that stalls (and note #4: on the `informalAnalytical`/`US` lineage check #5's knot count first), #6 after fixing one, #7 before keying a fix or a diagnostic to one solver/branch/range — or before trusting a hard-coded bound in a module that began as a copy, #9 before writing a parameter the model also derives from data, #10 before trusting a sensitivity check whose subject might sit on a boundary, #11 before grid-maximising over an instrument that also enters a predetermined state, and #12 before adopting a calibration target |
+| `crossCuttingFindings.md` | thirteen findings that recurred across modules, written once and cited by number. Read #3–#5 before diagnosing any outer solver that stalls (and note #4: on the `informalAnalytical`/`US` lineage check #5's knot count first), #6 after fixing one, #7 before keying a fix or a diagnostic to one solver/branch/range — or before trusting a hard-coded bound in a module that began as a copy, #9 before writing a parameter the model also derives from data, #10 before trusting a sensitivity check whose subject might sit on a boundary, #11 before grid-maximising over an instrument that also enters a predetermined state, #12 before adopting a calibration target, and #13 before resuming any sweep, or after changing anything one has already been run under |
 | `informalSavings_numericalDeviations.md` | where `InformalSavings`' code departs from the `num_*.tex` specs, with the measurement behind each |
 | `informalSavings_resolvedIssues.md` | two resolved calibration defects and the still-live settings they justify |
 | `argentina_calibrationTarget.md` | why the calibration targets K/Y rather than the savings rate, and the map from target to `β` |
@@ -44,7 +44,12 @@ beside the live ones — `notes/crossCuttingFindings.md` #8.
 
 **`writing/`** — tex documentation: `main.tex` plus one subfolder per model variant, each with
 `model*.tex` (model and equilibrium definitions) and `num*.tex` (numerical solution).
-`US/model_esc.tex` / `num_esc.tex` document the endogenous choice of `θ`. **`writing/Paper/`** holds the
+`US/model_esc.tex` / `num_esc.tex` document the endogenous choice of `θ`. The `num*.tex` sets are written
+as self-contained, final-state technical notes for the public repo: strategy overview and repo URL in
+`num.tex`, the shared grid-search machinery stated once per model in `num_robustroot.tex`
+(`eq:extendedGrid`/`eq:objectiveProfile`/`eq:candidates` are defined there, not in `num_peeLOG.tex`), and
+no development history — that stays in `notes/` and the logs. Docstring-cited labels were preserved
+throughout the 2026-08-25 restructure; keep them stable, or follow a rename through the `.py` files. **`writing/Paper/`** holds the
 current draft. Compiled locally by the user, not by agents; do not hand-edit a generated `.tex` there —
 it carries a `%% GENERATED` banner and the next `build.py` overwrites it.
 

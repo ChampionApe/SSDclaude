@@ -1,19 +1,51 @@
-\subsection{Robust root finding with bounds}\label{\refsec:RobustRoot}
-In the following subsections, we identify policies that maximize the political objective function by solving the first order condition as a root-finding problem instead of using the political objective function directly. This is paramount to avoid having the entire distribution of past savings as state variables for the political problem. Also, we will generally only work with $\tau \in[0,1]$ for numerical stability. To deal with these two points (that we work with first order conditions and only want to evaluate most functions on $\tau\in[0,1]$), we set up an auxiliary root-finding problem.
+\subsection{Robust policy search with bounds}\label{\refsec:RobustRoot}
+The politico-economic equilibria below are identified from first order conditions rather than by maximising political objectives directly. This is paramount to keeping the state space small --- it is what allows the closed-form reduction of the predetermined savings shares to do its work --- but it converts a maximisation problem into a root problem, and a root problem inherits none of the safeguards of the maximisation it came from: a root may be a minimum, there may be several, and the optimum may sit at a corner where no root exists at all. This subsection collects, once, the machinery that restores those safeguards. It is stated for a generic first order condition and is implemented as a standalone package (\texttt{python/gridsearch} in the repository); the model enters only through the function being evaluated.
 
-Notationally, let $z(\tau) = f\left([\tau]_{[0,1]}\right)$ denote the first order condition evaluated in the interior $[\tau]_{[0,1]} \equiv \min(1, \max(0,\tau))$. Instead of trying to solve for $f(\tau) = 0$, we suggest solving for
+Throughout, let $f(\tau)$ denote a first order condition --- in our applications the derivative of a political objective $\mathcal{W}$ with respect to the tax rate --- that it is safe to evaluate on an interval $[l,u]$ with $0\leq l < u < 1$, and let $z(\tau) = f\left([\tau]_{[l,u]}\right)$ denote its bounded evaluation, where $[\tau]_{[l,u]} \equiv \min(u, \max(l,\tau))$.
+
+\smalltitle{A bounded-root reparameterization.}
+Gradient-based solvers are efficient when they apply, but they search all of $\mathbb{R}$ and $f$ is only meaningful on $[l,u]$. Instead of solving $f(\tau) = 0$ subject to bounds, we solve the unconstrained auxiliary problem
 \begin{align}\label{\refeq:root}
-    h(z,\tau) = z - |z| \underbrace{\left[a_0\min\left(\tau,0\right) + a_1\left(\max(\tau,1)-1\right)\right]}_{\equiv g(\tau)} = 0,
+    h(z,\tau) = z - |z| \underbrace{\left[a_0\min\left(\tau - l,0\right) + a_1\max\left(\tau - u, 0\right)\right]}_{\equiv g(\tau)} = 0,
 \end{align}
-where $a_0, a_1>0$ are some technical parameters. In this case we have three regions:
+where $a_0, a_1>0$ are technical parameters. This gives three regions:
 \begin{align*}
-    h\left(z,\tau\right) = \left\lbrace \begin{array}{ll} f(0)-|f(0)| a_0 \tau, & \tau<0 \\
-    f(\tau), & \tau\in[0,1] \\
-    f(1)-|f(1)|a_1(\tau-1), & \tau>1\end{array}\right., && \dfrac{\partial h}{\partial \tau} = \left\lbrace \begin{array}{ll} -|f(0)|a_0, & \tau<0 \\
-    \dfrac{\partial f}{\partial \tau}, & \tau\in[0,1] \\
-    -|f(1)|a_1, & \tau>1\end{array}\right.
+    h\left(z,\tau\right) = \left\lbrace \begin{array}{ll} f(l)-|f(l)| a_0 (\tau - l), & \tau<l \\
+    f(\tau), & \tau\in[l,u] \\
+    f(u)-|f(u)|a_1(\tau-u), & \tau>u\end{array}\right., && \dfrac{\partial h}{\partial \tau} = \left\lbrace \begin{array}{ll} -|f(l)|a_0, & \tau<l \\
+    \dfrac{\partial f}{\partial \tau}, & \tau\in[l,u] \\
+    -|f(u)|a_1, & \tau>u\end{array}\right.
 \end{align*}
+$f$ is never evaluated outside $[l,u]$, yet $h$ is defined everywhere --- affine with a weakly negative slope outside the interval --- so an unconstrained solver can search freely. If $f$ identifies an interior optimum, solving $h\left(z(\tilde{\tau}),\tilde{\tau}\right) = 0$ and reporting the bounded solution $\tau = [\tilde{\tau}]_{[l,u]}$ recovers it.
 
-If the function $f(\tau)$ is well behaved (i.e.\ identifies a maximum), we can solve simply using $h(z(\tilde{\tau}), \tilde{\tau}) = 0$ and then report the bounded solution as $\tau = [\tilde{\tau}]_{[0,1]}$. As long as the function is well behaved, we can use gradient-based solvers to identify roots.
+The construction also detects corners. Suppose $f(\tau)>0$ throughout $[l,u]$ with $\partial f/\partial\tau <0$: a gradient-based algorithm started in the interior finds no root there, but for $\tau\geq u$ the auxiliary problem still has one, at $\tilde{\tau} = u+1/a_1$, which bounds to the corner solution $\tau = u$. Symmetrically, $f(\tau)<0$ throughout with $\partial f/\partial \tau>0$ yields $\tilde{\tau} = l-1/a_0$ and thus $\tau = l$.
 
-If the function is not well behaved, we may still use $h(z, \tau)$ to detect boundary solutions in some instances. Assume for instance that $f(\tau) >0$ for all $\tau\in[0,1]$, but that $\partial f/\partial \tau <0$. In this case a gradient-based algorithm would have a hard time identifying a solution starting in the interior, as it would suggest trying out lower values of $\tau$. However, note that for $\tau\geq 1$, the method still works and identifies $\tilde{\tau} = 1+1/a_1$ and thus the boundary solution of $\tau = 1$. Similarly, assume that $f(\tau)<0$ for all $\tau\in[0,1]$ and that $\partial f/\partial \tau >0$. In this case, the same problem exists for a gradient-based solver in the interior, but searching outside the bounds still ensures that we identify the correct root $\tilde{\tau} = -1/a_0$ and thus $\tau = 0$.
+\smalltitle{The grid, and the extended grid.}
+When $f$ is not known to be well behaved --- and a political first order condition generally is not --- we evaluate it on a grid rather than trusting a solver's path through it. Let $\mathcal{T} = \left\lbrace \tau^{(1)},...,\tau^{(M)}\right\rbrace$ with $\tau^{(1)} = l$ and $\tau^{(M)} = u$ denote a grid on the interior, and let the \emph{extended} grid $\tilde{\mathcal{T}}$ add two outer nodes
+\begin{align}\label{\refeq:extendedGrid}
+    \tilde{\tau}^{(0)} = l-\frac{1}{a_0}-\delta, \qquad \tilde{\tau}^{(M+1)} = u+\frac{1}{a_1}+\delta,
+\end{align}
+for a small $\delta>0$. The outer nodes sit at (a hair beyond) the two boundary solutions of \eqref{\refeq:root}. Evaluating $h$ at $\tilde{\tau} = l-1/a_0$ gives $h = f(l)+\left|f(l)\right|$, which is identically zero whenever $f(l)<0$; at $\tilde{\tau} = u+1/a_1$ it gives $h = f(u)-\left|f(u)\right|$, identically zero whenever $f(u)>0$. A corner solution is thus encoded as an \emph{exact} zero at an outer node rather than as a sign change, and a pure sign-change test of the form $h^{(k)}h^{(k+1)}<0$ would not detect it; the root detection must treat exact zeros as first-class citizens. The offset $\delta$ shifts the node just outside the root so that the outermost cell does exhibit a sign change; since $h$ is affine in $\tilde\tau$ outside $[l,u]$, linear interpolation on that cell returns $\tilde\tau = l-1/a_0$ (resp.\ $u+1/a_1$) exactly, and hence $\tau = l$ (resp.\ $\tau = u$) after bounding. Note that $a_0, a_1$ thereby serve double duty --- as the penalty slopes in \eqref{\refeq:root} and as the placement of the outer nodes --- and the two uses must be kept consistent.
+
+\smalltitle{Selecting among several roots.}
+Solving $z = 0$ is only a necessary condition for the political optimum: an upward crossing of $z$ is a local \emph{minimum} of $\mathcal{W}$, and when several downward crossings exist the first one located need not be the global maximum. Since a grid search delivers $z$ everywhere on $\mathcal{T}$ in any case, the maximisation can be restored without any additional evaluations of $z$.
+
+Let $\hat{z}$ denote the piecewise-linear interpolant of $z$ through the nodes of $\mathcal{T}$ --- the same interpolant that is used to locate crossings --- and define
+\begin{align}\label{\refeq:objectiveProfile}
+    \hat{\mathcal{V}}(\tau) = \int_l^{\tau}\hat{z}(x)\mbox{ }dx.
+\end{align}
+Because $z = d\mathcal{W}/d\tau$, $\hat{\mathcal{V}}$ approximates the political objective up to an additive constant. It is piecewise quadratic and continuously differentiable with $\hat{\mathcal{V}}' = \hat{z}$, so its interior local maxima are exactly the downward crossings of $\hat{z}$, and
+\begin{align}\label{\refeq:candidates}
+    \arg\max_{\tau\in[l,u]}\hat{\mathcal{V}}(\tau)\in\mathcal{C} \equiv \left\lbrace l,u \right\rbrace\cup\left\lbrace \tau\in(l,u)\mbox{ }:\mbox{ }\hat{z}(\tau) = 0\text{ and }\hat{z}\text{ crosses from above}\right\rbrace.
+\end{align}
+The candidate set $\mathcal{C}$ is finite and cheap to construct, and $\hat{\mathcal{V}}$ is evaluated on it \emph{exactly}: at the nodes by the trapezoidal rule,
+\begin{align*}
+    \hat{\mathcal{V}}\left(\tau^{(k+1)}\right) = \hat{\mathcal{V}}\left(\tau^{(k)}\right)+\frac{1}{2}\left(z\left(\tau^{(k)}\right)+z\left(\tau^{(k+1)}\right)\right)\left(\tau^{(k+1)}-\tau^{(k)}\right),
+\end{align*}
+and, for a crossing $\tau^{\star}$ located inside the cell $\left[\tau^{(k)},\tau^{(k+1)}\right]$, by adding the triangle $\frac{1}{2}z\left(\tau^{(k)}\right)\left(\tau^{\star}-\tau^{(k)}\right)$. Setting $\tau = \arg\max_{\tau\in\mathcal{C}}\hat{\mathcal{V}}(\tau)$ resolves multiplicity and corner solutions under a single criterion: $l$ and $u$ compete with the interior crossings on the same footing, so the rule subsumes the boundary check rather than supplementing it. The accuracy demanded of \eqref{\refeq:objectiveProfile} is only that it rank well-separated candidates correctly, which is a far weaker requirement than the accuracy demanded of the located roots themselves. One restriction: the integration is taken over the interior grid $\mathcal{T}$ only, never over the outer nodes of $\tilde{\mathcal{T}}$ --- outside $[l,u]$ the penalised residual $h$ is an artificial construction, not $d\mathcal{W}/d\tau$, and integrating it would be meaningless. When a feasibility mask excludes part of $\mathcal{T}$ (as it will in \cref{\refsec:PEE}), the rule is applied to the feasible sub-grid, with $l$ and $u$ replaced by its endpoints.
+
+\smalltitle{Root problems that are not maximisations.}
+Not every root problem below is a first order condition. The state fixed point of \cref{\refsec:PEE} is a self-consistency condition in which \emph{any} crossing is a solution; there, the direction filter and the objective integration above are deliberately not applied. Keeping the two kinds of problem distinct matters, because the safeguards appropriate to one are errors in the other. The design choice of \cref{\refsec:ESC} sits at the opposite end and is not run through this machinery either, for its own reason given there: its objective is evaluated and maximised directly, because whether that choice is interior is itself the question being asked.
+
+\smalltitle{Two implementation conventions.}
+First, convergence of any gradient-polished solution is judged on $\max\left|z\right|$ directly, against an explicit tolerance, rather than on the solver's own success flag --- the flags reported by standard library routines are not consistent across methods, and a residual check is both stricter and portable. Second, a residual is only a meaningful convergence measure at an \emph{interior} optimum: at a corner, $z\neq 0$ is the correct answer, not an error, so residual diagnostics are restricted to periods (or states) whose selected policy is interior.

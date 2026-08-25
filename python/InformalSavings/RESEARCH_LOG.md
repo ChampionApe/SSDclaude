@@ -276,3 +276,53 @@ deviations note renumbered into current state (the retracted items folded into t
 them). Superseded sweeps, their pickles and all run logs were deleted — recoverable at `bfba998`. That
 turned up one live defect: `measureOuterSettings.py` still defaulted its `--csv` to a superseded file,
 which is #8 in the other direction. **A stale default that still resolves is worse than one that does not.**
+
+## 2026-08-25 — the (ε,θ) grid re-solved at the current calibration
+
+The 2026-08-24 retarget entry above says the full re-run included "the (ε,θ) grid". It did not: the sweep
+resumes on `(ε, θ)` and was re-run **without** `--force`, so it added the new calibrated ε column and kept
+378 rows solved at the old β. Re-solved here — 378 points, 27 ε × 14 θ, `nRoots = 1` everywhere, and the
+status-quo row reproduces the calibrated baseline exactly (τ = 0.125, sr = 0.147247, h = 0.499316,
+ι = 0.364964). The mechanism and the guards added downstream are in `python/paper/RESEARCH_LOG.md` and
+generalised as `crossCuttingFindings.md` #13.
+
+**Cost: ~2.4 s per point, not the ~0.65 s the old csv's `time` column recorded.** The estimate had been
+read off rows solved at the previous calibration, so the sweep is ~15 min rather than the ~5 documented in
+`python/paper/`. Worth noting as a fact about the current β rather than a regression: the timings were
+stale in exactly the way the rows were.
+
+**The `ι` exception survives the retarget, and is sharper than first recorded.** `Quant.tex` claims the
+marginal effect of ε decreases "in all cases"; on the fresh grid it holds for τ, the savings rate and h,
+and fails for ι, whose `|∂ι/∂ε|` *grows* by a factor of three across the grid — 0.036 to 0.108 at the
+calibrated θ, monotonically in 11 of 14 θ columns, the other three flattening near the upper edge rather
+than turning over. Every other documented claim checks out on the new numbers, including "almost linear in
+θ" for h: its θ-slope moves 8% from θ=0.5 to θ=1, against 23% for τ and 43% for the savings rate.
+
+**RESOLVED the same day, and not by a carve-out.** The user rewrote the paragraph rather than exempting ι
+from it: the "marginal effect decreasing with ε in all cases" sentence is gone, and with it the only claim
+the sweep contradicted. This closes the item opened 2026-08-21. The replacement makes four claims, all
+re-checked against the fresh grid and holding **strictly at every grid point** — τ up in ε and down in θ;
+savings and labour down in ε, up in θ, largest effect at low ε (|slope| 0.035→0.009 for sr, 0.042→0.019
+for h); ι down in *both* ε and θ; and formal savings falling in ε too, so `s^0 = ι·s` drops by more than ι
+alone shows. That last one is new and worth the arithmetic: across the ε range at the calibrated θ,
+ι −14.2% and s −15.9% compound to s^0 −27.9%.
+
+*Worth keeping:* the sweep's contribution here was not the correction but the **claim that could not be
+made before** — that ι falls in θ as well as in ε, which is a statement about the whole surface. The cross
+sweep the grid replaced could not have supported it.
+
+**One thing the re-run changed for the reader.** The figure's reform move (ε: 0.305 → ε^U = 0.546 along the
+calibrated-θ curve) is now +1.89 p.p. in τ, against the +1.44 p.p. in Table `ArgentinaUniversal`. The two
+are different objects — the sweep puts the reformed system in place over the whole horizon and lets the
+initial state be re-derived under it, while `shockUniversal.py` is unanticipated at t0 onto the baseline's
+inherited state — but before the re-run the stale diamond read +1.24 p.p., so the figure *understated* the
+table and now *overstates* it. The text quotes "about 1.4 p.p." next to the figure. Open, in the paper.
+
+## 2026-08-25 — num docs restructured (detail in the root log)
+
+`writing/informalSavings/num*.tex` rewritten as final-state technical notes. The selection rule
+(`eq:objectiveProfile`/`eq:candidates`) moved from `num_peeLOG.tex` into `num_robustroot.tex`; the ι-grid
+bounds discussion and the calibration step-size/grid-displacement measurements were compressed to the
+design rules they justified — the journeys stay in `notes/informalSavings_*` and this log.
+`num_ee.tex`/`num_shock.tex` essentially unchanged. Every label cited by `policy.py`/`model.py`/tests is
+preserved.

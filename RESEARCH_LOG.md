@@ -345,3 +345,60 @@ that cost a solve goes to a note; narration of how the code came to be goes nowh
 its `--csv` to a superseded sweep. Removing that file turned a silent staleness into a loud failure, which
 is the argument for deleting superseded files rather than filing them — a stale default that still
 resolves is worse than one that does not.
+
+## 2026-08-25 — a published figure built from two calibrations
+
+Structural because the lesson is not about the `(ε,θ)` sweep. `crossCuttingFindings.md` gains **#13: a
+resumable producer is keyed on the question, not on what answered it.** A script that skips points already
+on disk is resumable within one setup and a silent mixer across a change in what produced the rows —
+the key is the parameter point, and nothing in the row records the calibration behind it. The K/Y retarget
+moved the calibrated `ε`, the sweep was re-run without `--force`, and 378 of the resulting 392 rows were
+bit-identical to the pre-retarget file. `ARG_LOG_FourInOne` then showed one column of the current economy
+inside a surface of the old one. Detail in `python/paper/` and `python/InformalSavings/RESEARCH_LOG.md`.
+
+**Three repo-wide habits come out of it**, all in #13. A shape check answers "is it finished", never "is it
+about the current question" — staleness here *added* a column, so the rectangle check passed. Every
+resumable output should carry a row that must agree with the current inputs, and the loader should check
+it; the distinguished point already in the grid usually serves for free. And **a flag that only defeats the
+caller's own bookkeeping is worse than no flag** — `runShocks.py --force` was never forwarded to the child,
+so following the documented remedy would have produced the same stale file with more confidence in it.
+
+**The audit that would have caught it earlier is cheap and was not being run**: diff `results/paper/` against
+`writing/Paper/` after any change to a calibration. It also isolates hand edits to the draft from line-ending
+rewrites, which `git status` cannot separate — used that way in the same session to reconcile three
+hand-edited tables back into `config.py`/`tables.py`/`tablesUS.py`.
+
+## 2026-08-25 — the num docs rebuilt as public technical notes
+
+All three `writing/<model>/num*.tex` sets were restructured for the repository going public, one pattern
+per model: `num.tex` opens with a three-pillar strategy overview (FOC-as-root plus the closed-form
+`s_{t-1,i}/s_{t-1}` reduction that keeps the savings distribution out of the state space; grids robust to
+corners and multiplicity that reuse their evaluations for the objective and the numerical gradients; the
+structure each variant exploits — LOG triangularity/decoupling, the CRRA broadcast, the ESC
+objective-on-grid) and cites the GitHub URL. The generic machinery is stated once per model in
+`num_robustroot.tex` ("Robust policy search with bounds"), where `eq:root` is now written on general
+`[l,u]` (matching what `gridsearch/robustRoot.py` implements) and
+`eq:extendedGrid`/`eq:objectiveProfile`/`eq:candidates` moved in from `num_peeLOG.tex` — label *names*
+unchanged, so every docstring cross-reference survives without touching a `.py`. The planning inventory
+behind the cut is `notes/numAppendix_analytical_planning.md`.
+
+**The writing rule applied: docs hold no memory.** Final state only — the measured tuning chronicles
+(InformalSavings' ι-grid bounds, the calibration step-size and grid-displacement tables) were compressed
+to the design rules they justified (default √ε finite-difference step with the fixed-knot smoother as its
+stated precondition; cubic continuation surfaces under CRRA; the decay-vs-plateau refinement check behind
+the 45×45 inner grids), with the journeys remaining in `notes/informalSavings_*` and the module logs.
+Kept in full, per the user: every ESC methodological innovation (objective evaluated on the design grid so
+corners are observed rather than inferred, the pinned-ratio discipline, scan-not-bracket for a
+corner-flat residual) and the correctness gotchas (closed-form-only derivatives, the ρ→1 overflow
+identities, corner-as-exact-zero, residual-not-success-flag).
+
+**Defects fixed in passing.** `\Eqref` was used in `US/num_esc.tex` but defined nowhere in the preamble —
+replaced, no uses remain; `US/num_esc.tex` referenced `\refeq:esc:auxiliary:si` where the label lives
+under the model prefix (`\refmodeleq:`) — a latent dangling reference; and
+`informalAnalytical/num_calibration.tex` now defines `calibration:KY/:tau/:sr`, which `base.py`/`model.py`
+docstrings already cited but the tex never labeled.
+
+**A checker gotcha worth keeping.** The quick bash/grep label check silently failed to extract
+`\refmodeleq:` references and reported all-clear on a comparison it never made. The prefix-aware Python
+checker (label prefixes normalized per file kind, model↔num cross-references included) is the one that
+counts; it verified all three doc sets with zero dangling references.

@@ -32,7 +32,9 @@ ARG = {
     'ρGrid':      [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0],
     'ρAnchor':    1.0,      # the sole LOG point; calibrateGrid marches outward from it
     'ρBaseline':  1.0,      # the paper's headline specification
-    'ρTable':     [0.8, 1.0, 2.0],   # rows the funcOfRho table prints uncommented
+    'ρTable':     [0.5, 1.0, 2.0],   # rows the funcOfRho table prints uncommented; the rest are
+                                     # emitted commented. Matches US['ρTable'], so both arms of the
+                                     # paper show the same three points of their rho grids
     'rule':       'match',  # b^0 = b^refType
     'refType':    1,
     # Grid settings. calibrateRhoGrid.py gives BOTH solvers interpKind/smoothKnots and only the grid

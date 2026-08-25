@@ -63,9 +63,11 @@ printing one PASS/FAIL line per assertion via `gridsearch/testing.py`; run them 
 `_sliceDb` coverage lives in `informalAnalytical/test_createCopyFromt0.py`, since the helper is shared
 verbatim.
 
-Two things the sweeps do that will bite: **a re-run under changed settings silently returns the old rows**
-unless given a new `--out` or `--force` (they resume from their own csv), and `--out` is relative to this
-directory, since the scripts `chdir` so `test.py` finds `data/`.
+Two things the sweeps do that will bite: **a re-run silently returns the old rows** unless given a new
+`--out` or `--force`, since they resume from their own csv and key on the parameter point alone — that
+covers changed grid settings and, the case that actually bit, **a recalibration**, which no column records
+(`crossCuttingFindings.md` #13); and `--out` is relative to this directory, since the scripts `chdir` so
+`test.py` finds `data/`.
 
 ## Conventions and traps
 

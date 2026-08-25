@@ -5,7 +5,9 @@ so stage (i) must have run first.
 Run:  .venv\Scripts\python.exe python\paper\runShocks.py                 run whatever is missing
       ... --only universal                                              one experiment
       ... --list                                                        what exists, what is missing
-      ... --force                                                       re-run even where output exists
+      ... --force                                                       re-run even where output exists,
+                                                                        and re-do work inside a script
+                                                                        that resumes from its own csv
       ... --dry                                                         print the commands and exit
 
 Each entry of EXPERIMENTS declares WHAT the paper needs and which script produces it. The scripts are
@@ -14,7 +16,8 @@ numbers were produced at, so that reproducing them is a run rather than an archa
 
 Cost, cold, on the 16-point rho grid: `universal` ~2.5 h (a full backward PEE recursion per rho),
 `flat` ~10 min (anchor only), `eeOnly` ~minutes (taxes are exogenous, so it is one EE solve per rho and
-no policy recursion), `epsThetaGrid` ~5 min (378 points). Every entry is skipped when its output already
+no policy recursion), `epsThetaGrid` ~15 min (378 points at ~2.4 s; the older ~5 min was measured under
+the pre-2026-08-24 calibration). Every entry is skipped when its output already
 exists, so a re-run with nothing to do costs seconds.
 """
 import os, sys, argparse, subprocess, glob
@@ -72,6 +75,10 @@ EXPERIMENTS = {
         'args':    ['--rho', str(C.ARG['ρBaseline'])] + GRIDFLAGS,
         'outputs': lambda: {'sweep': os.path.join(C.SWEEPDIR, 'epsThetaGrid_rho{:.4f}.csv'
                                                   .format(C.ARG['ρBaseline']))},
+        # The ONLY entry here whose script resumes from its own csv: it is keyed on (eps, theta) and
+        # returns rows solved under any earlier calibration or grid setting without a word. So --force
+        # has to REACH it. The two shock scripts overwrite their csvs outright and need nothing.
+        'force':   ['--force'],
         'note':    'tau/sr/h/iota over the eps x theta plane',
     },
 }
@@ -86,13 +93,16 @@ def status(name):
     return os.path.exists(os.path.join(C.MODELDIR, e['script'])), have, lack
 
 
-def command(name, ρ = None):
+def command(name, ρ = None, force = False):
+    """ `force` appends the entry's own re-do flag, for the scripts that resume from their own output.
+    Skipping our own outputs is this file's job; making a resumable script redo work is the script's,
+    and only it knows the flag -- so it is declared per entry rather than assumed to be '--force'. """
     e = EXPERIMENTS[name]
     cmd = [C.PYTHON, os.path.join(C.MODELDIR, e['script'])] + list(e['args'])
     ρ = ρ if ρ is not None else e.get('rho')
     if ρ:
         cmd += ['--rho'] + [str(v) for v in ρ] if isinstance(ρ, (list, tuple)) else ['--rho', str(ρ)]
-    return cmd
+    return cmd + (list(e.get('force', [])) if force else [])
 
 
 def main():
@@ -110,7 +120,7 @@ def main():
                 name, EXPERIMENTS[name]['note'], 'yes' if ok else 'MISSING',
                 len(have), len(have)+len(lack)))
             if a.dry and ok:
-                print('    ' + ' '.join(command(name)))
+                print('    ' + ' '.join(command(name, force = a.force)))
             if lack and not a.dry:
                 keys = sorted(lack, key = str)
                 print('    missing: ' + ', '.join(str(k) for k in keys[:8])
@@ -128,7 +138,8 @@ def main():
         # The scripts are individually resumable and skip what they already have, so the whole set is
         # handed over rather than only the missing keys -- one process, one warm-started march.
         cmd = command(name, list(lack) if (lack and not a.force
-                                           and all(isinstance(k, float) for k in lack)) else None)
+                                           and all(isinstance(k, float) for k in lack)) else None,
+                      force = a.force)
         print('\n' + '='*94 + '\n{}: {}\n  {}\n'.format(name, EXPERIMENTS[name]['note'], ' '.join(cmd))
               + '='*94)
         r = subprocess.run(cmd, cwd = C.REPO)

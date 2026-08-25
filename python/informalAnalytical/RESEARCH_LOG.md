@@ -154,3 +154,11 @@ steady-state `brentq` then dies at its own lower bracket. Every start in `[0.7, 
 **Worth recording as a limitation of this variant**: its outer search has **no globalization**, so a start
 far from the root fails rather than converging slowly. `InformalSavings` took the same change from the same
 guess without complaint. Any future change of target or data should expect to re-tune this guess.
+
+## 2026-08-25 — num docs restructured (detail in the root log)
+
+`writing/informalAnalytical/num*.tex` rewritten as final-state technical notes.
+`eq:extendedGrid`/`eq:objectiveProfile`/`eq:candidates` are now defined in `num_robustroot.tex` (moved
+from `num_peeLOG.tex`; names unchanged), `eq:root` is restated on general `[l,u]`, and
+`num_calibration.tex` now defines `calibration:KY/:tau/:sr` — labels this module's docstrings already
+cited but the tex never carried. No `.py` changes needed.

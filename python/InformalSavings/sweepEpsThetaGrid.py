@@ -40,10 +40,18 @@ REPORTED AT ONE YEAR. Every column is read at t0 = db['t'][db['t0']] (model inde
 year, the figure's "year 2010". The pickled instances carry neither db['dates'] nor db['workweek'], so h
 is the model's own aggregate hours, not a workweek in hours.
 
-RESUMABLE: the csv is rewritten after every point and a re-run returns any (eps, theta) already present
-in it without re-solving. That also means a re-run under changed settings --
-a different --interpKind/--smoothKnots/--nι/--ns -- needs a new --out or --force, or it will silently
-return the old rows.
+RESUMABLE, AND THE ROW DOES NOT RECORD WHAT PRODUCED IT. The csv is rewritten after every point and a
+re-run returns any (eps, theta) already present in it without re-solving. The key is the parameter point
+alone, so anything else that moved is invisible to the resume and needs a new --out or --force:
+
+  * a RECALIBRATION -- the loaded instance carries (beta, omega, eta0, X0) and no column names them. This
+    is the one that has actually bitten: the 2026-08-24 K/Y retarget moved the calibrated eps, so a
+    resumed run ADDED the new calibrated column and kept 378 rows solved at the old beta, leaving a
+    two-calibration csv that is a complete rectangle and passes every shape check but one.
+  * changed settings -- a different --interpKind/--smoothKnots/--nι/--ns.
+
+paper/datasets.epsThetaGrid now rejects a csv with two statusQuo rows, or one whose statusQuo does not
+match the current calibration, which is what makes the first case loud rather than a kink in a figure.
 """
 import os, sys, argparse, time
 import numpy as np, pandas as pd

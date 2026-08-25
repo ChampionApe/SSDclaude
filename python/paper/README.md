@@ -20,6 +20,17 @@ Every stage **skips work whose output already exists**, so running them in order
 when nothing has changed and only pays for what is genuinely missing. `--force` overrides, `--list`
 reports without doing anything, `--dry` prints the commands stage (i)/(ii) would delegate.
 
+**Skipping answers "nothing changed"; `--force` answers "the inputs moved". Only the second is a
+judgement.** Three of the delegated scripts resume from their own csv — the calibration sweeps and
+`sweepEpsThetaGrid.py` — and they key on the parameter point, never on what produced it. A resumed run
+therefore returns rows solved under an earlier calibration, or earlier grid settings, without a word, and
+nothing downstream can tell from the row that it did. **So `--force` whenever anything upstream moved: a
+recalibration above all**, since the sweeps load a pickled instance and no column records which one. It is
+forwarded to the child only where the child resumes; elsewhere it just defeats this file's own skip.
+Failing to do this after the K/Y retarget is what put 378 stale rows in the `(ε, θ)` grid and a
+discontinuity in `ARG_LOG_FourInOne` (2026-08-25 log entry); `datasets.epsThetaGrid` now refuses that csv
+rather than plotting it.
+
 **Stage (iii) imports no model code and unpickles nothing.** It reads csv, writes tex and pdf. That is
 what makes it re-runnable after every caption or rounding change, and it is why the expensive stages are
 separate entry points rather than a `--refresh` flag: a paper rebuild can never silently turn into a
@@ -113,10 +124,15 @@ identified at France's θ = 1 corner — and the headline `scale` spec carries i
   series converge and cross near ρ≈0.9, with a largest gap of 0.024 p.p. on an axis spanning 0.19 p.p.
   That is a real feature of the path (the savings-rate effect is essentially at its long-run value by
   2040), not a plotting artifact — but it is why that panel no longer shows a short/long contrast.
-- **`datasets.epsThetaGrid` requires a complete rectangle.** `figures.argLogFourInOne` pivots the grid into
-  an `ε × θ` matrix and fills between adjacent `θ` columns; a missing pair becomes a NaN and
-  `fill_between` drops that span **silently**. Since `sweepEpsThetaGrid.py` is resumable, a partially
-  finished sweep is a reachable state.
+- **`datasets.epsThetaGrid` checks the grid is finished AND that it is about the current calibration** —
+  two different failures, because `sweepEpsThetaGrid.py` is resumable. *Finished*: a complete `ε × θ`
+  rectangle, since `figures.argLogFourInOne` pivots it into a matrix and `fill_between` drops a NaN span
+  **silently**. *Current*: **exactly one `statusQuo` row, matching `calibrationSummary`**. A resumed sweep
+  across a recalibration ADDS the new calibrated column and keeps the old rows, which is still a perfect
+  rectangle — so the shape check cannot see it, and the tell is the second `statusQuo` row. The
+  calibration match is the check that matters: a *wholly* stale csv has exactly one such row. This was
+  live — 378 of 392 rows survived the K/Y retarget and put a 3.7 p.p. notch in the published figure.
+  `crossCuttingFindings.md` #13.
 - **Figure colours**: a two-hue **categorical** pair (blue then orange, worst-case CVD ΔE 24.7) in fixed
   order, never cycled, for series identity. A **continuous** parameter gets `figures.THETA_RAMP` instead —
   one hue light→dark plus a colourbar, never a rainbow and never the categorical pair. Its middle step is
