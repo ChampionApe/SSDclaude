@@ -12,8 +12,8 @@ separate stage (i)/(ii) entry points, because they delegate to different experim
 | Stage | Argentina | US / France / UK | Writes | Cost (cold, ARG / US) |
 |---|---|---|---|---|
 | (0) data targets | `dataTargets.py` | — | `data/argentina_*.csv` | seconds |
-| (i) calibration | `runCalibration.py` | `runCalibrationUS.py` | `results/calibration/`, `results/paper/*Summary.csv` | ~2 h / ~20 min |
-| (ii) experiments | `runShocks.py` | `runShocksUS.py` | `results/shocks/`, `results/sweeps/` | ~2.5 h / ~30 s |
+| (i) calibration | `runCalibration.py` | `runCalibrationUS.py` | `results/calibration/`, `results/paper/*Summary.csv` | ~3.2 h / ~20 min |
+| (ii) experiments | `runShocks.py` | `runShocksUS.py` | `results/shocks/`, `results/sweeps/` | ~50 min / ~30 s |
 | (iii) build | `build.py` | `build.py` | `results/paper/{Tables,Figs}`, then `writing/Paper` | seconds |
 
 Every stage **skips work whose output already exists**, so running them in order is safe: it costs seconds
@@ -30,6 +30,18 @@ forwarded to the child only where the child resumes; elsewhere it just defeats t
 Failing to do this after the K/Y retarget is what put 378 stale rows in the `(ε, θ)` grid and a
 discontinuity in `ARG_LOG_FourInOne` (2026-08-25 log entry); `datasets.epsThetaGrid` now refuses that csv
 rather than plotting it.
+
+**The US arm carries TWO calibration variants, and `config.US['commonX']` says which one leads.** Common
+`X` is the headline: the taste for leisure is one number across income groups, its level pinned by
+targeting the observed workweek, and relative hours become a prediction. Vector `X_i` is the robustness
+twin. Every US builder takes `commonX` and defaults to the headline, so one builder produces both — the
+headline keeps the plain name, filename and tex `\label` the draft already cites, and the twin's carry
+their own variant (`config.variantSuffix`). `build.OUTPUTS` registers the pair through `_variants`.
+Flipping the config flag therefore swaps what is in the paper's tables without renaming one of them.
+The two share `β`, `ω`, `τ`, `R`, the savings rate and aggregate `h` exactly; what differs is anything
+defined *through* `η` or `X` — the French income-distribution and leisure rows, and nothing else. The
+ESC leg runs under the headline variant only: it is the most expensive stage in the pipeline and a
+second variant would double a multi-hour run for an appendix nobody reads twice.
 
 **Stage (iii) imports no model code and unpickles nothing.** It reads csv, writes tex and pdf. That is
 what makes it re-runnable after every caption or rounding change, and it is why the expensive stages are
@@ -59,7 +71,7 @@ writes both the year and the window-mean reading every run and names only one `c
 (`--target` chooses); like every other stage it skips existing output, so the committed csv means no other
 stage ever needs the network.
 
-## Outputs wired (23)
+## Outputs wired (34)
 
 | Paper file | Built from |
 |---|---|
@@ -69,11 +81,15 @@ stage ever needs the network.
 | `Figs/ARG_LOG_FourInOne.pdf` | `results/sweeps/epsThetaGrid_rho1.0000.csv` |
 | `Figs/ARG_CRRA_LOG.pdf` | `universal_match_rho*.csv` |
 | `Tables/USUKFRCalibration.tex`, `Tables/{US,FR,UK}_householdheterogeneity.tex` | `results/paper/usCalibrationSummary.csv` |
-| `Tables/US_{PensChars,Ageing,OtherShocks}.tex` | `US_shocks.csv`, ρ = 1 |
-| `Tables/US_CRRA_{PensChars,Ageing,OtherShocks}.tex` | `US_shocks.csv`, ρ ∈ {0.5, 1, 2} |
-| `Figs/US_taxOverview.pdf` / `Figs/USX_taxOverview.pdf` | `US_shocks.csv` / `US_shocksCommonX.csv`, all ρ |
+| `Tables/US_{PensChars,Ageing,OtherShocks}.tex` | `US_shocksCommonX.csv`, ρ = 1 |
+| `Tables/US_CRRA_{PensChars,Ageing,OtherShocks}.tex` | `US_shocksCommonX.csv`, ρ ∈ {0.5, 1, 2} |
+| `Figs/US_overview.pdf` | `US_shocksCommonX.csv`, all ρ — τ, savings and hours in one three-panel figure |
 | `Tables/US_ESC_Calibration.tex` | `results/esc/escCalibration{,CRRA}.csv` |
 | `Tables/US_ESC_{Ageing,IncomeDistr,Leisure,Voting,FrenchAll}.tex` | `results/esc/escExperiments.csv`, ρ ∈ {0.5, 1, 2} |
+| `Figs/US_ESC_overview.pdf` | `escExperiments.csv` — dumbbells: open marker = `θ` pinned, filled = chosen, per (scenario, ρ) |
+
+Every US table and figure above is registered **twice**, once per calibration variant: the plain name is
+the headline and `<name>_vectorX` the appendix twin. The ESC outputs are the exception (headline only).
 
 Nothing in `writing/Paper` remains unwired.
 
@@ -97,6 +113,12 @@ identified at France's θ = 1 corner — and the headline `scale` spec carries i
 
 ## Traps
 
+- **A pinned `θ` does not survive a composite shock on its own.** `θ` is in `paramsFromFuncs`, so every
+  `updateAuxPars` re-derives it and the LAST one wins: in `frAll` and `frBoth` the income shock's pin is
+  followed by `shockVoting`'s refresh, which recomputes `θ` from *France's* `η`. Both composites
+  re-install it explicitly, and `test_esc.py` pins that they do. The single-characteristic rows never see
+  this, which is exactly why the defect read as a plausible 0.55 rather than as a failure
+  (`crossCuttingFindings.md` #9).
 - **`build.py` backs up a hand-written file the first time it overwrites one**, to
   `results/paper/superseded/`. Re-runs detect their own `%% GENERATED` banner and do not re-back-up, which
   would otherwise overwrite the true original with a generated one on the second run. That directory was
@@ -110,6 +132,16 @@ identified at France's θ = 1 corner — and the headline `scale` spec carries i
   input — not a scale the solved `h_t` inherits. Using it to report made the baseline read 44.22 instead
   of 42.54 and manufactured a 43.80–44.57 spread across ρ out of a free normalisation, which then looked
   like a result worth noting in the table.
+- **The pre-reform savings rate is per rho, not a shared row — in both arms.** Neither arm targets it any
+  more (Argentina identifies β by K/Y, the US by R), so it is a prediction that moves with ρ, and a table
+  that differences against the ρ = 1 level misstates the effect at every other ρ, sign included.
+  The three `US_CRRA_*` tables print a baseline row per ρ and difference against it; `Argentina_funcOfRho`
+  prints ONE shared pre-reform row (τ and the workweek, which are common by construction; the savings
+  cell is `--`) and still differences every post-reform row against its own ρ's baseline path
+  (2026-09-08). The builder raises if the pre-reform τ is not common across ρ.
+- **The Argentina ρ march must be seeded at its anchor.** `config.ARG['anchorGuess']` is forwarded as
+  `calibrateRhoGrid.py --x0`; without it the anchor starts from the workbook defaults, at which the `ι`
+  state grid is degenerate under α = 0.35. Retune it if the capital share or the K/Y target moves.
 - **The savings rate needs a state, not a row.** `s_{t0-1}` is the seed entering the reform year and no
   shock csv can carry it as a datum. `datasets.seedSavings` gets it two ways — from `shockEEOnly.py`'s
   `s__base`, and by inverting eq (calibration) at `t0`, where the baseline savings rate is a target and so
@@ -146,21 +178,35 @@ identified at France's θ = 1 corner — and the headline `scale` spec carries i
   interpolate. So the US sweep must be complete over the whole grid before any European sweep starts;
   `runCalibrationUS.py` enforces that rather than relying on loop order, since a partial US sweep would
   otherwise fail one point at a time in the middle of a march.
-- **Two columns of the US shock csv are already converted and must not be converted again.** `sr` is
-  `s/(w·h)`, the paper's savings rate; and `workweek` is already in hours, normalised inside the
-  experiment script against *that ρ's own* baseline. Re-deriving the workweek in stage (iii) from `hbar`
-  would be wrong twice over.
+- **One savings-rate unit, `s/Y`, in every table and figure of both arms (2026-09-08).** The US shock csv
+  carries both `sr` = `s/(w·h)` and `srOverY` = `s/Y`; stage (iii) reads `datasets.US_SR` (= `srOverY`)
+  and never `sr`. The ESC csvs carry only `s/(w·h)`, and `datasets.escSavingsOverY` converts by the exact
+  factor `(1-α)` with `α` read from `usCalibrationSummary.csv` and cross-checked against the workbook —
+  never a bare 0.30. Every counterfactual table prints the savings rate as the **change against that ρ's
+  own baseline** (`config.pp`), the baseline row as a level, and the note says so (`tables.SRNOTE`); the
+  leisure row must read `0.00 p.p.` at every ρ, which is the check that the differencing is against the
+  right baseline. The ESC tables difference against the *endogenous* baseline, so their exogenous leisure
+  rows carry the 0.01–0.02 p.p. gap between the two baselines rather than an effect.
+- **`workweek` in the US shock csv is already in hours**, normalised inside the experiment script
+  against *that ρ's own* baseline. Re-deriving it in stage (iii) from `hbar` would be wrong twice over.
 - **A shock copy's `db['dates']` is stale, not absent.** `createCopyFromt0` leaves the full original
   calendar on a shorter, renumbered horizon, so nothing here reads it — `config.usCalendar()` goes back to
   the workbook instead.
 - **`config.pct` escapes the percent sign for tex, so it must never go into a figure.** matplotlib renders
   the backslash literally and the legend read `14.4\%`. Anything drawn *into* a figure needs plain
   formatting.
-- **The income-distribution counterfactual moves `θ`** (0.738 → 0.495), because swapping `η_i` re-derives
-  it from the unchanged replacement-rate ratio. That is what reproduces the paper, so it is the default,
-  but the row therefore bundles a pension-design change with the inequality change. `runShocksUS.py`'s
-  `pinTheta` entry keeps the alternative reading on disk.
-- **The common-`X` shock run is a check as much as an output.** θ, ageing and voting must come back
-  *identical* to the vector-`X` run (measured: ≤ 4e-15 in τ and sr) while income distribution and leisure
-  must differ (up to 7.9e-3 in τ), since those two are *defined* through `η` and `X`. A common-`X` run
-  matching on all seven would mean the variant was not being applied.
+- **The income-distribution counterfactual HOLDS `θ` at the US design.** Swapping `η_i` would otherwise
+  re-derive it from the unchanged replacement-rate ratio and take it to 0.495, bundling a pension-design
+  change into a counterfactual about inequality — and pension design is the separate `theta` family in
+  the same table set. Pinning is therefore the default; `runShocksUS.py`'s `freeTheta` entry keeps the
+  re-deriving reading on disk (τ 13.79% against the reported 13.21% at ρ = 1, common X).
+- **The two variants check each other.** Run the same shock set under both and compare row by row:
+  baseline, θ, ageing and voting must come back *identical* (measured ≤ 5e-15 in τ and sr — this is the
+  block-recursivity claim end to end), while income distribution and all-three must **differ** (4.9e-3
+  and 5.1e-3 in τ), since those are defined through `η`. A run matching everywhere would mean the variant
+  was not being applied.
+  **Leisure is the one that must differ in the WORKWEEK and not in τ**: it is a pure scale, so τ and the
+  savings rate are pinned at baseline in *both* variants (they agree to 2.3e-5, the solver's own
+  tolerance) and the whole variant effect lands on hours — 34.74 against 33.24, because `Xbar_FR/Xbar_US`
+  is 1.520 under vector `X` and 1.761 under common `X`. Checking that row in τ would report a pass on a
+  quantity that cannot move.

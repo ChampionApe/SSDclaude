@@ -164,6 +164,19 @@ is finite** — check the degenerate limits — and **a change of experimental c
 input distribution to every solver downstream**. The repair pattern: expand the bracket geometrically, and
 only when the default has already failed, so it can never alter a call that worked.
 
+**And the ancestors were still carrying it (2026-09-08).** The US fix above was never ported back to
+`informalAnalytical`/`InformalSavings`, on the reasoning that the constant was "safe at Argentina's
+parameters". It was — at α = 0.43. Moving the capital share to 0.35 lowered the cap by 29% and the first
+CRRA point of the ρ march died on the same NaN, in a module whose docs said the problem was solved next
+door. **A hard-coded bound that is safe "by parameter values" is a hypothesis about the data, and the data
+is the thing most likely to change.** Both modules now carry `ΓsCap` and `steadyState_CRRA_bounds`.
+
+**A second constant in the same run: the anchor's starting parameters.** The ρ march seeds every point
+from its history except the anchor, which starts from the workbook defaults (`β = 0.6, ω = 2`). The `ι`
+state grid is built from the steady state at whatever parameters the residual is *first* evaluated at,
+so a default that is merely far from the solution can make the grid degenerate before the root takes a
+step. `calibrateRhoGrid.py --x0` and `config.ARG['anchorGuess']` make the guess a declared input.
+
 ## 8. A superseded file left beside the live ones is an input to anything that globs
 
 Backups, variants and dated copies in the same directory as the data they supersede are not inert. Any
@@ -200,8 +213,20 @@ exist to produce. Measured: `shocks.shockTheta` set `db['θ']` then called `upda
 both `θ = 0` and `θ = 1` returned the calibrated path to every printed digit.
 
 The same refresh is *required* two functions away — `shockIncomeDistribution` changes `η`, and `Γ_h` and
-`θ` are genuine functions of `η`, so there it moves `θ` from 0.738 to 0.495, a real part of the experiment.
-The rule is not "never refresh"; the refresh's inputs decide.
+`θ` are genuine functions of `η`, so there it would move `θ` from 0.738 to 0.495. Whether that is wanted
+is a modelling question rather than a mechanical one (the paper now holds `θ` fixed there, so the row is
+about inequality alone); either way the refresh itself is required, and only the value installed after it
+is a choice. The rule is not "never refresh"; the refresh's inputs decide.
+
+**The second instance is the one the habit below does not catch, because the offending line is in another
+function.** Setting a derived parameter *after* the refresh is only safe until something else refreshes.
+`shocks.shockFrenchAll` pins `θ` inside its income step and then calls `shockVoting`, whose own
+`updateAuxPars` re-derives `θ` from the η now in db — France's. The pin is silently undone, and only in
+the composite rows: the single-characteristic row is correct, because nothing runs after it. Measured:
+`frAll` and `frBoth` came back on `θ = 0.551` with every other column plausible. **So the rule extends —
+a derived parameter is pinned by the LAST refresh in the whole sequence, not by the last one in the
+function you are reading.** Composite shocks re-install it at the end, and `US/test_esc.py` asserts the
+pin survives each composite as well as each single shock.
 
 **The habit.** Know which parameters are derived before writing one, and set it *after* the refresh. **A
 counterfactual that returns the baseline exactly is a failed run until proven otherwise** — polar cases
@@ -277,7 +302,11 @@ the capital Argentina has, and β absorbed it.
   in the code, so no test could check it. It is now a parameter (`yearsPerPeriod`) the target equation
   carries explicitly.
 - **The neighbouring target was converted correctly** (7.1% of GDP ÷ (1-α) = 0.125), which made the
-  calibration look internally careful.
+  calibration look internally careful. **And that conversion became the next instance of this finding**
+  (2026-09-08): the workbook carried the *converted* 0.125, so when α moved to 0.35 the target silently
+  stayed at the α = 0.43 conversion and a full ρ sweep calibrated ω to it. A converted datum has the
+  conversion's inputs baked in; store the datum (spending, 7.1% of GDP) and derive the target in the
+  loader, so the units follow the parameter. That is #9's rule applied to a datum rather than a parameter.
 - **Both readings were plausible numbers.** A units error between two plausible quantities has no symptom
   except the parameter it lands in.
 - **The provenance was one sentence, in the paper, and wrong** — sector, denominator and comparability all

@@ -7,20 +7,18 @@
 \caption{The calibrated cost of redistributive funds}
 \label{table:US_ESC:calibration}
 \renewcommand{\arraystretch}{1.25}
-\begin{tabularx}{.9\textwidth}{YYYYY}
+\begin{tabularx}{.9\textwidth}{YYY}
 \toprule
- & \multicolumn{2}{c}{\textbf{Proportional cost}} & \multicolumn{2}{c}{\textbf{Redistributive-only cost}} \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}
-\textbf{CRRA} ($\rho$) & $p$ & $\theta^{\ast}$ & $p$ & $\theta^{\ast}$ \\
+\textbf{CRRA} ($\rho$) & $p$ & $\theta^{\ast}$ \\
 \midrule 
-0.5 & 0.965 & 0.738 & 1.461 & 0.690 \\
-1.0 & 0.408 & 0.738 & 0.709 & 0.716 \\
-2.0 & 0.090 & 0.738 & 0.178 & 0.733 \\
+0.5 & 0.965 & 0.738 \\
+1.0 & 0.408 & 0.738 \\
+2.0 & 0.090 & 0.738 \\
 \bottomrule
 \end{tabularx}
 \begin{tablenotes}
 \footnotesize
-\item $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = 0.5$ imposed; $p$ is calibrated so the design \emph{in force} in 2020 --- on a path where the political choice binds from the first period --- is the observed one, with $(\beta, \omega)$ recalibrated at each trial value. Under the proportional cost the wedge cancels from the replacement-rate ratio, so $\theta^{\ast}$ is the data's own at every $\rho$; under the redistributive-only cost $\theta^{\ast}$ and $p$ are jointly identified. Without the cost the choice corners at $\theta = 0$ at every $\rho$.
+\item $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = 0.5$ imposed; $p$ is calibrated so the design \emph{in force} in 2020 --- on a path where the political choice binds from the first period --- is the observed one, with $(\beta, \omega)$ recalibrated at each trial value. The cost is proportional, so the wedge cancels from the replacement-rate ratio and $\theta^{\ast}$ is the data's own at every $\rho$. Without the cost the choice corners at $\theta = 0$ at every $\rho$. Common-$X$ calibration: one leisure parameter $X$ shared across income groups, with the hours unit pinned by targeting the observed average workweek, so relative hours are a prediction rather than a calibration target.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

@@ -305,3 +305,74 @@ is now a neutral comparison of the two constructions). Two latent defects fixed 
 defined nowhere in the preamble) and `\refeq:esc:auxiliary:si` (wrong prefix — the label lives in
 `model_esc.tex` under `\refmodeleq:`). `eq:extendedGrid`/`eq:objectiveProfile`/`eq:candidates` now live in
 `num_robustroot.tex`. `num_ee.tex`/`num_calibration.tex` untouched; all code-cited labels preserved.
+
+
+## 2026-08-27 — the income-distribution counterfactual holds θ, and a pin that did not hold
+
+**Decision, from the user**: the French income-distribution row should change the income distribution and
+nothing else. `θ` is identified from the ratio of replacement rates at mean and half-mean income, so
+France's flatter `η` implies a much less Bismarckian system through the *same* observed ratio — 0.738 →
+0.495. Letting that happen puts a pension-design change inside a counterfactual about inequality, when
+pension design is the separate `theta` family in the same table set. `shockIncomeDistribution` now pins by
+default (`--freeTheta` keeps the re-deriving reading on disk), and the ESC exogenous-θ rows inherit it.
+
+`θPin` defaults to the model's own design read *before* the swap rather than to a value the caller passes.
+The caller had one — `frenchData['θUS']` — but a default that depends on the caller supplying the right
+number is a default that can be wrong quietly; reading it off the object being shocked cannot be.
+
+**The pin did not survive the composite rows, and that is finding #9 in a form the existing habit misses.**
+#9's rule was "set a derived parameter *after* the refresh". `shockIncomeDistribution` does exactly that —
+and then `shockFrenchAll` calls `shockVoting`, whose own `updateAuxPars` re-derives `θ` from the η now in
+db, which is France's. `frAll` and `frBoth` came back on **θ = 0.551** with every other column plausible;
+`frIncome`, where nothing runs afterwards, was correct. The rule extends: **a derived parameter is pinned
+by the last refresh in the whole sequence, not by the last one in the function you are reading.** Both
+composites re-install it at the end, `test_esc.py` asserts the pin survives each of `frIncome`/`frAll`/
+`frBoth` *and* that `pinTheta=False` still re-derives, and `frBoth` became a named function instead of a
+tuple-of-lambdas so it has somewhere to say so. Caught by reading the run's own output rather than by a
+test — the pinned rows printing 0.5506 where 0.7382 was asked for.
+
+## 2026-08-27 — the ESC leg gains the common-X variant, and loses the flat spec
+
+`runESC.py`/`runESCcrra.py` take `--commonX`, threaded into `buildUS` and `buildEU`. Two things had to
+agree that are easy to miss: `usReference` must be read off the *same* variant's sweep (it carries
+`h̄_US`, and `h̄` differs between the variants by construction), and `frenchData` must build France under
+the same variant, since under common X France's `η` inverts `z^η` directly and its `X` is a scalar.
+
+**`commonX` is a column and part of every merge key.** These csvs are resumable and their rows do not
+otherwise record what produced them, so without it a common-X run would overwrite the vector-X rows, or
+leave them to be read as current — #13. `datasets.escCalibration`/`escRow` filter on it. Two guards were
+needed rather than one: `bool(nan)` is **True**, so a blank cell would file an untagged row under common
+X, the one variant it certainly is not; and `mergeWrite` adds a key column missing from the file on disk
+as NaN, so a pre-column csv keeps its rows instead of raising.
+
+**The calibrated wedge is invariant to the variant, bit for bit**: `p` = 0.964818 at ρ = 0.5 and 0.407612
+at ρ = 1 under both. Block recursivity reaching through the endogenous-θ layer — the leaded choice sees
+`η`/`X` only through the normalised aggregate.
+
+**And so is the chosen design, measured rather than inferred.** Comparing the LOG counterfactuals under
+the two variants scenario by scenario: baseline, mild and acute ageing, voting and leisure agree to
+**≤ 1.2e-12 in θ and 1.2e-14 in τ**, in the *endogenous* reading as well as the pinned one. That settles
+two things at once — the ±0.01 certification of the path iteration against the 2-D solver was measured
+under vector `X` and carries over, and the appendix's ageing, voting and leisure results are literally the
+same numbers under either identification.
+
+**Only the scenarios that swap `η` move, and `frIncome` alone hides it.** Under vector `X` the swap holds
+`X_i` fixed, so `y^η_i = η_i^{1+ξ}/X_i^ξ` is not proportional to either country's `z^η`; under common `X`
+it is proportional to `η_i^{1+ξ}`. Different `y^η` distributions, hence a genuinely different experiment —
+the same 13.21% against 12.83% the exogenous-θ table shows. `frIncome` reads as identical (1.000 both)
+only because it corners; `frBoth` and `frAll` are interior at 0.9718 against 1.000 and show it. A corner
+masking a real difference is #10's shape: the invariance had to be read off the scenarios that are not at
+one.
+
+The `flat` (redistributive-only) cost spec is still implemented and runnable but is no longer run for the
+paper — the user's call. It is a second formulation of the same assumption and it doubled the most
+expensive stage in the pipeline.
+
+## 2026-09-08 — a forced failure that did not fail
+
+`test_calibration.py`'s "forced failure raises" check called `calibrate(tol = 0.)` and expected
+`_checkConverged` to raise. Under the full runner it passed silently once: a warm-started root landed on a
+residual of exactly 0.0, and `0.0 <= 0.0` is converged. Standalone it raised every time. The check now
+uses `tol = -1.`, which no finite residual satisfies — a "forced" failure has to be forced by construction,
+not by a tolerance the solver can happen to meet (`crossCuttingFindings.md` #1 on cross-process bitwise
+differences is the likely reason it showed up only under the runner).

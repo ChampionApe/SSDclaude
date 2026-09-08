@@ -37,6 +37,12 @@ ARG = {
                                      # paper show the same three points of their rho grids
     'rule':       'match',  # b^0 = b^refType
     'refType':    1,
+    # The anchor's starting (beta, omega, eta0, X0). The march seeds every other point from its history,
+    # but the anchor starts from test.py's defaults (beta = 0.6, omega = 2), and at alpha = 0.35 those put
+    # the informal steady state outside the net-saver region, so the iota state grid is degenerate before
+    # the root takes a step. This is the alpha = 0.35, K/Y = 3.23, tau0 = 0.071/0.65 solution at rho = 1
+    # (2026-09-08); retune it if the capital share, the spending share or the K/Y target moves.
+    'anchorGuess': {'β': 0.651, 'ω': 1.527, 'η0': 0.331, 'X0': 0.413},
     # Grid settings. calibrateRhoGrid.py gives BOTH solvers interpKind/smoothKnots and only the grid
     # SIZES to CRRA; LOG keeps its own documented nι=50. Anything re-solving a calibrated instance must
     # mirror that split or it solves under a different interpolant than it was fitted under
@@ -65,7 +71,10 @@ def calendar():
             't0': int(list(dates).index(dfc['Calibration year'])),
             'year0': int(dfc['Calibration year']),
             'workweek': float(dfc['Average workweek']),
-            'τ0': float(dfc['Pension tax']),
+            # Derived as in test.py: spending/(1-alpha), never a literal tax rate.
+            'τ0': float(dfc['Pension spending'])/(1-float(dfc['Capital income share'])),
+            'α': float(dfc['Capital income share']),
+            'spending': float(dfc['Pension spending']),
             's0': float(dfc['Savings rate'])}
 
 
@@ -84,21 +93,30 @@ US = {
     # counterfactual comparability and NOT interchangeable with 'UK' (different RR0, so different theta).
     # It is calibrated and swept, but no paper table reads it yet.
     'extraSweeps': ('UKUS',),
+    # WHICH CALIBRATION VARIANT THE PAPER LEADS WITH. True = the common scalar X of the docs' variant B,
+    # where the hours unit is a calibration target and relative hours become a prediction; False = the
+    # vector X_i of variant A, where relative hours are data and the LEVEL of hbar is not identified.
+    # beta, omega, tau, R, the savings rate and aggregate h are the SAME under both (block recursivity,
+    # measured to ~1e-13 down the sweeps) -- what the choice changes is eta, X, and therefore every
+    # counterfactual defined THROUGH eta or X: the French income-distribution and leisure rows.
+    # The headline tables and figures read this; their vector-X twins pass commonX = not this.
+    'commonX': True,
     'gridSettings': {'interpKind': 'linear', 'smoothKnots': 4, 'n': 101, 'ns': 150,
                      'verify': 225, 'verifyN': 151},
     # --- Endogenous system characteristics (app:ESC): the leaded choice of theta under a deadweight
-    # wedge on redistributive funds. 'spec' is the paper's headline cost formulation (the wedge scales
-    # the whole benefit; f cancels from the replacement-rate ratio, so theta* stays the data's own);
-    # 'altSpec' is the benefit-side variant, calibrated and run everywhere as robustness. phi is
-    # imposed, p is calibrated per (rho, spec) so the design IN FORCE in 2020 on a freely simulated path
+    # wedge on redistributive funds. 'spec' is the PROPORTIONAL cost, where the wedge scales the whole
+    # benefit and f cancels from the replacement-rate ratio, so theta* stays the data's own. The
+    # redistributive-only ('flat') alternative -- where only the flat component carries the cost, and
+    # theta and p are jointly identified -- is still implemented in python/US/ but is no longer run or
+    # reported: it is a second formulation of the same assumption, and carrying both doubled the most
+    # expensive stage of the pipeline for a robustness check the paper does not lean on.
+    # phi is imposed; p is calibrated per rho so the design IN FORCE in 2020 on a freely simulated path
     # is the observed one (ModelESC.leadedDesignAtT0, results/esc/escCalibration{,CRRA}.csv). The
     # counterfactual tables report at t0: every scenario is a new equilibrium path whose political choice
     # binds from the first period, so 2020's design is an outcome and already carries the response.
-    # (The superseded convention -- an unanticipated 2020 reform with the design pinned through 2020 --
-    # had to report t0+1.)
+    # The ESC leg runs under the headline calibration variant above, US['commonX'].
     'esc': {
         'spec':      'scale',
-        'altSpec':   'flat',
         'phi':       0.5,
         'ρTable':    [0.5, 1.0, 2.0],
         # escExperiments.csv scenario keys -> the labels the appendix tables print.
@@ -144,7 +162,49 @@ def usCalendar(country = 'US'):
             'year0': int(dfc['Calibration year']),
             'workweek': float(dfc['Average workweek']),
             'τ0': float(dfc['Pension tax']),
-            'RR0': float(dfc['Replacement rate'])}
+            'RR0': float(dfc['Replacement rate']),
+            'α': float(dfc['Capital income share'])}
+
+
+# ---------------------------------------------------------------------------------------------------
+# The two US calibration variants, as they appear in an output's identity and in its table note.
+#
+# The variant US['commonX'] names is the HEADLINE: its outputs keep the plain names and tex labels the
+# paper already \ref{}s, so switching which variant leads never renames the outputs the draft cites --
+# it changes what they contain. The other variant is the robustness twin, and its name and label carry
+# ITS OWN variant rather than the word "alternative", so a file on disk says what is in it.
+# ---------------------------------------------------------------------------------------------------
+def isLead(commonX):
+    return bool(commonX) == bool(US['commonX'])
+
+
+def variantSuffix(commonX):
+    r""" '' for the headline variant, '_commonX'/'_vectorX' for the twin. Appended to an output's name,
+    its tex filename and its \label. """
+    return '' if isLead(commonX) else ('_commonX' if commonX else '_vectorX')
+
+
+def variantCaption(commonX):
+    """ The caption tail that marks a twin. Empty for the headline -- its caption is the paper's own. """
+    return '' if isLead(commonX) else (r' (common $X$ calibration)' if commonX
+                                       else r' (vector $X_i$ calibration)')
+
+
+def variantNote(commonX):
+    r""" One sentence naming the calibration variant, appended to every US table note.
+
+    Both tables carry it, headline included: the two variants share beta, omega, tau, R and the savings
+    rate exactly, and differ only where a number is defined through eta or X -- so a reader comparing two
+    tables needs to be told which one they are looking at, not left to infer it from the one column that
+    moved. """
+    if commonX:
+        return (r' Common-$X$ calibration: one leisure parameter $X$ shared across income groups, with '
+                r'the hours unit pinned by targeting the observed average workweek, so relative hours '
+                r'are a prediction rather than a calibration target.')
+    return (r' Vector-$X_i$ calibration: $X_i$ is identified from relative hours, which are data here, '
+            r'and the level of $ar h$ is then not identified --- only its ratio to the baseline is. '
+            r'$eta$, $\omega$, the tax rate and the savings rate are common to the two variants; what '
+            r'differs is anything defined through $\eta$ or $X$.')
 
 
 def workweekHours(h, hRef):
@@ -167,6 +227,16 @@ def workweekHours(h, hRef):
 def pct(x, digits = 2):
     r""" 0.1256 -> '12.56\%'. The escaped percent is what goes into a tex cell. """
     return r'{:.{d}f}\%'.format(100*x, d = digits)
+
+
+def pp(x, digits = 2):
+    r""" A CHANGE in a rate, 0.0014 -> '$+0.14$ p.p.', -0.0158 -> '$-1.58$ p.p.'. Math mode so the
+    minus is a minus rather than a hyphen. A change that rounds to zero prints unsigned ('0.00 p.p.')
+    rather than as '-0.00': the sign of a solver residual is not a result. """
+    v = round(100*x, digits)
+    if v == 0:
+        return '{:.{d}f} p.p.'.format(0., d = digits)
+    return '${:+.{d}f}$ p.p.'.format(v, d = digits)
 
 
 def num(x, digits = 2):

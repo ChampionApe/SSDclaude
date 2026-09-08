@@ -24,30 +24,38 @@ log['ρ'], log['preferences'] = 1.0, 'LOG'
 crra = pd.read_csv(os.path.join(ESC, 'escShocksCRRA.csv'))
 crra['preferences'] = 'CRRA'
 d = pd.concat([log, crra], ignore_index = True)
-d = d[[c for c in ('ρ', 'preferences', 'spec', 'phi', 'p', 'scenario', 'θpinned',
+# commonX identifies the calibration variant the row was produced under and is carried through to the
+# merged csv, where datasets.escExperiments filters on it. A row written before the column existed is a
+# vector-X row (the variant everything ran under then), so that is what a missing value means.
+if 'commonX' not in d.columns:
+    d['commonX'] = False
+d['commonX'] = d['commonX'].fillna(False).astype(bool)
+d = d[[c for c in ('ρ', 'preferences', 'spec', 'phi', 'commonX', 'p', 'scenario', 'θpinned',
                    'θ_tm1', 'θ_t0', 'θ_t1', 'τ_t0', 'sr_t0', 'ww_t0', 'τ_t1', 'sr_t1', 'ww_t1')
        if c in d.columns]]
-d = d.sort_values(['spec', 'ρ', 'scenario', 'θpinned']).reset_index(drop = True)
+d = d.sort_values(['commonX', 'spec', 'ρ', 'scenario', 'θpinned']).reset_index(drop = True)
 out = os.path.join(ESC, 'escExperiments.csv')
 d.to_csv(out, index = False)
 print(f'-> {os.path.relpath(out, REPO)}  ({len(d)} rows)\n')
 
 order = ['baseline', 'mild', 'acute', 'frIncome', 'frLeisure', 'frVoting', 'frBoth',
          'frAll', 'France']
-for spec in ('scale', 'flat'):
-    ds = d[d['spec'] == spec]
-    if ds.empty:
-        continue
-    print('=' * 100)
-    print(f'spec = {spec}, phi = 0.5   (theta_t0 = design in force at 2020; tau/sr at 2020)')
-    print('=' * 100)
-    for pin, lab in ((False, 'theta CHOSEN'), (True, 'theta PINNED at its exogenous value')):
-        sub = ds[ds['θpinned'] == pin]
-        if sub.empty:
+for cx in sorted(d['commonX'].unique()):
+    for spec in sorted(d.loc[d['commonX'] == cx, 'spec'].unique()):
+        ds = d[(d['spec'] == spec) & (d['commonX'] == cx)]
+        if ds.empty:
             continue
-        piv = sub.pivot_table(index = 'scenario', columns = 'ρ',
-                              values = ['θ_t0', 'τ_t0', 'sr_t0'], aggfunc = 'first')
-        piv = piv.reindex([s for s in order if s in piv.index])
-        print(f'\n--- {lab} ---')
-        print(piv.round(4).to_string())
-    print()
+        print('=' * 100)
+        print('spec = {}, phi = 0.5, {}   (theta_t0 = design in force at 2020; tau/sr at 2020)'
+              .format(spec, 'common X' if cx else 'vector X'))
+        print('=' * 100)
+        for pin, lab in ((False, 'theta CHOSEN'), (True, 'theta PINNED at its exogenous value')):
+            sub = ds[ds['θpinned'] == pin]
+            if sub.empty:
+                continue
+            piv = sub.pivot_table(index = 'scenario', columns = 'ρ',
+                                  values = ['θ_t0', 'τ_t0', 'sr_t0'], aggfunc = 'first')
+            piv = piv.reindex([s for s in order if s in piv.index])
+            print('\n--- {} ---'.format(lab))
+            print(piv.round(4).to_string())
+        print()

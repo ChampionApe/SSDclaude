@@ -27,6 +27,11 @@ Docs run `t=1,…,T` with `t=0` a pre-determined state; code has `db['t']` defau
 | `t=1` (first active period) | `db['t'][0]` = `Base.tFirst` |
 | `t=T` (terminal) | `db['t'][-1]` |
 
+**The tax target is derived, not read** (2026-09-08): the workbook carries pension spending as a share of
+GDP (`Pension spending` = 0.071), and `test.py` sets `db['τ0'] = spending/(1-α)` because spending over
+formal output is `τ(1-α)`. A literal tax rate went stale with α once (0.125 is the conversion at α = 0.43;
+at 0.35 it is 0.109), which cost a half-finished ρ sweep — `crossCuttingFindings.md` #9.
+
 Two db entries share names with the above by coincidence: `db['s0']` is the savings **rate** at the
 baseline year (reported; it identified `β` until 2026-08-24, when `db['KY0']`, the capital-output ratio,
 replaced it as the target), and `db['t0']` is the *index* of the calibration baseline year.
@@ -40,7 +45,9 @@ replaced it as the target), and `db['t0']` is the *index* of the calibration bas
 | `policy.py` | `LOG` / `CRRA` — the full backward recursion, over `ι_{t-1}` and over `(s_{t-1}, ι_{t-1})` |
 | `test.py` | loads `data/ArgentinaTest.xlsx` and builds the real Argentina instance. A bare `ModelInformalSavings()` has identical household types and gives `NaN`/`inf` `θ`/`κ`/`ε` — expected |
 
-**Experiment scripts** (not tests): `calibrateRhoGrid.py` (the ρ sweep), `retargetCalibration.py`
+**Experiment scripts** (not tests): `calibrateRhoGrid.py` (the ρ sweep; `--x0 β ω η0 X0` seeds the
+anchor, which otherwise starts from `test.py`'s defaults — at α = 0.35 those make the `ι` grid degenerate
+before the root moves), `retargetCalibration.py`
 (parameters as a function of ONE calibration target), `shockUniversal.py` (the unanticipated
 universalisation, `num_shock.tex`), `shockEEOnly.py` (the same reform with taxes held at the baseline
 path), `sweepEpsThetaGrid.py` (the cartesian `(ε, θ)` comparative statics behind the paper's
@@ -174,6 +181,12 @@ the path solve (§6-7); calibration (§8) and calibration over a parameter grid 
 diagnostics; model copies for shock experiments; and the universalisation experiment, run across the full
 ρ grid for `match` (`flat` only at ρ=1).
 
+**The CRRA steady-state bracket is derived, not a constant** (2026-09-08). `steadyState_CRRA_solve`
+defaults to `steadyState_CRRA_bounds`, `(1e-6, min(0.75, 0.99·Base.ΓsCap))` with geometric expansion
+only when that fails to bracket — the US module's construction, ported here the day the constant
+`(1e-6, 0.75)` killed the ρ march at α = 0.35 (`crossCuttingFindings.md` #7). `informalAnalytical`
+carries the same port.
+
 `calibrate`'s `tol` defaults to `1e-6`, deliberately looser than the inner solves (EE 1e-8, steady state
 1e-11): those are exact root problems, this one reads its targets off a grid-searched path. ~1e-4 in the
 parameters is the outer answer's floor, which is what that `tol` should be read against — do not relax it
@@ -196,10 +209,6 @@ behind each: `notes/informalSavings_numericalDeviations.md` — read it before e
   the two rows stay differenceable. **Fix**: let `EE_report` take the lagged state instead of calling
   `initialState_solve` — a `model.py` change plus a ~2.5 h re-run. Until then the consumption columns
   should not be quoted.
-- **`test_calibrationGrid.py`'s pinned anchor was updated without running the suite** (2026-08-20, at the
-  user's request). The pair is backed by two direct calibrations and agrees with the fine grid's
-  CRRA-extrapolated prediction to 1.2e-5, but agreement with a prediction is not the suite passing. Run
-  `python/runTests.py -k calibrationGrid` (~45 min) before treating it as verified.
 - **`κ`'s db-cache staleness under a varying `ε` is live, not latent.** The explicit `κ(ε1, t)` exists but
   every consumer reads a cached `db['κ']`, so any path that changes `ε` must rewrite `db['κ']` with it —
   `shockUniversal.installEps` is the one that does. Nothing detects the omission: a mutually inconsistent

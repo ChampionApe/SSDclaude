@@ -96,7 +96,10 @@ def dbSignature(mm):
 
 sig = dbSignature(m)
 try:
-    m.calibrate(preferences = 'LOG', tol = 0.)     # unreachable tolerance -> _checkConverged raises
+    # A NEGATIVE tolerance: `max|res| <= tol` is then false for every finite residual. tol = 0 was not
+    # unreachable -- a warm-started root can land on a residual of exactly 0.0, and did once under the
+    # full runner (2026-09-08), so the forced failure did not fail.
+    m.calibrate(preferences = 'LOG', tol = -1.)
     check('forced failure raises', False)
 except RuntimeError:
     check('forced failure raises', True)

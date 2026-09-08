@@ -1,4 +1,6 @@
-# US: measurements and validation against the paper
+# US: measurements and validation against the paper
+
+> **Dating.** Everything below was measured under the *vector-`X_i`* calibration, and with the income-distribution counterfactual re-deriving `θ` from `RR0`. The paper now leads with common `X` and holds `θ` at the US design in that row, so the French-characteristic and leisure numbers here are the vector-`X` twins' rather than the headline tables'. Kept as measured: the comparisons this file exists to record — old convention against new, one identification against another — are between numbers taken under the same setup, and re-running them under a later one would not answer the question they were taken to answer.
 
 Demoted from `python/US/README.md` so it can stay a file map and a status. Everything here is a
 measurement that cost a solve, or a statement about which of the paper's printed columns this code

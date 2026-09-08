@@ -12,15 +12,69 @@ For the UK, we use UK DATA SERVICES, Harmonised BHPS Wave 17 (refers to year 200
 
 \input{Tables/UK_householdheterogeneity}
 
-Tables \ref{table:US:CRRA:pensChars}, \ref{table:US:CRRA:ageing}, and \ref{table:US:CRRA:otherShocks} show results for counterfactual population growth, income and voting inequality, and leisure preferences present when using general CRRA preferences. 
+Tables \ref{table:US:CRRA:ageing} and \ref{table:US:CRRA:otherShocks} show results for counterfactual population growth, income and voting inequality, and leisure preferences under general CRRA preferences; the pension-characteristics counterpart is table \ref{table:US:CRRA:pensChars} in the main text.
 
 \subsection{The effect of CRRA preferences}
-
-\input{Tables/US_CRRA_PensChars}
 
 \input{Tables/US_CRRA_Ageing}
 
 \input{Tables/US_CRRA_OtherShocks}
+
+\subsection{The vector-\texorpdfstring{$X_i$}{Xi} calibration}\label{app:US:vectorX}
+
+Section \ref{sec:oecd} identifies $\eta_i$ and $X_i$ by taking the taste for leisure common across income
+groups, $X_i = X$, and using the observed average workweek to fix its level. Relative hours are then a
+prediction. The alternative is to treat relative hours as data as well: with both $z_i^{\eta}$ and
+$h_i/h$ observed, \eqref{eq:calibration_eta} identifies a full vector $X_i$ and no separate hours target
+is needed. The level of average hours is then no longer identified, so $\bar h$ can only be read
+against a reference point and never as a level.
+
+Which of the two is preferable is not obvious, and neither is innocuous, so we repeat the whole of section
+\ref{sec:oecd} under the second. What carries over exactly is worth stating first: $\beta$, $\omega$, the
+equilibrium tax rate, the savings rate and aggregate hours are \emph{identical} across the two variants,
+because the calibration is block recursive --- the productivity distribution enters every aggregate only
+through $\sum_i\gamma_i\eta_i^{1+\xi}/X_i^{\xi}$, which the normalization holds at one. Everything that
+depends on the design or on the demography therefore reproduces to numerical precision: tables
+\ref{table:US:pensChars_vectorX} and \ref{table:US:ageing_vectorX} are the main text's tables to every
+printed digit.
+
+What differs is anything defined \emph{through} $\eta$ or $X$ separately, which is to say the two
+counterfactuals that borrow France's income distribution and its leisure preferences (table
+\ref{table:US:otherShocks_vectorX}). The vector-$X_i$ calibration attributes more of the observed income
+dispersion to productivity and less to hours, so replacing the U.S.\ productivity distribution with
+France's is a larger change under it: the tax rate falls by 1.6 p.p.\ rather than 1.2 p.p. Leisure
+preferences move in the opposite direction: the gap in average $X$ between the two countries is smaller
+under vector $X_i$, so imposing French leisure preferences costs 4.6 hours a week rather than 6.2.
+Neither change disturbs the paper's ranking, in which ageing and pension design dominate taxes while the
+French characteristics are minor for taxes and decisive for hours, which is the claim the exercise is
+meant to test.
+
+\input{Tables/USUKFRCalibration_vectorX}
+
+\input{Tables/US_householdheterogeneity_vectorX}
+
+\input{Tables/FR_householdheterogeneity_vectorX}
+
+\input{Tables/UK_householdheterogeneity_vectorX}
+
+\input{Tables/US_PensChars_vectorX}
+
+\input{Tables/US_Ageing_vectorX}
+
+\input{Tables/US_OtherShocks_vectorX}
+
+\input{Tables/US_CRRA_PensChars_vectorX}
+
+\input{Tables/US_CRRA_Ageing_vectorX}
+
+\input{Tables/US_CRRA_OtherShocks_vectorX}
+
+\begin{figure}[!htb]
+    \centering
+    \caption{The effect of various counterfactuals in the U.S., vector-$X_i$ calibration}
+    \label{fig:US:overview_vectorX}
+    \includegraphics[width=\linewidth]{Figs/US_overview_vectorX.pdf}
+\end{figure}
 
 
 

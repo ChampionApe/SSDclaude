@@ -18,8 +18,8 @@ families at every rho in config.US['ρTable']. That is why the whole set costs o
 three: the families share a baseline solve per rho, and splitting them would re-solve it three times.
 
 Cost: ~30 s for the whole thing. Every experiment here is cheap because none of them calibrates -- the
-expensive outer root already ran in stage (i). The `pinTheta` entry is a second reading of the French
-income-distribution counterfactual (theta held at the US value rather than re-derived from RR0); see
+expensive outer root already ran in stage (i). The `freeTheta` entry is a second reading of the French
+income-distribution counterfactual (theta re-derived from RR0 rather than held at the US design); see
 python/US/shocks.shockIncomeDistribution for why that choice is not incidental.
 """
 import os, sys, argparse, subprocess
@@ -34,17 +34,23 @@ RHOFLAGS = ['--rho'] + [str(r) for r in C.US['ρTable']]
 G = C.US['gridSettings']
 GRIDFLAGS = ['--n', str(G['n']), '--ns', str(G['ns']),
              '--interpKind', G['interpKind'], '--smoothKnots', str(G['smoothKnots'])]
+# The ESC leg runs under the headline calibration variant only. It is the most expensive stage in the
+# pipeline, and unlike the exogenous-theta shocks -- where both variants are cheap and both are built --
+# a second variant here would double a multi-hour run for an appendix the paper does not read twice.
+ESCVARIANT = ['--commonX'] if C.US['commonX'] else []
 
 EXPERIMENTS = {
     # Every family, every rho in the table grid, both readings (full effect and economic-equilibrium-only).
-    # Feeds US_PensChars, US_Ageing, US_OtherShocks and their CRRA counterparts, plus US_taxOverview.
+    # The VECTOR-X variant: with config.US['commonX'] = True this is the appendix's robustness twin, and
+    # 'shocksCommonX' below carries the headline tables and figure. Both are built either way -- they cost
+    # 30 s each and the pair is a check on itself (see 'shocksCommonX').
     'shocks': {
         'script':  'runShocksUS.py',
         'args':    RHOFLAGS + GRIDFLAGS,
         'outputs': lambda: [os.path.join(C.SHOCKDIR, 'US_shocks.csv')],
         'note':    'theta / ageing / French, all rho, both effects',
     },
-    # The same set under the common-X calibration variant, for Figs/USX_taxOverview. Cheap and worth
+    # The same set under the common-X calibration variant -- the HEADLINE one. Cheap and worth
     # having as a check as much as an output: theta, ageing and voting must come back IDENTICAL to the
     # vector-X run (they touch neither eta nor X, and beta/omega/h agree across variants), while income
     # distribution and leisure must differ -- those two are defined through eta and X, whose meaning is
@@ -56,15 +62,16 @@ EXPERIMENTS = {
         'outputs': lambda: [os.path.join(C.SHOCKDIR, 'US_shocksCommonX.csv')],
         'note':    'the same set under common X',
     },
-    # The alternative reading of the income-distribution counterfactual. Not wired to a paper output;
-    # kept because the difference (tau 12.83% against 13.28% at rho=1) is a modelling choice the table
-    # does not show, and re-deriving it later from memory is exactly what this pipeline exists to avoid.
-    'pinTheta': {
+    # The alternative reading of the income-distribution counterfactual: theta RE-DERIVED from RR0 under
+    # France's eta instead of held at the US design. Not wired to a paper output; kept because the
+    # difference (tau 13.28% against the reported 12.83% at rho=1, vector X) is a modelling choice the
+    # table does not show, and re-deriving it later from memory is what this pipeline exists to avoid.
+    'freeTheta': {
         'script':  'runShocksUS.py',
-        'args':    RHOFLAGS + GRIDFLAGS + ['--pinTheta', '--family', 'french',
-                                           '--out', os.path.join(C.SHOCKDIR, 'US_shocks_pinTheta.csv')],
-        'outputs': lambda: [os.path.join(C.SHOCKDIR, 'US_shocks_pinTheta.csv')],
-        'note':    'French income distribution with theta pinned',
+        'args':    RHOFLAGS + GRIDFLAGS + ['--commonX', '--freeTheta', '--family', 'french',
+                                           '--out', os.path.join(C.SHOCKDIR, 'US_shocks_freeTheta.csv')],
+        'outputs': lambda: [os.path.join(C.SHOCKDIR, 'US_shocks_freeTheta.csv')],
+        'note':    'French income distribution with theta re-derived',
     },
     # --- Endogenous system characteristics (app:ESC). The counterfactuals on the LEADED-choice model
     # at the calibrated wedge, each run twice (theta pinned at the calibrated design vs chosen), at
@@ -73,8 +80,8 @@ EXPERIMENTS = {
     # scenario is a path iteration of full equilibrium solves, ~4-6 min per (rho, spec, scenario).
     'escShocks': {
         'script':  'runESC.py',
-        'args':    ['--stage', 'shocks', '--spec', C.US['esc']['spec'], C.US['esc']['altSpec'],
-                    '--phi', str(C.US['esc']['phi'])],
+        'args':    ['--stage', 'shocks', '--spec', C.US['esc']['spec'],
+                    '--phi', str(C.US['esc']['phi'])] + ESCVARIANT,
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocks.csv')],
         'note':    'endogenous-theta counterfactuals, LOG (rho = 1)',
     },
@@ -82,8 +89,8 @@ EXPERIMENTS = {
         'script':  'runESCcrra.py',
         'args':    (['--stage', 'shocks', '--rho']
                     + [str(r) for r in C.US['esc']['ρTable'] if r != C.US['ρAnchor']]
-                    + ['--spec', C.US['esc']['spec'], C.US['esc']['altSpec'],
-                       '--phi', str(C.US['esc']['phi'])]),
+                    + ['--spec', C.US['esc']['spec'],
+                       '--phi', str(C.US['esc']['phi'])] + ESCVARIANT),
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksCRRA.csv')],
         'note':    'endogenous-theta counterfactuals, CRRA (the other rho)',
     },

@@ -5,11 +5,22 @@ Each function returns the complete tex body of one file in writing/Paper/Tables/
 STRUCTURE of the hand-written table it replaces (tabularx with Y columns, the same caption, label and
 rules), so the paper's \ref{}s keep resolving and a diff shows moved numbers rather than a re-layout.
 
-TWO CONVENTIONS CARRIED FROM python/US, both of which a builder could silently get wrong:
+EVERY US BUILDER TAKES `commonX`, DEFAULTING TO THE HEADLINE VARIANT (config.US['commonX']). The same
+builder therefore produces the paper's table and its robustness twin, and config.variantSuffix keeps the
+headline's name, filename and \label exactly as the draft cites them while the twin's carry its own
+variant. Do not fork a builder to make a twin -- the point of the pair is that the two differ only in
+which calibration they read.
 
-  * `Savings rate` is s/(w*h) -- savings over gross labour income -- not Base.savingsRate's s/Y. They
-    differ by exactly (1-alpha), and the experiment csv already carries the paper's version. Do not
-    divide again here.
+THREE CONVENTIONS, each of which a builder could silently get wrong:
+
+  * `Savings rate` is s/Y, savings relative to GDP -- the same quantity as the Argentina tables. The US
+    shock csv carries it as `srOverY` (datasets.US_SR); its `sr` column is s/(w h) and is not read. The
+    ESC csvs carry only s/(w h) and go through datasets.escSavingsOverY, which is exact (w h = (1-alpha) Y).
+  * A counterfactual's savings rate is reported as the CHANGE against that rho's own baseline, in
+    percentage points (config.pp); only baseline rows carry a level. The baseline savings rate is a
+    prediction that moves with rho (beta is identified by R), so a scenario at rho differenced against
+    the rho = 1 baseline is not an effect -- the leisure row, a pure scale that cannot move savings, is
+    the check: it must read 0.00 at every rho. Tax rates and workweeks stay as levels.
   * `Avg. workweek` is normalised against each rho's OWN baseline, inside the experiment script. Under
     vector X the level of hbar is not identified, so there is no expression that converts it to hours;
     the observed workweek is a reference point, not a unit. Stage (iii) therefore reads `workweek`
@@ -19,7 +30,7 @@ import numpy as np
 
 import config as C
 import datasets as D
-from tables import BANNER, LQ, RQ
+from tables import BANNER, LQ, RQ, SRNOTE
 
 
 def _xwrap(name, src, caption, label, colspec, header, body, note = None):
@@ -38,19 +49,22 @@ def _xwrap(name, src, caption, label, colspec, header, body, note = None):
             + '\\end{threeparttable}\n\\end{table}\n')
 
 
-def _cells(r):
-    """ The three reported quantities of one shock row, already formatted. """
-    return [C.pct(r['τ']), C.pct(r['sr']), C.num(r['workweek'])]
+def _cells(r, base = None):
+    """ The three reported quantities of one shock row, formatted. With `base` (that rho's baseline
+    row) the savings rate is the change against it in p.p.; without, it is the level. """
+    sr = C.pct(r[D.US_SR]) if base is None else C.pp(r[D.US_SR] - base[D.US_SR])
+    return [C.pct(r['τ']), sr, C.num(r['workweek'])]
 
 
 def _shockRows(df, ρ, scenarios, baselineLabel):
     """ The 'Full effect' / 'Economic equilibrium effect' block shared by US_PensChars and US_Ageing. """
-    line = lambda lab, r: ' & '.join([lab] + _cells(r)) + r' \\'
-    out = [line(baselineLabel, D.usBaseline(df, ρ)) + '[1.25ex]']
+    b = D.usBaseline(df, ρ)
+    line = lambda lab, r, base = None: ' & '.join([lab] + _cells(r, base)) + r' \\'
+    out = [line(baselineLabel, b) + '[1.25ex]']
     for effect, head in (('full', 'Full effect:'), ('ee', 'Economic equilibrium effect:')):
         out.append(r'\multicolumn{4}{l}{\textit{' + head + r'}} \\\hline')
         for lab, scen in scenarios:
-            out.append(line(lab, D.usShockRow(df, ρ, scen, effect)))
+            out.append(line(lab, D.usShockRow(df, ρ, scen, effect), b))
         out[-1] += '[1.25ex]'
     return '\n'.join(out)
 
@@ -60,41 +74,50 @@ SHOCKHEAD = [r'\textbf{Scenario}', r'\textbf{Tax rate}', r'\textbf{Savings rate}
 
 
 # ---------------------------------------------------------------------------------------------------
-def usPensChars():
+def usPensChars(commonX = None):
     r""" Table \ref{table:US:pensChars}: theta = 0 and theta = 1 in the US, both effects, at the
     baseline rho. """
+    commonX = C.US['commonX'] if commonX is None else commonX
     ρ = C.US['ρBaseline']
-    df = D.usShocks()
-    θ0 = D.usCalibrationSummary()['US']['θ']
+    df = D.usShocks(commonX = commonX)
+    θ0 = D.usCalibrationSummary(commonX)['US']['θ']
     body = _shockRows(df, ρ, [(r'$\theta = 0$', r'$\theta = 0$'), (r'$\theta = 1$', r'$\theta = 1$')],
                       r'$\theta = ' + C.num(θ0) + '$')
     note = (r'\item $\rho = ' + C.num(ρ, 1) + r'$. The economic-equilibrium rows hold $\tau$ at the '
             r'baseline path, so they isolate the response of savings and hours to $\theta$ alone; the '
-            r'full rows re-optimise $\tau$ politically.')
-    return _xwrap('US_PensChars', 'results/shocks/US_shocks.csv',
-                  r'The effect of pension design ($\theta$) in US -- {}'.format(C.usCalendar()['year0']),
-                  'table:US:pensChars', 'p{3cm}YYY', SHOCKHEAD, body, note)
+            r'full rows re-optimise $\tau$ politically.' + SRNOTE + C.variantNote(commonX))
+    return _xwrap('US_PensChars' + C.variantSuffix(commonX), df.attrs['source'],
+                  r'The effect of pension design ($\theta$) in US -- {}{}'.format(
+                      C.usCalendar()['year0'], C.variantCaption(commonX)),
+                  'table:US:pensChars' + C.variantSuffix(commonX), 'p{3cm}YYY', SHOCKHEAD, body, note)
 
 
-def usAgeing():
-    r""" Table \ref{table:US:ageing}: mild and acute ageing, both effects, at the baseline rho. """
+def usAgeing(commonX = None):
+    r""" Table \ref{table:US:ageing}: mild and acute ageing, both effects, at the baseline rho.
+
+    Ageing touches neither eta nor X, so every number here is common to the two calibration variants
+    (they agree to ~1e-13); the twin exists so the appendix set is complete, not because it moves. """
+    commonX = C.US['commonX'] if commonX is None else commonX
     ρ = C.US['ρBaseline']
     year0 = C.usCalendar()['year0']
-    body = _shockRows(D.usShocks(), ρ,
+    df = D.usShocks(commonX = commonX)
+    body = _shockRows(df, ρ,
                       [(r'Mild ageing\tnote{a}', 'Mild ageing'),
                        (r'Acute ageing\tnote{b}', 'Acute ageing')], 'Baseline')
     note = (r'\item Each scenario is a separate equilibrium path: the demography holds throughout and '
             r'the economy starts from its own steady state, so the capital stock brought into '
-            + str(year0) + r' is the counterfactual one rather than the baseline\textquotesingle s.' '\n'
+            + str(year0) + r' is the counterfactual one rather than the baseline\textquotesingle s.'
+            + SRNOTE + '\n'
             r'\item[a] The ' + LQ + 'mild ageing' + RQ + r' scenario refers to the case with $\nu_t$ set '
             r'at $(1+\nu_t^{base})/2$ throughout.' '\n'
-            r'\item[b] The ' + LQ + 'acute ageing' + RQ + r' scenario refers to $\nu_t = 1$ throughout.')
-    return _xwrap('US_Ageing', 'results/shocks/US_shocks.csv',
-                  'The effect of ageing in US -- {}'.format(year0),
-                  'table:US:ageing', 'p{3cm}YYY', SHOCKHEAD, body, note)
+            r'\item[b] The ' + LQ + 'acute ageing' + RQ + r' scenario refers to $\nu_t = 1$ throughout.'
+            + C.variantNote(commonX))
+    return _xwrap('US_Ageing' + C.variantSuffix(commonX), df.attrs['source'],
+                  'The effect of ageing in US -- {}{}'.format(year0, C.variantCaption(commonX)),
+                  'table:US:ageing' + C.variantSuffix(commonX), 'p{3cm}YYY', SHOCKHEAD, body, note)
 
 
-def usOtherShocks():
+def usOtherShocks(commonX = None):
     r""" Table \ref{table:US:otherShocks}: French income distribution, leisure preferences and voting
     imposed on the US model, at the baseline rho.
 
@@ -105,93 +128,117 @@ def usOtherShocks():
     Two rows beyond the paper's original three: all three characteristics at once, and France's own
     calibrated path. Together they say how far the observable characteristics take the US towards France
     and how much is left for the political weight -- the comparison the new-path convention exists to
-    make (python/US/runShocksUS.franceReference). """
+    make (python/US/runShocksUS.franceReference).
+
+    This is the table the calibration variant moves most: income distribution is defined through eta and
+    leisure through the level of X, which is exactly what the variant re-interprets. """
+    commonX = C.US['commonX'] if commonX is None else commonX
     ρ = C.US['ρBaseline']
-    df = D.usShocks()
-    rows = [' & '.join(['Baseline'] + _cells(D.usBaseline(df, ρ))) + r' \\']
+    df = D.usShocks(commonX = commonX)
+    b = D.usBaseline(df, ρ)
+    rows = [' & '.join(['Baseline'] + _cells(b)) + r' \\']
     for lab in ('Income distribution', 'Leisure preferences', 'Voting'):
-        rows.append(' & '.join([lab] + _cells(D.usShockRow(df, ρ, lab, 'full'))) + r' \\')
+        rows.append(' & '.join([lab] + _cells(D.usShockRow(df, ρ, lab, 'full'), b)) + r' \\')
     rows.append(' & '.join(['All three'] + _cells(D.usShockRow(df, ρ, 'All French characteristics',
-                                                               'full'))) + r' \\[.5em]\hline\\[-.75em]')
+                                                               'full'), b)) + r' \\[.5em]\hline\\[-.75em]')
     rows.append(' & '.join(['France (own calibration)']
-                           + _cells(D.usShockRow(df, ρ, 'France (own calibration)', 'full'))) + r' \\')
+                           + _cells(D.usShockRow(df, ρ, 'France (own calibration)', 'full'), b)) + r' \\')
     note = (r'\item $\rho = ' + C.num(ρ, 1) + r'$, full effect. Each row is a separate equilibrium path: '
             r'the borrowed characteristics hold throughout and the economy starts from its own steady '
             r'state, so the row describes a country that has always had this mix rather than the US hit '
             r'by a surprise in 2020. Leisure preferences rescales every '
             r'$X_i$ to France\textquotesingle s population-weighted mean $X$, which is a pure change of the hours '
             r'unit, so the tax and savings rates stay exactly at baseline and only hours move. Income '
-            r'distribution replaces $\eta_i$ with France\textquotesingle s while holding $X_i$; $\theta$ is then '
-            r're-derived from the unchanged replacement-rate ratio and falls, so this row bundles a '
-            r'pension-design change with the inequality change (see python/US/shocks.py). The last row '
+            r'distribution replaces $\eta_i$ with France\textquotesingle s while holding $X_i$ \emph{and} '
+            r'holding $\theta$ at the US design, so it is a change in inequality alone; pension design is '
+            r'the separate counterfactual of \cref{table:US:pensChars}. The last row '
             r'is France\textquotesingle s own calibrated path, which carries its own $\omega$ as well as '
-            r'its own characteristics; its workweek is a calibration target, not a prediction.')
-    return _xwrap('US_OtherShocks', 'results/shocks/US_shocks.csv',
-                  'French income distribution, leisure preferences, and voting patterns in US',
-                  'table:US:otherShocks', 'lYYY', SHOCKHEAD, '\n'.join(rows), note)
+            r'its own characteristics; its workweek is a calibration target, not a prediction, and its '
+            r'savings rate is likewise reported as the distance from the US baseline.'
+            + SRNOTE + C.variantNote(commonX))
+    return _xwrap('US_OtherShocks' + C.variantSuffix(commonX), df.attrs['source'],
+                  'French income distribution, leisure preferences, and voting patterns in US'
+                  + C.variantCaption(commonX),
+                  'table:US:otherShocks' + C.variantSuffix(commonX), 'lYYY', SHOCKHEAD,
+                  '\n'.join(rows), note)
 
 
 # ---------------------------------------------------------------------------------------------------
-def _crraTable(name, caption, label, scenarios):
-    """ A rho-stacked table: one group of rows per scenario, the scenario name printed against the
-    middle rho, over config.US['rhoTable']. Full effect only -- the decomposition is the LOG tables' job.
-    """
-    df = D.usShocks()
+def _crraTable(name, caption, label, scenarios, commonX = None):
+    """ A rho-stacked table over config.US['rhoTable'], laid out like the ESC tables: a baseline group
+    with one row per rho (levels), then one group per scenario whose savings cell is the change against
+    THAT rho's baseline. The group name is printed against the middle rho. Full effect only -- the
+    decomposition is the LOG tables' job.
+
+    One baseline per rho, not one shared row: tau and the workweek are common across rho (a target and a
+    normalisation), the savings rate is not -- beta is identified by R, so the baseline savings rate is
+    a prediction that falls with rho. Differencing every rho against the rho = 1 level reversed the sign
+    of the theta rows at rho = 2 and put +-0.8 p.p. on the leisure row, which cannot move savings. """
+    commonX = C.US['commonX'] if commonX is None else commonX
+    df = D.usShocks(commonX = commonX)
     ρs = C.US['ρTable']
     mid = len(ρs)//2
-    b = D.usBaseline(df, C.US['ρBaseline'])
-    out = [' & '.join(['Baseline', ''] + _cells(b)) + r' \\[.5em]\hline\\[-.75em]']
-    for lab, scen in scenarios:
+    groups = [('Baseline', None)] + list(scenarios)
+    out = []
+    for lab, scen in groups:
         for k, ρ in enumerate(ρs):
-            r = D.usShockRow(df, ρ, scen, 'full')
-            out.append(' & '.join([lab if k == mid else '', C.num(ρ, 1)] + _cells(r))
+            b = D.usBaseline(df, ρ)
+            cells = _cells(b) if scen is None else _cells(D.usShockRow(df, ρ, scen, 'full'), b)
+            out.append(' & '.join([lab if k == mid else '', C.num(ρ, 1)] + cells)
                        + r' \\' + (r'[.5em]\hline\\[-.75em]' if k == len(ρs)-1 else ''))
-    note = (r'\item The baseline row is at $\rho = ' + C.num(C.US['ρBaseline'], 1)
-            + r'$, the log case, where the calibration targets are hit exactly. Every $\rho$ is '
-            r'separately calibrated (results/calibration/US\_rhoGrid.csv) and its workweek is '
-            r'normalised against its own baseline, so the columns are comparable down the table.')
-    return _xwrap(name, 'results/shocks/US_shocks.csv', caption, label, 'YYYYY',
+    note = (r'\item Every $\rho$ is separately calibrated: the tax rate is a target and the workweek '
+            r'is normalised against each $\rho$\textquotesingle s own baseline, so both are common to the '
+            r'baseline rows, while the baseline savings rate is a prediction ($\beta$ is identified by '
+            r'the interest rate) and falls with $\rho$. The savings rate is savings relative to GDP; '
+            r'the baseline rows report its level and every scenario row the change against the '
+            r'baseline at the same $\rho$, in percentage points.' + C.variantNote(commonX))
+    return _xwrap(name + C.variantSuffix(commonX), df.attrs['source'],
+                  caption + C.variantCaption(commonX), label + C.variantSuffix(commonX), 'YYYYY',
                   [r'\textbf{Scenario}', r'\textbf{CRRA} ($\rho$)', r'\textbf{Tax rate}',
                    r'\textbf{Savings rate}', r'\textbf{Avg. workweek}'], '\n'.join(out), note)
 
 
-def usCrraPensChars():
+def usCrraPensChars(commonX = None):
     r""" Table \ref{table:US:CRRA:pensChars}. """
     return _crraTable('US_CRRA_PensChars',
                       r'Does CRRA matter for the effect of pension design ($\theta$) in US -- {}'
                       .format(C.usCalendar()['year0']), 'table:US:CRRA:pensChars',
-                      [(r'$\theta = 0$', r'$\theta = 0$'), (r'$\theta = 1$', r'$\theta = 1$')])
+                      [(r'$\theta = 0$', r'$\theta = 0$'), (r'$\theta = 1$', r'$\theta = 1$')],
+                      commonX = commonX)
 
 
-def usCrraAgeing():
+def usCrraAgeing(commonX = None):
     r""" Table \ref{table:US:CRRA:ageing}. """
     return _crraTable('US_CRRA_Ageing',
                       'Does CRRA matter for the effect of ageing in US -- {}'
                       .format(C.usCalendar()['year0']), 'table:US:CRRA:ageing',
-                      [('Mild ageing', 'Mild ageing'), ('Acute ageing', 'Acute ageing')])
+                      [('Mild ageing', 'Mild ageing'), ('Acute ageing', 'Acute ageing')],
+                      commonX = commonX)
 
 
-def usCrraOtherShocks():
+def usCrraOtherShocks(commonX = None):
     r""" Table \ref{table:US:CRRA:otherShocks}. """
     return _crraTable('US_CRRA_OtherShocks',
                       'Does CRRA matter for French characteristics imposed on the US -- {}'
                       .format(C.usCalendar()['year0']), 'table:US:CRRA:otherShocks',
                       [('Income distribution', 'Income distribution'),
-                       ('Leisure preferences', 'Leisure preferences'), ('Voting', 'Voting')])
+                       ('Leisure preferences', 'Leisure preferences'), ('Voting', 'Voting')],
+                      commonX = commonX)
 
 
 # ---------------------------------------------------------------------------------------------------
 COUNTRYNAME = {'US': 'US', 'UK': 'UK', 'FR': 'France'}
 
 
-def usukfrCalibration():
+def usukfrCalibration(commonX = None):
     r""" Table \ref{table:US:Calib}: the headline calibration for the three countries.
 
     `X` is the POPULATION-WEIGHTED MEAN of X_i -- the only summary of a vector whose level IS the hours
     unit, and the one the leisure counterfactual is matched on. beta is added as a row the hand-written
     table omitted: it is imposed on France and the UK from the US calibration at the same rho, so
     printing it makes that visible rather than implicit. """
-    c = D.usCalibrationSummary()
+    commonX = C.US['commonX'] if commonX is None else commonX
+    c = D.usCalibrationSummary(commonX)
     cols = [k for k in ('US', 'UK', 'FR') if k in c]     # the hand-written column order
     year0 = C.usCalendar()['year0']
 
@@ -213,10 +260,12 @@ def usukfrCalibration():
     note = (r'\item $\rho = ' + C.num(C.US['ρBaseline'], 1) + r'$. $X$ is the population-weighted mean '
             r'of $X_i$; its level is the hours unit, pinned for France and the UK by targeting average '
             r'hours relative to the US rather than in levels. $\beta$ is calibrated for the US and '
-            r'imposed on the other two.')
-    return (BANNER.format(name = 'USUKFRCalibration', src = 'results/paper/usCalibrationSummary.csv')
+            r'imposed on the other two.' + C.variantNote(commonX))
+    return (BANNER.format(name = 'USUKFRCalibration' + C.variantSuffix(commonX),
+                          src = 'results/paper/usCalibrationSummary.csv')
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
-            + '\\caption{Calibration, US, UK, and France}\n\\label{table:US:Calib}\n'
+            + '\\caption{Calibration, US, UK, and France' + C.variantCaption(commonX) + '}\n'
+            + '\\label{table:US:Calib' + C.variantSuffix(commonX) + '}\n'
             + '\\renewcommand{\\arraystretch}{1.25}\n'
             + '\\begin{tabularx}{\\textwidth}{Y|' + 'Y'*len(cols) + '|p{6cm}}\n\\hline\n'
             + '& \\multicolumn{%d}{c|}{\\textbf{Country}} & \\\\ \\cline{2-%d}\n' % (len(cols), len(cols)+1)
@@ -226,19 +275,26 @@ def usukfrCalibration():
             + '\\end{threeparttable}\n\\end{table}\n')
 
 
-def _householdHeterogeneity(country, name, label):
-    r""" One country's per-group table: gamma_i, X_i, eta_i, mu_i. """
-    c = D.usCalibrationSummary()[country]
+def _householdHeterogeneity(country, name, label, commonX = None):
+    r""" One country's per-group table: gamma_i, X_i, eta_i, mu_i.
+
+    Under the common-X calibration the X_i row is one number repeated, and the hours row is a prediction
+    rather than the target it is under vector X -- so the `Target` column is variant-dependent. """
+    commonX = C.US['commonX'] if commonX is None else commonX
+    c = D.usCalibrationSummary(commonX)[country]
     spec = [(r'$\gamma_i$', 'γi', 2, 'Income percentiles.'),
-            ('$X_i$',       'Xi', 1, 'Hours worked.'),
+            ('$X_i$',       'Xi', 1, 'Average hours worked.' if commonX else 'Hours worked.'),
             (r'$\eta_i$',   'ηi', 2, 'Income distribution.'),
             (r'$\mu_i$',    'μi', 2, 'Voting propensity.')]
     rows = [' & '.join([lab] + [C.num(v, d) for v in c[key]] + [target]) + r' \\'
             for lab, key, d, target in spec]
-    return (BANNER.format(name = name, src = 'results/paper/usCalibrationSummary.csv')
+    return (BANNER.format(name = name + C.variantSuffix(commonX),
+                          src = 'results/paper/usCalibrationSummary.csv')
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
-            + '\\caption{Household heterogeneity -- ' + COUNTRYNAME[country] + '}\n'
-            + '\\label{' + label + '}\n\\renewcommand{\\arraystretch}{1.5}\n'
+            + '\\caption{Household heterogeneity -- ' + COUNTRYNAME[country]
+            + C.variantCaption(commonX) + '}\n'
+            + '\\label{' + label + C.variantSuffix(commonX) + '}\n'
+            + '\\renewcommand{\\arraystretch}{1.5}\n'
             + '\\begin{tabularx}{\\textwidth}{Y|YYY|p{5cm}}\n\\hline\n'
             + '& \\multicolumn{3}{c|}{\\textbf{Income group}} & \\\\ \\cline{2-4}\n'
             + ' & '.join([r'\multicolumn{1}{c|}{\textbf{Parameter}}',
@@ -247,16 +303,16 @@ def _householdHeterogeneity(country, name, label):
             + '\\end{threeparttable}\n\\end{table}\n')
 
 
-def usHouseholdHeterogeneity():
-    return _householdHeterogeneity('US', 'US_householdheterogeneity', 'table:a_US:CalibUS')
+def usHouseholdHeterogeneity(commonX = None):
+    return _householdHeterogeneity('US', 'US_householdheterogeneity', 'table:a_US:CalibUS', commonX)
 
 
-def frHouseholdHeterogeneity():
-    return _householdHeterogeneity('FR', 'FR_householdheterogeneity', 'table:a_US:CalibFR')
+def frHouseholdHeterogeneity(commonX = None):
+    return _householdHeterogeneity('FR', 'FR_householdheterogeneity', 'table:a_US:CalibFR', commonX)
 
 
-def ukHouseholdHeterogeneity():
-    return _householdHeterogeneity('UK', 'UK_householdheterogeneity', 'table:a_US:CalibUK')
+def ukHouseholdHeterogeneity(commonX = None):
+    return _householdHeterogeneity('UK', 'UK_householdheterogeneity', 'table:a_US:CalibUK', commonX)
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -271,14 +327,23 @@ ESCHEAD = [r'\textbf{Scenario}', r'\textbf{CRRA} ($\rho$)', r'$\bm{\theta}$ \tex
            r'\textbf{Tax rate}', r'\textbf{Savings rate}', r'\textbf{Avg. workweek}']
 
 
-def _escCells(r):
-    """ The design in force at t0 and the three t0 outcomes of one escExperiments row. """
-    return [C.num(r['θ_t0']), C.pct(r['τ_t0']), C.pct(r['sr_t0']), C.num(r['ww_t0'])]
+def _escCells(r, base = None):
+    """ The design in force at t0 and the three t0 outcomes of one escExperiments row. The csv's
+    savings rate is s/(w h) and is converted to s/Y here; with `base` (that rho's baseline row) it is
+    reported as the change against it in p.p. """
+    sr = D.escSavingsOverY(r['sr_t0'])
+    srCell = C.pct(sr) if base is None else C.pp(sr - D.escSavingsOverY(base['sr_t0']))
+    return [C.num(r['θ_t0']), C.pct(r['τ_t0']), srCell, C.num(r['ww_t0'])]
 
 
 def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False):
+    """ Rows grouped by reading, one row per rho within each. The savings change in every non-baseline
+    row is against the printed baseline of the same rho -- the endogenous-theta reading, which is also
+    what figuresUS.escOverview differences against. """
     df = D.escExperiments()
     spec, ρs = C.US['esc']['spec'], C.US['esc']['ρTable']
+    # The ESC leg runs under the headline calibration variant only -- there is no twin to select here,
+    # and escRow filters on it so a stale vector-X row cannot be read in its place.
     mid = len(ρs)//2
     readings = [('Baseline', 'baseline', False),
                 (r'Exogenous $\theta$', scenarioKey, True),
@@ -289,7 +354,8 @@ def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False)
     for lab, scen, pinned in readings:
         for k, ρ in enumerate(ρs):
             r = D.escRow(df, ρ, spec, scen, pinned)
-            out.append(' & '.join([lab if k == mid else '', C.num(ρ, 1)] + _escCells(r))
+            base = None if scen == 'baseline' else D.escRow(df, ρ, spec, 'baseline', False)
+            out.append(' & '.join([lab if k == mid else '', C.num(ρ, 1)] + _escCells(r, base))
                        + r' \\' + ('[.5em]\\hline\\\\[-.75em]' if k == len(ρs)-1 else ''))
     note = (r'\item Deadweight-cost specification: the proportional cost $f(\theta)$ with $\phi = '
             + C.num(C.US['esc']['phi'], 1) + r'$ and $p$ calibrated per $\rho$ '
@@ -297,14 +363,18 @@ def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False)
             r'the changed parameters hold throughout, the economy starts from its own steady state, and '
             r'the political choice binds from the first period of the horizon, so the design in force in '
             r'2020 is itself an outcome rather than an inherited datum. All rows are read at 2020. '
-            r'$\theta$ (2020) is the design in force there; in the exogenous rows it is the value the '
-            r'replacement-rate data imply under the changed characteristics. Each $\rho$ is separately '
-            r'calibrated and its workweek normalised against its own baseline.' + extraNote)
+            r'$\theta$ (2020) is the design in force there; in the exogenous rows it is the US design, '
+            r'held fixed so that the counterfactual is about the changed characteristic alone. Each '
+            r'$\rho$ is separately calibrated and its workweek normalised against its own baseline. '
+            r'The savings rate is savings relative to GDP; the baseline rows report its level and every '
+            r'other row the change against the baseline at the same $\rho$, in percentage points.'
+            + extraNote + C.variantNote(C.US['commonX']))
     if france:
         note += (r' The France row is not a counterfactual on the US model: France carries its own '
                  r'characteristics \emph{and} its own calibrated $\omega$, so the distance between it '
                  r'and the endogenous row is what the observable characteristics do not explain. Its '
-                 r"workweek is France's own calibration target, not a prediction.")
+                 r"workweek is France's own calibration target, not a prediction, and its savings rate "
+                 r'is likewise the distance from the US baseline.')
     return _xwrap(name, 'results/esc/escExperiments.csv', caption, label, 'p{2.6cm}YYYYY',
                   ESCHEAD, '\n'.join(out), note)
 
@@ -324,10 +394,10 @@ def escIncomeDistr():
     return _escTable('US_ESC_IncomeDistr', 'frIncome',
                      'Endogenous design and the French income distribution in US',
                      'table:US_ESC:incomeDistr',
-                     r' In the exogenous rows $\theta$ is re-derived from the unchanged replacement-rate '
-                     r'ratio under the French $\eta_i$ (0.50 against the US 0.74), so that row bundles a '
-                     r'design change with the change in inequality; the endogenous rows let the '
-                     r'electorate choose instead.', france = True)
+                     r' The exogenous rows hold $\theta$ at the US design, so they are the change in '
+                     r'inequality alone; the endogenous rows let the electorate choose the design under '
+                     r'the French income distribution, and the gap between the two is what endogenising '
+                     r'the design adds.', france = True)
 
 
 def escLeisure():
@@ -358,35 +428,31 @@ def escFrenchAll():
 
 
 def escCalibrationTable():
-    r""" Table \ref{table:US_ESC:calibration}: the calibrated cost parameter p per (rho, spec), with the
-    design theta* the electorate re-elects. Under the proportional cost f cancels from the
-    replacement-rate ratio, so theta* is the data's 0.738 at every rho; under the benefit-side variant
-    theta and p are jointly identified and theta* moves with rho. """
+    r""" Table \ref{table:US_ESC:calibration}: the calibrated cost parameter p per rho, with the design
+    theta* the electorate re-elects.
+
+    The proportional cost is the only formulation reported. Under it f cancels from the replacement-rate
+    ratio, so theta* is the data's own 0.738 at every rho and the table's second column is a check that
+    it did: a theta* that moved with rho would mean the wedge had leaked into the design identification.
+    """
     cal = D.escCalibration()
-    ρs = C.US['esc']['ρTable']
-    spec, alt = C.US['esc']['spec'], C.US['esc']['altSpec']
+    ρs, spec = C.US['esc']['ρTable'], C.US['esc']['spec']
     rows = []
     for ρ in ρs:
-        cells = [C.num(ρ, 1)]
-        for s in (spec, alt):
-            if (ρ, s) not in cal:
-                raise D.MissingInput('escCalibration ({}, {})'.format(ρ, s))
-            r = cal[(ρ, s)]
-            cells += [C.num(float(r['p']), 3), C.num(float(r['θStar']), 3)]
-        rows.append(' & '.join(cells) + r' \\')
-    header = (' & \\multicolumn{2}{c}{\\textbf{Proportional cost}} & '
-              '\\multicolumn{2}{c}{\\textbf{Redistributive-only cost}} \\\\\n'
-              '\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\n'
-              + ' & '.join([r'\textbf{CRRA} ($\rho$)', '$p$', r'$\theta^{\ast}$',
-                            '$p$', r'$\theta^{\ast}$']))
+        if (ρ, spec) not in cal:
+            raise D.MissingInput('escCalibration ({}, {})'.format(ρ, spec))
+        r = cal[(ρ, spec)]
+        rows.append(' & '.join([C.num(ρ, 1), C.num(float(r['p']), 3), C.num(float(r['θStar']), 3)])
+                    + r' \\')
+    header = ' & '.join([r'\textbf{CRRA} ($\rho$)', '$p$', r'$\theta^{\ast}$'])
     note = (r'\item $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = ' + C.num(C.US['esc']['phi'], 1)
             + r'$ imposed; $p$ is calibrated so the design \emph{in force} in 2020 --- on a path where the '
             r'political choice binds from the first period --- is the observed one, '
-            r'with $(\beta, \omega)$ recalibrated at each trial value. Under the proportional cost the '
-            r"wedge cancels from the replacement-rate ratio, so $\theta^{\ast}$ is the data's own at "
-            r'every $\rho$; under the redistributive-only cost $\theta^{\ast}$ and $p$ are jointly '
-            r'identified. Without the cost the choice corners at $\theta = 0$ at every $\rho$.')
+            r'with $(\beta, \omega)$ recalibrated at each trial value. The cost is proportional, so the '
+            r"wedge cancels from the replacement-rate ratio and $\theta^{\ast}$ is the data's own at "
+            r'every $\rho$. Without the cost the choice corners at $\theta = 0$ at every $\rho$.'
+            + C.variantNote(C.US['commonX']))
     return _xwrap('US_ESC_Calibration', 'results/esc/escCalibration{,CRRA}.csv',
                   'The calibrated cost of redistributive funds',
-                  'table:US_ESC:calibration', 'YYYYY', header, '\n'.join(rows), note)
+                  'table:US_ESC:calibration', 'YYY', header, '\n'.join(rows), note)
 

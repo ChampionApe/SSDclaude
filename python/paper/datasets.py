@@ -198,9 +198,14 @@ def reformSavingsRate(ρ, period = 0, rule = None):
 # US / France / UK
 # ---------------------------------------------------------------------------------------------------
 
-def usCalibrationSummary(commonX = False):
+def usCalibrationSummary(commonX = None):
     """ runCalibrationUS.py's one-row-per-country record, keyed by country. Vector entries are JSON in
-    the csv and come back as lists of float. """
+    the csv and come back as lists of float.
+
+    commonX = None means the variant the paper leads with, config.US['commonX']. Every US loader here
+    takes it that way, so a builder that says nothing gets the headline calibration and a builder that
+    wants the robustness twin has to ask for it by name. """
+    commonX = C.US['commonX'] if commonX is None else commonX
     df = pd.read_csv(_need(os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv')))
     df = df[df['commonX'].astype(bool) == bool(commonX)]
     if df.empty:
@@ -214,15 +219,54 @@ def usCalibrationSummary(commonX = False):
     return out
 
 
-def usShocks(pinTheta = False, commonX = False):
+def usAlpha(commonX = None):
+    """ The capital share of the US/FR/UK model, read from usCalibrationSummary.csv (the US row of
+    the requested variant) and cross-checked against the workbook's `Capital income share` cell,
+    which is where the summary got it. Falls back to the workbook alone when the summary is absent.
+    Raises if the two disagree -- one number, from data, never typed here. """
+    fromWb = C.usCalendar('US')['α']
+    try:
+        fromCsv = float(usCalibrationSummary(commonX)['US']['α'])
+    except (MissingInput, KeyError):
+        return fromWb
+    if not np.isclose(fromCsv, fromWb):
+        raise ValueError('capital share disagrees: usCalibrationSummary.csv {!r} vs workbook {!r}'
+                         .format(fromCsv, fromWb))
+    return fromCsv
+
+
+def escSavingsOverY(sr, commonX = None):
+    """ ESC csv savings rate s/(w h) -> the paper's s/Y.
+
+    The ESC csvs (escExperiments/escShocks*/escCalibration*/escCountry) carry `sr_*` as savings over
+    gross labour income, s/(w h); the US shock csv carries both that (`sr`) and s/Y (`srOverY`), and
+    the paper reports s/Y everywhere. With Cobb--Douglas production and a competitive labour market
+    w h = (1-alpha) Y identically, so s/Y = (1-alpha) * s/(w h) is EXACT in every period and scenario,
+    not an approximation -- which is why converting here rather than re-running the ESC leg loses
+    nothing. `sr` may be a scalar or an array. """
+    return np.asarray(sr, dtype = float) * (1 - usAlpha(commonX))
+
+
+US_SR = 'srOverY'    # the US shock csv column the tables read: s/Y. `sr` is s/(w h) and is NOT read.
+
+
+def usShocks(commonX = None, freeTheta = False):
     """ python/US/runShocksUS.py's long csv: one row per (rho, family, scenario, effect).
 
-    `effect` is 'baseline' | 'full' | 'ee'. tau and sr are fractions; `workweek` is already in hours,
+    `effect` is 'baseline' | 'full' | 'ee'. tau, sr and srOverY are fractions -- `sr` is s/(w h),
+    `srOverY` is s/Y, the paper's savings rate (US_SR); `workweek` is already in hours,
     normalised against that rho's own baseline inside the experiment script -- stage (iii) must NOT
-    re-derive it from hbar, which has no scale under vector X (see python/US/shocks.py). """
-    name = ('US_shocks_pinTheta.csv' if pinTheta
+    re-derive it from hbar, which has no scale under vector X (see python/US/shocks.py).
+
+    commonX = None is the headline variant (config.US['commonX']). freeTheta selects the alternative
+    reading of the income-distribution counterfactual, where theta is re-derived from RR0 under France's
+    eta rather than held at the US design; that file covers the `french` family only. """
+    commonX = C.US['commonX'] if commonX is None else commonX
+    name = ('US_shocks_freeTheta.csv' if freeTheta
             else 'US_shocksCommonX.csv' if commonX else 'US_shocks.csv')
-    return pd.read_csv(_need(os.path.join(C.SHOCKDIR, name)))
+    df = pd.read_csv(_need(os.path.join(C.SHOCKDIR, name)))
+    df.attrs['source'] = 'results/shocks/' + name
+    return df
 
 
 def usShockRow(df, ρ, scenario, effect):
@@ -230,8 +274,8 @@ def usShockRow(df, ρ, scenario, effect):
     missing scenario would render as a blank table cell instead of a skipped output. """
     hit = df[(np.isclose(df['ρ'], ρ)) & (df['scenario'] == scenario) & (df['effect'] == effect)]
     if hit.empty:
-        raise MissingInput('{} (ρ={}, {}, {}) in results/shocks/US_shocks.csv'
-                           .format(scenario, ρ, scenario, effect))
+        raise MissingInput('{} (ρ={}, {}) in {}'
+                           .format(scenario, ρ, effect, df.attrs.get('source', 'the US shock csv')))
     return hit.iloc[-1]
 
 
@@ -239,8 +283,9 @@ def usBaseline(df, ρ):
     return usShockRow(df, ρ, 'Baseline', 'baseline')
 
 
-def usSweep(country, commonX = False):
+def usSweep(country, commonX = None):
     """ One country's calibration sweep, deduplicated on rho keeping the last. """
+    commonX = C.US['commonX'] if commonX is None else commonX
     df = pd.read_csv(_need(C.usSweepCsv(country, commonX)))
     return df.drop_duplicates('ρ', keep = 'last').sort_values('ρ').reset_index(drop = True)
 
@@ -248,24 +293,43 @@ def usSweep(country, commonX = False):
 # ---------------------------------------------------------------------------------------------------
 # Endogenous system characteristics (results/esc/)
 # ---------------------------------------------------------------------------------------------------
-def escCalibration():
+def _escVariant(rec, commonX):
+    """ Is this ESC row from the calibration variant we are reading?
+
+    The csvs carry a `commonX` column and the drivers key their merge on it, so both variants can sit in
+    one file. A row from before that column existed is a vector-X row -- that is the variant everything
+    ran under then -- which is what the missing-column fallback means, not "applies to either".
+
+    A MISSING value reads as False for the same reason, and it has to be handled explicitly: pandas
+    returns NaN for a blank cell, and `bool(nan)` is True, so the obvious `bool(rec.get(...))` would file
+    every untagged row under common X -- the one variant it certainly is not. """
+    v = rec.get('commonX', False)
+    v = False if v is None or v != v else bool(v)      # v != v catches NaN
+    return v == bool(commonX)
+
+
+def escCalibration(commonX = None):
     """ The calibrated deadweight wedge, {(rho, spec): record} with p, thetaStar, beta, omega.
 
     Two files because two solvers produced them: escCalibration.csv is the LOG case (rho = 1; also
     carries the no-wedge row under spec 'none', keyed here as (1.0, 'none')), escCalibrationCRRA.csv the
-    CRRA rows with their own rho column. Only converged rows at config.US['esc']['phi'] are returned --
-    an unconverged calibration must surface as a missing key, not as a NaN cell. """
+    CRRA rows with their own rho column. Only converged rows at config.US['esc']['phi'] AND at the
+    requested calibration variant are returned -- an unconverged or wrong-variant calibration must
+    surface as a missing key, not as a cell of a number that was never calibrated for this economy. """
+    commonX = C.US['commonX'] if commonX is None else commonX
     phi = C.US['esc']['phi']
     out = {}
     log = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCalibration.csv')))
     for rec in log.to_dict('records'):
+        if not _escVariant(rec, commonX):
+            continue
         if rec['spec'] == 'none':
             out[(1.0, 'none')] = rec
         elif bool(rec['converged']) and np.isclose(float(rec['phi']), phi):
             out[(1.0, rec['spec'])] = rec
     crra = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCalibrationCRRA.csv')))
     for rec in crra.to_dict('records'):
-        if bool(rec['converged']) and np.isclose(float(rec['phi']), phi):
+        if _escVariant(rec, commonX) and bool(rec['converged']) and np.isclose(float(rec['phi']), phi):
             out[(float(rec['ρ']), rec['spec'])] = rec
     return out
 
@@ -283,13 +347,17 @@ def escExperiments():
     return pd.read_csv(_need(os.path.join(C.ESCDIR, 'escExperiments.csv')))
 
 
-def escRow(df, ρ, spec, scenario, pinned):
+def escRow(df, ρ, spec, scenario, pinned, commonX = None):
     """ One (rho, spec, scenario, reading) row, raising rather than returning an empty frame -- same
-    contract as usShockRow. """
+    contract as usShockRow. The calibration variant is part of the key for the reason _escVariant gives.
+    """
+    commonX = C.US['commonX'] if commonX is None else commonX
+    cx = (df['commonX'].fillna(False).astype(bool) if 'commonX' in df.columns
+          else pd.Series(False, index = df.index))
     hit = df[np.isclose(df['ρ'], ρ) & (df['spec'] == spec) & (df['scenario'] == scenario)
-             & (df['θpinned'].astype(bool) == bool(pinned))
+             & (df['θpinned'].astype(bool) == bool(pinned)) & (cx == bool(commonX))
              & np.isclose(df['phi'], C.US['esc']['phi'])]
     if hit.empty:
-        raise MissingInput('{} (ρ={}, {}, pinned={}) in results/esc/escExperiments.csv'
-                           .format(scenario, ρ, spec, pinned))
+        raise MissingInput('{} (ρ={}, {}, pinned={}, commonX={}) in results/esc/escExperiments.csv'
+                           .format(scenario, ρ, spec, pinned, commonX))
     return hit.iloc[-1]

@@ -326,3 +326,87 @@ bounds discussion and the calibration step-size/grid-displacement measurements w
 design rules they justified — the journeys stay in `notes/informalSavings_*` and this log.
 `num_ee.tex`/`num_shock.tex` essentially unchanged. Every label cited by `policy.py`/`model.py`/tests is
 preserved.
+
+## 2026-09-08 — why β is above the US's, and what the capital share has to do with it
+
+**Decomposition.** The savings rule works through $B = \beta^{\rho}R^{\rho-1}$, and the K/Y target pins
+$B$, not β: 0.81 here and 0.76 in the US, invariant to ρ across both grids (drift 1%). So
+$\beta(\rho) = (B R^{1-\rho})^{1/\rho}$, and the whole ρ-shape of the gap is the two returns — with
+$K/Y = \alpha/R$, α = 0.43 and K/Y = 3.23 leave no freedom: R = 3.99 per period (4.7%/yr) against the
+US's targeted 2.443 (3.0%/yr). Predicting $\beta_{ARG}/\beta_{US}$ from the ρ = 1 ratio and the two R's
+alone reproduces the grid at every ρ (1.84 vs 1.83 at ρ = 0.5; 0.806 vs 0.806 at ρ = 2). The 6% at ρ = 1
+is the labour share: savings must be 29.5% of net formal wages here against 25.7% in the US. For ρ ≥ 1.2
+Argentina's β is already *below* the US's; the low-ρ tail (β > 1 below ρ ≈ 0.85, and below ≈ 0.7 for the
+US) is generic to a 30-year period with an IES under one and is not treated as a calibration problem.
+
+**Why α ∈ [0.30, 0.43] is admissible.** In this model α is the capital share of *formal* output: informal
+households produce with a separate linear technology outside $Y_t$ and $K_t$. National accounts book the
+output of unincorporated household enterprises — where informal work sits — as *mixed income*, which a
+share computed as one minus the wage bill over GDP counts entirely as capital (Gollin 2002). The paper
+applies Gollin's adjustments 2 and 3 to the US/FR/UK shares but takes Argentina's 0.43 from Frankema
+(2010), a reconstruction ending in 2000 — asymmetric treatment in the one economy where it matters. With
+a share $y$ of GDP in informal mixed income inside the 0.43, the formal share is $(0.43-y)/(1-y)$: the
+EPH's informal earnings (~5% of GDP) give 0.40, shadow-economy estimates (20–25%) give ~0.30. Two things
+to check in Frankema: whether the series imputes labour income to the self-employed, and what it does
+after 2000.
+
+**What a lower α does, recalibrated at ρ = 1 with K/Y held at 3.23** (scratch sweep; reproducible from
+`instances/rho_1.0000.pkl` via `adjPar('α', ·)`, `updateAuxPars()`, `calibrate()`; the 0.43 row
+reproduces the published calibration exactly):
+
+| α | β | ω | savings rate | R/period | R/yr |
+|---|---|---|---|---|---|
+| 0.43 | 0.808 | 2.328 | 14.72% | 3.99 | 4.72% |
+| 0.40 | 0.754 | 2.025 | 14.62% | 3.71 | 4.47% |
+| 0.35 | 0.686 | 1.616 | 14.44% | 3.25 | 4.01% |
+| 0.30 | 0.642 | 1.295 | 14.27% | 2.79 | 3.47% |
+
+β and ω both fall (ω toward the rich economies' 1.16–1.45); η0, X0, ι barely move; the savings rate
+moves only through the period's growth term since nothing targets it. Over ρ ∈ [1, 2] the effect on β
+fades to zero at ρ = 2, where the lower R and lower B cancel. **Caveat:** applying the same formal-sector
+logic to K/Y pushes the other way (informal is labour-intensive, so formal K/Y > 3.23; at α = 0.35 and
+K/Y = 3.61, β = 0.82 again), but that needs an informal capital share nobody measures and PWT's stock
+includes housing. Recommendation on record: correct α, keep K/Y at 3.23, and state the share as the
+formal-sector one net of mixed income. Full tables in `notes/argentina_alphaSensitivity.md`. Nothing under
+`results/` was changed; a move of α is the ≈3 h pass in `notes/argentina_calibrationTarget.md`.
+
+## 2026-09-08 — α = 0.35: the march needed a derived bracket and a seeded anchor
+
+The capital share moved to 0.35 (`notes/argentina_alphaSensitivity.md`, now with a Status section) and
+the full pass was launched with `--force`. Two failures before it ran, both constants in this module:
+
+- **The anchor's starting point.** `calibrateRhoGrid.py` seeds every point from the march history except
+  the anchor, which started from `test.py`'s `β = 0.6, ω = 2`. `LOG.defaultIotaGrid` anchors the state
+  grid on `min_τ ι*(τ)` from the steady state at the *current* parameters, and at α = 0.35 those defaults
+  put the informal household outside the net-saver region, so the grid was `[1e-4, nan]` before the root
+  took a step. New `--x0 β ω η0 X0`, forwarded from `config.ARG['anchorGuess']` — the ρ = 1 solution from
+  the α note, which the anchor reproduces to five digits (β = 0.68627, ω = 1.61617, 8 s, nfev 10).
+- **The CRRA steady-state bracket.** `steadyState_CRRA_solve` carried `(1e-6, 0.75)`; the feasibility cap
+  `Γh·α·κ/((1-α)·p·θ·τ)` fell below it over part of the τ grid and brentq raised "function value at
+  x=0.75 is NaN" at ρ = 1.1, then at every halving. Ported the US construction (`Base.ΓsCap`,
+  `steadyState_CRRA_bounds`, geometric expansion only after the default fails) here and to
+  `informalAnalytical`. ρ = 1.1 then solved in 398 s at nfev 12, β = 0.63745, ω = 1.54818;
+  `test_peeCRRA` passes.
+
+Also: an openpyxl edit of the workbook silently NaN'd every formula cell (θ, ε, ν) — edit it through
+Excel. `test_calibrationGrid.py`'s pinned anchor is still the α = 0.43 pair and will need re-pinning once
+the sweep is in.
+
+## 2026-09-08 (later) — the tax target is α-dependent; first α = 0.35 run killed and relaunched
+
+RKB: the workbook's `Pension tax` = 0.125 is 7.1% of GDP converted at α = 0.43, since spending over
+formal output is τ(1−α). At α = 0.35 the target is 0.071/0.65 = 0.1092, so the morning's run (killed at
+ρ = 1.5) calibrated ω to a stale datum. The workbook now carries `Pension spending` = 0.071 and `test.py`
+(here and in `informalAnalytical`) derives τ₀ from it and the capital share; `config.calendar()` does the
+same. At ρ = 1 the corrected target moves β 0.686 → 0.6515 and ω 1.616 → 1.528 (11 evaluations from the
+new `anchorGuess`); η0, X0, the savings rate and R do not move. Mechanism and table in
+`notes/argentina_alphaSensitivity.md`. Relaunched ~11:30 with `--force`.
+
+## 2026-09-08 (night) — every suite passes under α = 0.35, τ₀ = 0.109
+
+`runTests.py --all` after the corrected pass: 25/26, the failure being `test_calibrationGrid`'s pinned
+anchor. Re-pinned to β = 0.651367, ω = 1.526699 and re-run alone: pass, 1133 s (the README's stale
+"anchor updated without running the suite" item is closed). The full run took 8604 s instead of ~2200
+because `US/test_esc.py` took 6455 s (86 s on its own, 50/50) and every other suite ran 2–3× slow: CPU
+contention from something outside the repo during 17:13–19:04, nothing broken. Note for the runner:
+`-k` on a slow suite needs `--slow` or `--all`, or it selects nothing and exits 0.

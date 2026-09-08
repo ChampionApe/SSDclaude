@@ -78,8 +78,10 @@ def escMissing():
     (converged, at config.US['esc']'s phi). One command per missing combination -- the drivers merge
     into their csvs (runESC.mergeWrite), so partial re-runs are safe. """
     esc = C.US['esc']
-    specs = [esc['spec'], esc['altSpec']]
+    specs = [esc['spec']]
     phi = esc['phi']
+    # The ESC leg runs under the headline calibration variant only -- see paper/runShocksUS.ESCVARIANT.
+    variant = ['--commonX'] if C.US['commonX'] else []
     cmds = []
     pathL = os.path.join(C.ESCDIR, 'escCalibration.csv')
     haveL = set()
@@ -87,22 +89,26 @@ def escMissing():
         df = pd.read_csv(pathL)
         ok = df[df['converged'].astype(bool)
                 & np.isclose(pd.to_numeric(df['phi'], errors = 'coerce'), phi)]
+        if 'commonX' in ok.columns:
+            ok = ok[ok['commonX'].astype(bool) == bool(C.US['commonX'])]
         haveL = set(ok['spec'])
     lackL = [s for s in specs if s not in haveL]
     if lackL:
         cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESC.py'), '--stage', 'calib',
-                     '--spec'] + lackL + ['--phi', str(phi)])
+                     '--spec'] + lackL + ['--phi', str(phi)] + variant)
     pathC = os.path.join(C.ESCDIR, 'escCalibrationCRRA.csv')
     haveC = set()
     if os.path.exists(pathC):
         df = pd.read_csv(pathC)
         ok = df[df['converged'].astype(bool) & np.isclose(df['phi'], phi)]
+        if 'commonX' in ok.columns:
+            ok = ok[ok['commonX'].astype(bool) == bool(C.US['commonX'])]
         haveC = {(round(float(r), 6), s) for r, s in zip(ok['ρ'], ok['spec'])}
     for ρ in [r for r in esc['ρTable'] if r != C.US['ρAnchor']]:
         for s in specs:
             if (round(ρ, 6), s) not in haveC:
                 cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESCcrra.py'), '--stage', 'calib',
-                             '--rho', str(ρ), '--spec', s, '--phi', str(phi)])
+                             '--rho', str(ρ), '--spec', s, '--phi', str(phi)] + variant)
     return cmds
 
 
@@ -171,7 +177,10 @@ def main():
     p = argparse.ArgumentParser(description = __doc__.split('\n')[1])
     p.add_argument('--force', action = 'store_true', help = 're-solve every point, not only the missing')
     p.add_argument('--summaryOnly', action = 'store_true', help = 'rebuild the summary from what exists')
-    p.add_argument('--commonX', action = 'store_true', help = 'also sweep/summarise the common-X variant')
+    p.add_argument('--commonX', action = 'store_true',
+                   help = 'also SWEEP the common-X variant. The summary always covers both variants -- '
+                          'the paper builds a headline table and its twin from them and summarising is '
+                          'only an unpickle -- so this flag is about the expensive step alone.')
     p.add_argument('--dry', action = 'store_true', help = 'print the sweep commands and exit')
     p.add_argument('--rho', type = float, default = None, help = 'summarise a rho other than the baseline')
     a = p.parse_args()
@@ -217,15 +226,21 @@ def main():
             if r.returncode:
                 raise SystemExit('ESC calibration exited {}'.format(r.returncode))
 
-    recs = [summarise(c, a.rho, cx) for cx in variants for c in SWEEPS]
+    # Both variants, always: the paper's headline outputs read one and their robustness twins the
+    # other, so a summary carrying only one of them blocks half the build (config.US['commonX']).
+    recs = [summarise(c, a.rho, cx) for cx in (False, True) for c in SWEEPS]
     os.makedirs(C.PAPERDIR, exist_ok = True)
     out = os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv')
     pd.DataFrame(recs).to_csv(out, index = False)
     print('\nwritten: ' + os.path.relpath(out, C.REPO))
+    # Printed for the variant the paper leads with. beta, omega and theta are common to both by block
+    # recursivity; Xbar and the eta ratio are not, which is the whole content of the variant.
+    print('  the {} calibration (config.US[\'commonX\'] = {})'.format(
+        'common-X' if C.US['commonX'] else 'vector-X', C.US['commonX']))
     print('  {:<8} {:>8} {:>8} {:>8} {:>8} {:>8} {:>8}'.format(
         'country', 'θ', 'ω', 'β', 'Xbar', 'ηH/ηL', 'ν2020'))
     for r in recs:
-        if r['commonX']:
+        if bool(r['commonX']) != bool(C.US['commonX']):
             continue
         print('  {:<8} {:8.4f} {:8.4f} {:8.4f} {:8.2f} {:8.3f} {:8.3f}'.format(
             r['country'], r['θ'], r['ω'], r['β'], r['Xbar'], r['ηHηL'], r['ν2020']))

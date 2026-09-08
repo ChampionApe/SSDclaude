@@ -25,7 +25,7 @@ Eight test suites, all fast (~55 s), registered in `python/runTests.py`.
 python\US\calibrateRhoGrid.py   [--commonX]                  # US sweep, rho 0.5..2.0 step 0.1, ~4.5 min
 python\US\calibrateRhoGridEU.py --country FR|UK [--grouping US] [--commonX]
 python\US\runShocksUS.py        [--commonX] [--family theta] [--rho 1]
-python\US\runESC.py | runESCcrra.py                          # endogenous theta
+python\US\runESC.py | runESCcrra.py    [--commonX]           # endogenous theta
 python\US\collectESCexperiments.py                           # merge -> results/esc/escExperiments.csv
 ```
 
@@ -162,9 +162,10 @@ problem; its `s0` is the shocked model's own steady state at the baseline's firs
 | `french` | France's income distribution (`η`), leisure preferences (`X`), voting (`μ`), all three at once |
 | — | France, own calibration (`--noFrance` to skip) |
 
-**Three reporting conventions, none arbitrary.** The paper's **savings rate is `s/(w·h)`**, not
-`Base.savingsRate`'s `s/Y` — they differ by exactly `(1-α)`, and without this the baseline row misses by a
-third. The **workweek is normalised against that ρ's own baseline**, since under vector `X` the level of
+**Three reporting conventions, none arbitrary.** The shock csv carries the savings rate **twice**: `sr` is
+`s/(w·h)` and `srOverY` is `Base.savingsRate`'s `s/Y`; they differ by exactly `(1-α)`. Since 2026-09-08
+the paper reports **`s/Y` everywhere**, in both arms, and `python/paper/` reads `srOverY` (the ESC csvs
+carry only `s/(w·h)` and are converted there). The **workweek is normalised against that ρ's own baseline**, since under vector `X` the level of
 `h̄` is not identified and only the ratio is a result. **Everything is read at `db['t0']`**; the new-path
 models keep the baseline's calendar, so `db['dates']` is valid on them — which was *not* true of the
 `createCopyFromt0` copies these experiments used to run on (`Index.union` drops the name, so `_sliceDb`
@@ -177,10 +178,17 @@ reproducing the paper. So `η` carries income distribution, the *level* of `X` c
 and they do not overlap. Leisure is then a pure scale, which is why its row leaves τ and the savings rate
 exactly at baseline. Voting swaps `μ`, and only its *profile* matters — the FOC is linear in `μ`.
 
-**The income-distribution row moves `θ`,** 0.738 → 0.495: `updateAuxPars` re-derives it holding the
-replacement-rate *ratio* fixed, so France's flatter distribution implies a much less Bismarckian system.
-Not incidental — pinning `θ` instead gives τ = 12.83% against 13.28%. Re-deriving reproduces the paper and
-is the default; `--pinTheta` keeps the alternative on disk.
+**The income-distribution row HOLDS `θ` at the US design.** Left alone, `updateAuxPars` re-derives it
+holding the replacement-rate *ratio* fixed, so France's flatter distribution would imply a much less
+Bismarckian system (0.738 → 0.495) — a design change riding inside a counterfactual about inequality,
+when design is the separate `theta` family. Pinning is the default and `--freeTheta` keeps the
+re-deriving reading on disk; the two differ by ~0.6 p.p. in τ.
+
+**A pin does not survive a composite shock by itself.** `θ` is in `paramsFromFuncs` and every
+`updateAuxPars` re-derives it, so the last one wins: in `frAll` and `frBoth` the income shock's pin is
+undone by `shockVoting`'s refresh, which recomputes `θ` from France's `η`. Both re-install it explicitly
+at the end, and `test_esc.py` asserts they do. The single-characteristic rows never see this, which is
+what made the silent 0.738 → 0.551 read as a number rather than as a failure (#9).
 
 > **A trap that cost a full run** (`crossCuttingFindings.md` #9): `θ` is in `paramsFromFuncs`, so calling
 > `updateAuxPars` after setting it re-derives it and silently undoes the shock. Both `θ = 0` and `θ = 1`
@@ -199,11 +207,32 @@ LOG the leaded choice has **no state at all**, because `W_t = A(τ_t) + B(θ_{t+
 is invariant to `s_{t-1}`. All three fail under CRRA, which is why `LeadedCRRA` solves the path and
 reports `stateSensitivity`.
 
+**The ESC leg runs under whichever calibration variant `python/paper/config.US['commonX']` names**, and
+the paper leads with common `X`. `runESC.py`/`runESCcrra.py` take `--commonX`, thread it into `buildUS`
+and `buildEU` (which must agree — `usReference` carries `h̄_US`, and `h̄` differs between the variants by
+construction), and write it as a **column that is part of every merge key**. The two variants therefore
+coexist in one csv instead of overwriting each other, and `datasets.escCalibration`/`escRow` filter on it
+— #13 applied to a resumable producer whose rows do not otherwise record what answered them. The `flat`
+(redistributive-only) cost spec is still implemented and still runnable, but is no longer run for the
+paper.
+
 **The calibration target is the design *in force* in 2020** — `θPolicy_1990`, not the choice made in 2020,
 since `θ_t` is a state chosen at `t-1`. `calibrateWedge` targets `leadedDesignAtT0`, which is what puts
 the baseline row on the observed 0.738 (the old target came back at 0.727). `p` = 0.4076 under `scale`,
 φ = 0.5, ρ = 1. The counterfactuals are new paths read at 2020 with the choice binding from the first
 period, so `θ_2020` is an equilibrium outcome.
+
+**The endogenous design is invariant to both things this module recently changed, measured.** The
+calibrated `p` is bit-identical across the two calibration variants (0.964818 / 0.407612 / 0.090068 at
+ρ = 0.5 / 1 / 2), and so is the chosen design: baseline, ageing, voting and leisure agree to ≤ 1.2e-12 in
+`θ` between vector `X` and common `X`, in the chosen reading as well as the pinned one. The whole table of
+chosen designs also reproduces the 2026-08-24 run, which was taken under the *other* variant and with the
+exogenous rows re-deriving `θ`. **Only the exogenous rows moved.** Two consequences worth having: the
+±0.01 certification of the path iteration against the 2-D solver was measured under vector `X` and carries
+over, and the exogenous/endogenous pairs in the appendix tables now differ by the political response
+alone. Only scenarios that *swap* `η` can move between variants, and `frIncome` hides even that by
+cornering — it shows on `frBoth`/`frAll` (0.972 against 1.000), which is `crossCuttingFindings.md` #10's
+shape. Detail in `notes/esc_experiments_acrossRho.md`.
 
 **`LeadedCRRA2D` is the honest Markov object** the path iteration approximates — backward iteration over
 the 2-D state `(s_{t-1}, θ_t)`, one direct pass, no warm start. **Pinned periods collapse the candidate
@@ -237,3 +266,8 @@ Measurements, ρ=1 results tables and validation against the paper's printed col
 (`notes/todo_escPermanentTiming.md`); the workweek column's full-effect gap against the paper (~2%,
 unattributed, but known not to be the initial condition); and the UK's `X_i` sitting uniformly 1.108× the
 paper's, which is purely the `λ` normalisation.
+
+**Two ESC corners that are structural rather than broken**, and reproduce under both variants: France and
+the UK-regrouped-at-US-percentiles have no own-wedge calibration, because France's observed design *is*
+the `θ = 1` corner so the choice never crosses `θ*` and there is no root (`escCountry.csv` carries the
+scan's own "no sign change" rather than a number). The UK's own `p` = 0.185 against the US's 0.408.

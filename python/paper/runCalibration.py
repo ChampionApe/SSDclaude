@@ -37,6 +37,9 @@ def sweepCmd(force = False):
            '--anchor', str(C.ARG['ρAnchor']),
            '--nι', str(g['nι']), '--ns', str(g['ns']),
            '--interpKind', g['interpKind'], '--smoothKnots', str(g['smoothKnots'])]
+    x0 = C.ARG.get('anchorGuess')
+    if x0:
+        cmd += ['--x0'] + [str(x0[k]) for k in ('β', 'ω', 'η0', 'X0')]
     return cmd + (['--force'] if force else [])
 
 

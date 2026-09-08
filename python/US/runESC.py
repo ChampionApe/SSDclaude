@@ -53,13 +53,42 @@ def mergeWrite(path, rows, key):
     """ Write `rows` to csv `path`, PRESERVING rows on disk whose `key` combination this run did not
     produce. The stage loops write after every point, and the paper pipeline re-runs exactly the missing
     (spec, phi) or (rho, spec, phi) combinations -- a plain to_csv would clobber everything else in the
-    file on such a partial run. NaN keys (the no-wedge row's phi) are compared as equal. """
+    file on such a partial run. NaN keys (the no-wedge row's phi) are compared as equal.
+
+    `commonX` IS PART OF EVERY KEY HERE, and it has to be: the two calibration variants answer the same
+    (rho, spec, phi) question about two different economies, so without it a common-X run would silently
+    overwrite the vector-X rows -- or, worse, leave them in place to be read as if they were current. A
+    resumable producer must be keyed on the question AND on what is answering it
+    (notes/crossCuttingFindings.md #13). """
     df = pd.DataFrame(rows)
     if os.path.exists(path) and len(df):
         old = pd.read_csv(path)
+        # A csv written before one of the key columns existed has no way to match a new row, and must
+        # not be dropped on the strength of the columns it does share -- so the missing column is added
+        # as NaN, which the '__na__' fill turns into a key no current row can equal. The old rows are
+        # then preserved verbatim and stay distinguishable from the new ones.
+        for k in key:
+            if k not in old.columns:
+                old[k] = np.nan
         fill = lambda d: pd.MultiIndex.from_frame(d[key].astype(object).fillna('__na__').astype(str))
         df = pd.concat([old[~fill(old).isin(fill(df))], df], ignore_index = True)
     df.to_csv(path, index = False)
+
+
+# The row-identity keys of the two merged csvs. commonX is in both -- see mergeWrite.
+KEYCAL = ['spec', 'phi', 'commonX']
+KEYSHK = ['spec', 'phi', 'commonX', 'scenario', 'θpinned']
+
+
+def pickCalib(calib, spec, phi, commonX):
+    """ The converged wedge calibration for one (spec, phi, variant), or an empty frame.
+
+    Filtering on commonX is not optional: escCalibration.csv carries both variants, and reading a
+    vector-X p into a common-X run would report a wedge that was never calibrated for that economy. """
+    hit = calib[(calib['spec'] == spec) & (calib['phi'] == phi) & calib['converged']]
+    if 'commonX' in calib.columns:
+        hit = hit[hit['commonX'].astype(bool) == bool(commonX)]
+    return hit
 
 
 class ModelESCFR(ModelESC, ModelFR):
@@ -70,22 +99,37 @@ class ModelESCFR(ModelESC, ModelFR):
 
 # ---------------------------------------------------------------- builders
 
-def buildUS(wedge = None, ρ = 1.0, nθ = 41, nθCand = 121):
-    row = pd.read_csv(os.path.join(REPO, 'results', 'calibration', 'US_rhoGrid.csv'))
+def buildUS(wedge = None, ρ = 1.0, nθ = 41, nθCand = 121, commonX = False):
+    """ The US model under the wedge, with (beta, omega) SEEDED from the no-wedge sweep at this rho.
+
+    Only seeded: every stage that uses this calls calibrate() (or calibrateWedge, which calibrates
+    inside), so the numbers on the csv are a starting point, not the calibration. What the variant
+    selects is therefore the sweep file to seed from and -- through commonX -- the meaning of eta and X.
+    Under commonX the hours unit is a target rather than free, so the calibration adds h0 as a third
+    condition and returns a scalar X; nothing here has to install it, calibrate() does.
+    """
+    row = pd.read_csv(os.path.join(REPO, 'results', 'calibration',
+                                   'US_rhoGridCommonX.csv' if commonX else 'US_rhoGrid.csv'))
     row = row.loc[(row['ρ'] - ρ).abs() < 1e-9].iloc[-1]
     m = ModelESC(pars = testmod.pars | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])},
-                 wedge = wedge, nθ = nθ, nθCand = nθCand, **testmod.kwargs)
+                 wedge = wedge, nθ = nθ, nθCand = nθCand, commonX = commonX, **testmod.kwargs)
     m.db['dates'] = testmod.dates
     m.db['workweek'] = testmod.workweek
     m.LOG.initGS(GS)
     return m
 
 
-def buildEU(country, wedge = None, grouping = None, nθ = 41, nθCand = 121, ρ = 1.0):
+def buildEU(country, wedge = None, grouping = None, nθ = 41, nθCand = 121, ρ = 1.0, commonX = False):
+    """ France or the UK under the wedge. commonX must MATCH the US model it is compared against: under
+    commonX France's X_i is a single scalar and its eta_i inverts z^eta directly, so both characteristics
+    differ from the vector-X calibration and a mismatched pair would put a France that does not exist in
+    this run's units next to the US rows (runShocksUS.frenchData says the same about the shock data). """
     pars, kwargs, dates, workweek = testEU.load(country, grouping = grouping)
     pars.update({'ρ': float(ρ), 'ω': 2.})
-    m = ModelESCFR(pars = pars, wedge = wedge, usRef = testEU.usReference(), nθ = nθ,
-                   nθCand = nθCand, **kwargs)
+    # usReference must be read off the SAME variant's sweep: it carries hbar_US, and hbar differs
+    # between vector X and common X by construction (python/US/README.md).
+    m = ModelESCFR(pars = pars, wedge = wedge, usRef = testEU.usReference(commonX = commonX), nθ = nθ,
+                   nθCand = nθCand, commonX = commonX, **kwargs)
     m.db['dates'], m.db['workweek'], m.db['country'] = dates, workweek, country + (grouping or '')
     m.LOG.initGS(GS)
     return m
@@ -117,30 +161,32 @@ def baselineRefs(m):
 
 # ---------------------------------------------------------------- stage: calibration
 
-def stageCalib(specs, phis, out, ρ = 1.0):
+def stageCalib(specs, phis, out, ρ = 1.0, commonX = False):
     rows = []
-    m = buildUS(None, ρ = ρ)
+    m = buildUS(None, ρ = ρ, commonX = commonX)
     m.calibrate()
     t0 = m.t0Year
     sols = m.ESC.solveBackward()
-    rows.append({'spec': 'none', 'phi': np.nan, 'p': np.nan, 'converged': True,
+    rows.append({'spec': 'none', 'phi': np.nan, 'commonX': commonX, 'p': np.nan, 'converged': True,
                  'θStar': float(m.db['θ'].xs(t0)), 'choice': m.leadedDesignAtT0(sols),
                  'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(t0)), 'τDrift': np.nan, 'RDrift': np.nan})
     print('no wedge: θ*={θStar:.4f} -> choice {choice:.4f}'.format(**rows[-1]))
-    mergeWrite(out, rows, ['spec', 'phi'])
+    mergeWrite(out, rows, KEYCAL)
 
     for spec in specs:
         for phi in phis:
             tic = time.time()
             print(f'\n[{spec}, φ={phi}] calibrating p ...')
-            m = buildUS({'spec': spec, 'phi': phi, 'p': 1.0}, ρ = ρ)
+            m = buildUS({'spec': spec, 'phi': phi, 'p': 1.0}, ρ = ρ, commonX = commonX)
             try:
                 rec = m.calibrateWedge(spec = spec, phi = phi)
             except Exception as e:
                 print(f'  FAILED: {type(e).__name__}: {e}')
-                rows.append({'spec': spec, 'phi': phi, 'p': np.nan, 'converged': False})
-                mergeWrite(out, rows, ['spec', 'phi']); continue
-            r = {'spec': spec, 'phi': phi, 'p': rec['p'], 'converged': rec['converged'],
+                rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': np.nan,
+                             'converged': False})
+                mergeWrite(out, rows, KEYCAL); continue
+            r = {'spec': spec, 'phi': phi, 'commonX': commonX, 'p': rec['p'],
+                 'converged': rec['converged'],
                  'θStar': rec['θ'], 'residual': rec['residual'],
                  'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(m.t0Year))}
             if rec['converged']:
@@ -152,21 +198,21 @@ def stageCalib(specs, phis, out, ρ = 1.0):
                       'choiceAtT0': float(led['θ'].iloc[m.db['t0']+1])}
             rows.append(r)
             print('  -> p={p}  θ*={θStar:.4f}  β={β:.4f} ω={ω:.4f}  ({:.0f}s)'.format(time.time()-tic, **r))
-            mergeWrite(out, rows, ['spec', 'phi'])
+            mergeWrite(out, rows, KEYCAL)
     return pd.DataFrame(rows)
 
 
 # ---------------------------------------------------------------- stage: the design path
 
-def stagePath(specs, phis, calib, out, ρ = 1.0):
+def stagePath(specs, phis, calib, out, ρ = 1.0, commonX = False):
     rows = []
     for spec in specs:
         for phi in phis:
-            hit = calib[(calib['spec'] == spec) & (calib['phi'] == phi) & calib['converged']]
+            hit = pickCalib(calib, spec, phi, commonX)
             if hit.empty:
                 continue
             p = float(hit.iloc[0]['p'])
-            m = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ)
+            m = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
             m.calibrate()
             base, hbarRef = baselineRefs(m)
             led = m.solveLeaded(pinAtT0 = False)
@@ -176,7 +222,7 @@ def stagePath(specs, phis, calib, out, ρ = 1.0):
                     break
                 r = readout(m, led['τ'], led['report'], hbarRef, pos)
                 rb = readout(m, base['τ'], base['report'], hbarRef, pos)
-                rows.append({'spec': spec, 'phi': phi, 'p': p, 'pos': pos,
+                rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p, 'pos': pos,
                              'date': dates[pos] if pos < len(dates) else np.nan,
                              'ν': float(m.db['ν'].xs(t)),
                              'θ': float(led['θ'].xs(t)), 'τ': r['τ'], 'sr': r['sr'],
@@ -223,18 +269,18 @@ def leadedNewPath(m, hbarRef, apply = None, data = None, pin = False):
             'θ1': float(θPath.iloc[pos+1]), 'm': mt}
 
 
-def stageShocks(specs, phis, calib, out, ρ = 1.0):
+def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False):
     rows = []
     for spec in specs:
         for phi in phis:
-            hit = calib[(calib['spec'] == spec) & (calib['phi'] == phi) & calib['converged']]
+            hit = pickCalib(calib, spec, phi, commonX)
             if hit.empty:
                 continue
             p = float(hit.iloc[0]['p'])
-            m = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ)
+            m = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
             m.calibrate()
             _, hbarRef = baselineRefs(m)
-            data = frenchData(m)
+            data = frenchData(m, commonX = commonX)
             print(f'\n[{spec}, φ={phi}, p={p:.4f}] counterfactuals')
             for name in ESC_SCENARIOS:
                 apply, d = (None, None) if name == 'baseline' else (SHOCKS_ESC[name][1], data)
@@ -245,7 +291,8 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0):
                     except Exception as e:
                         print(f'  {name:<10} pin={pin}: FAILED {type(e).__name__}: {e}')
                         continue
-                    rows.append({'spec': spec, 'phi': phi, 'p': p, 'scenario': name,
+                    rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p,
+                                 'scenario': name,
                                  'θpinned': pin, 'θ_tm1': r['θ_'], 'θ_t0': r['θ0'], 'θ_t1': r['θ1'],
                                  'τ_t0': r['t0']['τ'], 'sr_t0': r['t0']['sr'], 'ww_t0': r['t0']['workweek'],
                                  'τ_t1': r['t1']['τ'], 'sr_t1': r['t1']['sr'], 'ww_t1': r['t1']['workweek']})
@@ -253,23 +300,23 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0):
                           '  (θ_t1={:.4f}, {:.0f}s)'
                           .format(name, str(pin), r['θ0'], r['t0']['τ'], r['t0']['sr'],
                                   r['t0']['workweek'], r['θ1'], time.time()-tic))
-                    mergeWrite(out, rows, ['spec', 'phi', 'scenario', 'θpinned'])
+                    mergeWrite(out, rows, KEYSHK)
 
             # France's own calibrated path under the same wedge -- the endpoint the French-characteristics
             # rows are read against. Exogenous theta only: France's design is a datum here, and a leaded
             # France would be a different exercise (that is stageCountry's question).
             try:
-                f = franceRow(m, spec, phi, p, hbarRef, ρ = ρ)
+                f = franceRow(m, spec, phi, p, hbarRef, ρ = ρ, commonX = commonX)
                 rows.append(f)
                 print('  {:<10} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}'
                       .format('France', 'True', f['θ_t0'], f['τ_t0'], f['sr_t0'], f['ww_t0']))
-                mergeWrite(out, rows, ['spec', 'phi', 'scenario', 'θpinned'])
+                mergeWrite(out, rows, KEYSHK)
             except Exception as e:
                 print(f'  France     FAILED {type(e).__name__}: {e}')
     return pd.DataFrame(rows)
 
 
-def franceRow(m, spec, phi, p, hbarRef, ρ = 1.0):
+def franceRow(m, spec, phi, p, hbarRef, ρ = 1.0, commonX = False):
     """ France's own calibrated equilibrium at 2020 under the same wedge, in escShocks' row schema.
 
     Not a shock on the US model: France carries its own eta, X, mu, nu AND its own calibrated omega, so
@@ -277,7 +324,7 @@ def franceRow(m, spec, phi, p, hbarRef, ρ = 1.0):
     characteristics do not explain. The workweek is on the US scale (hbarRef, and the US datum passed
     explicitly to readout) and is ModelFR's own hours target, so that cell reproduces the datum rather
     than predicting it. """
-    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, ρ = ρ)
+    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
     mFR.calibrate()
     pos = mFR.db['t0']
     out = mFR.solvePEE_LOG()
@@ -285,21 +332,34 @@ def franceRow(m, spec, phi, p, hbarRef, ρ = 1.0):
     r0 = readout(mFR, out['τ'], out['report'], hbarRef, pos, workweekData = ww)
     r1 = readout(mFR, out['τ'], out['report'], hbarRef, pos+1, workweekData = ww)
     θ = mFR.db['θ'].values.astype(float)
-    return {'spec': spec, 'phi': phi, 'p': p, 'scenario': 'France', 'θpinned': True,
+    return {'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p, 'scenario': 'France',
+            'θpinned': True,
             'θ_tm1': float(θ[pos-1]), 'θ_t0': float(θ[pos]), 'θ_t1': float(θ[pos+1]),
             'τ_t0': r0['τ'], 'sr_t0': r0['sr'], 'ww_t0': r0['workweek'],
             'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek']}
 
 
-# France's income distribution AND its voting profile together. Neither shocks.py nor the paper runs the
-# pair, and the pair is what the cross-section actually confronts: the two move in OPPOSITE directions for
-# the design (more equality pushes theta up, a flatter voting profile pushes it down), so whether the model
-# implies a theta-inequality relation at all depends on their net effect -- which is the question figure 1.1
-# poses. Applied in the order income-then-voting; shockIncomeDistribution re-derives theta from RR0 and
-# shockVoting does not touch eta, so the two commute.
+def shockIncomeAndVoting(mt0, d):
+    """ France's income distribution AND its voting profile together.
+
+    Neither shocks.py nor the paper runs the pair, and the pair is what the cross-section actually
+    confronts: the two move in OPPOSITE directions for the design (more equality pushes theta up, a
+    flatter voting profile pushes it down), so whether the model implies a theta-inequality relation at
+    all depends on their net effect -- the question figure 1.1 poses.
+
+    theta is re-installed after both, for the reason shocks.shockFrenchAll gives: shockVoting's
+    updateAuxPars re-derives it from France's eta and would undo the income shock's pin. """
+    pin = d.get('pinTheta', True)
+    θ0 = float(mt0.db['θ'].xs(mt0.db['t'][0])) if d.get('θUS') is None else float(d['θUS'])
+    sh.shockIncomeDistribution(mt0, d['ηFR'], pin, θ0 if pin else None)
+    sh.shockVoting(mt0, d['μFR'])
+    if pin:
+        mt0.db.update(mt0.adjPar('θ', θ0))
+    return float(mt0.db['θ'].xs(mt0.db['t'][mt0.db['t0']]))
+
+
 SHOCKS_ESC = dict(sh.SHOCKS) | {
-    'frBoth': ('Income distribution + voting',
-               lambda mt0, d: (sh.SHOCKS['frIncome'][1](mt0, d), sh.SHOCKS['frVoting'][1](mt0, d))),
+    'frBoth': ('Income distribution + voting', shockIncomeAndVoting),
 }
 
 # The order the shocks stage runs and the tables read. 'frAll' (shocks.shockFrenchAll) is the far end of
@@ -308,10 +368,13 @@ SHOCKS_ESC = dict(sh.SHOCKS) | {
 ESC_SCENARIOS = ('baseline', 'mild', 'acute', 'frIncome', 'frLeisure', 'frVoting', 'frBoth', 'frAll')
 
 
-def frenchData(m):
-    """ France's characteristics in the form shocks.py wants (runShocksUS.frenchData, LOG only). """
+def frenchData(m, commonX = False):
+    """ France's characteristics in the form shocks.py wants (runShocksUS.frenchData, LOG only).
+
+    commonX must match the US model being shocked, for the reason buildEU gives. """
     parsFR, kwFR, datesFR, wwFR = testEU.load('FR')
-    mFR = ModelFR(pars = parsFR | {'ρ': 1., 'ω': 2.}, usRef = testEU.usReference(), **kwFR)
+    mFR = ModelFR(pars = parsFR | {'ρ': 1., 'ω': 2.}, usRef = testEU.usReference(commonX = commonX),
+                  commonX = commonX, **kwFR)
     mFR.db['dates'], mFR.db['workweek'] = datesFR, wwFR
     mFR.LOG.initGS(GS)
     mFR.calibrate()
@@ -323,17 +386,17 @@ def frenchData(m):
     # how this was caught. eta is the other way round: shockIncomeDistribution takes eta_i.
     return {'ηFR': mFR.db['ηi'].xs(t0FR).values.astype(float),
             'μFR': parsFR['μj'],
-            'xbarRatio': XbarFR/XbarUS, 'pinTheta': False,
+            'xbarRatio': XbarFR/XbarUS, 'pinTheta': True,
             'θUS': float(m.db['θ'].xs(t0US))}
 
 
 # ---------------------------------------------------------------- stage: France and the UK
 
-def stageCountry(specs, phis, calib, out):
+def stageCountry(specs, phis, calib, out, commonX = False):
     rows = []
     for spec in specs:
         for phi in phis:
-            hit = calib[(calib['spec'] == spec) & (calib['phi'] == phi) & calib['converged']]
+            hit = pickCalib(calib, spec, phi, commonX)
             if hit.empty:
                 continue
             pUS = float(hit.iloc[0]['p'])
@@ -341,13 +404,15 @@ def stageCountry(specs, phis, calib, out):
                 label = country + (grouping or '')
                 # (i) the US-calibrated wedge, imposed
                 try:
-                    m = buildEU(country, {'spec': spec, 'phi': phi, 'p': pUS}, grouping = grouping)
+                    m = buildEU(country, {'spec': spec, 'phi': phi, 'p': pUS}, grouping = grouping,
+                                commonX = commonX)
                     m.calibrate()
                     t0 = m.t0Year
                     sols = m.ESC.solveBackward()
                     θStar = float(m.db['θ'].xs(t0))
                     ch = m.leadedDesignAtT0(sols)
-                    rows.append({'spec': spec, 'phi': phi, 'country': label, 'wedgeFrom': 'US',
+                    rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'country': label,
+                                 'wedgeFrom': 'US',
                                  'p': pUS, 'θStar': θStar, 'choice': ch,
                                  'ω': float(m.db['ω'].xs(t0)), 'τ': float(m.solvePEE_LOG()['τ'].xs(t0))})
                     print('[{}, φ={}] {:<5} US wedge p={:.4f}: θ*={:.4f} -> choice {:.4f}'
@@ -356,9 +421,11 @@ def stageCountry(specs, phis, calib, out):
                     print(f'  {label} US-wedge FAILED {type(e).__name__}: {e}')
                 # (ii) its own calibrated p
                 try:
-                    m = buildEU(country, {'spec': spec, 'phi': phi, 'p': pUS}, grouping = grouping)
+                    m = buildEU(country, {'spec': spec, 'phi': phi, 'p': pUS}, grouping = grouping,
+                                commonX = commonX)
                     rec = m.calibrateWedge(spec = spec, phi = phi, verbose = False)
-                    rows.append({'spec': spec, 'phi': phi, 'country': label, 'wedgeFrom': 'own',
+                    rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'country': label,
+                                 'wedgeFrom': 'own',
                                  'p': rec['p'], 'θStar': rec['θ'], 'choice': rec['θ'] + rec['residual'],
                                  'converged': rec['converged'],
                                  'ω': float(m.db['ω'].xs(m.t0Year))})
@@ -372,7 +439,7 @@ def stageCountry(specs, phis, calib, out):
 
 # ---------------------------------------------------------------- stage: the permanent choice
 
-def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None):
+def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None, commonX = False):
     """ The PERMANENT choice of theta (app:ESC), calibrated in its own right and compared with the leaded
     one at the same wedge.
 
@@ -389,7 +456,7 @@ def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None):
     for spec in specs:
         for phi in phis:
             # (a) no wedge
-            m = buildUS(None, ρ = ρ)
+            m = buildUS(None, ρ = ρ, commonX = commonX)
             m.calibrate()
             r = m.solvePermanent('LOG', θCand = θCand)
             rows.append({'spec': 'none', 'phi': np.nan, 'p': np.nan, 'source': 'none',
@@ -403,7 +470,7 @@ def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None):
                 spec, phi, r['θ'], r['atBound'], r['nTurning']))
 
             # (b) the permanent timing's own calibrated p
-            m = buildUS({'spec': spec, 'phi': phi, 'p': 0.4}, ρ = ρ)
+            m = buildUS({'spec': spec, 'phi': phi, 'p': 0.4}, ρ = ρ, commonX = commonX)
             try:
                 rec = m.calibrateWedge(spec = spec, phi = phi, preferences = 'permLOG', verbose = False)
             except Exception as e:
@@ -425,7 +492,7 @@ def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None):
 
 # ---------------------------------------------------------------- stage: the model's figure 1.1
 
-def stageFig1(specs, phis, calib, out, ρ = 1.0):
+def stageFig1(specs, phis, calib, out, ρ = 1.0, commonX = False):
     """ The model's own cross-section: the chosen design and the equilibrium tax as functions of population
     growth and of income inequality, one axis at a time.
 
@@ -440,11 +507,11 @@ def stageFig1(specs, phis, calib, out, ρ = 1.0):
     rows = []
     for spec in specs:
         for phi in phis:
-            hit = calib[(calib['spec'] == spec) & (calib['phi'] == phi) & calib['converged']]
+            hit = pickCalib(calib, spec, phi, commonX)
             if hit.empty:
                 continue
             p = float(hit.iloc[0]['p'])
-            base = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ)
+            base = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
             base.calibrate()
             t0 = base.t0Year
             pars0 = {'β': base.simpleβinv(), 'ω': float(base.db['ω'].xs(t0))}
@@ -456,7 +523,7 @@ def stageFig1(specs, phis, calib, out, ρ = 1.0):
             for axis, values in (('nu', np.linspace(0.95, 1.55, 13)),
                                  ('inequality', np.linspace(0.5, 1.3, 9))):
                 for v in values:
-                    m = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ)
+                    m = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
                     m.db.update(m.adjPar('β', pars0['β']))
                     m.db.update(m.adjPar('ω', pars0['ω']))
                     if axis == 'nu':
@@ -495,6 +562,10 @@ def main():
     p.add_argument('--spec', nargs = '*', default = ['scale', 'flat'])
     p.add_argument('--phi', type = float, nargs = '*', default = [0.5, 0.25, 0.75])
     p.add_argument('--rho', type = float, default = 1.0)
+    p.add_argument('--commonX', action = 'store_true',
+                   help = 'the common-X calibration variant (the paper leads with it). Recorded as a '
+                          'column in every csv written here and part of the merge key, so the two '
+                          'variants coexist in one file instead of overwriting each other.')
     p.add_argument('--tag', default = '')
     a = p.parse_args()
     os.makedirs(OUTDIR, exist_ok = True)
@@ -502,19 +573,19 @@ def main():
 
     calib = None
     if 'calib' in a.stage:
-        calib = stageCalib(a.spec, a.phi, f('escCalibration'), ρ = a.rho)
+        calib = stageCalib(a.spec, a.phi, f('escCalibration'), ρ = a.rho, commonX = a.commonX)
     else:
         calib = pd.read_csv(f('escCalibration'))
     if 'path' in a.stage:
-        stagePath(a.spec, a.phi, calib, f('escPath'), ρ = a.rho)
+        stagePath(a.spec, a.phi, calib, f('escPath'), ρ = a.rho, commonX = a.commonX)
     if 'shocks' in a.stage:
-        stageShocks(a.spec, a.phi, calib, f('escShocks'), ρ = a.rho)
+        stageShocks(a.spec, a.phi, calib, f('escShocks'), ρ = a.rho, commonX = a.commonX)
     if 'country' in a.stage:
-        stageCountry(a.spec, a.phi, calib, f('escCountry'))
+        stageCountry(a.spec, a.phi, calib, f('escCountry'), commonX = a.commonX)
     if 'fig1' in a.stage:
-        stageFig1(a.spec, a.phi, calib, f('escFig1'), ρ = a.rho)
+        stageFig1(a.spec, a.phi, calib, f('escFig1'), ρ = a.rho, commonX = a.commonX)
     if 'permanent' in a.stage:
-        stagePermanent(a.spec, a.phi, f('escPermanent'), ρ = a.rho)
+        stagePermanent(a.spec, a.phi, f('escPermanent'), ρ = a.rho, commonX = a.commonX)
     print('\n-> {}'.format(os.path.relpath(OUTDIR, REPO)))
     return 0
 

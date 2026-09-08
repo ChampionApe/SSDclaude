@@ -27,7 +27,8 @@ workweek = dfc['Average workweek']
 # Create objects to parse to model initialization:
 kwargs = {'T': TLog+t_ss, 'nj':dfj.shape[0]}
 pars = {'α': dfc['Capital income share'], 'ξ': dfc['Labor supply elasticity'], 'ν': np.hstack([νLog, np.full(kwargs['T']-TLog, νLog[-1])]),
-        'τ0': dfc['Pension tax'], 'RR0': dfc['Replacement rate'], 'RRGroups': tuple(eval(dfc['Replacement rate groups'])), 't0': dates.get_loc(dfc['Calibration year']),
+        # Derived, not read: spending/(1-alpha) -- see InformalSavings/test.py.
+        'τ0': dfc['Pension spending']/(1-dfc['Capital income share']), 'RR0': dfc['Replacement rate'], 'RRGroups': tuple(eval(dfc['Replacement rate groups'])), 't0': dates.get_loc(dfc['Calibration year']),
         'γj': dfj['Population shares'].values.astype(float), 
         'μj': dfj['Voting shares'].values.astype(float), 
         'Xj': 1,

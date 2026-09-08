@@ -540,11 +540,39 @@ class ModelInformalSavings:
         Scalar in/out, matching scipy.optimize.brentq's signature. """
         return Γs - self.B.Γs(self.B.BSteadyState(Γs, τ, θ, t), τ, θ, t)
 
-    def steadyState_CRRA_solve(self, τ, θ, t = None, bounds = (1e-6, 0.75), tol = 1e-11, **kwargs):
-        """ Root-find the CRRA steady state Γs via brentq (bounded scalar search, per the doc's own
-        recommendation). The doc suggests (0, 0.9) on the grounds that Γs = B/((1+B)(1+ξ)) exactly when B
-        is constant across types; 0.75 is tightened from that, and is not a doc value. """
+    def steadyState_CRRA_bounds(self, τ, θ, t = None, upper = 0.75, margin = 0.99, lower = 1e-6,
+                                maxExpand = 40):
+        """ Bracket for steadyState_CRRA_solve's Γs search: (lower, min(upper, margin·Base.ΓsCap)),
+        widened upward if that does not actually bracket a root.
+
+        `upper` alone -- the constant 0.75 this module carried until 2026-09-08 -- was safe at α = 0.43 by
+        parameter values, not by construction: the cap scales with α/(1-α), and at α = 0.35 it falls below
+        0.75 over part of the τ grid steadyStatePEE_CRRA searches, so brentq evaluated a NaN and raised
+        "function value at x=0.75 is NaN" at the first CRRA point of the ρ march. The expansion runs only
+        when the default bracket fails to bracket a root, so it cannot change a call that already worked.
+        Same construction as US/model.py; notes/crossCuttingFindings.md #7. """
         t = self.B.tFirst if t is None else t
+        cap = self.B.ΓsCap(τ, θ, t)
+        hi = min(upper, margin*cap)
+        f = lambda x: self.steadyState_CRRA_residual(x, τ, θ, t)
+        brackets = lambda a, b: np.isfinite(a) and np.isfinite(b) and a*b < 0
+        fLo = f(lower)
+        if brackets(fLo, f(hi)):
+            return (lower, hi)
+        for _ in range(maxExpand):
+            hi = min(2*hi, margin*cap)
+            if brackets(fLo, f(hi)):
+                return (lower, hi)
+            if hi >= margin*cap:                 # nothing left to expand into
+                break
+        return (lower, min(upper, margin*cap))   # give up: let brentq report the original failure
+
+    def steadyState_CRRA_solve(self, τ, θ, t = None, bounds = None, tol = 1e-11, **kwargs):
+        """ Root-find the CRRA steady state Γs via brentq (bounded scalar search, per the doc's own
+        recommendation). bounds default to steadyState_CRRA_bounds -- see there for why a constant upper
+        bound is not enough. """
+        t = self.B.tFirst if t is None else t
+        bounds = self.steadyState_CRRA_bounds(τ, θ, t) if bounds is None else bounds
         Γs = optimize.brentq(self.steadyState_CRRA_residual, *bounds, args = (τ, θ, t), **kwargs)
         self._checkConverged(self.steadyState_CRRA_residual(Γs, τ, θ, t), tol = tol, name = 'steadyState_CRRA_solve')
         B = self.B.BSteadyState(Γs, τ, θ, t)

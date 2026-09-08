@@ -489,6 +489,20 @@ class Base:
         ρc = self._bcast(self.get('ρ', t))
         return self.get('βi', t)**ρc * self._bcast(self.RpSteadyState(Γs, τ, θ, t))**(ρc-1)
 
+    def ΓsCap(self, τ, θ, t = None):
+        """ The Γs at which Θ_{h,t}'s denominator (eq:auxiliary:Thetah) hits zero,
+
+            Γs_cap = Γh·α·κ / ((1-α)·p·θ·τ),      = inf when θτ = 0.
+
+        Above it Θh and RpSteadyState are negative, so a fractional power returns NaN and a bracketing root
+        finder dies rather than reporting a bad bracket. A hard feasibility limit: the steady-state root is
+        always strictly below it. Scales with α/(1-α), so a constant upper bound that was safe at α = 0.43
+        (0.75 against a cap of ≈1.1) is inside the infeasible region at α = 0.35 for τ large enough --
+        see model.steadyState_CRRA_bounds and notes/crossCuttingFindings.md #7. """
+        denom = (1-self.get('α', t))*self.get('p', t)*θ*τ
+        cap = self.Γh(t)*self.get('α', t)*self.get('κ', t)/np.where(denom == 0, np.nan, denom)
+        return np.where(np.isnan(cap), np.inf, cap)[()]
+
     def B0SteadyState(self, Γs, τ, θ, t = None):
         """ Informal counterpart of BSteadyState: B^0 = (β_0)^ρ (R^0/p_{t,0})^(ρ-1), with R^0 = χ^R·R and
         R = p_t·RpSteadyState. Collapses to the primitive β_0 at ρ=1. Not part of the Γs fixed point

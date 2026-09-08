@@ -15,6 +15,9 @@ baseline path):
     french   France's income distribution, leisure preferences, voting, and all three at once
                                                                   -> US_OtherShocks.tex
 
+The income-distribution scenario holds theta at the US design (--freeTheta re-derives it from RR0 under
+France's eta instead), so that row is about inequality alone and the theta family carries pension design.
+
 Plus a FRANCE reference row (--noFrance to skip): France's own calibrated path, read at its own 2020 with
 the US workweek reference, so the French-characteristics rows can be read against the country they are
 borrowed from. That row is the point of the new-path convention -- an unanticipated 2020 reform is not
@@ -133,10 +136,10 @@ def main():
     p.add_argument('--ns', type = int, default = 150)
     p.add_argument('--smoothKnots', type = int, default = 4)
     p.add_argument('--interpKind', default = 'linear')
-    p.add_argument('--pinTheta', action = 'store_true',
-                   help = "hold theta at the US value in the income-distribution counterfactual instead "
-                          "of re-deriving it from RR0 (which is what reproduces the paper). See "
-                          "shocks.shockIncomeDistribution.")
+    p.add_argument('--freeTheta', action = 'store_true',
+                   help = "re-derive theta from RR0 under France's eta in the income-distribution "
+                          "counterfactual, instead of holding it at the US design (the default). The "
+                          "alternative reading; see shocks.shockIncomeDistribution.")
     p.add_argument('--noFrance', action = 'store_true',
                    help = "skip France's own calibrated path, the reference row the French-characteristics "
                           'counterfactuals are read against. See franceReference.')
@@ -183,7 +186,7 @@ def main():
         data = (frenchData(m, ρ, preferences, gsFR, a.commonX)
                 if any(famOf[n] == 'french' for n in names) else {})
         if data:
-            data['pinTheta'] = a.pinTheta
+            data['pinTheta'] = not a.freeTheta
         if data:
             print('  French: Xbar_FR/Xbar_US={:.4f} ({:.2f} vs {:.2f}), max|gamma_FR-gamma_US|={:.1e}'
                   .format(data['xbarRatio'], data['XbarFR'], data['XbarUS'], data['γgap']))

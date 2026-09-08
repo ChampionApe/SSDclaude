@@ -402,3 +402,183 @@ docstrings already cited but the tex never labeled.
 `\refmodeleq:` references and reported all-clear on a comparison it never made. The prefix-aware Python
 checker (label prefixes normalized per file kind, model↔num cross-references included) is the one that
 counts; it verified all three doc sets with zero dangling references.
+
+## 2026-08-27 — a pinned parameter is pinned by the LAST refresh, not the last one you can see
+
+Structural because the lesson is not about `θ`. `crossCuttingFindings.md` **#9 gains its second instance**,
+and it is the one the finding's own habit does not catch. #9's rule was "set a derived parameter *after*
+the refresh that would recompute it". `shocks.shockIncomeDistribution` does exactly that. Then
+`shockFrenchAll` calls `shockVoting` two lines later, whose own `updateAuxPars` re-derives `θ` from the
+`η` now in db — France's. The pin was undone in the composite rows and nowhere else: the
+single-characteristic row is correct precisely because nothing runs after it.
+
+**So the rule extends: a derived parameter is pinned by the last refresh in the whole sequence, not by the
+last one in the function you are reading.** Composing two individually correct shocks is not itself
+correct, and the composite is where nobody looks — `frAll` came back on `θ = 0.551` where 0.738 was asked
+for, with τ, savings and hours all plausible. It was caught by reading the run's printed output against
+what had been requested, not by a test; the test exists now, and covers each composite as well as each
+single shock.
+
+**A second habit out of the same session, about checks rather than about code.** The US arm's two
+calibration variants are supposed to check each other: run the same shock set under both, and quantities
+the variant cannot touch must agree while quantities defined through `η` or `X` must differ. The check as
+written asked the *leisure* row to differ **in τ** — and leisure is a pure scale, so τ cannot move under
+either variant. It agreed to 2.3e-5 and would have gone on reporting a pass through any breakage of the
+thing it was meant to police; the row's whole variant content is in the workweek (34.74 against 33.24).
+**A check keyed to a quantity that cannot move is not a weak check, it is not a check** — and it reads as
+one of the strongest, because it never fails.
+
+Detail in `python/US/RESEARCH_LOG.md` (the pin, and the ESC leg's common-X variant) and
+`python/paper/RESEARCH_LOG.md` (common `X` as the headline calibration, one builder per variant pair, and
+a `sharey` axis inversion that was correct only by panel-count parity).
+
+## 2026-09-08 — the baseline savings rate is a prediction, not a row; and a zip round trip to Overleaf
+
+**A pre-reform row taken from the ρ = 1 calibration is wrong at every other ρ, in both arms.** Neither
+arm targets the savings rate any more: Argentina identifies β by K/Y (since the 2026-08-24 retarget) and
+the US by the interest rate, so the 2010/2020 savings rate is an equilibrium outcome that moves with ρ —
+15.3% → 14.1% across the Argentina grid, 22.7% → 21.2% across the US one (paper units). The tax rate is a
+target and the workweek a per-ρ normalisation, so those two columns *are* common; the savings rate only
+looked like a third. `Argentina_funcOfRho` printed one pre-reform row from the calibration summary and
+thereby showed the reform *raising* savings at ρ = 0.5 (15.27% against 14.72%), contradicting the figure
+beside it, which differences each ρ against its own baseline (−0.07 p.p.). Fixed: a pre/post pair per ρ,
+the pre-reform row read off that ρ's baseline path. **The three US CRRA tables carry the same defect and
+are not yet fixed**: read against their single ρ = 1 baseline, the savings effect appears to grow with ρ
+in every scenario; against each ρ's own baseline it mostly shrinks, and for θ = 0, θ = 1 and the leisure
+row the sign flips (leisure is a pure scale and cannot move savings, yet the table implies ±0.8 p.p.).
+The ESC tables and both overview figures were already per-ρ. Detail and numbers in
+`python/paper/RESEARCH_LOG.md`.
+
+**Why Argentina's β exceeds the US's, and why α ∈ [0.30, 0.43] is on the table.** In
+`python/InformalSavings/RESEARCH_LOG.md` and `notes/argentina_alphaSensitivity.md`.
+
+**`writing/overleaf.py`: export/import by zip, no git sync.** `export note|paper` zips the sources with
+`main.tex` at the root for Overleaf's *Upload Project*; `import note|paper <zip> [--dry-run] [--all]`
+brings *Download Source* back. Import never deletes, writes only text sources unless `--all` (so an old
+zip cannot roll back pipeline-built figures), and refuses to overwrite anything carrying the
+`%% GENERATED` banner — an online edit to a generated table is reported so the change goes to its source.
+Export first resolves every `\input`/`\subimport`/`\includegraphics`/`\addbibresource` against the zip
+contents *case-sensitively* and refuses on a miss. That check found three references that compile here
+and would fail on Overleaf's Linux: `\input{Packages.tex}` for `packages.tex` in the note, and
+`\addbibresource{references.bib}` for `References.bib` in both preambles. All three now match the files.
+`writing/exports/` is gitignored. The Overleaf side stays manual by design.
+
+## 2026-09-08 — the paper rebuilt as four sections, α = 0.35 launched, and two constants that were data
+
+**Decisions, from the user.** Argentina's capital share moves from Frankema's economy-wide 0.43 to a
+formal-sector 0.35 net of mixed income (Gollin), K/Y kept at 3.23; every table in both arms reports the
+savings rate as s/Y and as a change against that ρ's own baseline; the two overview figures lose their
+composite rows and the ESC figure becomes a dumbbell chart; and the "Quantitative Analysis" section is
+replaced by four — numerical methods, Argentina, rich OECD, endogenous design. The plan and the state of
+each item are in `notes/todo_paperRewrite.md`, which is the entry point for the writing sessions.
+
+**Two constants that turned out to be statements about the data, not about the model.** The α change
+killed the ρ march twice before it ran. First the `ι` state grid was degenerate at the anchor: the grid is
+built from the steady state at the parameters the residual is *first* evaluated at, and the anchor's
+only source of those was the workbook default `β = 0.6, ω = 2`. Second the first CRRA point died on the
+inherited bracket `(1e-6, 0.75)` for `Γs` — the constant the US module had replaced with a derived cap on
+2026-08-21, on the reasoning that it was "safe at Argentina's parameters". It was, at α = 0.43. Both are
+now inputs (`config.ARG['anchorGuess']`, `steadyState_CRRA_bounds` in both Argentina modules);
+`crossCuttingFindings.md` #7 gains the instance. The habit: a bound justified by the current parameter
+values is re-tested by every change to the data, and the module that "does not have the problem" is the
+one to check first when the data moves.
+
+**A tooling trap that read as a model failure.** Editing the workbook with openpyxl dropped the cached
+values of its formula cells, so pandas read θ, ε and three population cells as NaN and the first symptom
+was a degenerate state grid deep in the solver. Edit workbooks through Excel; `logs/` (gitignored) now
+holds the detached-run scripts and their logs, and `PYTHONUTF8=1` is required for any pipeline run.
+
+**Restructure without rewriting.** The old section was sliced, not edited: the Argentina and OECD
+sections are the old subsections promoted, the ESC appendix is the new `sec:esc` verbatim apart from the
+figure paragraph and the s/Y numbers, and `Sections/Numerical.tex` is an outline plus the two surviving
+paragraphs. Every place that still quotes an α = 0.43 magnitude carries a `%% TODO-ARG035` comment for the
+Argentina session to grep. One real defect found by the reference checker: the CRRA
+pension-characteristics table was input twice, in the main text and in the appendix.
+
+## 2026-09-08 (writing) — a style guide, the numerical section, the OECD pass, and two checks that changed the record
+
+The first writing session of the rewrite (`notes/todo_paperRewrite.md` is the plan; this entry is what it
+did and what it learnt). Working method agreed with RKB and kept: lay out the options before writing
+anything, then write.
+
+**A style guide before any prose.** `notes/paper_styleGuide.md` synthesises the draft's own conventions
+(voice, paragraph anatomy, units and precision, terminology, LaTeX habits) so new text blends in. The
+draft carried two registers — the plain textbook register of the older sections and a more rhetorical
+one in the September additions (dashes, "in disguise", meta-commentary on the paper's own claims) — and
+the guide picks the plain one as the target. It also records that the introduction's two-argument
+parencite form is not valid biblatex.
+
+**The numerical section, and what it does not claim.** Written as a compact section from the three
+`num*.tex` sets: six run-in headings, the candidate-set rule and the additive decomposition of the
+first-order condition in the informal savings ratio as its only displays, the generic nested-fixed-point
+calibration and the ρ march (targets stay in the application sections), one forwarding sentence to the
+endogenous-design section. Decision with RKB: no methodological contribution is claimed; the state-space
+reduction is an economic result already in section 3, the objective reconstruction is a device, and the
+rank-one / exact-unnesting structure is model-specific exploitation. The endogenous-θ solution was judged
+an extension of the same machinery (direct objective evaluation on a design grid because the corner is
+the question; separability and concentration are economics; the CRRA recursion is the tax recursion with
+one more state) and stays in `sec:esc`.
+
+**A literature claim that was wrong, caught by RKB.** The first draft said the numerical
+politico-economic literature uses backward induction on a state grid. Checked against the papers' own
+text: Krusell–Ríos-Rull (1999) compute a stationary policy function as a fixed point by linear-quadratic
+approximation; Song (2011) does the same by Chebyshev projection for CRRA; Gonzalez-Eiras–Niepelt (2008)
+have the closed form and only footnote a numerical CRRA check, and both they and Song use finite-horizon
+backward induction as a proof device (uniqueness "in the limit of finite-horizon economies"). The section
+now states the difference: we compute a sequence of date-specific policy functions, which is that
+finite-horizon-limit equilibrium, selected by the terminal condition where a stationary fixed point can be
+multiple (Forni 2005), with the demographic transition entering directly. A difference, not a
+contribution. `KrusellRR99a1` added to the bib.
+
+**The OECD pass.** The draft's US/UK/FR tables were stale copies (savings as levels over labour income);
+the rebuilt ones and the three US figures were copied across, and every number in the section re-read
+against them — all held, one overstatement softened ("an order of magnitude" → "several times"; the
+inequality/ageing ratio is 3–7). Rearranged so the CRRA robustness has its own heading and the
+interpretation paragraphs close the section on the hand-off to `sec:esc`; the IES paragraph duplicated
+from the Argentina section became a cross-reference. The vector-X appendix argued the wrong direction
+(France's income distribution as a *smaller* change while quoting a *larger* tax effect); fixed.
+
+**Two things a reader caught that the pipeline could not.** "See the note above" in the Argentina
+calibration pointed at a tex comment; the capital-share paragraph is now written (formal-sector share,
+Gollin's mixed-income argument, the (0.43−y)/(1−y) bracket 0.30–0.40 with 0.35 taken, a footnote on why
+K/Y stays at 3.23). And the tax target: spending over formal output is τ(1−α), so the 12.5% literal was
+0.071/0.57 and belonged to α = 0.43; at 0.35 it is 10.9%. The experiments session took it from there
+(the workbook now carries spending, τ₀ is derived — finding #9 again) and relaunched. Every "% of GDP"
+conversion in the Argentina prose uses 0.65 from now on.
+
+**Table 3.** `Argentina_funcOfRho` now prints one shared pre-reform row (τ, workweek; savings `--`) and
+"Change in savings rate" against each ρ's own baseline, with a guard that the pre-reform τ is common.
+
+**Overleaf.** Two zips exported during the session; RKB edits online from here, so further exports are on
+request, and the import script's dry run is the way changes come back.
+
+## 2026-09-08 (evening) — a converted datum is a stale datum: the tax target moved with α
+
+RKB caught it after the first α = 0.35 sweep was running: the workbook's tax target 0.125 was 7.1% of
+GDP converted at α = 0.43, since spending over formal output is τ(1−α). Under α = 0.35 the target is
+0.109, and ω had been calibrated to a number that no longer meant what it said. The run was killed and
+relaunched with the datum stored (spending share) and the target derived in the loaders; β moved a
+further 0.686 → 0.651, ω 1.616 → 1.527, R and the informal parameters not at all. Finding #12 gains the
+instance — the neighbouring target that #12 had praised for being converted *correctly* was the one
+that went stale, because the conversion's input was baked into the cell. Store the datum, derive the
+target.
+
+**The pass, end to end.** Calibration 16/16 in 3.2 h (the low-ρ tail takes ~17 min a point), shocks
+50 min (the README had said 2.5 h), tests all green after the anchor re-pin, build copied into the draft
+and the Argentina prose re-read against it (`python/paper/RESEARCH_LOG.md`). The plan note
+`notes/todo_paperRewrite.md` now has items 1–4 closed except the endogenous-θ writing pass; the
+introduction's three `XXX` author notes and the two Frankema checks are RKB's.
+
+## 2026-09-08 (late) — Overleaf by git after all
+
+Uploading a zip into an existing Overleaf project does not extract it, so every zip export meant a new
+project. The DeiC instance has the Git integration, and `writing/overleaf.py` gains `push`/`pull`: a
+clone of the project under the gitignored `exports/`, `push` copies the export's file set over it
+(same reference check, deletions propagated), `pull` applies the zip import's rules to the clone. This
+repository's own history is never involved. Three things the stand-in test (a local bare repo) forced:
+a first push knows nothing of the online history, so it refuses if any online text source differs and
+asks for a `pull --dry-run` and then `--force` once; the clone runs with `core.autocrlf=false` and all
+comparisons normalise line endings, since Windows git's checkout otherwise reported the whole project
+as changed on every pull; and a pulled file keeps the local file's ending style. Tested: co-author edit
+detected, pulled, overwritten with `--force`, second push a no-op. The real first push is RKB's, from a
+terminal so the credential manager can take the token.

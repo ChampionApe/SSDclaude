@@ -205,3 +205,135 @@ matches `results/paper` because build.py just copied it there; the question is w
 *user wrote*. The blob hashes were unchanged (`8060794`, `01c05af`), so the builders reproduce the hand
 edits byte for byte. Full rebuild: 23 built, 0 skipped, nothing backed up to `superseded/` — correct, since
 all three carried the `%% GENERATED` banner and so were recognised as build.py's own output.
+
+
+## 2026-08-27 — common X leads, and one builder makes both variants
+
+**Decision, from the user**: the paper leads with the common-`X` calibration and keeps vector `X_i` as an
+appendix robustness set. `config.US['commonX']` names the headline; every US builder takes `commonX` and
+defaults to it, and `build._variants` registers the pair. **The headline output keeps the plain name,
+filename and tex `\label` the draft already cites, and the twin's carry the variant they contain** — so
+flipping the flag changes what is inside the paper's tables without renaming one of them, and a file on
+disk says which economy it is about. 23 outputs became 34.
+
+`config.variantNote` puts one sentence naming the variant into *every* US table note, headline included.
+The two variants share `β`, `ω`, `τ`, `R`, the savings rate and aggregate `h` exactly, so a reader
+comparing two tables cannot tell them apart from the columns that did not move.
+
+**The variants check each other, and the old form of that check was wrong about one row.** Run the same
+set under both: baseline, θ, ageing and voting come back identical (≤ 5e-15 in τ and sr — block
+recursivity end to end), income distribution and all-three differ (4.9e-3, 5.1e-3 in τ). The README asked
+for leisure to differ *in τ* as well; it cannot. Leisure is a pure scale, so τ and the savings rate are
+pinned at baseline in **both** variants (they agree to 2.3e-5) and the whole variant effect lands on
+hours — 34.74 against 33.24, because `Xbar_FR/Xbar_US` is 1.520 under vector `X` and 1.761 under common
+`X`. A check keyed to a quantity that cannot move reports a pass for the wrong reason.
+
+## 2026-08-27 — three panels instead of one, and an inverted axis that was right by parity
+
+`US_taxOverview`/`USX_taxOverview` are retired for `US_overview`: tax, savings rate and workweek as three
+panels on a shared scenario axis, plus the two rows the tax figure never carried — all three French
+characteristics at once, and France's own calibrated path. The layout earns itself: the tax panel's
+ranking (ageing and design dominate, the French characteristics minor) is **inverted** by the workweek
+panel, where leisure preferences are the largest mover and move τ not at all. That contrast is the
+paper's own US-Europe hours argument, and it is invisible in three separate figures.
+
+`US_ESC_overview` is the appendix counterpart: bar = the effect at a fixed design, open marker = the same
+effect with the design chosen, both against the same baseline, so the gap between them is the design
+response read along the axis rather than across a gutter. Four panels, the design itself first — where the
+exogenous bars sit at zero by construction and give the scale the other three panels' gaps are read on.
+
+**A latent bug the four-panel figure exposed.** The panels are created with `sharey=True`, so they are one
+y-axis wearing several faces, and `invert_yaxis()` called per panel flips it once per call: the scenario
+order reverses on an even panel count and survives on an odd one. The three-panel figure was upright
+**by parity**, from the same code that put the four-panel one upside down. `_topDown` now inverts once,
+outside the per-panel helper, and says why.
+
+Also: `_panel` must be called *before* `set_yticklabels`, since its `tick_params` recolours the scenario
+labels to the muted ink meant for numeric ticks; and the legend moved to figure level, because with the
+France row present there is no in-panel position that is not on top of a bar.
+
+## 2026-09-08 — a shared pre-reform row that was only shared in two of its three columns
+
+`argentinaFuncOfRho` printed one pre-reform row (τ, savings rate, workweek from the ρ = 1 calibration)
+over post-reform rows at every ρ, on the reasoning — still in the inline comment — that "τ and the savings
+rate are calibration targets, so they are identical at every ρ by construction". True before the K/Y
+retarget, false after it: the savings rate $s_t/Y_t$ is now $K/Y$ times the period's output growth, and
+the growth term depends on how strongly households front-load against the slowing population path, i.e.
+on ρ. Per ρ, own baseline vs. calibration summary vs. reform at 2010:
+
+| ρ | own baseline | summary (ρ = 1) | reform | effect (own) | effect as printed |
+|---|---|---|---|---|---|
+| 0.5 | 15.34% | 14.72% | 15.27% | −0.07 | **+0.54** |
+| 1.0 | 14.72% | 14.72% | 14.45% | −0.27 | −0.27 |
+| 2.0 | 14.10% | 14.72% | 13.90% | −0.20 | −0.82 |
+
+The figure (`argCrraLog`) was right all along: it differences against `savingsRatePath(ρ, 'base')`, which
+equals the sweep csv's achieved `sr` at every ρ to machine precision. The table now emits a pre/post pair
+per ρ (both rows commented outside `ρTable`), the pre-reform τ and workweek read from the same shock row
+rather than the summary, and the note says which columns are common and why. README trap added.
+
+**The same reasoning is wrong in `_crraTable`, and that is open.** The US identifies β by R, so its
+baseline savings rate is 22.73 / 21.96 / 21.22% at ρ = 0.5 / 1 / 2 (`US_shocksCommonX.csv`, $s/(wh)$
+units). The three CRRA tables print the ρ = 1 baseline once, with a note claiming the targets are hit
+there — τ is, the savings rate is not. Consequences, savings effect as printed vs. against own baseline:
+θ = 0 at ρ = 2, −0.60 vs +0.14 p.p.; θ = 1 at ρ = 2, −0.65 vs +0.09; mild ageing across ρ = 0.5 → 2,
+−0.81 → −2.00 as printed against −1.58 → −1.26 in fact; leisure, ±0.8 as printed against exactly 0.00
+(pure scale). The printed tables therefore say the savings response grows with ρ when it shrinks, and
+Quant.tex's "almost linear in ρ" reading of the savings column rests on the artefact. Fix is the ESC
+tables' layout — a baseline group of three rows, one per ρ — in the one shared builder, rebuilding six
+files. `usOverview` and the ESC outputs were already per-ρ and need nothing.
+
+## 2026-09-08 (later) — s/Y everywhere, changes against each ρ's baseline, and two figures redrawn
+
+**The savings-rate convention is one unit now.** The US tables and figures read `srOverY` (= s/Y) from
+the shock csv instead of `sr` (= s/(wh)); the ESC csvs carry only s/(wh) and `datasets.escSavingsOverY`
+converts by the exact `(1-α)`, with α read from `usCalibrationSummary.csv` and cross-checked against the
+workbook (`datasets.usAlpha`). US baselines in s/Y: 15.91 / 15.37 / 14.85% at ρ = 0.5 / 1 / 2.
+
+**Every counterfactual row prints the savings rate as a change against that ρ's own baseline**
+(`config.pp`, `tables.SRNOTE`), which closes the morning's open defect in the three `US_CRRA_*` tables:
+they now carry a baseline group of three rows and difference per ρ. The check that the differencing is
+right is the leisure row, `0.00 p.p.` at every ρ in both variants (raw +0.0047 / 0.0000 / −0.0001). The
+sign flips the morning's entry predicted are now on the page: θ = 0 at ρ = 2 is +0.10 p.p., θ = 1 is
++0.06, mild ageing shrinks −1.10 → −0.88 across ρ. A scripted cell-by-cell check of every changed table
+against the csv: 0 mismatches. The ESC tables difference against the *endogenous* baseline (the printed
+row, and what the figure differences against), so their exogenous leisure rows show the 0.01–0.02 p.p.
+gap between the two baselines; switching them to the pinned baseline is a one-line change in `_escTable`.
+
+**Figures.** `US_overview` drops the all-three and France rows and its savings panel is s/Y.
+`US_ESC_overview` is a dumbbell chart — open marker at the pinned reading, filled at the chosen one, one
+connector per (scenario, ρ), design panel as a level with every pinned marker at 0.738 by construction.
+Two alternatives were drawn and kept as pngs in the session scratchpad: a single-panel "chosen θ against
+ρ" line chart (the clearest statement of the design response; worth adding as a companion figure) and a
+5×3 small-multiples grid (too small at `\linewidth`). `frAll` is dropped from the ESC figure since by
+scale invariance it duplicates `frBoth` in everything the figure shows.
+
+**Pipeline.** `config.ARG['anchorGuess']` is forwarded to the Argentina sweep as `--x0`. `build.py --list`
+raises (not `MissingInput`) on `seedSavings`' agreement guard while the Argentina csvs are of mixed
+vintage — expected during the re-run, and the guard working as intended. The Argentina builders were
+verified on the committed α = 0.43 csvs in a scratch tree; their new numbers arrive with the re-run.
+
+## 2026-09-08 (writing session) — Table 3 gets one pre-reform row and a "Change in savings rate" column
+
+`argentinaFuncOfRho` no longer prints a pre-reform row per ρ. RKB's reading: the two things that are
+common across ρ by construction (τ is a target, the workweek a normalisation) belong in one shared row,
+and the pre-reform savings level, which is a prediction that varies with ρ, is simply not printed (`--`)
+rather than printed per ρ. Every post-reform row still differences against its own ρ's baseline path, so
+the p.p. changes are unchanged; the column header now says "Change in savings rate". The builder raises
+if the pre-reform τ is not common across ρ — a spread would mean a calibration point missed its target,
+and a single row must not hide that. The three `US_CRRA_*` tables keep their per-ρ baseline rows (their
+baseline savings level is part of what they show). README's convention bullet updated.
+
+Also this session: the rebuilt US/UK/FR tables and the three US figures were copied from `results/paper`
+into `writing/Paper` by hand (`cp`), since the draft copies predated the s/Y convention and the Argentina
+pipeline — which the copy stage would otherwise wait for — never touches them.
+
+## 2026-09-08 (evening) — the corrected Argentina pass landed and the Argentina prose was re-read
+
+`build.py` with the copy at 19:10: the draft's Argentina tables had still been the α = 0.43 vintage.
+Then every `TODO-ARG035` marker was resolved against the new tables (`notes/todo_paperRewrite.md` item 2
+records what each paragraph now says). Two things the numbers forced beyond a find-and-replace: the
+reform paragraph claimed higher labour supply where both table rows show lower hours (fixed, with the
+taxes-fixed mechanism), and the four-in-one figure's 1.6 p.p. move along the calibrated θ is the
+always-had-it comparison, which sits next to the 1.7 p.p. long-run effect rather than the 1.0 p.p.
+impact effect — the text now says so instead of quoting one number beside the other.

@@ -39,6 +39,8 @@ beside the live ones — `notes/crossCuttingFindings.md` #8.
 | `argentina_calibrationTarget.md` | why the calibration targets K/Y rather than the savings rate, and the map from target to `β` |
 | `esc_experiments_acrossRho.md` | the endogenous-`θ` counterfactuals across `ρ ∈ {0.5, 1, 2}` |
 | `todo_escPermanentTiming.md` | the one piece of open ESC work |
+| `todo_paperRewrite.md` | the 2026-09-08 rewrite plan (α = 0.35, s/Y convention, figures, four new sections) and the entry point for the writing sessions |
+| `paper_styleGuide.md` | voice, paragraph anatomy, units and LaTeX conventions of the paper draft, for the rewrite sessions |
 | `archive/` | measurements and results demoted out of the module READMEs |
 
 **`writing/`** 
@@ -51,13 +53,19 @@ beside the live ones — `notes/crossCuttingFindings.md` #8.
 no development history — that stays in `notes/` and the logs.
 * Docstring-cited labels were preserved throughout the 2026-08-25 restructure; keep them stable, or follow a rename through the `.py` files.
 * **`writing/Paper/`** holds the current draft. Compiled locally by the user, not by agents; do not hand-edit a generated `.tex` there — it carries a `%% GENERATED` banner and the next `build.py` overwrites it.
+* **`writing/overleaf.py`** moves the draft to and from Overleaf: `export`/`import` by zip, and since 2026-09-08 `push`/`pull` through the project's git remote (one project, deletions propagated, online edits detected before a push and brought back through the import rules). Its docstring is the manual.
+
+**`logs/`** (gitignored) — the detached-run scripts for the Argentina pipeline and their logs
+(`argPipeline.log` is the stage/exit-code timeline; `argCalibration.log`, `argShocks.log`, `argTests.log`,
+`argBuild.log` the detail). Python output there needs `PYTHONUTF8=1`, and workbooks under `data/` must
+be edited through Excel, not openpyxl — `notes/todo_paperRewrite.md`, "Traps".
 
 **`RESEARCH_LOG.md`** — cross-cutting session log (repo organization, decisions spanning modules).
 Model-specific logs live under `python/<module>/`. **`pyenv.md`** — required packages and versions.
 
 ## Status
 
-All three model variants solve, calibrate and run their counterfactuals, and all 23 paper outputs are
+All three model variants solve, calibrate and run their counterfactuals, and all 34 paper outputs are
 wired end to end. The endogenous-`θ` layer (leaded and permanent timings, LOG and CRRA) is implemented and
 calibrated; only the *sequential* timing is not. Per-module detail and open items are in the module
 READMEs.

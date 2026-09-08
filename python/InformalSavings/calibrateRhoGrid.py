@@ -131,6 +131,13 @@ def main():
     # That matters even when the settings agree: the code is bitwise reproducible within a process but not
     # across them, so the overwrite is not a no-op and shockUniversal.py reads these by name.
     p.add_argument('--pkldir', default = PKLDIR, help = 'where the per-point pickled instances go')
+    # The anchor's starting parameters. Every other point is seeded from the march history, but the anchor
+    # has only test.py's defaults (beta=0.6, omega=2), and the iota state grid is built from the steady
+    # state at whatever parameters the residual is FIRST evaluated at -- at a capital share of 0.35 those
+    # defaults put the informal steady state outside the net-saver region and the grid is degenerate
+    # before the root takes a single step. Give the anchor a guess near its solution instead.
+    p.add_argument('--x0', type = float, nargs = 4, metavar = ('BETA', 'OMEGA', 'ETA0', 'X0'),
+                   default = None, help = "the anchor's starting (beta, omega, eta0, X0)")
     args = p.parse_args()
 
     pkldir = args.pkldir
@@ -225,7 +232,13 @@ def main():
         with open(os.path.join(pkldir, 'rho_{:.4f}.pkl'.format(r['value'])), 'wb') as f:
             pickle.dump(m, f)
 
-    out = continuation.marchGrid(grid, solve, anchor = args.anchor, degree = args.degree,
+    x0 = None
+    if args.x0 is not None:
+        x0Pars = dict(zip(('β', 'ω', 'η0', 'X0'), args.x0))
+        m._calSetPars(x0Pars)
+        x0 = m._calToX(x0Pars)
+        print('anchor starting point: ' + ', '.join('{}={:.4f}'.format(k, v) for k, v in x0Pars.items()))
+    out = continuation.marchGrid(grid, solve, x0 = x0, anchor = args.anchor, degree = args.degree,
                                  maxHalvings = args.maxHalvings, onPoint = onPoint)
 
     # A failed *attempt* is not a failed point -- the retry ladder and step-halving may have rescued it.

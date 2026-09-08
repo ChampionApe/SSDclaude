@@ -64,7 +64,8 @@ check("the record's x is the unbounded image of the record's parameters",
 # The history of moves, and the fine-grid extrapolation that independently confirms one of them, are in
 # notes/archive/informalSavings_results.md.
 check('the anchor reproduces the LOG calibration documented in the README',
-      np.isclose(anchor['β'], 0.807610, rtol = 1e-4) and np.isclose(anchor['ω'], 2.327810, rtol = 1e-4),
+      # alpha = 0.35, tau0 = 0.071/(1-alpha), K/Y = 3.23 (2026-09-08); was 0.807610 / 2.327810 at alpha = 0.43.
+      np.isclose(anchor['β'], 0.651367, rtol = 1e-4) and np.isclose(anchor['ω'], 1.526699, rtol = 1e-4),
       '-> β={:.6f}, ω={:.6f}'.format(anchor['β'], anchor['ω']))
 check('the inner grid actually used is recorded with the point',
       anchor['gridSettings']['nι'] == 50,

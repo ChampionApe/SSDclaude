@@ -27,6 +27,11 @@ Two more since the counterfactuals became new equilibrium paths read at 2020 (se
      theta and leaves everything looking reasonable.
   7. A SHOCKED MODEL IS THE FULL HORIZON. shocks.shockedCopy must keep the calendar and db['t0'], and the
      shock must reach the first period -- a copy that renumbered periods would report the wrong year.
+  8. A PINNED theta STAYS PINNED THROUGH A COMPOSITE SHOCK. theta is in paramsFromFuncs, so every
+     updateAuxPars re-derives it and the LAST one wins. In frAll and frBoth the income shock's pin is
+     followed by shockVoting's refresh, which recomputes theta from FRANCE's eta -- silently putting the
+     combined rows on a design nothing asked for while every other column stays plausible
+     (crossCuttingFindings.md #9).
 """
 import os, sys
 import numpy as np
@@ -318,5 +323,32 @@ noShock, _ = sh.shockedCopy(mBase, 'frLeisure', {'xbarRatio': 1.0})
 dτ = float(np.max(np.abs(noShock.solvePEE_LOG()['τ'].values - mBase.solvePEE_LOG()['τ'].values)))
 check('a null shock on a new path reproduces the baseline path', dτ < 1e-8,
       '-> max|dtau|={:.2e}'.format(dτ))
+
+# ---- 12. a pinned theta survives a COMPOSITE shock
+# frIncome pins theta and stops; frAll and frBoth run shockVoting afterwards, whose updateAuxPars
+# re-derives theta from France's eta. Each composite must therefore re-install it. The single-shock rows
+# never see this, which is why the defect reads as a plausible number rather than as a failure.
+import runESC as _resc                                                               # noqa: E402
+θUS = float(mBase.db['θ'].xs(mBase.db['t'][0]))
+frData = _resc.frenchData(mBase)
+free = dict(frData) | {'pinTheta': False}
+
+for name, registry in (('frIncome', sh.SHOCKS), ('frAll', sh.SHOCKS), ('frBoth', _resc.SHOCKS_ESC)):
+    mS, _ = sh.shockedCopy(mBase, name, frData, registry)
+    θS = mS.db['θ'].values.astype(float)
+    check('{}: the pinned design holds over the whole horizon'.format(name),
+          np.max(np.abs(θS - θUS)) < 1e-12,
+          '-> theta[0]={:.6f} theta[t0]={:.6f} (US {:.6f})'.format(
+              θS[0], θS[mS.db['t0']], θUS))
+    mF, _ = sh.shockedCopy(mBase, name, free, registry)
+    θF = float(mF.db['θ'].xs(mF.db['t'][mF.db['t0']]))
+    check('...and pinTheta=False still re-derives it from France\'s eta',
+          abs(θF - θUS) > 1e-3, '-> theta={:.6f}'.format(θF))
+
+# eta really did move in the pinned runs -- otherwise the check above would pass on a no-op shock.
+mS, _ = sh.shockedCopy(mBase, 'frAll', frData)
+check('...on a model whose eta really is France\'s',
+      np.max(np.abs(mS.db['ηi'].xs(mS.db['t'][0]).values.astype(float)
+                    - np.asarray(frData['ηFR'], dtype = float))) < 1e-12)
 
 report()

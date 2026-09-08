@@ -41,16 +41,17 @@ REPORTING CONVENTIONS -- all three matter, and none is arbitrary.
 
 THE FRENCH COUNTERFACTUALS. Three separate experiments, and the paper's own table pins what each means:
 
-  * Income distribution: France's eta_i with X_i held at the US values -- see shockIncomeDistribution for
-    why that particular combination, and why the obvious alternatives are all the same experiment as each
-    other. France's income groups are cut at US percentiles precisely so that gamma_i lines up and the
-    swap is like-for-like (Quant.tex).
+  * Income distribution: France's eta_i with X_i held at the US values AND theta held at the US design --
+    see shockIncomeDistribution for why that particular combination, why the obvious alternatives to
+    holding X are all the same experiment as each other, and why theta is pinned rather than re-derived.
+    France's income groups are cut at US percentiles precisely so that gamma_i lines up and the swap is
+    like-for-like (Quant.tex).
   * Leisure preferences: a PURE SCALE on X_i, matching France's population-weighted mean X. It is
     rescaleX, i.e. eq:us:model:scaleInvariance, so tau, the savings rate and R cannot move at all and only
     the workweek does. US_OtherShocks.tex confirms this exactly -- its leisure row carries the baseline's
-    own 14.43% and 21.96% and moves the workweek 39.39 -> 34.72. Anything else would be a different
-    experiment, and a version of this table where the leisure row DID move taxes is commented out beside
-    the live one.
+    own 14.43% and 21.96% and moves the workweek alone (39.39 -> 33.24 under common X, -> 34.74 under
+    vector X: the size of the effect is variant-dependent because Xbar_FR/Xbar_US is, but the exact
+    zero in tau and sr is not). Anything else would be a different experiment.
   * Voting: France's mu_i. Only the PROFILE matters: FOC is linear in mu through both omega1i and omega2i,
     so a common scale cancels out of z_t = 0. US mu rises steeply across income (0.474/0.629/0.765),
     France's is nearly flat (0.810/0.857/0.852).
@@ -111,10 +112,10 @@ def shockAgeing(mt0, kind):
     return new
 
 
-def shockIncomeDistribution(mt0, ηFR, pinTheta = False, θPin = None):
-    """ France's productivity vector eta_i, with X_i HELD at the US values. That combination is the
-    experiment, and which combination it is matters: it reproduces US_OtherShocks.tex's income row exactly
-    (tau 13.28%, savings rate 22.75%), where the alternatives do not.
+def shockIncomeDistribution(mt0, ηFR, pinTheta = True, θPin = None):
+    """ France's productivity vector eta_i, with X_i HELD at the US values, at the US pension design.
+
+    That combination is the experiment, and which combination it is matters on both counts.
 
     Why the alternatives collapse. Under vector X the eigenvector identification makes y^eta proportional
     to z^eta, and every aggregate uses y^eta alone (docs eq:us:model:scaleInvariance) -- so "swap z^eta and
@@ -126,22 +127,28 @@ def shockIncomeDistribution(mt0, ηFR, pinTheta = False, θPin = None):
     the LEVEL of X carries "leisure preferences" (shockLeisure), and the two do not overlap. Changing both
     at once would just be the France calibration.
 
-    THETA MOVES WITH ETA, AND IT MOVES A LOT. theta is in paramsFromFuncs, so updateAuxPars re-derives it
-    from getTheta -- i.e. it holds the OECD replacement-rate RATIO db['RR0'] fixed and lets theta adjust to
-    the new income distribution. It falls from 0.738 to 0.495: under France's flatter distribution the same
-    observed replacement-rate ratio implies a much less Bismarckian system. This is NOT incidental to the
-    result -- pinning theta at the US value instead gives tau = 12.83% against 13.28%. Re-deriving is what
-    reproduces US_OtherShocks.tex, so it is the default, but the counterfactual then bundles a pension-design
-    change with the inequality change and should be read that way. pinTheta = True holds theta at `θPin`
-    for the alternative reading.
+    THETA WOULD OTHERWISE MOVE WITH ETA, AND IT WOULD MOVE A LOT. theta is in paramsFromFuncs, so
+    updateAuxPars re-derives it from getTheta -- holding the OECD replacement-rate RATIO db['RR0'] fixed
+    and letting theta adjust to the new income distribution, which takes it from 0.738 to 0.495: under
+    France's flatter distribution the same observed replacement-rate ratio implies a much less Bismarckian
+    system. That is a pension-design change riding along inside a counterfactual about inequality, and the
+    two are separately identified elsewhere in the same table (shockTheta is the design experiment). So
+    pinTheta = True is the DEFAULT and this row moves eta alone. The two readings differ by ~0.6 p.p. in
+    tau: 13.21% pinned against 13.79% re-derived under the paper's common-X calibration, 12.83% against
+    13.28% under vector X. pinTheta = False keeps the re-deriving reading available.
+
+    theta is pinned at `θPin`, defaulting to the model's OWN design before the swap -- read here rather
+    than passed in, so the default reading needs no cooperation from the caller and cannot be pinned at
+    another model's design by accident. Installed AFTER updateAuxPars, for the reason shockTheta gives.
 
     eta_0 (the zero-mass slot) is kept at the US value -- it is multiplied by gamma_0 = 0, but must stay
     finite. """
+    θ0 = float(mt0.db['θ'].xs(mt0.db['t'][0])) if θPin is None else float(θPin)
     ηj = np.hstack([mt0.db['ηj'].values[0, 0], np.asarray(ηFR, dtype = float)])
     mt0.db.update(mt0.adjPar('ηj', ηj))
     mt0.updateAuxPars()   # Gamma_h and theta are both functions of eta/X
     if pinTheta:
-        mt0.db.update(mt0.adjPar('θ', float(θPin)))   # after updateAuxPars -- see shockTheta
+        mt0.db.update(mt0.adjPar('θ', θ0))   # after updateAuxPars -- see shockTheta
     return float(mt0.db['θ'].xs(mt0.db['t'][0]))
 
 
@@ -158,7 +165,12 @@ def shockLeisure(mt0, xbarRatio):
 
 def shockVoting(mt0, μFR):
     """ France's voting profile. Only relative mu matters (the FOC is linear in it), so the level of the
-    supplied vector is irrelevant; it is installed as given. """
+    supplied vector is irrelevant; it is installed as given.
+
+    The updateAuxPars here RE-DERIVES theta, which matters only in combination: on its own this shock
+    leaves eta alone so theta comes back at its calibrated value, but run after shockIncomeDistribution
+    it recomputes theta from FRANCE's eta and silently undoes a pin. shockFrenchAll re-installs it for
+    that reason -- crossCuttingFindings.md #9. """
     mt0.db.update(mt0.adjPar('μj', np.asarray(μFR, dtype = float)))
     mt0.updateAuxPars()
 
@@ -171,13 +183,23 @@ def shockFrenchAll(mt0, d):
     touches X, only shockVoting touches mu, and each ends with an updateAuxPars that re-derives theta and
     Gamma_h from whatever eta/X are in db by then. In particular rescaleX's scaling of X_j SURVIVES the
     later updateAuxPars -- X is stored in db, not in paramsFromFuncs -- so the leisure effect is intact
-    in the combined row (it lands on the workweek at 35.49 against France's own 35.44).
+    in the combined row.
 
-    theta ends at the income shock's re-derived value (0.495), since a common scale on X leaves the
-    replacement-rate ratio alone. Returns that theta. """
-    shockIncomeDistribution(mt0, d['ηFR'], d.get('pinTheta', False), d.get('θUS'))
+    THETA IS RE-INSTALLED LAST, and it has to be. Each of the three ends with an updateAuxPars, and theta
+    is in paramsFromFuncs, so the LAST one wins: shockIncomeDistribution's pin is recomputed away by
+    shockVoting's refresh, which re-derives theta from France's eta and puts the combined row back on a
+    design nothing asked for. The single-characteristic rows never see this because nothing runs after
+    them, which is what makes the combined row's silent 0.738 -> 0.551 the kind of defect #9 is about.
+    Under pinTheta = False the same line is a no-op on the re-derived value.
+
+    Returns the design the row ends on. """
+    pin = d.get('pinTheta', True)
+    θ0 = float(mt0.db['θ'].xs(mt0.db['t'][0])) if d.get('θUS') is None else float(d['θUS'])
+    shockIncomeDistribution(mt0, d['ηFR'], pin, θ0 if pin else None)
     shockLeisure(mt0, d['xbarRatio'])
     shockVoting(mt0, d['μFR'])
+    if pin:
+        mt0.db.update(mt0.adjPar('θ', θ0))
     return float(mt0.db['θ'].xs(mt0.db['t'][mt0.db['t0']]))
 
 
@@ -186,7 +208,7 @@ SHOCKS = {
     'theta1':   ('$\\theta = 1$',          lambda mt0, d: shockTheta(mt0, 1.)),
     'mild':     ('Mild ageing',            lambda mt0, d: shockAgeing(mt0, 'mild')),
     'acute':    ('Acute ageing',           lambda mt0, d: shockAgeing(mt0, 'acute')),
-    'frIncome': ('Income distribution',    lambda mt0, d: shockIncomeDistribution(mt0, d['ηFR'], d.get('pinTheta', False), d.get('θUS'))),
+    'frIncome': ('Income distribution',    lambda mt0, d: shockIncomeDistribution(mt0, d['ηFR'], d.get('pinTheta', True), d.get('θUS'))),
     'frLeisure':('Leisure preferences',    lambda mt0, d: shockLeisure(mt0, d['xbarRatio'])),
     'frVoting': ('Voting',                 lambda mt0, d: shockVoting(mt0, d['μFR'])),
     'frAll':    ('All French characteristics', shockFrenchAll),

@@ -2,7 +2,7 @@ r""" Endogenous system characteristics under CRRA: calibrate the wedge at rho !=
 and run the ageing counterfactual.
 
 Run:  .venv\Scripts\python.exe python\US\runESCcrra.py                       # rho = 2, both specs, phi=.5
-      ... --rho 2.0 0.5  --spec scale flat  --phi 0.5
+      ... --rho 2.0 0.5  --spec scale  --phi 0.5  --commonX
       ... --stage calib path shocks sens
 
 Why this is a separate driver from runESC.py: under CRRA nothing about the leaded choice is cheap. The tau
@@ -52,23 +52,31 @@ from runShocksUS import frenchData
 OUTDIR = os.path.join(REPO, 'results', 'esc')
 GSC = {'n': 101, 'ns': 150, 'smoothKnots': 4, 'interpKind': 'linear'}
 
+# Row-identity keys, rho-indexed counterparts of runESC's. commonX is in all three -- see mergeWrite.
+KEYCAL = ['ρ', 'spec', 'phi', 'commonX']
+KEYPATH = ['ρ', 'spec', 'phi', 'commonX', 'pos']
+KEYSHK = ['ρ', 'spec', 'phi', 'commonX', 'scenario', 'θpinned']
 
-def buildUS(ρ, wedge = None, nθCandCRRA = 13):
-    row = pd.read_csv(os.path.join(REPO, 'results', 'calibration', 'US_rhoGrid.csv'))
+
+def buildUS(ρ, wedge = None, nθCandCRRA = 13, commonX = False):
+    """ runESC.buildUS's CRRA counterpart: (beta, omega) seeded from the matching variant's sweep, the
+    calibration itself redone by the caller. """
+    row = pd.read_csv(os.path.join(REPO, 'results', 'calibration',
+                                   'US_rhoGridCommonX.csv' if commonX else 'US_rhoGrid.csv'))
     row = row.loc[(row['ρ'] - ρ).abs() < 1e-9].iloc[-1]
     m = ModelESC(pars = testmod.pars | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])},
-                 wedge = wedge, nθCandCRRA = nθCandCRRA, **testmod.kwargs)
+                 wedge = wedge, nθCandCRRA = nθCandCRRA, commonX = commonX, **testmod.kwargs)
     m.db['dates'], m.db['workweek'] = testmod.dates, testmod.workweek
     m.CRRA.initGS(GSC)
     m.LOG.initGS({k: v for k, v in GSC.items() if k != 'ns'})
     return m
 
 
-def franceRowCRRA(m, ρ, spec, phi, p, hbarRef):
+def franceRowCRRA(m, ρ, spec, phi, p, hbarRef, commonX = False):
     """ runESC.franceRow at rho != 1: France's own calibrated equilibrium at 2020 under the same wedge,
     exogenous theta, in escShocksCRRA's row schema. See runESC.franceRow for what the row means and why
     its workweek is a target rather than a prediction. """
-    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, ρ = ρ)
+    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
     mFR.CRRA.initGS(GSC)
     mFR.calibrate(preferences = 'CRRA')
     pos = mFR.db['t0']
@@ -77,13 +85,14 @@ def franceRowCRRA(m, ρ, spec, phi, p, hbarRef):
     r0 = escReadout(mFR, out['τ'], out['report'], hbarRef, pos, workweekData = ww)
     r1 = escReadout(mFR, out['τ'], out['report'], hbarRef, pos+1, workweekData = ww)
     θ = mFR.db['θ'].values.astype(float)
-    return {'ρ': ρ, 'spec': spec, 'phi': phi, 'p': p, 'scenario': 'France', 'θpinned': True,
+    return {'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p, 'scenario': 'France',
+            'θpinned': True,
             'θ_tm1': float(θ[pos-1]), 'θ_t0': float(θ[pos]), 'θ_t1': float(θ[pos+1]),
             'τ_t0': r0['τ'], 'sr_t0': r0['sr'], 'ww_t0': r0['workweek'],
             'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek']}
 
 
-def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21):
+def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21, commonX = False):
     """ The permanent choice under CRRA, traced in rho.
 
     This is where the permanent timing turns out to be fragile in a way the appendix does not report. With
@@ -104,7 +113,7 @@ def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21):
                     if wedge is None and label == 'calibrated':
                         continue
                     try:
-                        m = buildUS(ρ, wedge, nθCandCRRA = 13)
+                        m = buildUS(ρ, wedge, nθCandCRRA = 13, commonX = commonX)
                         m.ESCPC.nθCand = nCand
                         m.ESCPC.θCand = np.linspace(0., 1., nCand)
                         m.calibrate()
@@ -113,7 +122,8 @@ def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21):
                         r = m.solvePermanent(pref, verbose = False)
                         W = np.asarray(r['W'], dtype = float)
                         W = W - np.nanmax(W)
-                        rows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'wedge': label,
+                        rows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': commonX,
+                                     'wedge': label,
                                      'p': np.nan if wedge is None else wedge['p'],
                                      'θStar': float(m.db['θ'].xs(m.t0Year)), 'θPerm': r['θ'],
                                      'atBound': r['atBound'], 'W0gap': W[0], 'W1gap': W[-1],
@@ -132,7 +142,10 @@ def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21):
 def main():
     p = argparse.ArgumentParser(description = 'Endogenous theta under CRRA.')
     p.add_argument('--rho', type = float, nargs = '*', default = [2.0])
-    p.add_argument('--spec', nargs = '*', default = ['scale', 'flat'])
+    p.add_argument('--spec', nargs = '*', default = ['scale'])
+    p.add_argument('--commonX', action = 'store_true',
+                   help = 'the common-X calibration variant (the paper leads with it). Written as a '
+                          'column and part of the merge key -- see runESC.mergeWrite.')
     p.add_argument('--phi', type = float, nargs = '*', default = [0.5])
     p.add_argument('--stage', nargs = '*', default = ['calib', 'path', 'sens', 'shocks'],
                    help = "add 'permanent' for the permanent-choice trace in rho")
@@ -157,7 +170,8 @@ def main():
 
     if 'permanent' in a.stage:
         print('=== the permanent choice under CRRA, traced in rho ===')
-        stagePermanentCRRA(a.rho, a.spec, a.phi, os.path.join(OUTDIR, f'escPermanentCRRA{a.tag}.csv'))
+        stagePermanentCRRA(a.rho, a.spec, a.phi, os.path.join(OUTDIR, f'escPermanentCRRA{a.tag}.csv'),
+                           commonX = a.commonX)
         if a.stage == ['permanent']:
             print()
             print('-> {}'.format(os.path.relpath(OUTDIR, REPO)))
@@ -174,12 +188,14 @@ def main():
                 if 'calib' in a.stage:
                     tic = time.time()
                     print(f'\n=== [{tag}] calibrating p under CRRA ===')
-                    m = buildUS(ρ, {'spec': spec, 'phi': phi, 'p': 0.2}, nθCandCRRA = a.nCand)
+                    m = buildUS(ρ, {'spec': spec, 'phi': phi, 'p': 0.2}, nθCandCRRA = a.nCand,
+                                commonX = a.commonX)
                     try:
                         rec = m.calibrateWedge(spec = spec, phi = phi, preferences = 'CRRA',
                                                bracket = tuple(a.bracket), nScan = a.nScan)
                         pCal = rec['p']
-                        calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'p': rec['p'],
+                        calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': a.commonX,
+                                        'p': rec['p'],
                                         'converged': rec['converged'], 'θStar': rec['θ'],
                                         'residual': rec['residual'], 'message': rec['message'],
                                         'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(m.t0Year)),
@@ -187,19 +203,23 @@ def main():
                         print('  -> p={}  ({})  [{:.0f}s]'.format(rec['p'], rec['message'], time.time()-tic))
                     except Exception as e:
                         print(f'  FAILED {type(e).__name__}: {e}')
-                        calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'p': np.nan,
+                        calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': a.commonX,
+                                        'p': np.nan,
                                         'converged': False, 'message': f'{type(e).__name__}: {e}'})
-                    mergeWrite(fCal, calRows, ['ρ', 'spec', 'phi'])
+                    mergeWrite(fCal, calRows, KEYCAL)
                 else:
                     hit = pd.read_csv(fCal)
                     hit = hit[(hit['ρ'] == ρ) & (hit['spec'] == spec) & (hit['phi'] == phi)]
+                    if 'commonX' in hit.columns:
+                        hit = hit[hit['commonX'].astype(bool) == bool(a.commonX)]
                     pCal = float(hit.iloc[0]['p']) if not hit.empty else np.nan
                 if not np.isfinite(pCal):
                     print(f'  [{tag}] no calibrated p -- skipping the remaining stages.')
                     continue
 
                 # ---------------------------------------------------- the design path
-                m = buildUS(ρ, {'spec': spec, 'phi': phi, 'p': pCal}, nθCandCRRA = a.nCand)
+                m = buildUS(ρ, {'spec': spec, 'phi': phi, 'p': pCal}, nθCandCRRA = a.nCand,
+                            commonX = a.commonX)
                 m.calibrate()
                 t0 = m.t0Year
                 θStar = float(m.db['θ'].xs(t0))
@@ -218,7 +238,8 @@ def main():
                                            float(m.db['workweek']), hbarRef, pos = pos)
                             rb = sh.readout(m, base['τ'], base['report'],
                                             float(m.db['workweek']), hbarRef, pos = pos)
-                            pathRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'p': pCal, 'pos': pos,
+                            pathRows.append({'ρ': ρ, 'spec': spec, 'phi': phi,
+                                             'commonX': a.commonX, 'p': pCal, 'pos': pos,
                                              'date': dates[pos] if pos < len(dates) else np.nan,
                                              'ν': float(m.db['ν'].xs(t)), 'θ': float(led['θ'].xs(t)),
                                              'τ': r['τ'], 'sr': r['sr'], 'workweek': r['workweek'],
@@ -229,7 +250,7 @@ def main():
                         print('  θ path: {}   (converged={}, {:.0f}s)'.format(
                             '  '.join('{:.4f}'.format(x) for x in led['θ'].values[:7]),
                             led['converged'], time.time()-tic))
-                        mergeWrite(fPath, pathRows, ['ρ', 'spec', 'phi', 'pos'])
+                        mergeWrite(fPath, pathRows, KEYPATH)
                     except Exception as e:
                         print(f'  path FAILED {type(e).__name__}: {e}')
 
@@ -247,7 +268,7 @@ def main():
                             if (r['ρ'], r['spec'], r['phi']) == (ρ, spec, phi):
                                 r['stateSlope'] = sens['slope']
                         if calRows:
-                            mergeWrite(fCal, calRows, ['ρ', 'spec', 'phi'])
+                            mergeWrite(fCal, calRows, KEYCAL)
                     except Exception as e:
                         print(f'  sens FAILED {type(e).__name__}: {e}')
 
@@ -260,7 +281,8 @@ def main():
                     if any(n.startswith('fr') for n in a.scenarios):
                         if ρ not in frDataCache:
                             print('  calibrating France at rho={} for the French scenarios ...'.format(ρ))
-                            frDataCache[ρ] = frenchData(m, ρ, 'CRRA', gs = GSC)
+                            frDataCache[ρ] = frenchData(m, ρ, 'CRRA', gs = GSC,
+                                                        commonX = a.commonX)
                         frData = frDataCache[ρ]
                     for name in a.scenarios:
                         for pin in (True, False):
@@ -285,7 +307,8 @@ def main():
                                                 hbarRef, pos = pos0)
                                 r1 = sh.readout(mt, out['τ'], out['report'], float(mt.db['workweek']),
                                                 hbarRef, pos = pos0+1)
-                                shkRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'p': pCal,
+                                shkRows.append({'ρ': ρ, 'spec': spec, 'phi': phi,
+                                                'commonX': a.commonX, 'p': pCal,
                                                 'scenario': name, 'θpinned': pin,
                                                 'θ_tm1': float(θPath.iloc[pos0-1]),
                                                 'θ_t0': float(θPath.iloc[pos0]),
@@ -296,7 +319,7 @@ def main():
                                       'ww_t0={:.2f}  (θ_t1={:.4f}, {:.0f}s)'.format(
                                           name, str(pin), float(θPath.iloc[pos0]), r0['τ'], r0['sr'],
                                           r0['workweek'], float(θPath.iloc[pos0+1]), time.time()-tic))
-                                mergeWrite(fShk, shkRows, ['ρ', 'spec', 'phi', 'scenario', 'θpinned'])
+                                mergeWrite(fShk, shkRows, KEYSHK)
                             except Exception as e:
                                 print(f'  {name} pin={pin} FAILED {type(e).__name__}: {e}')
 
@@ -304,12 +327,12 @@ def main():
                     # rows are read against (runESC.franceRow's CRRA counterpart, exogenous theta).
                     try:
                         tic = time.time()
-                        f = franceRowCRRA(m, ρ, spec, phi, pCal, hbarRef)
+                        f = franceRowCRRA(m, ρ, spec, phi, pCal, hbarRef, commonX = a.commonX)
                         shkRows.append(f)
                         print('  {:<9} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}'
                               '  [{:.0f}s]'.format('France', 'True', f['θ_t0'], f['τ_t0'], f['sr_t0'],
                                                    f['ww_t0'], time.time()-tic))
-                        mergeWrite(fShk, shkRows, ['ρ', 'spec', 'phi', 'scenario', 'θpinned'])
+                        mergeWrite(fShk, shkRows, KEYSHK)
                     except Exception as e:
                         print(f'  France FAILED {type(e).__name__}: {e}')
     print('\n-> {}'.format(os.path.relpath(OUTDIR, REPO)))
