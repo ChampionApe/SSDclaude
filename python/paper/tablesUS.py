@@ -83,7 +83,7 @@ def usPensChars(commonX = None):
     θ0 = D.usCalibrationSummary(commonX)['US']['θ']
     body = _shockRows(df, ρ, [(r'$\theta = 0$', r'$\theta = 0$'), (r'$\theta = 1$', r'$\theta = 1$')],
                       r'$\theta = ' + C.num(θ0) + '$')
-    note = (r'\item $\rho = ' + C.num(ρ, 1) + r'$. The economic-equilibrium rows hold $\tau$ at the '
+    note = (r'\item \textit{Note:} $\rho = ' + C.num(ρ, 1) + r'$. The economic-equilibrium rows hold $\tau$ at the '
             r'baseline path, so they isolate the response of savings and hours to $\theta$ alone; the '
             r'full rows re-optimise $\tau$ politically.' + SRNOTE + C.variantNote(commonX))
     return _xwrap('US_PensChars' + C.variantSuffix(commonX), df.attrs['source'],
@@ -104,10 +104,7 @@ def usAgeing(commonX = None):
     body = _shockRows(df, ρ,
                       [(r'Mild ageing\tnote{a}', 'Mild ageing'),
                        (r'Acute ageing\tnote{b}', 'Acute ageing')], 'Baseline')
-    note = (r'\item Each scenario is a separate equilibrium path: the demography holds throughout and '
-            r'the economy starts from its own steady state, so the capital stock brought into '
-            + str(year0) + r' is the counterfactual one rather than the baseline\textquotesingle s.'
-            + SRNOTE + '\n'
+    note = (r'\item \textit{Note:} Each scenario is a separate equilibrium path.' + SRNOTE + '\n'
             r'\item[a] The ' + LQ + 'mild ageing' + RQ + r' scenario refers to the case with $\nu_t$ set '
             r'at $(1+\nu_t^{base})/2$ throughout.' '\n'
             r'\item[b] The ' + LQ + 'acute ageing' + RQ + r' scenario refers to $\nu_t = 1$ throughout.'
@@ -143,7 +140,7 @@ def usOtherShocks(commonX = None):
                                                                'full'), b)) + r' \\[.5em]\hline\\[-.75em]')
     rows.append(' & '.join(['France (own calibration)']
                            + _cells(D.usShockRow(df, ρ, 'France (own calibration)', 'full'), b)) + r' \\')
-    note = (r'\item $\rho = ' + C.num(ρ, 1) + r'$, full effect. Each row is a separate equilibrium path: '
+    note = (r'\item \textit{Note:} $\rho = ' + C.num(ρ, 1) + r'$, full effect. Each row is a separate equilibrium path: '
             r'the borrowed characteristics hold throughout and the economy starts from its own steady '
             r'state, so the row describes a country that has always had this mix rather than the US hit '
             r'by a surprise in 2020. Leisure preferences rescales every '
@@ -151,11 +148,9 @@ def usOtherShocks(commonX = None):
             r'unit, so the tax and savings rates stay exactly at baseline and only hours move. Income '
             r'distribution replaces $\eta_i$ with France\textquotesingle s while holding $X_i$ \emph{and} '
             r'holding $\theta$ at the US design, so it is a change in inequality alone; pension design is '
-            r'the separate counterfactual of \cref{table:US:pensChars}. The last row '
-            r'is France\textquotesingle s own calibrated path, which carries its own $\omega$ as well as '
-            r'its own characteristics; its workweek is a calibration target, not a prediction, and its '
-            r'savings rate is likewise reported as the distance from the US baseline.'
-            + SRNOTE + C.variantNote(commonX))
+            r'the separate counterfactual of Table~\ref{table:US:pensChars}. The last row '
+            r'is France\textquotesingle s own calibrated path, its savings rate reported as the distance '
+            r'from the US baseline.' + C.variantNote(commonX))
     return _xwrap('US_OtherShocks' + C.variantSuffix(commonX), df.attrs['source'],
                   'French income distribution, leisure preferences, and voting patterns in US'
                   + C.variantCaption(commonX),
@@ -186,12 +181,9 @@ def _crraTable(name, caption, label, scenarios, commonX = None):
             cells = _cells(b) if scen is None else _cells(D.usShockRow(df, ρ, scen, 'full'), b)
             out.append(' & '.join([lab if k == mid else '', C.num(ρ, 1)] + cells)
                        + r' \\' + (r'[.5em]\hline\\[-.75em]' if k == len(ρs)-1 else ''))
-    note = (r'\item Every $\rho$ is separately calibrated: the tax rate is a target and the workweek '
-            r'is normalised against each $\rho$\textquotesingle s own baseline, so both are common to the '
-            r'baseline rows, while the baseline savings rate is a prediction ($\beta$ is identified by '
-            r'the interest rate) and falls with $\rho$. The savings rate is savings relative to GDP; '
-            r'the baseline rows report its level and every scenario row the change against the '
-            r'baseline at the same $\rho$, in percentage points.' + C.variantNote(commonX))
+    note = (r'\item \textit{Note:} Every $\rho$ is separately calibrated. Every scenario row reports the '
+            r'change in the savings rate against the baseline at the same $\rho$, in percentage points.'
+            + C.variantNote(commonX))
     return _xwrap(name + C.variantSuffix(commonX), df.attrs['source'],
                   caption + C.variantCaption(commonX), label + C.variantSuffix(commonX), 'YYYYY',
                   [r'\textbf{Scenario}', r'\textbf{CRRA} ($\rho$)', r'\textbf{Tax rate}',
@@ -247,7 +239,8 @@ def usukfrCalibration(commonX = None):
 
     rows = [
         row(r'$\theta$', lambda r: C.num(r['θ']), 'Replacement rate dispersion'),
-        row(r'$\omega$', lambda r: C.num(r['ω']), 'Social security tax rates'),
+        row(r'$\omega$', lambda r: C.num(r['ω']),
+            ', '.join(r'$\tau^{' + k + '} = ' + C.pct(c[k]['τ0'], 1) + '$' for k in cols)),
         row(r'$\beta$',  lambda r: C.num(r['β']), 'US: 30y interest rate; imposed on UK/FR'),
         row('$X$',       lambda r: C.num(r['Xbar'], 1), 'Avg.\\ workweek'),
         row(r'$\nu_{%d}$' % year0, lambda r: C.num(r['ν2020']),
@@ -257,10 +250,11 @@ def usukfrCalibration(commonX = None):
     ]
     header = ([r'\multicolumn{1}{c|}{\textbf{Parameter}}']
               + [r'\textbf{' + COUNTRYNAME[k] + '}' for k in cols] + [r'\textbf{Target}'])
-    note = (r'\item $\rho = ' + C.num(C.US['ρBaseline'], 1) + r'$. $X$ is the population-weighted mean '
-            r'of $X_i$; its level is the hours unit, pinned for France and the UK by targeting average '
-            r'hours relative to the US rather than in levels. $\beta$ is calibrated for the US and '
-            r'imposed on the other two.' + C.variantNote(commonX))
+    # The one note that spells the variant out; every other US table points here (config.variantNote).
+    note = (r'\item \textit{Note:} $\rho = ' + C.num(C.US['ρBaseline'], 1) + r'$. $X$ is the '
+            r'population-weighted mean of $X_i$; its level is the hours unit, pinned for France and the '
+            r'UK by targeting average hours relative to the US rather than in levels. $\beta$ is '
+            r'calibrated for the US and imposed on the other two.' + C.variantNote(commonX, full = True))
     return (BANNER.format(name = 'USUKFRCalibration' + C.variantSuffix(commonX),
                           src = 'results/paper/usCalibrationSummary.csv')
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
@@ -357,9 +351,9 @@ def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False)
             base = None if scen == 'baseline' else D.escRow(df, ρ, spec, 'baseline', False)
             out.append(' & '.join([lab if k == mid else '', C.num(ρ, 1)] + _escCells(r, base))
                        + r' \\' + ('[.5em]\\hline\\\\[-.75em]' if k == len(ρs)-1 else ''))
-    note = (r'\item Deadweight-cost specification: the proportional cost $f(\theta)$ with $\phi = '
+    note = (r'\item \textit{Note:} Deadweight-cost specification: the proportional cost $f(\theta)$ with $\phi = '
             + C.num(C.US['esc']['phi'], 1) + r'$ and $p$ calibrated per $\rho$ '
-            r'(\cref{table:US_ESC:calibration}). Every counterfactual is a separate equilibrium path: '
+            r'(Table~\ref{table:US_ESC:calibration}). Every counterfactual is a separate equilibrium path: '
             r'the changed parameters hold throughout, the economy starts from its own steady state, and '
             r'the political choice binds from the first period of the horizon, so the design in force in '
             r'2020 is itself an outcome rather than an inherited datum. All rows are read at 2020. '
@@ -436,23 +430,24 @@ def escCalibrationTable():
     it did: a theta* that moved with rho would mean the wedge had leaked into the design identification.
     """
     cal = D.escCalibration()
-    ρs, spec = C.US['esc']['ρTable'], C.US['esc']['spec']
+    ρs, spec, φ = C.US['esc']['ρTable'], C.US['esc']['spec'], C.US['esc']['phi']
     rows = []
     for ρ in ρs:
         if (ρ, spec) not in cal:
             raise D.MissingInput('escCalibration ({}, {})'.format(ρ, spec))
         r = cal[(ρ, spec)]
-        rows.append(' & '.join([C.num(ρ, 1), C.num(float(r['p']), 3), C.num(float(r['θStar']), 3)])
+        p, θ = float(r['p']), float(r['θStar'])
+        # f(theta*) = phi + (1-phi) theta*^p: the share of redistributive funds that reaches households
+        # at the chosen design, so 1 - f is the deadweight cost the text quotes.
+        rows.append(' & '.join([C.num(ρ, 1), C.num(p, 3), C.num(θ, 3), C.num(φ + (1-φ)*θ**p, 3)])
                     + r' \\')
-    header = ' & '.join([r'\textbf{CRRA} ($\rho$)', '$p$', r'$\theta^{\ast}$'])
-    note = (r'\item $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = ' + C.num(C.US['esc']['phi'], 1)
-            + r'$ imposed; $p$ is calibrated so the design \emph{in force} in 2020 --- on a path where the '
-            r'political choice binds from the first period --- is the observed one, '
-            r'with $(\beta, \omega)$ recalibrated at each trial value. The cost is proportional, so the '
-            r"wedge cancels from the replacement-rate ratio and $\theta^{\ast}$ is the data's own at "
-            r'every $\rho$. Without the cost the choice corners at $\theta = 0$ at every $\rho$.'
-            + C.variantNote(C.US['commonX']))
+    header = ' & '.join([r'\textbf{CRRA} ($\rho$)', '$p$', r'$\theta^{\ast}$', r'$f(\theta^{\ast})$'])
+    note = (r'\item \textit{Note:} $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = ' + C.num(φ, 1)
+            + r'$ imposed; $p$ is calibrated so the $\theta$ choice is the observed one, with '
+            r'$(\beta, \omega)$ recalibrated at each trial value. The cost is proportional, so the wedge '
+            r'cancels from the replacement-rate ratio. Without the cost the choice would be in the corner '
+            r'$\theta = 0$ for every $\rho$.' + C.variantNote(C.US['commonX']))
     return _xwrap('US_ESC_Calibration', 'results/esc/escCalibration{,CRRA}.csv',
                   'The calibrated cost of redistributive funds',
-                  'table:US_ESC:calibration', 'YYY', header, '\n'.join(rows), note)
+                  'table:US_ESC:calibration', 'YYYY', header, '\n'.join(rows), note)
 

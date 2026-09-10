@@ -120,3 +120,40 @@ $\beta(\rho) = (B R^{1-\rho})^{1/\rho}$ predicts; the sweep is `results/calibrat
 - **`PYTHONUTF8=1` for every pipeline run.** The scripts print `ι`; under the cp1252 console they crash
   on the first print.
 - **PowerShell `*>` redirection writes UTF-16.** Route python output through `cmd /c "... > log 2>&1"`.
+
+## Open, added 2026-09-10
+
+Two larger items agreed with RKB, both for the final version of the paper rather than the next build.
+
+6. **Argentina with common X.** The OECD arm leads with the common-X calibration (one leisure parameter
+   across income groups, its level pinned by the observed workweek, relative hours a prediction); the
+   Argentina arm is still vector-X only. Solve the Argentina model under common X as well, so the two
+   arms rest on the same calibration convention. This touches `python/InformalSavings` (the calibration
+   loader, `calibrateRhoGrid.py`), `python/paper/runCalibration.py`/`config.ARG`, and the Argentina
+   builders, which would gain the same `commonX` variant switch as the US ones (`config.variantSuffix`).
+   Not started; budget a full recalibration of the rho grid (~3 h) plus the shocks (~1 h).
+
+7. **Re-run the CRRA ESC leg with the exact solver.** The CRRA tables (rho = 0.5, 2) come from the path
+   iteration, certified against the exact two-dimensional recursion (`LeadedCRRA2D`) to +-0.01 in the
+   design. For the final version, run the wedge calibration and the chosen-design readings through
+   `solveLeaded2D` instead, so the paragraph in `sec:esc` can say the tables are the exact solution and
+   drop the path-iteration caveat. Timings (2026-09-10 assessment): ~12 min per 2-D solve at ns = 150,
+   ~3x faster at ns = 50 (the s-grid is immaterial, the 13-node theta-state grid is not); with the scan
+   for p narrowed to half..double the known p (0.965 / 0.090), about 8 solves per rho for the calibration
+   and one per chosen reading. **Make it opt-in, not part of the default pipeline**: a `--exact` switch
+   on `python/US/runESCcrra.py` routing the calibration residual and the shocks stage through the 2-D
+   solver, a `method` column in `escCalibrationCRRA.csv`/`escExperiments.csv` so the two vintages cannot
+   be confused, and `config.US['esc']['exact']` (default False) telling `runCalibrationUS.py`/
+   `runShocksUS.py` which vintage stage (iii) should read. Nothing about the LOG point changes.
+   The driver has no 2-D branch today (`runESCcrra.py` never references `ESCC2`), so this is half a day of
+   code plus 1.5-5 h of compute depending on the grid.
+
+Smaller loose ends from the 2026-09-10 session:
+
+- Introduction: `XXX FILL IN HERE` in the OECD-sample sentence; the leisure-preferences claim should say
+  "somewhat overshoots" the hours gap (6.2 hours against 4).
+- Two checks on Frankema (2010) remain RKB's (see item 2 above).
+- `notes/todo_escPermanentTiming.md`: `PermanentCRRA` has never been executed. Only matters if the
+  permanent-timing sentence in `sec:esc` is to be backed under CRRA.
+- The composite French shocks (income + voting, all three): RKB is inclined to cut them from the ESC leg
+  but the section's closing paragraphs rest on income + voting; decision deferred.

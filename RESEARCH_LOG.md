@@ -582,3 +582,51 @@ comparisons normalise line endings, since Windows git's checkout otherwise repor
 as changed on every pull; and a pulled file keeps the local file's ending style. Tested: co-author edit
 detected, pulled, overwritten with `--force`, second push a no-op. The real first push is RKB's, from a
 terminal so the credential manager can take the token.
+
+## 2026-09-10 — first pull from Overleaf by git; RKB's table edits moved into the builders
+
+**The pull.** `overleaf.py pull paper` brought back RKB's online pass on eight prose files (the
+endogenous-theta section drops the sequential/leaded vocabulary for contemporaneous / one period in
+advance; the Argentina savings effect reads 1.8% rather than 1.9%; a deadweight-cost sentence gained
+13% / 1.5% of raised funds at rho = 0.5 / 2). Eight generated tables had also been edited online and were
+refused by the banner check, as designed. Their edits went into the builders instead: shorter notes,
+every US table now says "Common-X calibration: see the note to Table X" and only the calibration table
+spells the variant out (`config.variantNote(commonX, full)`), and the ESC calibration table gained a
+computed f(theta*) column (RKB had typed 0.986 at rho = 2; the value is 0.9865, printed 0.987). Kept
+against the online version, on RKB's instruction: `tablenotes` rather than a plain italic Note, and no
+manual spacing in header cells. The biblatex switch to `authoryear-comp` was reverted. Two literal
+backspace bytes in `config.py` (a heredoc had eaten `\b` in `\bar h` and `\beta`) would have printed
+"ar h" and "eta" in the vector-X appendix tables; fixed.
+
+**Paper edits.** The technical documentation is now a bib entry (`BergGE26doc`, @online, URL in the
+note field because the paper sets `url = false`) cited in the numerical section and the ESC section's
+opening footnote. The calibration table's omega row prints the three tax targets as
+`tau^{US} = 14.4%` etc. instead of "Social security tax rates".
+
+**Endogenous-theta section, the co-author's three questions.** "The forward-looking channel the data
+narrative is about", "the fixed point moves with it", "static in the design state" and "a cheaper path
+iteration" were all compressions of `num_esc.tex`; rewritten in plain terms. Two errors found on the
+way: RKB's online edit had turned "provably independent" into "probably independent", and "the tables
+below use the most accurate method" was wrong — the CRRA tables come from the path iteration, certified
+against the exact 2-D recursion, not from the recursion. Now stated as such.
+
+**Exact-solver question.** Assessed from the recorded timings (~12 min per 2-D solve at ns = 150, ~3x
+less at ns = 50; the path iteration 2 min per sweep, the p scan 15–17 min per rho): an everything-exact
+CRRA leg is ~1.5–5 h of compute plus half a day for an `--exact` branch the driver does not have, and
+changes the design by ~0.002 against a method resolution of ±0.01. Decision: do it once for the final
+version, opt-in, not in the default pipeline. Logged as item 7 of `notes/todo_paperRewrite.md`, with
+Argentina under common X as item 6. The composite French shocks (income + voting, all three) are
+flagged for a cut but deferred: the section's closing paragraphs rest on income + voting.
+
+**Common X against vector X.** `notes/us_commonX_vs_vectorX.md`: the two variants agree to 1e-6 on
+every US counterfactual that does not touch eta or X, and differ on two. Income distribution: the
+political choice responds to eta^{1+xi}/X^xi, and under vector X the US X_i rise with income (8.0 to
+18.5), so holding them while importing France's flatter eta compounds the compression (composite
+top/bottom 2.5 against 2.9 under common X) — a larger tax cut and a smaller hours rise. Leisure:
+Xbar_FR/Xbar_US is 1.76 under common X and 1.52 under vector X because the vector X_i also carry each
+country's relative-hours profile; both overshoot the observed 4.0-hour gap (6.2 and 4.7 h at rho = 1).
+Recommendation, argued in the note: common X stays the headline (relative hours are a prediction, the
+inequality counterfactual isolates eta, one parameter one target), vector X stays the appendix twin.
+
+**Overleaf.** First push by git, `--force` once as the docstring foresees; RKB's three newer eps figures
+were copied local first so the push could not delete or roll them back. Overleaf matches the folder.

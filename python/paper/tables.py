@@ -91,8 +91,7 @@ def argentinaUniversal():
             r' scenario lets taxes be determined by the politico-economic equilibrium. $\rho=' +
             C.num(ρ, 0) + r"$." + SRNOTE + r" Aggregate hours have no "
             r"scale in the model, so the workweek is normalised to the observed average of "
-            + C.num(C.calendar()['workweek']) + r" hours in the calibrated baseline; the other rows "
-            r"report the change in hours that normalisation implies.")
+            + C.num(C.calendar()['workweek']) + r" hours in the baseline.")
     return _wrap('ArgentinaUniversal', 'results/shocks/{eeOnly,universal}_match_rho%.4f.csv' % ρ,
                  'Pension system reform, year %d.' % year, 'table:Argentina:Universal', 'lccc',
                  [r'\textbf{Scenario}', r'\textbf{Tax rate}', r'\textbf{Savings rate}',

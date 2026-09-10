@@ -337,3 +337,19 @@ reform paragraph claimed higher labour supply where both table rows show lower h
 taxes-fixed mechanism), and the four-in-one figure's 1.6 p.p. move along the calibrated θ is the
 always-had-it comparison, which sits next to the 1.7 p.p. long-run effect rather than the 1.0 p.p.
 impact effect — the text now says so instead of quoting one number beside the other.
+
+## 2026-09-10 — table notes follow RKB's online edits; f(theta*) computed; tax targets in the calibration table
+
+RKB edited eight generated tables on Overleaf; the pull refused them (banner) and the edits went into
+the builders. `config.variantNote(commonX, full = False)`: every US table now points at the calibration
+table's note ("Common-X calibration: see the note to Table X", label via `variantSuffix` so the vector-X
+twins point at their own), and only `usukfrCalibration` passes `full = True`. Notes shortened as online
+(ageing, the CRRA tables, other shocks, the ESC calibration, the Argentina universal table); every US
+note now opens with `\textit{Note:}` like the Argentina ones; `\cref` replaced by `Table~\ref` in the
+two notes that had it. Kept against the online version on RKB's instruction: `tablenotes`, and no `\ \ `
+spacing in header cells. `escCalibrationTable` gained a fourth column f(theta*) = phi + (1-phi) theta*^p
+computed from the csv (0.873 / 0.942 / 0.987; RKB had typed 0.986 for the last, the value is 0.9865).
+`usukfrCalibration`'s omega row prints the tax targets from `τ0` in the summary csv as
+`$\tau^{US} = 14.4\%$, ...`. Verified by a normalised diff of the rebuilt tables against the online
+copies: only the intended differences remain. `config.py` carried two literal 0x08 bytes where `\bar h`
+and `\beta` should be (heredoc damage); fixed.

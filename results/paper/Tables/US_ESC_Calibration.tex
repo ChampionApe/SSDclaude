@@ -7,18 +7,18 @@
 \caption{The calibrated cost of redistributive funds}
 \label{table:US_ESC:calibration}
 \renewcommand{\arraystretch}{1.25}
-\begin{tabularx}{.9\textwidth}{YYY}
+\begin{tabularx}{.9\textwidth}{YYYY}
 \toprule
-\textbf{CRRA} ($\rho$) & $p$ & $\theta^{\ast}$ \\
+\textbf{CRRA} ($\rho$) & $p$ & $\theta^{\ast}$ & $f(\theta^{\ast})$ \\
 \midrule 
-0.5 & 0.965 & 0.738 \\
-1.0 & 0.408 & 0.738 \\
-2.0 & 0.090 & 0.738 \\
+0.5 & 0.965 & 0.738 & 0.873 \\
+1.0 & 0.408 & 0.738 & 0.942 \\
+2.0 & 0.090 & 0.738 & 0.987 \\
 \bottomrule
 \end{tabularx}
 \begin{tablenotes}
 \footnotesize
-\item $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = 0.5$ imposed; $p$ is calibrated so the design \emph{in force} in 2020 --- on a path where the political choice binds from the first period --- is the observed one, with $(\beta, \omega)$ recalibrated at each trial value. The cost is proportional, so the wedge cancels from the replacement-rate ratio and $\theta^{\ast}$ is the data's own at every $\rho$. Without the cost the choice corners at $\theta = 0$ at every $\rho$. Common-$X$ calibration: one leisure parameter $X$ shared across income groups, with the hours unit pinned by targeting the observed average workweek, so relative hours are a prediction rather than a calibration target.
+\item \textit{Note:} $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = 0.5$ imposed; $p$ is calibrated so the $\theta$ choice is the observed one, with $(\beta, \omega)$ recalibrated at each trial value. The cost is proportional, so the wedge cancels from the replacement-rate ratio. Without the cost the choice would be in the corner $\theta = 0$ for every $\rho$. Common-$X$ calibration: see the note to Table~\ref{table:US:Calib}.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

@@ -190,20 +190,24 @@ def variantCaption(commonX):
                                        else r' (vector $X_i$ calibration)')
 
 
-def variantNote(commonX):
+def variantNote(commonX, full = False):
     r""" One sentence naming the calibration variant, appended to every US table note.
 
     Both tables carry it, headline included: the two variants share beta, omega, tau, R and the savings
     rate exactly, and differ only where a number is defined through eta or X -- so a reader comparing two
     tables needs to be told which one they are looking at, not left to infer it from the one column that
-    moved. """
+    moved. The calibration table (`full = True`) spells the variant out; every other table names it and
+    points at that table's note. """
+    if not full:
+        return (r' ' + (r'Common-$X$' if commonX else r'Vector-$X_i$') + r' calibration: see the note to '
+                r'Table~\ref{table:US:Calib' + variantSuffix(commonX) + '}.')
     if commonX:
         return (r' Common-$X$ calibration: one leisure parameter $X$ shared across income groups, with '
                 r'the hours unit pinned by targeting the observed average workweek, so relative hours '
                 r'are a prediction rather than a calibration target.')
     return (r' Vector-$X_i$ calibration: $X_i$ is identified from relative hours, which are data here, '
-            r'and the level of $ar h$ is then not identified --- only its ratio to the baseline is. '
-            r'$eta$, $\omega$, the tax rate and the savings rate are common to the two variants; what '
+            r'and the level of $\bar h$ is then not identified --- only its ratio to the baseline is. '
+            r'$\beta$, $\omega$, the tax rate and the savings rate are common to the two variants; what '
             r'differs is anything defined through $\eta$ or $X$.')
 
 
