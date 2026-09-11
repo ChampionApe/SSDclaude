@@ -11,6 +11,7 @@ The project is self-contained in the current repository. Subfolders:
 - `python/` - python files.
 - `results` - output tables, figures, and model instances and solution databases.
 - `notes` - use this for smaller tasks and working notes. 
+- `archive` - history: session logs to 2026-09-11, long-form findings, pre-cut READMEs, closed to-dos. Indexed in `archive/INDEX.md`; excluded from default searches by `.rgignore`. Do not read it unless a live file points there or you are stuck on something the index names, and never restate its content into a live file.
 - `writing` - use this to generate tex and markdown files like model documentation. 
 - `writing/Paper` - contains copy of latest draft of the final paper.
 
@@ -39,6 +40,7 @@ experiment that produced the csv) and rebuild. See `python/paper/README.md`.
 - Language: Mainly Python.
 - Writing: Do not waste energy on compiling tex files; add as local tex file under `writing` and let the user compile locally. 
 - After a full working session, before the user shuts down the session (not during every interaction), append a short entry to the relevant log: the root `RESEARCH_LOG.md` for cross-cutting/structural work (repo organization, conventions, decisions spanning modules), or `python/<module>/RESEARCH_LOG.md` for work specific to one model (informalAnalytical, InformalSavings, US) or the gridsearch package.
+- Context budget, so the docs stay cheap to read: a `README.md` stays under ~100 lines and holds orientation only (purpose, file map, how to run, invariants as one-liners, status, open items). A log entry is at most ~10 lines: what changed, why, where to look. A lesson that recurs goes to `notes/crossCuttingFindings.md` once, as statement/tell/habit, cited by number; its numbering is referenced from code and must not change. Anything longer (measurements, investigations, superseded plans) goes to `archive/` with a pointer from the live file.
 - Keep a list of python packages including specific versions required for running the code updated in `pyenv.md`. 
 - Keep each `python/<module>/README.md` current (see Model structure above).
 - Docstrings/comments in `.py` files: keep only what a future session needs to *use or modify* the code correctly — the equation/doc cross-reference (e.g. `Eq (auxiliary:Gammas)`), shape conventions where non-obvious (e.g. `(M,)` vs `(M,ni)`), and genuine gotchas (why an argument must be explicit rather than read from db, a numerical trap like an overflow band that must not be reintroduced, why NaN must not be zero-filled). Do not narrate design history, debugging process, alternatives considered and rejected, or comparisons to a prior/inspiration implementation — that belongs in `RESEARCH_LOG.md`, not inline. If a docstring reads like a chronicle of how the code came to be rather than a spec of what it does now, trim it.

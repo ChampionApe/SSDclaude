@@ -4,7 +4,7 @@ Both are fixed and their transferable lessons are `crossCuttingFindings.md` #5 (
 #4/#7 (the ρ=1 boundary). Kept for the measurements — they are what a re-run would otherwise have to
 re-derive — and because the settings they justify are still live. Full investigations, including the raw
 diagnostic output that lived in `results/boundary/`, are at `c958031^`
-(`notes/informalSavings_rho07_resolved.md`, `notes/informalSavings_logCrraBoundary.md`).
+(`informalSavings_rho07_resolved.md`, `informalSavings_logCrraBoundary.md`, both at `c958031^:notes/`).
 
 ---
 

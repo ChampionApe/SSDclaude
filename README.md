@@ -5,67 +5,60 @@ conventions; this file is a map.
 
 ## Layout
 
-**`data/`** — raw and processed inputs (not results). `ArgentinaTest.xlsx`, `USMain_test.xlsx`,
-`FRMain.xlsx`, `UKMain.xlsx` (the last also carries a US-percentile regrouping of the UK data, for
-counterfactual comparability), plus `argentina_*.csv`, the calibration targets
-`python/paper/dataTargets.py` derives from the Penn World Table.
+**`data/`**: raw and processed inputs (not results). `ArgentinaTest.xlsx`, `USMain_test.xlsx`,
+`FRMain.xlsx`, `UKMain.xlsx` (the last also regrouped at US percentiles), plus `argentina_*.csv`, the
+calibration targets `python/paper/dataTargets.py` derives from the Penn World Table.
 
-**`python/`** — three model variants, a shared numerical package, and the paper pipeline. Each subfolder
-has its own `README.md` (purpose, files, status) and `RESEARCH_LOG.md`.
+**`python/`**: three model variants, a shared numerical package, and the paper pipeline. Each subfolder
+has a `README.md` (purpose, files, how to run, invariants, status, open items) and a terse `RESEARCH_LOG.md`.
 
 | | |
 |---|---|
-| `informalAnalytical/` | the analytical (log-preference) informal-sector model, and the **ancestor** of the other two — the shared conventions are documented there |
-| `InformalSavings/` | the variant where the informal type saves rather than being hand-to-mouth. Calibrated to Argentina, targeting its capital-output ratio |
-| `US/` | `informalAnalytical` without the informal type (`γ_0 = 0`), for the US, France and the UK. Also carries the endogenous-`θ` work |
-| `gridsearch/` | bounded-root reparameterization, 1-D root selection, Cartesian grids, gridded interpolation/smoothing/differentiation, and an anchored parameter march. Also `testing.py`, the shared PASS/FAIL harness — it lives here because `gridsearch` is the only importable package |
+| `informalAnalytical/` | the analytical (log-preference) informal-sector model and **ancestor** of the other two; shared conventions documented there |
+| `InformalSavings/` | the variant where the informal type saves. Calibrated to Argentina, targeting its capital-output ratio |
+| `US/` | `informalAnalytical` without the informal type, for the US, France and the UK. Also the endogenous-`θ` work |
+| `gridsearch/` | bounded-root reparameterisation, 1-D root selection, Cartesian grids, gridded interpolation, an anchored parameter march, and `testing.py`, the shared PASS/FAIL harness |
 | `paper/` | the three-stage pipeline that builds `writing/Paper`'s tables and figures from `results/` |
-| `runTests.py` | the repo-wide runner: 22 fast suites (~160 s), `--all` adds the four slow suites (~1 h), `--list`, `-k <pattern>`. Every suite also runs on its own |
+| `runTests.py` | the repo-wide runner: 22 fast suites (~160 s), `--all` adds the four slow ones (~1 h), `--list`, `-k <pattern>` |
 
-**`results/`** — solved output. `calibration/` holds the parameter sweeps and one pickled instance per
-solved point, each sweep with its **own** pickle directory since the filenames are the `ρ` alone
-(`instances/` for Argentina, `instancesUS*`, `instances{FR,UK,UKUS}*`); `shocks/` the counterfactual paths,
-full-effect and economic-equilibrium-only; `sweeps/` the cartesian `(ε, θ)` comparative statics; `esc/` the
-endogenous-`θ` runs; `paper/` the built tables and figures. Superseded runs go in a subdirectory, never
-beside the live ones — `notes/crossCuttingFindings.md` #8.
+**`results/`**: solved output. `calibration/` holds the parameter sweeps and one pickled instance per point,
+each sweep with its own pickle directory (`instances/` for Argentina, `instancesUS*`, `instances{FR,UK,UKUS}*`);
+`shocks/` the counterfactual paths; `sweeps/` the `(ε, θ)` comparative statics; `esc/` the endogenous-`θ`
+runs; `paper/` the built tables and figures. Superseded runs go in a subdirectory, never beside the live
+ones (`notes/crossCuttingFindings.md` #8).
 
-**`notes/`** — working notes, and where longer findings live so the READMEs can stay short.
+**`notes/`**: the live working notes.
 
 | | |
 |---|---|
-| `crossCuttingFindings.md` | thirteen findings that recurred across modules, written once and cited by number. Read #3–#5 before diagnosing any outer solver that stalls (and note #4: on the `informalAnalytical`/`US` lineage check #5's knot count first), #6 after fixing one, #7 before keying a fix or a diagnostic to one solver/branch/range — or before trusting a hard-coded bound in a module that began as a copy, #9 before writing a parameter the model also derives from data, #10 before trusting a sensitivity check whose subject might sit on a boundary, #11 before grid-maximising over an instrument that also enters a predetermined state, #12 before adopting a calibration target, and #13 before resuming any sweep, or after changing anything one has already been run under |
-| `informalSavings_numericalDeviations.md` | where `InformalSavings`' code departs from the `num_*.tex` specs, with the measurement behind each |
-| `informalSavings_resolvedIssues.md` | two resolved calibration defects and the still-live settings they justify |
-| `argentina_calibrationTarget.md` | why the calibration targets K/Y rather than the savings rate, and the map from target to `β` |
-| `esc_experiments_acrossRho.md` | the endogenous-`θ` counterfactuals across `ρ ∈ {0.5, 1, 2}` |
-| `todo_escPermanentTiming.md` | the one piece of open ESC work |
-| `todo_paperRewrite.md` | the 2026-09-08 rewrite plan (α = 0.35, s/Y convention, figures, four new sections) and the entry point for the writing sessions |
-| `paper_styleGuide.md` | voice, paragraph anatomy, units and LaTeX conventions of the paper draft, for the rewrite sessions |
-| `archive/` | measurements and results demoted out of the module READMEs |
+| `crossCuttingFindings.md` | thirteen findings cited by number from code and READMEs. Read #3–#5 before diagnosing a stalled outer solver, #7 before keying a fix to one solver, #9 before writing a parameter the model derives, #13 before resuming any sweep |
+| `TODO.md` | the one open list. Closed work is in the logs, not here |
+| `informalSavings_numericalDeviations.md` | where `InformalSavings` departs from the `num_*.tex` specs, with the measurement behind each |
+| `informalSavings_resolvedIssues.md` | two resolved calibration defects and the live settings they justify |
+| `argentina_calibrationTarget.md`, `argentina_alphaSensitivity.md` | why the calibration targets K/Y, and what α does to β |
+| `esc_experiments_acrossRho.md`, `us_commonX_vs_vectorX.md` | result write-ups behind two paper decisions |
+| `paper_styleGuide.md` | voice, units and LaTeX conventions of the paper draft |
 
-**`writing/`** 
-* Tex documentation: `main.tex` plus one subfolder per model variant, each with
-`model*.tex` (model and equilibrium definitions) and `num*.tex` (numerical solution).
-* `US/model_esc.tex` / `num_esc.tex` document the endogenous choice of `θ`.
-* The `num*.tex` sets are written as self-contained, final-state technical notes for the public repo: strategy overview and repo URL in
-`num.tex`, the shared grid-search machinery stated once per model in `num_robustroot.tex`
-(`eq:extendedGrid`/`eq:objectiveProfile`/`eq:candidates` are defined there, not in `num_peeLOG.tex`), and
-no development history — that stays in `notes/` and the logs.
-* Docstring-cited labels were preserved throughout the 2026-08-25 restructure; keep them stable, or follow a rename through the `.py` files.
-* **`writing/Paper/`** holds the current draft. Compiled locally by the user, not by agents; do not hand-edit a generated `.tex` there — it carries a `%% GENERATED` banner and the next `build.py` overwrites it.
-* **`writing/overleaf.py`** moves the draft to and from Overleaf: `export`/`import` by zip, and since 2026-09-08 `push`/`pull` through the project's git remote (one project, deletions propagated, online edits detected before a push and brought back through the import rules). Its docstring is the manual.
+**`archive/`**: history, frozen 2026-09-11 and indexed in `archive/INDEX.md`: the session logs to that
+date, the long-form findings with their measurements, the pre-cut READMEs, closed to-do files and
+demoted result notes. `.rgignore` keeps it out of default searches; read it by path when a live file
+points there.
 
-**`logs/`** (gitignored) — the detached-run scripts for the Argentina pipeline and their logs
-(`argPipeline.log` is the stage/exit-code timeline; `argCalibration.log`, `argShocks.log`, `argTests.log`,
-`argBuild.log` the detail). Python output there needs `PYTHONUTF8=1`, and workbooks under `data/` must
-be edited through Excel, not openpyxl — `notes/todo_paperRewrite.md`, "Traps".
+**`writing/`**: `main.tex` plus one subfolder per model variant with `model*.tex` (model and equilibrium)
+and `num*.tex` (numerical solution), written as self-contained technical notes; `US/model_esc.tex`/
+`num_esc.tex` cover the endogenous `θ`. Tex labels are cited from docstrings, so follow any rename
+through the `.py` files. **`writing/Paper/`** is the current draft, compiled locally by the user; a
+generated `.tex` there carries a `%% GENERATED` banner and must not be hand-edited. `writing/overleaf.py`
+moves the draft to and from Overleaf (`push`/`pull` by git; its docstring is the manual).
 
-**`RESEARCH_LOG.md`** — cross-cutting session log (repo organization, decisions spanning modules).
-Model-specific logs live under `python/<module>/`. **`pyenv.md`** — required packages and versions.
+**`logs/`** (gitignored): detached-run scripts and their logs. Python output there needs `PYTHONUTF8=1`,
+and workbooks under `data/` must be edited through Excel, not openpyxl (`notes/TODO.md`, "Traps").
+
+**`RESEARCH_LOG.md`**: cross-cutting session log; module logs live under `python/<module>/`.
+**`pyenv.md`**: required packages and versions.
 
 ## Status
 
 All three model variants solve, calibrate and run their counterfactuals, and all 34 paper outputs are
-wired end to end. The endogenous-`θ` layer (leaded and permanent timings, LOG and CRRA) is implemented and
-calibrated; only the *sequential* timing is not. Per-module detail and open items are in the module
-READMEs.
+wired end to end. The endogenous-`θ` layer (leaded and permanent timings, LOG and CRRA) is implemented
+and calibrated; only the *sequential* timing is not. Open items: `notes/TODO.md` and the module READMEs.

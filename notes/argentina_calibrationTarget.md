@@ -105,7 +105,7 @@ Order matters and the whole pass is ≈3 h of machine time.
 ```
 
 Two things the rebuild does not touch: `summarise()` and `tables.argentinaCalibration` name the target
-column, so they change *before* the run; and the Argentina prose in `writing/Paper/Sections/Quant.tex`
+column, so they change *before* the run; and the Argentina prose in `writing/Paper/Sections/Argentina.tex`
 (the p.p. magnitudes around line 57 and the ε/θ discussion's quoted numbers) must be re-read against the
 new tables. Two starting guesses are tuned to the target and may need moving with it —
 `informalAnalytical/test_calibration.py`'s β guess is the one that broke last time, walking into a region

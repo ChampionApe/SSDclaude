@@ -150,10 +150,29 @@ Two larger items agreed with RKB, both for the final version of the paper rather
 
 Smaller loose ends from the 2026-09-10 session:
 
-- Introduction: `XXX FILL IN HERE` in the OECD-sample sentence; the leisure-preferences claim should say
-  "somewhat overshoots" the hours gap (6.2 hours against 4).
+- Introduction: `XXX FILL IN HERE` in the OECD-sample sentence. ~~The leisure-preferences claim should
+  say "somewhat overshoots" the hours gap (6.2 hours against 4).~~ Moot 2026-09-11: the leisure shock is
+  no longer reported anywhere in the paper (item 8).
 - Two checks on Frankema (2010) remain RKB's (see item 2 above).
 - `notes/todo_escPermanentTiming.md`: `PermanentCRRA` has never been executed. Only matters if the
   permanent-timing sentence in `sec:esc` is to be backed under CRRA.
 - The composite French shocks (income + voting, all three): RKB is inclined to cut them from the ESC leg
   but the section's closing paragraphs rest on income + voting; decision deferred.
+
+## Open, added 2026-09-11
+
+8. **Re-run the US shocks and ESC stages, then rebuild.** Two code changes on 2026-09-11 make the printed
+   US counterfactual numbers stale, and the rerun is waiting only for the other session's heavy Argentina
+   job to finish. (a) The French income-distribution shock now puts France's η *profile* at the US
+   productivity *level* (`shocks.ηLevel`: η_FR rescaled so Γ_h = 1 at the US X), and the leisure step
+   carries the same scale; under common X this lowers the income row's workweek by ~4% (41.97 → 40.36
+   hours at ρ = 1) and leaves τ, s/Y and R unchanged to every digit; the combined rows and France's own
+   row do not move. (b) The French leisure shock is no longer printed anywhere; it still runs. The run:
+   `python\US\runShocksUS.py --commonX` (and without, for the vector-X twins), then `runESC.py --commonX`
+   and `runESCcrra.py --commonX` for the frIncome/frBoth/frAll rows (the endogenous θ can move slightly
+   since the level enters the choice through hours), `collectESCexperiments.py`, then
+   `python\paper\build.py`. Afterwards re-read the hand-written numbers in `Sections/OECD.tex` (the
+   income-distribution hours sentence) and `Sections/EndogenousTheta.tex` (income-distribution and
+   both-at-once paragraphs) against the rebuilt tables. The paper driver `python\paper\runShocksUS.py
+   --force` runs the shock and ESC experiment stages in that order (`--list` shows what exists, `--dry`
+   the commands); `--force` is needed because every output already exists and would otherwise be reused.

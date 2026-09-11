@@ -122,5 +122,5 @@ derived from α (`crossCuttingFindings.md` #7) and the anchor seeded (`config.AR
 
 The full pass is the one in `notes/argentina_calibrationTarget.md` (≈3 h): `dataTargets.py` is not
 involved, but the workbook's *Capital income share* cell is the source, then `runCalibration.py --force`,
-`runShocks.py --force`, the tests and `build.py`. The Argentina prose in `writing/Paper/Sections/Quant.tex`
+`runShocks.py --force`, the tests and `build.py`. The Argentina prose in `writing/Paper/Sections/Argentina.tex`
 (the Frankema sentence and the p.p. magnitudes) must be re-read against the new tables.
