@@ -111,6 +111,26 @@ check('eta0 self-consistent with Theta_h(t0)', np.isclose(calRep['η0'], cal['pa
       '-> implied={:.6f}, held={:.6f}'.format(calRep['η0'], cal['pars']['η0']))
 check('X0 self-consistent with Theta_h(t0)', np.isclose(calRep['X0'], cal['pars']['X0'], rtol = 1e-7),
       '-> implied={:.6f}, held={:.6f}'.format(calRep['X0'], cal['pars']['X0']))
+# What the two self-consistency conditions are FOR, read off the solved path rather than off the formulas:
+# informal hours and income relative to the average formal household equal the data. Checks 'X0 self-
+# consistent' above pass even when eq (calibration:X0) is derived under the wrong hours unit, which is
+# why this one is needed -- and it needs both the γ·y^x = 1 normalization and a data z_0 whose denominator
+# is the formal average (eq calibration:z).
+γiT0, ηiT0, XiT0 = m.db['γi'].xs(t0).values, m.db['ηi'].xs(t0).values, m.db['Xi'].xs(t0).values
+check('eq calibration:yNorm: Γ_h = 1 and ∑γ_i(η_i/X_i)^ξ = 1 at t0',
+      np.isclose(m.B.Γh(t0), 1, rtol = 1e-12) and np.isclose((γiT0*(ηiT0/XiT0)**ξ).sum(), 1, rtol = 1e-12))
+check('eq calibration:z: the data z_i average to one over the formal types',
+      np.isclose((γiT0*m.db['zxi'].xs(t0).values).sum(), 1, rtol = 1e-12)
+      and np.isclose((γiT0*m.db['zηi'].xs(t0).values).sum(), 1, rtol = 1e-12))
+sol = calRep['PEE']['report']
+hiC, h0C = sol['hi'].xs(t0).values, float(sol['h0'].xs(t0))
+wC, w0C = float(sol['w'].xs(t0)), float(sol['w0'].xs(t0))
+relHours  = h0C/(γiT0*hiC).sum()
+relIncome = w0C*cal['pars']['η0']*h0C/(wC*(1-calRep['τ'])*(γiT0*ηiT0*hiC).sum())
+check('solved informal hours / average formal hours == z_0^x', np.isclose(relHours, zx0, rtol = 1e-7),
+      '-> {:.6f} vs {:.6f}'.format(relHours, zx0))
+check('solved informal income / average formal income == z_0^η', np.isclose(relIncome, zη0, rtol = 1e-7),
+      '-> {:.6f} vs {:.6f}'.format(relIncome, zη0))
 check('db holds the converged parameters afterwards',
       all(np.isclose(m.calibrationPars[k], cal['pars'][k], rtol = 1e-10) for k in m._calPars),
       '-> ' + ', '.join('{}={:.5f}'.format(k, cal['pars'][k]) for k in m._calPars))

@@ -44,6 +44,9 @@ rather than trusting scipy's `res.success`.
 - **`hRatio` vs `hηRatio`.** `hRatio = h_{t,i}/h_t`, `hηRatio = h_{t,i}η_{t,i}/h_t`; `hi` needs the
   first, `si_s`'s third term, `c2i`, `dlnc2i_dτ` the second. Was a live bug. `test_ee.py` asserts
   `∑γ_iη_i·hRatio_i = 1` and `∑γ_i·hηRatio_i = 1`.
+- **Formal `(η_i, X_i)` carry two normalisations**, `Γ_h = 1` and `∑γ_i(η_i/X_i)^ξ = 1` (docs
+  eq:calibration:yNorm); `calibrationη0/X0` need both, and the data `z_j` are relative to the γ-weighted
+  formal mean. `test_calibration.py` checks both on the solved path.
 - **`μ` attaches to a generation**: the old-generation term uses `μ_{t-1,i}`.
 - **`FH_*` methods** own the terminal period's formula; where it is a special case of the general one,
   padding (`B=0`/`Γs=0`/`β=0`) is used instead of branching.

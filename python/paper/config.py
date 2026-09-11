@@ -40,9 +40,10 @@ ARG = {
     # The anchor's starting (beta, omega, eta0, X0). The march seeds every other point from its history,
     # but the anchor starts from test.py's defaults (beta = 0.6, omega = 2), and at alpha = 0.35 those put
     # the informal steady state outside the net-saver region, so the iota state grid is degenerate before
-    # the root takes a step. This is the alpha = 0.35, K/Y = 3.23, tau0 = 0.071/0.65 solution at rho = 1
-    # (2026-09-08); retune it if the capital share, the spending share or the K/Y target moves.
-    'anchorGuess': {'β': 0.651, 'ω': 1.527, 'η0': 0.331, 'X0': 0.413},
+    # the root takes a step. This is the alpha = 0.35, K/Y = 3.23, tau0 = 0.071/0.65 solution at rho = 1,
+    # with z_0 relative to the formal average (2026-09-11); retune it if the capital share, the spending
+    # share, the K/Y target or the household-survey targets move.
+    'anchorGuess': {'β': 0.649, 'ω': 1.487, 'η0': 0.288, 'X0': 0.375},
     # Grid settings. calibrateRhoGrid.py gives BOTH solvers interpKind/smoothKnots and only the grid
     # SIZES to CRRA; LOG keeps its own documented nι=50. Anything re-solving a calibrated instance must
     # mirror that split or it solves under a different interpolant than it was fitted under

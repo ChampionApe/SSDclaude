@@ -16,29 +16,41 @@ In the Argentina case, we exploit a pension reform around $t=2010$ that drastica
 \smalltitle{Calibration.}
 Several of the model parameters are set directly using the data. This covers the parts that are not set directly, but have to solved in one way or another.
 
-First, we calibrate the income distribution and relative working hours across the income distribution using $\eta_j$ and $X_j$. Specifically, let $z_j^{\eta}$ and $z_j^{x}$ denote income and working hours relative to the average formal household. With labour supply following $h_t^i/h_t = \eta_iX_i^{\xi}$ for formal households, we solve the system
-\begin{align*}
-        z_i^{\eta} &= \dfrac{w_t(1-\tau_t)h_t^i \eta_i}{w_t(1-\tau_t)h_t} = \dfrac{\eta_i^{1+\xi}/X_i^{\xi}}{\sum_{j>0} \left(\gamma_ j\eta_j^{1+\xi}/X_j^{\xi}\right)},  \\
-        z_i^{x} &= \frac{h_{t,i}}{\sum_i\gamma_i h_{t,i}} = \frac{\eta_i^{\xi}/X_i^{\xi}}{\sum_i \gamma_i(\eta_i/X_i)^{\xi}},
-\end{align*}
-where we normalize $\Gamma_h \equiv \sum_i \gamma_i\eta_i^{1+\xi}/X_i^{\xi} = 1$ in the calibration stage. Using $y_i^{\eta} = \eta_i^{1+\xi}/X_i^{\xi}$ and $y_i^x = (\eta_i/X_i)^{\xi}$ as shorthand, we can set up the conditions as linear systems instead:
-\begin{align*}
-    \left(\bm{z}_i^{\eta} \times \bm{\gamma}_i'-\bm{I}\right)\times \bm{y}_i^{\eta} &= \bm{0} \\
-    \left(\bm{z}_i^{x} \times \bm{\gamma}_i'-\bm{I}\right)\times \bm{y}_i^{x} &= \bm{0},
-\end{align*}
-where the bold-notation indicates vectors and matrices. We note that the $\bm{y}_i$ vectors are actually eigenvectors, which allows us to compute vectors of productivity and disutility of leisure as
-\begin{align} 
-    \bm{\eta}_i &= \frac{\bm{y}^{\eta}_i}{\bm{y}_i^x \left(\bm{y}_i^{\eta} \cdot \bm{y}_i\right)} \label{\refeq:calibration:etai} \\
-    \bm{X}_i &= \frac{\bm{\eta}_i}{(\bm{y}_i^x)^{1/\xi}}, \label{\refeq:calibration:Xi}
+First, we calibrate the income distribution and relative working hours across the income distribution using $\eta_j$ and $X_j$. Specifically, let $z_j^{\eta}$ and $z_j^{x}$ denote income and working hours of type $j$ relative to the average \emph{formal} household. The reference is the same for all types, informal ones included, and the informal type is compared to it without being part of it, so that
+\begin{align}\label{\refeq:calibration:z}
+    \sum_{i}\gamma_i z_i^{\eta} = \sum_{i}\gamma_i z_i^{x} = 1,
 \end{align}
-where $\bm{y}_i^{\eta} = \text{Eigvec}(\bm{z}_i^{\eta}\times \bm{\gamma}_i')$ and $\bm{y}_i^{x} = \text{Eigvec}(\bm{z}_i^{x}\times \bm{\gamma}_i')$ are eigenvectors.
+where, as throughout, the sums over $i$ run over the formal types only. In the data this means dividing each group's income and hours by the population-weighted mean over the formal groups.
 
-To capture the relative income and working hours of the informal/hand-to-mouth households, requires a bit more. First, the ratio of income and working hours can still be written as:
+With $A_t\equiv w_t(1-\tau_t)+\theta_{t+1}\overline{b}_{t+1}$, formal labour supply \eqref{\refeq:formalOpt} is $h_{t,i} = (\eta_i/X_i)^{\xi}A_t^{\xi}$, so that $h_t = \Gamma_hA_t^{\xi}$ and $h_{t,i}/h_t = (\eta_i/X_i)^{\xi}/\Gamma_h$. The relative income and hours of the formal types are then
 \begin{align*}
-    z_0^{\eta} &= \frac{w_t^0h_{1,t}^0\eta_{0}}{w_t(1-\tau_t)h_t} \\
-    z_0^x &= \dfrac{h_{t,1}^0}{\sum_i \gamma_{i} h_{t,i}}
+        z_i^{\eta} &= \dfrac{w_t(1-\tau_t)h_{t,i} \eta_i}{w_t(1-\tau_t)h_t} = \dfrac{\eta_i^{1+\xi}/X_i^{\xi}}{\sum_{j} \gamma_ j\eta_j^{1+\xi}/X_j^{\xi}},  \\
+        z_i^{x} &= \frac{h_{t,i}}{\sum_j\gamma_j h_{t,j}} = \frac{(\eta_i/X_i)^{\xi}}{\sum_j \gamma_j(\eta_j/X_j)^{\xi}}.
 \end{align*}
-We can combine and rearrange the terms to get the following expressions for $\eta_0, X_0$:
+Both conditions are ratios and leave two normalizations free. The first is the level of the labour aggregator $\Gamma_h$. The second is the unit in which hours are counted: the rescaling $\eta_i\rightarrow\eta_i/\mu$, $X_i\rightarrow\mu^{-(1+\xi)/\xi}X_i$ leaves $\eta_i^{1+\xi}/X_i^{\xi}$ and therefore efficiency units $\eta_ih_{t,i}$, the aggregate $h_t$ and the equilibrium unchanged, and scales every $h_{t,i}$ by $\mu$. We spend both normalizations in the calibration stage:
+\begin{align}\label{\refeq:calibration:yNorm}
+    \Gamma_h\equiv\sum_i\gamma_i\frac{\eta_i^{1+\xi}}{X_i^{\xi}} = 1, \qquad \sum_i\gamma_i\left(\frac{\eta_i}{X_i}\right)^{\xi} = 1.
+\end{align}
+The second one is a real restriction on the informal calibration below, not a convenience. The aggregate $h_t$ weights hours by productivity, and $h_t/\sum_i\gamma_ih_{t,i} = \Gamma_h/\sum_i\gamma_i(\eta_i/X_i)^{\xi}$. Under \eqref{\refeq:calibration:yNorm}, and only under it, $h_t$ equals average formal hours in the same clock unit as the individual $h_{t,i}$ and $h_{1,t}^0$, which lets the informal hours target be stated against $h_t$.
+
+Using $y_i^{\eta} = \eta_i^{1+\xi}/X_i^{\xi}$ and $y_i^x = (\eta_i/X_i)^{\xi}$ as shorthand, we can set up the conditions as linear systems instead:
+\begin{align*}
+    \left(\bm{z}^{\eta} \bm{\gamma}'-\bm{I}\right)\bm{y}^{\eta} &= \bm{0} \\
+    \left(\bm{z}^{x} \bm{\gamma}'-\bm{I}\right) \bm{y}^{x} &= \bm{0},
+\end{align*}
+where the bold notation indicates vectors and matrices over the formal types. The $\bm{y}$ vectors are eigenvectors with eigenvalue $\bm{\gamma}'\bm{z} = 1$. Since $\bm{z}\bm{\gamma}'$ has rank one, the eigenvector is $\bm{z}$ itself, and \eqref{\refeq:calibration:yNorm} fixes its scale at $\bm{\gamma}'\bm{y} = 1$, so $\bm{y}^{\eta} = \bm{z}^{\eta}$ and $\bm{y}^{x} = \bm{z}^{x}$. The vectors of productivity and disutility of labour follow as
+\begin{align}
+    \bm{\eta} &= \frac{\bm{y}^{\eta}}{\bm{y}^x} \label{\refeq:calibration:etai} \\
+    \bm{X} &= \frac{\bm{\eta}}{(\bm{y}^x)^{1/\xi}}, \label{\refeq:calibration:Xi}
+\end{align}
+with division and powers taken element by element.
+
+To capture the relative income and working hours of the informal/hand-to-mouth households, requires a bit more. By \eqref{\refeq:calibration:z} and \eqref{\refeq:calibration:yNorm}, the ratios of young informal income and working hours are
+\begin{align*}
+    z_0^{\eta} &= \frac{w_t^0h_{1,t}^0\eta_{0}}{w_t(1-\tau_t)h_t}, \\
+    z_0^x &= \dfrac{h_{1,t}^0}{\sum_i \gamma_{i} h_{t,i}} = \frac{h_{1,t}^0}{h_t}.
+\end{align*}
+Write $k_t\equiv s_{t-1}/\nu_t$. In equilibrium $h_t = \Theta_{h,t}k_t^{\alpha\xi/(1+\alpha\xi)}$, so the factor prices \eqref{\refeq:factorPrices} and \eqref{\refeq:w0} give $w_t = (1-\alpha)\Theta_{h,t}^{-\alpha}k_t^{\alpha/(1+\alpha\xi)}$ and $w_t^0 = \left((1-\alpha)/\Gamma_{h,t}^{\alpha}\right)^{1/(1+\alpha\xi)}k_t^{\alpha/(1+\alpha\xi)}$. The ratio $z_0^{\eta}/z_0^x = \eta_0w_t^0/\left(w_t(1-\tau_t)\right)$ then identifies $\eta_0$, and the informal labour supply condition \eqref{\refeq:informalOpt}, $h_{1,t}^0 = (\eta_0w_t^0/X_0)^{\xi} = z_0^x\Theta_{h,t}k_t^{\alpha\xi/(1+\alpha\xi)}$, identifies $X_0$. Here $k_t$ drops out of both:
 \begin{align}
     \eta_{0} &= \frac{z_0^{\eta}}{z_0^x}\frac{(1-\alpha)(1-\tau_t)}{\Theta_{h,t}^{\alpha}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}} \label{\refeq:calibration:eta0}\\
     X_{0} &= \eta_{0}\frac{\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}}{\left(\Theta_{h,t}z_0^x\right)^{1/\xi}} \label{\refeq:calibration:X0}

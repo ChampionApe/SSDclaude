@@ -331,9 +331,15 @@ class ModelInformalAnalytical:
         self.db.update(self.adjPar('Xj', self.db['ηj'].values/(np.tile(yx, (self.T,1))**(1/self.db['ξ'].values.reshape(self.T,1)))))
 
     def addEigenVectors(self):
-        valx, vecx = scipy.sparse.linalg.eigs(self.db['zxi'].xs(self.db['t0']).values.reshape(self.ni,1) * self.db['γi'].xs(self.db['t0']).values.reshape(1, self.ni), k = 1)
-        valη, vecη = scipy.sparse.linalg.eigs(self.db['zηi'].xs(self.db['t0']).values.reshape(self.ni,1) * self.db['γi'].xs(self.db['t0']).values.reshape(1, self.ni), k = 1)
-        self.db['yx'], self.db['yη'] = abs(np.real(vecx)).reshape(self.ni), abs(np.real(vecη).reshape(self.ni))
+        """ Eq (calibration:yNorm): both eigenvectors scaled to γ·y = 1, i.e. Γ_h = 1 AND ∑γ_i(η_i/X_i)^ξ = 1.
+        The y^x scale is NOT cosmetic: calibrationη0/X0 take h_t as average formal hours ∑γ_i h_{t,i},
+        which holds only under it. scipy's unit-norm eigenvector gives ∑γ_i y^x_i ≈ 0.5 here, and the
+        informal hours target then lands at twice its data value. """
+        γi = self.db['γi'].xs(self.db['t0']).values
+        valx, vecx = scipy.sparse.linalg.eigs(self.db['zxi'].xs(self.db['t0']).values.reshape(self.ni,1) * γi.reshape(1, self.ni), k = 1)
+        valη, vecη = scipy.sparse.linalg.eigs(self.db['zηi'].xs(self.db['t0']).values.reshape(self.ni,1) * γi.reshape(1, self.ni), k = 1)
+        yx, yη = abs(np.real(vecx)).reshape(self.ni), abs(np.real(vecη)).reshape(self.ni)
+        self.db['yx'], self.db['yη'] = yx/(γi*yx).sum(), yη/(γi*yη).sum()
     def getηi(self):
         return self.db['yη']/(self.db['yx']*sum(self.db['γi'].xs(self.db['t0']).values*self.db['yη']))
     def getXi(self):

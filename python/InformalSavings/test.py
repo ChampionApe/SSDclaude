@@ -24,6 +24,11 @@ dfc = pd.DataFrame(wb['calibration'].values)
 dfc = pd.Series(dfc.iloc[1,:].values, index = dfc.iloc[0,:].values)
 workweek = dfc['Average workweek']
 
+# Income and hours relative to the average FORMAL household, eq (calibration:z): the population-weighted
+# mean over j>0, with the informal row excluded from the denominator. The formal z_i only need the right
+# ratios (the eigenvector problem is scale-free), but z_0 is read as a level by eq (calibration:eta0/X0).
+formalMean = lambda x: np.average(x[1:].astype(float), weights = dfj['Population shares'].values[1:].astype(float))
+
 # Create objects to parse to model initialization:
 kwargs = {'T': TLog+t_ss, 'nj':dfj.shape[0]}
 pars = {'α': dfc['Capital income share'], 'ξ': dfc['Labor supply elasticity'], 'ν': np.hstack([νLog, np.full(kwargs['T']-TLog, νLog[-1])]),
@@ -34,8 +39,8 @@ pars = {'α': dfc['Capital income share'], 'ξ': dfc['Labor supply elasticity'],
         'γj': dfj['Population shares'].values.astype(float), 
         'μj': dfj['Voting shares'].values.astype(float), 
         'Xj': 1,
-        'zxj': (dfj['Hours'].values/(dfj['Hours'].values.mean())).astype(float), 
-        'zηj': (dfj['Income'].values/(dfj['Income'].values.mean())).astype(float)}
+        'zxj': (dfj['Hours'].values/formalMean(dfj['Hours'].values)).astype(float),
+        'zηj': (dfj['Income'].values/formalMean(dfj['Income'].values)).astype(float)}
 pars['h0'] = workweek / (7*12) # estimate of share of time spend on labor
 pars['s0'] = dfc['Savings rate']   # reported only; the target that identifies beta is KY0 below
 

@@ -519,7 +519,9 @@ class Base:
     #######################################################################
     # Evaluated at the single baseline year db['t0'] -- pass that year as `t`, never rely on the default.
     # calibrationη0/X0 read z_0^η/z_0^x (db['zη0']/db['zx0']) but NOT db['η0']/db['X0']: they compute the
-    # *implied* η0/X0 that model.py's calibration loop compares against the current ones.
+    # *implied* η0/X0 that model.py's calibration loop compares against the current ones. Both treat h_t as
+    # average formal hours ∑γ_i h_{t,i}; that is true only under eq (calibration:yNorm), which
+    # model.addEigenVectors imposes. A formal (η_i, X_i) that breaks it silently mis-scales η0 and X0.
     def savingsRate(self, s, s_, h, t = None):
         """ Eq (calibration:sr): s_t / ((s_{t-1}/ν_t)^α h_t^{1-α}). s, s_=s_{t-1}, h explicit.
         Reported, not targeted -- capitalOutputRatio identifies β (see it). """

@@ -47,7 +47,18 @@ reading. ~12 min per 2-D solve at ns = 150, ~3× faster at ns = 50 (the s-grid i
 **C3. Argentina under common X.** The OECD arm leads with the common-X calibration; the Argentina arm is
 vector-X only. Touches `python/InformalSavings` (calibration loader, `calibrateRhoGrid.py`),
 `python/paper/runCalibration.py` / `config.ARG`, and the Argentina builders, which gain the same `commonX`
-switch as the US ones (`config.variantSuffix`). Not started.
+switch as the US ones (`config.variantSuffix`). Not started. **Caveat:** `calibrationη0/X0` hold only while
+`h_t` is average formal hours, i.e. under `∑γ_i(η_i/X_i)^ξ = 1` (`eq:calibration:yNorm`). A common X pinned
+by the workweek spends that normalisation, so the two formulas then need the factor
+`Γ_h/∑γ_i(η_i/X_i)^ξ` (in `η0`, and inside the `1/ξ` power in `X0`). `test_calibration.py`'s solved-path
+checks catch a miss.
+
+**C4. US vector-X: one hours unit across countries** (for RKB; not started). Under vector X each country's
+hours unit `μ = ∑γ_i y^x_i` is whatever scipy's unit-norm eigenvector gives (US 0.5593, FR 0.5590, UK
+0.5770). `ModelFR` pins `h̄` by rescaling `Γ_h`, not `μ`, so `X̄_c/X̄_US` carries `μ_US/μ_c`: FR 1.0005, UK
+0.969. Moot for the French leisure row, which is no longer printed. The UK `X̄` in
+`USUKFRCalibration_vectorX` carries the ~3%. Fix: impose `∑γ_i y^x_i = 1` in `US.addEigenVectors`, as the
+Argentina models now do. It is equilibrium-neutral, but the vector-X `X_i` and `X̄` entries move.
 
 ## Compute tasks
 
@@ -98,7 +109,9 @@ once both exist (W2). Then W2.
   `Sections/EndogenousTheta.tex` (income-distribution and both-at-once paragraphs) against the tables;
 - after R2: decide with RKB which Argentina version (vector X or common X) the paper prints, or whether
   it prints both as the OECD arm does; then the Argentina section's numbers, and the abstract,
-  introduction and conclusion if a magnitude or sign moves (style guide §6);
+  introduction and conclusion if a magnitude or sign moves (style guide §6). The draft already carries
+  the vector-X numbers after the 2026-09-11 informal-target fix ("almost half" of the 1.8% of GDP);
+  those are the baseline to compare against;
 - after R3: add μ_i to the paper's `eq:esc:seqFOC` (missing against `Model.tex:128` and
   `writing/US/model_esc.tex`; this part can be done now) and replace the "averages to zero" argument with
   the measured result, in the paper and in `model_esc.tex`; back the permanent-timing sentence under CRRA;

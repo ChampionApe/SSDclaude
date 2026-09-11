@@ -52,6 +52,28 @@ check('eta0 self-consistent with Theta_h(t0)', np.isclose(rep['η0'], cal['pars'
       '-> implied={:.6f}, held={:.6f}'.format(rep['η0'], cal['pars']['η0']))
 check('X0 self-consistent with Theta_h(t0)', np.isclose(rep['X0'], cal['pars']['X0'], rtol = 1e-7),
       '-> implied={:.6f}, held={:.6f}'.format(rep['X0'], cal['pars']['X0']))
+# What the two self-consistency conditions are FOR, read off the solved path: young informal hours and
+# income relative to the average formal household equal the data. The self-consistency checks above pass
+# even when eq (calibration:X0) is derived under the wrong hours unit; this one needs eq calibration:yNorm
+# and a data z_0 whose denominator is the formal average (eq calibration:z). Informal hours are not in the
+# EE report, so eq (informalOpt) rebuilds them.
+ξ = m.B.get('ξ', t0)
+γiT0, ηiT0, XiT0 = m.db['γi'].xs(t0).values, m.db['ηi'].xs(t0).values, m.db['Xi'].xs(t0).values
+check('eq calibration:yNorm: Γ_h = 1 and ∑γ_i(η_i/X_i)^ξ = 1 at t0',
+      np.isclose(m.B.Γh(t0), 1, rtol = 1e-12) and np.isclose((γiT0*(ηiT0/XiT0)**ξ).sum(), 1, rtol = 1e-12))
+check('eq calibration:z: the data z_i average to one over the formal types',
+      np.isclose((γiT0*m.db['zxi'].xs(t0).values).sum(), 1, rtol = 1e-12)
+      and np.isclose((γiT0*m.db['zηi'].xs(t0).values).sum(), 1, rtol = 1e-12))
+sol = rep['PEE']['report']
+hiC, wC, w0C = sol['hi'].xs(t0).values, float(sol['w'].xs(t0)), float(sol['w0'].xs(t0))
+η0C, X0C = cal['pars']['η0'], cal['pars']['X0']
+h0C = (η0C*w0C/X0C)**ξ
+relHours, zx0 = h0C/(γiT0*hiC).sum(), m.B.get('zx0', t0)
+relIncome, zη0 = w0C*η0C*h0C/(wC*(1-rep['τ'])*(γiT0*ηiT0*hiC).sum()), m.B.get('zη0', t0)
+check('solved informal hours / average formal hours == z_0^x', np.isclose(relHours, zx0, rtol = 1e-7),
+      '-> {:.6f} vs {:.6f}'.format(relHours, zx0))
+check('solved informal income / average formal income == z_0^η', np.isclose(relIncome, zη0, rtol = 1e-7),
+      '-> {:.6f} vs {:.6f}'.format(relIncome, zη0))
 check('db holds the converged parameters afterwards',
       all(np.isclose(m.calibrationPars[k], cal['pars'][k], rtol = 1e-10) for k in m._calPars),
       '-> ' + ', '.join('{}={:.5f}'.format(k, cal['pars'][k]) for k in m._calPars))
@@ -91,7 +113,7 @@ check('no _calBounds entry caps a parameter from above (beta must be free to cro
 # Warm start means both halves: _calSetPars installs LOG's converged (β,ω,η0,X0) into the fresh instance's
 # db (so the auxiliary parameters and the very first PEE solve start from the LOG equilibrium), and
 # x0=cal['x'] starts the outer root finder at the same point. Without the first half the instance would
-# start from test.py's raw guesses (η0=0.20, X0=2.57) even though x0 describes the calibrated ones.
+# start from initProductivity's raw guesses even though x0 describes the calibrated ones.
 #
 # Deliberately only two points, both close to 1, where CRRA should essentially reproduce LOG. Harder
 # values (rho ~ 0.5, ~2) are left for a later, more robust test once the solve is tweaked for them.

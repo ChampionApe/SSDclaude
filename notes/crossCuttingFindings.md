@@ -161,12 +161,15 @@ moment, and β absorbed the factor (1.212). It survived because the period lengt
 `yearsPerPeriod`), both readings were plausible numbers, and the provenance was one wrong sentence. The
 correctly converted neighbour became the next instance: a *converted* datum stored in the workbook stayed
 at the old α when α moved (0.125 at α = 0.43 is 0.109 at 0.35). Store the datum, derive the target in the
-loader.
+loader. A third instance had no aggregate footprint at all: informal hours were targeted against formal
+*clock* hours, the derivation used the productivity-weighted `h_t`, and the two agree only under a
+normalisation the code did not impose (`X0` 20× off, every τ and β unchanged; 2026-09-11).
 
 **Habit.** Beside every target record series, window, retrieval date and the units of both sides; let a
 script derive it (`python/paper/dataTargets.py`). Tell: a target whose model side is a ratio at different
 time aggregations. Convert the model moment into the data's units by hand once and ask whether anyone
-would have written that number down.
+would have written that number down. Test a target on the solved path (the model's own ratio against the
+datum), not by re-evaluating the formula that defines it: a self-consistency check passes a wrong derivation.
 
 ## 13. A resumable producer is keyed on the question, not on what answered it
 
