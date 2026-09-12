@@ -30,8 +30,16 @@ X_0, the relative-hours prediction). Copied into `writing/Paper` on 2026-09-12 a
 
 ## Writing
 
-**W1. Introduction**: the OECD-sample sentence at `Sections/Introduction.tex` line 38 is drafted under a
-`%% TODO-W1` tag (2026-09-11); RKB to confirm or rewrite, then drop the tag.
+**W1. Introduction**: the sentence *after* the `%% TODO-W1` tag at `Sections/Introduction.tex` line 38 --
+"Our model provides a rationale for the latter: ..." -- is drafted text, not RKB's. MGE left the
+placeholder `XXX Our model provides a rationale for the latter XXX.` in the 2026-09-10 Overleaf edit
+(clone commit `48120ea`, the same edit that widened the sample from twenty countries to the 29 pre-2000
+OECD members); it was filled on 2026-09-11. Everything before the tag -- the CondeRuiz discussion, the
+29-country claim, the footnote -- is MGE's and untouched. Its three claims check against the tables:
+ageing raises taxes and moves the chosen design to θ = 0.76/0.78/0.82 at ρ = 0.5/1/2
+(`US_ESC_Ageing`); a flatter income distribution goes to the corner θ = 1 and flatter voting
+participation to 0.65/0.53/0.26 (`US_ESC_IncomeDistr`, `US_ESC_Voting`), so the inequality-design
+relation is unsigned and ρ-dependent. RKB to confirm the wording or rewrite, then drop the tag.
 
 **W2. Text that follows R2** — decided 2026-09-12: the paper prints **common X** in both arms
 (`config.ARG['commonX'] = True`). The Argentina identification paragraph was rewritten (one X pinned by the
