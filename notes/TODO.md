@@ -7,7 +7,7 @@ the permanent-timing fix, in `archive/notes/todo_paperRewrite.md` and `archive/n
 
 Items are labelled so they can cite each other: `C` code, `R` compute runs, `W` writing. C1, C2, R1, R3, R4
 and W3 closed on 2026-09-11 (`python/US/RESEARCH_LOG.md`, `python/paper/RESEARCH_LOG.md`); C4 and W2 on
-2026-09-12. Open: W1, W2b, W4, all three RKB's wording calls.
+2026-09-12, W4 the same day on RKB's instruction. Open: W1 and W2b, both RKB's wording calls.
 
 ## Code tasks
 
