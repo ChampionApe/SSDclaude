@@ -19,8 +19,9 @@ THREE CONVENTIONS, each of which a builder could silently get wrong:
   * A counterfactual's savings rate is reported as the CHANGE against that rho's own baseline, in
     percentage points (config.pp); only baseline rows carry a level. The baseline savings rate is a
     prediction that moves with rho (beta is identified by R), so a scenario at rho differenced against
-    the rho = 1 baseline is not an effect -- the leisure row, a pure scale that cannot move savings, is
-    the check: it must read 0.00 at every rho. Tax rates and workweeks stay as levels.
+    the rho = 1 baseline is not an effect. (The leisure row, a pure scale that cannot move savings, was
+    the check -- 0.00 at every rho -- while it was printed; it is still in the csv.) Tax rates and
+    workweeks stay as levels.
   * `Avg. workweek` is normalised against each rho's OWN baseline, inside the experiment script. Under
     vector X the level of hbar is not identified, so there is no expression that converts it to hours;
     the observed workweek is a reference point, not a unit. Stage (iii) therefore reads `workweek`
@@ -115,44 +116,50 @@ def usAgeing(commonX = None):
 
 
 def usOtherShocks(commonX = None):
-    r""" Table \ref{table:US:otherShocks}: French income distribution, leisure preferences and voting
-    imposed on the US model, at the baseline rho.
+    r""" Table \ref{table:US:otherShocks}: French income distribution and voting imposed on the US model,
+    at the baseline rho.
 
     Full effect only, following the paper, which reports that the two effects are not informative apart
-    for these three -- they work in the same direction and are quantitatively minor. The
-    economic-equilibrium rows ARE in results/shocks/US_shocks.csv if that judgement is revisited.
+    for these -- they work in the same direction and are quantitatively minor. The economic-equilibrium
+    rows ARE in results/shocks/US_shocks.csv if that judgement is revisited.
 
-    Two rows beyond the paper's original three: all three characteristics at once, and France's own
+    The leisure-preference row (a pure rescaling of X_i, moving hours alone) is no longer printed
+    anywhere in the paper -- dropped 2026-09-11 as uninformative. The experiment still runs and its rows
+    stay in the csv; only the readers changed. It is still INSIDE the all-characteristics row, which
+    needs France's level of X to land on France's own (eta, X).
+
+    Two rows beyond the single characteristics: all French characteristics at once, and France's own
     calibrated path. Together they say how far the observable characteristics take the US towards France
     and how much is left for the political weight -- the comparison the new-path convention exists to
     make (python/US/runShocksUS.franceReference).
 
-    This is the table the calibration variant moves most: income distribution is defined through eta and
-    leisure through the level of X, which is exactly what the variant re-interprets. """
+    This is the table the calibration variant moves most: income distribution is defined through eta,
+    which is exactly what the variant re-interprets. """
     commonX = C.US['commonX'] if commonX is None else commonX
     ρ = C.US['ρBaseline']
     df = D.usShocks(commonX = commonX)
     b = D.usBaseline(df, ρ)
     rows = [' & '.join(['Baseline'] + _cells(b)) + r' \\']
-    for lab in ('Income distribution', 'Leisure preferences', 'Voting'):
+    for lab in ('Income distribution', 'Voting'):
         rows.append(' & '.join([lab] + _cells(D.usShockRow(df, ρ, lab, 'full'), b)) + r' \\')
-    rows.append(' & '.join(['All three'] + _cells(D.usShockRow(df, ρ, 'All French characteristics',
-                                                               'full'), b)) + r' \\[.5em]\hline\\[-.75em]')
+    rows.append(' & '.join(['All French characteristics']
+                           + _cells(D.usShockRow(df, ρ, 'All French characteristics', 'full'), b))
+                + r' \\[.5em]\hline\\[-.75em]')
     rows.append(' & '.join(['France (own calibration)']
                            + _cells(D.usShockRow(df, ρ, 'France (own calibration)', 'full'), b)) + r' \\')
     note = (r'\item \textit{Note:} $\rho = ' + C.num(ρ, 1) + r'$, full effect. Each row is a separate equilibrium path: '
             r'the borrowed characteristics hold throughout and the economy starts from its own steady '
             r'state, so the row describes a country that has always had this mix rather than the US hit '
-            r'by a surprise in 2020. Leisure preferences rescales every '
-            r'$X_i$ to France\textquotesingle s population-weighted mean $X$, which is a pure change of the hours '
-            r'unit, so the tax and savings rates stay exactly at baseline and only hours move. Income '
+            r'by a surprise in 2020. Income '
             r'distribution replaces $\eta_i$ with France\textquotesingle s while holding $X_i$ \emph{and} '
             r'holding $\theta$ at the US design, so it is a change in inequality alone; pension design is '
-            r'the separate counterfactual of Table~\ref{table:US:pensChars}. The last row '
+            r'the separate counterfactual of Table~\ref{table:US:pensChars}. All French characteristics '
+            r'imposes France\textquotesingle s $\eta_i$, voting weights $\mu_i$ and level of $X_i$ at once; '
+            r'the last, a pure rescaling of the hours unit, moves hours and nothing else. The last row '
             r'is France\textquotesingle s own calibrated path, its savings rate reported as the distance '
             r'from the US baseline.' + C.variantNote(commonX))
     return _xwrap('US_OtherShocks' + C.variantSuffix(commonX), df.attrs['source'],
-                  'French income distribution, leisure preferences, and voting patterns in US'
+                  'French income distribution and voting patterns in US'
                   + C.variantCaption(commonX),
                   'table:US:otherShocks' + C.variantSuffix(commonX), 'lYYY', SHOCKHEAD,
                   '\n'.join(rows), note)
@@ -168,7 +175,8 @@ def _crraTable(name, caption, label, scenarios, commonX = None):
     One baseline per rho, not one shared row: tau and the workweek are common across rho (a target and a
     normalisation), the savings rate is not -- beta is identified by R, so the baseline savings rate is
     a prediction that falls with rho. Differencing every rho against the rho = 1 level reversed the sign
-    of the theta rows at rho = 2 and put +-0.8 p.p. on the leisure row, which cannot move savings. """
+    of the theta rows at rho = 2 and put +-0.8 p.p. on the (then printed) leisure row, which cannot move
+    savings. """
     commonX = C.US['commonX'] if commonX is None else commonX
     df = D.usShocks(commonX = commonX)
     ρs = C.US['ρTable']
@@ -213,8 +221,7 @@ def usCrraOtherShocks(commonX = None):
     return _crraTable('US_CRRA_OtherShocks',
                       'Does CRRA matter for French characteristics imposed on the US -- {}'
                       .format(C.usCalendar()['year0']), 'table:US:CRRA:otherShocks',
-                      [('Income distribution', 'Income distribution'),
-                       ('Leisure preferences', 'Leisure preferences'), ('Voting', 'Voting')],
+                      [('Income distribution', 'Income distribution'), ('Voting', 'Voting')],
                       commonX = commonX)
 
 
@@ -394,13 +401,6 @@ def escIncomeDistr():
                      r'the design adds.', france = True)
 
 
-def escLeisure():
-    r""" Table \ref{table:US_ESC:leisure}. """
-    return _escTable('US_ESC_Leisure', 'frLeisure',
-                     'Endogenous design and French leisure preferences in US',
-                     'table:US_ESC:leisure', france = True)
-
-
 def escVoting():
     r""" Table \ref{table:US_ESC:voting}. """
     return _escTable('US_ESC_Voting', 'frVoting',
@@ -450,4 +450,44 @@ def escCalibrationTable():
     return _xwrap('US_ESC_Calibration', 'results/esc/escCalibration{,CRRA}.csv',
                   'The calibrated cost of redistributive funds',
                   'table:US_ESC:calibration', 'YYYY', header, '\n'.join(rows), note)
+
+
+def ukEscCalibrationTable():
+    r""" Table \ref{table:UK_ESC:calibration}: escCalibrationTable's layout for the UK -- the wedge p
+    calibrated so that the UK electorate re-elects the UK's own observed design theta*.
+
+    rho = 1 only: the country stage (python/US/runESC.stageCountry) runs under LOG and has no CRRA
+    counterpart yet, so the table prints whatever rho the csv carries rather than config's rhoTable, and
+    the note says so. The US-wedge reading -- the UK's choice with the US's p imposed -- is in the same
+    csv and goes into the note as the comparison the number is for: the UK needs a smaller wedge than
+    the US to re-elect a less Bismarckian system, and with the US wedge its electorate corners at
+    theta = 1. France has no own-wedge row (its observed design IS the corner, so there is no root) and
+    is not printed. """
+    df = D.escCountry()
+    spec, φ = C.US['esc']['spec'], C.US['esc']['phi']
+    own = df[(df['country'] == 'UK') & (df['wedgeFrom'] == 'own')]
+    us = df[(df['country'] == 'UK') & (df['wedgeFrom'] == 'US')]
+    if own.empty:
+        raise D.MissingInput('escCountry (UK, own wedge, {}, phi={})'.format(spec, φ))
+    rows = []
+    for r in own.to_dict('records'):
+        p, θ = float(r['p']), float(r['θStar'])
+        rows.append(' & '.join([C.num(float(r['ρ']), 1), C.num(p, 3), C.num(θ, 3),
+                                C.num(φ + (1-φ)*θ**p, 3)]) + r' \\')
+    header = ' & '.join([r'\textbf{CRRA} ($\rho$)', '$p$', r'$\theta^{\ast}$', r'$f(\theta^{\ast})$'])
+    usNote = ''
+    if not us.empty:
+        u = us.iloc[-1]
+        usNote = (r' With the US wedge imposed instead ($p = ' + C.num(float(u['p']), 3)
+                  + r'$, Table~\ref{table:US_ESC:calibration}) the UK electorate\textquotesingle s choice is '
+                  r'$\theta = ' + C.num(float(u['choice']), 3) + '$.')
+    note = (r'\item \textit{Note:} As Table~\ref{table:US_ESC:calibration}, for the UK model: '
+            r'$f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = ' + C.num(φ, 1) + r'$ imposed, $\beta$ '
+            r'imposed from the US calibration at the same $\rho$, and $p$ calibrated so that the UK '
+            r'electorate re-elects the UK\textquotesingle s observed design $\theta^{\ast}$, with $\omega$ '
+            r'recalibrated at each trial value. Only $\rho = 1$ has been run for the UK.' + usNote
+            + C.variantNote(C.US['commonX']))
+    return _xwrap('UK_ESC_Calibration', 'results/esc/escCountry.csv',
+                  'The calibrated cost of redistributive funds in the UK',
+                  'table:UK_ESC:calibration', 'YYYY', header, '\n'.join(rows), note)
 

@@ -133,7 +133,7 @@ check('pinned everywhere, the 2-D recursion reproduces the exogenous CRRA tax pa
 # measured state slope is ~0.01, so they must agree to grid accuracy. Run at the SOLVE grid (ns=50),
 # where the measured choice is 0.7433 against ns=150's 0.7430 -- the s-grid is not what the accuracy
 # hangs on; the theta-STATE grid is (7 nodes gave 0.723), so nθ stays at the default 13
-# (RESEARCH_LOG 2026-08-24).
+# (archive/sessionLogs/RESEARCH_LOG_US.md, 2026-08-24).
 m2.CRRA.initGS(GS_LOG | {'ns': 50})
 out2D = m2.solveLeaded2D(pinAtT0 = True)
 ch2D = m2.leadedChoiceAtT0_2D(out = out2D)

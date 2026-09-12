@@ -18,7 +18,8 @@
 | `test.py`, `testEU.py` | workbook loaders: `USMain_test.xlsx`; `FRMain.xlsx`/`UKMain.xlsx` via `testEU.model('FR'|'UK'[, grouping='US'])` |
 | `calibrateRhoGrid.py`, `calibrateRhoGridEU.py`, `runShocksUS.py`, `runESC.py`, `runESCcrra.py`, `collectESCexperiments.py` | drivers |
 
-Eight fast test suites (~55 s), registered in `python/runTests.py`.
+Eight fast test suites (~3 min; `test_esc.py` alone ~100 s) and two slow ones (`test_escTiming.py`, the
+permanent timing's reference numbers, ~75 s; `test_escCRRA.py`, ~7 min), registered in `python/runTests.py`.
 
 ## Running it
 
@@ -96,9 +97,14 @@ calibration (`--noFrance` skips).
 - Calibration target: the design *in force* in 2020 (`leadedDesignAtT0`); `p` = 0.4076 at `ρ` = 1,
   `scale`, φ = 0.5. `p` and the chosen design are bit-identical across the calibration variants; only
   exogenous rows that swap `η` move (`notes/esc_experiments_acrossRho.md`).
-- `LeadedCRRA2D` is the exact 2-D recursion certifying the path iteration to ±0.01; pinned periods
-  collapse the candidate grid inside the recursion; the θ-state grid matters (13 nodes), the `s` grid does
-  not. ~70 s per period at `ns=150`.
+- `LeadedCRRA2D` is the exact 2-D recursion and the PUBLISHED CRRA method (`runESCcrra.py --exact`,
+  `method` = exact rows; the path iteration's rows stay under `method` = path as the cross-check). Pinned
+  periods collapse the candidate grid inside the recursion; the θ-state grid matters (13 nodes), the `s`
+  grid does not (50 vs 150: 3e-5 in θ); the objective is flat near its maximum, so the candidate grid
+  sets the third decimal of the design (41 nodes, `config.US['esc']['nCand2D']`). ~40 s per period at
+  `ns=150`; the wedge calibration scans at `ns=50` and refines at 150.
+- `ModelESC.sequentialFOC`: the costless sequential FOC on a solved path (`test_esc.py` at ρ = 1,
+  `runESCcrra.py --stage sequential` under CRRA). Negative on [0,1] at every dated period.
 - Permanent timing: the joint `(τ_{t0}, θ)` choice concentrates to a 1-D search; the savings ratio is
   pinned at the fixed point `θ*` (`solveFixedPoint`, default), not at the incumbent (#11/#11b).
 
@@ -110,6 +116,6 @@ choice (LOG, CRRA path iteration, exact 2-D) and permanent timing, and the `pyth
 Structural ESC corners: France and the UK-at-US-percentiles have no own-wedge calibration (the observed
 design is the `θ = 1` corner); the UK's own `p` = 0.185 against the US's 0.408.
 
-**Open**: the *sequential* ESC timing is unimplemented; `PermanentCRRA` has never been executed
-(`notes/TODO.md`, items 10–11); the workweek column's full-effect gap against the paper (~2%,
-unattributed, not the initial condition); the UK's `X_i` sit 1.108× the paper's (the `λ` normalisation).
+**Open**: `PermanentCRRA` (run 2026-09-11, `results/esc/escPermanentCRRA.csv`) puts the costless permanent
+choice at θ = 0 for ρ ≤ 1.3 and at θ = 1 for ρ ≥ 1.4 -- the paper's wording is RKB's (`notes/TODO.md`
+W2b); one hours unit across countries under vector X (TODO C4).

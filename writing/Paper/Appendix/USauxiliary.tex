@@ -12,13 +12,19 @@ For the UK, we use UK DATA SERVICES, Harmonised BHPS Wave 17 (refers to year 200
 
 \input{Tables/UK_householdheterogeneity}
 
-Tables \ref{table:US:CRRA:ageing} and \ref{table:US:CRRA:otherShocks} show results for counterfactual population growth, income and voting inequality, and leisure preferences under general CRRA preferences; the pension-characteristics counterpart is table \ref{table:US:CRRA:pensChars} in the main text.
+Tables \ref{table:US:CRRA:ageing} and \ref{table:US:CRRA:otherShocks} show results for counterfactual population growth and income and voting inequality under general CRRA preferences; the pension-characteristics counterpart is table \ref{table:US:CRRA:pensChars} in the main text.
 
 \subsection{The effect of CRRA preferences}
 
 \input{Tables/US_CRRA_Ageing}
 
 \input{Tables/US_CRRA_OtherShocks}
+
+\subsection{Endogenous pension design in the UK}\label{app:US:ukESC}
+
+Section \ref{sec:esc} calibrates the deadweight cost of redistributive funds so that the U.S.\ electorate re-elects the U.S.\ design. The same protocol applies to the UK model: $\beta$ is imposed from the U.S.\ calibration, $\omega$ is recalibrated at each trial value of $p$, and $p$ is chosen so that the UK electorate re-elects the UK's own observed design, $\theta^{\ast} = 0.560$. Table \ref{table:UK_ESC:calibration} reports the result at $\rho = 1$. The UK needs a considerably smaller wedge than the U.S.\ to re-elect its less Bismarckian system, and with the U.S.\ wedge imposed instead the UK electorate would move to the fully Bismarckian corner. France has no counterpart: its observed design is the corner $\theta = 1$ itself, so there is no interior choice for a wedge to reproduce.
+
+\input{Tables/UK_ESC_Calibration}
 
 \subsection{The vector-\texorpdfstring{$X_i$}{Xi} calibration}\label{app:US:vectorX}
 
@@ -38,16 +44,13 @@ depends on the design or on the demography therefore reproduces to numerical pre
 \ref{table:US:pensChars_vectorX} and \ref{table:US:ageing_vectorX} are the main text's tables to every
 printed digit.
 
-What differs is anything defined \emph{through} $\eta$ or $X$ separately, which is to say the two
-counterfactuals that borrow France's income distribution and its leisure preferences (table
-\ref{table:US:otherShocks_vectorX}). The vector-$X_i$ calibration attributes more of the observed income
-dispersion to productivity and less to hours, so replacing the U.S.\ productivity distribution with
-France's is a larger change under it: the tax rate falls by 1.6 p.p.\ rather than 1.2 p.p. Leisure
-preferences move in the opposite direction: the gap in average $X$ between the two countries is smaller
-under vector $X_i$, so imposing French leisure preferences costs 4.6 hours a week rather than 6.2.
-Neither change disturbs the paper's ranking, in which ageing and pension design dominate taxes while the
-French characteristics are minor for taxes and decisive for hours, which is the claim the exercise is
-meant to test.
+What differs is anything defined \emph{through} $\eta$ or $X$ separately, which is to say the
+counterfactual that borrows France's income distribution (table \ref{table:US:otherShocks_vectorX}). The
+vector-$X_i$ calibration attributes more of the observed income dispersion to productivity and less to
+hours, so replacing the U.S.\ productivity distribution with France's is a larger change under it: the
+tax rate falls by 1.6 p.p.\ rather than 1.2 p.p. The change does not disturb the paper's ranking, in
+which ageing and pension design dominate taxes while the French characteristics are minor, which is the
+claim the exercise is meant to test.
 
 \input{Tables/USUKFRCalibration_vectorX}
 

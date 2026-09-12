@@ -249,6 +249,13 @@ class ModelESC(ModelUS):
         return {'sols': sols, 'θ': θPath, 'τ': τPath, 'sol': sol, 'report': report,
                 'targetDrift': drift, 's0': s0}
 
+    def leadedDesignAtT0_2D(self, verbose = False):
+        """ θ_{t0} on the FREELY simulated 2-D path (LeadedCRRA2D, every period chooses): the design in
+        force at the baseline year, the exact CRRA counterpart of leadedDesignAtT0 and what calibrateWedge
+        targets under preferences = 'CRRA2D'. One full recursion per call. """
+        out = self.solveLeaded2D(pinAtT0 = False, verbose = verbose)
+        return float(out['θ'].xs(self.t0Year))
+
     def leadedChoiceAtT0_2D(self, out = None, verbose = False):
         """ θPolicy_{t0}(s_{t0-1}, θ*) from the 2-D solver -- the exact counterpart of what
         leadedChoiceAtT0_CRRA approximates with a held-fixed future, evaluated at the pinned path's own
@@ -277,6 +284,42 @@ class ModelESC(ModelUS):
         rec['targetDrift'] = {'R': float(rec['out']['report']['R'].xs(t0)) - float(self.db['R0']),
                               'τ': float(rec['out']['τ'].xs(t0)) - float(self.db['τ0'])}
         return rec
+
+    # ------------------------------------------------------------------ the sequential choice
+    def sequentialFOC(self, θGrid, out, pos = None):
+        """ ∂W_t/∂θ_t of Eq (esc:seqFOC), COSTLESS (A = θ, B = 1-θ, A' = 1, B' = -1), on a solved path at
+        horizon position `pos` (db['t0'] default), for every θ_t on θGrid. Returns (T_grid,).
+
+        out: a solvePEE_LOG/CRRA return; its report supplies s_{t-1,i}/s_{t-1} (the predetermined ratio,
+        'si_s' at t-1), h_t and s_{t-1}, and its τ the tax at t. Weights are LeadedBase.weights' old bloc,
+        γ_{t-1,i} ω p_{t-1} μ_{t-1,i}. Under CRRA the summand carries (c_{2,t}^i)^{1-1/ρ}, evaluated at the
+        candidate θ_t through Base.c2i's own bracket; at ρ = 1 that factor is 1 and the sum is the doc's
+        formula. The sign over [0,1] is the object: negative everywhere means the costless sequential
+        choice is the Beveridgean corner. pos = 0 has no solved t-1 ratio and raises. """
+        pos = int(self.db['t0']) if pos is None else int(pos)
+        if pos == 0:
+            raise ValueError('sequentialFOC: no predetermined ratio at the first period.')
+        tIdx = self.db['t']
+        t, tLag = tIdx[pos], tIdx[pos-1]
+        B, rep = self.B, out['report']
+        with B.cacheParams():
+            α, ρ = float(B.get('α', t)), float(B.get('ρ', t))
+            coef = (1-α)/α * float(B.get('p[t-1]', t)) * float(np.asarray(out['τ'])[pos]) \
+                / float(B.get('κ[t-1]', t))
+            hη = np.asarray(B.hηRatio(t, lag = '[t-1]'), dtype = float).ravel()
+            si_ = rep['si_s'].xs(tLag).values.astype(float)
+            old = np.asarray(self.ESC.weights(t)[0], dtype = float).ravel()
+            h, s_ = float(rep['h'].xs(t)), float(rep['s_'].xs(t))
+            q = 1 - 1/ρ
+            θg = np.asarray(θGrid, dtype = float)
+            foc = np.empty(len(θg))
+            for k, θ in enumerate(θg):
+                inner = si_ + coef*(θ*hη + (1-θ))                  # the costless bracket
+                num = coef*(hη - 1)                                # A' y/Γh + B' with A' = 1, B' = -1
+                c2 = np.asarray(B.c2i(h, s_, float(np.asarray(out['τ'])[pos]), θ, si_, t),
+                                dtype = float).ravel() if q != 0 else np.ones_like(inner)
+                foc[k] = float((old * c2**q * num/inner).sum())
+        return foc
 
     # ------------------------------------------------------------------ the permanent choice
     def predeterminedSiRatio(self, base = None, preferences = 'LOG'):
@@ -381,7 +424,7 @@ class ModelESC(ModelUS):
         a p where the incumbent-pinned choice reproduces the incumbent design is a p where the incumbent
         design IS the fixed point. So both readings have the same root, and this one reaches it with one
         pass per trial instead of an inner iteration. Verified against a scan run with solveFixedPoint
-        in the loop (RESEARCH_LOG, 2026-08-24): identical p to 1e-9.
+        in the loop (archive/sessionLogs/RESEARCH_LOG_US.md, 2026-08-24): identical p to 1e-9.
 
         What the two do NOT share is the residual away from the root, so a scan must not mix them. """
         t0 = self.t0Year
@@ -409,13 +452,19 @@ class ModelESC(ModelUS):
         θStar = float(self.db['θ'].xs(self.t0Year))
         design = {'LOG':      lambda: self.leadedDesignAtT0(),
                   'CRRA':     lambda: self.leadedDesignAtT0_CRRA(),
+                  'CRRA2D':   lambda: self.leadedDesignAtT0_2D(),
                   'permLOG':  lambda: self.permanentChoiceAtT0('LOG'),
                   'permCRRA': lambda: self.permanentChoiceAtT0('CRRA')}[preferences]()
         return design - θStar
 
     def calibrateWedge(self, spec = 'scale', phi = 0.5, bracket = (0.05, 3.0), nScan = 12,
-                       calKwargs = None, xtol = 1e-6, verbose = True, preferences = 'LOG'):
+                       calKwargs = None, xtol = 1e-6, verbose = True, preferences = 'LOG',
+                       beforeScan = None, beforeRefine = None):
         """ Calibrate p (phi imposed) so the equilibrium design at t0 is the observed one (wedgeResidual).
+        preferences: 'LOG', 'CRRA' (path iteration), 'CRRA2D' (the exact 2-D recursion; the published
+        CRRA method), 'permLOG', 'permCRRA'. beforeScan/beforeRefine: callables run before the scan and
+        before the bracketed root -- runESCcrra.py uses them to scan on a coarse savings grid and refine
+        on the fine one (the 2-D choice is insensitive to that grid, its cost is not).
 
         Scans `bracket` on a log grid for a sign change before bracketing, because the residual is NOT
         guaranteed monotone in p and, more importantly, is FLAT AT A CORNER: wherever the choice is at
@@ -425,6 +474,8 @@ class ModelESC(ModelUS):
         number. Returns {'p', 'residual', 'scan', 'converged', 'wedge', 'θ'}. """
         grid = np.exp(np.linspace(np.log(bracket[0]), np.log(bracket[1]), nScan))
         scan = []
+        if beforeScan is not None:
+            beforeScan()
         for p in grid:
             try:
                 r = self.wedgeResidual(p, spec, phi, calKwargs, preferences)
@@ -444,6 +495,8 @@ class ModelESC(ModelUS):
                     'wedge': self.wedge, 'θ': np.nan,
                     'message': 'no sign change in the scanned bracket -- the choice never crosses θ*'}
         k = idx[0]
+        if beforeRefine is not None:
+            beforeRefine()
         f = lambda p: self.wedgeResidual(p, spec, phi, calKwargs, preferences)
         p = optimize.brentq(f, grid[k], grid[k+1], xtol = xtol)
         res = self.wedgeResidual(p, spec, phi, calKwargs, preferences)  # leaves db at the calibrated point

@@ -261,6 +261,8 @@ check('...and there the two pinnings separate, so the timing is load-bearing',
       '-> fixedPoint={:.6f} incumbent={:.6f} moving={:.6f}'.format(
           permOff['θ'], permOff['θIncumbent'], permOff['θMoving']))
 
+# The reference NUMBERS of the permanent timing (fixed point / incumbent / moving at three p, and the
+# calibrated p) are test_escTiming.py's, a slow suite; here only the structure is pinned.
 # The reported path is the reform the timing describes: exogenous before t0, chosen from t0 on.
 θPath = permOff['θPath']
 check('the reported design path is kinked at t0, not constant at the choice',
@@ -346,9 +348,93 @@ for name, registry in (('frIncome', sh.SHOCKS), ('frAll', sh.SHOCKS), ('frBoth',
           abs(θF - θUS) > 1e-3, '-> theta={:.6f}'.format(θF))
 
 # eta really did move in the pinned runs -- otherwise the check above would pass on a no-op shock.
+# It is France's PROFILE at the US productivity level: eta = c*eta_FR with c = shocks.ηLevel, chosen so
+# that Gamma_h = 1 holds on the shocked model as on the baseline. Raw eta_FR carries the level Gamma_h = 1
+# fixes at FRANCE's X, which is a leisure effect in disguise and moved the income row's workweek by 4%.
+t0B = mBase.db['t'][mBase.db['t0']]
+c = float(frData['ηScale'])
+mI, cRet = sh.shockedCopy(mBase, 'frIncome', frData)
+check('frIncome: eta is France\'s profile at the US level, c*eta_FR, and returns c',
+      np.max(np.abs(mI.db['ηi'].xs(t0B).values.astype(float)
+                    - c*np.asarray(frData['ηFR'], dtype = float))) < 1e-12 and abs(cRet - c) < 1e-14,
+      '-> c={:.5f}'.format(c))
+check('...with Gamma_h = 1 on the shocked model (the level really was renormalised)',
+      abs(float(np.asarray(mI.db['Γh'])[mBase.db['t0']]) - 1) < 1e-12 and abs(c - 1) > 1e-3,
+      '-> Gamma_h={:.12f}'.format(float(np.asarray(mI.db['Γh'])[mBase.db['t0']])))
+# The income and leisure rows compose: frAll ends on France's own (eta, X) up to the joint scale c the
+# model is invariant to, so the choice of level moves the split between the rows and not their sum.
 mS, _ = sh.shockedCopy(mBase, 'frAll', frData)
-check('...on a model whose eta really is France\'s',
-      np.max(np.abs(mS.db['ηi'].xs(mS.db['t'][0]).values.astype(float)
-                    - np.asarray(frData['ηFR'], dtype = float))) < 1e-12)
+XS = mS.db['Xi'].xs(t0B).values.astype(float)
+XUS = mBase.db['Xi'].xs(t0B).values.astype(float)
+check('frAll: X_i = c * xbarRatio * X_US -- the leisure step carries the income step\'s scale',
+      np.max(np.abs(XS/XUS - c*frData['xbarRatio'])) < 1e-12
+      and np.max(np.abs(mS.db['ηi'].xs(t0B).values.astype(float)
+                        - c*np.asarray(frData['ηFR'], dtype = float))) < 1e-12,
+      '-> X_i/X_US={:.5f}, c*xbarRatio={:.5f}'.format(float((XS/XUS)[0]), c*frData['xbarRatio']))
+
+# ---- 13. the `method` column round trip: exact and path-iteration CRRA rows coexist in one csv
+# runESCcrra.py writes method = 'exact' | 'path' and keys its merge on it; collectESCexperiments.merge
+# carries it through, stamping LOG rows 'exact' and legacy CRRA rows (no column) 'path'. The pipeline
+# then selects by method, so a stale path row must survive beside an exact one without ever being
+# mistaken for it, and a legacy csv must not be clobbered by the first exact write.
+import tempfile                                                                      # noqa: E402
+import pandas as pd                                                                  # noqa: E402
+import collectESCexperiments as _coll                                                # noqa: E402
+from runESCcrra import KEYSHK                                                        # noqa: E402
+_row = lambda **kw: {'ρ': 2.0, 'spec': 'scale', 'phi': 0.5, 'commonX': True, 'scenario': 'baseline',
+                     'θpinned': False, 'p': 0.09, 'θ_t0': 0.5} | kw
+with tempfile.TemporaryDirectory() as tmp:
+    f = os.path.join(tmp, 'escShocksCRRA.csv')
+    legacy = pd.DataFrame([_row(θ_t0 = 0.7394)])            # no method column: a pre-column path row
+    legacy.to_csv(f, index = False)
+    _resc.mergeWrite(f, [_row(method = 'exact', θ_t0 = 0.74)], KEYSHK)
+    d1 = pd.read_csv(f)
+    check('mergeWrite keeps a legacy (method-less) path row beside the first exact row',
+          len(d1) == 2 and d1['method'].isna().sum() == 1 and (d1['method'] == 'exact').sum() == 1,
+          '-> {} rows, methods {}'.format(len(d1), d1['method'].tolist()))
+    _resc.mergeWrite(f, [_row(method = 'exact', θ_t0 = 0.75)], KEYSHK)
+    d2 = pd.read_csv(f)
+    check('...a second exact write replaces the exact row and nothing else',
+          len(d2) == 2 and float(d2.loc[d2['method'] == 'exact', 'θ_t0'].iloc[0]) == 0.75
+          and float(d2.loc[d2['method'].isna(), 'θ_t0'].iloc[0]) == 0.7394)
+    _resc.mergeWrite(f, [_row(method = 'path', θ_t0 = 0.76)], KEYSHK)
+    d3 = pd.read_csv(f)
+    check('...and an explicit path row is a third, distinct vintage', len(d3) == 3)
+    m = _coll.merge(pd.DataFrame([_row(θ_t0 = 0.738) | {'spec': 'scale'}]).drop(columns = ['ρ']), d3)
+    check('collect.merge stamps LOG rows exact, legacy CRRA rows path, and keeps the exact row',
+          set(m.columns) >= {'method', 'preferences'}
+          and m.loc[m['preferences'] == 'LOG', 'method'].eq('exact').all()
+          and (m.loc[m['preferences'] == 'CRRA', 'method'] == 'path').sum() == 2
+          and (m.loc[m['preferences'] == 'CRRA', 'method'] == 'exact').sum() == 1,
+          '-> methods by preferences: {}'.format(
+              m.groupby('preferences')['method'].apply(list).to_dict()))
+
+# ---- 14. the SEQUENTIAL timing: the costless FOC is negative on all of [0,1] at the solved 2020 baseline
+# eq:esc:seqFOC with A' = 1, B' = -1 and the actual voting weights mu_i (US: 0.47, 0.63, 0.77, rising
+# with income). The paper's corner claim rested on "the numerator averages to zero", which ignores mu_i;
+# this is the measured statement it is replaced by. Common X, rho = 1, no wedge, the model's own
+# s_{t-1,i}/s_{t-1}, y^eta/Gamma_h and tau_t. A failure here is the plan's STOP 1.
+mSeq = ModelESC(pars = PARS, commonX = True, **testmod.kwargs)
+mSeq.db['dates'], mSeq.db['workweek'] = testmod.dates, testmod.workweek
+mSeq.LOG.initGS(GS)
+mSeq.calibrate()
+solSeq = mSeq.solvePEE_LOG()
+θSeq = np.linspace(0., 1., 201)
+focSeq = mSeq.sequentialFOC(θSeq, solSeq)
+kMax = int(np.argmax(focSeq))
+check('the costless sequential FOC is negative on all of theta in [0,1] at 2020 (mu_i included)',
+      np.all(focSeq < 0.),
+      '-> max={:+.4e} at theta={:.3f}, min={:+.4e}; tau={:.4f}'.format(
+          focSeq[kMax], θSeq[kMax], float(np.min(focSeq)), float(solSeq['τ'].iloc[mSeq.db['t0']])))
+# The weights are what makes the claim non-trivial: with mu_i replaced by 1 the numerator averages to
+# zero by construction (sum gamma_i (y_i/Gamma_h - 1) = 0), so the sign is the denominator's alone.
+μSeq = mSeq.db['μi'].xs(mSeq.t0Year).values.astype(float)
+check('...and the voting weights really do rise with income, so the sum is not the equal-weight one',
+      np.all(np.diff(μSeq) > 0), '-> mu_i={}'.format(np.round(μSeq, 3)))
+# Every dated period, not only 2020: the corner is a property of the objective, not of one nu_t.
+worst = max((float(np.max(mSeq.sequentialFOC(θSeq, solSeq, pos = k))), k)
+            for k in range(1, len(mSeq.db['t']) - 1))
+check('...at every non-terminal period of the horizon', worst[0] < 0.,
+      '-> largest value over periods and theta: {:+.4e} at pos={}'.format(*worst))
 
 report()

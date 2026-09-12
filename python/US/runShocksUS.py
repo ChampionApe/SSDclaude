@@ -97,7 +97,10 @@ def frenchData(m, ρ, preferences, gs = None, commonX = False):
     XbarUS = float((γUS * m.db['Xi'].xs(t0).values.astype(float)).sum())
     # gamma is not bit-identical across the two workbooks -- the same nominal percentile cuts land on
     # slightly different shares in CPS and LIS -- so this reports the gap rather than asserting equality.
-    return {'ηFR': mFR.db['ηi'].xs(t0FR).values.astype(float), 'μFR': parsFR['μj'],
+    ηFR = mFR.db['ηi'].xs(t0FR).values.astype(float)
+    # ηScale: the level the income row puts France's eta at (Gamma_h = 1 at the US X, shocks.ηLevel).
+    # The leisure row scales X_i by ηScale*xbarRatio so the two rows compose to France's own (eta, X).
+    return {'ηFR': ηFR, 'μFR': parsFR['μj'], 'ηScale': sh.ηLevel(m, ηFR),
             'xbarRatio': XbarFR/XbarUS, 'XbarFR': XbarFR, 'XbarUS': XbarUS,
             'γgap': float(np.max(np.abs(γFR - γUS))),
             'θUS': float(m.db['θ'].xs(t0))}
@@ -188,8 +191,9 @@ def main():
         if data:
             data['pinTheta'] = not a.freeTheta
         if data:
-            print('  French: Xbar_FR/Xbar_US={:.4f} ({:.2f} vs {:.2f}), max|gamma_FR-gamma_US|={:.1e}'
-                  .format(data['xbarRatio'], data['XbarFR'], data['XbarUS'], data['γgap']))
+            print('  French: Xbar_FR/Xbar_US={:.4f} ({:.2f} vs {:.2f}), eta level c={:.4f}, '
+                  'max|gamma_FR-gamma_US|={:.1e}'.format(data['xbarRatio'], data['XbarFR'],
+                                                        data['XbarUS'], data['ηScale'], data['γgap']))
 
         for name in names:
             tic = time.time()

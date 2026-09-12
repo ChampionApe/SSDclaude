@@ -38,21 +38,24 @@ ALT = not C.US['commonX']
 ALTTAG = C.variantSuffix(ALT)
 
 
-def _variants(name, fn, folder, ext = 'tex'):
-    """ {headline name: entry, twin name: entry} for one US builder. """
+def _variants(name, fn, folder, ext = 'tex', arm = 'US'):
+    """ {headline name: entry, twin name: entry} for one US or Argentina builder (`arm`). """
     kind = 'table' if ext == 'tex' else 'figure'
+    alt = not (C.US if arm == 'US' else C.ARG)['commonX']
+    tag = C.variantSuffix(alt, arm)
     return {name: (kind, fn, '{}/{}.{}'.format(folder, name, ext)),
-            name + ALTTAG: (kind, (lambda f = fn: f(commonX = ALT)),
-                            '{}/{}{}.{}'.format(folder, name, ALTTAG, ext))}
+            name + tag: (kind, (lambda f = fn, a = alt: f(commonX = a)),
+                         '{}/{}{}.{}'.format(folder, name, tag, ext))}
 
 
 # name -> (kind, builder, destination relative to writing/Paper)
 OUTPUTS = {
-    'ArgentinaCalibration': ('table',  tables.argentinaCalibration, 'Tables/ArgentinaCalibration.tex'),
-    'ArgentinaUniversal':   ('table',  tables.argentinaUniversal,   'Tables/ArgentinaUniversal.tex'),
-    'Argentina_funcOfRho':  ('table',  tables.argentinaFuncOfRho,   'Tables/Argentina_funcOfRho.tex'),
-    'ARG_LOG_FourInOne':    ('figure', figures.argLogFourInOne,     'Figs/ARG_LOG_FourInOne.pdf'),
-    'ARG_CRRA_LOG':         ('figure', figures.argCrraLog,          'Figs/ARG_CRRA_LOG.pdf'),
+    # --- Argentina. Each line registers the headline (config.ARG['commonX']) and its variant twin. ---
+    **_variants('ArgentinaCalibration', tables.argentinaCalibration, 'Tables', arm = 'ARG'),
+    **_variants('ArgentinaUniversal',   tables.argentinaUniversal,   'Tables', arm = 'ARG'),
+    **_variants('Argentina_funcOfRho',  tables.argentinaFuncOfRho,   'Tables', arm = 'ARG'),
+    **_variants('ARG_LOG_FourInOne',    figures.argLogFourInOne,     'Figs', ext = 'pdf', arm = 'ARG'),
+    **_variants('ARG_CRRA_LOG',         figures.argCrraLog,          'Figs', ext = 'pdf', arm = 'ARG'),
     # --- US / France / UK. Each line registers two outputs: the headline and its variant twin. ---
     **_variants('USUKFRCalibration',        tablesUS.usukfrCalibration,        'Tables'),
     **_variants('US_householdheterogeneity', tablesUS.usHouseholdHeterogeneity, 'Tables'),
@@ -70,9 +73,9 @@ OUTPUTS = {
     'US_ESC_Calibration':     ('table', tablesUS.escCalibrationTable, 'Tables/US_ESC_Calibration.tex'),
     'US_ESC_Ageing':          ('table', tablesUS.escAgeing,           'Tables/US_ESC_Ageing.tex'),
     'US_ESC_IncomeDistr':     ('table', tablesUS.escIncomeDistr,      'Tables/US_ESC_IncomeDistr.tex'),
-    'US_ESC_Leisure':         ('table', tablesUS.escLeisure,          'Tables/US_ESC_Leisure.tex'),
     'US_ESC_Voting':          ('table', tablesUS.escVoting,           'Tables/US_ESC_Voting.tex'),
     'US_ESC_FrenchAll':       ('table', tablesUS.escFrenchAll,        'Tables/US_ESC_FrenchAll.tex'),
+    'UK_ESC_Calibration':     ('table', tablesUS.ukEscCalibrationTable, 'Tables/UK_ESC_Calibration.tex'),
 }
 
 

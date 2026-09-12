@@ -57,7 +57,7 @@ def _save(fig, name):
 
 
 # ---------------------------------------------------------------------------------------------------
-def argLogFourInOne():
+def argLogFourInOne(commonX = None):
     r""" Figure \ref{fig:Argentina_functionOfParams}: the tax rate, the savings rate, the average
     workweek and the informal savings ratio over the (epsilon, theta) plane, at the calibration year.
 
@@ -73,7 +73,8 @@ def argLogFourInOne():
     The calibrated theta is drawn over the band in INK, not as a further value of the ramp: it is an
     annotation, and giving it a hue would make the reader hunt for it on the colourbar. The reform is
     the horizontal move along that curve from the calibrated epsilon to epsilon^U. """
-    grid = D.epsThetaGrid()
+    commonX = C.ARG['commonX'] if commonX is None else commonX
+    grid = D.epsThetaGrid(commonX = commonX)
     hRef = float(grid.loc[grid['statusQuo'], 'h'].iloc[0])
     θs   = np.sort(grid['theta'].unique())
     norm = mcolors.Normalize(float(θs[0]), float(θs[-1]))
@@ -129,11 +130,11 @@ def argLogFourInOne():
                 'post-reform $\\epsilon^U = {:.2f}$'.format(εU)],
                loc = 'outside lower center', ncol = 3, frameon = False, fontsize = 9,
                labelcolor = INK['secondary'])
-    return _save(fig, 'ARG_LOG_FourInOne')
+    return _save(fig, 'ARG_LOG_FourInOne' + C.variantSuffix(commonX, 'ARG'))
 
 
 # ---------------------------------------------------------------------------------------------------
-def argCrraLog(longRun = 1):
+def argCrraLog(longRun = 1, commonX = None):
     r""" Figure \ref{fig:ARG:EffectOfCRRA}: the short- and long-run effect of the reform, as a function
     of rho.
 
@@ -145,18 +146,19 @@ def argCrraLog(longRun = 1):
     Each panel is a CHANGE in the natural unit of its variable -- percentage points for the three rates
     and hours for the workweek -- rather than a common percent scale, because the table beside it
     reports levels in exactly those units. """
-    nPeriods = len(D.shockPath(C.ARG['ρBaseline'], 'reform'))
+    commonX = C.ARG['commonX'] if commonX is None else commonX
+    nPeriods = len(D.shockPath(C.ARG['ρBaseline'], 'reform', commonX = commonX))
     if longRun >= nPeriods - 1:
         raise ValueError('longRun={} lands on or past the terminal period (path has {} periods, and '
                          'the last is degenerate: s_T=0).'.format(longRun, nPeriods))
 
-    short = D.shockAtPeriod(0, 'reform')
-    long_ = D.shockAtPeriod(longRun, 'reform')
+    short = D.shockAtPeriod(0, 'reform', commonX = commonX)
+    long_ = D.shockAtPeriod(longRun, 'reform', commonX = commonX)
     year  = C.calendar()['year0']
-    srShort = np.array([100*(D.reformSavingsRate(ρ, 0) - D.savingsRatePath(ρ, 'base').iloc[0])
-                        for ρ in short['ρ']])
-    srLong  = np.array([100*(D.reformSavingsRate(ρ, longRun) - D.savingsRatePath(ρ, 'base').iloc[longRun])
-                        for ρ in long_['ρ']])
+    srShort = np.array([100*(D.reformSavingsRate(ρ, 0, commonX = commonX)
+                             - D.savingsRatePath(ρ, 'base', commonX = commonX).iloc[0]) for ρ in short['ρ']])
+    srLong  = np.array([100*(D.reformSavingsRate(ρ, longRun, commonX = commonX)
+                             - D.savingsRatePath(ρ, 'base', commonX = commonX).iloc[longRun]) for ρ in long_['ρ']])
 
     # Hours are normalised against the CALIBRATED baseline at t0 -- one reference point per rho, fixed
     # across periods. Using each period's own h_base instead would re-anchor the scale every period and
@@ -188,4 +190,4 @@ def argCrraLog(longRun = 1):
                fontsize = 9, labelcolor = INK['secondary'])
     fig.suptitle('Short- and long-run effects of pension system reform, as a function of $\\rho$',
                  color = INK['primary'], fontsize = 11, x = 0.01, ha = 'left')
-    return _save(fig, 'ARG_CRRA_LOG')
+    return _save(fig, 'ARG_CRRA_LOG' + C.variantSuffix(commonX, 'ARG'))

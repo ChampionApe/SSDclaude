@@ -41,17 +41,21 @@ REPORTING CONVENTIONS -- all three matter, and none is arbitrary.
 
 THE FRENCH COUNTERFACTUALS. Three separate experiments, and the paper's own table pins what each means:
 
-  * Income distribution: France's eta_i with X_i held at the US values AND theta held at the US design --
-    see shockIncomeDistribution for why that particular combination, why the obvious alternatives to
-    holding X are all the same experiment as each other, and why theta is pinned rather than re-derived.
-    France's income groups are cut at US percentiles precisely so that gamma_i lines up and the swap is
-    like-for-like (Quant.tex).
-  * Leisure preferences: a PURE SCALE on X_i, matching France's population-weighted mean X. It is
+  * Income distribution: France's eta_i PROFILE at the US productivity LEVEL, with X_i held at the US
+    values AND theta held at the US design -- see shockIncomeDistribution for why that particular
+    combination, what "level" means here and why it has to be renormalised, why the obvious alternatives
+    to holding X are all the same experiment as each other, and why theta is pinned rather than
+    re-derived. France's income groups are cut at US percentiles precisely so that gamma_i lines up and
+    the swap is like-for-like (Quant.tex).
+  * Leisure preferences: a PURE SCALE on X_i, matching France's population-weighted mean X expressed at
+    the same productivity level the income row uses (eta_scale * Xbar_FR / Xbar_US -- see ηLevel). It is
     rescaleX, i.e. eq:us:model:scaleInvariance, so tau, the savings rate and R cannot move at all and only
-    the workweek does. US_OtherShocks.tex confirms this exactly -- its leisure row carries the baseline's
-    own 14.43% and 21.96% and moves the workweek alone (39.39 -> 33.24 under common X, -> 34.74 under
-    vector X: the size of the effect is variant-dependent because Xbar_FR/Xbar_US is, but the exact
-    zero in tau and sr is not). Anything else would be a different experiment.
+    the workweek does. The size of the effect is variant-dependent because Xbar_FR/Xbar_US is, but the
+    exact zero in tau and sr is not. Anything else would be a different experiment.
+  * The two scales are the SAME number by construction, so income row + leisure row lands on France's
+    own (eta, X) up to the joint scale the model is invariant to: the combined row (shockFrenchAll) and
+    France's own path are unchanged by how the level is normalised, only the split between the two
+    single-characteristic rows is.
   * Voting: France's mu_i. Only the PROFILE matters: FOC is linear in mu through both omega1i and omega2i,
     so a common scale cancels out of z_t = 0. US mu rises steeply across income (0.474/0.629/0.765),
     France's is nearly flat (0.810/0.857/0.852).
@@ -112,10 +116,35 @@ def shockAgeing(mt0, kind):
     return new
 
 
-def shockIncomeDistribution(mt0, ηFR, pinTheta = True, θPin = None):
-    """ France's productivity vector eta_i, with X_i HELD at the US values, at the US pension design.
+def ηLevel(mt0, ηFR):
+    """ The scale c that puts France's eta PROFILE at the US productivity LEVEL: with the US X_i and
+    gamma_i in db, c = Gamma_h(ηFR, X_US)^{-1/(1+ξ)}, so that Gamma_h = 1 holds on the shocked model
+    exactly as it does on the baseline. Evaluated at db['t0'], BEFORE the swap (X must still be the US's).
 
-    That combination is the experiment, and which combination it is matters on both counts.
+    Why a level has to be chosen at all. The model is invariant to the JOINT scale (eta, X) -> (c eta, c X)
+    -- that is what Gamma_h = 1 normalises away -- but eta -> c eta at FIXED X is not a normalisation:
+    hours depend on eta_i/X_i, so it moves h_i and hbar by c^ξ while leaving tau, s/Y and R alone
+    (eq:us:model:hoursUnit). France's calibrated eta_i carries the level that Gamma_h = 1 fixes at
+    FRANCE's X, which under common X is z^{1/(1+ξ)} X_FR^{ξ/(1+ξ)}: a factor (X_FR/X_US)^{ξ/(1+ξ)}
+    (1.14 at rho = 1) that is France's leisure preference showing up as a productivity advantage. Swapped
+    in raw it raised the income row's workweek by (X_FR/X_US)^{ξ²/(1+ξ)} = 1.040 under common X (41.97
+    against 40.36 hours) and left tau/sr/R untouched to every digit. Under vector X the raw level is set
+    by the unit-norm eigenvector instead and happened to land at Gamma_h = 0.998, so the appendix
+    numbers barely move -- but that was luck, not a property. The same c must scale the leisure row
+    (shockLeisure's ηScale) so the two rows still compose to France's own (eta, X). """
+    t0 = mt0.db['t'][mt0.db['t0']]
+    ξ = float(mt0.db['ξ'].xs(t0))
+    γ, X = mt0.db['γi'].xs(t0).values.astype(float), mt0.db['Xi'].xs(t0).values.astype(float)
+    Γh = float((γ * np.asarray(ηFR, dtype = float)**(1+ξ) / X**ξ).sum())
+    return Γh**(-1/(1+ξ))
+
+
+def shockIncomeDistribution(mt0, ηFR, pinTheta = True, θPin = None):
+    """ France's productivity PROFILE eta_i, at the US productivity level (Gamma_h = 1 at the US X_i --
+    see ηLevel), with X_i HELD at the US values, at the US pension design. Returns the scale c applied
+    to eta.
+
+    That combination is the experiment, and which combination it is matters on every count.
 
     Why the alternatives collapse. Under vector X the eigenvector identification makes y^eta proportional
     to z^eta, and every aggregate uses y^eta alone (docs eq:us:model:scaleInvariance) -- so "swap z^eta and
@@ -141,24 +170,32 @@ def shockIncomeDistribution(mt0, ηFR, pinTheta = True, θPin = None):
     than passed in, so the default reading needs no cooperation from the caller and cannot be pinned at
     another model's design by accident. Installed AFTER updateAuxPars, for the reason shockTheta gives.
 
-    eta_0 (the zero-mass slot) is kept at the US value -- it is multiplied by gamma_0 = 0, but must stay
-    finite. """
+    eta_0 (the zero-mass slot) is kept at the US value, scaled by the same c -- it is multiplied by
+    gamma_0 = 0, but must stay finite. """
     θ0 = float(mt0.db['θ'].xs(mt0.db['t'][0])) if θPin is None else float(θPin)
-    ηj = np.hstack([mt0.db['ηj'].values[0, 0], np.asarray(ηFR, dtype = float)])
+    c = ηLevel(mt0, ηFR)   # before the swap: reads the US X_i
+    ηj = c * np.hstack([mt0.db['ηj'].values[0, 0], np.asarray(ηFR, dtype = float)])
     mt0.db.update(mt0.adjPar('ηj', ηj))
-    mt0.updateAuxPars()   # Gamma_h and theta are both functions of eta/X
+    mt0.updateAuxPars()   # Gamma_h (back to 1, by construction of c) and theta are both functions of eta/X
+    Γh = float(np.asarray(mt0.db['Γh'])[mt0.db['t0']])
+    assert abs(Γh - 1) < 1e-10, f'shockIncomeDistribution: Gamma_h = {Γh} after renormalisation, expected 1'
     if pinTheta:
         mt0.db.update(mt0.adjPar('θ', θ0))   # after updateAuxPars -- see shockTheta
-    return float(mt0.db['θ'].xs(mt0.db['t'][0]))
+    return c
 
 
-def shockLeisure(mt0, xbarRatio):
-    """ France's leisure preferences: scale every X_i by xbarRatio = Xbar_FR/Xbar_US (population-weighted
-    means), i.e. rescaleX(lambda) with lambda = xbarRatio**(-xi).
+def shockLeisure(mt0, xbarRatio, ηScale = 1.):
+    """ France's leisure preferences: scale every X_i by ηScale * xbarRatio, with xbarRatio = Xbar_FR/Xbar_US
+    (population-weighted means) and ηScale the level c the income row applies to eta (ηLevel), i.e.
+    rescaleX(lambda) with lambda = (ηScale*xbarRatio)**(-xi).
+
+    ηScale is what keeps the decomposition additive: France's own (eta, X) is defined only up to the joint
+    scale, and the income row has fixed that scale at c, so France's X on the same scale is c*X_FR.
+    Passing ηScale = 1 is the raw-level reading (a null shock with xbarRatio = 1 is still a null shock).
 
     A pure scale, so tau/sr/R cannot move -- see the module docstring. Returns lambda. """
     ξ = float(mt0.db['ξ'].xs(mt0.db['t'][0]))
-    λ = float(xbarRatio)**(-ξ)
+    λ = (float(ηScale) * float(xbarRatio))**(-ξ)
     mt0.rescaleX(λ)
     return λ
 
@@ -179,11 +216,12 @@ def shockFrenchAll(mt0, d):
     """ All three French characteristics at once -- the far end of the "mostly US, partly France" scale,
     and the row that is read against France's own calibrated path (runShocksUS.franceReference).
 
-    The three commute, so the order is free: only shockIncomeDistribution touches eta, only shockLeisure
-    touches X, only shockVoting touches mu, and each ends with an updateAuxPars that re-derives theta and
-    Gamma_h from whatever eta/X are in db by then. In particular rescaleX's scaling of X_j SURVIVES the
-    later updateAuxPars -- X is stored in db, not in paramsFromFuncs -- so the leisure effect is intact
-    in the combined row.
+    Only shockIncomeDistribution touches eta, only shockLeisure touches X, only shockVoting touches mu,
+    and each ends with an updateAuxPars that re-derives theta and Gamma_h from whatever eta/X are in db
+    by then. In particular rescaleX's scaling of X_j SURVIVES the later updateAuxPars -- X is stored in
+    db, not in paramsFromFuncs -- so the leisure effect is intact in the combined row. The income step
+    must run FIRST, though: ηLevel reads the US X_i off db, and the scale it returns is what the leisure
+    step is fed, so the row ends on France's own (eta, X) up to the joint scale (c eta_FR, c X_FR).
 
     THETA IS RE-INSTALLED LAST, and it has to be. Each of the three ends with an updateAuxPars, and theta
     is in paramsFromFuncs, so the LAST one wins: shockIncomeDistribution's pin is recomputed away by
@@ -195,8 +233,8 @@ def shockFrenchAll(mt0, d):
     Returns the design the row ends on. """
     pin = d.get('pinTheta', True)
     θ0 = float(mt0.db['θ'].xs(mt0.db['t'][0])) if d.get('θUS') is None else float(d['θUS'])
-    shockIncomeDistribution(mt0, d['ηFR'], pin, θ0 if pin else None)
-    shockLeisure(mt0, d['xbarRatio'])
+    c = shockIncomeDistribution(mt0, d['ηFR'], pin, θ0 if pin else None)
+    shockLeisure(mt0, d['xbarRatio'], c)
     shockVoting(mt0, d['μFR'])
     if pin:
         mt0.db.update(mt0.adjPar('θ', θ0))
@@ -209,7 +247,7 @@ SHOCKS = {
     'mild':     ('Mild ageing',            lambda mt0, d: shockAgeing(mt0, 'mild')),
     'acute':    ('Acute ageing',           lambda mt0, d: shockAgeing(mt0, 'acute')),
     'frIncome': ('Income distribution',    lambda mt0, d: shockIncomeDistribution(mt0, d['ηFR'], d.get('pinTheta', True), d.get('θUS'))),
-    'frLeisure':('Leisure preferences',    lambda mt0, d: shockLeisure(mt0, d['xbarRatio'])),
+    'frLeisure':('Leisure preferences',    lambda mt0, d: shockLeisure(mt0, d['xbarRatio'], d.get('ηScale', 1.))),
     'frVoting': ('Voting',                 lambda mt0, d: shockVoting(mt0, d['μFR'])),
     'frAll':    ('All French characteristics', shockFrenchAll),
 }

@@ -4,8 +4,8 @@ The calibration is a nested fixed point. In the inner part we solve the full pol
     \begin{align}
         \widehat{K/Y}_{t_0} &= n_{\text{yr}}\frac{s_{t_0-1}/\nu_{t_0}}{\left(s_{t_0-1}/\nu_{t_0}\right)^{\alpha} h_{t_0}^{1-\alpha}} = n_{\text{yr}}\frac{\alpha}{R_{t_0}} \label{\refeq:calibration:KY}\\
         \hat{\tau}_{t_0} &= \tau_{t_0} \label{\refeq:calibration:tau}\\
-        \hat{\eta}_{0} &= \frac{z_0^{\eta}}{z_0^x}\frac{(1-\alpha)(1-\tau_{t_0})}{\Theta_{h,t_0}^{\alpha}\left(\frac{1-\alpha}{\Gamma_{h,t_0}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}} \label{\refeq:calibration:eta0}\\
-        \hat{X}_{0} &= \hat{\eta}_{0}\frac{\left(\frac{1-\alpha}{\Gamma_{h,t_0}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}}{\left(\Theta_{h,t_0}z_0^x\right)^{1/\xi}} \label{\refeq:calibration:X0}
+        \hat{\eta}_{0} &= \frac{z_0^{\eta}}{z_0^x}\frac{(1-\alpha)(1-\tau_{t_0})}{M_{t_0}\Theta_{h,t_0}^{\alpha}\left(\frac{1-\alpha}{\Gamma_{h,t_0}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}} \label{\refeq:calibration:eta0}\\
+        \hat{X}_{0} &= \hat{\eta}_{0}\frac{\left(\frac{1-\alpha}{\Gamma_{h,t_0}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}}{\left(\Theta_{h,t_0}z_0^xM_{t_0}\right)^{1/\xi}} \label{\refeq:calibration:X0}
     \end{align}
 \end{subequations}
 where the ``hats'' reflect exogenous targets and $t_0$ indicates a specific baseline year. In our main specification $\beta_{t,j} = \beta$ is constant over time and across types, and most exogenous parameters are constant over time except for the ageing population reflected by $\nu_t$. Loosely, $\beta$ carries the capital--output ratio, $\omega$ the tax rate, and $\eta_0, X_0$ the informal income and labour targets --- but as we note below, that reading of the Jacobian describes the dominant terms only and should not be relied on.

@@ -45,9 +45,14 @@ and `notes/informalSavings_numericalDeviations.md`.
   term, `c2i`, `dlnc2i_dτ` the second. Checks: `∑γ_iη_i·hRatio_i = 1`, `∑γ_i·hηRatio_i = 1`.
 - `χ^R` carries a *period* index: `ι_t`/`c10`/`tildec10` use `χ^R_{t+1}`, `c20`/`dv20` use `χ^R_t`.
 - `Γs`/`B`/`B0`/`si_s`/`ι` report on `db['txE']` (length `T-1`); everything else length `T`.
-- The formal `(η_i, X_i)` carry two normalisations, `Γ_h = 1` and `∑γ_i(η_i/X_i)^ξ = 1`; the informal
-  calibration (`calibrationη0/X0`) needs both, and the data `z_j` are relative to the γ-weighted formal
-  mean. `test_calibration.py` checks both.
+- Two calibration variants (`ModelInformalSavings(commonX=...)`, `calibrateRhoGrid.py --commonX`, own csv
+  and `instancesCommonX/`). Vector X (default): `Γ_h = 1` and `∑γ_i(η_i/X_i)^ξ = 1`, relative hours as
+  data. Common X: one scalar `X`, `η_i` closed-form from income with `Γ_h = 1`, `X` solved after the root
+  from the FORMAL workweek `db['h0']` (block-recursive, as the US arm); relative formal hours are a
+  prediction (`predictedRelativeHours`). The informal targets `calibrationη0/X0` carry the hours-unit
+  ratio `M = ∑γ_i(η_i/X_i)^ξ/Γ_h` (`Base.hoursUnitRatio`, 1 under vector X), and the data `z_j` are
+  relative to the γ-weighted formal mean. `X` enters no aggregate, so β, ω, τ, K/Y and every shock
+  coincide across variants to 1e-13; only `(η_i, X_i, η_0, X_0)` differ. `test_calibration.py` §6.
 - Primitives are read from db; anything solve- or policy-dependent (`τ`, `θ`/`ε`, `s`/`h`, `B`, `ι`) is an
   explicit argument. `cacheParams()` is opt-in and block-scoped.
 - Differentiate along `ln(1-τ_t)`, not `τ_t` (`policy.py`'s `_gradProfile`); do not simplify back.
@@ -101,3 +106,5 @@ experiment across the ρ grid (`match`; `flat` at ρ=1 only), and the `(ε, θ)`
   bitwise); deliberate.
 - `lnRleadΘ` reads `α`/`power_h` at `t` though they are `t+1` objects; immaterial unless they vary.
 - Not planned: a `χ^R` sweep; reducing the outer root from four parameters to two; `flat` at every ρ.
+- `informalAnalytical`'s `calibrationη0/X0` still assume `M = 1` (no common-X variant there); mirror the
+  `hoursUnitRatio` factor if that model ever gets one.

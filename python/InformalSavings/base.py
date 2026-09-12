@@ -606,9 +606,22 @@ class Base:
     #######################################################################
     # Evaluated at the single baseline year db['t0'] -- pass that year as `t`, never rely on the default.
     # calibrationη0/X0 read z_0^η/z_0^x (db['zη0']/db['zx0']) but NOT db['η0']/db['X0']: they compute the
-    # *implied* η0/X0 that model.py's calibration loop compares against the current ones. Both treat h_t as
-    # average formal hours ∑γ_i h_{t,i}; that is true only under eq (calibration:yNorm), which
-    # model.addEigenVectors imposes. A formal (η_i, X_i) that breaks it silently mis-scales η0 and X0.
+    # *implied* η0/X0 that model.py's calibration loop compares against the current ones. z_0^x is hours
+    # relative to AVERAGE FORMAL HOURS ∑γ_i h_{t,i} = h_t·hoursUnitRatio, which equals the aggregate h_t
+    # only under eq (calibration:yNorm)'s second normalisation (vector X, hoursUnitRatio = 1). Under the
+    # common-X variant that normalisation is spent on the workweek target and the ratio carries the
+    # difference (docs eq:calibration:eta0/X0, the factor M).
+    def hoursUnitRatio(self, t = None):
+        """ M_t = ∑_i γ_{t,i}(η_{t,i}/X_{t,i})^ξ / Γ_{h,t}: average formal hours over the aggregate h_t
+        (eq EE:hi summed with population weights). Exactly 1 under eq (calibration:yNorm); under common X
+        it is X^{-ξ/(1+ξ)}·∑γ_i(z^η_i)^{ξ/(1+ξ)}. """
+        return (self.get('γi', t) * self.hRatio(t)).sum(axis = -1)
+
+    def avgHoursFormal(self, h, t = None):
+        """ Average formal hours h̄_t = ∑_i γ_{t,i}h_{t,i} = h_t·M_t -- the object the observed workweek is
+        comparable to and the common-X calibration pins (NOT the aggregate h_t, which is in efficiency
+        units and does not respond to the hours unit). """
+        return h * self.hoursUnitRatio(t)
     def savingsRate(self, s, s_, h, t = None):
         """ Eq (calibration:sr): s_t / ((s_{t-1}/ν_t)^α h_t^{1-α}). s, s_=s_{t-1}, h explicit.
         Reported, not targeted -- capitalOutputRatio identifies β (see it). """
@@ -627,14 +640,18 @@ class Base:
         return self.db['yearsPerPeriod'] * (s_/self.get('ν', t)/h)**(1-α)
 
     def calibrationη0(self, Θh, τ, t = None):
-        """ Eq (calibration:eta0): η_0 implied by z_0^η/z_0^x at a given Θ_{h,t}, τ_t. """
+        """ Eq (calibration:eta0): η_0 implied by z_0^η/z_0^x at a given Θ_{h,t}, τ_t, with z_0^x read
+        against average formal hours h_t·M_t (hoursUnitRatio; M = 1 under vector X). """
         α, ξ, Γh = self.get('α', t), self.get('ξ', t), self.Γh(t)
-        return (self.get('zη0', t)/self.get('zx0', t)) * (1-α)*(1-τ) / (Θh**α * ((1-α)/Γh**α)**(1/(1+α*ξ)))
+        M = self.hoursUnitRatio(t)
+        return (self.get('zη0', t)/self.get('zx0', t)) * (1-α)*(1-τ) / (M * Θh**α * ((1-α)/Γh**α)**(1/(1+α*ξ)))
 
     def calibrationX0(self, η0, Θh, t = None):
-        """ Eq (calibration:X0): X_0 implied by a given η_0, Θ_{h,t}. Feed it calibrationη0's output. """
+        """ Eq (calibration:X0): X_0 implied by a given η_0, Θ_{h,t}. Feed it calibrationη0's output.
+        Informal hours are z_0^x·M_t·h_t, so M sits inside the 1/ξ power. """
         α, ξ, Γh = self.get('α', t), self.get('ξ', t), self.Γh(t)
-        return η0 * ((1-α)/Γh**α)**(1/(1+α*ξ)) / (Θh*self.get('zx0', t))**(1/ξ)
+        M = self.hoursUnitRatio(t)
+        return η0 * ((1-α)/Γh**α)**(1/(1+α*ξ)) / (Θh*self.get('zx0', t)*M)**(1/ξ)
 
 
 class BaseGrid(Base):

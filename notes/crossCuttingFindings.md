@@ -186,3 +186,17 @@ the rows are individually correct equilibria of a different economy; the only te
 check it (exactly one `statusQuo`, matching the calibration record). `--force` must reach the process that
 owns the skip. Document the invalidating *event* (a recalibration), not only the invalidating setting.
 Tell: a skip key that is a strict subset of what the rows depend on.
+
+## 14. A log held open by a reader is a log the writer cannot append to
+
+**Statement.** On Windows, Git's `tail -F` opens a file without write sharing, so a PowerShell
+`Add-Content` to that file fails with "being used by another process"; inside a `.ps1` the error is
+non-terminating, the script runs on, and the pipeline log ends up with its first line only while every
+stage silently completes (twice on 2026-09-11: `logs/argPipeline0911.log`, `logs/usPipeline0911.log`).
+
+**Tell.** A pipeline log frozen at `START`/`WAITING` while the per-stage logs keep growing; no `exit`
+lines, no `DONE`; the stage logs' mtimes are the only record.
+
+**Habit.** Never hold a pipeline log open: watch it with `until grep -q DONE log; do sleep 30; done`
+(open, read, close), never with `tail -F` or a Monitor built on it. When the log is frozen, read the
+stage logs and their mtimes before concluding anything about the run.

@@ -46,9 +46,10 @@ SUITES = [
     ('US/test_fr.py',                             False, '~20 s: ModelFR -- imposed β, US-referenced h̄'),
     ('US/test_eu.py',                             False, 'the FR/UK workbooks end to end through ModelFR'),
     ('US/test_createCopyFromt0.py',               False, 'model copies from t0 -- the shock machinery'),
-    ('US/test_esc.py',                            False, '~12 s: the θ wedge, leaded and permanent choices'),
+    ('US/test_esc.py',                            False, '~100 s: the θ wedge, leaded/permanent structure, sequential FOC sign, ESC method column'),
     ('informalAnalytical/test_calibration.py',    True,  'nested-fixed-point calibration'),
-    ('InformalSavings/test_calibration.py',       True,  '~12 min: four LOG calibrations and one CRRA'),
+    ('US/test_escTiming.py',                      True,  '~75 s: the permanent timing\'s LOG reference numbers and calibrated p'),
+    ('InformalSavings/test_calibration.py',       True,  '~15 min: five LOG calibrations (one common X) and one CRRA'),
     ('InformalSavings/test_calibrationGrid.py',   True,  '~45 min: three real calibrations over a ρ grid'),
     ('US/test_escCRRA.py',                        True,  '~7 min: LeadedCRRA vs its LOG limit; the 2-D solver vs both'),
 ]

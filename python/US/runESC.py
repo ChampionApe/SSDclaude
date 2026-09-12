@@ -384,8 +384,9 @@ def frenchData(m, commonX = False):
     # muFR is the WORKBOOK's mu_j -- nj entries, including the zero-mass slot -- because shockVoting
     # installs it through adjPar('μj'). Passing the ni-length mu_i instead raises a shape error, which is
     # how this was caught. eta is the other way round: shockIncomeDistribution takes eta_i.
-    return {'ηFR': mFR.db['ηi'].xs(t0FR).values.astype(float),
-            'μFR': parsFR['μj'],
+    ηFR = mFR.db['ηi'].xs(t0FR).values.astype(float)
+    return {'ηFR': ηFR, 'μFR': parsFR['μj'],
+            'ηScale': sh.ηLevel(m, ηFR),   # as runShocksUS.frenchData: the leisure row needs the income row's scale
             'xbarRatio': XbarFR/XbarUS, 'pinTheta': True,
             'θUS': float(m.db['θ'].xs(t0US))}
 
@@ -459,7 +460,7 @@ def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None, commonX = False):
             m = buildUS(None, ρ = ρ, commonX = commonX)
             m.calibrate()
             r = m.solvePermanent('LOG', θCand = θCand)
-            rows.append({'spec': 'none', 'phi': np.nan, 'p': np.nan, 'source': 'none',
+            rows.append({'spec': 'none', 'phi': np.nan, 'commonX': commonX, 'p': np.nan, 'source': 'none',
                          'θStar': float(m.db['θ'].xs(m.t0Year)), 'θPerm': r['θ'],
                          'atBound': r['atBound'], 'nTurning': r['nTurning'],
                          'converged': r['converged'], 'θPermIncumbent': r['θIncumbent'],
@@ -478,7 +479,8 @@ def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None, commonX = False):
                 rec = {'converged': False, 'p': np.nan, 'message': str(e)}
             if rec['converged']:
                 r = m.solvePermanent('LOG', θCand = θCand)
-                rows.append({'spec': spec, 'phi': phi, 'p': rec['p'], 'source': 'permanent',
+                rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': rec['p'],
+                             'source': 'permanent',
                              'θStar': rec['θ'], 'θPerm': r['θ'], 'atBound': r['atBound'],
                              'nTurning': r['nTurning'], 'converged': r['converged'],
                              'θPermIncumbent': r['θIncumbent'], 'θPermMovingSi': r['θMoving'],

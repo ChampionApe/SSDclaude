@@ -51,7 +51,7 @@ PKLDIR = os.path.join(OUTDIR, 'instances')
 
 # Ordered so the csv reads as: what was solved, what it cost, whether to believe it, then the answer.
 COLUMNS = ['ρ', 'preferences', 'requested', 'residual', 'verifyResidual', 'occupancyι', 'occupancys',
-           'β', 'ω', 'η0', 'X0',
+           'β', 'ω', 'η0', 'X0', 'X', 'hbar', 'commonX',
            'KY', 'sr', 'τ', 'ι', 'nRoots', 'nfev', 'time', 'nι', 'ns', 'nτ', 'x0', 'x1', 'x2', 'x3',
            'commit', 'timestamp']
 # occupancy* sit beside verifyResidual because they answer the same kind of question and neither is
@@ -74,8 +74,8 @@ def toRow(rec, requested, commit):
     """ calibratePoint's record -> one flat csv row. """
     g = rec['gridSettings']
     row = {k: rec.get(k) for k in ('ρ', 'preferences', 'residual', 'verifyResidual', 'occupancyι',
-                                   'occupancys', 'β', 'ω', 'η0', 'X0', 'KY', 'sr', 'τ', 'ι', 'nRoots',
-                                   'nfev', 'time')}
+                                   'occupancys', 'β', 'ω', 'η0', 'X0', 'X', 'hbar', 'commonX', 'KY',
+                                   'sr', 'τ', 'ι', 'nRoots', 'nfev', 'time')}
     row |= {'requested': requested, 'nι': g.get('nι'), 'ns': g.get('ns'), 'nτ': g.get('n'),
             'commit': commit, 'timestamp': datetime.datetime.now().isoformat(timespec = 'seconds')}
     row |= {f'x{i}': v for i, v in enumerate(rec['x'])}
@@ -125,12 +125,16 @@ def main():
                    help = 'also give the LOG anchor the CRRA grid SIZES, so nothing but the recursion '
                           'changes at rho=1 (diagnostic; interpKind is already shared)')
     p.add_argument('--force', action = 'store_true', help = 're-solve points already present in the csv')
-    p.add_argument('--out', default = CSV)
+    # The common-X calibration variant (model.py __init__): its own csv and instance directory, since
+    # the two variants answer the same rho with different (eta_i, X_i, eta_0, X_0) (finding #13).
+    p.add_argument('--commonX', action = 'store_true',
+                   help = 'the common-X variant: informalSavings_rhoGridCommonX.csv, instancesCommonX/')
+    p.add_argument('--out', default = None, help = "default: the variant's own csv")
     # A sweep written to a non-default --out must also get its own --pkldir, or it silently overwrites the
     # canonical sweep's instances wherever the two grids share a value (the filename is the rho alone).
     # That matters even when the settings agree: the code is bitwise reproducible within a process but not
     # across them, so the overwrite is not a no-op and shockUniversal.py reads these by name.
-    p.add_argument('--pkldir', default = PKLDIR, help = 'where the per-point pickled instances go')
+    p.add_argument('--pkldir', default = None, help = "where the per-point pickled instances go (default: the variant's own)")
     # The anchor's starting parameters. Every other point is seeded from the march history, but the anchor
     # has only test.py's defaults (beta=0.6, omega=2), and the iota state grid is built from the steady
     # state at whatever parameters the residual is FIRST evaluated at -- at a capital share of 0.35 those
@@ -139,6 +143,11 @@ def main():
     p.add_argument('--x0', type = float, nargs = 4, metavar = ('BETA', 'OMEGA', 'ETA0', 'X0'),
                    default = None, help = "the anchor's starting (beta, omega, eta0, X0)")
     args = p.parse_args()
+    tag = 'CommonX' if args.commonX else ''
+    if args.out is None:
+        args.out = os.path.join(OUTDIR, f'informalSavings_rhoGrid{tag}.csv')
+    if args.pkldir is None:
+        args.pkldir = os.path.join(OUTDIR, f'instances{tag}')
 
     pkldir = args.pkldir
     os.makedirs(OUTDIR, exist_ok = True)
@@ -193,7 +202,10 @@ def main():
         print('resuming: {} of {} points already in {}'.format(
             sum(round(float(v), 6) in done for v in grid), len(grid), os.path.relpath(args.out, REPO)))
 
-    m = ModelInformalSavings(pars = testmod.pars | {'ρ': float(args.anchor)}, **testmod.kwargs)
+    m = ModelInformalSavings(pars = testmod.pars | {'ρ': float(args.anchor)}, commonX = args.commonX,
+                             **testmod.kwargs)
+    print('calibration variant: {}'.format('common X (formal workweek targeted)' if args.commonX
+                                            else 'vector X_i (relative hours as data)'))
 
     def write():
         (pd.DataFrame(list(rows.values())).reindex(columns = COLUMNS).sort_values('ρ')
@@ -212,9 +224,10 @@ def main():
             return {'x': x, 'cached': True}
         rec = m.calibratePoint(ρ, x0 = x0, gridSettings = gridSettings, verify = verify)
         print('  rho={:<6} {:<4} max|res|={:.2e}  verify={:.2e}  nfev={:<3} {:.0f}s  '
-              'β={:.5f} ω={:.5f} η0={:.5f} X0={:.5f}'.format(
+              'β={:.5f} ω={:.5f} η0={:.5f} X0={:.5f}{}'.format(
                   key, rec['preferences'], rec['residual'], rec.get('verifyResidual', np.nan),
-                  rec['nfev'], rec['time'], rec['β'], rec['ω'], rec['η0'], rec['X0']))
+                  rec['nfev'], rec['time'], rec['β'], rec['ω'], rec['η0'], rec['X0'],
+                  '  X={:.4f} hbar={:.4f}'.format(rec['X'], rec['hbar']) if 'X' in rec else ''))
         return rec
 
     def onPoint(r):

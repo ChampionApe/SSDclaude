@@ -41,8 +41,9 @@ SCENARIOS = [(r'$\theta = 0$',        r'$\theta = 0$',        'design'),
              ('Acute ageing',         'Acute ageing',         'ageing'),
              ('Mild ageing',          'Mild ageing',          'ageing'),
              ('French voting',        'Voting',               'french'),
-             ('French income distr.', 'Income distribution',  'french'),
-             ('French leisure',       'Leisure preferences',  'french')]
+             ('French income distr.', 'Income distribution',  'french')]
+# 'Leisure preferences' -- a pure rescaling of X_i that moves hours alone -- is run and in the csv but
+# no longer printed anywhere in the paper (dropped 2026-09-11 as uninformative).
 
 # The three reported quantities, as (csv column, panel title, axis label, how to scale a deviation).
 # tau and srOverY are fractions on the csv and are read in percentage points; the workweek is already
@@ -118,10 +119,9 @@ def usOverview(commonX = None):
     config.US['rhoTable'].
 
     Read as: which characteristics move each outcome, and does that ranking survive the IES. Ageing and
-    pension design should dominate the tax panel and the three French characteristics should be visibly
-    minor there -- while the workweek panel inverts that, since leisure preferences are a pure change of
-    the hours unit and move hours alone. Putting the three panels side by side on a SHARED scenario axis
-    is what makes that inversion readable.
+    pension design should dominate the tax panel and the French characteristics should be visibly minor
+    there, while none of them moves the workweek by much. Putting the three panels side by side on a
+    SHARED scenario axis is what makes the two rankings comparable.
     """
     commonX = C.US['commonX'] if commonX is None else commonX
     df = D.usShocks(commonX = commonX)
@@ -157,11 +157,11 @@ def usOverview(commonX = None):
 # only and a row of it would be a hole at two thirds of the grid. 'frBoth' has no main-text
 # counterpart: it is the pair whose two halves move the DESIGN in opposite directions, which is why the
 # appendix runs it. 'frAll' is left out: by scale invariance it carries the same design, tax and
-# savings as 'frBoth' and differs only in hours, which this figure does not report.
+# savings as 'frBoth' and differs only in hours, through France's level of X -- the leisure rescaling
+# the paper no longer reports as a shock of its own ('frLeisure' is likewise run but not drawn).
 ESCSCENARIOS = [('Acute ageing',            'acute'),
                 ('French voting',           'frVoting'),
                 ('French income distr.',    'frIncome'),
-                ('French leisure',          'frLeisure'),
                 ('Income distr.\n+ voting', 'frBoth')]
 
 
@@ -227,11 +227,22 @@ def escOverview():
     chosen politically, against what it does at a fixed design -- as dumbbells from the pinned reading
     (open marker) to the chosen one (filled marker), one per (scenario, rho).
 
-    Three panels. The design itself first, as a LEVEL: every dumbbell there starts at the US design,
-    so its length is the design response and the muted lines at 0 and 1 are the corners the text refers
-    to. Then the tax rate and savings over GDP as deviations from the endogenous-theta baseline, so the
-    pinned end is the main-text reading and the dumbbell is what endogenising the design adds. A
-    dumbbell that collapses to a dot IS the finding for that row (ageing, leisure).
+    Four panels in a 2 x 2 grid. The design itself first, as a LEVEL: every dumbbell there starts at
+    the US design, so its length is the design response and the muted lines at 0 and 1 are the corners
+    the text refers to. Then the tax rate, savings over GDP and the average workweek as deviations from
+    the endogenous-theta baseline, so the pinned end is the main-text reading and the dumbbell is what
+    endogenising the design adds. A dumbbell that collapses to a dot IS the finding for that row (ageing
+    in the tax panel).
+
+    2 x 2 rather than one row of four: at \linewidth a row of four narrow panels shrinks the type below
+    legibility and squeezes the tax panel's 12-point range into an inch. The grid keeps every panel at
+    half the width, and the scenario labels are repeated on the left of each row so a panel can be read
+    without tracing back across the page. All four share one scenario axis (sharey), so inverting it
+    once (_topDown) puts the first scenario at the top everywhere.
+
+    The workweek is in hours, normalised against that rho's own baseline inside the ESC driver (the
+    csv's ww_t0), for the reason tablesUS.py gives: under vector X the level of hbar is not identified,
+    so stage (iii) never re-derives it.
 
     Every row is a new equilibrium path whose political choice binds from the first period, so the
     design in force in 2020 is itself an outcome. All panels are read at 2020.
@@ -250,9 +261,11 @@ def escOverview():
                '$\\theta$ in force (0 = Beveridgean, 1 = Bismarckian)', 1., True),
               ('τ_t0',  'Equilibrium tax rate', 'Change in $\\tau$ (percentage points)', 100., False),
               ('sr_t0', 'Savings over GDP', 'Change in $s/Y$ (percentage points of GDP)',
-               100.*(1 - α), False)]
+               100.*(1 - α), False),
+              ('ww_t0', 'Average workweek', 'Change in average hours worked per week', 1., False)]
 
-    fig, axes = plt.subplots(1, len(panels), figsize = (9.6, 0.75*len(labels) + 2.3), sharey = True)
+    fig, grid = plt.subplots(2, 2, figsize = (9.6, 2*(0.56*len(labels) + 1.4) + 1.3), sharey = True)
+    axes = grid.ravel()
     for ax, (col, title, xlabel, scale, level) in zip(axes, panels):
         pairs = []
         for ρ in ρs:
@@ -268,6 +281,10 @@ def escOverview():
                        ref = θstar if level else 0., extraRefs = (0., 1.) if level else ())
     axes[0].set_xlim(-0.04, 1.06)
     _topDown(axes)
+    # sharey hides the inner columns' tick labels; the second ROW's left panel keeps its own, which is
+    # what lets the lower panels be read without tracing back up the page.
+    for ax in grid[:, 0]:
+        ax.tick_params(axis = 'y', labelleft = True)
 
     handles = [Line2D([], [], color = c, linewidth = 1.8, label = r'$\rho = ' + C.num(ρ, 1) + '$')
                for c, ρ in zip(colours, ρs)]
@@ -281,8 +298,9 @@ def escOverview():
     b = D.escRow(df, ρ0, spec, 'baseline', False)
     _figLegend(fig, handles, [h.get_label() for h in handles],
                'Deviations from the endogenous-$\\theta$ baseline, which at $\\rho = {}$ chooses '
-               '$\\theta = {:.3f}$, a tax rate of {:.1f}% and savings of {:.1f}% of GDP. Savings are '
-               'relative to GDP, $s/Y$.'.format(C.num(ρ0, 1), θstar, 100*float(b['τ_t0']),
-                                                100*(1 - α)*float(b['sr_t0'])),
-               bottom = 0.1)
+               '$\\theta = {:.3f}$, a tax rate of {:.1f}%, savings of {:.1f}% of GDP\nand a {:.1f}-hour '
+               'week. Savings are relative to GDP, $s/Y$.'.format(
+                   C.num(ρ0, 1), θstar, 100*float(b['τ_t0']), 100*(1 - α)*float(b['sr_t0']),
+                   float(b['ww_t0'])),
+               bottom = 0.07)
     return _save(fig, 'US_ESC_overview')

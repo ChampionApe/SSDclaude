@@ -59,20 +59,28 @@ class ModelInformalSavings:
     _PolicyLogClass = LOG
     _PolicyCRRAClass = CRRA
 
-    def __init__(self, nj = 4, T = 10, pars = None, **kwargs):
+    def __init__(self, nj = 4, T = 10, pars = None, commonX = False, **kwargs):
         """ Model with informal households.
-        
+
         Parameters
         ----------
         nj: Integer - number of household types.
         T : Integer - years.
-        
+        commonX: bool - the calibration variant of the formal (η_i, X_i). False: vector X_i from relative
+            income AND relative hours (docs eq:calibration:etai/Xi, both normalisations of
+            eq:calibration:yNorm). True: one scalar X across the formal types, η_i from relative income
+            alone with Γ_h = 1, and X pinned after the root by the observed formal workweek db['h0']
+            (as the US arm's variant B); relative formal hours are then a prediction. The informal
+            (η_0, X_0) are calibrated under both, with the hours-unit ratio M carried through
+            Base.calibrationη0/X0.
+
         db : dict
             Keys = Variable names (string).
-            Values = Data either stored as scalars, pandas series, or numpy arrays.        
+            Values = Data either stored as scalars, pandas series, or numpy arrays.
         """
         self.nj, self.T = nj, T
         self.ni = self.nj-1
+        self.commonX = bool(commonX)
         self.db = {} # dictionary database
         self.x0 = {} # cache of last-used/default initial guesses for numerical problems, keyed by problem name
         self.addProperty('paramsFromFuncs', ['Γh','θ','eps','κ']) # list of auxiliary parameters to be recalculated when deep parameters are updated
@@ -185,6 +193,8 @@ class ModelInformalSavings:
         value = getattr(self, '_paramsFromFuncs', getattr(self, '_paramFromFuncs', None))
         if value is not None:
             self.addProperty('paramsFromFuncs', value)
+        if 'commonX' not in self.__dict__:      # an instance pickled before the variant existed: vector X
+            self.commonX = False
 
     def initIdxs(self):
         self.db['t'] = pd.Index(range(self.T), name = 't')
@@ -321,8 +331,16 @@ class ModelInformalSavings:
 
     # Initialize productivity distribution:
     def initProductivity(self):
-        """Get ηi, Xi based on data on relative income/labor supply."""
-        # i. ηj, Xj stuff:
+        """ Get ηi, Xi from data on relative income (and, under vector X, relative hours); see __init__'s
+        commonX. The informal (η_0, X_0) get a starting guess here under both variants -- they are
+        calibrated parameters (eq:calibration:eta0/X0), not data. """
+        if self.commonX:
+            self.initProductivity_commonX()
+        else:
+            self.initProductivity_vectorX()
+
+    def initProductivity_vectorX(self):
+        """ Vector X_i: both eigenvector systems, both normalisations of eq (calibration:yNorm). """
         self.addEigenVectors()
         ηi = self.getηi()
         η0 = 0.3 * ηi[0] * self.db['zη0'].xs(self.db['t0'])/self.db['zηi'].xs(self.db['t0'])[1] # initial guess for η0 based on the rest of the vector
@@ -330,6 +348,55 @@ class ModelInformalSavings:
         xj = self.db['zxj'].xs(self.db['t0'])
         yx = np.hstack([self.db['yx'][0]*xj[0]/xj[1], self.db['yx']]) # inital guess for yx vector.
         self.db.update(self.adjPar('Xj', self.db['ηj'].values/(np.tile(yx, (self.T,1))**(1/self.db['ξ'].values.reshape(self.T,1)))))
+
+    def zηiNormalized(self):
+        """ z^η_i rescaled so that ∑_i γ_i z^η_i = 1 over the formal types (eq calibration:z; test.py
+        already normalises to the γ-weighted formal mean, this guards it). At db['t0']. """
+        t0 = self.db['t0']
+        zηi, γi = self.db['zηi'].xs(t0).values, self.db['γi'].xs(t0).values
+        return zηi/(γi*zηi).sum()
+
+    def initProductivity_commonX(self, X = 1., keepInformal = False):
+        """ Common X: η_{t,i} = (z^η_i)^{1/(1+ξ_t)}·X^{ξ_t/(1+ξ_t)} and X_{t,i} = X, so Γ_h = 1 for ANY X
+        (docs eq:calibration:etaCommonX, as the US arm). X enters no aggregate, which is why it can be
+        pinned by the workweek after the root (solveCommonX). The second normalisation of
+        eq (calibration:yNorm) is NOT imposed: M = ∑γ_i(η_i/X)^ξ = X^{-ξ/(1+ξ)}∑γ_i(z^η_i)^{ξ/(1+ξ)} is
+        what Base.hoursUnitRatio carries into the informal targets.
+
+        keepInformal: leave column 0 of ηj/Xj (the calibrated η_0, X_0) as db holds it -- the post-root
+        rescaling re-derives them itself; False seeds them as initProductivity_vectorX does. """
+        t0 = self.db['t0']
+        ξ = self.db['ξ'].values.reshape(self.T, 1)
+        ηi = self.zηiNormalized().reshape(1, self.ni)**(1/(1+ξ)) * X**(ξ/(1+ξ))
+        if keepInformal:
+            η0, X0 = self.db['ηj'].values[:, :1], self.db['Xj'].values[:, :1]
+        else:
+            zη, zx = self.db['zηj'].xs(t0).values, self.db['zxj'].xs(t0).values
+            η0 = np.full((self.T, 1), 0.3 * ηi[0, 0] * zη[0]/zη[1])
+            yx0 = (ηi[:, :1]/X)**ξ * zx[0]/zx[1]                  # informal y^x seeded off type 1
+            X0 = η0/yx0**(1/ξ)
+        self.db.update(self.adjPar('ηj', np.hstack([η0, ηi])))
+        self.db.update(self.adjPar('Xj', np.hstack([X0, np.full((self.T, self.ni), float(X))])))
+
+    def hbarTarget(self):
+        """ The formal average workweek h̄_{t0} the common-X calibration pins X to: db['h0'], the
+        observed workweek as a share of discretionary time (test.py). """
+        return self.db['h0']
+
+    def solveCommonX(self, h):
+        """ Docs eq:calibration:Xsolve: the X at which average formal hours at db['t0'] hit hbarTarget(),
+        given the aggregate h_{t0} an already-solved equilibrium produced. Closed form and exact: X enters
+        no aggregate, so h_{t0} on the right does not move when X is applied. """
+        t0 = self.db['t0']
+        ξ, γi = self.db['ξ'].xs(t0), self.db['γi'].xs(t0).values
+        S = (γi * self.zηiNormalized()**(ξ/(1+ξ))).sum()
+        return float((h * S/self.hbarTarget())**((1+ξ)/ξ))
+
+    def predictedRelativeHours(self):
+        """ The model's formal hours relative to the formal average, h_{t0,i}/h̄_{t0} = hRatio_i/M -- data
+        under vector X (equal to db['zxi']), a prediction under common X (∝ (z^η_i)^{ξ/(1+ξ)}). """
+        t0 = self.db['t'][self.db['t0']]
+        return np.asarray(self.B.hRatio(t0), dtype = float).ravel() / float(self.B.hoursUnitRatio(t0))
 
     def addEigenVectors(self):
         """ Eq (calibration:yNorm): both eigenvectors scaled to γ·y = 1, i.e. Γ_h = 1 AND ∑γ_i(η_i/X_i)^ξ = 1.
@@ -846,7 +913,10 @@ class ModelInformalSavings:
         h, s, s_ = rep['h'].xs(t0), rep['s'].xs(t0), rep['s_'].xs(t0)
         Θh = self.B.ΘhFromH(h, s_, t0)
         η0 = self.B.calibrationη0(Θh, τ, t0)
-        return {'KY': self.B.capitalOutputRatio(s_, h, t0), 'τ': τ, 'Θh': Θh,
+        # h and hbar are reported, not targeted, by the root: hbar (average FORMAL hours) is what the
+        # common-X post-root step points solveCommonX at.
+        return {'KY': self.B.capitalOutputRatio(s_, h, t0), 'τ': τ, 'Θh': Θh, 'h': float(h),
+                'hbar': float(self.B.avgHoursFormal(h, t0)),
                 'sr': self.B.savingsRate(s, s_, h, t0),
                 'η0': η0, 'X0': self.B.calibrationX0(η0, Θh, t0), 'PEE': out}
 
@@ -895,16 +965,24 @@ class ModelInformalSavings:
         is left holding the converged parameters and equilibrium. """
         if preferences is None:
             preferences = 'LOG' if self.db['ρ'].xs(self.db['t'][self.db['t0']]) == 1 else 'CRRA'
+        if self.commonX and 'h0' not in self.db:
+            raise KeyError("calibrate: commonX=True needs the formal workweek target db['h0'] (see test.py).")
+        snapshot = dict(self.db)
+        if self.commonX:
+            # The root runs at the reference scale X = 1, whatever X the previous point left in db, so
+            # the unbounded warm start (η_0, X_0 at X = 1) and the residual agree; X is applied after.
+            self.initProductivity_commonX(X = 1., keepInformal = True)
+            self.updateAuxPars()
         if x0 is None:
             x0 = self.x0.get('calibration', self._calToX(self.calibrationPars))
         kwargs = self._calOuterKwargs.get(preferences, {}) | kwargs   # caller wins, per top-level key
-        snapshot = dict(self.db)
         try:
             res = optimize.root(self.calibration_residual, x0, args = (preferences, solveKwargs), **kwargs)
             pars = self._calFromX(res.x)
             report = self.calibration_report(pars, preferences, solveKwargs)
             residual = self._calResidual(report, pars)
             self._checkConverged(residual, tol = tol, name = 'calibrate', scipyRes = res)
+            pars, report = self._calPostRoot(pars, report, preferences, solveKwargs, tol)
         except Exception:
             self.db.clear() # self.B/BG/BT hold a reference to this dict, so restore in place
             self.db.update(snapshot)
@@ -912,6 +990,32 @@ class ModelInformalSavings:
         if update:
             self.x0['calibration'] = res.x
         return {'pars': pars, 'x': res.x, 'residual': residual, 'report': report, 'scipyRes': res}
+
+    def _calPostRoot(self, pars, report, preferences, solveKwargs, tol):
+        """ The block-recursive half of the common-X calibration (docs eq:calibration:Xsolve): X from the
+        solved h_{t0} so that average formal hours hit db['h0'], the formal η_i re-installed at that X,
+        and the informal (η_0, X_0) re-derived at the UNCHANGED Θ_h and τ -- they carry the hours-unit
+        ratio M, which moved with X, while the aggregate equilibrium did not. The equilibrium is then
+        re-solved so db and the returned report hold the final parameters, and the identity is checked:
+        K/Y and τ reproduce the root's, η_0/X_0 are self-consistent, and h̄ hits its target. Any drift
+        beyond `tol` means an η/X has leaked into an aggregate other than through η^{1+ξ}/X^ξ, so it
+        raises. A no-op under vector X. """
+        if not self.commonX:
+            return pars, report
+        t0 = self.db['t'][self.db['t0']]
+        X = self.solveCommonX(report['h'])
+        self.initProductivity_commonX(X = X, keepInformal = True)
+        self.updateAuxPars()                                    # Γh, θ, eps, κ are functions of ηi/Xi
+        η0 = float(self.B.calibrationη0(report['Θh'], report['τ'], t0))
+        X0 = float(self.B.calibrationX0(η0, report['Θh'], t0))
+        pars = pars | {'η0': η0, 'X0': X0, 'X': X}
+        reportX = self.calibration_report({k: pars[k] for k in self._calPars}, preferences, solveKwargs)
+        drift = np.array([reportX['KY']/report['KY'] - 1, reportX['τ'] - report['τ'],
+                          reportX['η0']/η0 - 1, reportX['X0']/X0 - 1,
+                          reportX['hbar']/self.hbarTarget() - 1])
+        self._checkConverged(drift, tol = tol, name = 'calibrate (commonX rescaling)')
+        reportX['commonXdrift'] = drift
+        return pars, reportX
 
     #######################################################################
     ##########   8.1. Calibration over a grid of parameter values    ######
@@ -1014,10 +1118,15 @@ class ModelInformalSavings:
                'nRoots': None if init is None else int(init['nRoots']),
                'gridSettings': dict(policy.GS['PEE']['gridSettings'])}
         rec.update({k: float(v) for k, v in cal['pars'].items()})
+        rec['hbar'] = float(rep['hbar'])
+        rec['commonX'] = self.commonX
         rec.update(self._calOccupancy(policy, cal['report']['PEE']))
         verifySettings = self._calGridSettings(verify, preferences) if verify else None
         if verifySettings:
-            rec['verifyResidual'] = self._calVerify(cal['x'], preferences, policy, verifySettings, settings)
+            # At the FINAL parameters, not the root's x: under common X the root ran at X = 1 and the
+            # post-root step rescaled η_0/X_0 with X, so cal['x'] would be evaluated at the wrong scale.
+            xFinal = self._calToX({k: cal['pars'][k] for k in self._calPars})
+            rec['verifyResidual'] = self._calVerify(xFinal, preferences, policy, verifySettings, settings)
         return rec
 
     def calibrateGrid(self, grid, par = 'ρ', anchor = 1.0, gridSettings = None, verify = None,

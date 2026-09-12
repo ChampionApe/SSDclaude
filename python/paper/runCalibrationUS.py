@@ -2,11 +2,17 @@ r""" Stage (i) of the paper pipeline, US/France/UK arm: produce the calibration 
 rest on. The Argentina arm is runCalibration.py; the two are separate entry points because they delegate
 to different sweep scripts, and share config.py and results/paper/.
 
-Run:  .venv\Scripts\python.exe python\paper\runCalibrationUS.py       check what exists, solve what does not
+Run:  .venv\Scripts\python.exe python\paper\runCalibrationUS.py       the MAIN part: check what exists, solve what does not
+      ... --prepub                                                     the PRE-PUBLICATION part only (the exact CRRA wedge, the phi runs)
+      ... --all                                                        both parts
       ... --force                                                      re-solve every point
       ... --summaryOnly                                                skip solving; just rebuild the summary
       ... --commonX                                                    also sweep the common-X variant
       ... --dry                                                        print the commands and exit
+
+TWO PARTS, as runShocksUS.py: the main part is the sweeps, the LOG wedge calibration and the summary; the
+pre-publication part is the EXACT CRRA wedge calibration (runESCcrra.py --exact, the published method,
+~1.2 h per rho from scratch) and the phi-robustness wedge calibrations under LOG (the phi footnote).
 
 Two things happen, and only the first is expensive:
 
@@ -73,42 +79,61 @@ def missing(country, commonX = False):
     return [ρ for ρ in C.US['ρGrid'] if round(ρ, 6) not in have]
 
 
-def escMissing():
-    """ The ESC wedge-calibration commands whose (rho, spec) rows results/esc does not already carry
-    (converged, at config.US['esc']'s phi). One command per missing combination -- the drivers merge
-    into their csvs (runESC.mergeWrite), so partial re-runs are safe. """
+PHIROBUST = [0.25, 0.75]      # the phi footnote in sec:esc: LOG wedge calibrations at phi != esc['phi']
+
+
+def _escLogRows(phis):
+    """ {(spec, phi)} of converged LOG wedge calibrations on file, under the headline variant. """
+    path = os.path.join(C.ESCDIR, 'escCalibration.csv')
+    if not os.path.exists(path):
+        return set()
+    df = pd.read_csv(path)
+    ok = df[df['converged'].astype(bool)]
+    if 'commonX' in ok.columns:
+        ok = ok[ok['commonX'].astype(bool) == bool(C.US['commonX'])]
+    return {(s, round(float(p), 6)) for s, p in zip(ok['spec'], pd.to_numeric(ok['phi'], errors = 'coerce'))
+            if p == p}
+
+
+def escMissing(part = 'main', force = False):
+    """ The ESC wedge-calibration commands whose rows results/esc does not already carry (converged, at
+    config.US['esc']'s phi, headline variant). One command per missing combination -- the drivers merge
+    into their csvs (runESC.mergeWrite), so partial re-runs are safe.
+
+    'main': the LOG calibration at esc['phi'] (also the no-wedge row). 'prepub': the EXACT CRRA
+    calibrations at every rho the ESC tables print (method = 'exact' rows -- the path iteration's rows in
+    the same csv do not count), and the LOG calibrations at PHIROBUST. `force` lists them all. """
     esc = C.US['esc']
-    specs = [esc['spec']]
-    phi = esc['phi']
+    spec, phi = esc['spec'], esc['phi']
     # The ESC leg runs under the headline calibration variant only -- see paper/runShocksUS.ESCVARIANT.
     variant = ['--commonX'] if C.US['commonX'] else []
     cmds = []
-    pathL = os.path.join(C.ESCDIR, 'escCalibration.csv')
-    haveL = set()
-    if os.path.exists(pathL):
-        df = pd.read_csv(pathL)
-        ok = df[df['converged'].astype(bool)
-                & np.isclose(pd.to_numeric(df['phi'], errors = 'coerce'), phi)]
-        if 'commonX' in ok.columns:
-            ok = ok[ok['commonX'].astype(bool) == bool(C.US['commonX'])]
-        haveL = set(ok['spec'])
-    lackL = [s for s in specs if s not in haveL]
-    if lackL:
+    haveL = set() if force else _escLogRows([phi] + PHIROBUST)
+    if part in ('main', 'all') and (spec, round(phi, 6)) not in haveL:
         cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESC.py'), '--stage', 'calib',
-                     '--spec'] + lackL + ['--phi', str(phi)] + variant)
-    pathC = os.path.join(C.ESCDIR, 'escCalibrationCRRA.csv')
-    haveC = set()
-    if os.path.exists(pathC):
-        df = pd.read_csv(pathC)
-        ok = df[df['converged'].astype(bool) & np.isclose(df['phi'], phi)]
-        if 'commonX' in ok.columns:
-            ok = ok[ok['commonX'].astype(bool) == bool(C.US['commonX'])]
-        haveC = {(round(float(r), 6), s) for r, s in zip(ok['ρ'], ok['spec'])}
-    for ρ in [r for r in esc['ρTable'] if r != C.US['ρAnchor']]:
-        for s in specs:
-            if (round(ρ, 6), s) not in haveC:
-                cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESCcrra.py'), '--stage', 'calib',
-                             '--rho', str(ρ), '--spec', s, '--phi', str(phi)] + variant)
+                     '--spec', spec, '--phi', str(phi)] + variant)
+    if part in ('prepub', 'all'):
+        pathC = os.path.join(C.ESCDIR, 'escCalibrationCRRA.csv')
+        haveC = set()
+        if os.path.exists(pathC) and not force:
+            df = pd.read_csv(pathC)
+            if 'method' not in df.columns:
+                df['method'] = 'path'
+            ok = df[df['converged'].astype(bool) & np.isclose(df['phi'], phi)
+                    & (df['method'].fillna('path') == 'exact')]
+            if 'commonX' in ok.columns:
+                ok = ok[ok['commonX'].astype(bool) == bool(C.US['commonX'])]
+            haveC = {(round(float(r), 6), s) for r, s in zip(ok['ρ'], ok['spec'])}
+        lackρ = [ρ for ρ in esc['ρTable'] if ρ != C.US['ρAnchor'] and (round(ρ, 6), spec) not in haveC]
+        if lackρ:
+            cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESCcrra.py'), '--exact', '--stage', 'calib',
+                         '--rho'] + [str(r) for r in lackρ]
+                        + ['--spec', spec, '--phi', str(phi), '--ns', str(esc['ns2D']),
+                           '--nsScan', str(esc['nsScan']), '--nCand2D', str(esc['nCand2D'])] + variant)
+        lackφ = [p for p in PHIROBUST if (spec, round(p, 6)) not in haveL]
+        if lackφ:
+            cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESC.py'), '--stage', 'calib',
+                         '--spec', spec, '--phi'] + [str(p) for p in lackφ] + variant)
     return cmds
 
 
@@ -183,18 +208,23 @@ def main():
                           'only an unpickle -- so this flag is about the expensive step alone.')
     p.add_argument('--dry', action = 'store_true', help = 'print the sweep commands and exit')
     p.add_argument('--rho', type = float, default = None, help = 'summarise a rho other than the baseline')
+    p.add_argument('--prepub', action = 'store_true',
+                   help = 'the pre-publication part only: the exact CRRA wedge and the phi runs, no sweeps')
+    p.add_argument('--all', dest = 'all_', action = 'store_true', help = 'both parts')
     a = p.parse_args()
+    part = 'all' if a.all_ else ('prepub' if a.prepub else 'main')
 
     variants = [False] + ([True] if a.commonX else [])
     if a.dry:
-        for cx in variants:
-            for c in SWEEPS:
-                print(' '.join(sweepCmd(c, cx, a.force)))
-        for cmd in escMissing():
+        if part != 'prepub':
+            for cx in variants:
+                for c in SWEEPS:
+                    print(' '.join(sweepCmd(c, cx, a.force)))
+        for cmd in escMissing(part, a.force):
             print(' '.join(cmd))
         return
 
-    if not a.summaryOnly:
+    if not a.summaryOnly and part != 'prepub':
         for cx in variants:
             for c in SWEEPS:
                 todo = C.US['ρGrid'] if a.force else missing(c, cx)
@@ -215,11 +245,12 @@ def main():
                 if r.returncode:
                     raise SystemExit('sweep for {} exited {}'.format(label, r.returncode))
 
-        # --- the ESC wedge calibrations (app:ESC). Per-(rho, spec) check, so a complete results/esc
-        # costs nothing here; a missing CRRA combination costs ~25-30 min.
-        cmds = escMissing()
+    if not a.summaryOnly:
+        # --- the ESC wedge calibrations (app:ESC). Per-(rho, spec, method) check, so a complete
+        # results/esc costs nothing here; a missing exact CRRA rho costs ~1.2 h (pre-publication part).
+        cmds = escMissing(part, a.force)
         if not cmds:
-            print('ESC wedge:      all (rho, spec) combinations already calibrated.')
+            print('ESC wedge ({}): every combination already calibrated.'.format(part))
         for cmd in cmds:
             print('\nESC wedge: ' + ' '.join(cmd))
             r = subprocess.run(cmd, cwd = C.REPO)

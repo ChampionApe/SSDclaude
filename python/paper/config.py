@@ -49,7 +49,38 @@ ARG = {
     # mirror that split or it solves under a different interpolant than it was fitted under
     # (notes/informalSavings_resolvedIssues.md). loadCalibrated() enforces it; do not bypass.
     'gridSettings': {'interpKind': 'cubic', 'smoothKnots': 4, 'nι': 45, 'ns': 45},
+    # WHICH CALIBRATION VARIANT THE ARGENTINA OUTPUTS LEAD WITH (as US['commonX']). False: vector X_i
+    # from relative income and relative hours (the draft's numbers); True: one scalar X across the
+    # formal types pinned by the formal workweek, relative formal hours a prediction. X enters no
+    # aggregate, so tau, K/Y, the savings rate and every counterfactual coincide across the two to
+    # solver precision; what differs is the calibration table (eta_i, X_i, eta_0, X_0) and the
+    # relative-hours diagnostic. The headline outputs read this; their twins pass commonX = not this.
+    'commonX': False,
 }
+
+
+def argVariantTag(commonX = False):
+    """ The file-name suffix of the Argentina variant's results: '' (vector X) or '_commonX'. """
+    return '_commonX' if commonX else ''
+
+
+def argSweepCsv(commonX = False):
+    return os.path.join(CALIBDIR, 'informalSavings_rhoGrid' + ('CommonX' if commonX else '') + '.csv')
+
+
+def argInstanceDir(commonX = False):
+    return os.path.join(CALIBDIR, 'instances' + ('CommonX' if commonX else ''))
+
+
+def argShockTemplate(scenario, rule = None, commonX = False):
+    """ The shock csv name template of one scenario ('reform' | 'ee' | 'flat'), with {ρ} left open. """
+    rule = rule or ARG['rule']
+    stem = {'reform': 'universal_' + rule, 'ee': 'eeOnly_' + rule, 'flat': 'universal_flat'}[scenario]
+    return stem + '_rho{ρ:.4f}' + argVariantTag(commonX) + '.csv'
+
+
+def argEpsThetaCsv(ρ, commonX = False):
+    return os.path.join(SWEEPDIR, 'epsThetaGrid_rho{:.4f}{}.csv'.format(ρ, argVariantTag(commonX)))
 
 # ---------------------------------------------------------------------------------------------------
 # Calendar and units
@@ -120,10 +151,23 @@ US = {
         'spec':      'scale',
         'phi':       0.5,
         'ρTable':    [0.5, 1.0, 2.0],
+        # THE PUBLISHED CRRA METHOD. True: every CRRA ESC output is built from rows with method = 'exact'
+        # (LeadedCRRA2D, python/US/runESCcrra.py --exact, the pre-publication part of stages (i)/(ii))
+        # and a missing exact row is MissingInput -- never a fallback to the path iteration's rows, which
+        # stay on disk under method = 'path' as the cross-check they are. False builds from the path rows.
+        'exact':     True,
+        'ns2D':      150,      # savings-state grid of the exact recursion (its choice is insensitive to it)
+        'nsScan':    50,       # the coarse grid the wedge calibration SCANS on before refining at ns2D
+        # The candidate grid for θ_{t+1}. The objective is flat near its maximum (1e-5 in W over ±0.01 in
+        # θ at the frVoting choice, rho = 2), so this grid sets the resolution of the printed design: 13
+        # nodes gave 0.285, 21 gave 0.273 (2026-09-11).
+        'nCand2D':   41,
+        # The pre-publication timing checks (TODO R3): the permanent choice traced in rho under CRRA.
+        'ρPermanentCRRA': [1.1, 1.2, 1.3, 1.4, 1.5, 2.0],
         # escExperiments.csv scenario keys -> the labels the appendix tables print.
+        # 'frLeisure' is run and merged but no longer printed (dropped from the paper 2026-09-11).
         'scenarios': {'acute': 'Acute ageing', 'frIncome': 'Income distribution',
-                      'frLeisure': 'Leisure preferences', 'frVoting': 'Voting',
-                      'frAll': 'All French characteristics'},
+                      'frVoting': 'Voting', 'frAll': 'All French characteristics'},
     },
 }
 
@@ -175,37 +219,42 @@ def usCalendar(country = 'US'):
 # it changes what they contain. The other variant is the robustness twin, and its name and label carry
 # ITS OWN variant rather than the word "alternative", so a file on disk says what is in it.
 # ---------------------------------------------------------------------------------------------------
-def isLead(commonX):
-    return bool(commonX) == bool(US['commonX'])
+def isLead(commonX, arm = 'US'):
+    """ Is `commonX` the headline variant of `arm` ('US' | 'ARG')? """
+    return bool(commonX) == bool((US if arm == 'US' else ARG)['commonX'])
 
 
-def variantSuffix(commonX):
+def variantSuffix(commonX, arm = 'US'):
     r""" '' for the headline variant, '_commonX'/'_vectorX' for the twin. Appended to an output's name,
     its tex filename and its \label. """
-    return '' if isLead(commonX) else ('_commonX' if commonX else '_vectorX')
+    return '' if isLead(commonX, arm) else ('_commonX' if commonX else '_vectorX')
 
 
-def variantCaption(commonX):
+def variantCaption(commonX, arm = 'US'):
     """ The caption tail that marks a twin. Empty for the headline -- its caption is the paper's own. """
-    return '' if isLead(commonX) else (r' (common $X$ calibration)' if commonX
-                                       else r' (vector $X_i$ calibration)')
+    return '' if isLead(commonX, arm) else (r' (common $X$ calibration)' if commonX
+                                            else r' (vector $X_i$ calibration)')
 
 
-def variantNote(commonX, full = False):
-    r""" One sentence naming the calibration variant, appended to every US table note.
+def variantNote(commonX, full = False, arm = 'US'):
+    r""" One sentence naming the calibration variant, appended to every US (and Argentina) table note.
 
     Both tables carry it, headline included: the two variants share beta, omega, tau, R and the savings
     rate exactly, and differ only where a number is defined through eta or X -- so a reader comparing two
     tables needs to be told which one they are looking at, not left to infer it from the one column that
     moved. The calibration table (`full = True`) spells the variant out; every other table names it and
     points at that table's note. """
+    calib = r'table:US:Calib' if arm == 'US' else r'table:Arg:Calib'
     if not full:
         return (r' ' + (r'Common-$X$' if commonX else r'Vector-$X_i$') + r' calibration: see the note to '
-                r'Table~\ref{table:US:Calib' + variantSuffix(commonX) + '}.')
+                r'Table~\ref{' + calib + variantSuffix(commonX, arm) + '}.')
     if commonX:
-        return (r' Common-$X$ calibration: one leisure parameter $X$ shared across income groups, with '
+        who = 'formal income groups' if arm == 'ARG' else 'income groups'
+        tail = (r' The informal $\eta_0$ and $X_0$ are calibrated under either variant.' if arm == 'ARG'
+                else '')
+        return (r' Common-$X$ calibration: one leisure parameter $X$ shared across ' + who + r', with '
                 r'the hours unit pinned by targeting the observed average workweek, so relative hours '
-                r'are a prediction rather than a calibration target.')
+                r'are a prediction rather than a calibration target.' + tail)
     return (r' Vector-$X_i$ calibration: $X_i$ is identified from relative hours, which are data here, '
             r'and the level of $\bar h$ is then not identified --- only its ratio to the baseline is. '
             r'$\beta$, $\omega$, the tax rate and the savings rate are common to the two variants; what '

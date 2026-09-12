@@ -15,8 +15,12 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | (ii) experiments | `runShocks.py` | `runShocksUS.py` | `results/shocks/`, `results/sweeps/`, `results/esc/` | ~50 min / ~30 s (+ESC) |
 | (iii) build | `build.py` | `build.py` | `results/paper/{Tables,Figs}`, then `writing/Paper` | seconds |
 
+- The US arm's stages (i)/(ii) have two parts. `main` (the default) is a routine rebuild: sweeps, the LOG
+  wedge, the exogenous shocks in both variants, the LOG ESC leg. `prepub` (`--prepub`; `--all` for both)
+  is run once before submission: the exact CRRA wedge and ESC leg (`runESCcrra.py --exact`, the published
+  method, `config.US['esc']['exact']`), the φ-robustness wedges and the R3 timing checks; ~3.5 h.
 - Every stage skips work whose output exists; `--force` overrides, `--list` reports, `--dry` prints the
-  delegated commands. **`--force` whenever anything upstream moved, a recalibration above all**: the
+  delegated commands. The ESC merge entry always runs. **`--force` whenever anything upstream moved, a recalibration above all**: the
   calibration sweeps and `sweepEpsThetaGrid.py` resume from their own csv keyed on the parameter point
   alone (finding #13). It is forwarded to the child only where the child resumes.
 - Stage (iii) imports no model code and unpickles nothing, so a rebuild is seconds and can never turn into
@@ -24,9 +28,12 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
   partially written.
 - Stages (i)/(ii) are declarations: the model folders' scripts do the work, and `config.py` records the
   settings the published numbers were produced at. **Change a paper number there first.**
-- The US arm carries two calibration variants; `config.US['commonX']` names the headline (common `X`).
-  Every US builder takes `commonX`: the plain name and tex label are the headline, `_vectorX` the appendix
-  twin (`config.variantSuffix`, `build._variants`). The ESC leg runs under the headline only.
+- Both arms carry two calibration variants; `config.US['commonX']` (True) and `config.ARG['commonX']`
+  (False) name each headline. Every US and Argentina builder takes `commonX`: the plain name and tex
+  label are the headline, the `_vectorX`/`_commonX` twin follows (`config.variantSuffix(commonX, arm)`,
+  `build._variants`). Argentina's variant lives in its own sweep csv, instance directory and suffixed
+  shock/sweep csvs (`config.argSweepCsv`, `argInstanceDir`, `argShockTemplate`); `runCalibration.py` /
+  `runShocks.py --commonX` add it. The ESC leg runs under the US headline only.
 - Stage (0) is the only network access (Penn World Table via FRED); it writes a calibration *input* to
   `data/` and skips existing output, so the committed csv means no other stage touches the network.
 
@@ -54,8 +61,8 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `Tables/US_{PensChars,Ageing,OtherShocks}.tex` | `US_shocksCommonX.csv`, ρ = 1 |
 | `Tables/US_CRRA_{PensChars,Ageing,OtherShocks}.tex` | `US_shocksCommonX.csv`, ρ ∈ {0.5, 1, 2} |
 | `Figs/US_overview.pdf` | `US_shocksCommonX.csv`, all ρ; three panels |
-| `Tables/US_ESC_Calibration.tex` | `results/esc/escCalibration{,CRRA}.csv` |
-| `Tables/US_ESC_{Ageing,IncomeDistr,Voting,FrenchAll}.tex` | `results/esc/escExperiments.csv`, ρ ∈ {0.5, 1, 2} |
+| `Tables/US_ESC_Calibration.tex` | `results/esc/escCalibration{,CRRA}.csv` (CRRA rows: `method` = exact) |
+| `Tables/US_ESC_{Ageing,IncomeDistr,Voting,FrenchAll}.tex` | `results/esc/escExperiments.csv`, ρ ∈ {0.5, 1, 2}, CRRA rows at `method` = exact |
 | `Tables/UK_ESC_Calibration.tex` | `results/esc/escCountry.csv`, ρ = 1 only |
 | `Figs/US_ESC_overview.pdf` | `escExperiments.csv`, 2×2 dumbbells (open = `θ` pinned, filled = chosen) |
 
@@ -98,5 +105,8 @@ US arm:
 - A `createCopyFromt0` copy's `db['dates']` is stale; `config.usCalendar()` reads the workbook instead.
 - `config.pct` escapes `%` for tex; never into a figure.
 - The income-distribution row holds `θ` (the `freeTheta` entry keeps the other reading).
+- The CRRA ESC csvs hold two vintages side by side, `method` = exact (published) and path (the
+  cross-check); `datasets.escMethod` selects and never falls back. An exact row missing is `MissingInput`.
+- A detached pipeline log must not be held open while it runs (`crossCuttingFindings.md` #14).
 - The two variants check each other: baseline, `θ`, ageing and voting come back identical (≤5e-15),
   income distribution and all-three differ, leisure differs in the workweek only.

@@ -16,3 +16,14 @@ carries the size caps. Live paths cited from code (`crossCuttingFindings`, the t
 notes, `TODO.md`) did not move; two code comments citing the old root log were repointed. The archived
 logs sit in `archive/sessionLogs/`, not `archive/logs/`: `.gitignore`'s `logs/` rule matches any directory
 of that name, which both untracks it and hides it from ripgrep.
+
+## 2026-09-11 — the agent plan executed: exact CRRA ESC solver, two-part pipeline, variant twins in both arms
+
+`notes/plan_2026-09-11.md` (deleted at the end of the day, per its own rule) ran end to end: C1, C2, R1, R3,
+R4, W1–W3, then C3 and R2. Structural: (i) the US stages (i)/(ii) have a `main` and a `--prepub` part, and
+the exact 2-D recursion is the published CRRA ESC method with a `method` column keyed into every CRRA csv
+(`python/paper/RESEARCH_LOG.md`); (ii) both arms now carry two calibration variants with headline/twin
+outputs (`config.US['commonX']` = True, `config.ARG['commonX']` = False) — for Argentina the variants print
+identical results and differ only in the calibration table (`notes/argentina_commonX_vs_vectorX.md`,
+decision W2); (iii) finding #14 (a `tail -F` on a pipeline log breaks the ps1's own `Add-Content`). Per-model
+detail in the three module logs of the same date; open items for RKB in `notes/TODO.md` (W1, W2, W2b, W4, C4).

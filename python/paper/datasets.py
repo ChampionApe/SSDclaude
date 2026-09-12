@@ -28,40 +28,53 @@ def _need(path):
     return path
 
 
-def calibrationSummary():
-    """ The one-row record runCalibration.py writes. Vector entries are JSON in the csv and come back
-    as lists of float. """
+def _argCX(commonX):
+    return C.ARG['commonX'] if commonX is None else bool(commonX)
+
+
+def calibrationSummary(commonX = None):
+    """ The one record per variant runCalibration.py writes, at the requested variant (the headline,
+    config.ARG['commonX'], by default). Vector entries are JSON in the csv and come back as lists of
+    float. A summary written before the variant column existed is a vector-X summary. """
+    cx = _argCX(commonX)
     df = pd.read_csv(_need(os.path.join(C.PAPERDIR, 'calibrationSummary.csv')))
-    rec = df.iloc[0].to_dict()
-    for k in ('ν', 'ηi', 'Xi', 'γi'):
+    if 'commonX' not in df.columns:
+        df['commonX'] = False
+    df = df[df['commonX'].fillna(False).astype(bool) == cx]
+    if df.empty:
+        raise MissingInput(os.path.join(C.PAPERDIR, 'calibrationSummary.csv')
+                           + ' (no {} row)'.format('common-X' if cx else 'vector-X'))
+    rec = df.iloc[-1].to_dict()
+    for k in ('ν', 'ηi', 'Xi', 'γi', 'zxi', 'zxPredicted'):
         if isinstance(rec.get(k), str):
             rec[k] = json.loads(rec[k])
     return rec
 
 
-def rhoGrid():
-    """ The calibration sweep, one row per rho, deduplicated on rho keeping the last (the file is
-    appended to across resumed marches). """
-    df = pd.read_csv(_need(os.path.join(C.CALIBDIR, 'informalSavings_rhoGrid.csv')))
+def rhoGrid(commonX = None):
+    """ The calibration sweep of one variant, one row per rho, deduplicated on rho keeping the last (the
+    file is appended to across resumed marches). """
+    df = pd.read_csv(_need(C.argSweepCsv(_argCX(commonX))))
     return df.drop_duplicates('ρ', keep = 'last').sort_values('ρ').reset_index(drop = True)
 
 
-def shockPath(ρ, scenario = 'reform', rule = None):
+def _shockCsv(ρ, scenario, rule, commonX):
+    return os.path.join(C.SHOCKDIR, C.argShockTemplate(scenario, rule, _argCX(commonX)).format(ρ = ρ))
+
+
+def shockPath(ρ, scenario = 'reform', rule = None, commonX = None):
     """ One rho's full response path, indexed on the model's own t with t0 first. """
-    rule = rule or C.ARG['rule']
-    return pd.read_csv(_need(os.path.join(C.SHOCKDIR, SCENARIOS[scenario].format(ρ = ρ, rule = rule))),
-                       index_col = 0)
+    return pd.read_csv(_need(_shockCsv(ρ, scenario, rule, commonX)), index_col = 0)
 
 
-def shockAtPeriod(period = 0, scenario = 'reform', rule = None, ρGrid = None):
+def shockAtPeriod(period = 0, scenario = 'reform', rule = None, ρGrid = None, commonX = None):
     """ One row per rho, at `period` periods after t0 (0 = the impact period, the paper's year 2010).
 
     The row is taken POSITIONALLY (iloc), not by label: each csv is already indexed on the model's own
     t starting at t0, so period is an offset into that. Every rho in the grid must be present -- a
     partial sweep is raised on rather than silently plotted as a shorter curve. """
     ρGrid = C.ARG['ρGrid'] if ρGrid is None else ρGrid
-    rule = rule or C.ARG['rule']
-    paths = {ρ: os.path.join(C.SHOCKDIR, SCENARIOS[scenario].format(ρ = ρ, rule = rule)) for ρ in ρGrid}
+    paths = {ρ: _shockCsv(ρ, scenario, rule, commonX) for ρ in ρGrid}
     lack = [p for p in paths.values() if not os.path.exists(p)]
     if lack:
         raise MissingInput(lack)
@@ -76,7 +89,7 @@ def shockAtPeriod(period = 0, scenario = 'reform', rule = None, ρGrid = None):
     return pd.DataFrame(rows).sort_values('ρ').reset_index(drop = True)
 
 
-def epsThetaGrid(ρ = None):
+def epsThetaGrid(ρ = None, commonX = None):
     """ The Cartesian (eps, theta) grid at the calibration year, one row per pair.
 
     Two shape checks, because the producer is resumable on its own csv and so has two distinct ways of
@@ -93,7 +106,7 @@ def epsThetaGrid(ρ = None):
     flagged statusQuo, and a wholly stale csv carries one that does not match calibrationSummary. Both
     are caught here. This was live: 378 of 392 rows survived the 2026-08-24 K/Y retarget. """
     ρ = C.ARG['ρBaseline'] if ρ is None else ρ
-    path = _need(os.path.join(C.SWEEPDIR, 'epsThetaGrid_rho{:.4f}.csv'.format(ρ)))
+    path = _need(C.argEpsThetaCsv(ρ, _argCX(commonX)))
     df = pd.read_csv(path)
     nε, nθ = df['eps'].nunique(), df['theta'].nunique()
     if len(df) != nε * nθ:
@@ -104,7 +117,7 @@ def epsThetaGrid(ρ = None):
         raise MissingInput('{} ({} statusQuo rows, expected 1 -- the sweep resumed across a '
                            'recalibration and the csv mixes parameter sets; re-run it with --force)'
                            .format(path, len(sq)))
-    cal = calibrationSummary()
+    cal = calibrationSummary(commonX)
     if np.isclose(cal['ρ'], ρ) and not (np.isclose(float(sq['eps'].iloc[0]), cal['ε'])
                                         and np.isclose(float(sq['theta'].iloc[0]), cal['θ'])):
         raise MissingInput('{} (status quo at (eps, theta) = ({:.6f}, {:.6f}), but the calibration is '
@@ -124,7 +137,7 @@ def savingsRate(s, s_, h, α, ν):
     return s / ((s_/ν)**α * h**(1-α))
 
 
-def seedSavings(ρ, rule = None, tol = 1e-6):
+def seedSavings(ρ, rule = None, tol = 1e-6, commonX = None):
     """ s_{t0-1}, the savings level entering the reform year. Common to every scenario, because the
     reform is unanticipated: the seed state is the baseline's in all of them.
 
@@ -139,17 +152,17 @@ def seedSavings(ρ, rule = None, tol = 1e-6):
 
     The inversion is what keeps every figure buildable before the eeOnly experiment has been run; the
     agreement check is what keeps it honest once it has. """
-    ref  = shockPath(ρ, 'reform', rule)
-    grid = rhoGrid()
+    ref  = shockPath(ρ, 'reform', rule, commonX)
+    grid = rhoGrid(commonX)
     row  = grid.loc[np.isclose(grid['ρ'], ρ)]
     if row.empty:
-        raise MissingInput('rho={} absent from informalSavings_rhoGrid.csv'.format(ρ))
-    cal  = calibrationSummary()
+        raise MissingInput('rho={} absent from {}'.format(ρ, os.path.basename(C.argSweepCsv(_argCX(commonX)))))
+    cal  = calibrationSummary(commonX)
     α, ν = cal['α'], np.asarray(cal['ν'], dtype = float)[C.calendar()['t0']]
     sr, s, h = float(row['sr'].iloc[-1]), float(ref['s_base'].iloc[0]), float(ref['h_base'].iloc[0])
     inverted = ν * (s / (sr * h**(1-α)))**(1/α)
 
-    path = os.path.join(C.SHOCKDIR, SCENARIOS['ee'].format(ρ = ρ, rule = rule or C.ARG['rule']))
+    path = _shockCsv(ρ, 'ee', rule, commonX)
     if os.path.exists(path):
         reported = float(pd.read_csv(path, index_col = 0)['s__base'].iloc[0])
         if abs(reported/inverted - 1) > tol:
@@ -160,38 +173,38 @@ def seedSavings(ρ, rule = None, tol = 1e-6):
     return inverted
 
 
-def baselineHours(ρ, rule = None):
+def baselineHours(ρ, rule = None, commonX = None):
     """ The calibrated baseline's aggregate hours at t0, for this rho: the reference point that
     config.workweekHours normalises against. Per rho, because each rho is separately calibrated and h is
     not one of the four targets -- so its level differs across the grid even though tau and the savings
     rate do not. Normalising each rho against its own baseline is what makes the pre-reform workweek
     42.54 everywhere and the reform rows comparable. """
-    return float(shockPath(ρ, 'reform', rule)['h_base'].iloc[0])
+    return float(shockPath(ρ, 'reform', rule, commonX)['h_base'].iloc[0])
 
 
-def savingsRatePath(ρ, which = 'reform', rule = None):
+def savingsRatePath(ρ, which = 'reform', rule = None, commonX = None):
     """ The savings rate over the whole reported path. `which` is a column suffix: 'base', 'reform'
     (shockUniversal's csv) or 'ee' (shockEEOnly's).
 
     The lag is the previous row of the same path, except at t0 where it is the seed state -- see
     seedSavings. The terminal period is NaN by construction (s_T = 0), and is left NaN rather than
     zero-filled: a zero there would plot as a real collapse. """
-    df   = shockPath(ρ, 'ee' if which == 'ee' else 'reform', rule)
-    cal  = calibrationSummary()
+    df   = shockPath(ρ, 'ee' if which == 'ee' else 'reform', rule, commonX)
+    cal  = calibrationSummary(commonX)
     α, ν = cal['α'], np.asarray(cal['ν'], dtype = float)
     t0i  = C.calendar()['t0']
     s = df['s_' + which].values.astype(float)
     h = df['h_' + which].values.astype(float)
-    s_ = np.concatenate([[seedSavings(ρ, rule)], s[:-1]])
+    s_ = np.concatenate([[seedSavings(ρ, rule, commonX = commonX)], s[:-1]])
     with np.errstate(divide = 'ignore', invalid = 'ignore'):
         sr = savingsRate(s, s_, h, α, ν[t0i:t0i+len(s)])
     sr[s <= 0] = np.nan                       # terminal period: s_T = 0 is degenerate, not a datum
     return pd.Series(sr, index = df.index)
 
 
-def reformSavingsRate(ρ, period = 0, rule = None):
+def reformSavingsRate(ρ, period = 0, rule = None, commonX = None):
     """ The savings rate on the full-effect path at `period` periods after t0. """
-    return float(savingsRatePath(ρ, 'reform', rule).iloc[period])
+    return float(savingsRatePath(ρ, 'reform', rule, commonX).iloc[period])
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -293,6 +306,26 @@ def usSweep(country, commonX = None):
 # ---------------------------------------------------------------------------------------------------
 # Endogenous system characteristics (results/esc/)
 # ---------------------------------------------------------------------------------------------------
+def escCountry(commonX = None):
+    """ python/US/runESC.stageCountry's csv: France and the UK under the ESC wedge, at the requested
+    variant, spec and phi. Two readings per country, `wedgeFrom` 'US' (the US-calibrated p imposed;
+    `choice` is what that electorate then picks) and 'own' (p calibrated to re-elect the country's own
+    design; only converged rows are kept). The stage runs under LOG only, and the csv carries no rho
+    column, so rho = 1 is stamped on here rather than read -- a CRRA country stage would have to write
+    the column itself. """
+    commonX = C.US['commonX'] if commonX is None else commonX
+    df = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCountry.csv')))
+    keep = [i for i, rec in enumerate(df.to_dict('records'))
+            if _escVariant(rec, commonX) and rec['spec'] == C.US['esc']['spec']
+            and np.isclose(float(rec['phi']), C.US['esc']['phi'])
+            and (rec['wedgeFrom'] != 'own' or (rec['converged'] == rec['converged']
+                                               and bool(rec['converged'])))]
+    df = df.iloc[keep].copy()
+    if 'ρ' not in df.columns:
+        df['ρ'] = 1.0
+    return df
+
+
 def _escVariant(rec, commonX):
     """ Is this ESC row from the calibration variant we are reading?
 
@@ -308,14 +341,28 @@ def _escVariant(rec, commonX):
     return v == bool(commonX)
 
 
+def escMethod():
+    """ The CRRA ESC solver the paper prints: 'exact' (LeadedCRRA2D) or 'path' (the path iteration),
+    config.US['esc']['exact']. Every CRRA row in results/esc carries a `method` column; a row written
+    before the column existed is a path-iteration row, which is what a missing value means. """
+    return 'exact' if C.US['esc'].get('exact', True) else 'path'
+
+
+def _escMethodOK(rec):
+    v = rec.get('method', None)
+    v = 'path' if v is None or v != v else str(v)          # v != v catches NaN
+    return v == escMethod()
+
+
 def escCalibration(commonX = None):
     """ The calibrated deadweight wedge, {(rho, spec): record} with p, thetaStar, beta, omega.
 
     Two files because two solvers produced them: escCalibration.csv is the LOG case (rho = 1; also
     carries the no-wedge row under spec 'none', keyed here as (1.0, 'none')), escCalibrationCRRA.csv the
-    CRRA rows with their own rho column. Only converged rows at config.US['esc']['phi'] AND at the
-    requested calibration variant are returned -- an unconverged or wrong-variant calibration must
-    surface as a missing key, not as a cell of a number that was never calibrated for this economy. """
+    CRRA rows with their own rho column, at the published method (escMethod) only. Only converged rows at
+    config.US['esc']['phi'] AND at the requested calibration variant are returned -- an unconverged,
+    wrong-variant or wrong-method calibration must surface as a missing key, not as a cell of a number
+    that was never calibrated for this economy by the published solver. """
     commonX = C.US['commonX'] if commonX is None else commonX
     phi = C.US['esc']['phi']
     out = {}
@@ -329,7 +376,8 @@ def escCalibration(commonX = None):
             out[(1.0, rec['spec'])] = rec
     crra = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCalibrationCRRA.csv')))
     for rec in crra.to_dict('records'):
-        if _escVariant(rec, commonX) and bool(rec['converged']) and np.isclose(float(rec['phi']), phi):
+        if (_escVariant(rec, commonX) and _escMethodOK(rec) and bool(rec['converged'])
+                and np.isclose(float(rec['phi']), phi)):
             out[(float(rec['ρ']), rec['spec'])] = rec
     return out
 
@@ -354,10 +402,15 @@ def escRow(df, ρ, spec, scenario, pinned, commonX = None):
     commonX = C.US['commonX'] if commonX is None else commonX
     cx = (df['commonX'].fillna(False).astype(bool) if 'commonX' in df.columns
           else pd.Series(False, index = df.index))
+    # The LOG rows (rho = 1) are exact by construction and pass under either setting; the CRRA rows must
+    # carry the published method (a merged csv from before the column is all path-iteration rows).
+    meth = (df['method'].fillna('path').astype(str) if 'method' in df.columns
+            else pd.Series('path', index = df.index))
+    isLOG = (df['preferences'] == 'LOG') if 'preferences' in df.columns else np.isclose(df['ρ'], 1.0)
     hit = df[np.isclose(df['ρ'], ρ) & (df['spec'] == spec) & (df['scenario'] == scenario)
              & (df['θpinned'].astype(bool) == bool(pinned)) & (cx == bool(commonX))
-             & np.isclose(df['phi'], C.US['esc']['phi'])]
+             & np.isclose(df['phi'], C.US['esc']['phi']) & (isLOG | (meth == escMethod()))]
     if hit.empty:
-        raise MissingInput('{} (ρ={}, {}, pinned={}, commonX={}) in results/esc/escExperiments.csv'
-                           .format(scenario, ρ, spec, pinned, commonX))
+        raise MissingInput('{} (ρ={}, {}, pinned={}, commonX={}, method={}) in results/esc/escExperiments.csv'
+                           .format(scenario, ρ, spec, pinned, commonX, escMethod()))
     return hit.iloc[-1]

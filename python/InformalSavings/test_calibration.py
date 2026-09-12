@@ -87,8 +87,9 @@ check('Theta_h from ΘhFromH inverts Base.h exactly',
       '-> h {:.10f} vs {:.10f}'.format(float(m.B.h(rep['Θh'], s_, t0)), float(h)))
 zη0, zx0 = m.B.get('zη0', t0), m.B.get('zx0', t0)
 inner = ((1-α)/Γh**α)**(1/(1+α*ξ))
-η0Manual = (zη0/zx0) * (1-α)*(1-rep['τ']) / (rep['Θh']**α * inner)
-X0Manual = η0Manual * inner / (rep['Θh']*zx0)**(1/ξ)
+M = float(m.B.hoursUnitRatio(t0))          # average formal hours / h_t: 1 under vector X
+η0Manual = (zη0/zx0) * (1-α)*(1-rep['τ']) / (M * rep['Θh']**α * inner)
+X0Manual = η0Manual * inner / (rep['Θh']*zx0*M)**(1/ξ)
 check('implied eta0 == eq:calibration:eta0 rebuilt from primitives',
       np.isclose(rep['η0'], η0Manual, rtol = 1e-14), '-> {:.10f} vs {:.10f}'.format(rep['η0'], η0Manual))
 check('implied X0 == eq:calibration:X0 rebuilt from primitives',
@@ -248,5 +249,49 @@ check('the calibrated CRRA point survives grid refinement', rFine < 1e-3,
 # left and should be dropped.
 check('coarsening the inner grid to the PEE default degrades the residual', rCoarse > rFine,
       '-> max|residual| at 30x30 = {:.2e}, {:.1f}x the 60x60 value'.format(rCoarse, rCoarse/rFine))
+
+# ---- 6. the common-X variant: same equilibrium, the hours unit pinned by the workweek ------------------
+# X enters no aggregate (eta_i^{1+xi}/X^xi = z^eta_i for any X), so the four-parameter root and the
+# equilibrium must coincide with the vector-X calibration's; what moves is (eta_0, X_0) through the
+# hours-unit ratio M, and the level of formal hours, which now hits db['h0']. The informal z checks are
+# the same as under vector X, which is what the M factor in calibrationη0/X0 is for.
+mX = ModelInformalSavings(pars = testmod.pars | {'ρ': 1.0}, commonX = True, **testmod.kwargs)
+mX._calSetPars({'β': cal['pars']['β'], 'ω': cal['pars']['ω'], 'η0': cal['pars']['η0'], 'X0': cal['pars']['X0']})
+mX.LOG.initGS(dict(m.LOG.GS['PEE']['gridSettings']))       # the vector-X model's own grid
+calX = mX.calibrate(preferences = 'LOG')
+repX = calX['report']
+check('common X: the root converges', np.max(np.abs(calX['residual'])) < 1e-8,
+      '-> max|residual|={:.2e}'.format(np.max(np.abs(calX['residual']))))
+check('common X: beta, omega, K/Y, tau and iota coincide with the vector-X calibration (X enters no aggregate)',
+      all(np.isclose(calX['pars'][k], cal['pars'][k], rtol = 1e-8) for k in ('β', 'ω'))
+      and np.isclose(repX['KY'], calRep['KY'], rtol = 1e-8) and np.isclose(repX['τ'], calRep['τ'], atol = 1e-10)
+      and np.isclose(float(repX['PEE']['report']['ι'].xs(t0)), float(calRep['PEE']['report']['ι'].xs(t0)), rtol = 1e-8),
+      '-> β {:.10f} vs {:.10f}, ω {:.10f} vs {:.10f}'.format(calX['pars']['β'], cal['pars']['β'],
+                                                          calX['pars']['ω'], cal['pars']['ω']))
+check('common X: average formal hours at t0 hit the workweek target db[h0]',
+      np.isclose(repX['hbar'], mX.hbarTarget(), rtol = 1e-8),
+      '-> hbar={:.6f} target={:.6f}, X={:.4f}'.format(repX['hbar'], mX.hbarTarget(), calX['pars']['X']))
+γX, ηX, XX = mX.db['γi'].xs(t0).values, mX.db['ηi'].xs(t0).values, mX.db['Xi'].xs(t0).values
+MX = float(mX.B.hoursUnitRatio(t0))
+check('common X: Γ_h = 1 still, X_i common, and the second normalisation is NOT imposed (M != 1)',
+      np.isclose(mX.B.Γh(t0), 1, rtol = 1e-12) and np.allclose(XX, XX[0]) and abs(MX - 1) > 1e-3,
+      '-> M={:.6f}'.format(MX))
+check('common X: eta_0/X_0 differ from the vector-X ones by the M factors',
+      np.isclose(calX['pars']['η0'], cal['pars']['η0']/MX, rtol = 1e-6)
+      and np.isclose(calX['pars']['X0'], cal['pars']['X0']*MX**(-1-1/ξ), rtol = 1e-6),
+      '-> η0 {:.6f} vs {:.6f}/M, X0 {:.6f} vs {:.6f}·M^(-1-1/ξ)'.format(
+          calX['pars']['η0'], cal['pars']['η0'], calX['pars']['X0'], cal['pars']['X0']))
+solX = repX['PEE']['report']
+hiX, h0X = solX['hi'].xs(t0).values, float(solX['h0'].xs(t0))
+wX, w0X = float(solX['w'].xs(t0)), float(solX['w0'].xs(t0))
+check('common X: solved informal hours / average formal hours == z_0^x',
+      np.isclose(h0X/(γX*hiX).sum(), zx0, rtol = 1e-7), '-> {:.6f} vs {:.6f}'.format(h0X/(γX*hiX).sum(), zx0))
+check('common X: solved informal income / average formal income == z_0^η',
+      np.isclose(w0X*calX['pars']['η0']*h0X/(wX*(1-repX['τ'])*(γX*ηX*hiX).sum()), zη0, rtol = 1e-7))
+check('common X: relative formal hours are a prediction, rising with income',
+      np.all(np.diff(mX.predictedRelativeHours()) > 0)
+      and np.isclose((γX*mX.predictedRelativeHours()).sum(), 1, rtol = 1e-12),
+      '-> predicted {} vs data {}'.format(np.round(mX.predictedRelativeHours(), 3),
+                                          np.round(mX.db['zxi'].xs(t0).values, 3)))
 
 report()

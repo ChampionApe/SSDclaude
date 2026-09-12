@@ -36,11 +36,14 @@ def _wrap(name, src, caption, label, colspec, header, rows, note):
 
 
 # ---------------------------------------------------------------------------------------------------
-def argentinaCalibration():
+def argentinaCalibration(commonX = None):
     r""" Table \ref{table:Arg:Calib}: the calibrated and fixed parameters, with the target each one is
     identified by. Rows follow the paper's own order, with eta_0/X_0 appended -- they are calibrated
-    jointly with beta/omega but the hand-written table omitted them. """
-    c = D.calibrationSummary()
+    jointly with beta/omega but the hand-written table omitted them. commonX selects the calibration
+    variant (config.ARG['commonX'] by default); the twin carries config.variantSuffix. """
+    commonX = C.ARG['commonX'] if commonX is None else commonX
+    c = D.calibrationSummary(commonX)
+    sfx = C.variantSuffix(commonX, 'ARG')
     ν = np.asarray(c['ν'], dtype = float)
     nDated = len(C.calendar()['dates'])   # the tail is the steady-state pad and has no calendar meaning
     rows = [
@@ -50,7 +53,9 @@ def argentinaCalibration():
         [r'$\nu_t$',    '$' + C.vec([ν[0], ν[nDated-1]], 2) + '$', '30-year gross population growth rates'],
         [r'$\xi$',      '$' + C.num(c['ξ']) + '$', 'Elasticity of labor supply'],
         [r'$\beta$',    '$' + C.num(c['β']) + '$', 'Capital--output ratio of $' + C.num(c['KY'], 2) + '$'],
-        [r'$X_i$',      '$' + C.vec(c['Xi'], 2) + '$', 'Relative working hours'],
+        ([r'$X$',       '$' + C.num(c['Xi'][0], 2) + '$',
+          'Average formal workweek of ' + C.num(C.calendar()['workweek'], 1) + ' hours'] if commonX else
+         [r'$X_i$',      '$' + C.vec(c['Xi'], 2) + '$', 'Relative working hours']),
         [r'$\eta_i$',   '$' + C.vec(c['ηi'], 2) + '$', 'Income distribution'],
         [r'$\gamma_0$', '$' + C.num(c['γ0']) + '$', 'Recipients of basic pension'],
         [r'$\omega$',   '$' + C.num(c['ω']) + '$', 'Social security tax of $' + C.pct(c['τ'], 1) + '$'],
@@ -59,27 +64,33 @@ def argentinaCalibration():
         [r'$X_0$',      '$' + C.num(c['X0'], 3) + '$', 'Informal relative working hours'],
     ]
     note = r'\textit{Note:} Our default specification relies on $\rho=' + C.num(c['ρ'], 0) + r'$.'
-    return _wrap('ArgentinaCalibration', 'results/paper/calibrationSummary.csv',
-                 'Calibration, Argentina', 'table:Arg:Calib', 'lll',
+    if commonX and c.get('zxPredicted'):
+        note += (r' Relative formal hours are then a prediction: the model gives $' + C.vec(c['zxPredicted'], 2)
+                 + r'$ against $' + C.vec(c['zxi'], 2) + r'$ in the data.')
+    note += C.variantNote(commonX, full = True, arm = 'ARG')
+    return _wrap('ArgentinaCalibration' + sfx, 'results/paper/calibrationSummary.csv',
+                 'Calibration, Argentina' + C.variantCaption(commonX, 'ARG'), 'table:Arg:Calib' + sfx, 'lll',
                  [r'\textbf{Parameter}', r'\textbf{Value}', r'\textbf{Target}'], rows, note)
 
 
 # ---------------------------------------------------------------------------------------------------
-def argentinaUniversal():
+def argentinaUniversal(commonX = None):
     r""" Table \ref{table:Argentina:Universal}: the reform decomposed into its economic-equilibrium and
     politico-economic parts, at the calibration year.
 
     The middle row is the point of the table -- taxes held at the baseline path, so its savings-rate
     response is the pure equilibrium effect, which runs opposite to the full effect. """
+    commonX = C.ARG['commonX'] if commonX is None else commonX
+    sfx  = C.variantSuffix(commonX, 'ARG')
     ρ    = C.ARG['ρBaseline']
-    ee   = D.shockPath(ρ, 'ee').iloc[0]
-    ref  = D.shockPath(ρ, 'reform').iloc[0]
+    ee   = D.shockPath(ρ, 'ee', commonX = commonX).iloc[0]
+    ref  = D.shockPath(ρ, 'reform', commonX = commonX).iloc[0]
     year = C.calendar()['year0']
 
-    srBase = D.savingsRatePath(ρ, 'base').iloc[0]
-    srEE   = D.savingsRatePath(ρ, 'ee').iloc[0]
-    srRef  = D.reformSavingsRate(ρ, 0)
-    hRef   = D.baselineHours(ρ)     # the calibrated 2010 hours: 42.54 by definition, see config
+    srBase = D.savingsRatePath(ρ, 'base', commonX = commonX).iloc[0]
+    srEE   = D.savingsRatePath(ρ, 'ee', commonX = commonX).iloc[0]
+    srRef  = D.reformSavingsRate(ρ, 0, commonX = commonX)
+    hRef   = D.baselineHours(ρ, commonX = commonX)     # the calibrated 2010 hours: 42.54 by definition, see config
 
     rows = [['Baseline',             C.pct(ee['τ_base']),    C.pct(srBase),         C.num(C.workweekHours(ee['h_base'], hRef))],
             ['Economic Equilibrium', C.pct(ee['τ_ee']),      C.pp(srEE - srBase),   C.num(C.workweekHours(ee['h_ee'], hRef))],
@@ -91,16 +102,17 @@ def argentinaUniversal():
             r' scenario lets taxes be determined by the politico-economic equilibrium. $\rho=' +
             C.num(ρ, 0) + r"$." + SRNOTE + r" Aggregate hours have no "
             r"scale in the model, so the workweek is normalised to the observed average of "
-            + C.num(C.calendar()['workweek']) + r" hours in the baseline.")
-    return _wrap('ArgentinaUniversal', 'results/shocks/{eeOnly,universal}_match_rho%.4f.csv' % ρ,
-                 'Pension system reform, year %d.' % year, 'table:Argentina:Universal', 'lccc',
+            + C.num(C.calendar()['workweek']) + r" hours in the baseline." + C.variantNote(commonX, arm = 'ARG'))
+    return _wrap('ArgentinaUniversal' + sfx, 'results/shocks/{eeOnly,universal}_match_rho%.4f%s.csv' % (ρ, C.argVariantTag(commonX)),
+                 'Pension system reform, year %d.' % year + C.variantCaption(commonX, 'ARG'),
+                 'table:Argentina:Universal' + sfx, 'lccc',
                  [r'\textbf{Scenario}', r'\textbf{Tax rate}', r'\textbf{Savings rate}',
                   r'\textbf{Avg. workweek (hours)}'], rows, note)
 
 
 # ---------------------------------------------------------------------------------------------------
 
-def argentinaFuncOfRho(printAll = False):
+def argentinaFuncOfRho(printAll = False, commonX = None):
     r""" Table \ref{table:Argentina:funcOfRho}: one shared pre-reform row, then the post-reform outcome
     at each rho -- tau and the workweek as levels, the savings rate as the change against THAT rho's own
     pre-reform level in p.p.
@@ -116,7 +128,9 @@ def argentinaFuncOfRho(printAll = False):
     Rows outside config.ARG['rhoTable'] are emitted COMMENTED rather than dropped, which is how the
     hand-written table carried them: the whole solved grid stays visible to whoever edits the paper
     without lengthening the printed table. printAll prints every row instead. """
-    df = D.shockAtPeriod(0, 'reform')
+    commonX = C.ARG['commonX'] if commonX is None else commonX
+    sfx = C.variantSuffix(commonX, 'ARG')
+    df = D.shockAtPeriod(0, 'reform', commonX = commonX)
     year = C.calendar()['year0']
     ww = C.calendar()['workweek']
 
@@ -129,10 +143,10 @@ def argentinaFuncOfRho(printAll = False):
     rows = [['Pre-reform', C.pct(τBase[0]), '--', C.num(ww)]]
     for _, r in df.iterrows():
         ρ = r['ρ']
-        srBase = D.savingsRatePath(ρ, 'base').iloc[0]
+        srBase = D.savingsRatePath(ρ, 'base', commonX = commonX).iloc[0]
         post = [r'Post-reform, $\rho$ = ' + C.num(ρ, 1), C.pct(r['τ_reform']),
-                C.pp(D.reformSavingsRate(ρ, 0) - srBase),
-                C.num(C.workweekHours(r['h_reform'], D.baselineHours(ρ)))]
+                C.pp(D.reformSavingsRate(ρ, 0, commonX = commonX) - srBase),
+                C.num(C.workweekHours(r['h_reform'], D.baselineHours(ρ, commonX = commonX)))]
         show = printAll or any(np.isclose(ρ, v) for v in C.ARG['ρTable'])
         rows.append(post if show else ['% ' + post[0]] + post[1:])
     note = (r'\textit{Note:} The reform permanently shifts $\epsilon = 1-\theta + \theta \eta_1 h_1/h$. '
@@ -143,9 +157,9 @@ def argentinaFuncOfRho(printAll = False):
             r'pre-reform level in percentage points. Aggregate hours have no scale in the model, so the '
             r'workweek is normalised to the observed average of ' + C.num(ww)
             + r' hours in each calibrated baseline. Commented rows are the remaining points of the '
-            r'solved grid.')
-    return _wrap('Argentina_funcOfRho', 'results/shocks/universal_match_rho*.csv',
-                 r'Pension system reform, year %d, function of $\rho$' % year,
-                 'table:Argentina:funcOfRho', 'lccc',
+            r'solved grid.' + C.variantNote(commonX, arm = 'ARG'))
+    return _wrap('Argentina_funcOfRho' + sfx, 'results/shocks/universal_match_rho*%s.csv' % C.argVariantTag(commonX),
+                 r'Pension system reform, year %d, function of $\rho$' % year + C.variantCaption(commonX, 'ARG'),
+                 'table:Argentina:funcOfRho' + sfx, 'lccc',
                  [r'\textbf{Scenario}', r'\textbf{Tax rate}', r'\textbf{Change in savings rate}',
                   r'\textbf{Avg. workweek (hours)}'], rows, note)
