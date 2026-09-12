@@ -357,8 +357,9 @@ class ModelUS:
 
     def initProductivity_vectorX(self):
         """ Variant A: a full vector X_i, identified from relative income AND relative hours via the two
-        eigenvector systems (docs eq:calibration:etai/Xi). The scale of yx is left as the routine returns
-        it -- that scale IS the hours unit, and relative-hours data cannot speak to it. """
+        eigenvector systems (docs eq:calibration:etai/Xi). Relative-hours data cannot speak to the hours
+        unit μ = ∑γ_i y^x_i (eq:hoursUnit), so addEigenVectors sets it to 1 -- h̄_{t0} = h_{t0} in the
+        unit the calibration reports, the same convention in every country. """
         self.addEigenVectors()
         ηi = self.getηi()
         η0 = 0.3 * ηi[0] * self.db['zη0'].xs(self.db['t0'])/self.db['zηi'].xs(self.db['t0'])[1] # initial guess for η0 based on the rest of the vector
@@ -429,9 +430,19 @@ class ModelUS:
         self.updateAuxPars() # Γh moves to λ; θ is invariant but is recomputed from η/X, so refresh it too
 
     def addEigenVectors(self):
-        valx, vecx = scipy.sparse.linalg.eigs(self.db['zxi'].xs(self.db['t0']).values.reshape(self.ni,1) * self.db['γi'].xs(self.db['t0']).values.reshape(1, self.ni), k = 1)
-        valη, vecη = scipy.sparse.linalg.eigs(self.db['zηi'].xs(self.db['t0']).values.reshape(self.ni,1) * self.db['γi'].xs(self.db['t0']).values.reshape(1, self.ni), k = 1)
-        self.db['yx'], self.db['yη'] = abs(np.real(vecx)).reshape(self.ni), abs(np.real(vecη).reshape(self.ni))
+        """ Eq (calibration:etai/Xi) with both eigenvectors scaled to γ·y = 1: Γ_h = 1 AND the hours
+        unit μ = ∑γ_i y^x_i = 1 (eq:hoursUnit), as the Argentina models do (eq:calibration:yNorm there).
+
+        The y^x scale is not cosmetic. It is the hours unit of eq (hoursUnit), and scipy's unit-norm
+        eigenvector makes it country-specific (0.5593 for the US, 0.5590 for France, 0.5770 for the UK
+        at US percentiles). Since ModelFR hits its h̄ target by rescaling Γ_h rather than μ, that left
+        the ratio X̄_c/X̄_US carrying a spurious μ_US/μ_c. Equilibrium-neutral either way (h̄ and h_i
+        are the only objects that respond to μ), but the reported η_i, X_i and X̄ are not. """
+        γi = self.db['γi'].xs(self.db['t0']).values
+        valx, vecx = scipy.sparse.linalg.eigs(self.db['zxi'].xs(self.db['t0']).values.reshape(self.ni,1) * γi.reshape(1, self.ni), k = 1)
+        valη, vecη = scipy.sparse.linalg.eigs(self.db['zηi'].xs(self.db['t0']).values.reshape(self.ni,1) * γi.reshape(1, self.ni), k = 1)
+        yx, yη = abs(np.real(vecx)).reshape(self.ni), abs(np.real(vecη)).reshape(self.ni)
+        self.db['yx'], self.db['yη'] = yx/(γi*yx).sum(), yη/(γi*yη).sum()
     def getηi(self):
         return self.db['yη']/(self.db['yx']*sum(self.db['γi'].xs(self.db['t0']).values*self.db['yη']))
     def getXi(self):

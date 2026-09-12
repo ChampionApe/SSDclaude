@@ -44,9 +44,10 @@ merge into their csvs (`runESC.mergeWrite`); `runESCcrra.py --bracket` must span
 - **The LOG FOC decouples across `t`** (`eq:us:model:PEELOG:decoupling`); the backward solver is still
   used. Not true under CRRA.
 - **Two invariances**: scale (`y^η → λy^η`, normalised away by `Γ_h = 1`) and hours unit (`y^x → μy^x`,
-  moves only `h_i` and `h̄`). `test_invariance.py`. **`h̄` is the only object comparable to an observed
-  workweek, and under vector `X` its level is meaningless**: report it against a reference, never as a
-  level across calibrations.
+  moves only `h_i` and `h̄`). `test_invariance.py`. Both normalisations are spent in
+  `addEigenVectors`: `Γ_h = 1` and `μ = ∑γ_i y^x_i = 1`, the latter since 2026-09-12 (so `h̄ = h` under
+  vector `X`, and one hours unit in every country). **`h̄` is the only object comparable to an observed
+  workweek, and under vector `X` its level is still not data**: report it against a reference.
 
 ## Calibration
 
@@ -118,4 +119,4 @@ design is the `θ = 1` corner); the UK's own `p` = 0.185 against the US's 0.408.
 
 **Open**: `PermanentCRRA` (run 2026-09-11, `results/esc/escPermanentCRRA.csv`) puts the costless permanent
 choice at θ = 0 for ρ ≤ 1.3 and at θ = 1 for ρ ≥ 1.4 -- the paper's wording is RKB's (`notes/TODO.md`
-W2b); one hours unit across countries under vector X (TODO C4).
+W2b).

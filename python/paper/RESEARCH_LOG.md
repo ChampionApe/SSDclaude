@@ -4,6 +4,25 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_paper.md`, in
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-12 — Argentina leads with common X (W2); vector-X outputs rebuilt after C4
+
+`config.ARG['commonX'] = True`, so both arms now print the common-X calibration. Argentina's ten outputs
+rebuilt: the headline `ArgentinaCalibration` is X = 1.94 against the 42.5-hour formal workweek with
+eta_i = [0.64, 0.90, 1.14, 1.87], eta_0 = 0.344, X_0 = 0.804, and relative formal hours as a prediction;
+the `_vectorX` twin is the old table. No counterfactual number moves (R2 measured <= 4e-12), so
+`ArgentinaUniversal`, `Argentina_funcOfRho` and the two figures are byte-identical to the vector-X ones.
+Paper text: the identification paragraph of `Sections/Argentina.tex` rewritten with a footnote naming the
+alternative, and a new appendix subsection `app:EPH:vectorX` in `HouseholdSurveyArg.tex` carrying the
+twin table.
+
+C4's rebuild (`python/US/RESEARCH_LOG.md`, same date): every US counterfactual table is unchanged --
+headline and vector-X alike, including the French income row -- because the shocked models rescale with
+the baseline and the workweek is reported as a ratio. What moved is exactly the three tables that print
+eta_i/X_i/X-bar: the vector-X X-bar ratios lose the hours-unit artefact (UK/US 1.716 -> 1.773, FR/US
+1.514 -> 1.519) and the vector-X X_i now sit on an O(1) scale, which is why `tablesUS` prints X and X_i
+to two decimals instead of one. Only France's own-path rows move numerically, in levels alone
+(h by 5.1e-4, tau to 1e-8), since its lambda carries the target.
+
 ## 2026-09-11 — Argentina rebuilt after the informal-target fix
 
 Stages (i)–(iii) re-run for Argentina (`InformalSavings` log, same date, for the fix). `anchorGuess`

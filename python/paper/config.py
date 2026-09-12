@@ -50,12 +50,16 @@ ARG = {
     # (notes/informalSavings_resolvedIssues.md). loadCalibrated() enforces it; do not bypass.
     'gridSettings': {'interpKind': 'cubic', 'smoothKnots': 4, 'nι': 45, 'ns': 45},
     # WHICH CALIBRATION VARIANT THE ARGENTINA OUTPUTS LEAD WITH (as US['commonX']). False: vector X_i
-    # from relative income and relative hours (the draft's numbers); True: one scalar X across the
-    # formal types pinned by the formal workweek, relative formal hours a prediction. X enters no
-    # aggregate, so tau, K/Y, the savings rate and every counterfactual coincide across the two to
-    # solver precision; what differs is the calibration table (eta_i, X_i, eta_0, X_0) and the
-    # relative-hours diagnostic. The headline outputs read this; their twins pass commonX = not this.
-    'commonX': False,
+    # from relative income and relative hours; True: one scalar X across the formal types pinned by the
+    # formal workweek, relative formal hours a prediction. X enters no aggregate, so tau, K/Y, the
+    # savings rate and every counterfactual coincide across the two to solver precision (measured at
+    # <= 4e-12 over the whole rho grid, notes/argentina_commonX_vs_vectorX.md); what differs is the
+    # calibration table (eta_i, X_i, eta_0, X_0) and the relative-hours diagnostic. The headline outputs
+    # read this; their twins pass commonX = not this.
+    # Common X since 2026-09-12 (TODO W2), matching the OECD arm: it identifies one leisure parameter
+    # rather than four, puts the workweek level on a target, and turns relative formal hours into a
+    # prediction to be checked against the survey.
+    'commonX': True,
 }
 
 

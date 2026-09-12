@@ -249,7 +249,9 @@ def usukfrCalibration(commonX = None):
         row(r'$\omega$', lambda r: C.num(r['ω']),
             ', '.join(r'$\tau^{' + k + '} = ' + C.pct(c[k]['τ0'], 1) + '$' for k in cols)),
         row(r'$\beta$',  lambda r: C.num(r['β']), 'US: 30y interest rate; imposed on UK/FR'),
-        row('$X$',       lambda r: C.num(r['Xbar'], 1), 'Avg.\\ workweek'),
+        # Two decimals: with the hours unit normalised to μ = 1 (model.addEigenVectors), the vector-X
+        # X_i and their mean sit on an O(1) scale where one decimal is two significant figures.
+        row('$X$',       lambda r: C.num(r['Xbar'], 2), 'Avg.\\ workweek'),
         row(r'$\nu_{%d}$' % year0, lambda r: C.num(r['ν2020']),
             '30-year gross population growth rates'),
         row(r'$\eta_{H}/\eta_L$', lambda r: C.num(r['ηHηL']),
@@ -284,7 +286,7 @@ def _householdHeterogeneity(country, name, label, commonX = None):
     commonX = C.US['commonX'] if commonX is None else commonX
     c = D.usCalibrationSummary(commonX)[country]
     spec = [(r'$\gamma_i$', 'γi', 2, 'Income percentiles.'),
-            ('$X_i$',       'Xi', 1, 'Average hours worked.' if commonX else 'Hours worked.'),
+            ('$X_i$',       'Xi', 2, 'Average hours worked.' if commonX else 'Hours worked.'),
             (r'$\eta_i$',   'ηi', 2, 'Income distribution.'),
             (r'$\mu_i$',    'μi', 2, 'Voting propensity.')]
     rows = [' & '.join([lab] + [C.num(v, d) for v in c[key]] + [target]) + r' \\'

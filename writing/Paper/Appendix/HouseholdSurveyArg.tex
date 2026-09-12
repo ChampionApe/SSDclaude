@@ -9,3 +9,28 @@ The survey is restricted to urban agglomerates—currently covering 31 metropoli
 
 We focus on the last two quarters of 2006 because this period coincides with a phase of sustained economic expansion in Argentina, following the recovery from the 2001–2002 crisis but preceding the increase in coverage from the large-scale tax amnesties in this period, and before global turbulence from the Great Recession. By focusing on this pre-crisis, pre-policy-shock moment, we capture a relatively stable baseline against which later changes can be more clearly identified. The survey asks respondents about their contributions to social security. We use this to separate workers into formal and informal, and only use data for those aged 25 to 60.
 
+
+\subsection{The vector-\texorpdfstring{$X_i$}{Xi} calibration}\label{app:EPH:vectorX}
+
+Section \ref{sec:argentina} identifies the formal households' taste for leisure as one parameter common
+to the four quartiles, $X_i = X$, and uses the observed average workweek to fix its level, so that
+relative hours across quartiles are a prediction. The alternative is to treat the survey's relative hours
+as data at every point of the formal distribution: with both $z_i^{\eta}$ and $z_i^{x}$ imposed,
+\eqref{eq:calibration_eta} identifies a full vector $X_i$ and no separate hours target is needed. The
+level of average hours is then not identified, and hours can only be read against a reference point.
+
+Table \ref{table:Arg:Calib_vectorX} reports that calibration. Nothing in section \ref{sec:argentina}
+depends on which of the two we use, and this is a property of the model rather than a numerical accident:
+$X$ enters no aggregate, because the productivity distribution reaches every aggregate through
+$\sum_{i>0}\gamma_i\eta_i^{1+\xi}/X_i^{\xi}$ alone, which both variants normalize to one. The calibration
+is therefore block recursive, and $\beta$, $\omega$, the capital-output ratio, the equilibrium tax rate,
+the savings rate and the informal savings ratio are identical across the two variants at every $\rho$ of
+the grid. The reform in table \ref{table:Argentina:Universal}, its dependence on $\epsilon$ and $\theta$
+in figure \ref{fig:Argentina_functionOfParams}, and the CRRA results in table
+\ref{table:Argentina:funcOfRho} and figure \ref{fig:ARG:EffectOfCRRA} therefore reproduce to every printed
+digit, and we do not repeat them. What the variants disagree about is the calibrated productivity and
+leisure parameters themselves, and the reading of relative hours: data under the vector-$X_i$ calibration,
+and under the common-$X$ one a prediction that reproduces the survey's ranking but overstates the top
+quartile's hours by about 8\%.
+
+\input{Tables/ArgentinaCalibration_vectorX}

@@ -6,18 +6,19 @@ the permanent-timing fix, in `archive/notes/todo_paperRewrite.md` and `archive/n
 `notes/paper_styleGuide.md` is the register every new paragraph follows.
 
 Items are labelled so they can cite each other: `C` code, `R` compute runs, `W` writing. C1, C2, R1, R3, R4
-and W3 closed on 2026-09-11 (`python/US/RESEARCH_LOG.md`, `python/paper/RESEARCH_LOG.md`).
+and W3 closed on 2026-09-11 (`python/US/RESEARCH_LOG.md`, `python/paper/RESEARCH_LOG.md`); C4 and W2 on
+2026-09-12. Open: W1, W2b, W4, all three RKB's wording calls.
 
 ## Code tasks
 
 **C3. Argentina under common X** — done 2026-09-11 (`python/InformalSavings/RESEARCH_LOG.md`, `python/paper/RESEARCH_LOG.md`); R2 runs it.
 
-**C4. US vector-X: one hours unit across countries** (for RKB; not started). Under vector X each country's
-hours unit `μ = ∑γ_i y^x_i` is whatever scipy's unit-norm eigenvector gives (US 0.5593, FR 0.5590, UK
-0.5770). `ModelFR` pins `h̄` by rescaling `Γ_h`, not `μ`, so `X̄_c/X̄_US` carries `μ_US/μ_c`: FR 1.0005, UK
-0.969. Moot for the French leisure row, which is no longer printed. The UK `X̄` in
-`USUKFRCalibration_vectorX` carries the ~3%. Fix: impose `∑γ_i y^x_i = 1` in `US.addEigenVectors`, as the
-Argentina models now do. It is equilibrium-neutral, but the vector-X `X_i` and `X̄` entries move.
+**C4. US vector-X: one hours unit across countries** — done 2026-09-12. `US.addEigenVectors` now scales
+both eigenvectors to γ·y = 1, so the hours unit μ = ∑γ_i y^x_i is 1 in every country rather than whatever
+scipy's unit-norm eigenvector gave (US 0.5593, FR 0.5590, UK 0.5770), and `X̄_c/X̄_US` no longer carries
+μ_US/μ_c. Equilibrium-neutral (it is the eq (hoursUnit) rescaling, which moves only h̄ and h_i); the
+vector-X η_i, X_i and X̄ entries move. Docs, `test_ee.py`'s h̄-vs-h check and the vector-X sweeps followed
+(`python/US/RESEARCH_LOG.md`, `logs/usVectorX0912.log`).
 
 ## Compute tasks
 
@@ -25,19 +26,20 @@ Argentina models now do. It is equilibrium-neutral, but the vector-X `X_i` and `
 exit 0, 39 outputs built, 22 fast suites pass). Every common-X shock csv and the ε×θ grid equal the vector-X
 ones to ≤ 4e-12 at every ρ, and the sweeps agree in β, ω, K/Y, τ, ι to 4e-12: the two versions print the same
 counterfactual tables and figures and differ only in `ArgentinaCalibration{,_commonX}` (η_i, X vs X_i, η_0,
-X_0, the relative-hours prediction). Nothing copied into `writing/Paper`; W2 decides.
+X_0, the relative-hours prediction). Copied into `writing/Paper` on 2026-09-12 as the headline (W2).
 
 ## Writing
 
 **W1. Introduction**: the OECD-sample sentence at `Sections/Introduction.tex` line 38 is drafted under a
 `%% TODO-W1` tag (2026-09-11); RKB to confirm or rewrite, then drop the tag.
 
-**W2. Text that follows R2**: decide with RKB which Argentina version (vector X or common X) the paper
-prints (`notes/argentina_commonX_vs_vectorX.md` compares them and recommends common X), or whether it prints both as the OECD arm does. Since R2 the choice is about the calibration table and
-its description only (relative hours as data vs as a prediction); no counterfactual number moves. Then the
-Argentina section's calibration paragraph, and `config.ARG['commonX']` + `build.py --only Argentina* ARG_*`. The draft already
-carries the vector-X numbers after the 2026-09-11 informal-target fix ("almost half" of the 1.8% of GDP);
-those are the baseline to compare against.
+**W2. Text that follows R2** — decided 2026-09-12: the paper prints **common X** in both arms
+(`config.ARG['commonX'] = True`). The Argentina identification paragraph was rewritten (one X pinned by the
+42.5-hour formal workweek, relative formal hours a prediction), the vector-X calibration table moved to a
+new appendix subsection `app:EPH:vectorX`, and the ten Argentina outputs were rebuilt. No counterfactual
+number moved, so the draft's magnitudes stand. The OECD section keeps its own copy of the identification
+argument; it could refer back to section 
+ef{sec:argentina} instead if RKB prefers.
 
 **W2b. The permanent corner under CRRA** (for RKB). `results/esc/escPermanentCRRA.csv` (2026-09-11): with no
 wedge the permanent choice is the corner θ = 0 for ρ ≤ 1.3 and θ = 1 for ρ ≥ 1.4 (W gaps of 0.002–0.02).

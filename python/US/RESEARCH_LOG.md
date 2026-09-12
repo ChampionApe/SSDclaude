@@ -4,6 +4,19 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_US.md`, index
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-12 — one hours unit across countries (C4)
+
+`addEigenVectors` now scales both eigenvectors to γ·y = 1, so the vector-X hours unit
+μ = ∑γ_i y^x_i is 1 everywhere instead of scipy's unit-norm value (US 0.5593, FR 0.5590, UK 0.5770) --
+the same normalisation the Argentina models impose. It is the eq (hoursUnit) rescaling, so only h̄ and
+h_i move: the re-swept vector-X grids reproduce β, ω, R, τ, sr and h to ≤1.6e-13 at every ρ, h̄ scales by
+1/μ_US (ratio 1.788), and the μ_c/μ_US that ModelFR's Γ_h rescaling used to hide in X̄_c/X̄_US now sits in
+λ where it belongs (UK λ 0.8367 → 0.8632 at ρ = 1, the 3% TODO C4 named; FR 0.8934 → 0.8930). Docs:
+`writing/US/model_calibration.tex` (both normalisations now stated, and the h̄-comparability remark).
+`test_ee.py`'s h̄ ≠ h check was degenerate under μ = 1 and became the two aggregation identities plus
+h̄/h = μ, with the commonX instance (μ = 0.963) as the non-normalised control. Sweeps:
+`logs/usVectorX0912.log`, ~20 min; the ESC leg runs under common X and was not touched.
+
 ## 2026-09-11 — Exact CRRA ESC solver published; timing checks as tests and stages
 
 `runESCcrra.py --exact` runs the wedge calibration, design path and counterfactuals through `solveLeaded2D`

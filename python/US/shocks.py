@@ -30,8 +30,8 @@ REPORTING CONVENTIONS -- all three matter, and none is arbitrary.
 
   * The workweek is reported RELATIVE to the baseline and rescaled to the observed one:
     workweek = workweek_data * hbar/hbar_baseline. Under vector X the LEVEL of hbar is not identified
-    (docs eq:us:model:hoursUnit), so an absolute hbar is meaningless -- hbar*84 is 31.54 at the baseline,
-    not the 39.39 the data say. Only the ratio is a result. This is the same rule modelFR.ModelFR builds
+    (docs eq:us:model:hoursUnit): model.addEigenVectors fixes the unit at mu = 1, so hbar = h and an
+    absolute hbar is a convention, nowhere near the 39.39 hours the data say. Only the ratio is a result. This is the same rule modelFR.ModelFR builds
     its hours target from, applied to reporting instead of to calibration.
 
   * Everything is reported at db['t0'], the calibration year's POSITION in the full horizon (2 = 2020).

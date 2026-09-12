@@ -81,13 +81,26 @@ rhs = p_*(γi_*V['bi']).sum(axis = 1)
 d, c = close(lhs[1:], rhs[1:])
 check('PAYG budget balances (contributions == benefits)', c, '-> max|diff|={:.2e}'.format(d))
 
-# avgHours is the unweighted average and must differ from the productivity-weighted aggregate.
+# avgHours is the UNWEIGHTED average; the aggregate h is the productivity-weighted one. The two
+# aggregation identities are what catch an h_i/h vs eta_i*h_i/h mix-up.
 hbar = m.B.avgHours(V['h'][m.db['t0']], t0)
 d, c = close(hbar, (γi[m.db['t0']]*V['hi'][m.db['t0']]).sum())
 check('avgHours == sum_i gamma_i h_i', c, '-> max|diff|={:.2e}'.format(d))
-check('avgHours is NOT the aggregate h (they are different objects)',
-      not np.isclose(hbar, V['h'][m.db['t0']], rtol = 1e-3),
-      '-> hbar={:.5f} vs h={:.5f}'.format(hbar, V['h'][m.db['t0']]))
+d, c = close((γi[m.db['t0']]*ηi[m.db['t0']]*V['hi'][m.db['t0']]).sum(), V['h'][m.db['t0']])
+check('aggregate h == sum_i gamma_i eta_i h_i', c, '-> max|diff|={:.2e}'.format(d))
+
+# They coincide numerically here, and only because addEigenVectors normalises the hours unit
+# mu = sum_i gamma_i y^x_i to 1 (docs eq:hoursUnit): hbar/h = mu, and gamma_i is constant over t. That
+# is a units convention, not an identity -- under commonX, where X carries the hours unit instead, the
+# same ratio is not 1. (How each object responds to mu is test_invariance's subject.)
+mX = ModelUS(pars = testmod.pars, commonX = True, **testmod.kwargs)
+μX = float((mX.db['γi'].values[mX.db['t0']]*mX.B.hRatio(mX.db['t'][mX.db['t0']])).sum())
+μ = float((γi[m.db['t0']]*m.B.hRatio(t0)).sum())
+d, c = close(hbar, V['h'][m.db['t0']]*μ)
+check('hbar/h == mu, the hours unit', c, '-> max|diff|={:.2e}'.format(d))
+check('vector X normalises mu = 1, commonX does not',
+      np.isclose(μ, 1., rtol = 1e-12) and not np.isclose(μX, 1., rtol = 1e-3),
+      '-> mu={:.6f} (vector X) vs {:.6f} (commonX, X=1)'.format(μ, μX))
 
 # ---- 5. the informal block is inert
 mAlt = ModelUS(pars = testmod.pars, **testmod.kwargs)

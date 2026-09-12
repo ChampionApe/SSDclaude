@@ -4,6 +4,18 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-12 — one hours-unit convention, and common X in both arms
+
+Two conventions that were per-model became repo-wide. (i) The US models now impose the second
+normalisation the Argentina models already did, `sum gamma_i y^x_i = 1` in `addEigenVectors` (TODO C4), so
+the hours unit is 1 in every calibration rather than whatever scipy's unit-norm eigenvector returned. It
+is the eq (hoursUnit) rescaling, hence equilibrium-neutral: the re-swept vector-X grids reproduce beta,
+omega, R, tau, the savings rate and aggregate h to <= 1.6e-13, and the mu_c/mu_US that ModelFR's Gamma_h
+rescaling hid in X-bar_c/X-bar_US now sits in lambda. (ii) `config.ARG['commonX'] = True` (TODO W2), so
+both arms print one leisure parameter pinned by an observed workweek and treat relative hours as a
+prediction; the vector-X calibration table moved to an appendix in each arm. Per-arm detail in the US and
+paper logs of the same date; `notes/TODO.md` now holds three open items, all RKB's wording calls.
+
 ## 2026-09-11 — context reset
 
 The repo's markdown context had grown to ~400 KB. All six session logs, `notes/archive/`, the 2026-08-25

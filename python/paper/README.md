@@ -28,9 +28,9 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
   partially written.
 - Stages (i)/(ii) are declarations: the model folders' scripts do the work, and `config.py` records the
   settings the published numbers were produced at. **Change a paper number there first.**
-- Both arms carry two calibration variants; `config.US['commonX']` (True) and `config.ARG['commonX']`
-  (False) name each headline. Every US and Argentina builder takes `commonX`: the plain name and tex
-  label are the headline, the `_vectorX`/`_commonX` twin follows (`config.variantSuffix(commonX, arm)`,
+- Both arms carry two calibration variants; `config.US['commonX']` and `config.ARG['commonX']` (both
+  True since 2026-09-12) name each headline. Every US and Argentina builder takes `commonX`: the plain
+  name and tex label are the headline, the `_vectorX`/`_commonX` twin follows (`config.variantSuffix(commonX, arm)`,
   `build._variants`). Argentina's variant lives in its own sweep csv, instance directory and suffixed
   shock/sweep csvs (`config.argSweepCsv`, `argInstanceDir`, `argShockTemplate`); `runCalibration.py` /
   `runShocks.py --commonX` add it. The ESC leg runs under the US headline only.
