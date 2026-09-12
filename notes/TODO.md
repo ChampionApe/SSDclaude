@@ -35,7 +35,8 @@ X_0, the relative-hours prediction). Copied into `writing/Paper` on 2026-09-12 a
 placeholder `XXX Our model provides a rationale for the latter XXX.` in the 2026-09-10 Overleaf edit
 (clone commit `48120ea`, the same edit that widened the sample from twenty countries to the 29 pre-2000
 OECD members); it was filled on 2026-09-11. Everything before the tag -- the CondeRuiz discussion, the
-29-country claim, the footnote -- is MGE's and untouched. Its three claims check against the tables:
+29-country claim, the footnote -- is MGE's and untouched. Revised 2026-09-12 to follow the sec:esc
+rewording (W4): the inequality clause now names the two dimensions that pull against each other. Its three claims check against the tables:
 ageing raises taxes and moves the chosen design to θ = 0.76/0.78/0.82 at ρ = 0.5/1/2
 (`US_ESC_Ageing`); a flatter income distribution goes to the corner θ = 1 and flatter voting
 participation to 0.65/0.53/0.26 (`US_ESC_IncomeDistr`, `US_ESC_Voting`), so the inequality-design
@@ -66,8 +67,14 @@ wedge paragraph uses it correctly to explain why less friction is needed at high
 here to explain the ρ-profile of the *response*, where it points the wrong way. The missing link is the
 calibration: p = 0.935, 0.408, 0.085 puts the deadweight cost at θ* at 12.4%, 5.8% and 1.3% of funds
 (`US_ESC_Calibration`), so at ρ = 2 the interior optimum is held by a cushion of about one percent and
-any pull slides it a long way. Candidate rewording: keep the mechanism, add that the wedge calibration
-has already spent the forward-looking stake at high ρ. RKB to decide.
+any pull slides it a long way.
+
+Reworded on RKB's instruction, 2026-09-12: the mechanism sentence stays, and the paragraph now says the
+ρ-profile of the response follows from the calibration, citing the wedge's 1.3% against roughly 12% cost
+in the same units the wedge paragraph uses. The wording is drafted, not RKB's; it is in the paper
+untagged, so read it when next in `sec:esc`. W1's introduction sentence was made to follow (its
+inequality clause now names the two dimensions that pull against each other) and keeps its
+`%% TODO-W1` tag.
 
 ## Traps to remember (kept here because `README.md` points at them)
 
