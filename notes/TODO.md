@@ -54,10 +54,20 @@ wedge the permanent choice is the corner θ = 0 for ρ ≤ 1.3 and θ = 1 for ρ
 under a `%% TODO-W2` tag; confirm the wording and check the introduction/conclusion do not promise
 "the Beveridgean corner" for every timing.
 
-**W4. Voting-patterns mechanism in `sec:esc`** (for RKB): "the redistributive force regains ground against
-the forward-looking stake, and it is the latter that scales with ρ" reads as if higher ρ should protect
-the Bismarckian design, yet the design falls most at ρ = 2 (0.259 under the exact solver). The likely
-reason is the small calibrated wedge at high ρ; decide the wording.
+**W4. Voting-patterns mechanism in `sec:esc`** (for RKB). Self-flagged on 2026-09-11, not raised by a
+coauthor. The sentence is drafted text: the section was written on 2026-09-08, reworded in the
+2026-09-11 style-guide pass, and its numbers refreshed on 2026-09-12 for the exact solver (0.285 → 0.259
+at ρ = 2). MGE's 2026-09-10 online edit touched the file but left this paragraph byte-identical.
+
+The problem: "the redistributive force regains ground against the forward-looking stake, and it is the
+latter that scales with ρ" reads as if higher ρ should protect the Bismarckian design, yet the design
+falls furthest at ρ = 2 (0.738 → 0.654, 0.533, 0.259 at ρ = 0.5, 1, 2). The claim is not false -- the
+wedge paragraph uses it correctly to explain why less friction is needed at high ρ -- but it is reused
+here to explain the ρ-profile of the *response*, where it points the wrong way. The missing link is the
+calibration: p = 0.935, 0.408, 0.085 puts the deadweight cost at θ* at 12.4%, 5.8% and 1.3% of funds
+(`US_ESC_Calibration`), so at ρ = 2 the interior optimum is held by a cushion of about one percent and
+any pull slides it a long way. Candidate rewording: keep the mechanism, add that the wedge calibration
+has already spent the forward-looking stake at high ρ. RKB to decide.
 
 ## Traps to remember (kept here because `README.md` points at them)
 
