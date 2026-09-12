@@ -37,9 +37,8 @@ X_0, the relative-hours prediction). Copied into `writing/Paper` on 2026-09-12 a
 (`config.ARG['commonX'] = True`). The Argentina identification paragraph was rewritten (one X pinned by the
 42.5-hour formal workweek, relative formal hours a prediction), the vector-X calibration table moved to a
 new appendix subsection `app:EPH:vectorX`, and the ten Argentina outputs were rebuilt. No counterfactual
-number moved, so the draft's magnitudes stand. The OECD section keeps its own copy of the identification
-argument; it could refer back to section 
-ef{sec:argentina} instead if RKB prefers.
+number moved, so the draft's magnitudes stand. The OECD section now cites section 5's identification
+paragraph instead of repeating it, and keeps only the part specific to its own arm.
 
 **W2b. The permanent corner under CRRA** (for RKB). `results/esc/escPermanentCRRA.csv` (2026-09-11): with no
 wedge the permanent choice is the corner θ = 0 for ρ ≤ 1.3 and θ = 1 for ρ ≥ 1.4 (W gaps of 0.002–0.02).
