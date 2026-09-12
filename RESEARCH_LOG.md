@@ -13,8 +13,10 @@ is the eq (hoursUnit) rescaling, hence equilibrium-neutral: the re-swept vector-
 omega, R, tau, the savings rate and aggregate h to <= 1.6e-13, and the mu_c/mu_US that ModelFR's Gamma_h
 rescaling hid in X-bar_c/X-bar_US now sits in lambda. (ii) `config.ARG['commonX'] = True` (TODO W2), so
 both arms print one leisure parameter pinned by an observed workweek and treat relative hours as a
-prediction; the vector-X calibration table moved to an appendix in each arm. Per-arm detail in the US and
-paper logs of the same date; `notes/TODO.md` now holds three open items, all RKB's wording calls.
+prediction; the vector-X calibration table moved to an appendix in each arm. Spending the hours-unit
+normalisation made `h̄` and `h` coincide and broke a test asserting they differ, which is finding #15.
+Per-arm detail in the US and paper logs of the same date; `notes/TODO.md` now holds two open items, W1
+and W2b, both RKB's wording calls.
 
 ## 2026-09-11 — context reset
 

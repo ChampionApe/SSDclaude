@@ -200,3 +200,20 @@ lines, no `DONE`; the stage logs' mtimes are the only record.
 **Habit.** Never hold a pipeline log open: watch it with `until grep -q DONE log; do sleep 30; done`
 (open, read, close), never with `tail -F` or a Monitor built on it. When the log is frozen, read the
 stage logs and their mtimes before concluding anything about the run.
+
+## 15. Spending a normalisation makes distinct objects coincide numerically
+
+**Statement.** A free normalisation fixes units, not meaning. Imposing the hours unit
+`mu = sum_i gamma_i y^x_i = 1` in the US calibration (2026-09-12, TODO C4) moved no equilibrium object at
+all, but made the average workweek `hbar` equal the aggregate `h` at every date, since `gamma_i` does not
+vary with `t`. The two stay different objects -- one unweighted, one productivity-weighted -- and the
+`test_ee.py` check asserting they differ was right to fail.
+
+**Tell.** A test that asserts two quantities are *unequal*, or a comment that separates them by example,
+starts failing after a change that touches nothing else; the ratio between them is exactly the constant
+just normalised.
+
+**Habit.** When spending a normalisation, grep for the objects it relates and rewrite any "these differ"
+check as the identity that defines their ratio (`hbar/h = mu`), with a non-normalised instance as the
+control -- an equality that holds by convention is worth asserting, an inequality that holds by accident
+is not. Never let other code read the new coincidence as an invariant.

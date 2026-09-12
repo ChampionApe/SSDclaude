@@ -46,7 +46,7 @@ merge into their csvs (`runESC.mergeWrite`); `runESCcrra.py --bracket` must span
 - **Two invariances**: scale (`y^η → λy^η`, normalised away by `Γ_h = 1`) and hours unit (`y^x → μy^x`,
   moves only `h_i` and `h̄`). `test_invariance.py`. Both normalisations are spent in
   `addEigenVectors`: `Γ_h = 1` and `μ = ∑γ_i y^x_i = 1`, the latter since 2026-09-12 (so `h̄ = h` under
-  vector `X`, and one hours unit in every country). **`h̄` is the only object comparable to an observed
+  vector `X` -- a coincidence of units, not an identity: finding #15 -- and one hours unit per country). **`h̄` is the only object comparable to an observed
   workweek, and under vector `X` its level is still not data**: report it against a reference.
 
 ## Calibration

@@ -91,8 +91,9 @@ check('aggregate h == sum_i gamma_i eta_i h_i', c, '-> max|diff|={:.2e}'.format(
 
 # They coincide numerically here, and only because addEigenVectors normalises the hours unit
 # mu = sum_i gamma_i y^x_i to 1 (docs eq:hoursUnit): hbar/h = mu, and gamma_i is constant over t. That
-# is a units convention, not an identity -- under commonX, where X carries the hours unit instead, the
-# same ratio is not 1. (How each object responds to mu is test_invariance's subject.)
+# is a units convention, not an identity (crossCuttingFindings #15) -- under commonX, where X carries the
+# hours unit instead, the same ratio is not 1. (How each object responds to mu is test_invariance's
+# subject.)
 mX = ModelUS(pars = testmod.pars, commonX = True, **testmod.kwargs)
 μX = float((mX.db['γi'].values[mX.db['t0']]*mX.B.hRatio(mX.db['t'][mX.db['t0']])).sum())
 μ = float((γi[m.db['t0']]*m.B.hRatio(t0)).sum())

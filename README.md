@@ -31,12 +31,12 @@ ones (`notes/crossCuttingFindings.md` #8).
 
 | | |
 |---|---|
-| `crossCuttingFindings.md` | thirteen findings cited by number from code and READMEs. Read #3–#5 before diagnosing a stalled outer solver, #7 before keying a fix to one solver, #9 before writing a parameter the model derives, #13 before resuming any sweep |
+| `crossCuttingFindings.md` | fifteen findings cited by number from code and READMEs. Read #3–#5 before diagnosing a stalled outer solver, #7 before keying a fix to one solver, #9 before writing a parameter the model derives, #13 before resuming any sweep, #15 before spending a normalisation |
 | `TODO.md` | the one open list. Closed work is in the logs, not here |
 | `informalSavings_numericalDeviations.md` | where `InformalSavings` departs from the `num_*.tex` specs, with the measurement behind each |
 | `informalSavings_resolvedIssues.md` | two resolved calibration defects and the live settings they justify |
 | `argentina_calibrationTarget.md`, `argentina_alphaSensitivity.md` | why the calibration targets K/Y, and what α does to β |
-| `esc_experiments_acrossRho.md`, `us_commonX_vs_vectorX.md` | result write-ups behind two paper decisions |
+| `esc_experiments_acrossRho.md`, `us_commonX_vs_vectorX.md`, `argentina_commonX_vs_vectorX.md` | result write-ups behind three paper decisions; both arms print the common-`X` calibration since 2026-09-12 |
 | `paper_styleGuide.md` | voice, units and LaTeX conventions of the paper draft |
 
 **`archive/`**: history, frozen 2026-09-11 and indexed in `archive/INDEX.md`: the session logs to that
@@ -59,6 +59,6 @@ and workbooks under `data/` must be edited through Excel, not openpyxl (`notes/T
 
 ## Status
 
-All three model variants solve, calibrate and run their counterfactuals, and all 34 paper outputs are
+All three model variants solve, calibrate and run their counterfactuals, and all 39 paper outputs are
 wired end to end. The endogenous-`θ` layer (leaded and permanent timings, LOG and CRRA) is implemented
 and calibrated; only the *sequential* timing is not. Open items: `notes/TODO.md` and the module READMEs.

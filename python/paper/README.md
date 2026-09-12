@@ -48,7 +48,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `build.py` | stage (iii): the output registry for both arms, and the copy into `writing/Paper` |
 | `dataTargets.py` | stage (0) |
 
-## Outputs wired (34)
+## Outputs wired (39)
 
 | Paper file | Built from |
 |---|---|
@@ -66,7 +66,9 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `Tables/UK_ESC_Calibration.tex` | `results/esc/escCountry.csv`, ρ = 1 only |
 | `Figs/US_ESC_overview.pdf` | `escExperiments.csv`, 2×2 dumbbells (open = `θ` pinned, filled = chosen) |
 
-Every US table and figure is registered twice (headline and `_vectorX`); the ESC outputs headline only.
+Every US and Argentina table and figure is registered twice (headline and `_vectorX`, both arms leading
+with common X since 2026-09-12); the ESC outputs headline only. Only `ArgentinaCalibration_vectorX` is
+`\input` in the paper -- the other Argentina twins are built but print the same numbers as the headline.
 The French leisure row is no longer printed (2026-09-11) but still runs, sits in every csv and inside
 `frAll`. Every US counterfactual is a new equilibrium path read at 2020 (`python/US/shocks.py`,
 `writing/US/num_esc.tex`); the French tables carry the all-three row and France's own path, which fails by

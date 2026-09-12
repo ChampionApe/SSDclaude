@@ -4,6 +4,25 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_paper.md`, in
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-12 (evening) — paper prose: the identification argument stated once, W4 reworded
+
+Three prose passes on RKB's instruction, no pipeline change. (i) `sec:oecd` now cites section 5's
+identification paragraph instead of repeating it, keeping only what is specific to its arm -- that the
+French income-distribution counterfactual (and the composite containing it) is defined through eta and X
+separately, which is why every table is repeated under the vector-X variant. It had also still named the
+French leisure row, not printed since 2026-09-11. (ii) W4: the voting paragraph keeps its mechanism
+sentence but drops "it is the latter that scales with rho", which explained the rho-profile of the
+*response* with an argument that points the wrong way; it now says the profile follows from the
+calibration, the wedge costing about 1.3% of raised funds at rho = 2 against roughly 12% at rho = 0.5
+(`US_ESC_Calibration`), so the interior choice sits on a thin cushion at high rho. (iii) W1's
+introduction sentence follows, naming income and political participation as the two dimensions pulling
+against each other; it keeps its `%% TODO-W1` tag.
+
+Provenance, established from the Overleaf clone's history and recorded in `notes/TODO.md`: the W1
+sentence fills a placeholder MGE left in his 2026-09-10 online edit (the same edit that widened the
+sample to the 29 pre-2000 OECD members); W4's paragraph is drafted text throughout, self-flagged, and
+MGE's edit left it byte-identical. Open: W1 and W2b.
+
 ## 2026-09-12 — Argentina leads with common X (W2); vector-X outputs rebuilt after C4
 
 `config.ARG['commonX'] = True`, so both arms now print the common-X calibration. Argentina's ten outputs
