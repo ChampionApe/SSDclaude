@@ -7,8 +7,8 @@ the permanent-timing fix, in `archive/notes/todo_paperRewrite.md` and `archive/n
 
 Items are labelled so they can cite each other: `C` code, `R` compute runs, `W` writing. C1, C2, R1, R3, R4
 and W3 closed on 2026-09-11 (`python/US/RESEARCH_LOG.md`, `python/paper/RESEARCH_LOG.md`); C4 and W2 on
-2026-09-12, W4 the same day on RKB's instruction, W2b on 2026-09-15 along with most of W5. Open: W1 and
-the last two parts of W5, both RKB's wording calls.
+2026-09-12, W4 the same day on RKB's instruction, W2b on 2026-09-15 along with the rest of W5. Open: W1,
+a wording call, and W5's one remaining part, whether the paper carries a verification paragraph.
 
 ## Code tasks
 
@@ -88,12 +88,26 @@ footnote. That closed (ii) and (iv) by deletion; (i) and (iii) were then fixed o
 with two typos, the now-undefined $[l,u]$, an unnumbered candidate set, and two register points. The
 `sec:esc` back-reference was narrowed to match what the shortened section still says.
 
-Still open, all RKB's call: (v) no hand-off sentence to section 6; (vi) no verification paragraph
-(log–CRRA agreement as ρ→1, the pinned design recursion reproducing the exogenous solver, grid
-refinement). Two deletions worth a second look: the policy-function smoothing sentence was the only thing
-explaining why the outer calibration solve converges, and "Importantly, letting ρ→1, the CRRA recursion
-reproduces the log solution" lost the clause that made it important (the two solvers share almost no
-code, so their agreement is the main check on both).
+Still open, RKB's call: **a verification paragraph.** The section says how the equilibria are computed but
+never how we know the code computes them, so a referee's "how do you know the solver is right?" has no
+answer in the paper. One short paragraph at the end of the section would give it. Three candidate checks,
+two of which already run as test suites:
+
+- *The CRRA solver against its own log limit.* As ρ → 1 the CRRA recursion must converge on the log
+  solution, at a first-order rate in (ρ − 1). What makes this a test rather than a formality is that the
+  two share almost no code — log maximises a closed-form $\mathcal{W}_t$ by backward recursion, CRRA
+  re-solves the whole politico-economic equilibrium at each candidate and iterates on the path — so they
+  reach the same number from different directions or one of them is wrong (`python/US/test_escCRRA.py`;
+  `python/InformalSavings/test_peeCRRA.py`, whose terminal-period agreement at ρ = 1 is an exact identity,
+  not a numerical coincidence). The section already asserts the convergence in one clause; what it omits
+  is why it counts.
+- *The design machinery with the design pinned.* `ModelESC` with no wedge reproduces `ModelUS` to machine
+  precision — the section 7 solver collapses onto the exogenous-θ one (`python/US/test_esc.py`, check 1).
+- *Grid refinement.* **Not measured.** Nothing sweeps the tax or state grid and reports how far the
+  solution moves, so this one would have to be run before it could be claimed.
+
+The prior question is whether any of it belongs in the paper: the technical documentation carries the full
+battery and the section already defers to it twice, so the paragraph may be one sentence pointing there.
 
 ## Traps to remember (kept here because `README.md` points at them)
 
