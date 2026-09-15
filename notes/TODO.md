@@ -7,7 +7,8 @@ the permanent-timing fix, in `archive/notes/todo_paperRewrite.md` and `archive/n
 
 Items are labelled so they can cite each other: `C` code, `R` compute runs, `W` writing. C1, C2, R1, R3, R4
 and W3 closed on 2026-09-11 (`python/US/RESEARCH_LOG.md`, `python/paper/RESEARCH_LOG.md`); C4 and W2 on
-2026-09-12, W4 the same day on RKB's instruction. Open: W1 and W2b, both RKB's wording calls.
+2026-09-12, W4 the same day on RKB's instruction, W2b on 2026-09-15 along with most of W5. Open: W1 and
+the last two parts of W5, both RKB's wording calls.
 
 ## Code tasks
 
@@ -49,11 +50,13 @@ new appendix subsection `app:EPH:vectorX`, and the ten Argentina outputs were re
 number moved, so the draft's magnitudes stand. The OECD section now cites section 5's identification
 paragraph instead of repeating it, and keeps only the part specific to its own arm.
 
-**W2b. The permanent corner under CRRA** (for RKB). `results/esc/escPermanentCRRA.csv` (2026-09-11): with no
-wedge the permanent choice is the corner θ = 0 for ρ ≤ 1.3 and θ = 1 for ρ ≥ 1.4 (W gaps of 0.002–0.02).
-`Sections/EndogenousTheta.tex` now says so in the permanent paragraph and qualifies the section opening,
-under a `%% TODO-W2` tag; confirm the wording and check the introduction/conclusion do not promise
-"the Beveridgean corner" for every timing.
+**W2b. The permanent corner under CRRA** — done 2026-09-15 on RKB's instruction, tag dropped. The
+section's own wording checked out against `results/esc/escPermanentCRRA.csv` (θ = 0 for ρ ≤ 1.3, θ = 1 for
+ρ ≥ 1.4) and `escPermanent.csv` (θ = 0 under log); the permanent paragraph now also says the two corners
+are nearly tied across the switch, since the W gap is 0.002–0.003 there against 0.02 at ρ = 1.1. The
+introduction did promise a fully Beveridgean system "under every timing" and now promises a corner under
+every timing; the conclusion and the section's closing lesson dropped "too attractive" for the claim that
+actually holds at all three timings, that no interior design survives.
 
 **W4. Voting-patterns mechanism in `sec:esc`** (for RKB). Self-flagged on 2026-09-11, not raised by a
 coauthor. The sentence is drafted text: the section was written on 2026-09-08, reworded in the
@@ -75,6 +78,22 @@ in the same units the wedge paragraph uses. The wording is drafted, not RKB's; i
 untagged, so read it when next in `sec:esc`. W1's introduction sentence was made to follow (its
 inequality clause now names the two dimensions that pull against each other) and keeps its
 `%% TODO-W1` tag.
+
+**W5. The numerical section** (for RKB, 2026-09-12 night). The opening paragraph of `Sections/Numerical.tex`
+was rewritten on RKB's instruction (stationary policy functions as the literature's object, date-specific
+ones as ours, a footnote with the measured cost of the approximation from `results/numerical/`), and the
+horizon footnote corrected. **RKB then shortened the section himself on Overleaf (2026-09-15), 57
+sentences to 45**, deleting the four solver `\smalltitle` blocks and moving the grid search into a
+footnote. That closed (ii) and (iv) by deletion; (i) and (iii) were then fixed on his instruction, along
+with two typos, the now-undefined $[l,u]$, an unnumbered candidate set, and two register points. The
+`sec:esc` back-reference was narrowed to match what the shortened section still says.
+
+Still open, all RKB's call: (v) no hand-off sentence to section 6; (vi) no verification paragraph
+(log–CRRA agreement as ρ→1, the pinned design recursion reproducing the exogenous solver, grid
+refinement). Two deletions worth a second look: the policy-function smoothing sentence was the only thing
+explaining why the outer calibration solve converges, and "Importantly, letting ρ→1, the CRRA recursion
+reproduces the log solution" lost the clause that made it important (the two solvers share almost no
+code, so their agreement is the main check on both).
 
 ## Traps to remember (kept here because `README.md` points at them)
 

@@ -4,6 +4,20 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_InformalSavin
 `archive/INDEX.md`. Format: one entry per session, at most ~10 lines: what changed, why, where to look. A
 lesson that would recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-12 — stationary vs date-specific policy functions (prepub check)
+
+`stationaryApprox.py` (driven by `python/paper/runShocks.py --prepub`, headline variant): on the pickled
+common-X instances at ρ = 1, 2, 0.5, the exact recursion against a policy function solved on a deep copy
+with ν frozen at each date's value, on the BASELINE's state grids (`gridsOf`), read at the first period,
+walked from the exact initial state with the transition re-solved on the frozen model; plus τ*(ν_t) from
+`initialStatePEE` on the frozen model. Along 1920–2070 the stationary walk misses the exact tax by ≤ 0.24
+p.p. (0.32 at the exact states; 2010, ρ = 2), the steady-state comparison by ≤ 1.4 p.p. (2040, ρ = 0.5;
+0.9 at ρ = 1): larger than the US arm because ν falls from 1.65 to 0.96 and ι carries policy history.
+Terminal period 4–11 p.p. too high, the one before ≤ 0.64 p.p. (ρ = 0.5), two before ≤ 0.06. The frozen
+recursion at ν = 1.646, ρ = 0.5 settles only to 1e-3 over the visited states (10 periods, not extended).
+`results/numerical/ARG_stationaryApprox_commonX.csv`, `logs/argStationary*0912.log`. Trap: `--nι` through
+a `cmd /c` line in a ps1 is mangled by the code page; use `--niota`.
+
 ## 2026-09-11 — the informal targets were mis-scaled; recalibrated
 
 `X0` looked low (0.413 against formal `X_i` of 15–25). Two defects, both in the `η0/X0` step (also in

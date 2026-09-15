@@ -44,7 +44,9 @@ credential manager after the first push):
     beside it after the first use. `push` fast-forwards the clone, copies the export's file set over it --
     the same files, the same reference check -- DELETES clone files that no longer exist here, commits and
     pushes. A file that was edited online since the last push and differs from the local copy is a
-    conflict: push refuses and says `pull` first (--force overwrites). On the FIRST push nothing is known
+    conflict: push refuses and says `pull` first (--force overwrites). `pull` records what it took, so
+    pulling someone's edit, building on it and pushing it back is an ordinary push; a file the pull did
+    NOT take (protected, binary) keeps conflicting until it is resolved at its source. On the FIRST push nothing is known
     about the online history, so every online text source that differs is treated that way: review with
     `pull --dry-run`, then `push --force` once to make Overleaf match this folder. `pull` fast-forwards
     the clone and applies the import rules above to it. Neither direction touches this repository's git
@@ -250,6 +252,9 @@ def applyImport(name, incoming, dryRun = False, allFiles = False):
     print('{} updated, {} new, {} unchanged, {} protected, {} binary skipped, {} only local{}'.format(
         len(plan['update']), len(plan['new']), len(plan['same']), len(plan['protected']),
         len(plan['binary']), len(onlyLocal), '  (dry run, nothing written)' if dryRun else ''))
+    # The files this import leaves in sync with `incoming`: taken, or already identical. NOT the
+    # protected and binary ones, which were deliberately left alone and must keep being flagged.
+    return set(plan['same']) | {rel for rel, _, _ in plan['update'] + plan['new']}
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -405,7 +410,21 @@ def push(name, url = None, force = False, message = None):
 def pull(name, url = None, dryRun = False, allFiles = False):
     clone = ensureClone(name, url)
     incoming = {rel: open(p, 'rb').read() for rel, p in cloneFiles(clone).items()}
-    applyImport(name, incoming, dryRun = dryRun, allFiles = allFiles)
+    synced = applyImport(name, incoming, dryRun = dryRun, allFiles = allFiles)
+    if dryRun:
+        return
+    # Record what this pull has taken from Overleaf, so that editing a pulled file and pushing it back
+    # is an ordinary push. Without this the snapshot still describes the previous PUSH, every pull ->
+    # edit -> push round trip reads as a conflict, and the only way out is --force -- the one flag that
+    # can discard someone's online work. Files the import did not take (protected, binary) keep their
+    # old entry and go on conflicting until they are resolved at their source.
+    online = cloneFiles(clone)
+    pushed = json.load(open(pushedFile(name))) if os.path.exists(pushedFile(name)) else {}
+    for rel in synced:
+        if rel in online:
+            pushed[rel] = sha(online[rel], rel)
+    with open(pushedFile(name), 'w', encoding = 'utf-8') as f:
+        json.dump(pushed, f, indent = 1)
 
 
 def main():

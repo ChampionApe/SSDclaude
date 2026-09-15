@@ -180,6 +180,30 @@ EXPERIMENTS = {
                                 for f in ('escShocksCRRA.csv', 'escPathCRRA.csv')),
         'note':    'endogenous-theta path and counterfactuals, CRRA, EXACT 2-D recursion',
     },
+    # --- PRE-PUBLICATION. Stationary vs date-specific policy functions, the check behind sec:numerical's
+    # literature paragraph: the exact date-specific recursion against a stationary policy function computed
+    # at each date's own nu and walked along the demographic path (plus the steady-state comparison and one
+    # long-run function). No paper table reads these; the footnote quotes the maximal gaps. They move only
+    # when the model or the calibration does, hence prepub. The exogenous-theta check under CRRA (LOG is
+    # exact by the decoupling) and the endogenous-theta check under LOG and the exact 2-D CRRA recursion
+    # (~1 h at ns2D, one recursion per distinct nu). The Argentina counterpart is runShocks.py --prepub.
+    'stationary': {
+        'part':    'prepub',
+        'script':  'stationaryApprox.py',
+        'args':    (['--rho'] + [str(r) for r in C.US['ρStationary']]
+                    + ['--n', str(G['n']), '--ns', str(G['ns']), '--smoothKnots', str(G['smoothKnots'])]
+                    + ([] if C.US['commonX'] else ['--vectorX'])),
+        'outputs': lambda: [os.path.join(C.NUMDIR, 'US_stationaryApprox.csv')],
+        'note':    'stationary vs date-specific tax policies, CRRA (~2 min)',
+    },
+    'stationaryESC': {
+        'part':    'prepub',
+        'script':  'stationaryApproxESC.py',
+        'args':    (['--rho'] + [str(r) for r in ESC['ρTable']] + ESCSPEC
+                    + ['--ns', str(ESC['ns2D']), '--nCand2D', str(ESC['nCand2D'])] + ESCVARIANT),
+        'outputs': lambda: [os.path.join(C.NUMDIR, 'US_ESC_stationaryApprox.csv')],
+        'note':    'stationary vs date-specific design policies, LOG and exact CRRA (~1 h)',
+    },
     # The merge stage (iii) reads. Listed last so a run rebuilds it after the producers, in BOTH parts,
     # and NEVER skipped ('always'): it costs a second, and a merge left over from before a producer ran
     # is exactly the stale-but-present output that blocked the build on 2026-09-11.

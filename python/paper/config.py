@@ -16,6 +16,8 @@ INSTDIR   = os.path.join(CALIBDIR, 'instances')
 SHOCKDIR  = os.path.join(RESULTS, 'shocks')
 SWEEPDIR  = os.path.join(RESULTS, 'sweeps')
 ESCDIR    = os.path.join(RESULTS, 'esc')
+NUMDIR    = os.path.join(RESULTS, 'numerical')      # pre-publication numerical checks (stationary vs
+                                                    # date-specific policy functions), no paper output
 PAPERDIR  = os.path.join(RESULTS, 'paper')          # stage (iii) writes here first
 PAPERTEX  = os.path.join(REPO, 'writing', 'Paper')  # ... then copies here unless --no-copy
 
@@ -151,6 +153,10 @@ US = {
     # counterfactual tables report at t0: every scenario is a new equilibrium path whose political choice
     # binds from the first period, so 2020's design is an outcome and already carries the response.
     # The ESC leg runs under the headline calibration variant above, US['commonX'].
+    # The rho points of the pre-publication stationary-vs-date-specific check (runShocksUS.py 'stationary';
+    # rho = 1 is exact by the LOG decoupling and is not run). sec:numerical's footnote quotes the maximal gap
+    # over these points.
+    'ρStationary': [0.5, 0.7, 1.3, 1.5, 2.0],
     'esc': {
         'spec':      'scale',
         'phi':       0.5,
@@ -222,6 +228,9 @@ def usCalendar(country = 'US'):
 # paper already \ref{}s, so switching which variant leads never renames the outputs the draft cites --
 # it changes what they contain. The other variant is the robustness twin, and its name and label carry
 # ITS OWN variant rather than the word "alternative", so a file on disk says what is in it.
+#
+# The printed note is keyed on commonX, not on which variant leads: the paper's tables and figures are
+# the common-X calibration and say nothing about it, and only a vector-X table names itself.
 # ---------------------------------------------------------------------------------------------------
 def isLead(commonX, arm = 'US'):
     """ Is `commonX` the headline variant of `arm` ('US' | 'ARG')? """
@@ -241,24 +250,18 @@ def variantCaption(commonX, arm = 'US'):
 
 
 def variantNote(commonX, full = False, arm = 'US'):
-    r""" One sentence naming the calibration variant, appended to every US (and Argentina) table note.
+    r""" One sentence naming the calibration variant, appended to a VECTOR-X table's note.
 
-    Both tables carry it, headline included: the two variants share beta, omega, tau, R and the savings
-    rate exactly, and differ only where a number is defined through eta or X -- so a reader comparing two
-    tables needs to be told which one they are looking at, not left to infer it from the one column that
-    moved. The calibration table (`full = True`) spells the variant out; every other table names it and
-    points at that table's note. """
+    Empty under common X, which is what the paper is: every table and figure in the main text is the
+    common-X calibration, so none of them says so, and only the vector-X twins in the appendices carry a
+    label. The vector-X calibration table (`full = True`) spells the variant out; every other vector-X
+    table names it and points at that table's note. """
+    if commonX:
+        return ''
     calib = r'table:US:Calib' if arm == 'US' else r'table:Arg:Calib'
     if not full:
-        return (r' ' + (r'Common-$X$' if commonX else r'Vector-$X_i$') + r' calibration: see the note to '
+        return (r' Vector-$X_i$ calibration: see the note to '
                 r'Table~\ref{' + calib + variantSuffix(commonX, arm) + '}.')
-    if commonX:
-        who = 'formal income groups' if arm == 'ARG' else 'income groups'
-        tail = (r' The informal $\eta_0$ and $X_0$ are calibrated under either variant.' if arm == 'ARG'
-                else '')
-        return (r' Common-$X$ calibration: one leisure parameter $X$ shared across ' + who + r', with '
-                r'the hours unit pinned by targeting the observed average workweek, so relative hours '
-                r'are a prediction rather than a calibration target.' + tail)
     return (r' Vector-$X_i$ calibration: $X_i$ is identified from relative hours, which are data here, '
             r'and the level of $\bar h$ is then not identified --- only its ratio to the baseline is. '
             r'$\beta$, $\omega$, the tax rate and the savings rate are common to the two variants; what '

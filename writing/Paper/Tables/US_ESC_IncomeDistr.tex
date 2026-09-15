@@ -7,7 +7,7 @@
 \caption{Endogenous design and the French income distribution in US}
 \label{table:US_ESC:incomeDistr}
 \renewcommand{\arraystretch}{1.25}
-\begin{tabularx}{.9\textwidth}{p{2.6cm}YYYYY}
+\begin{tabularx}{\textwidth}{p{2.6cm}YYYYY}
 \toprule
 \textbf{Scenario} & \textbf{CRRA} ($\rho$) & $\bm{\theta}$ \textbf{(2020)} & \textbf{Tax rate} & \textbf{Savings rate} & \textbf{Avg. workweek} \\
 \midrule 
@@ -25,9 +25,9 @@ France & 1.0 & 1.00 & 21.29\% & $-1.95$ p.p. & 35.44 \\
  & 2.0 & 1.00 & 21.29\% & $-2.38$ p.p. & 35.44 \\[.5em]\hline\\[-.75em]
 \bottomrule
 \end{tabularx}
-\begin{tablenotes}
+\begin{tablenotes}[flushleft]
 \footnotesize
-\item \textit{Note:} Deadweight-cost specification: the proportional cost $f(\theta)$ with $\phi = 0.5$ and $p$ calibrated per $\rho$ (Table~\ref{table:US_ESC:calibration}). Every counterfactual is a separate equilibrium path: the changed parameters hold throughout, the economy starts from its own steady state, and the political choice binds from the first period of the horizon, so the design in force in 2020 is itself an outcome rather than an inherited datum. All rows are read at 2020. $\theta$ (2020) is the design in force there; in the exogenous rows it is the US design, held fixed so that the counterfactual is about the changed characteristic alone. Each $\rho$ is separately calibrated and its workweek normalised against its own baseline. The savings rate is savings relative to GDP; the baseline rows report its level and every other row the change against the baseline at the same $\rho$, in percentage points. The exogenous rows hold $\theta$ at the US design, so they are the change in inequality alone; the endogenous rows let the electorate choose the design under the French income distribution, and the gap between the two is what endogenising the design adds. Common-$X$ calibration: see the note to Table~\ref{table:US:Calib}. The France row is not a counterfactual on the US model: France carries its own characteristics \emph{and} its own calibrated $\omega$, so the distance between it and the endogenous row is what the observable characteristics do not explain. Its workweek is France's own calibration target, not a prediction, and its savings rate is likewise the distance from the US baseline.
+\item[] \textit{Note:} The cost specification and the units are those of table \ref{table:US_ESC:ageing}. The France row is France's own calibrated path rather than a counterfactual on the US model: it carries France\textquotesingle s own $\omega$ as well as its characteristics, and its workweek is a calibration target rather than a prediction.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

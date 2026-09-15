@@ -17,6 +17,7 @@
 | `thetaStakes.py` | diagnostic: who gains from a marginal change in `θ_{t+1}`; showed the leaded choice needs a wedge |
 | `test.py`, `testEU.py` | workbook loaders: `USMain_test.xlsx`; `FRMain.xlsx`/`UKMain.xlsx` via `testEU.model('FR'|'UK'[, grouping='US'])` |
 | `calibrateRhoGrid.py`, `calibrateRhoGridEU.py`, `runShocksUS.py`, `runESC.py`, `runESCcrra.py`, `collectESCexperiments.py` | drivers |
+| `stationaryApprox.py`, `stationaryApproxESC.py` | prepub checks: a stationary policy function (ν frozen at each date's value) against the exact date-specific one along the demographic path, for taxes (CRRA) and for the endogenous design (LOG, exact 2-D CRRA); `results/numerical/` |
 
 Eight fast test suites (~3 min; `test_esc.py` alone ~100 s) and two slow ones (`test_escTiming.py`, the
 permanent timing's reference numbers, ~75 s; `test_escCRRA.py`, ~7 min), registered in `python/runTests.py`.

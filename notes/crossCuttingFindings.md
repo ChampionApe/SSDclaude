@@ -217,3 +217,18 @@ just normalised.
 check as the identity that defines their ratio (`hbar/h = mu`), with a non-normalised instance as the
 control -- an equality that holds by convention is worth asserting, an inequality that holds by accident
 is not. Never let other code read the new coincidence as an invariant.
+
+## 16. A sync that pulls overwrites whatever is uncommitted underneath it
+
+**Statement.** `writing/overleaf.py pull` writes every differing text source over the local copy. On
+2026-09-15 it was run to clear a stale push snapshot while two section files carried unpushed edits;
+both were reverted. One had been backed up, the other had not, and was only recovered because its
+single changed sentence was still in the session. Git would have made this free, but nothing that day
+was committed, so the working tree was the only copy.
+
+**Tell.** A sync command reports more files written than the one being chased -- "2 updated" when a
+single file was expected -- or a file you edited minutes ago reappears in its remote form.
+
+**Habit.** Run `git status` before any command that pulls a remote over the working tree, and commit (or
+stash) first. Read the count in the tool's own summary line against the number of files expected, and
+treat a mismatch as a revert until proven otherwise; `--dry-run` says exactly which files are in play.

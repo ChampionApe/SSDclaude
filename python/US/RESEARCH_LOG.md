@@ -4,6 +4,21 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_US.md`, index
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-12 (night) — stationary vs date-specific policy functions (prepub check)
+
+`stationaryApprox.py`: the exact CRRA recursion against a policy function solved with ν frozen at each
+date's value (40-period recursion, first period read, convergence checked over the visited states -- the
+bottom of the s grid never settles, ~1e-4, and is excluded), walked along the projected path from the exact
+initial state; plus the steady-state PEE tax τ*(ν_t) and one long-run function. At ρ ∈ {0.5, 0.7, 1.3,
+1.5, 2}: the date-by-date stationary walk misses the exact tax by ≤ 0.17 p.p. (2020), the steady-state
+comparison by ≤ 0.20 p.p., the sign flipping at ρ = 1 (exact by the decoupling); one long-run function is
+6–8 p.p. off before 2050. The terminal period is 3.5–9.7 p.p. too high, the one before ≤ 0.26 p.p.
+`stationaryApproxESC.py`: the same for the leaded design under the wedge, LOG (`ESC.solveBackward` on the
+frozen copy) and exact 2-D CRRA (`ESCC2.solvePolicies` on the baseline's s grid, ~5 min each): the design
+in force is misplaced by ≤ 0.005 (LOG) and ≤ 0.016 (CRRA, 1990 at ρ = 2, where the frozen recursion itself
+only settles to 0.015 -- the flat objective); the tax by ≤ 0.21 p.p. `results/numerical/US_*.csv`,
+`logs/*Stationary*0912.log`; wired as prepub entries of `python/paper/runShocksUS.py`.
+
 ## 2026-09-12 — one hours unit across countries (C4)
 
 `addEigenVectors` now scales both eigenvectors to γ·y = 1, so the vector-X hours unit

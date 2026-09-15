@@ -6,22 +6,21 @@
 \begin{threeparttable}
 \caption{Calibration, US, UK, and France (vector $X_i$ calibration)}
 \label{table:US:Calib_vectorX}
-\renewcommand{\arraystretch}{1.25}
-\begin{tabularx}{\textwidth}{Y|YYY|p{6cm}}
-\hline
-& \multicolumn{3}{c|}{\textbf{Country}} & \\ \cline{2-4}
-\multicolumn{1}{c|}{\textbf{Parameter}} & \textbf{US} & \textbf{UK} & \textbf{France} & \textbf{Target} \\ \hline
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{l!{\color{black!25}\vrule width 0.5pt}C{1.4cm}C{1.4cm}C{1.4cm}!{\color{black!25}\vrule width 0.5pt}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Parameter} & \textbf{US} & \textbf{UK} & \textbf{France} & \textbf{Identified by} \\ \midrule
 $\theta$ & 0.74 & 0.56 & 1.00 & Replacement rate dispersion \\
 $\omega$ & 1.45 & 1.16 & 1.42 & $\tau^{US} = 14.4\%$, $\tau^{UK} = 11.9\%$, $\tau^{FR} = 21.3\%$ \\
-$\beta$ & 0.76 & 0.76 & 0.76 & US: 30y interest rate; imposed on UK/FR \\
-$X$ & 0.88 & 1.55 & 1.33 & Avg.\ workweek \\
-$\nu_{2020}$ & 1.34 & 1.17 & 0.97 & 30-year gross population growth rates \\
-$\eta_{H}/\eta_L$ & 3.73 & 3.87 & 2.44 & Relative productivity of high (H) to low (L) income groups \\
-\hline
+$\beta$ & 0.76 & 0.76 & 0.76 & 30-year interest rate (US) \\
+$X$ & 0.88 & 1.55 & 1.33 & Average workweek \\
+$\nu_{2020}$ & 1.34 & 1.17 & 0.97 & 30-year gross population growth \\
+$\eta_{H}/\eta_L$ & 3.73 & 3.87 & 2.44 & Relative productivity, high to low income \\
+\bottomrule
 \end{tabularx}
-\begin{tablenotes}
+\begin{tablenotes}[flushleft]
 \footnotesize
-\item \textit{Note:} $\rho = 1.0$. $X$ is the population-weighted mean of $X_i$; its level is the hours unit, pinned for France and the UK by targeting average hours relative to the US rather than in levels. $\beta$ is calibrated for the US and imposed on the other two. Vector-$X_i$ calibration: $X_i$ is identified from relative hours, which are data here, and the level of $\bar h$ is then not identified --- only its ratio to the baseline is. $\beta$, $\omega$, the tax rate and the savings rate are common to the two variants; what differs is anything defined through $\eta$ or $X$.
+\item[] \textit{Note:} $\rho = 1.0$. $X$ is the population-weighted mean of $X_i$; its level is the hours unit, pinned for France and the UK by targeting average hours relative to the US rather than in levels. $\beta$ is calibrated for the US and imposed on the other two. Vector-$X_i$ calibration: $X_i$ is identified from relative hours, which are data here, and the level of $\bar h$ is then not identified --- only its ratio to the baseline is. $\beta$, $\omega$, the tax rate and the savings rate are common to the two variants; what differs is anything defined through $\eta$ or $X$.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

@@ -22,6 +22,22 @@ SRNOTE = (r' The savings rate is savings relative to GDP; the baseline row repor
           r'other row the change against that baseline in percentage points.')
 
 
+def notesBlock(note):
+    r""" The tablenotes block.
+
+    A single unlabelled note is set flush left with no list indentation -- it is a paragraph, not a list
+    of one. A note that carries labelled markers keyed to table cells (US_Ageing's a/b) stays a list, so
+    the markers keep their hanging indent. """
+    if not note:
+        return ''
+    note = note.strip()
+    if note.startswith(r'\item '):
+        note = note[len(r'\item '):]
+    if r'\item[' in note:
+        return '\\begin{tablenotes}\n\\footnotesize\n\\item ' + note + '\n\\end{tablenotes}\n'
+    return '\\begin{tablenotes}[flushleft]\n\\footnotesize\n\\item[] ' + note + '\n\\end{tablenotes}\n'
+
+
 def _wrap(name, src, caption, label, colspec, header, rows, note):
     """ One threeparttable. `rows` is a list of already-formatted cell lists. """
     body = '\n'.join(' & '.join(r) + r' \\[1ex]' for r in rows)
@@ -31,8 +47,8 @@ def _wrap(name, src, caption, label, colspec, header, rows, note):
             + '\\begin{tabular}{' + colspec + '}\n\\toprule\n'
             + ' & '.join(header) + ' \\\\\n\\midrule \n'
             + body + '\n\\bottomrule\n\\end{tabular}\n'
-            + '\\begin{tablenotes}\n\\footnotesize\n\\item ' + note
-            + '\n\\end{tablenotes}\n\\end{threeparttable}\n\\end{table}\n')
+            + notesBlock(note)
+            + '\\end{threeparttable}\n\\end{table}\n')
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -65,7 +81,7 @@ def argentinaCalibration(commonX = None):
     ]
     note = r'\textit{Note:} Our default specification relies on $\rho=' + C.num(c['ρ'], 0) + r'$.'
     if commonX and c.get('zxPredicted'):
-        note += (r' Relative formal hours are then a prediction: the model gives $' + C.vec(c['zxPredicted'], 2)
+        note += (r' Relative formal hours are a prediction: the model gives $' + C.vec(c['zxPredicted'], 2)
                  + r'$ against $' + C.vec(c['zxi'], 2) + r'$ in the data.')
     note += C.variantNote(commonX, full = True, arm = 'ARG')
     return _wrap('ArgentinaCalibration' + sfx, 'results/paper/calibrationSummary.csv',
@@ -92,17 +108,18 @@ def argentinaUniversal(commonX = None):
     srRef  = D.reformSavingsRate(ρ, 0, commonX = commonX)
     hRef   = D.baselineHours(ρ, commonX = commonX)     # the calibrated 2010 hours: 42.54 by definition, see config
 
-    rows = [['Baseline',             C.pct(ee['τ_base']),    C.pct(srBase),         C.num(C.workweekHours(ee['h_base'], hRef))],
-            ['Economic Equilibrium', C.pct(ee['τ_ee']),      C.pp(srEE - srBase),   C.num(C.workweekHours(ee['h_ee'], hRef))],
-            ['Full effect',          C.pct(ref['τ_reform']), C.pp(srRef - srBase),  C.num(C.workweekHours(ref['h_reform'], hRef))]]
+    # Every cell in this table is a level, savings included: with three rows the reader can difference
+    # them, and the levels say what the savings rate actually is in each scenario.
+    rows = [['Baseline',             C.pct(ee['τ_base']),    C.pct(srBase), C.num(C.workweekHours(ee['h_base'], hRef))],
+            ['Economic Equilibrium', C.pct(ee['τ_ee']),      C.pct(srEE),   C.num(C.workweekHours(ee['h_ee'], hRef))],
+            ['Full effect',          C.pct(ref['τ_reform']), C.pct(srRef),  C.num(C.workweekHours(ref['h_reform'], hRef))]]
     note = (r'\textit{Note:} The reform permanently shifts $\epsilon = 1-\theta + \theta \eta_1 h_1/h$ '
             r'at the calibration year, unanticipated. The ' + LQ + 'Economic Equilibrium' + RQ +
             r' scenario solves for the new economic equilibrium path with taxes as in the Baseline '
             r'scenario, but with the new permanent $\epsilon$; the ' + LQ + 'Full effect' + RQ +
             r' scenario lets taxes be determined by the politico-economic equilibrium. $\rho=' +
-            C.num(ρ, 0) + r"$." + SRNOTE + r" Aggregate hours have no "
-            r"scale in the model, so the workweek is normalised to the observed average of "
-            + C.num(C.calendar()['workweek']) + r" hours in the baseline." + C.variantNote(commonX, arm = 'ARG'))
+            C.num(ρ, 0) + r"$. The savings rate is savings relative to GDP."
+            + C.variantNote(commonX, arm = 'ARG'))
     return _wrap('ArgentinaUniversal' + sfx, 'results/shocks/{eeOnly,universal}_match_rho%.4f%s.csv' % (ρ, C.argVariantTag(commonX)),
                  'Pension system reform, year %d.' % year + C.variantCaption(commonX, 'ARG'),
                  'table:Argentina:Universal' + sfx, 'lccc',
@@ -154,10 +171,7 @@ def argentinaFuncOfRho(printAll = False, commonX = None):
             r'tax rate and workweek are common to every $\rho$. The savings rate is savings relative to '
             r'GDP; its pre-reform level is not targeted (the capital--output ratio is) and varies with '
             r'$\rho$, so each post-reform row reports the change against its own $\rho$' + "'" + r's '
-            r'pre-reform level in percentage points. Aggregate hours have no scale in the model, so the '
-            r'workweek is normalised to the observed average of ' + C.num(ww)
-            + r' hours in each calibrated baseline. Commented rows are the remaining points of the '
-            r'solved grid.' + C.variantNote(commonX, arm = 'ARG'))
+            r'pre-reform level in percentage points.' + C.variantNote(commonX, arm = 'ARG'))
     return _wrap('Argentina_funcOfRho' + sfx, 'results/shocks/universal_match_rho*%s.csv' % C.argVariantTag(commonX),
                  r'Pension system reform, year %d, function of $\rho$' % year + C.variantCaption(commonX, 'ARG'),
                  'table:Argentina:funcOfRho' + sfx, 'lccc',

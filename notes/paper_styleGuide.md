@@ -113,11 +113,10 @@ three distinct parts, but do not add further subsections elsewhere.
   colon-separated path (`table:US:pensChars`, `fig:US_ESC:overview`, `eq:esc:budget`). Table and
   figure labels are set by `python/paper` and must not be changed in the tex.
 - **Citations**: biblatex. `\textcite{key}` as a sentence element, `\parencite{key}` for
-  parenthetical, `\parencite[e.g.][]{a,b}` for a list with a prefix. The introduction's
-  `\parencite{a,b}{e.g.}` is not biblatex syntax (the second brace group prints as text after the
-  citation); fix it when that paragraph is touched. Two references are still written
-  as plain text ("Gonzalez-Eiras and Niepelt (2008)", "Song (2011)") in `Log.tex`; convert to
-  `\textcite` when that section is touched.
+  parenthetical, `\parencite[e.g.][]{a,b}` for a list with a prefix. Every reference in the draft
+  goes through biblatex; no author-year is written as plain text. The style is `authoryear`, not
+  `authoryear-comp`, so a multi-key cite repeats a repeated author's name rather than sharing it
+  across years.
 - **Footnotes** carry data sources, institutional detail, alternative choices not pursued, and
   connections to the literature that would interrupt the argument. They are full sentences. Use them
   freely; the draft averages one or two per paragraph in the calibration passages.
@@ -125,6 +124,26 @@ three distinct parts, but do not add further subsections elsewhere.
   Figures: `\caption` above `\includegraphics`, `\label` after the caption, `[!htb]`, width
   `\linewidth` (or `0.7\linewidth` for a single panel); notes via `threeparttable` +
   `\tablenotes` in `\footnotesize`, opening "\textit{Note:}".
+- **Table and figure notes** (2026-09-15). A single note is `\begin{tablenotes}[flushleft]` + `\item[]`,
+  set as a paragraph with no list indent; the list form with `\item` is only for notes carrying labelled
+  markers keyed to cells (`US_Ageing`'s a/b). A note carries what the main text does not — it never
+  restates the section's own description of the exercise — and where several tables share a preamble,
+  one anchors it and the rest say "the cost specification and the units are those of table X"
+  (`tablesUS.ESCANCHOR`). Figure notes live in the `.tex` beside the `\includegraphics`, not drawn
+  inside the PDF, and cite a table for baseline levels rather than repeating the numbers.
+- **Rules.** Booktabs everywhere: `\toprule`/`\midrule`/`\bottomrule`, no vertical rules and no
+  full-width `\hline`. The one exception, deliberate and confined to the two calibration tables
+  `table:US:Calib{,_vectorX}`, is a hairline at 25% black on each side of the three country columns,
+  which separates the values from the prose column (2026-09-15, RKB's call). It rules out
+  `\addlinespace` in those tables: a `\vrule` in the column spec is drawn per row and a gap breaks it.
+  The household-heterogeneity tables still carry the old `|`-and-`\hline` design and are the last ones
+  that do.
+- **The calibration variant is not printed** (2026-09-15). The paper is the common-`X` calibration
+  throughout, so no caption or note in the main text names it; only a vector-`X_i` twin in an appendix
+  says what it is (`config.variantNote`, `variantCaption`). Each arm references the alternative once —
+  Argentina in a footnote to its calibration paragraph, the OECD section inline in its own, `sec:esc` in
+  a footnote to the results opening — pointing at `app:EPH:vectorX` or `app:US:vectorX` with a one-line
+  summary of what agrees and what moves. Do not add a second pointer in the same section.
 - **Equations**: `align` (unnumbered `align*` for one-off calibration formulas), `subequations` with
   a shared label for a block of definitions; inline `$...$` for symbols. Multi-letter functions in
   `\mathrm{}` (`\mathrm{LE_{men}}`), calligraphic for objective functions ($\mathcal{W}_t$).

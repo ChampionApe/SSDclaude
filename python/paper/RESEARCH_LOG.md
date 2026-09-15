@@ -4,6 +4,34 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_paper.md`, in
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-15 — the tables and figures stop announcing themselves
+
+A presentation pass on RKB's list, all at source. `config.variantNote` is empty under common X and keyed
+on `commonX` rather than on which variant leads, so 16 headline tables dropped the "Common-$X$
+calibration" sentence. `tables.notesBlock` sets a single note as a flush-left paragraph; the list form
+survives only for `US_Ageing`, whose a/b markers are keyed to cells. `ArgentinaUniversal` prints savings
+as levels. `USUKFRCalibration` was rebuilt twice, ending as parameter, three values between hairline
+rules, then the identifying phrase — `\addlinespace` had to go, a per-row `\vrule` breaking at the gap.
+The US figures were drawn 10.6in wide into a 5.91in measure, so 9pt type arrived at 5pt: both are
+narrower with larger type, and their baseline note moved to a `\tablenotes` citing the table that holds
+the levels. `tablesUS.ESCANCHOR` — table 10 carries the shared ESC note, 11–13 point at it; the ESC
+tables take `_xwrap(width=\textwidth)`.
+
+## 2026-09-12 (night) — stationary vs date-specific policies: the check behind sec:numerical's literature paragraph
+
+RKB's claim: the numerical literature computes stationary policy functions and applies them to non-stationary
+settings, a steady-state approximation, whereas we compute the date-specific sequence. Checked against the
+cited papers (`pdfs/`, gitignored): Song (2011) and Forni (2005) are stationary environments solved by
+Chebyshev projection; Gonzalez-Eiras–Niepelt (2008) is exact along the transition under log; none runs a
+transition through a stationary function. The opening paragraph of `Sections/Numerical.tex` now states the
+claim about the object (stationary function = right object only in a stationary environment; along a
+transition it holds the continuation at its stationary form; empty under log without informal savers) and
+a footnote quotes what the approximation costs in our models, measured by three new scripts (US taxes,
+Argentina, endogenous θ; `results/numerical/`, module logs). Pipeline: `runShocksUS.py --prepub` gained
+`stationary`/`stationaryESC`; `runShocks.py` gained a `--prepub` part (`stationary`, headline variant only,
+`headline: True`); `config.NUMDIR`, `config.US['ρStationary']`. The horizon footnote was corrected (four
+constant periods after the last projection, not five). Open: TODO W5.
+
 ## 2026-09-12 (evening) — paper prose: the identification argument stated once, W4 reworded
 
 Three prose passes on RKB's instruction, no pipeline change. (i) `sec:oecd` now cites section 5's

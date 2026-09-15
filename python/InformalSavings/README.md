@@ -30,6 +30,7 @@ is the *index* of the baseline year.
 | `test.py` | loads `data/ArgentinaTest.xlsx`; a bare `ModelInformalSavings()` gives NaN/inf `θ`/`κ`/`ε`, expected |
 | experiments | `calibrateRhoGrid.py` (`--x0 β ω η0 X0` seeds the anchor; required at α = 0.35), `retargetCalibration.py`, `shockUniversal.py`, `shockEEOnly.py`, `sweepEpsThetaGrid.py`, `plotUniversalShock.py`, `plotBoundary.py` |
 | diagnostics | `measureGrids.py`, `measureOuterSettings.py`, `diagnoseRho07.py`, `diagnoseLogCrraBoundary.py` (`--mode common|production` is the point of it) |
+| prepub check | `stationaryApprox.py`: a stationary policy function (ν frozen at each date's value, on the baseline's grids) against the exact date-specific one along the demographic path, LOG and CRRA; `results/numerical/`, driven by `python/paper/runShocks.py --prepub` |
 | tests | `test_ee.py`, `test_peeLOG.py`, `test_peeCRRA.py`, `test_peePath.py`, `test_createCopyFromt0.py`; slow: `test_calibration.py` (~12 min), `test_calibrationGrid.py` (~45 min) |
 
 Sweeps resume from their own csv keyed on the parameter point alone: a re-run after a recalibration

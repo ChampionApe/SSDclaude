@@ -33,14 +33,17 @@ THETA_RAMP = mcolors.LinearSegmentedColormap.from_list(
     'thetaBlue', ['#86b6ef', '#5598e7', '#2a78d6', '#1c5cab', '#104281', '#0d366b'])
 
 
-def _panel(ax, title, ylabel):
-    ax.set_title(title, color = INK['primary'], fontsize = 10, loc = 'left', pad = 6)
+def _panel(ax, title, ylabel, titlesize = 10, labelsize = 8):
+    """ `titlesize`/`labelsize` default to the Argentina figures' sizes. The US bar and dumbbell figures
+    pass larger ones: they are drawn much wider than \\linewidth and lose most of their type to the
+    downscaling, so they need to be set larger to arrive at the same size on the page. """
+    ax.set_title(title, color = INK['primary'], fontsize = titlesize, loc = 'left', pad = 6)
     ax.set_ylabel(ylabel, color = INK['secondary'], fontsize = 9)
     for spine in ('top', 'right'):
         ax.spines[spine].set_visible(False)
     for spine in ('left', 'bottom'):
         ax.spines[spine].set_color(INK['muted'])
-    ax.tick_params(colors = INK['muted'], labelsize = 8)
+    ax.tick_params(colors = INK['muted'], labelsize = labelsize)
     ax.grid(True, color = INK['grid'], linewidth = 0.8)
     ax.set_axisbelow(True)
 

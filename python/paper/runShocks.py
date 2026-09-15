@@ -95,7 +95,28 @@ EXPERIMENTS = {
         'force':   ['--force'],
         'note':    'tau/sr/h/iota over the eps x theta plane',
     },
+    # --- PRE-PUBLICATION (`part` = 'prepub'; every entry above is 'main'). Stationary vs date-specific
+    # policy functions, the check behind sec:numerical's literature paragraph -- the Argentina counterpart
+    # of runShocksUS.py's 'stationary'. Even LOG carries a state here (iota), so rho = 1 is included. Run
+    # on the HEADLINE variant only: X enters no aggregate, so the two variants would print the same numbers.
+    # ~2 h (a full CRRA recursion per distinct nu at rho = 0.5 and 2). No paper output reads it.
+    'stationary': {
+        'part':     'prepub',
+        'headline': True,
+        'script':   'stationaryApprox.py',
+        'args':     lambda cx: (['--rho'] + [str(r) for r in C.ARG['ρTable']] + GRIDFLAGS
+                                + ['--pkldir', C.argInstanceDir(cx),
+                                   '--out', 'ARG_stationaryApprox' + C.argVariantTag(cx) + '.csv']),
+        'outputs':  lambda cx: {'csv': os.path.join(C.NUMDIR, 'ARG_stationaryApprox' + C.argVariantTag(cx) + '.csv')},
+        'note':     'stationary vs date-specific policies, LOG and CRRA (prepub, headline variant)',
+    },
 }
+
+
+def selected(prepub = False, all_ = False):
+    """ The entry names of the requested part(s), in declaration order; an entry without `part` is 'main'. """
+    parts = {'main', 'prepub'} if all_ else ({'prepub'} if prepub else {'main'})
+    return [n for n, e in EXPERIMENTS.items() if e.get('part', 'main') in parts]
 
 
 def status(name, cx = False):
@@ -121,17 +142,23 @@ def command(name, cx = False, ρ = None, force = False):
 
 def main():
     p = argparse.ArgumentParser(description = __doc__.split('\n')[1])
-    p.add_argument('--only', nargs = '+', choices = list(EXPERIMENTS), default = list(EXPERIMENTS))
+    p.add_argument('--only', nargs = '+', choices = list(EXPERIMENTS), default = None,
+                   help = 'a subset, regardless of part')
     p.add_argument('--commonX', action = 'store_true', help = 'also run every experiment for the common-X variant')
+    p.add_argument('--prepub', action = 'store_true', help = 'the pre-publication part instead of the main one')
+    p.add_argument('--all', dest = 'all_', action = 'store_true', help = 'both parts')
     p.add_argument('--list', action = 'store_true', help = 'report what exists and exit')
     p.add_argument('--force', action = 'store_true', help = 're-run even where output already exists')
     p.add_argument('--dry', action = 'store_true', help = 'print commands and exit')
     a = p.parse_args()
+    names = a.only if a.only else selected(a.prepub, a.all_)
     variants = [False] + ([True] if a.commonX else [])
+    # a 'headline' entry runs once, on the headline variant, whatever --commonX says
+    variantsOf = lambda name: [C.ARG['commonX']] if EXPERIMENTS[name].get('headline') else variants
 
     if a.list or a.dry:
-        for cx in variants:
-            for name in a.only:
+        for name in names:
+            for cx in variantsOf(name):
                 ok, have, lack = status(name, cx)
                 print('{:<9} {:<13} {:<48} script:{}  have {}/{}'.format(
                     'commonX' if cx else 'vectorX', name, EXPERIMENTS[name]['note'],
@@ -144,8 +171,8 @@ def main():
                           + (' ...' if len(keys) > 8 else ''))
         return
 
-    for cx in variants:
-        for name in a.only:
+    for name in names:
+        for cx in variantsOf(name):
             ok, have, lack = status(name, cx)
             label = '{} [{}]'.format(name, 'common X' if cx else 'vector X')
             if not ok:

@@ -15,10 +15,14 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | (ii) experiments | `runShocks.py` | `runShocksUS.py` | `results/shocks/`, `results/sweeps/`, `results/esc/` | ~50 min / ~30 s (+ESC) |
 | (iii) build | `build.py` | `build.py` | `results/paper/{Tables,Figs}`, then `writing/Paper` | seconds |
 
-- The US arm's stages (i)/(ii) have two parts. `main` (the default) is a routine rebuild: sweeps, the LOG
+- Stage (ii) has two parts in both arms. `main` (the default) is a routine rebuild: sweeps, the LOG
   wedge, the exogenous shocks in both variants, the LOG ESC leg. `prepub` (`--prepub`; `--all` for both)
   is run once before submission: the exact CRRA wedge and ESC leg (`runESCcrra.py --exact`, the published
-  method, `config.US['esc']['exact']`), the φ-robustness wedges and the R3 timing checks; ~3.5 h.
+  method, `config.US['esc']['exact']`), the φ-robustness wedges, the R3 timing checks (~3.5 h), and the
+  **stationary-vs-date-specific policy checks** behind `sec:numerical`'s literature paragraph: US taxes
+  under CRRA, the endogenous design (LOG and exact CRRA, ~1 h), and Argentina (`runShocks.py --prepub`,
+  headline variant only, ~10 min). Those write `results/numerical/`, which no paper output reads; the
+  section's footnote quotes their maximal gaps.
 - Every stage skips work whose output exists; `--force` overrides, `--list` reports, `--dry` prints the
   delegated commands. The ESC merge entry always runs. **`--force` whenever anything upstream moved, a recalibration above all**: the
   calibration sweeps and `sweepEpsThetaGrid.py` resume from their own csv keyed on the parameter point
@@ -34,6 +38,11 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
   `build._variants`). Argentina's variant lives in its own sweep csv, instance directory and suffixed
   shock/sweep csvs (`config.argSweepCsv`, `argInstanceDir`, `argShockTemplate`); `runCalibration.py` /
   `runShocks.py --commonX` add it. The ESC leg runs under the US headline only.
+- **Only a vector-X table names its calibration** (2026-09-15). `config.variantNote` is empty under
+  common X, keyed on `commonX` and not on which variant leads: the paper is the common-X calibration
+  throughout and says so nowhere, and the appendix twins carry the label. `tables.notesBlock` sets a
+  single note flush left with no list indent; keep the `\item` list form only for a note with labelled
+  markers keyed to cells (`US_Ageing`'s a/b).
 - Stage (0) is the only network access (Penn World Table via FRED); it writes a calibration *input* to
   `data/` and skips existing output, so the committed csv means no other stage touches the network.
 
@@ -50,21 +59,9 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 
 ## Outputs wired (39)
 
-| Paper file | Built from |
-|---|---|
-| `Tables/ArgentinaCalibration.tex` | `results/paper/calibrationSummary.csv` |
-| `Tables/ArgentinaUniversal.tex` | `eeOnly_match_rho1.0000.csv` + `universal_match_rho1.0000.csv` |
-| `Tables/Argentina_funcOfRho.tex` | `universal_match_rho*.csv` |
-| `Figs/ARG_LOG_FourInOne.pdf` | `results/sweeps/epsThetaGrid_rho1.0000.csv` |
-| `Figs/ARG_CRRA_LOG.pdf` | `universal_match_rho*.csv` |
-| `Tables/USUKFRCalibration.tex`, `Tables/{US,FR,UK}_householdheterogeneity.tex` | `results/paper/usCalibrationSummary.csv` |
-| `Tables/US_{PensChars,Ageing,OtherShocks}.tex` | `US_shocksCommonX.csv`, ρ = 1 |
-| `Tables/US_CRRA_{PensChars,Ageing,OtherShocks}.tex` | `US_shocksCommonX.csv`, ρ ∈ {0.5, 1, 2} |
-| `Figs/US_overview.pdf` | `US_shocksCommonX.csv`, all ρ; three panels |
-| `Tables/US_ESC_Calibration.tex` | `results/esc/escCalibration{,CRRA}.csv` (CRRA rows: `method` = exact) |
-| `Tables/US_ESC_{Ageing,IncomeDistr,Voting,FrenchAll}.tex` | `results/esc/escExperiments.csv`, ρ ∈ {0.5, 1, 2}, CRRA rows at `method` = exact |
-| `Tables/UK_ESC_Calibration.tex` | `results/esc/escCountry.csv`, ρ = 1 only |
-| `Figs/US_ESC_overview.pdf` | `escExperiments.csv`, 2×2 dumbbells (open = `θ` pinned, filled = chosen) |
+Each built file names its own input: every generated `.tex` and its `.pdf` sibling carry a
+`%% Source:` banner with the csv it was read from, and `--list` reports what is buildable now. The
+registry itself is `build.py`'s table -- that, not this file, is the list of 39.
 
 Every US and Argentina table and figure is registered twice (headline and `_vectorX`, both arms leading
 with common X since 2026-09-12); the ESC outputs headline only. Only `ArgentinaCalibration_vectorX` is
@@ -96,6 +93,9 @@ One line each; measurements in `archive/readmes/paper_README_2026-09-11.md`.
   `calibrationSummary` (#13).
 - Colours: the categorical blue/orange pair in fixed order; `figures.THETA_RAMP` for a continuous
   parameter. Do not substitute by eye.
+- A figure's type is set at `figsize`, read at a `\linewidth` of 5.91 in / 15 cm (A4, 3 cm margins). A
+  10.6in-wide figure is scaled to 56%, so 9pt arrives at 5pt. Size the figure near the measure and pass
+  `titlesize`/`labelsize` to `figures._panel`; check the rendered page, not the png.
 
 US arm:
 

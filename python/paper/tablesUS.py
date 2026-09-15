@@ -31,20 +31,23 @@ import numpy as np
 
 import config as C
 import datasets as D
-from tables import BANNER, LQ, RQ, SRNOTE
+from tables import BANNER, LQ, RQ, SRNOTE, notesBlock
 
 
-def _xwrap(name, src, caption, label, colspec, header, body, note = None):
+def _xwrap(name, src, caption, label, colspec, header, body, note = None, width = r'.9\textwidth'):
     """ One threeparttable around a tabularx, matching the hand-written US tables' layout. `header` is a
     list of cells for one row, or a pre-formatted string when a table needs more than one header row
-    (escCalibrationTable's grouped columns). """
-    tn = ('\\begin{tablenotes}\n\\footnotesize\n' + note + '\n\\end{tablenotes}\n') if note else ''
+    (escCalibrationTable's grouped columns).
+
+    `width`: the four-column shock tables sit at .9\\textwidth. The six-column ESC tables need the full
+    measure -- at .9 each Y column is 2.2cm and the headers break mid-word. """
+    tn = notesBlock(note)
     head = header if isinstance(header, str) else ' & '.join(header)
     return (BANNER.format(name = name, src = src)
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
             + '\\caption{' + caption + '}\n\\label{' + label + '}\n'
             + '\\renewcommand{\\arraystretch}{1.25}\n'
-            + '\\begin{tabularx}{.9\\textwidth}{' + colspec + '}\n\\toprule\n'
+            + '\\begin{tabularx}{' + width + '}{' + colspec + '}\n\\toprule\n'
             + head + ' \\\\\n\\midrule \n'
             + body + '\n\\bottomrule\n\\end{tabularx}\n' + tn
             + '\\end{threeparttable}\n\\end{table}\n')
@@ -241,40 +244,49 @@ def usukfrCalibration(commonX = None):
     cols = [k for k in ('US', 'UK', 'FR') if k in c]     # the hand-written column order
     year0 = C.usCalendar()['year0']
 
-    def row(label, fn, target):
+    # Parameter, the three values, then what identifies them. The values are the table's content and sit
+    # in the middle under one spanner rule, which is what separates them from the prose column; the
+    # identifying phrase is a gloss and closes the row.
+    def row(label, target, fn):
         return ' & '.join([label] + [fn(c[k]) for k in cols] + [target]) + r' \\'
 
     rows = [
-        row(r'$\theta$', lambda r: C.num(r['θ']), 'Replacement rate dispersion'),
-        row(r'$\omega$', lambda r: C.num(r['ω']),
-            ', '.join(r'$\tau^{' + k + '} = ' + C.pct(c[k]['τ0'], 1) + '$' for k in cols)),
-        row(r'$\beta$',  lambda r: C.num(r['β']), 'US: 30y interest rate; imposed on UK/FR'),
+        row(r'$\theta$', 'Replacement rate dispersion', lambda r: C.num(r['θ'])),
+        row(r'$\omega$', ', '.join(r'$\tau^{' + k + '} = ' + C.pct(c[k]['τ0'], 1) + '$' for k in cols),
+            lambda r: C.num(r['ω'])),
+        # Not "imposed on the other two" as well: the note says so, and the cell then fits one line.
+        row(r'$\beta$', '30-year interest rate (US)', lambda r: C.num(r['β'])),
         # Two decimals: with the hours unit normalised to μ = 1 (model.addEigenVectors), the vector-X
         # X_i and their mean sit on an O(1) scale where one decimal is two significant figures.
-        row('$X$',       lambda r: C.num(r['Xbar'], 2), 'Avg.\\ workweek'),
-        row(r'$\nu_{%d}$' % year0, lambda r: C.num(r['ν2020']),
-            '30-year gross population growth rates'),
-        row(r'$\eta_{H}/\eta_L$', lambda r: C.num(r['ηHηL']),
-            'Relative productivity of high (H) to low (L) income groups'),
+        row('$X$', 'Average workweek', lambda r: C.num(r['Xbar'], 2)),
+        row(r'$\nu_{%d}$' % year0, '30-year gross population growth',
+            lambda r: C.num(r['ν2020'])),
+        row(r'$\eta_{H}/\eta_L$', 'Relative productivity, high to low income',
+            lambda r: C.num(r['ηHηL'])),
     ]
-    header = ([r'\multicolumn{1}{c|}{\textbf{Parameter}}']
-              + [r'\textbf{' + COUNTRYNAME[k] + '}' for k in cols] + [r'\textbf{Target}'])
+    header = ([r'\textbf{Parameter}'] + [r'\textbf{' + COUNTRYNAME[k] + '}' for k in cols]
+              + [r'\textbf{Identified by}'])
     # The one note that spells the variant out; every other US table points here (config.variantNote).
     note = (r'\item \textit{Note:} $\rho = ' + C.num(C.US['ρBaseline'], 1) + r'$. $X$ is the '
             r'population-weighted mean of $X_i$; its level is the hours unit, pinned for France and the '
             r'UK by targeting average hours relative to the US rather than in levels. $\beta$ is '
             r'calibrated for the US and imposed on the other two.' + C.variantNote(commonX, full = True))
+    # Booktabs horizontals, plus the one deviation: a hairline at 25% black on each side of the value
+    # block, which is what separates the numbers from the prose column now that there is no spanner.
+    # No \addlinespace with it -- the rules are drawn per row, so a gap between rows breaks them into
+    # dashes; \arraystretch carries the air instead.
+    rule = '!{\\color{black!25}\\vrule width 0.5pt}'
     return (BANNER.format(name = 'USUKFRCalibration' + C.variantSuffix(commonX),
                           src = 'results/paper/usCalibrationSummary.csv')
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
             + '\\caption{Calibration, US, UK, and France' + C.variantCaption(commonX) + '}\n'
             + '\\label{table:US:Calib' + C.variantSuffix(commonX) + '}\n'
-            + '\\renewcommand{\\arraystretch}{1.25}\n'
-            + '\\begin{tabularx}{\\textwidth}{Y|' + 'Y'*len(cols) + '|p{6cm}}\n\\hline\n'
-            + '& \\multicolumn{%d}{c|}{\\textbf{Country}} & \\\\ \\cline{2-%d}\n' % (len(cols), len(cols)+1)
-            + ' & '.join(header) + ' \\\\ \\hline\n'
-            + '\n'.join(rows) + '\n\\hline\n\\end{tabularx}\n'
-            + '\\begin{tablenotes}\n\\footnotesize\n' + note + '\n\\end{tablenotes}\n'
+            + '\\renewcommand{\\arraystretch}{1.3}\n'
+            + '\\begin{tabularx}{\\textwidth}{l' + rule + 'C{1.4cm}'*len(cols) + rule
+            + '>{\\raggedright\\arraybackslash}X}\n\\toprule\n'
+            + ' & '.join(header) + ' \\\\ \\midrule\n'
+            + '\n'.join(rows) + '\n\\bottomrule\n\\end{tabularx}\n'
+            + notesBlock(note)
             + '\\end{threeparttable}\n\\end{table}\n')
 
 
@@ -339,7 +351,10 @@ def _escCells(r, base = None):
     return [C.num(r['θ_t0']), C.pct(r['τ_t0']), srCell, C.num(r['ww_t0'])]
 
 
-def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False):
+ESCANCHOR = 'table:US_ESC:ageing'    # the first ESC table; the other three refer to its note
+
+
+def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False, anchor = False):
     """ Rows grouped by reading, one row per rho within each. The savings change in every non-baseline
     row is against the printed baseline of the same rho -- the endogenous-theta reading, which is also
     what figuresUS.escOverview differences against. """
@@ -360,26 +375,26 @@ def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False)
             base = None if scen == 'baseline' else D.escRow(df, ρ, spec, 'baseline', False)
             out.append(' & '.join([lab if k == mid else '', C.num(ρ, 1)] + _escCells(r, base))
                        + r' \\' + ('[.5em]\\hline\\\\[-.75em]' if k == len(ρs)-1 else ''))
-    note = (r'\item \textit{Note:} Deadweight-cost specification: the proportional cost $f(\theta)$ with $\phi = '
-            + C.num(C.US['esc']['phi'], 1) + r'$ and $p$ calibrated per $\rho$ '
-            r'(Table~\ref{table:US_ESC:calibration}). Every counterfactual is a separate equilibrium path: '
-            r'the changed parameters hold throughout, the economy starts from its own steady state, and '
-            r'the political choice binds from the first period of the horizon, so the design in force in '
-            r'2020 is itself an outcome rather than an inherited datum. All rows are read at 2020. '
-            r'$\theta$ (2020) is the design in force there; in the exogenous rows it is the US design, '
-            r'held fixed so that the counterfactual is about the changed characteristic alone. Each '
-            r'$\rho$ is separately calibrated and its workweek normalised against its own baseline. '
-            r'The savings rate is savings relative to GDP; the baseline rows report its level and every '
-            r'other row the change against the baseline at the same $\rho$, in percentage points.'
-            + extraNote + C.variantNote(C.US['commonX']))
+    # Section sec:esc already states what every one of these tables is -- separate equilibrium paths,
+    # read at 2020, pinned against chosen design -- so the note carries only what the text does not: the
+    # cost specification and the units. ESCANCHOR spells those out once; the other three point at it.
+    if anchor:
+        note = (r'\textit{Note:} The proportional deadweight cost $f(\theta)$ of \eqref{eq:esc:budget}, '
+                r'with $\phi = ' + C.num(C.US['esc']['phi'], 1) + r'$ and $p$ calibrated per $\rho$ '
+                r'(table \ref{table:US_ESC:calibration}). Each $\rho$ is separately calibrated and its '
+                r'workweek normalised against its own baseline. The savings rate is savings relative to '
+                r'GDP; the baseline rows report its level and every other row the change against the '
+                r'baseline at the same $\rho$, in percentage points.')
+    else:
+        note = (r'\textit{Note:} The cost specification and the units are those of table \ref{'
+                + ESCANCHOR + r'}.')
+    note += extraNote + C.variantNote(C.US['commonX'])
     if france:
-        note += (r' The France row is not a counterfactual on the US model: France carries its own '
-                 r'characteristics \emph{and} its own calibrated $\omega$, so the distance between it '
-                 r'and the endogenous row is what the observable characteristics do not explain. Its '
-                 r"workweek is France's own calibration target, not a prediction, and its savings rate "
-                 r'is likewise the distance from the US baseline.')
+        note += (r" The France row is France's own calibrated path rather than a counterfactual on the "
+                 r'US model: it carries France\textquotesingle s own $\omega$ as well as its '
+                 r'characteristics, and its workweek is a calibration target rather than a prediction.')
     return _xwrap(name, 'results/esc/escExperiments.csv', caption, label, 'p{2.6cm}YYYYY',
-                  ESCHEAD, '\n'.join(out), note)
+                  ESCHEAD, '\n'.join(out), note, width = r'\textwidth')
 
 
 def escAgeing():
@@ -387,20 +402,15 @@ def escAgeing():
     return _escTable('US_ESC_Ageing', 'acute',
                      'Endogenous design and ' + LQ + 'acute ageing' + RQ + ' in US',
                      'table:US_ESC:ageing',
-                     r' The ' + LQ + 'acute ageing' + RQ + r' scenario sets $\nu_t = 1$ throughout, so '
-                     r'the counterfactual economy is one whose demography has always been stationary '
-                     r'rather than the US surprised by ageing in 2020.')
+                     r' The ' + LQ + 'acute ageing' + RQ + r' scenario sets $\nu_t = 1$ throughout.',
+                     anchor = True)
 
 
 def escIncomeDistr():
     r""" Table \ref{table:US_ESC:incomeDistr}. """
     return _escTable('US_ESC_IncomeDistr', 'frIncome',
                      'Endogenous design and the French income distribution in US',
-                     'table:US_ESC:incomeDistr',
-                     r' The exogenous rows hold $\theta$ at the US design, so they are the change in '
-                     r'inequality alone; the endogenous rows let the electorate choose the design under '
-                     r'the French income distribution, and the gap between the two is what endogenising '
-                     r'the design adds.', france = True)
+                     'table:US_ESC:incomeDistr', france = True)
 
 
 def escVoting():

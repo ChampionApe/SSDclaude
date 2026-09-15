@@ -4,6 +4,18 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-15 — the draft says common X by saying nothing, and a pull no longer needs --force
+
+W2b closed: the permanent corner flips to θ = 1 for ρ ≥ 1.4, so the introduction promises a corner rather
+than a *fully Beveridgean* system "under every timing", and the conclusion dropped "too attractive" for the
+claim that holds at all three timings. Common X became the paper's silent default — nothing in the main
+text names it, each arm points at its vector-X appendix once — and the Argentina calibration was cut from
+two pages to four paragraphs, the detail moving to appendix D, now *Calibration — Argentina*. Three
+plain-text references went through biblatex, and `app:recursive`, a `\ref` aimed at an online appendix,
+became a `\parencite`. Tooling: `writing/overleaf.py pull` now records what it took, so a pull → edit →
+push round trip is an ordinary push instead of demanding `--force`. Per-arm detail in
+`python/paper/RESEARCH_LOG.md`, the lesson in finding #16; `notes/TODO.md` holds W1 and a trimmed W5.
+
 ## 2026-09-12 — one hours-unit convention, and common X in both arms
 
 Two conventions that were per-model became repo-wide. (i) The US models now impose the second

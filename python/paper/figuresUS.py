@@ -49,9 +49,9 @@ SCENARIOS = [(r'$\theta = 0$',        r'$\theta = 0$',        'design'),
 # tau and srOverY are fractions on the csv and are read in percentage points; the workweek is already
 # in hours (normalised inside the experiment script against that rho's own baseline) and its deviation
 # is in hours. Do NOT re-derive the workweek from hbar here -- see tablesUS.py.
-PANELS = [('τ',        'Equilibrium tax rate',    'Change in $\\tau$ (percentage points)',      100.),
-          ('srOverY',  'Savings over GDP',        'Change in $s/Y$ (percentage points of GDP)', 100.),
-          ('workweek', 'Average workweek',        'Change in average hours worked per week',    1.)]
+PANELS = [('τ',        'Equilibrium tax rate', 'Percentage points',        100.),
+          ('srOverY',  'Savings over GDP',     'Percentage points of GDP', 100.),
+          ('workweek', 'Average workweek',     'Hours per week',           1.)]
 
 # Colours for the three rho values: the categorical pair plus one ink shade -- three is one more than
 # the validated pair carries, so the extra slot is deliberately NEUTRAL rather than a third hue guessed
@@ -66,15 +66,15 @@ def _barPanel(ax, title, xlabel, labels, series, colours):
     height = 0.8/len(series)
     # _panel FIRST: it sets tick_params, which would otherwise recolour the scenario labels to the muted
     # ink meant for numeric ticks. These are the figure's row headings and belong in primary ink.
-    _panel(ax, title, '')
+    _panel(ax, title, '', titlesize = 12, labelsize = 10)
     for k, (lab, vals) in enumerate(series):
         off = (k - (len(series)-1)/2)*height
         ax.barh(y + off, vals, height = height, color = colours[k], label = lab,
                 edgecolor = 'none', zorder = 3)
     ax.axvline(0, color = INK['primary'], linewidth = 1.0, zorder = 4)
     ax.set_yticks(y)
-    ax.set_yticklabels(labels, fontsize = 9, color = INK['primary'])
-    ax.set_xlabel(xlabel, color = INK['secondary'], fontsize = 8.5)
+    ax.set_yticklabels(labels, fontsize = 11, color = INK['primary'])
+    ax.set_xlabel(xlabel, color = INK['secondary'], fontsize = 10)
     ax.grid(axis = 'y', visible = False)
 
 
@@ -88,14 +88,18 @@ def _topDown(axes):
     axes[0].invert_yaxis()
 
 
-def _figLegend(fig, handles, labels, note, bottom = 0.09):
-    """ One legend for the whole figure, below the panels, plus a one-line note on the baseline the
-    deviations are measured from. Figure-level rather than per-panel: the series mean the same thing
-    in every panel, so repeating the key would be redundant. """
+def _figLegend(fig, handles, labels, bottom = 0.075, ncol = None):
+    """ One legend for the whole figure, below the panels. Figure-level rather than per-panel: the
+    series mean the same thing in every panel, so repeating the key would be redundant.
+
+    The baseline the deviations are measured from is NOT drawn here: it is a \tablenotes under the
+    \includegraphics in the paper, which keeps its levels out of a second place they would have to be
+    kept in step (they are printed in the tables) and leaves the panels the height. """
+    # ncol: a five-entry key does not fit one row at this width and is clipped at both ends rather than
+    # shrunk, so the caller that has one wraps it.
     fig.tight_layout(rect = (0, bottom, 1, 1))
-    fig.legend(handles, labels, loc = 'lower center', ncol = len(handles), frameon = False,
-               fontsize = 9, bbox_to_anchor = (0.5, 0.035))
-    fig.text(0.5, 0.005, note, ha = 'center', va = 'bottom', fontsize = 8, color = INK['secondary'])
+    fig.legend(handles, labels, loc = 'lower center', ncol = ncol or len(handles), frameon = False,
+               fontsize = 11, bbox_to_anchor = (0.5, 0.01))
 
 
 def _rowsPresent(df, ρs, scenarios, effect = 'full'):
@@ -130,7 +134,7 @@ def usOverview(commonX = None):
     labels = [lab for lab, _, _ in scen]
     colours = RHOCOLOURS[:len(ρs)]
 
-    fig, axes = plt.subplots(1, len(PANELS), figsize = (10.6, 0.42*len(labels) + 2.6), sharey = True)
+    fig, axes = plt.subplots(1, len(PANELS), figsize = (8.4, 0.46*len(labels) + 2.2), sharey = True)
     for ax, (col, title, xlabel, scale) in zip(axes, PANELS):
         series = []
         for ρ in ρs:
@@ -139,13 +143,8 @@ def usOverview(commonX = None):
                            [scale*(D.usShockRow(df, ρ, s, 'full')[col] - base) for _, s, _ in scen]))
         _barPanel(ax, title, xlabel, labels, series, colours)
     _topDown(axes)
-    b = D.usBaseline(df, C.US['ρBaseline'])
     handles, labs = axes[0].get_legend_handles_labels()
-    _figLegend(fig, handles, labs,
-               'Deviations from the calibrated US baseline, which at $\\rho = {}$ is a tax rate of '
-               '{:.1f}%, savings of {:.1f}% of GDP and a {:.1f}-hour week. Savings are relative to '
-               'GDP, $s/Y$.'.format(C.num(C.US['ρBaseline'], 1), 100*b['τ'], 100*b['srOverY'],
-                                    b['workweek']))
+    _figLegend(fig, handles, labs)
     return _save(fig, 'US_overview' + C.variantSuffix(commonX))
 
 
@@ -199,7 +198,7 @@ def _dumbbellPanel(ax, title, xlabel, labels, pairs, colours, ref = 0., extraRef
     panel, the US design for the level panel); `extraRefs` are muted lines (the corners of theta). """
     y = np.arange(len(labels))
     off = np.linspace(-0.27, 0.27, len(pairs)) if len(pairs) > 1 else [0.]
-    _panel(ax, title, '')
+    _panel(ax, title, '', titlesize = 12, labelsize = 10)
     ax.axvline(ref, color = INK['primary'], linewidth = 1.0, zorder = 2)
     for x in extraRefs:
         ax.axvline(x, color = INK['muted'], linewidth = 0.8, zorder = 2)
@@ -217,8 +216,8 @@ def _dumbbellPanel(ax, title, xlabel, labels, pairs, colours, ref = 0., extraRef
     for yk in y[:-1]:
         ax.axhline(yk + 0.5, color = INK['grid'], linewidth = 0.8, zorder = 1)
     ax.set_yticks(y)
-    ax.set_yticklabels(labels, fontsize = 9, color = INK['primary'])
-    ax.set_xlabel(xlabel, color = INK['secondary'], fontsize = 8.5)
+    ax.set_yticklabels(labels, fontsize = 11, color = INK['primary'])
+    ax.set_xlabel(xlabel, color = INK['secondary'], fontsize = 10)
     ax.grid(axis = 'y', visible = False)
 
 
@@ -257,14 +256,12 @@ def escOverview():
 
     # (column, title, axis label, deviation scale, is a level). sr_t0 is s/(wh); (1 - alpha) turns it
     # into s/Y before the percentage-point scaling.
-    panels = [('θ_t0',  'Pension design in 2020',
-               '$\\theta$ in force (0 = Beveridgean, 1 = Bismarckian)', 1., True),
-              ('τ_t0',  'Equilibrium tax rate', 'Change in $\\tau$ (percentage points)', 100., False),
-              ('sr_t0', 'Savings over GDP', 'Change in $s/Y$ (percentage points of GDP)',
-               100.*(1 - α), False),
-              ('ww_t0', 'Average workweek', 'Change in average hours worked per week', 1., False)]
+    panels = [('θ_t0',  'Pension design in 2020', '$\\theta$ in force', 1., True),
+              ('τ_t0',  'Equilibrium tax rate', 'Percentage points', 100., False),
+              ('sr_t0', 'Savings over GDP', 'Percentage points of GDP', 100.*(1 - α), False),
+              ('ww_t0', 'Average workweek', 'Hours per week', 1., False)]
 
-    fig, grid = plt.subplots(2, 2, figsize = (9.6, 2*(0.56*len(labels) + 1.4) + 1.3), sharey = True)
+    fig, grid = plt.subplots(2, 2, figsize = (8.0, 2*(0.5*len(labels) + 1.35) + 0.9), sharey = True)
     axes = grid.ravel()
     for ax, (col, title, xlabel, scale, level) in zip(axes, panels):
         pairs = []
@@ -294,13 +291,5 @@ def escOverview():
                 Line2D([], [], marker = 'o', linestyle = 'none', markerfacecolor = INK['primary'],
                        markeredgecolor = 'white', markersize = 6,
                        label = '$\\theta$ chosen by the electorate')]
-    ρ0 = C.US['ρBaseline']
-    b = D.escRow(df, ρ0, spec, 'baseline', False)
-    _figLegend(fig, handles, [h.get_label() for h in handles],
-               'Deviations from the endogenous-$\\theta$ baseline, which at $\\rho = {}$ chooses '
-               '$\\theta = {:.3f}$, a tax rate of {:.1f}%, savings of {:.1f}% of GDP\nand a {:.1f}-hour '
-               'week. Savings are relative to GDP, $s/Y$.'.format(
-                   C.num(ρ0, 1), θstar, 100*float(b['τ_t0']), 100*(1 - α)*float(b['sr_t0']),
-                   float(b['ww_t0'])),
-               bottom = 0.07)
+    _figLegend(fig, handles, [h.get_label() for h in handles], bottom = 0.12, ncol = 2)
     return _save(fig, 'US_ESC_overview')
