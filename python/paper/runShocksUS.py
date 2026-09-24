@@ -50,7 +50,15 @@ GRIDFLAGS = ['--n', str(G['n']), '--ns', str(G['ns']),
 # a second variant here would double a multi-hour run for an appendix the paper does not read twice.
 ESCVARIANT = ['--commonX'] if C.US['commonX'] else []
 ESC = C.US['esc']
+# The paper's cost specification, for the CRRA legs and the stationary check (one spec each; the
+# stationary check follows the paper's spec so sec:numerical's footnote quotes the paper's own design).
 ESCSPEC = ['--spec', ESC['spec'], '--phi', str(ESC['phi'])]
+# The LOG leg runs the comparison arm too: it costs seconds, the appendix table US_ESC_ScaleWedge reads
+# its rows, and runESC.stagePath and stageCountry OVERWRITE escPath.csv and escCountry.csv with the specs
+# of the run rather than merging (stageCalib and stageShocks merge), so a single-spec LOG run would drop
+# the other spec's path and country rows.
+ESCSPEC_LOG = (['--spec', ESC['spec']] + ([ESC['comparisonSpec']] if ESC.get('comparisonSpec') else [])
+               + ['--phi', str(ESC['phi'])])
 ESCRHO = [str(r) for r in ESC['ρTable'] if r != C.US['ρAnchor']]
 
 
@@ -126,33 +134,35 @@ EXPERIMENTS = {
         'requires': lambda: [C.usSweepCsv(C.US['ukHost'], True), C.usSweepCsv('FRUK', True)],
         'note':    'the same on the UK under common X (the headline)',
     },
-    # --- Endogenous system characteristics (app:ESC), the LOG leg (rho = 1). Requires the LOG wedge
-    # calibration from stage (i) (runCalibrationUS.py's escMissing step). All cheap.
-    # The equilibrium design path under the calibrated wedge: the 0.738 -> 0.748 -> 0.773 drift the
-    # text quotes (results/esc/escPath.csv).
+    # --- Endogenous system characteristics (sec:esc), the LOG leg (rho = 1), the paper's spec and the
+    # comparison spec (ESCSPEC_LOG). Requires the LOG cost calibrations of both from stage (i)
+    # (runCalibrationUS.py's escMissing step). All cheap.
+    # The equilibrium design path under the calibrated cost: the 2020 -> 2110 drift the text quotes
+    # (results/esc/escPath.csv).
     'escPath': {
         'part':    'main',
         'script':  'runESC.py',
-        'args':    ['--stage', 'path'] + ESCSPEC + ESCVARIANT,
+        'args':    ['--stage', 'path'] + ESCSPEC_LOG + ESCVARIANT,
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escPath.csv')],
         'note':    'endogenous-theta design path, LOG (rho = 1)',
     },
-    # The counterfactuals on the LEADED-choice model at the calibrated wedge, each run twice (theta
+    # The counterfactuals on the LEADED-choice model at the calibrated cost, each run twice (theta
     # pinned at the calibrated design vs chosen).
     'escShocks': {
         'part':    'main',
         'script':  'runESC.py',
-        'args':    ['--stage', 'shocks'] + ESCSPEC + ESCVARIANT,
+        'args':    ['--stage', 'shocks'] + ESCSPEC_LOG + ESCVARIANT,
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocks.csv')],
         'note':    'endogenous-theta counterfactuals, LOG (rho = 1)',
     },
-    # France and the UK under the US wedge and under their own (Tables/UK_ESC_Calibration.tex).
+    # The UK, France and the UK at US income groups under the US parameter and under their own
+    # (Tables/US_ESC_Country.tex).
     'escCountry': {
         'part':    'main',
         'script':  'runESC.py',
-        'args':    ['--stage', 'country'] + ESCSPEC + ESCVARIANT,
+        'args':    ['--stage', 'country'] + ESCSPEC_LOG + ESCVARIANT,
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escCountry.csv')],
-        'note':    'France and the UK under the ESC wedge, LOG (rho = 1)',
+        'note':    'the UK and France under the ESC cost, LOG (rho = 1)',
     },
     # The timing checks of TODO R3. Permanent: the anticipated-vote fixed point under LOG at three phi and
     # both specs (its reference numbers are also test_esc.py's), and under CRRA traced in rho (a corner
@@ -205,7 +215,8 @@ EXPERIMENTS = {
     # long-run function). No paper table reads these; the footnote quotes the maximal gaps. They move only
     # when the model or the calibration does, hence prepub. The exogenous-theta check under CRRA (LOG is
     # exact by the decoupling) and the endogenous-theta check under LOG and the exact 2-D CRRA recursion
-    # (~1 h at ns2D, one recursion per distinct nu). The Argentina counterpart is runShocks.py --prepub.
+    # (~1 h at ns2D, one recursion per distinct nu), under the paper's cost spec (ESCSPEC). The Argentina
+    # counterpart is runShocks.py --prepub.
     'stationary': {
         'part':    'prepub',
         'script':  'stationaryApprox.py',

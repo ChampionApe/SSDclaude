@@ -307,17 +307,20 @@ def usSweep(country, commonX = None):
 # ---------------------------------------------------------------------------------------------------
 # Endogenous system characteristics (results/esc/)
 # ---------------------------------------------------------------------------------------------------
-def escCountry(commonX = None):
-    """ python/US/runESC.stageCountry's csv: France and the UK under the ESC wedge, at the requested
-    variant, spec and phi. Two readings per country, `wedgeFrom` 'US' (the US-calibrated p imposed;
-    `choice` is what that electorate then picks) and 'own' (p calibrated to re-elect the country's own
-    design; only converged rows are kept). The stage runs under LOG only, and the csv carries no rho
-    column, so rho = 1 is stamped on here rather than read -- a CRRA country stage would have to write
-    the column itself. """
+def escCountry(commonX = None, spec = None):
+    """ python/US/runESC.stageCountry's csv: France, the UK and the UK regrouped at US income percentiles
+    ('UKUS') under the ESC cost, at the requested variant, spec (config.US['esc']['spec'] by default) and
+    phi. Two readings per economy, `wedgeFrom` 'US' (the US-calibrated parameter imposed; `choice` is
+    what that electorate then picks, `τ` its observed 2020 tax rate) and 'own' (the parameter calibrated
+    to re-elect the economy's own design; only converged rows are kept, so an economy whose observed
+    design no finite value reaches has no 'own' row). `Vtilde` is present on rows written since the
+    'size' spec. The stage runs under LOG only, and the csv carries no rho column, so rho = 1 is stamped
+    on here rather than read -- a CRRA country stage would have to write the column itself. """
     commonX = C.US['commonX'] if commonX is None else commonX
+    spec = C.US['esc']['spec'] if spec is None else spec
     df = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCountry.csv')))
     keep = [i for i, rec in enumerate(df.to_dict('records'))
-            if _escVariant(rec, commonX) and rec['spec'] == C.US['esc']['spec']
+            if _escVariant(rec, commonX) and rec['spec'] == spec
             and np.isclose(float(rec['phi']), C.US['esc']['phi'])
             and (rec['wedgeFrom'] != 'own' or (rec['converged'] == rec['converged']
                                                and bool(rec['converged'])))]
@@ -356,7 +359,9 @@ def _escMethodOK(rec):
 
 
 def escCalibration(commonX = None):
-    """ The calibrated deadweight wedge, {(rho, spec): record} with p, thetaStar, beta, omega.
+    """ The calibrated deadweight cost, {(rho, spec): record} with p (the cost parameter under either
+    spec: lambda under 'size'), thetaStar, beta, omega, and -- on rows written since the 'size' spec --
+    fStar, f0, Vtilde and τ0 (escWedge reads them).
 
     Two files because two solvers produced them: escCalibration.csv is the LOG case (rho = 1; also
     carries the no-wedge row under spec 'none', keyed here as (1.0, 'none')), escCalibrationCRRA.csv the
@@ -380,6 +385,31 @@ def escCalibration(commonX = None):
         if (_escVariant(rec, commonX) and _escMethodOK(rec) and bool(rec['converged'])
                 and np.isclose(float(rec['phi']), phi)):
             out[(float(rec['ρ']), rec['spec'])] = rec
+    return out
+
+
+def _col(rec, k):
+    """ A float column that may be absent, or blank (NaN) on a row written before it existed: None then. """
+    v = rec.get(k, None)
+    return None if v is None or v != v else float(v)
+
+
+def escWedge(rec, spec):
+    """ f(θ*), f(0) and Ṽ of one cost-calibration row (escCalibration{,CRRA}.csv), {'fStar', 'f0',
+    'Vtilde'} as floats, None where the row does not carry the quantity.
+
+    Rows written since the 'size' spec carry `fStar` = f(θ*, τ_t0), `f0` = f(0, τ_t0) and `Vtilde` under
+    every spec and are read as they are. An older row has none of them; under 'scale' the two f values
+    are then f(θ) = φ + (1-φ) θ^p from the row's own phi and p (so f(0) = φ) and Ṽ is None. Under any
+    other spec the form needs Ṽ and τ, which such a row does not carry, so the row is MissingInput rather
+    than a number computed from the wrong form. """
+    out = {k: _col(rec, k) for k in ('fStar', 'f0', 'Vtilde')}
+    if out['fStar'] is None or out['f0'] is None:
+        if spec != 'scale':
+            raise MissingInput('columns fStar, f0, Vtilde of the {!r} rows in results/esc/escCalibration{{,CRRA}}.csv'
+                               .format(spec))
+        φ, p, θ = float(rec['phi']), float(rec['p']), float(rec['θStar'])
+        out['fStar'], out['f0'] = φ + (1-φ)*θ**p, φ
     return out
 
 

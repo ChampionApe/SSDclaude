@@ -16,9 +16,10 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | (iii) build | `build.py` | `build.py` | `results/paper/{Tables,Figs}`, then `writing/Paper` | seconds |
 
 - Stage (ii) has two parts in both arms. `main` (the default) is a routine rebuild: sweeps, the LOG
-  wedge, the exogenous shocks in both variants, the LOG ESC leg. `prepub` (`--prepub`; `--all` for both)
-  is run once before submission: the exact CRRA wedge and ESC leg (`runESCcrra.py --exact`, the published
-  method, `config.US['esc']['exact']`), the φ-robustness wedges, the R3 timing checks (~3.5 h), and the
+  wedge, the exogenous shocks in both variants, the LOG ESC leg (both cost specs, see below). `prepub`
+  (`--prepub`; `--all` for both) is run once before submission: the exact CRRA ESC leg under the paper's
+  spec (`runESCcrra.py --exact`, the published method, `config.US['esc']['exact']`), the φ-robustness
+  wedges, the R3 timing checks (~3.5 h), and the
   **stationary-vs-date-specific policy checks** behind `sec:numerical`'s literature paragraph: US taxes
   under CRRA, the endogenous design (LOG and exact CRRA, ~1 h), and Argentina (`runShocks.py --prepub`,
   headline variant only, ~10 min). Those write `results/numerical/`, which no paper output reads; the
@@ -50,6 +51,16 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
   stage (ii) runs `runShocksUS.py --host UK` under a `requires` guard on the UK and FRUK sweeps; stage (iii)
   builds `UK_OtherShocks`, `UK_CRRA_OtherShocks` and `FRUK_householdheterogeneity` (+ twins), `\input` in
   `app:US:french` and `app:US:vectorX`.
+- **The ESC cost specification** (2026-09-24, `notes/plan_escSizeLeak.md`): `config.US['esc']['spec'] =
+  'size'` is the paper's, `comparisonSpec = 'scale'` the previous wedge, kept as one appendix table
+  (`US_ESC_ScaleWedge`: its calibration and the French income row). `phi` is a dummy key under `'size'`
+  (the csvs are keyed on it); the `p` column holds λ, printed as $\lambda$. Stage (i) calibrates both
+  specs under LOG and the paper's spec under CRRA, with a per-(spec, ρ) scan bracket from
+  `config.escBracket` -- the `'size'` entries are placeholders until the LOG λ is known, and a placeholder
+  stops the stage before anything solves (`--dry` prints `<unset>`). Stage (ii)'s LOG entries run
+  `--spec size scale` because `runESC.stagePath`/`stageCountry` overwrite their csv with the run's specs;
+  the CRRA and stationary entries run the paper's spec. `US_ESC_Country` (the UK, France and the UK at US
+  cuts under the US λ, and their own) replaces `UK_ESC_Calibration`, whose builder stays callable.
 
 ## Files
 
@@ -62,18 +73,20 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `build.py` | stage (iii): the output registry for both arms, and the copy into `writing/Paper` |
 | `dataTargets.py` | stage (0) |
 
-## Outputs wired (45)
+## Outputs wired (46)
 
 Each built file names its own input: every generated `.tex` and its `.pdf` sibling carry a
 `%% Source:` banner with the csv it was read from, and `--list` reports what is buildable now. The
-registry itself is `build.py`'s table -- that, not this file, is the list of 45.
+registry itself is `build.py`'s table -- that, not this file, is the list of 46.
 
 Every US and Argentina table and figure is registered twice (headline and `_vectorX`, both arms leading
 with common X since 2026-09-12); the ESC outputs headline only. Only `ArgentinaCalibration_vectorX` is
 `\input` in the paper -- the other Argentina twins are built but print the same numbers as the headline.
 The French leisure row is printed again in `US_OtherShocks` since 2026-09-22 (dropped 2026-09-11); it is
 still not drawn in `US_overview`. Since 2026-09-22 `US_OtherShocks` and `US_CRRA_PensChars` are `\input` from
-appendix `app:US`, as are the four `US_ESC_*` tables (`app:US:escTables`); the main text keeps the discussion. Every US counterfactual is a new equilibrium path read at 2020 (`python/US/shocks.py`,
+appendix `app:US`, as are the four `US_ESC_*` experiment tables (`app:US:escTables`); the main text keeps the
+discussion. `US_ESC_Country` is for `app:US:ukESC` (in place of `UK_ESC_Calibration`) and `US_ESC_ScaleWedge`
+for the appendix's robustness paragraph -- both `\input`s are WP5's. Every US counterfactual is a new equilibrium path read at 2020 (`python/US/shocks.py`,
 `writing/US/num_esc.tex`); the French tables carry the all-three row and France's own path, which fails by
 construction under the `flat` spec.
 
@@ -118,3 +131,11 @@ US arm:
 - A detached pipeline log must not be held open while it runs (`crossCuttingFindings.md` #14).
 - The two variants check each other: baseline, `θ`, ageing and voting come back identical (≤5e-15),
   income distribution and all-three differ, leisure differs in the workweek only.
+- The ESC calibration csvs gained `Vtilde`, `fStar`, `f0`, `τ0` on 2026-09-24; rows from before lack them,
+  and `datasets.escWedge` then computes the two `f` from the `'scale'` form and refuses under any other spec.
+
+## Open
+
+- WP4 of `notes/plan_escSizeLeak.md`: no `'size'` rows yet, so the seven `'size'`-dependent ESC outputs
+  report `MissingInput` and `config.US['esc']['bracket']['size']` is a placeholder; `US_ESC_ScaleWedge`
+  builds from the `'scale'` rows now.

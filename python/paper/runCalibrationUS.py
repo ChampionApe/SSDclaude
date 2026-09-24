@@ -27,12 +27,13 @@ Two things happen, and only the first is expensive:
      beta and hbar at each rho and refuses to interpolate, so the US sweep must be complete over the
      grid before any European sweep starts. That dependency is enforced, not just documented.
 
-  2. The endogenous-theta (app:ESC) wedge calibrations: p per (rho, spec) such that the leaded choice
-     at 2020 reproduces the observed design, at config.US['esc']'s phi. Delegated to python/US/runESC.py
-     (LOG, rho = 1 -- also produces the no-wedge corner row) and python/US/runESCcrra.py (CRRA, the other
-     rho in the esc table grid). EXPENSIVE where missing (~25-30 min per CRRA (rho, spec): each trial
-     value of p recalibrates (beta, omega) and runs 13 candidate equilibrium solves), which is why the
-     check is per-(rho, spec) and the drivers merge into their csvs rather than overwriting them.
+  2. The endogenous-theta (sec:esc) cost calibrations: the cost parameter per (rho, spec) such that the
+     leaded choice at 2020 reproduces the observed design, at config.US['esc']'s phi. Delegated to
+     python/US/runESC.py (LOG, rho = 1 -- the paper's spec AND the comparison spec, also the no-wedge
+     corner row) and python/US/runESCcrra.py (CRRA, the other rho in the esc table grid, the paper's spec
+     only, with config.escBracket's scan bracket per rho). EXPENSIVE where missing (~45 min per CRRA
+     (rho, spec): each trial value recalibrates (beta, omega) and runs the exact recursion), which is why
+     the check is per-(rho, spec) and the drivers merge into their csvs rather than overwriting them.
 
   3. The summary, results/paper/usCalibrationSummary.csv -- one row per country. Stage (iii) builds the
      calibration and household-heterogeneity tables from this file rather than from a pickled instance,
@@ -96,23 +97,28 @@ def _escLogRows(phis):
             if p == p}
 
 
-def escMissing(part = 'main', force = False):
-    """ The ESC wedge-calibration commands whose rows results/esc does not already carry (converged, at
+def escMissing(part = 'main', force = False, strict = True):
+    """ The ESC cost-calibration commands whose rows results/esc does not already carry (converged, at
     config.US['esc']'s phi, headline variant). One command per missing combination -- the drivers merge
     into their csvs (runESC.mergeWrite), so partial re-runs are safe.
 
-    'main': the LOG calibration at esc['phi'] (also the no-wedge row). 'prepub': the EXACT CRRA
-    calibrations at every rho the ESC tables print (method = 'exact' rows -- the path iteration's rows in
-    the same csv do not count), and the LOG calibrations at PHIROBUST. `force` lists them all. """
+    'main': the LOG calibrations at esc['phi'] under the paper's spec and the comparison spec (about 80 s
+    each; also the no-wedge row). 'prepub': the EXACT CRRA calibrations at every rho the ESC tables print
+    under the paper's spec (method = 'exact' rows -- the path iteration's rows in the same csv do not
+    count), one command per rho with its own scan bracket from config.escBracket, and the LOG
+    calibrations at PHIROBUST. `force` lists them all. A placeholder bracket raises unless `strict` is
+    False (the --dry listing), which prints it as `--bracket <unset> <unset>` instead. """
     esc = C.US['esc']
     spec, phi = esc['spec'], esc['phi']
+    specsL = [spec] + ([esc['comparisonSpec']] if esc.get('comparisonSpec') else [])
     # The ESC leg runs under the headline calibration variant only -- see paper/runShocksUS.ESCVARIANT.
     variant = ['--commonX'] if C.US['commonX'] else []
     cmds = []
     haveL = set() if force else _escLogRows([phi] + PHIROBUST)
-    if part in ('main', 'all') and (spec, round(phi, 6)) not in haveL:
+    lackL = [s for s in specsL if (s, round(phi, 6)) not in haveL]
+    if part in ('main', 'all') and lackL:
         cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESC.py'), '--stage', 'calib',
-                     '--spec', spec, '--phi', str(phi)] + variant)
+                     '--spec'] + lackL + ['--phi', str(phi)] + variant)
     if part in ('prepub', 'all'):
         pathC = os.path.join(C.ESCDIR, 'escCalibrationCRRA.csv')
         haveC = set()
@@ -126,11 +132,25 @@ def escMissing(part = 'main', force = False):
                 ok = ok[ok['commonX'].astype(bool) == bool(C.US['commonX'])]
             haveC = {(round(float(r), 6), s) for r, s in zip(ok['ρ'], ok['spec'])}
         lackρ = [ρ for ρ in esc['ρTable'] if ρ != C.US['ρAnchor'] and (round(ρ, 6), spec) not in haveC]
-        if lackρ:
-            cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESCcrra.py'), '--exact', '--stage', 'calib',
-                         '--rho'] + [str(r) for r in lackρ]
-                        + ['--spec', spec, '--phi', str(phi), '--ns', str(esc['ns2D']),
-                           '--nsScan', str(esc['nsScan']), '--nCand2D', str(esc['nCand2D'])] + variant)
+        exact = [C.PYTHON, os.path.join(C.USDIR, 'runESCcrra.py'), '--exact', '--stage', 'calib']
+        opts = ['--spec', spec, '--phi', str(phi), '--ns', str(esc['ns2D']),
+                '--nsScan', str(esc['nsScan']), '--nCand2D', str(esc['nCand2D'])] + variant
+        # A rho with its own bracket gets its own command (the bracket is one pair); the rest share one
+        # command and runESCcrra.py's own default scan for the spec.
+        brackets = {}
+        for ρ in lackρ:
+            try:
+                brackets[ρ] = C.escBracket(ρ, spec)
+            except ValueError:
+                if strict:
+                    raise
+                brackets[ρ] = ('<unset>', '<unset>')
+        shared = [ρ for ρ in lackρ if brackets[ρ] is None]
+        if shared:
+            cmds.append(exact + ['--rho'] + [str(r) for r in shared] + opts)
+        for ρ in lackρ:
+            if brackets[ρ] is not None:
+                cmds.append(exact + ['--rho', str(ρ), '--bracket'] + [str(b) for b in brackets[ρ]] + opts)
         lackφ = [p for p in PHIROBUST if (spec, round(p, 6)) not in haveL]
         if lackφ:
             cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESC.py'), '--stage', 'calib',
@@ -221,7 +241,7 @@ def main():
             for cx in variants:
                 for c in SWEEPS:
                     print(' '.join(sweepCmd(c, cx, a.force)))
-        for cmd in escMissing(part, a.force):
+        for cmd in escMissing(part, a.force, strict = False):
             print(' '.join(cmd))
         return
 
@@ -251,13 +271,14 @@ def main():
                     raise SystemExit('sweep for {} exited {}'.format(label, r.returncode))
 
     if not a.summaryOnly:
-        # --- the ESC wedge calibrations (app:ESC). Per-(rho, spec, method) check, so a complete
-        # results/esc costs nothing here; a missing exact CRRA rho costs ~1.2 h (pre-publication part).
+        # --- the ESC cost calibrations (sec:esc). Per-(rho, spec, method) check, so a complete
+        # results/esc costs nothing here; a missing exact CRRA rho costs ~45 min (pre-publication part).
+        # A placeholder bracket (config.escBracket) raises here, before any command runs.
         cmds = escMissing(part, a.force)
         if not cmds:
-            print('ESC wedge ({}): every combination already calibrated.'.format(part))
+            print('ESC cost ({}): every combination already calibrated.'.format(part))
         for cmd in cmds:
-            print('\nESC wedge: ' + ' '.join(cmd))
+            print('\nESC cost: ' + ' '.join(cmd))
             r = subprocess.run(cmd, cwd = C.REPO)
             if r.returncode:
                 raise SystemExit('ESC calibration exited {}'.format(r.returncode))

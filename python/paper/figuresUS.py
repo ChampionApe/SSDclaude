@@ -89,7 +89,7 @@ def _topDown(axes):
 
 
 def _figLegend(fig, handles, labels, bottom = 0.075, ncol = None):
-    """ One legend for the whole figure, below the panels. Figure-level rather than per-panel: the
+    r""" One legend for the whole figure, below the panels. Figure-level rather than per-panel: the
     series mean the same thing in every panel, so repeating the key would be redundant.
 
     The baseline the deviations are measured from is NOT drawn here: it is a \tablenotes under the

@@ -79,7 +79,12 @@ OUTPUTS = {
     'US_ESC_IncomeDistr':     ('table', tablesUS.escIncomeDistr,      'Tables/US_ESC_IncomeDistr.tex'),
     'US_ESC_Voting':          ('table', tablesUS.escVoting,           'Tables/US_ESC_Voting.tex'),
     'US_ESC_FrenchAll':       ('table', tablesUS.escFrenchAll,        'Tables/US_ESC_FrenchAll.tex'),
-    'UK_ESC_Calibration':     ('table', tablesUS.ukEscCalibrationTable, 'Tables/UK_ESC_Calibration.tex'),
+    # The cross-country test (app:US:ukESC): the UK, France and the UK at US income groups under the US
+    # parameter, and their own. tablesUS.ukEscCalibrationTable, the UK-only table it replaces, stays
+    # callable on the comparison arm's rows but is not an output.
+    'US_ESC_Country':         ('table', tablesUS.escCountryTable,     'Tables/US_ESC_Country.tex'),
+    # The previous cost specification (config.US['esc']['comparisonSpec']) as one appendix table.
+    'US_ESC_ScaleWedge':      ('table', tablesUS.escScaleWedge,       'Tables/US_ESC_ScaleWedge.tex'),
 }
 
 
