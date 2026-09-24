@@ -103,6 +103,15 @@ three distinct parts, but do not add further subsections elsewhere.
   distribution, leisure preferences, voting patterns, "French characteristics" for the composite.
 - **"Exogenous θ" / "endogenous θ"**, or "θ pinned" / "θ chosen", for the two readings in the
   endogenous-design section.
+- **Endogenous-design cost vocabulary** (2026-09-24): "the deadweight cost of redistribution" or "the
+  cost"; λ is "the cost parameter" (never "the wedge", which was the previous specification's word);
+  $1-f$ is "the share of revenue lost"; $\tilde V$ is "the dispersion of relative incomes"; "the size of
+  the system" is the tax rate. The derivation is one paragraph in `sec:esc`; the technical note has the
+  rest, and the paper refers to it as "the technical documentation".
+- **Pending numbers** are written with the sentence structure in place and the number as
+  `\todo{CRRA: <what>}`, specific enough to be filled without re-reading the section. Inside a footnote
+  or a table note use `\todo[inline]{...}` (a margin note is not allowed there). `grep -rn "CRRA:"
+  writing/Paper` lists what is left.
 
 ## 5. LaTeX conventions
 
