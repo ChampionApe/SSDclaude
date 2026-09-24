@@ -32,6 +32,16 @@ Two more since the counterfactuals became new equilibrium paths read at 2020 (se
      followed by shockVoting's refresh, which recomputes theta from FRANCE's eta -- silently putting the
      combined rows on a design nothing asked for while every other column stays plausible
      (crossCuttingFindings.md #9).
+
+And the 'size' spec, f(theta_t, tau_t) = exp(-lambda tau_t Vtilde (1-theta_t)^2 / 2), the paper's wedge since
+2026-09-24 (notes/plan_escSizeLeak.md; sections S9-S14 keep that plan's test numbers):
+
+  9. lambda = 0 IS ModelUS bitwise; the retirees' analytic tau-derivative carries (1 + tau d ln f/d tau) and
+     equals its finite difference at fixed s_{t-1,i}/s_{t-1}; z_t still does not see (tau_{t+1}, theta_{t+1})
+     and the choice is still s_{t-1}-free (items 3 and 4 under the new f); Vtilde is invariant to a common
+     rescaling of X_i and of eta_i, zero when every y_i = 1 (and then f == 1), and masks a zero-mass type
+     rather than letting 0*inf poison it; theta* is unchanged (f cancels from the replacement-rate ratio).
+     The 'scale' p at rho = 1, 0.4076119851, is pinned as the regression gate for the untouched paths.
 """
 import os, sys
 import numpy as np
@@ -299,6 +309,9 @@ check('at the calibrated p the FREE path reproduces theta* at t0', rec['converge
           rec['p'], float(led['θ'].iloc[mCal.db['t0']]), float(mCal.db['θ'].xs(t0))))
 check('...and the tax target is still hit there', abs(led['targetDrift']['τ']) < 1e-6,
       '-> tauDrift={:.2e} RDrift={:.2e}'.format(led['targetDrift']['τ'], led['targetDrift']['R']))
+# The regression gate for every path the 'size' spec must leave untouched (plan_escSizeLeak.md, check 2).
+check("the calibrated 'scale' p at rho = 1 reproduces 0.4076119851", abs(rec['p'] - 0.4076119851) < 1e-8,
+      '-> p={:.10f}'.format(rec['p']))
 
 # ---- 11. the new-path convention: a shocked model is the full horizon, not a copy from t0
 # shockedCopy must leave the horizon, the calendar and t0's POSITION alone -- the readout sits at
@@ -436,5 +449,198 @@ worst = max((float(np.max(mSeq.sequentialFOC(θSeq, solSeq, pos = k))), k)
             for k in range(1, len(mSeq.db['t']) - 1))
 check('...at every non-terminal period of the horizon', worst[0] < 0.,
       '-> largest value over periods and theta: {:+.4e} at pos={}'.format(*worst))
+
+
+# ==== the 'size' spec: f(theta_t, tau_t) = exp(-lambda tau_t Vtilde (1-theta_t)^2 / 2) ===================
+# notes/plan_escSizeLeak.md, section 1 and WP2 tests 9-14 (the section labels below keep those numbers).
+# Vtilde = sum_i gamma_i (y_i-1)^2/y_i with y_i = hηRatio: the Harberger weight of the flat component's
+# implicit taxes. lambda sits in the 'p' slot; phi is a dummy the spec never reads. Everything is measured
+# on the US model at rho = 1, calibrated under 'size' where a check needs the calibrated wedge.
+
+# ---- S9. 'size' at lambda = 0 IS the no-wedge model: f = exp(-0) = 1 exactly, whatever tau
+# BITWISE on ONE instance with the spec toggled in its db. Two instances of the same class already differ
+# at ~1e-15 in eta_i/X_i (the eigenvector calibration of X is not bit-reproducible across instances), so
+# instance-to-instance identity is a 1e-14 statement, as in section 1; the bitwise claim is about the code
+# path, and only a same-instance toggle measures it.
+mS0 = build(ModelESC, {'spec': 'size', 'phi': 0.5, 'p': 0.0})
+sol0 = mS0.solvePEE_LOG()
+solsS0 = mS0.ESC.solveBackward()
+mS0.setWedge(spec = 'none', update = False)          # same db, same theta, no wedge
+mS0.x0, mS0.LOG.x0 = {}, {}
+solN = mS0.solvePEE_LOG()
+solsN = mS0.ESC.solveBackward()
+mS0.setWedge(spec = 'size', update = False)
+keys = ('s', 'h', 'si_s', 'c2i', 'tildec1i', 'bi', 'R')
+same = (np.array_equal(sol0['τ'].values, solN['τ'].values)
+        and all(np.array_equal(sol0['report'][k].values, solN['report'][k].values) for k in keys))
+check("'size' at lambda = 0 reproduces the no-wedge model BITWISE on one instance (tau, s, h, s_i/s, c2i, "
+      "tildec1i, bi, R)", same,
+      '-> max|dtau|={:.1e} max|dc2i|={:.1e}'.format(
+          np.max(np.abs(sol0['τ'].values - solN['τ'].values)),
+          np.max(np.abs(sol0['report']['c2i'].values - solN['report']['c2i'].values))))
+check('...and so does the leaded recursion (tau policy and chosen design at every period)',
+      all(np.array_equal(solsS0[t]['τ'], solsN[t]['τ']) for t in mS0.db['t'])
+      and all(np.array_equal(solsS0[t]['θNext'], solsN[t]['θNext']) for t in mS0.db['t'][:-1]))
+dτ0, okτ0 = close(sol0['τ'].values, solUS['τ'].values, 1e-14)
+dθ0, okθ0 = close(mS0.db['θ'].values, mUS.db['θ'].values, 1e-14)
+ds0, oks0 = close(sol0['report']['s'].values, solUS['report']['s'].values, 1e-14)
+check("...and a separate ModelUS instance at section 1's tolerance (tau, s, theta)", okτ0 and oks0 and okθ0,
+      '-> max|dtau|={:.1e} max|ds|={:.1e} max|dtheta|={:.1e}'.format(dτ0, ds0, dθ0))
+
+# ---- the calibrated 'size' wedge: lambda such that the design IN FORCE at 2020 is theta*
+mSc = build(ModelESC, {'spec': 'size', 'phi': 0.5, 'p': 16.})
+recS = mSc.calibrateWedge(spec = 'size', phi = 0.5, verbose = False)
+vS = np.array([r['residual'] for r in recS['scan']])
+okS = np.isfinite(vS)
+nSign = sum(1 for k in range(len(vS)-1) if okS[k] and okS[k+1] and vS[k]*vS[k+1] < 0)
+check("the 'size' calibration converges with EXACTLY one sign change in the lambda scan (theta -> 0 corner "
+      "at small lambda, theta -> 1 at large)",
+      recS['converged'] and nSign == 1 and vS[okS][0] < 0 < vS[okS][-1],
+      '-> lambda={:.6f} residual={:.1e}; scan {} finite of {}, residual {:+.3f} -> {:+.3f}'.format(
+          recS['p'], recS['residual'], int(okS.sum()), len(vS), vS[okS][0], vS[okS][-1]))
+ledS = mSc.solveLeaded(pinAtT0 = False)
+pos0S = mSc.db['t0']
+θStarS, τ0S = float(mSc.db['θ'].xs(t0)), float(ledS['τ'].xs(t0))
+VS = float(mSc.B.Vtilde(t0))
+fStarS, f0S = float(mSc.B.fWedge(θStarS, τ0S, t0)), float(mSc.B.fWedge(0., τ0S, t0))
+# targetDrift is the inner approximation (modelESC's module docstring: (beta, omega) are calibrated with
+# theta held at theta*, the free path drifts away from it). tau holds to 1e-10 as under 'scale'; R reads
+# 2.9e-3 here against 5e-4 on the 'scale' rows of results/esc/escCalibration.csv -- the design path moves
+# about six times more after 2020 under 'size' (0.738 -> 0.797 in one period against 0.738 -> 0.748), and
+# R_{t0} sees theta_{t0+1} through h_{t0}. The gate is set at 5e-3, the measured order, not at the
+# 1e-3 the 'scale' rows meet; a jump above it would mean the calibration and the path had separated.
+check('...the FREE path reproduces theta* at t0 and the (tau, R) targets hold there (R to 5e-3, see above)',
+      abs(float(ledS['θ'].iloc[pos0S]) - θStarS) < 1e-4 and abs(ledS['targetDrift']['τ']) < 1e-6
+      and abs(ledS['targetDrift']['R']) < 5e-3,
+      '-> theta_t0={:.6f} tauDrift={:.1e} RDrift={:.1e}'.format(
+          float(ledS['θ'].iloc[pos0S]), ledS['targetDrift']['τ'], ledS['targetDrift']['R']))
+check('...and 1-f is a share of revenue lost: 0 < f(0, tau0) < f(theta*, tau0) < 1', 0. < f0S < fStarS < 1.,
+      '-> Vtilde={:.6f} tau0={:.5f} f(theta*,tau0)={:.5f} f(0,tau0)={:.5f}'.format(VS, τ0S, fStarS, f0S))
+check("...and the ageing prediction is a drift of the design (2020 -> 2110 on the free path)",
+      len(ledS['θ']) > pos0S + 3,
+      '-> theta path from 2020: {}'.format('  '.join('{:.4f}'.format(x) for x in ledS['θ'].values[pos0S:])))
+
+# ---- S10. dln(c_2^i)/dtau under 'size' equals its central finite difference at FIXED s_{t-1,i}/s_{t-1}
+# h is held fixed too (dlnh_dtau = 0), so what is compared is the retirees' benefit term alone, which is
+# where f(theta_t, tau_t) sits and where the factor (1 + tau d ln f/d tau) enters (plan section 1).
+solSc = mSc.solvePEE_LOG()                          # exogenous theta at theta*, on the calibrated model
+repS = solSc['report']
+tPrev = mSc.db['t'][pos0S-1]
+h0S, s_0S = float(repS['h'].xs(t0)), float(repS['s_'].xs(t0))
+si_S = repS['si_s'].xs(tPrev).values.astype(float)
+BS = mSc.B
+worstFD, worstFactor = 0., np.inf
+for θp, τp in ((θStarS, float(solSc['τ'].xs(t0))), (0.3, 0.25), (0.9, 0.08)):
+    ana = np.asarray(BS.dlnc2i_dτ(0., τp, θp, si_S, t0), dtype = float)
+    eps = 1e-5
+    lnc = lambda τ: np.log(np.asarray(BS.c2i(h0S, s_0S, τ, θp, si_S, t0), dtype = float))
+    fd = (lnc(τp + eps) - lnc(τp - eps))/(2*eps)
+    worstFD = max(worstFD, float(np.max(np.abs(ana - fd))/np.max(np.abs(ana))))
+    # the same expression WITHOUT the (1 + tau d ln f/d tau) factor: the check above is not vacuous
+    αS = float(BS.get('α', t0))
+    A0S = (1-αS)/αS*float(BS.get('p[t-1]', t0))/float(BS.get('κ[t-1]', t0))
+    brS = (np.asarray(BS.wedgeA(θp, τp, t0, '[t-1]'))*BS.hηRatio(t0, lag = '[t-1]')
+           + np.asarray(BS.wedgeB(θp, τp, t0, '[t-1]')))
+    naive = A0S*brS/(si_S + A0S*τp*brS)
+    worstFactor = min(worstFactor, float(np.max(np.abs(ana - naive))/np.max(np.abs(ana))))
+check("dlnc2i_dtau under 'size' equals the central finite difference of ln c2i at fixed s_{t-1,i}/s_{t-1} "
+      "(1e-8 relative, three (theta, tau) points)", worstFD < 1e-8, '-> max rel err={:.2e}'.format(worstFD))
+check('...and the (1 + tau d ln f/d tau) factor is load-bearing (drop it and the derivative moves)',
+      worstFactor > 1e-3, '-> smallest rel change from dropping it={:.2e}'.format(worstFactor))
+
+# ---- S11. z_t does not see (tau_{t+1}, theta_{t+1}) under 'size' (item 3 under the new f)
+worstS = 0.
+zRefS = None
+for τ1 in (0.05, 0.5, 0.9):
+    for θ1 in (0.0, 0.5, 1.0):
+        d = mSc.LOG.stateGrid(np.array([τx]), t0, np.array([θx]), tLag, False, τ1 = τ1, θ1 = θ1)
+        z = float(mSc.LOG.focGrid(d, t0, np.array([θx]), float(mSc.db['eps'].xs(t0)), False)[0])
+        zRefS = z if zRefS is None else zRefS
+        worstS = max(worstS, abs(z - zRefS))
+check("'size': z_t is unchanged over the whole (tau_1, theta_1) square (f(theta_1, tau_1) rides in Theta_h's "
+      "level, which reaches z_t only through the zero-mass slot)", worstS < 1e-14,
+      '-> max|dz|={:.2e}'.format(worstS))
+check("'size': the placeholder z() agrees with an explicit (tau_1, theta_1)",
+      abs(float(mSc.ESC.z(t0, τx, θx, tLag, False)[0]) - zRefS) < 1e-14)
+
+# ---- S12. the leaded choice is invariant to s_{t-1} under 'size' (item 4 under the new f)
+solsS = ledS['sols']
+τtS = np.full(mSc.ESC.nθCand, mSc.ESC.τAt(t0, θStarS))
+θtS = np.full(mSc.ESC.nθCand, θStarS)
+s1S = solsS[t1]
+contS = {'τ1': np.interp(mSc.ESC.θCand, s1S['θGrid'], s1S['τ']),
+         'θ2': np.interp(mSc.ESC.θCand, s1S['θGrid'], s1S['θNext']),
+         'terminal1': False}
+s2S = solsS[tIdx[pos+2]]
+contS['τ2'] = np.interp(contS['θ2'], s2S['θGrid'], s2S['τ'])
+argS = {}
+for sLag in (1.0, 0.037, 12.5):
+    W, _ = mSc.ESC.objective(t0, tIdx[pos-1], t1, τtS, θtS, mSc.ESC.θCand, contS, s_ = sLag)
+    argS[sLag] = mSc.ESC._argmax(mSc.ESC.θCand, W)[0]
+spreadS = max(argS.values()) - min(argS.values())
+check("'size': the choice is INTERIOR at the calibrated lambda, so the invariance check is not vacuous (#10)",
+      0.02 < argS[1.0] < 0.98, '-> choice at t0={:.6f}'.format(argS[1.0]))
+check("'size': the leaded choice is invariant to s_{t-1}", spreadS < 1e-12,
+      '-> argmax at s=1/0.037/12.5: {} (spread {:.1e})'.format(
+          ', '.join('{:.6f}'.format(v) for v in argS.values()), spreadS))
+
+# ---- S13. Vtilde: the two invariances, the degenerate distribution, the zero-mass guard, BaseTime
+mV = build(ModelESC, {'spec': 'size', 'phi': 0.5, 'p': recS['p']})
+V0 = float(mV.B.Vtilde(t0))
+γV, yV = mV.B.get('γi', t0), mV.B.hηRatio(t0)
+check('Vtilde equals its independent form sum_i gamma_i/y_i - 1 (uses sum_i gamma_i y_i = 1)',
+      abs(V0 - (float((γV/yV).sum()) - 1.)) < 1e-14, '-> Vtilde={:.10f}'.format(V0))
+mV.db.update(mV.adjPar('Xj', mV.db['Xj'].values*2.5)); mV.updateAuxPars()
+V1 = float(mV.B.Vtilde(t0))
+mV.db.update(mV.adjPar('ηj', mV.db['ηj'].values*1.7)); mV.updateAuxPars()
+V2 = float(mV.B.Vtilde(t0))
+check('Vtilde is invariant to a common rescaling of X_i (x2.5) and of eta_i (x1.7)',
+      abs(V1 - V0) < 1e-13 and abs(V2 - V0) < 1e-13,
+      '-> residuals {:.1e}, {:.1e}'.format(V1 - V0, V2 - V0))
+# every y_i = 1: eta and X common across types. adjPar refreshes eta_i/X_i directly; updateAuxPars is NOT
+# called because getTheta cannot invert a replacement-rate ratio between identical types, and Vtilde does
+# not need it (it recomputes Gamma_h itself).
+mV.db.update(mV.adjPar('ηj', np.ones(mV.nj)))
+mV.db.update(mV.adjPar('Xj', np.ones(mV.nj)))
+Vdeg = float(mV.B.Vtilde(t0))
+θq = np.linspace(0., 1., 11)
+fDeg = np.concatenate([np.asarray(mV.B.fWedge(θq, τq, t0), dtype = float) for τq in (0.05, 0.3, 0.9)])
+check('Vtilde = 0 when every y_i = 1, and then f == 1 for every (theta, tau): nothing redistributed, nothing lost',
+      Vdeg < 1e-28 and np.max(np.abs(fDeg - 1.)) < 1e-15,
+      '-> Vtilde={:.1e} max|f-1|={:.1e}'.format(Vdeg, np.max(np.abs(fDeg - 1.))))
+# the zero-mass guard: a type with gamma_i = 0 and y_i = 0 would contribute 0*inf = NaN without the mask
+mV.db.update(mV.adjPar('γj', np.array([0., 0., 0.5, 0.5])))
+mV.db.update(mV.adjPar('ηj', np.array([1., 0., 1., 2.])))
+Vg = float(mV.B.Vtilde(t0))
+ξV = float(mV.B.get('ξ', t0))
+aux = np.array([1., 2.**(1+ξV)])
+yHand = aux/(0.5*aux).sum()
+Vhand = float((0.5*(yHand-1)**2/yHand).sum())
+check('a zero-mass type with y_i = 0 is masked out of Vtilde (finite, and equal to the live types\' sum)',
+      np.isfinite(Vg) and abs(Vg - Vhand) < 1e-14, '-> Vtilde={:.10f} by hand={:.10f}'.format(Vg, Vhand))
+# BaseTime: (T,) broadcast, the same numbers as Base year by year, and the [t-1] vintage is the year before
+VT = np.asarray(mSc.BT.Vtilde(), dtype = float)
+VB = np.array([float(mSc.B.Vtilde(t)) for t in mSc.db['t']])
+lagOK = max(abs(float(mSc.B.Vtilde(mSc.db['t'][k], lag = '[t-1]')) - VB[k-1]) for k in range(1, mSc.T))
+check('Vtilde on BaseTime is (T,) and matches Base year by year; lag=[t-1] is the previous year\'s vintage',
+      VT.shape == (mSc.T,) and np.max(np.abs(VT - VB)) < 1e-15 and lagOK < 1e-15)
+fT = np.asarray(mSc.BT.fWedge(ledS['θ'].values, ledS['τ'].values), dtype = float)
+fB = np.array([float(mSc.B.fWedge(float(ledS['θ'].iloc[k]), float(ledS['τ'].iloc[k]), t))
+               for k, t in enumerate(mSc.db['t'])])
+check('f on BaseTime broadcasts over t and matches Base year by year', np.max(np.abs(fT - fB)) < 1e-15)
+try:
+    mSc.B.fWedge(0.5, t = t0)
+    raisedS = False
+except ValueError:
+    raisedS = True
+check("fWedge under 'size' RAISES when called without tau (a call site that forgot the tax fails loudly)", raisedS)
+
+# ---- S14. getTheta under 'size' is the exogenous-theta number: f cancels from B/A
+θS = float(mSc.db['θ'].xs(t0))
+check("'size': theta* is 0.7382263650 (unchanged by lambda: the cost is proportional)",
+      abs(θS - 0.7382263650) < 1e-9 and np.max(np.abs(mSc.db['θ'].values - mUS.db['θ'].values)) < 1e-12,
+      '-> theta*={:.10f} at lambda={:.4f}'.format(θS, recS['p']))
+A_S, B_S = mSc.B.wedgeA(θS, τ0S, t0), mSc.B.wedgeB(θS, τ0S, t0)
+check("'size': B/A reproduces the data ratio (1-theta)/theta at any tau", np.isclose(B_S/A_S, (1-θS)/θS, rtol = 1e-12))
 
 report()

@@ -7,9 +7,10 @@ test_esc.py rather than assumed:
 
     z_t -- the FOC for tau_t -- depends on (tau_t, theta_t) ALONE.
 
-theta_{t+1} enters z_t only through Theta_{h,t}, which reaches the FOC only through dv20 (the old informal
-household), and that term carries weight gamma_0 = 0 here. So tau_t = tauPolicy_t(theta_t) is a STATIC
-scalar problem, the two choices at t are separable, and the state is one-dimensional.
+theta_{t+1} enters z_t only through Theta_{h,t} -- as do tau_{t+1} and, under the 'size' wedge, f(theta_{t+1},
+tau_{t+1}) -- which reaches the FOC only through dv20 (the old informal household), and that term carries
+weight gamma_0 = 0 here. So tau_t = tauPolicy_t(theta_t) is a STATIC scalar problem, the two choices at t
+are separable, and the state is one-dimensional.
 
 Two further properties, both MEASURED (test_esc.py) rather than assumed, and both specific to LOG:
 
@@ -104,10 +105,11 @@ class LeadedLOG(LeadedBase):
         (tau_{t+1}, theta_{t+1}) are passed as (tau, theta) rather than their true values, and that is
         SOUND rather than approximate: they enter stateGrid only through the LEVEL of Theta_{h,t}, which
         reaches the FOC only through dv20 -- the old informal household -- whose weight is gamma_{t-1,0},
-        exactly zero in this model. The placeholder keeps that term finite (0*NaN would poison the whole
-        FOC, README's "zero-mass slot"). test_esc.py drives the placeholder over the whole unit square and
-        asserts z_t does not move; if the informal type is ever given mass, that test fails and this
-        shortcut has to go. """
+        exactly zero in this model. That covers every wedge spec: under 'size' f(theta_{t+1}, tau_{t+1})
+        rides in the same level. The placeholder keeps that term finite (0*NaN would poison the whole
+        FOC, README's "zero-mass slot"). test_esc.py drives the placeholder over the whole unit square,
+        under 'scale' and under 'size', and asserts z_t does not move; if the informal type is ever given
+        mass, that test fails and this shortcut has to go. """
         τ = np.atleast_1d(np.asarray(τ, dtype = float))
         θ = np.broadcast_to(np.asarray(θ, dtype = float), τ.shape)
         d = self.m.LOG.stateGrid(τ, t, θ, tLag, terminal, τ1 = τ, θ1 = θ)
@@ -961,8 +963,9 @@ class PermanentCRRA(LeadedBase):
         """ W_{t0} at every cached candidate, with c_{2,t0}^i rebuilt at the PINNED predetermined ratio
         rather than read off each candidate's own report, whose si_s moved with the candidate.
 
-        Evaluated with db back on the incumbent design, which is safe because c2i takes theta explicitly
-        and nothing in its chain reads db['θ'] -- wedgeA/wedgeB are functions of the argument. """
+        Evaluated with db back on the incumbent design, which is safe because c2i takes theta and tau
+        explicitly and nothing in its chain reads db['θ'] -- wedgeA/wedgeB are functions of their (θ, τ)
+        arguments (and, under 'size', of the income distribution through Vtilde, not of the design). """
         t = self.db['t'][self.db['t'].get_loc(t0)]
         q = 1 - 1/float(self.BG.get('ρ', t))
         old, young = self.weights(t)

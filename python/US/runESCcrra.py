@@ -5,6 +5,7 @@ Run:  .venv\Scripts\python.exe python\US\runESCcrra.py                       # r
       ... --rho 2.0 0.5  --spec scale  --phi 0.5  --commonX
       ... --stage calib path shocks sens
       ... --exact --stage calib path shocks --ns 150                        # the published method
+      ... --exact --rho 2.0 --spec size --phi 0.5 --commonX --bracket L U     # the paper's wedge, lambda in p
 
 TWO METHODS, one `method` column. Every row written here carries method = 'exact' or 'path', and the
 column is part of every merge key, so the two vintages coexist in one csv and the paper pipeline selects
@@ -65,11 +66,15 @@ os.chdir(HERE)
 import test as testmod
 import shocks as sh
 from modelESC import ModelESC
-from runESC import SHOCKS_ESC, mergeWrite, buildEU, readout as escReadout
+from runESC import SHOCKS_ESC, mergeWrite, buildEU, readout as escReadout, wedgeReadout
 from runShocksUS import frenchData
 
 OUTDIR = os.path.join(REPO, 'results', 'esc')
 GSC = {'n': 101, 'ns': 150, 'smoothKnots': 4, 'interpKind': 'linear'}
+
+# The default scan bracket per spec when --bracket is not given (see the argument's comment): p for the
+# theta^p forms, lambda for 'size' (about 8.6 at rho = 1 under LOG and expected to fall in rho, as p does).
+BRACKET_CRRA = {'scale': (0.01, 3.0), 'flat': (0.01, 3.0), 'size': (0.25, 200.)}
 
 # Row-identity keys, rho-indexed counterparts of runESC's. commonX is in all three -- see mergeWrite.
 # method too: an exact row and a path row answer the same question by different solvers and must not
@@ -238,7 +243,8 @@ def pathRowsFrom(m, led, base, ρ, spec, phi, pCal, commonX, method):
 def main():
     p = argparse.ArgumentParser(description = 'Endogenous theta under CRRA.')
     p.add_argument('--rho', type = float, nargs = '*', default = [2.0])
-    p.add_argument('--spec', nargs = '*', default = ['scale'])
+    p.add_argument('--spec', nargs = '*', default = ['scale'], choices = ('scale', 'flat', 'size'),
+                   help = "'size' is the paper's wedge (f(theta, tau), lambda in the p slot)")
     p.add_argument('--commonX', action = 'store_true',
                    help = 'the common-X calibration variant (the paper leads with it). Written as a '
                           'column and part of the merge key -- see runESC.mergeWrite.')
@@ -266,7 +272,8 @@ def main():
     # crossing rather than returning a number. Spanning all three costs only scan nodes, so the default
     # spans them and nScan rises to keep the resolution per decade roughly what it was. Under --exact the
     # default is half..double the path iteration's p instead (readCalibratedP), each node being a full
-    # recursion.
+    # recursion. The default is per spec (BRACKET_CRRA): under 'size' the parameter is lambda, an order of
+    # magnitude larger than p; one explicit --bracket applies to every spec in the run.
     p.add_argument('--bracket', type = float, nargs = 2, default = None)
     p.add_argument('--nScan', type = int, default = None, help = 'default 14 (path), 4 (exact)')
     p.add_argument('--xtol', type = float, default = None,
@@ -312,7 +319,7 @@ def main():
                     print(f'\n=== [{tag}] calibrating p under CRRA ({method}) ===')
                     bracket, nScanHere = a.bracket, nScan
                     if bracket is None:
-                        bracket = (0.01, 3.0)
+                        bracket = BRACKET_CRRA[spec]
                         if a.exact:
                             # a path-iteration p on file narrows the scan; without one the wide bracket
                             # is scanned on the coarse grid, which is what --nsScan is for
@@ -334,6 +341,10 @@ def main():
                                                beforeScan = lambda: m.CRRA.initGS(gsScan),
                                                beforeRefine = lambda: m.CRRA.initGS(gs))
                         pCal = rec['p']
+                        # the wedge read at the calibrated point: tau0 is the calibration target, which
+                        # the path stage's targetDrift measures the solved path against
+                        wr = (wedgeReadout(m, float(m.db['τ0'])) if rec['converged']
+                              else {'Vtilde': float(m.B.Vtilde(m.t0Year))})
                         calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': a.commonX,
                                         'method': method, 'p': rec['p'],
                                         'converged': rec['converged'], 'θStar': rec['θ'],
@@ -342,7 +353,7 @@ def main():
                                         'ns': a.ns, 'nsScan': a.nsScan if a.exact else np.nan,
                                         'nCand2D': a.nCand2D if a.exact else np.nan,
                                         'nScan': len(rec['scan']),
-                                        'seconds': time.time()-tic})
+                                        'seconds': time.time()-tic} | wr)
                         print('  -> p={}  ({})  [{:.0f}s]'.format(rec['p'], rec['message'], time.time()-tic))
                     except Exception as e:
                         print(f'  FAILED {type(e).__name__}: {e}')
