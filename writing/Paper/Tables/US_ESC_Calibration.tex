@@ -7,18 +7,18 @@
 \caption{The calibrated cost of redistributive funds}
 \label{table:US_ESC:calibration}
 \renewcommand{\arraystretch}{1.25}
-\begin{tabularx}{.9\textwidth}{YYYY}
+\begin{tabularx}{.9\textwidth}{YYYYYY}
 \toprule
-\textbf{CRRA} ($\rho$) & $p$ & $\theta^{\ast}$ & $f(\theta^{\ast})$ \\
+\textbf{CRRA} ($\rho$) & $\lambda$ & $\theta^{\ast}$ & $f(\theta^{\ast})$ & $f(0)$ & $\tilde V$ \\
 \midrule 
-0.5 & 0.935 & 0.738 & 0.876 \\
-1.0 & 0.408 & 0.738 & 0.942 \\
-2.0 & 0.085 & 0.738 & 0.987 \\
+0.5 & 18.242 & 0.738 & 0.961 & 0.564 & 0.436 \\
+1.0 & 8.643 & 0.738 & 0.982 & 0.762 & 0.436 \\
+2.0 & 1.728 & 0.738 & 0.996 & 0.947 & 0.436 \\
 \bottomrule
 \end{tabularx}
 \begin{tablenotes}[flushleft]
 \footnotesize
-\item[] \textit{Note:} $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = 0.5$ imposed; $p$ is calibrated so the $\theta$ choice is the observed one, with $(\beta, \omega)$ recalibrated at each trial value. The cost is proportional, so the wedge cancels from the replacement-rate ratio. Without the cost the choice would be in the corner $\theta = 0$ for every $\rho$.
+\item[] \textit{Note:} $f(\theta, \tau) = \exp\{-\tfrac12 \lambda \tau \tilde V (1-\theta)^2\}$ with $\tilde V = \sum_i \gamma_i (y_i - 1)^2 / y_i$ the dispersion of relative labour incomes; $f(\theta^{\ast})$ and $f(0)$ are read at the 2020 tax rate, so $1 - f$ is the share of revenue lost at the observed design and at a flat benefit; $\lambda$ is calibrated so the design in force in 2020 is the observed one, with $(\beta, \omega)$ recalibrated at each trial value. The cost is proportional, so it cancels from the replacement-rate ratio and $\theta^{\ast}$ is the data\textquotesingle s own. Without the cost the choice would be in the corner $\theta = 0$ for every $\rho$.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
