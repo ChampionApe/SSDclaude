@@ -50,11 +50,15 @@ Tables \ref{table:US_ESC:ageing} to \ref{table:US_ESC:frenchAll} report the coun
 
 \input{Tables/US_ESC_FrenchAll}
 
-\subsection{Endogenous pension design in the UK}\label{app:US:ukESC}
+Table \ref{table:US_ESC:scaleWedge} reports, as a robustness check, the cost specification of an earlier draft, $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = 0.5$ imposed and $p$ calibrated per $\rho$ as $\lambda$ is in section \ref{sec:esc}. That cost is attached to the design rather than to the transfer the design performs: a flat benefit forfeits a share $1-\phi$ of revenue whatever it redistributes, and would do so even if all incomes were equal and the two designs paid identical benefits. A compressed income distribution then removes the redistributive stakes and leaves the cost in place, which is why that specification sends the U.S.\ to the Bismarckian corner under France's income distribution at every $\rho$, and why the UK, under the U.S.\ parameter, chose $\theta = 1$ against its observed $0.560$. Under the cost of section \ref{sec:esc} the same two rows are interior (table \ref{table:US_ESC:incomeDistr}) and $0.625$ (table \ref{table:US_ESC:country}).
 
-Section \ref{sec:esc} calibrates the deadweight cost of redistributive funds so that the U.S.\ electorate re-elects the U.S.\ design. The same protocol applies to the UK model: $\beta$ is imposed from the U.S.\ calibration, $\omega$ is recalibrated at each trial value of $p$, and $p$ is chosen so that the UK electorate re-elects the UK's own observed design, $\theta^{\ast} = 0.560$. Table \ref{table:UK_ESC:calibration} reports the result at $\rho = 1$. The UK needs a considerably smaller wedge than the U.S.\ to re-elect its less Bismarckian system, and with the U.S.\ wedge imposed instead the UK electorate would move to the fully Bismarckian corner. France has no counterpart: its observed design is the corner $\theta = 1$ itself, so there is no interior choice for a wedge to reproduce.
+\input{Tables/US_ESC_ScaleWedge}
 
-\input{Tables/UK_ESC_Calibration}
+\subsection{Endogenous pension design across countries}\label{app:US:ukESC}
+
+Section \ref{sec:esc} calibrates the deadweight cost of redistribution on one datum, the U.S.\ design, and tests it on the UK and France. Table \ref{table:US_ESC:country} reports the test at $\rho = 1$: for each economy, the observed design and tax rate, the design in force in 2020 on its own freely simulated path under the U.S.\ parameter $\lambda$, with $\beta$ imposed from the U.S.\ calibration and $\omega$ the economy's own, and the value of $\lambda$ at which its electorate re-elects the observed design, with $\omega$ recalibrated at each trial value. France's observed design is the corner $\theta = 1$, which no finite $\lambda$ reproduces under a cost quadratic in the redistribution performed. The third row regroups the UK's households at the U.S.\ income percentiles, which lowers its dispersion of relative incomes $\tilde{V}$ from $0.223$ to $0.065$ and moves the choice under the U.S.\ parameter from $0.625$ to $0.644$.
+
+\input{Tables/US_ESC_Country}
 
 \subsection{The vector-\texorpdfstring{$X_i$}{Xi} calibration}\label{app:US:vectorX}
 
