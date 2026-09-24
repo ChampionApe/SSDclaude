@@ -7,12 +7,15 @@ Run:  .venv\Scripts\python.exe python\US\runESC.py                     # every s
       ... --stage shocks                       the counterfactuals
       ... --stage country                      France and the UK
       ... --spec scale flat  --phi 0.25 0.5 0.75
+      ... --spec size --phi 0.5 --commonX --stage calib path shocks country     # the paper's wedge
 
 Four stages, each writing its own csv under results/esc/:
 
   calib    for every (spec, phi): p such that the equilibrium design IN FORCE at 2020 is the observed one
            (ModelESC.leadedDesignAtT0), with (beta, omega) recalibrated inside. Plus the no-wedge row,
-           which is the corner the whole exercise is trying to escape.
+           which is the corner the whole exercise is trying to escape. Every row also carries Vtilde,
+           fStar = f(theta*, tau0), f0 = f(0, tau0) and tau0 (wedgeReadout), which the paper's calibration
+           table prints; under 'size' the 'p' column IS lambda and 'phi' is the dummy 0.5.
   path     the equilibrium path of theta_t under the calibrated wedge, with the choice binding from the
            first period -- the ageing prediction, and the closest thing the model has to figure 1.1's
            cross-section.
@@ -149,6 +152,18 @@ def readout(m, τ, report, hbarRef, pos, workweekData = None):
                       hbarRef, pos = pos)
 
 
+def wedgeReadout(m, τ0):
+    """ The wedge read at t0 on a calibrated model, as four csv columns: Vtilde (the young's vintage at t0),
+    fStar = f(theta*, tau0), f0 = f(0, tau0) and tau0 -- tau_{t0} on the calibrated path, which the
+    calibration's own target db['tau0'] reproduces to tauDrift. Under 'scale'/'flat' f ignores tau (and
+    under no wedge f = 1); tau0 is written regardless so the column means one thing in every row. """
+    t0 = m.t0Year
+    θStar = float(m.db['θ'].xs(t0))
+    with m.B.cacheParams():
+        return {'Vtilde': float(m.B.Vtilde(t0)), 'fStar': float(m.B.fWedge(θStar, τ0, t0)),
+                'f0': float(m.B.fWedge(0., τ0, t0)), 'τ0': float(τ0)}
+
+
 def baselineRefs(m):
     """ The exogenous-theta baseline on the SAME model (same wedge, same calibration): its hbar at t0 is
     the workweek's reference point, and its (tau, sr, workweek) the row every endogenous number is read
@@ -161,7 +176,8 @@ def baselineRefs(m):
 
 # ---------------------------------------------------------------- stage: calibration
 
-def stageCalib(specs, phis, out, ρ = 1.0, commonX = False):
+def stageCalib(specs, phis, out, ρ = 1.0, commonX = False, bracket = None):
+    """ bracket: the scan bracket for the wedge parameter, None = ModelESC.WEDGE_BRACKET[spec]. """
     rows = []
     m = buildUS(None, ρ = ρ, commonX = commonX)
     m.calibrate()
@@ -169,8 +185,9 @@ def stageCalib(specs, phis, out, ρ = 1.0, commonX = False):
     sols = m.ESC.solveBackward()
     rows.append({'spec': 'none', 'phi': np.nan, 'commonX': commonX, 'p': np.nan, 'converged': True,
                  'θStar': float(m.db['θ'].xs(t0)), 'choice': m.leadedDesignAtT0(sols),
-                 'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(t0)), 'τDrift': np.nan, 'RDrift': np.nan})
-    print('no wedge: θ*={θStar:.4f} -> choice {choice:.4f}'.format(**rows[-1]))
+                 'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(t0)), 'τDrift': np.nan, 'RDrift': np.nan}
+                | wedgeReadout(m, float(m.db['τ0'])))
+    print('no wedge: θ*={θStar:.4f} -> choice {choice:.4f}  (Vtilde={Vtilde:.4f})'.format(**rows[-1]))
     mergeWrite(out, rows, KEYCAL)
 
     for spec in specs:
@@ -179,7 +196,7 @@ def stageCalib(specs, phis, out, ρ = 1.0, commonX = False):
             print(f'\n[{spec}, φ={phi}] calibrating p ...')
             m = buildUS({'spec': spec, 'phi': phi, 'p': 1.0}, ρ = ρ, commonX = commonX)
             try:
-                rec = m.calibrateWedge(spec = spec, phi = phi)
+                rec = m.calibrateWedge(spec = spec, phi = phi, bracket = bracket)
             except Exception as e:
                 print(f'  FAILED: {type(e).__name__}: {e}')
                 rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': np.nan,
@@ -188,7 +205,8 @@ def stageCalib(specs, phis, out, ρ = 1.0, commonX = False):
             r = {'spec': spec, 'phi': phi, 'commonX': commonX, 'p': rec['p'],
                  'converged': rec['converged'],
                  'θStar': rec['θ'], 'residual': rec['residual'],
-                 'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(m.t0Year))}
+                 'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(m.t0Year)),
+                 'Vtilde': float(m.B.Vtilde(m.t0Year))}
             if rec['converged']:
                 led = m.solveLeaded(pinAtT0 = False)
                 # 'choice' is the calibration's own target read back off the solved path: the design in
@@ -196,8 +214,10 @@ def stageCalib(specs, phis, out, ρ = 1.0, commonX = False):
                 r |= {'τDrift': led['targetDrift']['τ'], 'RDrift': led['targetDrift']['R'],
                       'choice': float(led['θ'].iloc[m.db['t0']]),
                       'choiceAtT0': float(led['θ'].iloc[m.db['t0']+1])}
+                r |= wedgeReadout(m, float(led['τ'].xs(m.t0Year)))
             rows.append(r)
-            print('  -> p={p}  θ*={θStar:.4f}  β={β:.4f} ω={ω:.4f}  ({:.0f}s)'.format(time.time()-tic, **r))
+            print('  -> p={p}  θ*={θStar:.4f}  β={β:.4f} ω={ω:.4f}  Vtilde={Vtilde:.4f} f(θ*)={fStar} f(0)={f0}  ({:.0f}s)'
+                  .format(time.time()-tic, **({'fStar': np.nan, 'f0': np.nan} | r)))
             mergeWrite(out, rows, KEYCAL)
     return pd.DataFrame(rows)
 
@@ -412,12 +432,13 @@ def stageCountry(specs, phis, calib, out, commonX = False):
                     sols = m.ESC.solveBackward()
                     θStar = float(m.db['θ'].xs(t0))
                     ch = m.leadedDesignAtT0(sols)
+                    τc = float(m.solvePEE_LOG()['τ'].xs(t0))
                     rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'country': label,
                                  'wedgeFrom': 'US',
                                  'p': pUS, 'θStar': θStar, 'choice': ch,
-                                 'ω': float(m.db['ω'].xs(t0)), 'τ': float(m.solvePEE_LOG()['τ'].xs(t0))})
-                    print('[{}, φ={}] {:<5} US wedge p={:.4f}: θ*={:.4f} -> choice {:.4f}'
-                          .format(spec, phi, label, pUS, θStar, ch))
+                                 'ω': float(m.db['ω'].xs(t0)), 'τ': τc} | wedgeReadout(m, τc))
+                    print('[{}, φ={}] {:<5} US wedge p={:.4f}: θ*={:.4f} -> choice {:.4f}  (Vtilde={:.4f})'
+                          .format(spec, phi, label, pUS, θStar, ch, rows[-1]['Vtilde']))
                 except Exception as e:
                     print(f'  {label} US-wedge FAILED {type(e).__name__}: {e}')
                 # (ii) its own calibrated p
@@ -425,11 +446,13 @@ def stageCountry(specs, phis, calib, out, commonX = False):
                     m = buildEU(country, {'spec': spec, 'phi': phi, 'p': pUS}, grouping = grouping,
                                 commonX = commonX)
                     rec = m.calibrateWedge(spec = spec, phi = phi, verbose = False)
+                    own = (wedgeReadout(m, m.ESC.τAt(m.t0Year, rec['θ'])) if rec['converged']
+                           else {'Vtilde': float(m.B.Vtilde(m.t0Year))})
                     rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'country': label,
                                  'wedgeFrom': 'own',
                                  'p': rec['p'], 'θStar': rec['θ'], 'choice': rec['θ'] + rec['residual'],
                                  'converged': rec['converged'],
-                                 'ω': float(m.db['ω'].xs(m.t0Year))})
+                                 'ω': float(m.db['ω'].xs(m.t0Year))} | own)
                     print('[{}, φ={}] {:<5} own wedge: p={} θ*={:.4f} ({})'
                           .format(spec, phi, label, rec['p'], rec['θ'], rec['message']))
                 except Exception as e:
@@ -561,13 +584,18 @@ def main():
     p.add_argument('--stage', nargs = '*', default = ['calib', 'path', 'shocks', 'country', 'fig1',
                                                      'permanent'],
                    choices = ('calib', 'path', 'shocks', 'country', 'fig1', 'permanent'))
-    p.add_argument('--spec', nargs = '*', default = ['scale', 'flat'])
+    p.add_argument('--spec', nargs = '*', default = ['scale', 'flat'], choices = ('scale', 'flat', 'size'),
+                   help = "'size' is the paper's wedge (f(theta, tau), lambda in the p slot); 'scale' the "
+                          "previous one and the comparison arm; 'flat' MGE's variant")
     p.add_argument('--phi', type = float, nargs = '*', default = [0.5, 0.25, 0.75])
     p.add_argument('--rho', type = float, default = 1.0)
     p.add_argument('--commonX', action = 'store_true',
                    help = 'the common-X calibration variant (the paper leads with it). Recorded as a '
                           'column in every csv written here and part of the merge key, so the two '
                           'variants coexist in one file instead of overwriting each other.')
+    p.add_argument('--bracket', type = float, nargs = 2, default = None,
+                   help = 'the scan bracket for the wedge parameter (p, or lambda under size); default per '
+                          'spec, ModelESC.WEDGE_BRACKET. Applies to every spec asked for in one run.')
     p.add_argument('--tag', default = '')
     a = p.parse_args()
     os.makedirs(OUTDIR, exist_ok = True)
@@ -575,7 +603,8 @@ def main():
 
     calib = None
     if 'calib' in a.stage:
-        calib = stageCalib(a.spec, a.phi, f('escCalibration'), ρ = a.rho, commonX = a.commonX)
+        calib = stageCalib(a.spec, a.phi, f('escCalibration'), ρ = a.rho, commonX = a.commonX,
+                           bracket = None if a.bracket is None else tuple(a.bracket))
     else:
         calib = pd.read_csv(f('escCalibration'))
     if 'path' in a.stage:

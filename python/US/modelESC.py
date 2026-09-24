@@ -6,13 +6,19 @@ choice of theta (app:ESC). The "A+B" combination.
     out = m.solveLeaded()               # the sequence of policy functions + the equilibrium path
     rec = m.calibrateWedge()            # p such that the leaded choice reproduces the observed design
 
-TWO SPECS, and they differ in more than a formula (Base.wedgeA/wedgeB):
+THREE SPECS, and they differ in more than a formula (Base.wedgeA/wedgeB, Eq esc:AB):
 
-    'scale'   b^i = f(theta)[theta*eta_i*h_i + (1-theta)h]*bbar     the appendix's live spec
-    'flat'    b^i = [theta*eta_i*h_i + (1-theta)f(theta)h]*bbar     MGE's variant
+    'size'    b^i = f(theta_t, tau_t)[theta*eta_i*h_i + (1-theta)h]*bbar,
+              f = exp(-lambda*tau*Vtilde*(1-theta)^2/2)                  the paper's spec: the Harberger
+              loss of the flat component's implicit taxes, scaling with the redistribution performed
+              (Vtilde = sum_i gamma_i (y_i-1)^2/y_i, Base.Vtilde) and with the size of the system (tau).
+              lambda lives in the 'p' slot (db['wedgeP']); 'phi' stays in the db as a dummy (0.5) because
+              every csv key carries it, and f never reads it.
+    'scale'   b^i = f(theta)[theta*eta_i*h_i + (1-theta)h]*bbar,  f = phi+(1-phi)theta^p   the previous spec
+    'flat'    b^i = [theta*eta_i*h_i + (1-theta)f(theta)h]*bbar                              MGE's variant
 
-Under 'scale' f cancels out of the OECD replacement-rate ratio that identifies theta, so theta is the same
-number as in the exogenous-theta model. Under 'flat' it does NOT cancel: the same RR0 datum implies a
+Under 'size' and 'scale' f cancels out of the OECD replacement-rate ratio that identifies theta, so theta is
+the same number as in the exogenous-theta model. Under 'flat' it does NOT cancel: the same RR0 datum implies a
 different theta for every p, so theta and the wedge are jointly identified and getTheta becomes a scalar
 root. That is why the calibration below targets the DATUM (RR0, through theta*(p)) rather than the number
 0.738 -- see notes/crossCuttingFindings.md #9, which is exactly this trap in its earlier incarnation.
@@ -20,7 +26,7 @@ root. That is why the calibration below targets the DATUM (RR0, through theta*(p
 THE CALIBRATION, and what is approximate about it. Three targets, three parameters:
 
     R_{t0}, tau_{t0}     ->  beta, omega     ModelUS.calibrate, wedge installed, theta EXOGENOUS at theta*
-    theta_{t0} = theta*  ->  p               the outer root here (phi is imposed, not calibrated)
+    theta_{t0} = theta*  ->  p               the outer root here (lambda under 'size'; phi is imposed)
 
 where theta_{t0} is the design in FORCE at the baseline year on a freely simulated path -- chosen in 1990,
 not in 2020 (leadedDesignAtT0). So the observed design is what the model's own political history delivers
@@ -44,15 +50,26 @@ from scipy import optimize
 from model import ModelUS
 from policyESC import LeadedLOG, LeadedCRRA, LeadedCRRA2D, PermanentLOG, PermanentCRRA
 
+WEDGE_SPECS = (None, 'scale', 'flat', 'size')
+# calibrateWedge's default scan bracket per spec (a log grid): p in [0.05, 3] for the theta^p forms; lambda
+# in [0.5, 200] for 'size' at rho = 1 under LOG, where the calibrated lambda is about 8.6 (test_esc.py,
+# vector X) and the residual runs from the theta -> 0 corner at small lambda to the theta -> 1 corner at
+# large, with one sign change. The CRRA driver has its own defaults (runESCcrra.BRACKET_CRRA, --bracket):
+# the required cost falls steeply in rho.
+WEDGE_BRACKET = {'scale': (0.05, 3.0), 'flat': (0.05, 3.0), 'size': (0.5, 200.)}
+
 
 class ModelESC(ModelUS):
     _defaultWedge = {'spec': None, 'phi': 0.5, 'p': 1.0}
 
     def __init__(self, *args, wedge = None, nθ = 41, nθCand = 121, nθCandCRRA = 13,
                  nθCandPerm = 21, nθ2D = 13, nθCand2D = 21, **kwargs):
-        """ wedge: {'spec': None|'scale'|'flat', 'phi': float, 'p': float}. spec=None reproduces ModelUS
-        exactly (Base.wedgeA/wedgeB are then the identity), which is what test_esc.py pins. """
+        """ wedge: {'spec': None|'scale'|'flat'|'size', 'phi': float, 'p': float} ('p' is lambda under
+        'size'). spec=None reproduces ModelUS exactly (Base.wedgeA/wedgeB are then the identity), which is
+        what test_esc.py pins. """
         self._wedge0 = self._defaultWedge | (wedge or {})
+        if self._wedge0['spec'] not in WEDGE_SPECS:
+            raise ValueError(f"ModelESC: unknown wedge spec {self._wedge0['spec']!r}; one of {WEDGE_SPECS}.")
         super().__init__(*args, **kwargs)
         self.ESC = LeadedLOG(self, nθ = nθ, nθCand = nθCand)
         self.ESCC = LeadedCRRA(self, nθCand = nθCandCRRA)
@@ -457,14 +474,15 @@ class ModelESC(ModelUS):
                   'permCRRA': lambda: self.permanentChoiceAtT0('CRRA')}[preferences]()
         return design - θStar
 
-    def calibrateWedge(self, spec = 'scale', phi = 0.5, bracket = (0.05, 3.0), nScan = 12,
+    def calibrateWedge(self, spec = 'scale', phi = 0.5, bracket = None, nScan = 12,
                        calKwargs = None, xtol = 1e-6, verbose = True, preferences = 'LOG',
                        beforeScan = None, beforeRefine = None):
-        """ Calibrate p (phi imposed) so the equilibrium design at t0 is the observed one (wedgeResidual).
-        preferences: 'LOG', 'CRRA' (path iteration), 'CRRA2D' (the exact 2-D recursion; the published
-        CRRA method), 'permLOG', 'permCRRA'. beforeScan/beforeRefine: callables run before the scan and
-        before the bracketed root -- runESCcrra.py uses them to scan on a coarse savings grid and refine
-        on the fine one (the 2-D choice is insensitive to that grid, its cost is not).
+        """ Calibrate p (lambda under 'size'; phi imposed) so the equilibrium design at t0 is the observed
+        one (wedgeResidual). bracket: None picks WEDGE_BRACKET[spec]. preferences: 'LOG', 'CRRA' (path
+        iteration), 'CRRA2D' (the exact 2-D recursion; the published CRRA method), 'permLOG', 'permCRRA'.
+        beforeScan/beforeRefine: callables run before the scan and before the bracketed root --
+        runESCcrra.py uses them to scan on a coarse savings grid and refine on the fine one (the 2-D
+        choice is insensitive to that grid, its cost is not).
 
         Scans `bracket` on a log grid for a sign change before bracketing, because the residual is NOT
         guaranteed monotone in p and, more importantly, is FLAT AT A CORNER: wherever the choice is at
@@ -472,6 +490,7 @@ class ModelESC(ModelUS):
         would report a spurious convergence at whichever endpoint it happened to test. The scan reports
         what it saw, so a run that fails to find an interior crossing says so rather than returning a
         number. Returns {'p', 'residual', 'scan', 'converged', 'wedge', 'θ'}. """
+        bracket = WEDGE_BRACKET[spec] if bracket is None else bracket
         grid = np.exp(np.linspace(np.log(bracket[0]), np.log(bracket[1]), nScan))
         scan = []
         if beforeScan is not None:

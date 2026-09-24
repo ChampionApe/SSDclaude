@@ -65,7 +65,9 @@ for it, both in the ee reading (τ pinned -- the premise of the B+A hybrid, that
                         only) -- this is the appendix's own calibration of p (0.41 at φ = 0.5), so a check
 --wedge PHI P additionally runs the ee reading WITH f(θ) = (φ+(1-φ)θ^p)/(φ+(1-φ)θ_base^p) installed along
 the whole path (normalised so the baseline is untouched), i.e. the exact ee FOC under that wedge rather
-than its linearisation. The full reading is skipped in that mode (see above).
+than its linearisation. The full reading is skipped in that mode (see above). --wedgeSpec size swaps in the
+paper's f(θ,τ) = exp(-½ P τ Ṽ (1-θ)²) (P = λ, Ṽ = Base.Vtilde, τ the baseline tax at the same date, PHI
+unused), normalised the same way.
 Writes results/diagnostics/thetaStakes{,CommonX}{,Permanent}{,Wedge}.csv, one row per (country, rho, theta1).
 """
 import os, sys, argparse, time
@@ -145,9 +147,14 @@ def leadWedge(mt, τ, fθ):
         assert hits, 'leadWedge: the EE path never called leadSym(τ) -- the wedge was not applied'
 
 
-def fWedge(θ, φ, p, θBase):
-    """ f(θ) = (φ+(1-φ)θ^p)/(φ+(1-φ)θBase^p): the appendix's form, normalised so the baseline is untouched. """
-    return (φ + (1-φ)*np.asarray(θ, float)**p)/(φ + (1-φ)*θBase**p)
+def fWedge(θ, φ, p, θBase, spec = 'scale', τ = None, V = None):
+    """ The wedge normalised so the baseline design is untouched. 'scale': f(θ)/f(θBase) with
+    f = φ+(1-φ)θ^p. 'size': f(θ,τ)/f(θBase,τ) with f = exp(-½ p τ V (1-θ)²), p = λ, V = Ṽ (Base.Vtilde) and
+    τ the tax of the same date as θ (an array alongside θ). """
+    θ = np.asarray(θ, float)
+    if spec == 'size':
+        return np.exp(-0.5*p*np.asarray(τ, float)*V*((1-θ)**2 - (1-θBase)**2))
+    return (φ + (1-φ)*θ**p)/(φ + (1-φ)*θBase**p)
 
 
 def fSemiElasticity(θ, φ, p):
@@ -173,7 +180,8 @@ def pNeeded(θ, φ, eps):
 def evaluate(m, base, preferences, θ1, reading, permanent = False, sGrid = None, fθ = None, fScale1 = 1.):
     """ Solve the copy-from-t0 with θ_{t0+1} = θ1 (or θ_{t0+1}, ... = θ1 if permanent) in the given reading.
     Returns (copy, τ path, EE report). tau_0 (= t0) is the baseline's in both readings.
-    fθ: callable θ -> f(θ) installing the wedge on the EE solve (ee reading only -- see module docstring);
+    fθ: callable (θ, τ) -> f installing the wedge on the EE solve (ee reading only -- see module docstring),
+    evaluated at the baseline tax path so a τ-dependent f ('size') sees the τ of the same date as θ;
     fScale1 additionally scales f at the copy's period 1 (the lead seen from t0), which is how G is measured. """
     t0 = m.db['t'][m.db['t0']]
     seed = m.stateAtT0(base['report'], t0)
@@ -186,7 +194,7 @@ def evaluate(m, base, preferences, θ1, reading, permanent = False, sGrid = None
         θ[1] = θ1
     mt.db.update(mt.adjPar('θ', θ))  # db['θ'] is read by ΓsCap and the CRRA brackets -- keep consistent
     ε = mt.db['eps'].values.astype(float)
-    f = np.ones_like(θ) if fθ is None else np.asarray(fθ(θ), float).copy()
+    f = np.ones_like(θ) if fθ is None else np.asarray(fθ(θ, τBase), float).copy()
     f[1] *= fScale1
     if reading == 'ee':
         τ = τBase.copy()
@@ -358,21 +366,23 @@ def stakesAt(m, base, preferences, θ1, δ, permanent = False, sGrid = None, ver
     return out
 
 
-def run(m, preferences, θs, δ, permanent, label, verbose = True, wedge = None):
-    """ All theta levels for one calibrated model. wedge: None or (φ, p) -- see module docstring. """
+def run(m, preferences, θs, δ, permanent, label, verbose = True, wedge = None, wedgeSpec = 'scale'):
+    """ All theta levels for one calibrated model. wedge: None or (φ, p); wedgeSpec: 'scale' | 'size' --
+    see module docstring. """
     t0 = m.db['t'][m.db['t0']]
     tic = time.time()
     base = getattr(m, f'solvePEE_{preferences}')()
     sGrid = stateGridCRRA(m, t0) if preferences == 'CRRA' else None
     θBase = float(m.db['θ'].xs(t0))
     seq, seqByType = sequentialStake(m, base, preferences)
-    fθ = None if wedge is None else (lambda θ: fWedge(θ, wedge[0], wedge[1], θBase))
+    V = float(m.B.Vtilde(t0))
+    fθ = None if wedge is None else (lambda θ, τ: fWedge(θ, wedge[0], wedge[1], θBase, wedgeSpec, τ, V))
     print('\n{}: {} baseline τ={:.4f} θ={:.4f} ω={:.4f} ν={:.3f}  seq dW/dθ_t (old) = {:+.4f}, G = {:+.4f}, '
           'eps needed = {:.3f} -> p(φ=.5) = {:.3f}   ({:.0f}s){}'.format(
               label, preferences, float(base['τ'].xs(t0)), θBase, float(m.db['ω'].xs(t0)),
               float(m.db['ν'].xs(t0)), seq['seq_old'], seq['seq_G'], seq['seq_epsNeeded'],
               seq['seq_pNeeded_phi50'], time.time()-tic,
-              '' if wedge is None else '   [wedge φ={}, p={}: ee reading only]'.format(*wedge)))
+              '' if wedge is None else '   [wedge {} φ={}, p={}: ee reading only]'.format(wedgeSpec, *wedge)))
     rows = []
     for θ1 in θs:
         θ1 = θBase if θ1 == 'base' else float(θ1)
@@ -380,7 +390,8 @@ def run(m, preferences, θs, δ, permanent, label, verbose = True, wedge = None)
         r = stakesAt(m, base, preferences, θ1, δ, permanent, sGrid, verbose = verbose, fθ = fθ)
         r |= {'label': label, 'preferences': preferences, 'θBase': θBase, **seq,
               'τBase': float(base['τ'].xs(t0)), 'ν': float(m.db['ν'].xs(t0)),
-              'wedgePhi': np.nan if wedge is None else wedge[0], 'wedgeP': np.nan if wedge is None else wedge[1]}
+              'wedgePhi': np.nan if wedge is None else wedge[0], 'wedgeP': np.nan if wedge is None else wedge[1],
+              'wedgeSpec': None if wedge is None else wedgeSpec, 'Vtilde': V}
         for i, v in enumerate(seqByType):
             r[f'seq_old_i{i}'] = float(v)
         rows.append(r)
@@ -404,6 +415,8 @@ def main():
     p.add_argument('--permanent', action = 'store_true')
     p.add_argument('--wedge', type = float, nargs = 2, metavar = ('PHI', 'P'), default = None,
                    help = 'install f(θ)=φ+(1-φ)θ^p (normalised at the baseline θ) on the ee reading')
+    p.add_argument('--wedgeSpec', default = 'scale', choices = ('scale', 'size'),
+                   help = "the form --wedge installs: 'size' is f(θ,τ)=exp(-½Pτ Ṽ(1-θ)²), P = λ, PHI unused")
     p.add_argument('--commonX', action = 'store_true')
     p.add_argument('--n', type = int, default = 101)
     p.add_argument('--ns', type = int, default = 150)
@@ -428,7 +441,7 @@ def main():
                                   commonX = a.commonX)
             δ = a.delta if a.delta is not None else (1e-3 if pref == 'LOG' else 0.05)
             rs = run(m, pref, a.theta, δ, a.permanent, f'{c} ρ={ρ}', verbose = not a.quiet,
-                     wedge = tuple(a.wedge) if a.wedge else None)
+                     wedge = tuple(a.wedge) if a.wedge else None, wedgeSpec = a.wedgeSpec)
             for r in rs:
                 r |= {'country': c, 'ρ': ρ}
             rows += rs
