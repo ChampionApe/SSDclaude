@@ -150,26 +150,41 @@ US = {
     'commonX': True,
     'gridSettings': {'interpKind': 'linear', 'smoothKnots': 4, 'n': 101, 'ns': 150,
                      'verify': 225, 'verifyN': 151},
-    # --- Endogenous system characteristics (app:ESC): the leaded choice of theta under a deadweight
-    # wedge on redistributive funds. 'spec' is the PROPORTIONAL cost, where the wedge scales the whole
-    # benefit and f cancels from the replacement-rate ratio, so theta* stays the data's own. The
-    # redistributive-only ('flat') alternative -- where only the flat component carries the cost, and
-    # theta and p are jointly identified -- is still implemented in python/US/ but is no longer run or
-    # reported: it is a second formulation of the same assumption, and carrying both doubled the most
-    # expensive stage of the pipeline for a robustness check the paper does not lean on.
-    # phi is imposed; p is calibrated per rho so the design IN FORCE in 2020 on a freely simulated path
-    # is the observed one (ModelESC.leadedDesignAtT0, results/esc/escCalibration{,CRRA}.csv). The
-    # counterfactual tables report at t0: every scenario is a new equilibrium path whose political choice
-    # binds from the first period, so 2020's design is an outcome and already carries the response.
-    # The ESC leg runs under the headline calibration variant above, US['commonX'].
+    # --- Endogenous system characteristics (sec:esc): the leaded choice of theta under a deadweight
+    # cost on the pension system (python/US/base.py fWedge, writing/US/model_esc.tex). Every spec is
+    # PROPORTIONAL -- the cost scales the whole benefit and cancels from the replacement-rate ratio, so
+    # theta* stays the data's own -- and its one parameter is calibrated per rho so the design IN FORCE in
+    # 2020 on a freely simulated path is the observed one (ModelESC.leadedDesignAtT0,
+    # results/esc/escCalibration{,CRRA}.csv). The counterfactual tables report at t0: every scenario is a
+    # new equilibrium path whose political choice binds from the first period, so 2020's design is an
+    # outcome and already carries the response. The ESC leg runs under the headline variant, US['commonX'].
+    #   'size'  (the paper's): f(theta, tau) = exp(-1/2 lambda tau Vtilde (1-theta)^2), a deadweight cost
+    #           quadratic in the implicit tax the flat component levies on each type, scaled by the size of
+    #           the system; Vtilde = sum_i gamma_i (y_i-1)^2/y_i. Nothing is lost when nothing is
+    #           redistributed. lambda lives in the csvs' `p` column (the paper prints it as lambda).
+    #   'scale' (the previous wedge, the appendix comparison arm US_ESC_ScaleWedge): f(theta) =
+    #           phi + (1-phi) theta^p, the cost attached to the design label rather than to the transfer.
+    #   'flat'  (only the flat component carries the cost) is implemented in python/US/ but not run.
     # The rho points of the pre-publication stationary-vs-date-specific check (runShocksUS.py 'stationary';
     # rho = 1 is exact by the LOG decoupling and is not run). sec:numerical's footnote quotes the maximal gap
     # over these points.
     'ρStationary': [0.5, 0.7, 1.3, 1.5, 2.0],
     'esc': {
-        'spec':      'scale',
-        'phi':       0.5,
-        'ρTable':    [0.5, 1.0, 2.0],
+        'spec':           'size',      # the paper's cost specification
+        'comparisonSpec': 'scale',     # the previous wedge, kept as one appendix table (US_ESC_ScaleWedge)
+        # phi is a DUMMY KEY under 'size': f does not use it, but every ESC csv is merge-keyed on
+        # (spec, phi, commonX) and the readers (runESC.pickCalib, datasets.escRow/escCalibration) filter on
+        # it, so the 'size' rows are written and read at 0.5. Under 'scale' it is the imposed floor f(0).
+        'phi':            0.5,
+        'ρTable':         [0.5, 1.0, 2.0],
+        # The scan bracket of the EXACT CRRA calibration (runESCcrra.py --bracket), per spec and rho: the
+        # required parameter falls steeply in rho, so one bracket cannot serve both. A rho absent from a
+        # spec's dict leaves the bracket to runESCcrra.py's own default for that spec; a rho present with
+        # None is a PLACEHOLDER and stage (i) refuses to run it (config.escBracket). 'scale' keeps the
+        # child's default (its wide scan narrowed around a path-iteration p on file). 'size': set from the
+        # LOG lambda after WP4 -- [lambda/20, 3 lambda] at rho = 2, [lambda/3, 5 lambda] at rho = 0.5.
+        'bracket':        {'scale': {},
+                           'size':  {0.5: None, 2.0: None}},
         # THE PUBLISHED CRRA METHOD. True: every CRRA ESC output is built from rows with method = 'exact'
         # (LeadedCRRA2D, python/US/runESCcrra.py --exact, the pre-publication part of stages (i)/(ii))
         # and a missing exact row is MissingInput -- never a fallback to the path iteration's rows, which
@@ -189,6 +204,22 @@ US = {
                       'frVoting': 'Voting', 'frAll': 'All French characteristics'},
     },
 }
+
+def escBracket(ρ, spec = None):
+    """ The exact CRRA calibration's scan bracket at `rho` under `spec` (US['esc']['spec'] by default):
+    (lo, hi) to pass as runESCcrra.py --bracket, or None to leave the child its own default. Raises on a
+    placeholder (rho listed with None) so an unset bracket stops stage (i) before a 45-minute scan. """
+    spec = US['esc']['spec'] if spec is None else spec
+    table = US['esc']['bracket'].get(spec, {})
+    hit = [table[k] for k in table if np.isclose(float(k), ρ)]
+    if not hit:
+        return None
+    if hit[0] is None:
+        raise ValueError("config.US['esc']['bracket'][{!r}][{}] is a placeholder: set it from the LOG "
+                         "calibration before running the exact CRRA calibration".format(spec, ρ))
+    lo, hi = hit[0]
+    return float(lo), float(hi)
+
 
 # Which sweep csv belongs to which country and calibration variant. The US is calibrated on its own
 # (calibrateRhoGrid.py); FR/UK/UKUS impose the US beta and are swept by calibrateRhoGridEU.py.
