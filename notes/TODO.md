@@ -9,7 +9,17 @@ Items are labelled so they can cite each other: `C` code, `R` compute runs, `W` 
 R1, R3, R4 and W3 closed on 2026-09-11 (`python/US/RESEARCH_LOG.md`, `python/paper/RESEARCH_LOG.md`); C4
 and W2 on 2026-09-12, W4 the same day on RKB's instruction, W2b on 2026-09-15 along with the rest of W5.
 Open: W1, a wording call; W5's one remaining part, whether the paper carries a verification paragraph;
-and one data caveat under D1, France's voting at the UK cuts, MGE's.
+one data caveat under D1, France's voting at the UK cuts, MGE's; and P1 below, the branch.
+
+## Plan in progress
+
+**P1. The size-scaled leak as the paper's endogenous design** -- branch `esc-sizeLeak`, opened 2026-09-24.
+Section 7's wedge $f(\theta)$ burns revenue at a given $\theta$ whatever the income distribution, which is
+why France's income distribution corners the chosen design and the US wedge corners the UK. The branch
+replaces it by a leak quadratic in the cross-subsidy and proportional to the size of the system. Diagnosis,
+candidates and the pilot: `notes/esc_inequalityChannel.md`. Work packages, handoff protocol, stop
+conditions and the decisions RKB may overrule: `notes/plan_escSizeLeak.md`. W1's sentence and the
+inequality sentences of the abstract and conclusion are rewritten there (WP5), so W1 waits for P1.
 
 ## Data tasks
 

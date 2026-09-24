@@ -130,7 +130,13 @@ Reading.
    term restores that possibility at the price of a second parameter, which the UK's design could pin
    (two targets, two parameters, France as the prediction).
 
-## 5. What adopting A (or B) touches
+## 5. Status
+
+Candidate B adopted on 2026-09-24 as the branch `esc-sizeLeak`; the execution plan, with the derivation
+behind the form, the work packages and the stop conditions, is `notes/plan_escSizeLeak.md`. The pilot's
+script, result csvs and log are in `archive/pilots/escSizeLeak_2026-09-24/`.
+
+## 6. What adopting A (or B) touches
 
 - `python/US/base.py` `fWedge`: one new `spec` (A), or a τ argument through `wedgeA`/`wedgeB` and the
   old's derivative in `policy.py` (B). `modelESC.getθ` needs nothing: both are proportional.

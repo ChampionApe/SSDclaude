@@ -1,0 +1,57 @@
+V_US = 0.4826
+
+[quad] calibrating p ...
+    p=0.2000: θ*=0.7382  choice-θ* = -0.73823
+    p=0.3359: θ*=0.7382  choice-θ* = -0.73823
+    p=0.5642: θ*=0.7382  choice-θ* = -0.46704
+    p=0.9476: θ*=0.7382  choice-θ* = -0.23765
+    p=1.5915: θ*=0.7382  choice-θ* = -0.06396
+    p=2.6730: θ*=0.7382  choice-θ* = +0.05837
+    p=4.4894: θ*=0.7382  choice-θ* = +0.13495
+    p=7.5401: θ*=0.7382  choice-θ* = +0.18500
+    p=12.6641: θ*=0.7382  choice-θ* = +0.21294
+    p=21.2699: θ*=0.7382  choice-θ* = +0.23518
+    p=35.7239: θ*=0.7382  choice-θ* = +0.24367
+  old = (γi_*ω2i*dv2i).sum(axis = -1) + γ0_*ω20*dv20
+    p=60.0000: inner solve failed (ValueError: The function value at x=1e-06 is NaN; solver cannot continue.)
+  -> {'p': 2.0542294145533875, 'residual': 4.725966284979677e-10, 'converged': True, 'θ': 0.7382263650417814, 'message': 'calibrated'} (82s)
+  f(θ) on [0,1] at the US V: [0.609 0.669 0.728 0.784 0.837 0.883 0.924 0.956 0.98  0.995 1.   ]
+  design path: {'1960': 0.7382, '1990': 0.737, '2020': 0.7382, '2050': 0.7435, '2080': 0.7487, '2110': 0.7498, '2140': 0.7498, '2170': 0.7498, '2200': 0.7509}
+  quad     baseline   pin=True  V=0.483 θ_t0=0.7382 τ_t0=0.1443 sr=0.2198 ww=39.39 (0s)
+  quad     baseline   pin=False V=0.483 θ_t0=0.7382 τ_t0=0.1443 sr=0.2197 ww=39.40 (3s)
+  quad     mild       pin=True  V=0.483 θ_t0=0.7382 τ_t0=0.1850 sr=0.2054 ww=39.07 (0s)
+  quad     mild       pin=False V=0.483 θ_t0=0.7471 τ_t0=0.1849 sr=0.2053 ww=39.08 (3s)
+  quad     acute      pin=True  V=0.483 θ_t0=0.7382 τ_t0=0.2319 sr=0.1899 ww=38.64 (0s)
+  quad     acute      pin=False V=0.483 θ_t0=0.7518 τ_t0=0.2317 sr=0.1897 ww=38.66 (3s)
+  quad     frIncome   pin=True  V=0.261 θ_t0=0.7382 τ_t0=0.1359 sr=0.2233 ww=40.27 (0s)
+  quad     frIncome   pin=False V=0.261 θ_t0=0.7915 τ_t0=0.1358 sr=0.2226 ww=40.33 (3s)
+  quad     frLeisure  pin=True  V=0.483 θ_t0=0.7382 τ_t0=0.1443 sr=0.2198 ww=34.35 (0s)
+  quad     frLeisure  pin=False V=0.483 θ_t0=0.7382 τ_t0=0.1443 sr=0.2197 ww=34.35 (3s)
+  quad     frVoting   pin=True  V=0.483 θ_t0=0.7382 τ_t0=0.1534 sr=0.2152 ww=39.19 (0s)
+  quad     frVoting   pin=False V=0.483 θ_t0=0.6473 τ_t0=0.1559 sr=0.2160 ww=39.05 (3s)
+  quad     frBoth     pin=True  V=0.261 θ_t0=0.7382 τ_t0=0.1424 sr=0.2200 ww=40.12 (0s)
+  quad     frBoth     pin=False V=0.261 θ_t0=0.6517 τ_t0=0.1436 sr=0.2207 ww=40.01 (3s)
+  quad     frAll      pin=True  V=0.261 θ_t0=0.7382 τ_t0=0.1424 sr=0.2200 ww=34.99 (0s)
+  quad     frAll      pin=False V=0.261 θ_t0=0.6517 τ_t0=0.1436 sr=0.2207 ww=34.89 (3s)
+  quadSize baseline   scale=1.000 θ_t0=0.7382 τ_t0=0.1443 sr=0.2197 ww=39.40 (3s)
+  quadSize mild       scale=1.282 θ_t0=0.7970 τ_t0=0.1824 sr=0.2059 ww=39.19 (3s)
+  quadSize acute      scale=1.607 θ_t0=0.8368 τ_t0=0.2274 sr=0.1906 ww=38.86 (3s)
+  quadSize frIncome   scale=0.942 θ_t0=0.7760 τ_t0=0.1361 sr=0.2226 ww=40.31 (3s)
+  quadSize frLeisure  scale=1.000 θ_t0=0.7382 τ_t0=0.1443 sr=0.2197 ww=34.35 (3s)
+  quadSize frVoting   scale=1.063 θ_t0=0.6610 τ_t0=0.1548 sr=0.2163 ww=39.09 (3s)
+  quadSize frBoth     scale=0.987 θ_t0=0.6499 τ_t0=0.1437 sr=0.2206 ww=40.00 (3s)
+  quadSize frAll      scale=0.987 θ_t0=0.6499 τ_t0=0.1437 sr=0.2206 ww=34.88 (3s)
+  quad     UK    V=0.239 scale=1.000 θ*=0.5597 -> choice 0.6715  τ=0.1186 ω=1.213 (5s)
+  quadSize UK    V=0.239 scale=0.822 θ*=0.5597 -> choice 0.6019  τ=0.1186 ω=1.204 (5s)
+  quad     FR    V=0.261 scale=1.000 θ*=1.0000 -> choice 0.6746  τ=0.2129 ω=1.418 (5s)
+  quadSize FR    V=0.261 scale=1.475 θ*=1.0000 -> choice 0.7716  τ=0.2129 ω=1.418 (4s)
+  quad     UKUS  V=0.073 scale=1.000 θ*=0.5427 -> choice 0.6985  τ=0.1186 ω=1.243 (5s)
+  quadSize UKUS  V=0.073 scale=0.822 θ*=0.5427 -> choice 0.6397  τ=0.1186 ω=1.240 (5s)
+  coef = -1/(1-τ) * (1+ξ)/(1+α*ξ)
+  coef = -1/(1-τ) * (1+ξ)/(1+α*ξ)
+  coef = -1/(1-τ) * (1+ξ)/(1+α*ξ)
+  UK own-p FAILED ValueError: The function value at x=1e-06 is NaN; solver cannot continue.
+
+done in 198s
+quad UK own λ: 1.4973 residual -9.775513731824503e-13 calibrated (94s)
+quadSize UK own λ: 1.8221 residual 8.516085614473923e-10 calibrated (99s)

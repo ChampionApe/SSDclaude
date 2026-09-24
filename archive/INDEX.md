@@ -144,3 +144,11 @@ One line per entry: title, then `file:line`.
 
 - `readmes/<module>_README_2026-09-11.md` for `root`, `US`, `InformalSavings`, `informalAnalytical`,
   `paper`, `gridsearch`: the long versions with every measurement the live READMEs now only point to.
+
+## Pilots
+
+- 2026-09-24 — the transfer-scaled and size-scaled leak, run from a scratch script that patches
+  `Base.fWedge` at runtime (nothing in `python/` changed): `archive/pilots/escSizeLeak_2026-09-24/`
+  (`pilotQuadWedge.py`, `pilotUKown.py`, the two result csvs, the json and the log). Quoted in
+  `notes/esc_inequalityChannel.md` section 4; the branch `esc-sizeLeak` implements it properly
+  (`notes/plan_escSizeLeak.md`).
