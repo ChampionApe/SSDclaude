@@ -184,7 +184,8 @@ US = {
         # child's default (its wide scan narrowed around a path-iteration p on file). 'size': set from the
         # LOG lambda after WP4 -- [lambda/20, 3 lambda] at rho = 2, [lambda/3, 5 lambda] at rho = 0.5.
         'bracket':        {'scale': {},
-                           'size':  {0.5: None, 2.0: None}},
+                           # from the LOG lambda 8.643207 (2026-09-24): [lambda/3, 5 lambda] and [lambda/20, 3 lambda]
+                           'size':  {0.5: (2.881, 43.22), 2.0: (0.4322, 25.93)}},
         # THE PUBLISHED CRRA METHOD. True: every CRRA ESC output is built from rows with method = 'exact'
         # (LeadedCRRA2D, python/US/runESCcrra.py --exact, the pre-publication part of stages (i)/(ii))
         # and a missing exact row is MissingInput -- never a fallback to the path iteration's rows, which
