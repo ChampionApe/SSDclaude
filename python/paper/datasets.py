@@ -263,8 +263,9 @@ def escSavingsOverY(sr, commonX = None):
 US_SR = 'srOverY'    # the US shock csv column the tables read: s/Y. `sr` is s/(w h) and is NOT read.
 
 
-def usShocks(commonX = None, freeTheta = False):
-    """ python/US/runShocksUS.py's long csv: one row per (rho, family, scenario, effect).
+def usShocks(commonX = None, freeTheta = False, host = 'US'):
+    """ python/US/runShocksUS.py's long csv: one row per (rho, family, scenario, effect). `host` is the
+    economy the characteristics were imposed on, 'US' or 'UK' (config.usShockCsv).
 
     `effect` is 'baseline' | 'full' | 'ee'. tau, sr and srOverY are fractions -- `sr` is s/(w h),
     `srOverY` is s/Y, the paper's savings rate (US_SR); `workweek` is already in hours,
@@ -275,10 +276,10 @@ def usShocks(commonX = None, freeTheta = False):
     reading of the income-distribution counterfactual, where theta is re-derived from RR0 under France's
     eta rather than held at the US design; that file covers the `french` family only. """
     commonX = C.US['commonX'] if commonX is None else commonX
-    name = ('US_shocks_freeTheta.csv' if freeTheta
-            else 'US_shocksCommonX.csv' if commonX else 'US_shocks.csv')
-    df = pd.read_csv(_need(os.path.join(C.SHOCKDIR, name)))
-    df.attrs['source'] = 'results/shocks/' + name
+    path = (os.path.join(C.SHOCKDIR, 'US_shocks_freeTheta.csv') if freeTheta
+            else C.usShockCsv(host, commonX))
+    df = pd.read_csv(_need(path))
+    df.attrs['source'] = 'results/shocks/' + os.path.basename(path)
     return df
 
 

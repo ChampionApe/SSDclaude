@@ -4,6 +4,19 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-22 — the UK exercise, France's hours corrected, and the paper's tables moved to appendix E
+
+Martin's 2026-09-18 Overleaf pass pulled (layout to 12pt/1in/one-and-a-half spacing; his hand edit to the
+Argentina calibration note made at its source in `tables.py`). The French-characteristics exercise now runs
+on the UK as host: `runShocksUS.py --host UK|UKUS`, France regrouped at the UK's cuts (`FRUK`), six new paper
+outputs (45 wired), `app:US:french`. The data came from the old repo's
+`SSD/Data/calibration statistics AUG 2025.docx`, which also exposed a transposed digit in France's low-group
+hours (1731.91 → 1713.91, corrected on RKB's instruction; France's workweek 35.44 → 35.24, nothing else
+moves) and that the UK's own US-percentile regrouping is an Excel linear fit, not data. Paper: tables 7–8
+and the four ESC tables to appendix E, now *Rich OECD countries*; the advance and costly first-order
+conditions written out; the permanent paragraph cut. Open for MGE: France's voting at the UK cuts
+(`notes/TODO.md` D1). Per-arm detail in the US and paper logs of the same date.
+
 ## 2026-09-15 — the draft says common X by saying nothing, and a pull no longer needs --force
 
 W2b closed: the permanent corner flips to θ = 1 for ρ ≥ 1.4, so the introduction promises a corner rather

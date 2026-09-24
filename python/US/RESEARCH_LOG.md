@@ -4,6 +4,19 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_US.md`, index
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-22 — a UK host for the French-characteristics shocks
+
+`runShocksUS.py --host US|UK|UKUS`: the host is rebuilt from its sweep row (`hostModel`; on a ModelFR
+`setUSRef` for β, then X or `rescaleX(λ)`), asserted to reproduce the sweep's own τ (not the workbook
+target: under CRRA the vector-X rescaling drift of `hoursDriftTol` sits in the recorded τ). The one model
+change: `shocks.ηLevel` preserves the host's Γ_h instead of resetting it to 1 -- on a calibrated vector-X
+ModelFR Γ_h = λ, and the old assertion would have undone the UK's hours calibration (`test_eu.py`, 4 new
+checks). `testEU.load` takes any sheet suffix and names a missing sheet; `calibrateRhoGridEU.py --country FR
+--grouping UK` sweeps `FRUK` (16/16 both variants, ω identical to France's US-cut value). On the UK, France's
+income distribution *raises* τ (+0.3 p.p., France the more unequal at the UK's cuts) under common X and
+lowers it (−0.5) under vector X. `logs/ukusSmoke0922.log`, `frukSweep0922.log`, `ukShocks0922.log`,
+`frFix0922.log`, `escCrraFrFix0922.log` (the exact CRRA leg re-run after the hours fix, ~1.5 h).
+
 ## 2026-09-12 (night) — stationary vs date-specific policy functions (prepub check)
 
 `stationaryApprox.py`: the exact CRRA recursion against a policy function solved with ν frozen at each

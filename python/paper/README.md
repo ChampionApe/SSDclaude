@@ -45,6 +45,11 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
   markers keyed to cells (`US_Ageing`'s a/b).
 - Stage (0) is the only network access (Penn World Table via FRED); it writes a calibration *input* to
   `data/` and skips existing output, so the committed csv means no other stage touches the network.
+- **The UK exercise** (2026-09-22): `config.US['ukHost']` names the host of the second French-characteristics
+  arm. Stage (i) sweeps `FRUK` (France at the UK's cuts; a regrouping whose sheets are absent is skipped);
+  stage (ii) runs `runShocksUS.py --host UK` under a `requires` guard on the UK and FRUK sweeps; stage (iii)
+  builds `UK_OtherShocks`, `UK_CRRA_OtherShocks` and `FRUK_householdheterogeneity` (+ twins), `\input` in
+  `app:US:french` and `app:US:vectorX`.
 
 ## Files
 
@@ -57,17 +62,18 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `build.py` | stage (iii): the output registry for both arms, and the copy into `writing/Paper` |
 | `dataTargets.py` | stage (0) |
 
-## Outputs wired (39)
+## Outputs wired (45)
 
 Each built file names its own input: every generated `.tex` and its `.pdf` sibling carry a
 `%% Source:` banner with the csv it was read from, and `--list` reports what is buildable now. The
-registry itself is `build.py`'s table -- that, not this file, is the list of 39.
+registry itself is `build.py`'s table -- that, not this file, is the list of 45.
 
 Every US and Argentina table and figure is registered twice (headline and `_vectorX`, both arms leading
 with common X since 2026-09-12); the ESC outputs headline only. Only `ArgentinaCalibration_vectorX` is
 `\input` in the paper -- the other Argentina twins are built but print the same numbers as the headline.
-The French leisure row is no longer printed (2026-09-11) but still runs, sits in every csv and inside
-`frAll`. Every US counterfactual is a new equilibrium path read at 2020 (`python/US/shocks.py`,
+The French leisure row is printed again in `US_OtherShocks` since 2026-09-22 (dropped 2026-09-11); it is
+still not drawn in `US_overview`. Since 2026-09-22 `US_OtherShocks` and `US_CRRA_PensChars` are `\input` from
+appendix `app:US`, as are the four `US_ESC_*` tables (`app:US:escTables`); the main text keeps the discussion. Every US counterfactual is a new equilibrium path read at 2020 (`python/US/shocks.py`,
 `writing/US/num_esc.tex`); the French tables carry the all-three row and France's own path, which fails by
 construction under the `flat` spec.
 

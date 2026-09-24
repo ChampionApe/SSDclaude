@@ -79,10 +79,9 @@ def argentinaCalibration(commonX = None):
          r'Informal relative income, eq.\ \eqref{eq:calibration_eta}'],
         [r'$X_0$',      '$' + C.num(c['X0'], 3) + '$', 'Informal relative working hours'],
     ]
+    # The relative-hours prediction (c['zxPredicted'] against c['zxi']) is quoted in the text of
+    # Sections/Argentina.tex since 2026-09-18, not in this note; keep the two in step if it moves.
     note = r'\textit{Note:} Our default specification relies on $\rho=' + C.num(c['ρ'], 0) + r'$.'
-    if commonX and c.get('zxPredicted'):
-        note += (r' Relative formal hours are a prediction: the model gives $' + C.vec(c['zxPredicted'], 2)
-                 + r'$ against $' + C.vec(c['zxi'], 2) + r'$ in the data.')
     note += C.variantNote(commonX, full = True, arm = 'ARG')
     return _wrap('ArgentinaCalibration' + sfx, 'results/paper/calibrationSummary.csv',
                  'Calibration, Argentina' + C.variantCaption(commonX, 'ARG'), 'table:Arg:Calib' + sfx, 'lll',

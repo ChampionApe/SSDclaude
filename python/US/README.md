@@ -15,7 +15,7 @@
 | `shocks.py` | counterfactual machinery: `shockedCopy`, one function per scenario |
 | `policyESC.py`, `modelESC.py` | endogenous `θ`: `LeadedLOG`, `LeadedCRRA`, `LeadedCRRA2D`, `PermanentLOG/CRRA`, `ModelESC` |
 | `thetaStakes.py` | diagnostic: who gains from a marginal change in `θ_{t+1}`; showed the leaded choice needs a wedge |
-| `test.py`, `testEU.py` | workbook loaders: `USMain_test.xlsx`; `FRMain.xlsx`/`UKMain.xlsx` via `testEU.model('FR'|'UK'[, grouping='US'])` |
+| `test.py`, `testEU.py` | workbook loaders: `USMain_test.xlsx`; `FRMain.xlsx`/`UKMain.xlsx` via `testEU.model('FR'|'UK'[, grouping])` -- a grouping is a sheet suffix: `('UK', 'US')` the UK at US percentiles, `('FR', 'UK')` France at the UK's cuts (sheets `heterogeneityUK`/`calibrationUK`) |
 | `calibrateRhoGrid.py`, `calibrateRhoGridEU.py`, `runShocksUS.py`, `runESC.py`, `runESCcrra.py`, `collectESCexperiments.py` | drivers |
 | `stationaryApprox.py`, `stationaryApproxESC.py` | prepub checks: a stationary policy function (ν frozen at each date's value) against the exact date-specific one along the demographic path, for taxes (CRRA) and for the endogenous design (LOG, exact 2-D CRRA); `results/numerical/` |
 
@@ -26,14 +26,17 @@ permanent timing's reference numbers, ~75 s; `test_escCRRA.py`, ~7 min), registe
 
 ```
 python\US\calibrateRhoGrid.py   [--commonX]                  # US sweep, rho 0.5..2.0 step 0.1, ~4.5 min
-python\US\calibrateRhoGridEU.py --country FR|UK [--grouping US] [--commonX]
-python\US\runShocksUS.py        [--commonX] [--family theta] [--rho 1]
+python\US\calibrateRhoGridEU.py --country FR|UK [--grouping US|UK] [--commonX]   # UK --grouping US = UKUS, FR --grouping UK = FRUK
+python\US\runShocksUS.py        [--commonX] [--family theta] [--rho 1] [--host US|UK|UKUS]
 python\US\runESC.py | runESCcrra.py    [--commonX]           # endogenous theta
 python\US\collectESCexperiments.py                           # merge -> results/esc/escExperiments.csv
 ```
 
 Sweeps write their csv after every point and resume from it; `python/paper/` drives all of this. Instance
-directories are per sweep (pickle names are the `ρ` alone). EU sweeps need the complete US sweep of the
+directories are per sweep (pickle names are the `ρ` alone). `runShocksUS.py --host` picks the economy the
+characteristics are imposed on: `US` (default), `UK` (the UK's own calibration, France cut at the UK's groups,
+sweep `FRUK`) or `UKUS` (the UK at US percentiles, France as is); the host is rebuilt from its sweep row
+(`hostModel`) and its baseline must reproduce the workbook tax, which the script asserts. EU sweeps need the complete US sweep of the
 *same variant* first (`USReference` matches `ρ` exactly; `--maxHalvings` defaults to 0 there). ESC drivers
 merge into their csvs (`runESC.mergeWrite`); `runESCcrra.py --bracket` must span every `ρ` asked for, since
 `p` falls from 0.965 to 0.090 across `ρ` = 0.5..2.
@@ -88,6 +91,8 @@ calibration (`--noFrance` skips).
   the US `X`), the leisure row the compensating scale, so the two compose to `frAll`. `test_esc.py`.
 - The income row HOLDS `θ` at the US design (`--freeTheta` keeps the re-deriving reading). Composites
   re-install the pin at the end because the last `updateAuxPars` wins (#9; asserted in `test_esc.py`).
+- `shocks.ηLevel` preserves the HOST's `Γ_h`, which is 1 on `ModelUS` but `λ` on a calibrated vector-X
+  `ModelFR`; resetting it to 1 would undo the UK's hours calibration (`test_eu.py`).
 
 ## Endogenous `θ`
 
@@ -120,4 +125,7 @@ design is the `θ = 1` corner); the UK's own `p` = 0.185 against the US's 0.408.
 
 **Open**: `PermanentCRRA` (run 2026-09-11, `results/esc/escPermanentCRRA.csv`) puts the costless permanent
 choice at θ = 0 for ρ ≤ 1.3 and at θ = 1 for ρ ≥ 1.4 -- the paper's wording is RKB's (`notes/TODO.md`
-W2b).
+W2b). **The UK exercise** (2026-09-22): the French-characteristics shocks run on the UK's own calibration with
+France cut at the UK's groups (`--host UK`, sweep `FRUK`, `results/shocks/UK_shocks{,CommonX}.csv`); the
+data caveats (France's voting at those cuts is an overlap approximation; a likely hours typo in France's
+own sheet) are `notes/TODO.md` D1.

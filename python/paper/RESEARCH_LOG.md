@@ -4,6 +4,19 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_paper.md`, in
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-22 — the UK arm, the leisure row back, and eight tables moved to appendix E
+
+`config.US['ukHost']`, `usShockCsv`, `usHasSheets`; `datasets.usShocks(host=)`; `tablesUS._otherShocks`
+(host-generic, leisure row printed again), `ukOtherShocks`, `ukCrraOtherShocks`, `frukHouseholdHeterogeneity`;
+six registrations in `build.py`; stage (i) skips a regrouping without sheets and the summary tolerates a
+missing sweep; stage (ii) entries `shocksUK`/`shocksUKCommonX` carry a `requires` guard. In the draft:
+`US_OtherShocks`, `US_CRRA_PensChars` and the four `US_ESC_*` tables are `\input` from appendix E
+(`app:US:french`, `app:US:CRRA`, `app:US:escTables`), the UK twins from `app:US:vectorX`. After France's
+hours correction every France-dependent output was rebuilt (stage (ii) main with `--force`, then the exact
+CRRA ESC leg): only the hours unit moves, so the leisure and all-characteristics workweeks and France's own
+row change (35.44 → 35.24), the vector-X income row by 0.03 p.p., and no design or tax. Prose refreshed:
+the U.S. leisure sentence (5.0 hours), the UK paragraph and its footnote on the voting approximation.
+
 ## 2026-09-15 — the tables and figures stop announcing themselves
 
 A presentation pass on RKB's list, all at source. `config.variantNote` is empty under common X and keyed

@@ -68,6 +68,10 @@ OUTPUTS = {
     **_variants('US_CRRA_Ageing',           tablesUS.usCrraAgeing,             'Tables'),
     **_variants('US_CRRA_OtherShocks',      tablesUS.usCrraOtherShocks,        'Tables'),
     **_variants('US_overview',              figuresUS.usOverview,        'Figs', ext = 'pdf'),
+    # --- The UK exercise: French characteristics on the UK, France cut at the UK's groups (config.US['ukHost']).
+    **_variants('FRUK_householdheterogeneity', tablesUS.frukHouseholdHeterogeneity, 'Tables'),
+    **_variants('UK_OtherShocks',           tablesUS.ukOtherShocks,            'Tables'),
+    **_variants('UK_CRRA_OtherShocks',      tablesUS.ukCrraOtherShocks,        'Tables'),
     # --- Endogenous system characteristics (app:ESC). Headline variant only -- see paper/README.md. ---
     'US_ESC_overview':        ('figure', figuresUS.escOverview,       'Figs/US_ESC_overview.pdf'),
     'US_ESC_Calibration':     ('table', tablesUS.escCalibrationTable, 'Tables/US_ESC_Calibration.tex'),

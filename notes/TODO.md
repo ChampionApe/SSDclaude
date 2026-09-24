@@ -5,109 +5,47 @@ The one open list. Closed work is not here: it is in the session logs (`RESEARCH
 the permanent-timing fix, in `archive/notes/todo_paperRewrite.md` and `archive/notes/todo_escPermanentTiming.md`.
 `notes/paper_styleGuide.md` is the register every new paragraph follows.
 
-Items are labelled so they can cite each other: `C` code, `R` compute runs, `W` writing. C1, C2, R1, R3, R4
-and W3 closed on 2026-09-11 (`python/US/RESEARCH_LOG.md`, `python/paper/RESEARCH_LOG.md`); C4 and W2 on
-2026-09-12, W4 the same day on RKB's instruction, W2b on 2026-09-15 along with the rest of W5. Open: W1,
-a wording call, and W5's one remaining part, whether the paper carries a verification paragraph.
+Items are labelled so they can cite each other: `C` code, `R` compute runs, `W` writing, `D` data. C1, C2,
+R1, R3, R4 and W3 closed on 2026-09-11 (`python/US/RESEARCH_LOG.md`, `python/paper/RESEARCH_LOG.md`); C4
+and W2 on 2026-09-12, W4 the same day on RKB's instruction, W2b on 2026-09-15 along with the rest of W5.
+Open: W1, a wording call; W5's one remaining part, whether the paper carries a verification paragraph;
+and one data caveat under D1, France's voting at the UK cuts, MGE's.
 
-## Code tasks
+## Data tasks
 
-**C3. Argentina under common X** — done 2026-09-11 (`python/InformalSavings/RESEARCH_LOG.md`, `python/paper/RESEARCH_LOG.md`); R2 runs it.
+**D1. France regrouped at the UK's income cuts** -- done 2026-09-22, with two caveats for MGE. The source
+turned up in the old repo: `SSD/Data/calibration statistics AUG 2025.docx` carries France's LIS group
+means at BOTH cuts (US percentiles, and the UK's 29.2/87.3), and its first sampling reproduces
+`data/FRMain.xlsx` (shares to 6 decimals, income and hours to the cent) with one exception below. The
+second sampling is now `heterogeneityUK`/`calibrationUK` in `FRMain.xlsx` (written through Excel; the
+Readme sheet says where every column comes from): income 20011/37081/94604, hours 1629.38/1855.62/2194.58,
+shares 0.2924/0.5807/0.1269, workweek 35.24. Caveats:
+- *Voting at the UK cuts has no source.* CSES gives France's voting at the US cuts only
+  (0.8097/0.8567/0.8518). The sheet carries the observed values weighted by the population overlap of the
+  new groups with the old (0.8097/0.8323/0.8518), i.e. voting flat within each observed group. MGE to
+  replace with CSES at the UK cuts if available; the profile is nearly flat either way.
+- *A typo in France's hours, corrected 2026-09-22 on RKB's instruction.* The workbook's low-group hours
+  were 1731.91, the docx says 1713.91, and the docx value is the consistent one: it makes France's average
+  workweek the same at both cuts (35.240), where the workbook's gave 35.44. `data/FRMain.xlsx` sheet
+  `heterogeneity` C3 now carries 1713.91 (through Excel; the Readme sheet records it). France was re-swept
+  in both variants and stage (ii) re-run (`logs/frFix0922.log`): only France's hours unit moves (ω, τ,
+  the savings rate and the income and voting rows are invariant to it), so what changes is the leisure and
+  all-characteristics workweeks and France's own workweek, 35.44 → 35.24.
+- *The UK's own regrouping at US percentiles is a linear fit, not data.* `UKMain.xlsx` sheet
+  `heterogeneityUS` is Excel `FORECAST` of the three UK group means on cumulative shares. Applied to
+  France it predicts a negative bottom-group income, so the method is unreliable at extreme cuts; the
+  `UKUS` sweeps and `UK_ESC_Calibration`'s "US-percentile" reading rest on it. Worth a microdata
+  recount if UKUS is ever printed.
 
-**C4. US vector-X: one hours unit across countries** — done 2026-09-12. `US.addEigenVectors` now scales
-both eigenvectors to γ·y = 1, so the hours unit μ = ∑γ_i y^x_i is 1 in every country rather than whatever
-scipy's unit-norm eigenvector gave (US 0.5593, FR 0.5590, UK 0.5770), and `X̄_c/X̄_US` no longer carries
-μ_US/μ_c. Equilibrium-neutral (it is the eq (hoursUnit) rescaling, which moves only h̄ and h_i); the
-vector-X η_i, X_i and X̄ entries move. Docs, `test_ee.py`'s h̄-vs-h check and the vector-X sweeps followed
-(`python/US/RESEARCH_LOG.md`, `logs/usVectorX0912.log`).
+**R5. The UK exercise runs** -- done 2026-09-22 (`logs/frukSweep0922.log`, `logs/ukShocks0922.log`): FRUK
+swept in both variants (16/16 points each, France's ω at ρ = 1 equal to its US-cut value 1.4181, as the
+aggregates do not see the grouping), `UK_shocks{,CommonX}.csv` written at ρ = 0.5, 1, 2, six UK outputs
+built. The runs are wired as ordinary stage (i)/(ii) entries, so a rebuild picks them up.
 
-## Compute tasks
-
-**R2. Argentina under common X** — done 2026-09-11 evening (`logs/argCommonX*0911.log`, 1.8 h; all stages
-exit 0, 39 outputs built, 22 fast suites pass). Every common-X shock csv and the ε×θ grid equal the vector-X
-ones to ≤ 4e-12 at every ρ, and the sweeps agree in β, ω, K/Y, τ, ι to 4e-12: the two versions print the same
-counterfactual tables and figures and differ only in `ArgentinaCalibration{,_commonX}` (η_i, X vs X_i, η_0,
-X_0, the relative-hours prediction). Copied into `writing/Paper` on 2026-09-12 as the headline (W2).
-
-## Writing
-
-**W1. Introduction**: the sentence *after* the `%% TODO-W1` tag at `Sections/Introduction.tex` line 38 --
-"Our model provides a rationale for the latter: ..." -- is drafted text, not RKB's. MGE left the
-placeholder `XXX Our model provides a rationale for the latter XXX.` in the 2026-09-10 Overleaf edit
-(clone commit `48120ea`, the same edit that widened the sample from twenty countries to the 29 pre-2000
-OECD members); it was filled on 2026-09-11. Everything before the tag -- the CondeRuiz discussion, the
-29-country claim, the footnote -- is MGE's and untouched. Revised 2026-09-12 to follow the sec:esc
-rewording (W4): the inequality clause now names the two dimensions that pull against each other. Its three claims check against the tables:
-ageing raises taxes and moves the chosen design to θ = 0.76/0.78/0.82 at ρ = 0.5/1/2
-(`US_ESC_Ageing`); a flatter income distribution goes to the corner θ = 1 and flatter voting
-participation to 0.65/0.53/0.26 (`US_ESC_IncomeDistr`, `US_ESC_Voting`), so the inequality-design
-relation is unsigned and ρ-dependent. RKB to confirm the wording or rewrite, then drop the tag.
-
-**W2. Text that follows R2** — decided 2026-09-12: the paper prints **common X** in both arms
-(`config.ARG['commonX'] = True`). The Argentina identification paragraph was rewritten (one X pinned by the
-42.5-hour formal workweek, relative formal hours a prediction), the vector-X calibration table moved to a
-new appendix subsection `app:EPH:vectorX`, and the ten Argentina outputs were rebuilt. No counterfactual
-number moved, so the draft's magnitudes stand. The OECD section now cites section 5's identification
-paragraph instead of repeating it, and keeps only the part specific to its own arm.
-
-**W2b. The permanent corner under CRRA** — done 2026-09-15 on RKB's instruction, tag dropped. The
-section's own wording checked out against `results/esc/escPermanentCRRA.csv` (θ = 0 for ρ ≤ 1.3, θ = 1 for
-ρ ≥ 1.4) and `escPermanent.csv` (θ = 0 under log); the permanent paragraph now also says the two corners
-are nearly tied across the switch, since the W gap is 0.002–0.003 there against 0.02 at ρ = 1.1. The
-introduction did promise a fully Beveridgean system "under every timing" and now promises a corner under
-every timing; the conclusion and the section's closing lesson dropped "too attractive" for the claim that
-actually holds at all three timings, that no interior design survives.
-
-**W4. Voting-patterns mechanism in `sec:esc`** (for RKB). Self-flagged on 2026-09-11, not raised by a
-coauthor. The sentence is drafted text: the section was written on 2026-09-08, reworded in the
-2026-09-11 style-guide pass, and its numbers refreshed on 2026-09-12 for the exact solver (0.285 → 0.259
-at ρ = 2). MGE's 2026-09-10 online edit touched the file but left this paragraph byte-identical.
-
-The problem: "the redistributive force regains ground against the forward-looking stake, and it is the
-latter that scales with ρ" reads as if higher ρ should protect the Bismarckian design, yet the design
-falls furthest at ρ = 2 (0.738 → 0.654, 0.533, 0.259 at ρ = 0.5, 1, 2). The claim is not false -- the
-wedge paragraph uses it correctly to explain why less friction is needed at high ρ -- but it is reused
-here to explain the ρ-profile of the *response*, where it points the wrong way. The missing link is the
-calibration: p = 0.935, 0.408, 0.085 puts the deadweight cost at θ* at 12.4%, 5.8% and 1.3% of funds
-(`US_ESC_Calibration`), so at ρ = 2 the interior optimum is held by a cushion of about one percent and
-any pull slides it a long way.
-
-Reworded on RKB's instruction, 2026-09-12: the mechanism sentence stays, and the paragraph now says the
-ρ-profile of the response follows from the calibration, citing the wedge's 1.3% against roughly 12% cost
-in the same units the wedge paragraph uses. The wording is drafted, not RKB's; it is in the paper
-untagged, so read it when next in `sec:esc`. W1's introduction sentence was made to follow (its
-inequality clause now names the two dimensions that pull against each other) and keeps its
-`%% TODO-W1` tag.
-
-**W5. The numerical section** (for RKB, 2026-09-12 night). The opening paragraph of `Sections/Numerical.tex`
-was rewritten on RKB's instruction (stationary policy functions as the literature's object, date-specific
-ones as ours, a footnote with the measured cost of the approximation from `results/numerical/`), and the
-horizon footnote corrected. **RKB then shortened the section himself on Overleaf (2026-09-15), 57
-sentences to 45**, deleting the four solver `\smalltitle` blocks and moving the grid search into a
-footnote. That closed (ii) and (iv) by deletion; (i) and (iii) were then fixed on his instruction, along
-with two typos, the now-undefined $[l,u]$, an unnumbered candidate set, and two register points. The
-`sec:esc` back-reference was narrowed to match what the shortened section still says.
-
-Still open, RKB's call: **a verification paragraph.** The section says how the equilibria are computed but
-never how we know the code computes them, so a referee's "how do you know the solver is right?" has no
-answer in the paper. One short paragraph at the end of the section would give it. Three candidate checks,
-two of which already run as test suites:
-
-- *The CRRA solver against its own log limit.* As ρ → 1 the CRRA recursion must converge on the log
-  solution, at a first-order rate in (ρ − 1). What makes this a test rather than a formality is that the
-  two share almost no code — log maximises a closed-form $\mathcal{W}_t$ by backward recursion, CRRA
-  re-solves the whole politico-economic equilibrium at each candidate and iterates on the path — so they
-  reach the same number from different directions or one of them is wrong (`python/US/test_escCRRA.py`;
-  `python/InformalSavings/test_peeCRRA.py`, whose terminal-period agreement at ρ = 1 is an exact identity,
-  not a numerical coincidence). The section already asserts the convergence in one clause; what it omits
-  is why it counts.
-- *The design machinery with the design pinned.* `ModelESC` with no wedge reproduces `ModelUS` to machine
-  precision — the section 7 solver collapses onto the exogenous-θ one (`python/US/test_esc.py`, check 1).
-- *Grid refinement.* **Not measured.** Nothing sweeps the tax or state grid and reports how far the
-  solution moves, so this one would have to be run before it could be claimed.
-
-The prior question is whether any of it belongs in the paper: the technical documentation carries the full
-battery and the section already defers to it twice, so the paragraph may be one sentence pointing there.
+**W6. The UK paragraphs** -- done 2026-09-22, drafted text for RKB: the results paragraph in
+`app:US:french`, one sentence in `sec:oecd`, a footnote on the voting approximation, and the sign flip of
+the income row across calibration variants noted in `app:US:vectorX`. Read them against
+`Tables/UK_OtherShocks{,_vectorX}.tex`.
 
 ## Traps to remember (kept here because `README.md` points at them)
 

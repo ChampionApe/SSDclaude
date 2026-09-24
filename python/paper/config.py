@@ -129,8 +129,17 @@ US = {
     'ρTable':     [0.5, 1.0, 2.0],            # the rows the CRRA tables print
     # 'UKUS' is the UK workbook regrouped at US income percentiles -- a separate calibration, kept for
     # counterfactual comparability and NOT interchangeable with 'UK' (different RR0, so different theta).
-    # It is calibrated and swept, but no paper table reads it yet.
-    'extraSweeps': ('UKUS',),
+    # 'FRUK' is France regrouped at the UK's own income cuts (data/FRMain.xlsx sheets heterogeneityUK /
+    # calibrationUK), the France the UK exercise below borrows from; theta = 1 whatever the grouping.
+    # A regrouping whose sheets are not in the workbook yet is skipped by the sweep stage, not failed.
+    'extraSweeps': ('UKUS', 'FRUK'),
+    # THE UK EXERCISE (2026-09-22): the French-characteristics counterfactuals of sec:oecd repeated with
+    # the UK as the host economy -- its own calibration, France cut at its income groups (FRUK).
+    # python/US/runShocksUS.py --host UK writes results/shocks/UK_shocks{,CommonX}.csv, which the
+    # UK_OtherShocks tables read. The other pairing, --host UKUS (the UK at US percentiles with France
+    # as is), runs on data already in the repo and is the check the machinery was proven on; no paper
+    # output reads it.
+    'ukHost': 'UK',
     # WHICH CALIBRATION VARIANT THE PAPER LEADS WITH. True = the common scalar X of the docs' variant B,
     # where the hours unit is a calibration target and relative hours become a prediction; False = the
     # vector X_i of variant A, where relative hours are data and the LEVEL of hbar is not identified.
@@ -193,6 +202,20 @@ def usInstanceDir(country, commonX = False):
                         + ('CommonX' if commonX else ''))
 
 
+def usShockCsv(host = 'US', commonX = False):
+    """ python/US/runShocksUS.py's long csv for `host` ('US' | 'UK' | 'UKUS') and variant. """
+    return os.path.join(SHOCKDIR, host + '_shocks' + ('CommonX' if commonX else '') + '.csv')
+
+
+def usHasSheets(country):
+    """ Does the workbook carry `country`'s calibration sheet? False for a regrouping not yet added. """
+    try:
+        usCalendar(country)
+    except KeyError:
+        return False
+    return True
+
+
 @functools.lru_cache(maxsize = None)
 def usCalendar(country = 'US'):
     """ {model t index: calendar year}, the calibration year, and the observed workweek, from `country`'s
@@ -204,12 +227,17 @@ def usCalendar(country = 'US'):
     than absent -- it is present and stale (python/US/test_createCopyFromt0.py), which is the other
     reason nothing in this pipeline reads it.
 
-    The UK workbook carries a second calibration sheet for its US-percentile regrouping; `country`
-    'UKUS' selects it. """
-    base, sheet = (country[:2], 'calibrationUS') if country == 'UKUS' else (country, 'calibration')
+    A regrouped country is its two-letter workbook plus the grouping's suffix -- 'UKUS' (the UK at US
+    percentiles), 'FRUK' (France at the UK's cuts) -- and reads the workbook's 'calibration<suffix>'
+    sheet, as python/US/testEU.load does. A KeyError names the sheet when the workbook lacks it. """
+    base, suffix = (country, '') if country in US['workbooks'] else (country[:2], country[2:])
+    sheet = 'calibration' + suffix
     wb = pd.read_excel(os.path.join(DATA, US['workbooks'][base]), sheet_name = None, header = None)
     dft = pd.DataFrame(wb['population'].values)
     dates = pd.DataFrame(dft.iloc[1:, ].values, columns = dft.iloc[0, :]).set_index('t').index
+    if sheet not in wb:
+        raise KeyError("{} has no sheet '{}': the {} regrouping has not been added to the workbook"
+                       .format(US['workbooks'][base], sheet, country))
     dfc = pd.DataFrame(wb[sheet].values)
     dfc = pd.Series(dfc.iloc[1, :].values, index = dfc.iloc[0, :].values)
     return {'dates': {i: int(d) for i, d in enumerate(dates)},

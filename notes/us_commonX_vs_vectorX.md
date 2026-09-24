@@ -60,7 +60,7 @@ the smaller rise in hours.
 | 2.0 | 33.7 | 35.1 | 1.4 h |
 
 Taxes and the savings rate do not move in either variant (a pure rescaling of X is a change of the
-hours unit). The observed French workweek is 35.4 hours, 4.0 below the US.
+hours unit). The observed French workweek is 35.4 hours, 4.0 below the US. (35.2 since the 2026-09-22 correction of France's low-group hours, `notes/TODO.md` D1; the numbers in this note predate it.)
 
 **All three French characteristics** is the sum of the two: at ρ = 1, τ = 13.9% (common) against 13.4%
 (vector), hours 35.3 against 35.9.

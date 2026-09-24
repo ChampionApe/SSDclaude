@@ -27,6 +27,7 @@ THREE CONVENTIONS, each of which a builder could silently get wrong:
     the observed workweek is a reference point, not a unit. Stage (iii) therefore reads `workweek`
     straight out of the csv and must never re-derive it from hbar.
 """
+import os
 import numpy as np
 
 import config as C
@@ -118,58 +119,76 @@ def usAgeing(commonX = None):
                   'table:US:ageing' + C.variantSuffix(commonX), 'p{3cm}YYY', SHOCKHEAD, body, note)
 
 
-def usOtherShocks(commonX = None):
-    r""" Table \ref{table:US:otherShocks}: French income distribution and voting imposed on the US model,
-    at the baseline rho.
+HOSTNAME = {'US': 'US', 'UK': 'the UK'}    # as the captions and notes name the host economy
+
+
+def _otherShocks(commonX = None, host = 'US'):
+    r""" Table \ref{table:US:otherShocks} (host 'US') and \ref{table:UK:otherShocks} (host 'UK'): the
+    French characteristics imposed on the host model, at the baseline rho.
 
     Full effect only, following the paper, which reports that the two effects are not informative apart
     for these -- they work in the same direction and are quantitatively minor. The economic-equilibrium
-    rows ARE in results/shocks/US_shocks.csv if that judgement is revisited.
+    rows ARE in the shock csv if that judgement is revisited.
 
-    The leisure-preference row (a pure rescaling of X_i, moving hours alone) is no longer printed
-    anywhere in the paper -- dropped 2026-09-11 as uninformative. The experiment still runs and its rows
-    stay in the csv; only the readers changed. It is still INSIDE the all-characteristics row, which
-    needs France's level of X to land on France's own (eta, X).
-
-    Two rows beyond the single characteristics: all French characteristics at once, and France's own
-    calibrated path. Together they say how far the observable characteristics take the US towards France
-    and how much is left for the political weight -- the comparison the new-path convention exists to
-    make (python/US/runShocksUS.franceReference).
+    Four single-characteristic and composite rows: income distribution, leisure preferences (a pure
+    rescaling of X_i, so it moves hours and nothing else -- printed again since 2026-09-22), voting, and
+    all three at once; then France's own calibrated path. The last two say how far the observable
+    characteristics take the host towards France and how much is left for the political weight -- the
+    comparison the new-path convention exists to make (python/US/runShocksUS.franceReference).
 
     This is the table the calibration variant moves most: income distribution is defined through eta,
-    which is exactly what the variant re-interprets. """
+    which is exactly what the variant re-interprets. The UK table reads the UK-host csv, where France's
+    groups are cut at the UK's own income cuts (config.US['ukHost']). """
     commonX = C.US['commonX'] if commonX is None else commonX
     ρ = C.US['ρBaseline']
-    df = D.usShocks(commonX = commonX)
+    df = D.usShocks(commonX = commonX, host = host)
     b = D.usBaseline(df, ρ)
+    name = HOSTNAME[host]
     rows = [' & '.join(['Baseline'] + _cells(b)) + r' \\']
-    for lab in ('Income distribution', 'Voting'):
+    for lab in ('Income distribution', 'Leisure preferences', 'Voting'):
         rows.append(' & '.join([lab] + _cells(D.usShockRow(df, ρ, lab, 'full'), b)) + r' \\')
     rows.append(' & '.join(['All French characteristics']
                            + _cells(D.usShockRow(df, ρ, 'All French characteristics', 'full'), b))
                 + r' \\[.5em]\hline\\[-.75em]')
     rows.append(' & '.join(['France (own calibration)']
                            + _cells(D.usShockRow(df, ρ, 'France (own calibration)', 'full'), b)) + r' \\')
+    design = (r' pension design is the separate counterfactual of Table~\ref{table:US:pensChars}.'
+              if host == 'US' else '.')
     note = (r'\item \textit{Note:} $\rho = ' + C.num(ρ, 1) + r'$, full effect. Each row is a separate equilibrium path: '
             r'the borrowed characteristics hold throughout and the economy starts from its own steady '
-            r'state, so the row describes a country that has always had this mix rather than the US hit '
-            r'by a surprise in 2020. Income '
+            r'state, so the row describes a country that has always had this mix rather than ' + name
+            + r' hit by a surprise in 2020. Income '
             r'distribution replaces $\eta_i$ with France\textquotesingle s while holding $X_i$ \emph{and} '
-            r'holding $\theta$ at the US design, so it is a change in inequality alone; pension design is '
-            r'the separate counterfactual of Table~\ref{table:US:pensChars}. All French characteristics '
-            r'imposes France\textquotesingle s $\eta_i$, voting weights $\mu_i$ and level of $X_i$ at once; '
-            r'the last, a pure rescaling of the hours unit, moves hours and nothing else. The last row '
-            r'is France\textquotesingle s own calibrated path, its savings rate reported as the distance '
-            r'from the US baseline.' + C.variantNote(commonX))
-    return _xwrap('US_OtherShocks' + C.variantSuffix(commonX), df.attrs['source'],
-                  'French income distribution and voting patterns in US'
+            r'holding $\theta$ at the ' + name + r' design, so it is a change in inequality alone'
+            + (';' if host == 'US' else '') + design
+            + r' Leisure preferences rescales every $X_i$ to France\textquotesingle s population-weighted '
+            r'mean $X$ at the productivity level of the income row; it is a pure rescaling of the hours '
+            r'unit and moves hours and nothing else. All French characteristics '
+            r'imposes France\textquotesingle s $\eta_i$, level of $X_i$ and voting weights $\mu_i$ at once. '
+            r'The last row is France\textquotesingle s own calibrated path, its savings rate reported as '
+            r'the distance from the ' + name + r' baseline.'
+            + (r' France\textquotesingle s income groups are cut at the UK\textquotesingle s own income '
+               r'percentiles here (table \ref{table:a_US:CalibFRUK}).' if host == 'UK' else '')
+            + C.variantNote(commonX))
+    return _xwrap(host + '_OtherShocks' + C.variantSuffix(commonX), df.attrs['source'],
+                  'French income distribution, leisure preferences and voting patterns in ' + name
                   + C.variantCaption(commonX),
-                  'table:US:otherShocks' + C.variantSuffix(commonX), 'lYYY', SHOCKHEAD,
+                  'table:' + host + ':otherShocks' + C.variantSuffix(commonX), 'lYYY', SHOCKHEAD,
                   '\n'.join(rows), note)
 
 
+def usOtherShocks(commonX = None):
+    r""" Table \ref{table:US:otherShocks}. """
+    return _otherShocks(commonX, host = 'US')
+
+
+def ukOtherShocks(commonX = None):
+    r""" Table \ref{table:UK:otherShocks}: the same exercise with the UK as host (config.US['ukHost']). """
+    return _otherShocks(commonX, host = C.US['ukHost'])
+
+
 # ---------------------------------------------------------------------------------------------------
-def _crraTable(name, caption, label, scenarios, commonX = None):
+def _crraTable(name, caption, label, scenarios, commonX = None, host = 'US'):
     """ A rho-stacked table over config.US['rhoTable'], laid out like the ESC tables: a baseline group
     with one row per rho (levels), then one group per scenario whose savings cell is the change against
     THAT rho's baseline. The group name is printed against the middle rho. Full effect only -- the
@@ -181,7 +200,7 @@ def _crraTable(name, caption, label, scenarios, commonX = None):
     of the theta rows at rho = 2 and put +-0.8 p.p. on the (then printed) leisure row, which cannot move
     savings. """
     commonX = C.US['commonX'] if commonX is None else commonX
-    df = D.usShocks(commonX = commonX)
+    df = D.usShocks(commonX = commonX, host = host)
     ρs = C.US['ρTable']
     mid = len(ρs)//2
     groups = [('Baseline', None)] + list(scenarios)
@@ -228,8 +247,17 @@ def usCrraOtherShocks(commonX = None):
                       commonX = commonX)
 
 
+def ukCrraOtherShocks(commonX = None):
+    r""" Table \ref{table:UK:CRRA:otherShocks}: the UK-host counterpart. """
+    return _crraTable('UK_CRRA_OtherShocks',
+                      'Does CRRA matter for French characteristics imposed on the UK -- {}'
+                      .format(C.usCalendar('UK')['year0']), 'table:UK:CRRA:otherShocks',
+                      [('Income distribution', 'Income distribution'), ('Voting', 'Voting')],
+                      commonX = commonX, host = C.US['ukHost'])
+
+
 # ---------------------------------------------------------------------------------------------------
-COUNTRYNAME = {'US': 'US', 'UK': 'UK', 'FR': 'France'}
+COUNTRYNAME = {'US': 'US', 'UK': 'UK', 'FR': 'France', 'FRUK': 'France, UK income groups'}
 
 
 def usukfrCalibration(commonX = None):
@@ -296,7 +324,10 @@ def _householdHeterogeneity(country, name, label, commonX = None):
     Under the common-X calibration the X_i row is one number repeated, and the hours row is a prediction
     rather than the target it is under vector X -- so the `Target` column is variant-dependent. """
     commonX = C.US['commonX'] if commonX is None else commonX
-    c = D.usCalibrationSummary(commonX)[country]
+    summary = D.usCalibrationSummary(commonX)
+    if country not in summary:
+        raise D.MissingInput(os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv') + ' (no {} row)'.format(country))
+    c = summary[country]
     spec = [(r'$\gamma_i$', 'γi', 2, 'Income percentiles.'),
             ('$X_i$',       'Xi', 2, 'Average hours worked.' if commonX else 'Hours worked.'),
             (r'$\eta_i$',   'ηi', 2, 'Income distribution.'),
@@ -328,6 +359,11 @@ def frHouseholdHeterogeneity(commonX = None):
 
 def ukHouseholdHeterogeneity(commonX = None):
     return _householdHeterogeneity('UK', 'UK_householdheterogeneity', 'table:a_US:CalibUK', commonX)
+
+
+def frukHouseholdHeterogeneity(commonX = None):
+    """ France regrouped at the UK's income cuts -- the France the UK exercise borrows from. """
+    return _householdHeterogeneity('FRUK', 'FRUK_householdheterogeneity', 'table:a_US:CalibFRUK', commonX)
 
 
 # ---------------------------------------------------------------------------------------------------

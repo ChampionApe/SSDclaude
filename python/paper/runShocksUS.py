@@ -107,6 +107,25 @@ EXPERIMENTS = {
         'outputs': lambda: [os.path.join(C.SHOCKDIR, 'US_shocks_freeTheta.csv')],
         'note':    'French income distribution with theta re-derived',
     },
+    # --- The UK exercise (config.US['ukHost']): the same families with the UK as host and France cut at
+    # the UK's own income groups. Needs the UK and FRUK sweeps of the variant; until the France workbook
+    # carries its UK regrouping the FRUK sweep does not exist and the entry is skipped, not failed.
+    'shocksUK': {
+        'part':    'main',
+        'script':  'runShocksUS.py',
+        'args':    RHOFLAGS + GRIDFLAGS + ['--host', C.US['ukHost']],
+        'outputs': lambda: [C.usShockCsv(C.US['ukHost'], False)],
+        'requires': lambda: [C.usSweepCsv(C.US['ukHost'], False), C.usSweepCsv('FRUK', False)],
+        'note':    'French characteristics on the UK, all rho, both effects',
+    },
+    'shocksUKCommonX': {
+        'part':    'main',
+        'script':  'runShocksUS.py',
+        'args':    RHOFLAGS + GRIDFLAGS + ['--host', C.US['ukHost'], '--commonX'],
+        'outputs': lambda: [C.usShockCsv(C.US['ukHost'], True)],
+        'requires': lambda: [C.usSweepCsv(C.US['ukHost'], True), C.usSweepCsv('FRUK', True)],
+        'note':    'the same on the UK under common X (the headline)',
+    },
     # --- Endogenous system characteristics (app:ESC), the LOG leg (rho = 1). Requires the LOG wedge
     # calibration from stage (i) (runCalibrationUS.py's escMissing step). All cheap.
     # The equilibrium design path under the calibrated wedge: the 0.738 -> 0.748 -> 0.773 drift the
@@ -272,6 +291,10 @@ def main():
             continue
         if not lack and not a.force:
             print('SKIP {}: all {} output(s) present.'.format(name, len(have)))
+            continue
+        need = [p for p in EXPERIMENTS[name].get('requires', lambda: [])() if not os.path.exists(p)]
+        if need:
+            print('SKIP {}: needs {} first.'.format(name, ', '.join(os.path.relpath(p, C.REPO) for p in need)))
             continue
         cmd = command(name)
         print('\n' + '='*94 + '\n{} [{}]: {}\n  {}\n'.format(name, EXPERIMENTS[name]['part'],

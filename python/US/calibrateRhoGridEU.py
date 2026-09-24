@@ -3,6 +3,7 @@ r""" Calibrate the France / UK models (modelFR.ModelFR) across a grid of CRRA pa
 Run:  .venv\Scripts\python.exe python\US\calibrateRhoGridEU.py --country FR
       ... --country UK                        the UK on its own income groups
       ... --country UK --grouping US          the UK regrouped at US income percentiles
+      ... --country FR --grouping UK          France regrouped at the UK's own income cuts (tag FRUK)
       ... --commonX                           the common-X variant (its own csv and pickle directory)
       ... --force                             re-solve points already in the csv
 
@@ -93,8 +94,9 @@ def readDone(path):
 def main():
     p = argparse.ArgumentParser(description = 'Calibrate the France/UK model across a grid of rho.')
     p.add_argument('--country', default = 'FR', choices = ('FR', 'UK'))
-    p.add_argument('--grouping', default = None, choices = (None, 'US'),
-                   help = "'US' selects the UK workbook's US-percentile regrouping (UK only)")
+    p.add_argument('--grouping', default = None, choices = (None, 'US', 'UK'),
+                   help = "'US' selects the UK workbook's US-percentile regrouping (UK only); 'UK' the "
+                          "France workbook's regrouping at the UK's own cuts (FR only)")
     p.add_argument('--lo', type = float, default = 0.5)
     p.add_argument('--hi', type = float, default = 2.0)
     p.add_argument('--step', type = float, default = 0.1)
@@ -116,8 +118,10 @@ def main():
     p.add_argument('--pkldir', default = None)
     a = p.parse_args()
 
-    if a.grouping and a.country != 'UK':
-        p.error('--grouping US applies to the UK workbook only.')
+    if a.grouping and a.grouping == a.country:
+        p.error("--grouping {0} on the {0} workbook is its own grouping; drop the flag.".format(a.country))
+    if a.grouping and {'US': 'UK', 'UK': 'FR'}[a.grouping] != a.country:
+        p.error('--grouping US applies to the UK workbook and --grouping UK to the France workbook.')
 
     tag = a.country + (a.grouping or '') + '_rhoGrid' + ('CommonX' if a.commonX else '')
     out = a.out or os.path.join(OUTDIR, tag + '.csv')
@@ -150,7 +154,7 @@ def main():
     done, df = ({}, pd.DataFrame(columns = COLUMNS)) if a.force else readDone(out)
     rows = {} if a.force else {round(float(r['ρ']), 6): r for r in df.to_dict('records')}
 
-    print('country: {}{},  variant: {}'.format(a.country, ' (US groups)' if a.grouping else '',
+    print('country: {}{},  variant: {}'.format(a.country, ' ({} groups)'.format(a.grouping) if a.grouping else '',
                                                'common X' if a.commonX else 'vector X_i'))
     print('grid: {} points, {} to {} step {}'.format(len(grid), grid[0], grid[-1], a.step))
     print('anchor rho={},  tau nodes {},  state nodes {},  verify at {}/{}'.format(

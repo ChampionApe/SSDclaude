@@ -1,5 +1,5 @@
 \usepackage[T1]{fontenc}
-\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=3cm]{geometry}
+\usepackage[margin=1in]{geometry}
 \usepackage[multiple,bottom]{footmisc}
 \usepackage{booktabs}
 \usepackage{mathrsfs}
@@ -130,7 +130,7 @@
 \renewcommand{\theenumii  }{\roman{enumii}}
 \renewcommand{\theenumiii }{\roman{enumiii}}
 \numberwithin{figure}{section}
-\linespread{1.5}
+
 
 % Style for referencing software, functions and code following the convention used by the Journal of Statistical Software:
 \newcommand{\pkg}[1]{{\normalfont\fontseries{b}\selectfont #1}}
@@ -141,7 +141,7 @@
     % \usepackage[disable]{todonotes} %Create notes and corresponding todo-list with \todo. [disable] is an option.
     \usepackage[]{todonotes} %Create notes and corresponding todo-list with \todo. [disable] is an option.
     \usepackage{setspace} %Brug af \begin{spacing} til at angive linjeafstand
-
+\onehalfspacing
 %Define \tinytodo which is more appropriate than the standard \todo
     \newcommand{\tinytodo}[2][]{\todo[caption={#2}, size=\footnotesize, #1]{\begin{spacing}{0.5}#2\end{spacing}}}
 

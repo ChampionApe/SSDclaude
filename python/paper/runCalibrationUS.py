@@ -63,9 +63,10 @@ def sweepCmd(country, commonX = False, force = False):
     if country == 'US':
         cmd = [C.PYTHON, os.path.join(C.USDIR, 'calibrateRhoGrid.py')] + common
     else:
-        base = 'UK' if country in ('UK', 'UKUS') else country
+        # A regrouped country is its workbook plus the grouping suffix: 'UKUS', 'FRUK' (config.usCalendar).
+        base, grouping = country[:2], country[2:]
         cmd = ([C.PYTHON, os.path.join(C.USDIR, 'calibrateRhoGridEU.py'), '--country', base]
-               + (['--grouping', 'US'] if country == 'UKUS' else []) + common)
+               + (['--grouping', grouping] if grouping else []) + common)
     return cmd + (['--commonX'] if commonX else []) + (['--force'] if force else [])
 
 
@@ -232,6 +233,10 @@ def main():
                 if not todo:
                     print('{:<14} all {} rho already solved.'.format(label, len(C.US['ρGrid'])))
                     continue
+                if not C.usHasSheets(c):
+                    print('{:<14} SKIPPED: the workbook has no calibration sheet for this regrouping yet.'
+                          .format(label))
+                    continue
                 # The US sweep is the reference every European one reads beta and hbar from, and
                 # calibrateRhoGridEU refuses to interpolate it -- so an incomplete US sweep must stop the
                 # run here rather than fail per-point halfway through a march.
@@ -259,7 +264,10 @@ def main():
 
     # Both variants, always: the paper's headline outputs read one and their robustness twins the
     # other, so a summary carrying only one of them blocks half the build (config.US['commonX']).
-    recs = [summarise(c, a.rho, cx) for cx in (False, True) for c in SWEEPS]
+    # A regrouping whose sweep does not exist yet (no workbook sheets) is left out of the summary rather
+    # than failing it; its tables report MissingInput in stage (iii).
+    recs = [summarise(c, a.rho, cx) for cx in (False, True) for c in SWEEPS
+            if os.path.exists(C.usSweepCsv(c, cx))]
     os.makedirs(C.PAPERDIR, exist_ok = True)
     out = os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv')
     pd.DataFrame(recs).to_csv(out, index = False)

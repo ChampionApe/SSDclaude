@@ -42,8 +42,8 @@ SCENARIOS = [(r'$\theta = 0$',        r'$\theta = 0$',        'design'),
              ('Mild ageing',          'Mild ageing',          'ageing'),
              ('French voting',        'Voting',               'french'),
              ('French income distr.', 'Income distribution',  'french')]
-# 'Leisure preferences' -- a pure rescaling of X_i that moves hours alone -- is run and in the csv but
-# no longer printed anywhere in the paper (dropped 2026-09-11 as uninformative).
+# 'Leisure preferences' -- a pure rescaling of X_i that moves hours alone -- is run and in the csv and
+# printed in US_OtherShocks again since 2026-09-22, but not drawn here: it moves the workweek panel alone.
 
 # The three reported quantities, as (csv column, panel title, axis label, how to scale a deviation).
 # tau and srOverY are fractions on the csv and are read in percentage points; the workweek is already

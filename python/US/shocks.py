@@ -1,6 +1,11 @@
 r""" The US counterfactuals: pension design (theta), ageing, and French characteristics.
 
-Machinery only -- runShocksUS.py is the driver. Every experiment is a NEW EQUILIBRIUM PATH: the shocked
+Machinery only -- runShocksUS.py is the driver. Written for the US as the host economy; since 2026-09-22
+the same shocks run on a calibrated ModelFR of the UK (runShocksUS.py --host UK|UKUS), with France's
+groups cut at the host's percentiles. "US" below then reads "host": the only place the host's identity
+enters is ηLevel, which preserves the host's own Gamma_h.
+
+Every experiment is a NEW EQUILIBRIUM PATH: the shocked
 parameters hold over the WHOLE horizon (1960-2200, not from t0 onward), the economy starts from its own
 steady state rather than from the baseline's state, and the readout is at the calibration year t0 (2020).
 The counterfactual is a country that has always had this mix of characteristics -- mostly US, partly
@@ -117,9 +122,13 @@ def shockAgeing(mt0, kind):
 
 
 def ηLevel(mt0, ηFR):
-    """ The scale c that puts France's eta PROFILE at the US productivity LEVEL: with the US X_i and
-    gamma_i in db, c = Gamma_h(ηFR, X_US)^{-1/(1+ξ)}, so that Gamma_h = 1 holds on the shocked model
-    exactly as it does on the baseline. Evaluated at db['t0'], BEFORE the swap (X must still be the US's).
+    """ The scale c that puts France's eta PROFILE at the HOST's productivity LEVEL: with the host's X_i
+    and gamma_i in db, c = (Gamma_h^host / Gamma_h(ηFR, X_host))^{1/(1+ξ)}, so that Gamma_h on the shocked
+    model equals the host's own. Evaluated at db['t0'], BEFORE the swap (X must still be the host's).
+
+    The host's Gamma_h is read off db, not assumed to be 1: it is 1 on a ModelUS, but a calibrated
+    vector-X ModelFR (the UK as host) carries Gamma_h = lambda, the hours rescaling that put its workweek
+    on the US-referenced target (modelFR.py), and a swap that reset it to 1 would undo that calibration.
 
     Why a level has to be chosen at all. The model is invariant to the JOINT scale (eta, X) -> (c eta, c X)
     -- that is what Gamma_h = 1 normalises away -- but eta -> c eta at FIXED X is not a normalisation:
@@ -135,8 +144,9 @@ def ηLevel(mt0, ηFR):
     t0 = mt0.db['t'][mt0.db['t0']]
     ξ = float(mt0.db['ξ'].xs(t0))
     γ, X = mt0.db['γi'].xs(t0).values.astype(float), mt0.db['Xi'].xs(t0).values.astype(float)
+    Γh0 = float(np.asarray(mt0.db['Γh'])[mt0.db['t0']])
     Γh = float((γ * np.asarray(ηFR, dtype = float)**(1+ξ) / X**ξ).sum())
-    return Γh**(-1/(1+ξ))
+    return (Γh0/Γh)**(1/(1+ξ))
 
 
 def shockIncomeDistribution(mt0, ηFR, pinTheta = True, θPin = None):
@@ -173,12 +183,13 @@ def shockIncomeDistribution(mt0, ηFR, pinTheta = True, θPin = None):
     eta_0 (the zero-mass slot) is kept at the US value, scaled by the same c -- it is multiplied by
     gamma_0 = 0, but must stay finite. """
     θ0 = float(mt0.db['θ'].xs(mt0.db['t'][0])) if θPin is None else float(θPin)
-    c = ηLevel(mt0, ηFR)   # before the swap: reads the US X_i
+    Γh0 = float(np.asarray(mt0.db['Γh'])[mt0.db['t0']])   # 1 on ModelUS, lambda on a vector-X ModelFR
+    c = ηLevel(mt0, ηFR)   # before the swap: reads the host's X_i and Gamma_h
     ηj = c * np.hstack([mt0.db['ηj'].values[0, 0], np.asarray(ηFR, dtype = float)])
     mt0.db.update(mt0.adjPar('ηj', ηj))
-    mt0.updateAuxPars()   # Gamma_h (back to 1, by construction of c) and theta are both functions of eta/X
+    mt0.updateAuxPars()   # Gamma_h (back to the host's, by construction of c) and theta are functions of eta/X
     Γh = float(np.asarray(mt0.db['Γh'])[mt0.db['t0']])
-    assert abs(Γh - 1) < 1e-10, f'shockIncomeDistribution: Gamma_h = {Γh} after renormalisation, expected 1'
+    assert abs(Γh/Γh0 - 1) < 1e-10, f'shockIncomeDistribution: Gamma_h = {Γh} after renormalisation, expected {Γh0}'
     if pinTheta:
         mt0.db.update(mt0.adjPar('θ', θ0))   # after updateAuxPars -- see shockTheta
     return c

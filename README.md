@@ -59,6 +59,6 @@ and workbooks under `data/` must be edited through Excel, not openpyxl (`notes/T
 
 ## Status
 
-All three model variants solve, calibrate and run their counterfactuals, and all 39 paper outputs are
+All three model variants solve, calibrate and run their counterfactuals, and all 45 paper outputs are
 wired end to end. The endogenous-`θ` layer (leaded and permanent timings, LOG and CRRA) is implemented
 and calibrated; only the *sequential* timing is not. Open items: `notes/TODO.md` and the module READMEs.

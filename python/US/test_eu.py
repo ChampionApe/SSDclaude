@@ -13,6 +13,9 @@ no reason. What it asserts instead are the things that must hold whatever the da
   * beta is the US sweep's value at that rho, held exactly through the search.
   * hbar lands on hbarTarget(), and Gamma_h ends at lambda rather than 1.
   * the UK's own income groups and its US-percentile regrouping are NOT interchangeable.
+  * a French income profile swapped onto a calibrated vector-X ModelFR keeps Gamma_h at lambda, not 1
+    (shocks.ηLevel preserves the host's own level -- the UK-as-host exercise depends on it), and the
+    France workbook's UK regrouping fails by naming its sheet while the sheet is absent.
 """
 import os, sys
 import numpy as np
@@ -94,5 +97,37 @@ check('[UK] the US regrouping reproduces the US population shares',
       np.allclose(mUKus.db['γi'].xs(tUK).values.astype(float),
                   testmod.pars['γj'][1:], rtol = 1e-6),
       '-> {}'.format(np.round(mUKus.db['γi'].xs(tUK).values.astype(float), 6)))
+
+
+
+# ---- the shock machinery on a ModelFR host: the income swap must preserve Gamma_h = lambda, not reset it
+import shocks as sh
+mHost = testEU.model('UK', grouping = 'US')
+calHost = mHost.calibrate(preferences = 'LOG')
+t0 = mHost.db['t'][mHost.db['t0']]
+Γh0 = float(np.asarray(mHost.db['Γh'])[mHost.db['t0']])
+mFR = testEU.model('FR')
+mFR.calibrate(preferences = 'LOG')
+ηFR = mFR.db['ηi'].xs(mFR.db['t'][mFR.db['t0']]).values.astype(float)
+mS, c = sh.shockedCopy(mHost, 'frIncome', {'ηFR': ηFR})
+Γh1 = float(np.asarray(mS.db['Γh'])[mS.db['t0']])
+check('[UKUS host] Gamma_h is lambda, not 1, before the swap',
+      abs(Γh0 - 1) > 1e-3 and np.isclose(Γh0, calHost['pars']['λ'], rtol = 1e-9),
+      '-> Gamma_h={:.6f}'.format(Γh0))
+check("[UKUS host] France's income profile swapped in leaves Gamma_h at the host's lambda",
+      np.isclose(Γh1, Γh0, rtol = 1e-10), '-> {:.10f} vs {:.10f}, scale c={:.4f}'.format(Γh1, Γh0, c))
+check('[UKUS host] the swap pins theta at the host design',
+      np.isclose(float(mS.db['θ'].xs(t0)), float(mHost.db['θ'].xs(t0)), rtol = 1e-12))
+
+# ---- France at the UK's cuts: the loader names the missing sheet rather than failing obscurely
+try:
+    testEU.load('FR', grouping = 'UK')
+    frukLoads = True
+    msg = 'the sheet pair exists'
+except KeyError as e:
+    frukLoads = False
+    msg = str(e)
+check("[FRUK] load('FR', grouping='UK') either loads or names the missing sheet",
+      frukLoads or 'heterogeneityUK' in msg, '-> ' + msg[:90])
 
 report()
