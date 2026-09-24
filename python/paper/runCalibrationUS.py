@@ -151,7 +151,9 @@ def escMissing(part = 'main', force = False, strict = True):
         for ρ in lackρ:
             if brackets[ρ] is not None:
                 cmds.append(exact + ['--rho', str(ρ), '--bracket'] + [str(b) for b in brackets[ρ]] + opts)
-        lackφ = [p for p in PHIROBUST if (spec, round(p, 6)) not in haveL]
+        # phi is a parameter of f only under 'scale'/'flat'; under 'size' it is a dummy key and a
+        # run at another phi would reproduce the esc['phi'] calibration under a different key.
+        lackφ = [p for p in PHIROBUST if spec in ('scale', 'flat') and (spec, round(p, 6)) not in haveL]
         if lackφ:
             cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESC.py'), '--stage', 'calib',
                          '--spec', spec, '--phi'] + [str(p) for p in lackφ] + variant)
