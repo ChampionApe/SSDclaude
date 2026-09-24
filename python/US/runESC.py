@@ -62,7 +62,11 @@ def mergeWrite(path, rows, key):
     (rho, spec, phi) question about two different economies, so without it a common-X run would silently
     overwrite the vector-X rows -- or, worse, leave them in place to be read as if they were current. A
     resumable producer must be keyed on the question AND on what is answering it
-    (notes/crossCuttingFindings.md #13). """
+    (notes/crossCuttingFindings.md #13).
+
+    Keys are compared as CANONICAL strings (_keyOf): a key column that mixes bools with NaN -- legacy rows
+    kept beside new ones -- comes back from the csv as 1.0/NaN, not True/NaN, and a naive str() would then
+    never match the run's own rows again and duplicate them on every write. """
     df = pd.DataFrame(rows)
     if os.path.exists(path) and len(df):
         old = pd.read_csv(path)
@@ -73,14 +77,36 @@ def mergeWrite(path, rows, key):
         for k in key:
             if k not in old.columns:
                 old[k] = np.nan
-        fill = lambda d: pd.MultiIndex.from_frame(d[key].astype(object).fillna('__na__').astype(str))
-        df = pd.concat([old[~fill(old).isin(fill(df))], df], ignore_index = True)
+        df = pd.concat([old[~_keyOf(old, key).isin(_keyOf(df, key))], df], ignore_index = True)
     df.to_csv(path, index = False)
 
 
-# The row-identity keys of the two merged csvs. commonX is in both -- see mergeWrite.
+def _keyCell(v):
+    """ One key value as a string that survives the csv round trip: NaN/NA/'' -> '__na__'; bools, ints
+    and floats through repr(float(v)) (True == 1.0 == 1, 3 == 3.0); everything else str(v). """
+    if isinstance(v, (bool, np.bool_, int, np.integer, float, np.floating)):
+        f = float(v)
+        return '__na__' if np.isnan(f) else repr(f)
+    if v is None or v is pd.NA or (isinstance(v, str) and v == ''):
+        return '__na__'
+    return str(v)
+
+
+def _keyOf(d, key):
+    """ The row keys of frame d over the columns `key`, canonicalised cell by cell (_keyCell). """
+    return pd.MultiIndex.from_arrays([[_keyCell(v) for v in d[k].tolist()] for k in key])
+
+
+# The row-identity keys of the merged csvs, one per stage. spec and commonX are in every one -- see
+# mergeWrite -- so the 'size' rows coexist with the 'scale' rows (the comparison arm) in one file and a
+# rerun replaces only its own rows. No csv here carries rho: this driver is LOG at rho = 1; runESCcrra's
+# keys add it.
 KEYCAL = ['spec', 'phi', 'commonX']
 KEYSHK = ['spec', 'phi', 'commonX', 'scenario', 'θpinned']
+KEYPATH = ['spec', 'phi', 'commonX', 'pos']
+KEYCTY = ['spec', 'phi', 'commonX', 'country', 'wedgeFrom']
+KEYPERM = ['spec', 'phi', 'commonX', 'source']
+KEYFIG = ['spec', 'phi', 'commonX', 'axis', 'value']
 
 
 def pickCalib(calib, spec, phi, commonX):
@@ -248,7 +274,7 @@ def stagePath(specs, phis, calib, out, ρ = 1.0, commonX = False):
                              'θ': float(led['θ'].xs(t)), 'τ': r['τ'], 'sr': r['sr'],
                              'workweek': r['workweek'], 'R': r['R'],
                              'τExo': rb['τ'], 'srExo': rb['sr'], 'workweekExo': rb['workweek']})
-            pd.DataFrame(rows).to_csv(out, index = False)
+            mergeWrite(out, rows, KEYPATH)
             print('[{}, φ={}] θ path: {}'.format(spec, phi,
                   '  '.join('{:.3f}'.format(x) for x in led['θ'].values[:8])))
     return pd.DataFrame(rows)
@@ -457,7 +483,7 @@ def stageCountry(specs, phis, calib, out, commonX = False):
                           .format(spec, phi, label, rec['p'], rec['θ'], rec['message']))
                 except Exception as e:
                     print(f'  {label} own-wedge FAILED {type(e).__name__}: {e}')
-                pd.DataFrame(rows).to_csv(out, index = False)
+                mergeWrite(out, rows, KEYCTY)
     return pd.DataFrame(rows)
 
 
@@ -467,9 +493,9 @@ def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None, commonX = False):
     """ The PERMANENT choice of theta (app:ESC), calibrated in its own right and compared with the leaded
     one at the same wedge.
 
-    Three rows per (spec, phi): the no-wedge case (which the appendix reports as a corner and which this
-    reproduces), the leaded-calibrated wedge evaluated under the permanent timing, and the permanent
-    timing's OWN calibrated p. The last is the number that belongs beside the appendix's 0.41.
+    One no-wedge row (spec 'none', the corner the appendix reports, independent of the wedge asked for)
+    and, per (spec, phi), the permanent timing's OWN calibrated p with the leaded design at that same wedge
+    beside it (θLeaded). The own p is the number that belongs beside the appendix's 0.41.
 
     Three readings of the predetermined ratio are recorded per row (modelESC.solvePermanent's `pinning`).
     theta_perm is the anticipated vote's fixed point; theta_permIncumbent is the unanticipated reform, which
@@ -477,22 +503,22 @@ def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None, commonX = False):
     construction on the calibrated rows and separate only elsewhere. theta_permMovingSi is the WRONG object
     under either timing, kept because the gap is ~0.13 in theta and belongs on the record."""
     rows = []
+    # (a) no wedge -- one row, it does not depend on (spec, phi)
+    m = buildUS(None, ρ = ρ, commonX = commonX)
+    m.calibrate()
+    r = m.solvePermanent('LOG', θCand = θCand)
+    rows.append({'spec': 'none', 'phi': np.nan, 'commonX': commonX, 'p': np.nan, 'source': 'none',
+                 'θStar': float(m.db['θ'].xs(m.t0Year)), 'θPerm': r['θ'],
+                 'atBound': r['atBound'], 'nTurning': r['nTurning'],
+                 'converged': r['converged'], 'θPermIncumbent': r['θIncumbent'],
+                 'θPermMovingSi': r['θMoving'],
+                 'θLeaded': m.leadedDesignAtT0(m.ESC.solveBackward()),
+                 'τAtChoice': r['τAtChoice']})
+    print('no wedge: θ_perm={:.4f} (corner={}, turns={})'.format(r['θ'], r['atBound'], r['nTurning']))
+    mergeWrite(out, rows, KEYPERM)
+
     for spec in specs:
         for phi in phis:
-            # (a) no wedge
-            m = buildUS(None, ρ = ρ, commonX = commonX)
-            m.calibrate()
-            r = m.solvePermanent('LOG', θCand = θCand)
-            rows.append({'spec': 'none', 'phi': np.nan, 'commonX': commonX, 'p': np.nan, 'source': 'none',
-                         'θStar': float(m.db['θ'].xs(m.t0Year)), 'θPerm': r['θ'],
-                         'atBound': r['atBound'], 'nTurning': r['nTurning'],
-                         'converged': r['converged'], 'θPermIncumbent': r['θIncumbent'],
-                         'θPermMovingSi': r['θMoving'],
-                         'θLeaded': m.leadedDesignAtT0(m.ESC.solveBackward()),
-                         'τAtChoice': r['τAtChoice']})
-            print('[{}, φ={}] no wedge: θ_perm={:.4f} (corner={}, turns={})'.format(
-                spec, phi, r['θ'], r['atBound'], r['nTurning']))
-
             # (b) the permanent timing's own calibrated p
             m = buildUS({'spec': spec, 'phi': phi, 'p': 0.4}, ρ = ρ, commonX = commonX)
             try:
@@ -511,7 +537,7 @@ def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None, commonX = False):
                              'τAtChoice': r['τAtChoice']})
                 print('  own p={:.4f}: θ_perm={:.4f} (target {:.4f}), leaded at the same wedge={:.4f}'.format(
                     rec['p'], r['θ'], rec['θ'], rows[-1]['θLeaded']))
-            pd.DataFrame(rows).to_csv(out, index = False)
+            mergeWrite(out, rows, KEYPERM)
     return pd.DataFrame(rows)
 
 
@@ -547,7 +573,7 @@ def stageFig1(specs, phis, calib, out, ρ = 1.0, commonX = False):
 
             for axis, values in (('nu', np.linspace(0.95, 1.55, 13)),
                                  ('inequality', np.linspace(0.5, 1.3, 9))):
-                for v in values:
+                for v in np.round(values, 10):          # a key column: must round-trip through the csv
                     m = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
                     m.db.update(m.adjPar('β', pars0['β']))
                     m.db.update(m.adjPar('ω', pars0['ω']))
@@ -561,14 +587,15 @@ def stageFig1(specs, phis, calib, out, ρ = 1.0, commonX = False):
                         sols = m.ESC.solveBackward()
                         θStar = float(m.db['θ'].xs(t0))
                         ch = m.leadedDesignAtT0(sols)
-                        rows.append({'spec': spec, 'phi': phi, 'p': p, 'axis': axis, 'value': float(v),
+                        rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p, 'axis': axis,
+                                     'value': float(v),
                                      'ν': float(m.db['ν'].xs(t0)), 'θData': θStar, 'θChoice': ch,
                                      'τ': m.ESC.τAt(t0, θStar),
                                      'τAtChoice': m.ESC.τAt(t0, ch),
                                      'ηRatio': float(m.db['ηi'].xs(t0).values[-1]/m.db['ηi'].xs(t0).values[0])})
                     except Exception as e:
                         print(f'  {axis}={v:.3f} FAILED {type(e).__name__}: {e}')
-                    pd.DataFrame(rows).to_csv(out, index = False)
+                    mergeWrite(out, rows, KEYFIG)
                 d = pd.DataFrame(rows)
                 d = d[(d.spec == spec) & (d.phi == phi) & (d.axis == axis)]
                 print('[{}, φ={}] {:<11}: θ choice {:.3f} -> {:.3f} over {} = {:.2f} -> {:.2f}'.format(

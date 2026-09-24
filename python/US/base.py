@@ -193,7 +193,7 @@ class Base:
     # θ/τ: they are primitives of the political environment, not objects any solver chooses.
     def Vtilde(self, t = None, lag = ''):
         """ Ṽ = Σ_i γ_i (y_i-1)²/y_i, y_i = hηRatio (relative labour income, Σ_i γ_i y_i = 1): the
-        Harberger weight in f under 'size' (Eq esc:AB). Scalar on Base/BaseGrid, (T,) on BaseTime. Terms
+        Harberger weight in f under 'size' (Eq esc:Vtilde). Scalar on Base/BaseGrid, (T,) on BaseTime. Terms
         with γ_i = 0 are masked BEFORE the product is formed, so a zero-mass slot with a synthetic or
         non-finite y_i cannot poison the sum through 0·inf or 0·NaN. Memoised inside cacheParams(). """
         def _v():
@@ -562,7 +562,7 @@ class Base:
         closed form here holds siRatio_ fixed by construction.
 
         Under 'size' the bracket's f(θ_t, τ_t) moves with τ_t, so the numerator carries the factor
-        (1 + τ ∂_τ ln f) (Eq esc:AB); dlnfWedge_dτ is 0 under every other spec and the factor is exactly 1. """
+        (1 + τ ∂_τ ln f) (Eq esc:dlnc2i); dlnfWedge_dτ is 0 under every other spec and the factor is exactly 1. """
         α, p_, κ_ = self.get('α', t), self.get('p[t-1]', t), self.get('κ[t-1]', t)
         A0 = (1-α)/α * p_/κ_
         bracket = (self._bcast(self.wedgeA(θ, τ, t, '[t-1]'))*self.hηRatio(t, lag = '[t-1]')

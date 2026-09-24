@@ -592,7 +592,7 @@ class ModelUS:
         R, w, w0 = self.BT.R(s_, h), self.BT.w(s_, h), self.BT.w0(s_)
         hi = self.BT.hi(h)
         bbar = self.BT.bbar(τ, w, h, h_)
-        bi = self.BT.bi(θ, bbar, h_)
+        bi = self.BT.bi(θ, bbar, h_, τ = τ)      # τ_t reaches b^i through f(θ_t, τ_t) under the size wedge
         b0 = self.BT.b0(ε, bbar, h_)
 
         # si_s has no terminal-period counterpart at all (s_{T-1}=0 makes the ratio 0/0), so we pad with a
