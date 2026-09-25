@@ -4,6 +4,16 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-25 — `esc-sizeLeak` closed out and on Overleaf for review; the merge waits for MGE
+
+WP4's CRRA leg finished (S4 diagnosed, exact numbers kept by RKB), WP6 committed, finding #17 accepted. The
+paper (`6a86b4…`) and, for the first time through `writing/overleaf.py`, the technical note (`6a4b74…`) were
+pushed from the branch; before the note's forced first push every online file was checked against this
+repo's history (all 46 were old committed versions). That push exposed a defect: a file renamed only in case
+(`Packages.tex` there, `packages.tex` here) would have been deleted on Overleaf; `push` now carries such a
+rename (`caseRenames`, tested against a local bare remote) and `CLAUDE.md` names both projects. The merge
+into `main` waits for RKB's discussion with MGE (`notes/TODO.md` P1).
+
 ## 2026-09-24 — the size-scaled leak replaces the design wedge (branch `esc-sizeLeak`, P1)
 
 Section 7's cost $f(\theta)=\phi+(1-\phi)\theta^p$ attached the deadweight loss to the design label, so a
