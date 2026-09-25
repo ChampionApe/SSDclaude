@@ -4,6 +4,21 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-24 — the size-scaled leak replaces the design wedge (branch `esc-sizeLeak`, P1)
+
+Section 7's cost $f(\theta)=\phi+(1-\phi)\theta^p$ attached the deadweight loss to the design label, so a
+compressed income distribution cornered the French income row and the US wedge cornered the UK
+(`notes/esc_inequalityChannel.md`). Replaced by $f(\theta,\tau)=\exp(-\tfrac12\lambda\tau\tilde V(1-\theta)^2)$,
+the Harberger loss of the flat component's implicit taxes (Summers 1989, Disney 2004; Koethenbuerger, Poutvaara
+and Profeta 2008), derived in `writing/US/model_esc.tex`; $\theta^\ast = 0.738$ unchanged. Six work packages in
+parallel worktrees per `notes/plan_escSizeLeak.md`, D1 to D6 at their defaults. $\lambda$ = 18.24, 8.64, 1.73 at
+$\rho$ = 0.5, 1, 2; every counterfactual interior; the joint French row less Bismarckian at every $\rho$; one US
+$\lambda$ puts the UK at 0.625 and France at 0.749 (observed 0.560, 1.000), the UK's own $\lambda$ within 16 % of
+the US's. The previous wedge stays as `US_ESC_ScaleWedge` (D2). S4 fired: the path-iteration cross-check
+separates from the published exact solver by up to 0.09 on the French voting rows at $ho$ = 2, not by the
+candidate grid; check 8's $R$ drift (2.9e-3 LOG, 6.6e-3 at $ho$ 0.5) exceeds its 1e-3 tolerance. Merge into `main` and the Overleaf push wait for RKB's
+read of section 7 (`notes/TODO.md` P1). Per-arm detail in the US and paper logs of the same date.
+
 ## 2026-09-22 — the UK exercise, France's hours corrected, and the paper's tables moved to appendix E
 
 Martin's 2026-09-18 Overleaf pass pulled (layout to 12pt/1in/one-and-a-half spacing; his hand edit to the

@@ -136,6 +136,13 @@ Candidate B adopted on 2026-09-24 as the branch `esc-sizeLeak`; the execution pl
 behind the form, the work packages and the stop conditions, is `notes/plan_escSizeLeak.md`. The pilot's
 script, result csvs and log are in `archive/pilots/escSizeLeak_2026-09-24/`.
 
+Outcome (2026-09-24, the branch executed with $\tilde V$ in place of $V$ and $\tau$ inside $f$): at $\rho = 1$
+one $\lambda = 8.64$ calibrated on the US gives the French income row 0.772 (interior), acute ageing 0.825,
+French voting 0.653, income + voting 0.627, and the ranking UK 0.625 < US 0.738 < France 0.749 under the
+US $\lambda$, with the UK's own $\lambda$ within 16 % of the US's. Numbers: `results/esc/*.csv` rows
+`spec = size`, the paper's `Tables/US_ESC_*.tex`; the CRRA rows and the write-up are logged in
+`python/US/RESEARCH_LOG.md` and `python/paper/RESEARCH_LOG.md` of the same date.
+
 ## 6. What adopting A (or B) touches
 
 - `python/US/base.py` `fWedge`: one new `spec` (A), or a τ argument through `wedgeA`/`wedgeB` and the

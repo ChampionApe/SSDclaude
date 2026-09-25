@@ -1,0 +1,11 @@
+method = path, ns = 150
+  calibrating France at rho=2.0 for the French scenarios ...
+  baseline  pin=True  θ_t0=0.7382  τ_t0=0.1443 sr_t0=0.2126 ww_t0=39.39  (θ_t1=0.7382, 4s)
+  baseline  pin=False θ_t0=0.7172  τ_t0=0.1446 sr_t0=0.2122 ww_t0=39.44  (θ_t1=0.7766, 1007s)
+  frVoting  pin=True  θ_t0=0.7382  τ_t0=0.1608 sr_t0=0.2078 ww_t0=39.11  (θ_t1=0.7382, 5s)
+  frVoting  pin=False θ_t0=0.3506  τ_t0=0.1676 sr_t0=0.2083 ww_t0=38.66  (θ_t1=0.4498, 1381s)
+  frBoth    pin=True  θ_t0=0.7382  τ_t0=0.1504 sr_t0=0.2106 ww_t0=39.98  (θ_t1=0.7382, 5s)
+  frBoth    pin=False θ_t0=0.3000  τ_t0=0.1546 sr_t0=0.2114 ww_t0=39.56  (θ_t1=0.4262, 1438s)
+  France    pin=True  θ_t0=1.0000  τ_t0=0.2129 sr_t0=0.1782 ww_t0=35.24  [54s]
+
+-> results\esc

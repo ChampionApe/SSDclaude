@@ -4,6 +4,19 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_paper.md`, in
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-24 — the pipeline reads the `'size'` cost spec (WP3); `US_ESC_Country`, `US_ESC_ScaleWedge`, WP5
+
+`config.US['esc']`: `spec = 'size'`, `comparisonSpec = 'scale'`, per-(spec, ρ) `bracket` through
+`config.escBracket` (set from the LOG λ: [2.88, 43.2] at ρ 0.5, [0.432, 25.9] at ρ 2), `phi` a dummy key.
+`datasets.escWedge` reads `fStar`/`f0`/`Vtilde` with the `'scale'` fallback; `escCountry(spec=)`. `tablesUS`:
+`US_ESC_Calibration` prints λ, f(θ*), f(0), Ṽ; new `escCountryTable` (`US_ESC_Country`, in place of
+`UK_ESC_Calibration`, now deleted) and `escScaleWedge` (D2); 46 outputs. Stage (i) calibrates both specs under
+LOG and the paper's under CRRA, one command per ρ with its bracket, φ-robustness only for a spec whose f reads
+φ; stage (ii)'s LOG entries run `--spec size scale`. WP5 rewrote `sec:esc`, the intro, abstract, conclusion,
+`app:US:ukESC` (the cross-country test) and `app:US:escTables` (the previous wedge's paragraph);
+`notes/paper_styleGuide.md` gained the cost vocabulary. Rebuilt with `'size'` rows at ρ ∈ {0.5, 1, 2}
+(`logs/escSizeLog0924.log`, `escSizeCrra0924.log`); the stationary footnote's ESC numbers are 0.053 (LOG) and 0.059 (CRRA), from 0.005 and 0.016.
+
 ## 2026-09-22 — the UK arm, the leisure row back, and eight tables moved to appendix E
 
 `config.US['ukHost']`, `usShockCsv`, `usHasSheets`; `datasets.usShocks(host=)`; `tablesUS._otherShocks`

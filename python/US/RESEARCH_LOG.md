@@ -4,6 +4,19 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_US.md`, index
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-24 — the `'size'` wedge f(θ, τ) (WP2 and WP4 of `notes/plan_escSizeLeak.md`)
+
+`Base.fWedge/wedgeA/wedgeB(θ, τ, t, lag)` gain the spec `'size'`; `Vtilde(t, lag)` memoised and zero-mass
+masked; `dlnfWedge_dτ`; τ passed at every call site (same-date pairs); `dlnc2i_dτ` × (1+τ∂τ ln f); `model.py`'s
+`EE_report` passes τ to `bi`. `calibrateWedge` brackets per spec (`WEDGE_BRACKET`), λ in `wedgeP`. Every
+`runESC.py` stage merges its csv (per-stage keys; a bool/NaN key-string defect that duplicated rows fixed);
+calibration rows carry `Vtilde`, `fStar`, `f0`, `τ0`. `test_esc.py` 9–14: λ = 0 bitwise the no-wedge model,
+the retirees' τ-derivative against a finite difference to 2.6e-10, Ṽ invariances to 1e-16, `'scale'` p =
+0.4076119851 reproduced (~235 s now). Results, common X: λ = 8.643 (LOG; Ṽ 0.436, f(θ*) 0.982, f(0) 0.762,
+R drift 2.9e-3), 18.24 (ρ 0.5) and 1.728 (ρ 2) exact, one sign change per scan (a coarse-grid inner failure at
+one node each, skipped as designed); the two ρ ran in parallel through `--tag` (`logs/runEscSizeCrra0924.ps1`).
+S4 fired: the path iteration (λ = 20.31, 1.917) separates from the exact choice by 0.031 (French voting, ρ 0.5) and 0.063/0.091 (voting, joint, ρ 2); 81 candidates move the exact choice ≤ 0.006, and at the exact λ the path iteration picks 0.717 at baseline, so it is the method's approximation, not the grid (`archive/pilots/escSizeLeak_S4_2026-09-25/`). Stationary check under `'size'` (`results/numerical/US_ESC_stationaryApprox.csv`): the ν-frozen policy misplaces the design in force by up to 0.053 (LOG), 0.042 (ρ 0.5) and 0.059 (ρ 2), against 0.005/0.016 under `'scale'`: the design now answers to the size of the system, which the frozen ν mis-states most at 2020–2050.
+
 ## 2026-09-22 — a UK host for the French-characteristics shocks
 
 `runShocksUS.py --host US|UK|UKUS`: the host is rebuilt from its sweep row (`hostModel`; on a ModelFR

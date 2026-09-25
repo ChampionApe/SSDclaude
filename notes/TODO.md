@@ -13,13 +13,26 @@ one data caveat under D1, France's voting at the UK cuts, MGE's; and P1 below, t
 
 ## Plan in progress
 
-**P1. The size-scaled leak as the paper's endogenous design** -- branch `esc-sizeLeak`, opened 2026-09-24.
-Section 7's wedge $f(\theta)$ burns revenue at a given $\theta$ whatever the income distribution, which is
-why France's income distribution corners the chosen design and the US wedge corners the UK. The branch
-replaces it by a leak quadratic in the cross-subsidy and proportional to the size of the system. Diagnosis,
-candidates and the pilot: `notes/esc_inequalityChannel.md`. Work packages, handoff protocol, stop
-conditions and the decisions RKB may overrule: `notes/plan_escSizeLeak.md`. W1's sentence and the
-inequality sentences of the abstract and conclusion are rewritten there (WP5), so W1 waits for P1.
+**P1. The size-scaled leak as the paper's endogenous design** -- branch `esc-sizeLeak`, opened and
+executed 2026-09-24 (WP1 to WP6 of `notes/plan_escSizeLeak.md`; decisions D1 to D6 at their defaults on
+RKB's instruction). Section 7's wedge $f(\theta)$ burned revenue at a given $\theta$ whatever the income
+distribution, which is why France's income distribution cornered the chosen design and the US wedge
+cornered the UK; the branch replaces it by a leak quadratic in the cross-subsidy and proportional to the
+size of the system. Diagnosis, candidates, the pilot and the outcome: `notes/esc_inequalityChannel.md`.
+**Open on P1**: (a) stop condition S4 fired -- the path-iteration cross-check separates from the published
+exact solver by up to 0.09 on the French voting rows at $ho = 2$ (0.031 at $ho = 0.5$), and 81 candidates
+move the exact choice by at most 0.006, so the gap is the path iteration's approximation
+(`writing/US/num_esc.tex` checks; `archive/pilots/escSizeLeak_S4_2026-09-25/`): RKB decides whether the
+exact numbers stand as published (the default) or the gap needs more. (b) RKB reads the rewritten
+section 7, intro, abstract and conclusion (WP5), then merges
+`esc-sizeLeak` into `main` and pushes the paper to Overleaf (`pull --dry-run` first); the plan then moves to
+`archive/notes/` with a pointer from the root log. W1 is rewritten inside WP5 and closes with it.
+
+**C5. A linear (Okun) term in the leak** -- follow-up to P1, decision D3. Under a purely quadratic loss the
+first unit of redistribution is free at the margin, so no electorate chooses exactly $\theta = 1$ and
+France's design is a prediction the model cannot reach. A term linear in $1-\theta$ restores the corner at
+the price of a second parameter, which the UK's design could pin (two targets, two parameters, France as
+the prediction). Not in this draft; one sentence in `sec:esc` says so.
 
 ## Data tasks
 

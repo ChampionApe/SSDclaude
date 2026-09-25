@@ -19,8 +19,9 @@
 | `calibrateRhoGrid.py`, `calibrateRhoGridEU.py`, `runShocksUS.py`, `runESC.py`, `runESCcrra.py`, `collectESCexperiments.py` | drivers |
 | `stationaryApprox.py`, `stationaryApproxESC.py` | prepub checks: a stationary policy function (ν frozen at each date's value) against the exact date-specific one along the demographic path, for taxes (CRRA) and for the endogenous design (LOG, exact 2-D CRRA); `results/numerical/` |
 
-Eight fast test suites (~3 min; `test_esc.py` alone ~100 s) and two slow ones (`test_escTiming.py`, the
-permanent timing's reference numbers, ~75 s; `test_escCRRA.py`, ~7 min), registered in `python/runTests.py`.
+Eight fast test suites (~5 min; `test_esc.py` alone ~235 s, both cost specs) and two slow ones
+(`test_escTiming.py`, the permanent timing's reference numbers, ~75 s; `test_escCRRA.py`, ~7 min),
+registered in `python/runTests.py`.
 
 ## Running it
 
@@ -38,8 +39,10 @@ characteristics are imposed on: `US` (default), `UK` (the UK's own calibration, 
 sweep `FRUK`) or `UKUS` (the UK at US percentiles, France as is); the host is rebuilt from its sweep row
 (`hostModel`) and its baseline must reproduce the workbook tax, which the script asserts. EU sweeps need the complete US sweep of the
 *same variant* first (`USReference` matches `ρ` exactly; `--maxHalvings` defaults to 0 there). ESC drivers
-merge into their csvs (`runESC.mergeWrite`); `runESCcrra.py --bracket` must span every `ρ` asked for, since
-`p` falls from 0.965 to 0.090 across `ρ` = 0.5..2.
+merge into their csvs in every stage (`runESC.mergeWrite`, keyed on `spec`, `phi`, `commonX` and the row's
+own identifiers); `runESCcrra.py --bracket` is per `ρ` and per spec, because the calibrated cost falls
+steeply in `ρ` (`config.US['esc']['bracket']` records the paper's; `runESCcrra.py --tag` writes to a
+separate csv, used to run two `ρ` in parallel without racing on one file).
 
 ## Invariants the code depends on
 
@@ -96,13 +99,22 @@ calibration (`--noFrance` skips).
 
 ## Endogenous `θ`
 
-- The leaded choice under the `f(θ)` deadweight wedge. Measured in `test_esc.py`: `z_t` depends on
-  `(τ_t, θ_t)` alone, so `τ_t = τPolicy_t(θ_t)`; under LOG the choice has no state and is invariant to
-  `s_{t-1}`. Both fail under CRRA (`LeadedCRRA` solves the path, reports `stateSensitivity`).
-- Runs under the variant `config.US['commonX']` names; `commonX` is part of every merge key (#13). The
-  `flat` spec is implemented but not run for the paper.
-- Calibration target: the design *in force* in 2020 (`leadedDesignAtT0`); `p` = 0.4076 at `ρ` = 1,
-  `scale`, φ = 0.5. `p` and the chosen design are bit-identical across the calibration variants; only
+- The leaded choice under a deadweight cost on benefits, `Base.fWedge(θ, τ, t, lag)` with three specs
+  (`writing/US/model_esc.tex`, Eq `esc:AB`). **`'size'` is the paper's** (2026-09-24): `f = exp(-½ λ τ Ṽ
+  (1-θ)²)`, the Harberger loss of the flat component's implicit taxes, `Ṽ = Σ γ_i (y_i-1)²/y_i`
+  (`Base.Vtilde`, zero-mass slot masked), `λ` in the `wedgeP` slot and the csv column `p`, `φ` a dummy key.
+  `'scale'` (`f = φ+(1-φ)θ^p`) is the previous wedge and the appendix comparison arm; `'flat'` is
+  implemented but not run. `f` takes the τ of the same date as its θ, so every call site passes it, and
+  `dlnc2i_dτ` carries `(1 + τ ∂_τ ln f)` (Eq `esc:dlnc2i`); under the other specs τ is ignored and those
+  paths are bit-identical to before. Measured in `test_esc.py`: `z_t` depends on `(τ_t, θ_t)` alone, so
+  `τ_t = τPolicy_t(θ_t)`; under LOG the choice has no state and is invariant to `s_{t-1}`. Both fail under
+  CRRA (`LeadedCRRA` solves the path, reports `stateSensitivity`).
+- Runs under the variant `config.US['commonX']` names; `commonX` and `spec` are part of every merge key,
+  in every stage of `runESC.py` and `runESCcrra.py` (#13), so the two specs' rows coexist in one csv.
+- Calibration target: the design *in force* in 2020 (`leadedDesignAtT0`), by a log-grid scan of the cost
+  parameter for one sign change (`WEDGE_BRACKET` per spec) then a bracketed root. At `ρ` = 1: `λ` = 8.643
+  under `'size'` (`Ṽ_US` = 0.436, `f(θ*)` = 0.982, `f(0)` = 0.762), `p` = 0.4076 under `'scale'`. The
+  calibrated parameter and the chosen design are bit-identical across the calibration variants; only
   exogenous rows that swap `η` move (`notes/esc_experiments_acrossRho.md`).
 - `LeadedCRRA2D` is the exact 2-D recursion and the PUBLISHED CRRA method (`runESCcrra.py --exact`,
   `method` = exact rows; the path iteration's rows stay under `method` = path as the cross-check). Pinned
@@ -120,8 +132,10 @@ calibration (`--noFrance` skips).
 Implemented and tested: EE, LOG and CRRA PEE, both calibration variants, `ModelFR`, ρ sweeps for all four
 calibrations in both variants, three counterfactual families in both readings, the endogenous-`θ` leaded
 choice (LOG, CRRA path iteration, exact 2-D) and permanent timing, and the `python/paper/` wiring.
-Structural ESC corners: France and the UK-at-US-percentiles have no own-wedge calibration (the observed
-design is the `θ = 1` corner); the UK's own `p` = 0.185 against the US's 0.408.
+Under `'size'` the UK (own `λ` = 7.26 against the US's 8.64) and the UK-at-US-percentiles (6.52) have
+own calibrations; France has none, by construction: its observed design is the `θ = 1` corner, and under a
+cost quadratic in the redistribution performed the first unit of redistribution is free at the margin, so
+no finite `λ` places the choice there (`results/esc/escCountry.csv`).
 
 **Open**: `PermanentCRRA` (run 2026-09-11, `results/esc/escPermanentCRRA.csv`) puts the costless permanent
 choice at θ = 0 for ρ ≤ 1.3 and at θ = 1 for ρ ≥ 1.4 -- the paper's wording is RKB's (`notes/TODO.md`

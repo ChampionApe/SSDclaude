@@ -152,3 +152,7 @@ One line per entry: title, then `file:line`.
   (`pilotQuadWedge.py`, `pilotUKown.py`, the two result csvs, the json and the log). Quoted in
   `notes/esc_inequalityChannel.md` section 4; the branch `esc-sizeLeak` implements it properly
   (`notes/plan_escSizeLeak.md`).
+- 2026-09-25 — stop condition S4 of that plan, the two diagnostics at rho = 2 under 'size':
+  `archive/pilots/escSizeLeak_S4_2026-09-25/` (the exact 2-D choice at 81 candidates, and the path
+  iteration at the exact lambda with its planted calibration row; launchers and run logs). Quoted in
+  `writing/US/num_esc.tex`'s checks and the 2026-09-24 entry of `python/US/RESEARCH_LOG.md`.
