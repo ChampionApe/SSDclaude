@@ -20,10 +20,8 @@ distribution, which is why France's income distribution cornered the chosen desi
 cornered the UK; the branch replaces it by a leak quadratic in the cross-subsidy and proportional to the
 size of the system. Diagnosis, candidates, the pilot and the outcome: `notes/esc_inequalityChannel.md`.
 **Open on P1**: (a) stop condition S4 fired -- the path-iteration cross-check separates from the published
-exact solver by up to 0.09 on the French voting rows at $ho = 2$ (0.031 at $ho = 0.5$), and 81 candidates
-move the exact choice by at most 0.006, so the gap is the path iteration's approximation
-(`writing/US/num_esc.tex` checks; `archive/pilots/escSizeLeak_S4_2026-09-25/`): RKB decides whether the
-exact numbers stand as published (the default) or the gap needs more. (b) RKB reads the rewritten
+exact solver by up to 0.09 on the French voting rows, the path iteration's own approximation -- and RKB
+kept the exact numbers as published (2026-09-25); finding #17 accepted the same day. (b) RKB reads the rewritten
 section 7, intro, abstract and conclusion (WP5), then merges
 `esc-sizeLeak` into `main` and pushes the paper to Overleaf (`pull --dry-run` first); the plan then moves to
 `archive/notes/` with a pointer from the root log. W1 is rewritten inside WP5 and closes with it.

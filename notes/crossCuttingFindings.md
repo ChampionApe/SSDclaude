@@ -232,3 +232,20 @@ single file was expected -- or a file you edited minutes ago reappears in its re
 **Habit.** Run `git status` before any command that pulls a remote over the working tree, and commit (or
 stash) first. Read the count in the tool's own summary line against the number of files expected, and
 treat a mismatch as a revert until proven otherwise; `--dry-run` says exactly which files are in play.
+
+## 17. A reduced-form cost must vanish when the quantity it prices vanishes
+
+**Statement.** A cost attached to a policy's label rather than to what the policy does keeps charging when
+the policy does nothing. Section 7's wedge $f(\theta)=\phi+(1-\phi)\theta^p$ burned a share $1-\phi$ of
+revenue at $\theta=0$ even when all incomes were equal, where flat and earnings-related benefits pay the
+same. A compressed income distribution then shrank the stakes and left the cost in place, and the French
+income row and the UK went to the $\theta=1$ corner (2026-09-24, `notes/esc_inequalityChannel.md`).
+
+**Tell.** A counterfactual that removes the priced quantity (here the income dispersion $\tilde V$) sends
+the choice to a corner, by more than any other experiment moves it; or the cost is positive at a point
+where the policy's options are observationally equivalent.
+
+**Habit.** Before calibrating a reduced-form cost, evaluate it where the priced quantity is zero and
+require no loss there, as a test (`test_esc.py` section 13: $\tilde V=0$ gives $f\equiv1$). Prefer a form
+whose derivation names the quantity, such as the Harberger loss of the implicit tax, so that its scaling is
+derived rather than chosen.

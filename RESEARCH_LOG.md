@@ -15,8 +15,8 @@ parallel worktrees per `notes/plan_escSizeLeak.md`, D1 to D6 at their defaults. 
 $\rho$ = 0.5, 1, 2; every counterfactual interior; the joint French row less Bismarckian at every $\rho$; one US
 $\lambda$ puts the UK at 0.625 and France at 0.749 (observed 0.560, 1.000), the UK's own $\lambda$ within 16 % of
 the US's. The previous wedge stays as `US_ESC_ScaleWedge` (D2). S4 fired: the path-iteration cross-check
-separates from the published exact solver by up to 0.09 on the French voting rows at $ho$ = 2, not by the
-candidate grid; check 8's $R$ drift (2.9e-3 LOG, 6.6e-3 at $ho$ 0.5) exceeds its 1e-3 tolerance. Merge into `main` and the Overleaf push wait for RKB's
+separates from the published exact solver by up to 0.09 on the French voting rows at $\rho$ = 2, not by the
+candidate grid; check 8's $R$ drift (2.9e-3 LOG, 6.6e-3 at $\rho$ 0.5) exceeds its 1e-3 tolerance. Merge into `main` and the Overleaf push wait for RKB's
 read of section 7 (`notes/TODO.md` P1). Per-arm detail in the US and paper logs of the same date.
 
 ## 2026-09-22 — the UK exercise, France's hours corrected, and the paper's tables moved to appendix E
