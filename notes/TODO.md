@@ -21,9 +21,10 @@ cornered the UK; the branch replaces it by a leak quadratic in the cross-subsidy
 size of the system. Diagnosis, candidates, the pilot and the outcome: `notes/esc_inequalityChannel.md`.
 **Open on P1**: (a) stop condition S4 fired -- the path-iteration cross-check separates from the published
 exact solver by up to 0.09 on the French voting rows, the path iteration's own approximation -- and RKB
-kept the exact numbers as published (2026-09-25); finding #17 accepted the same day. (b) RKB reads the rewritten
-section 7, intro, abstract and conclusion (WP5), then merges
-`esc-sizeLeak` into `main` and pushes the paper to Overleaf (`pull --dry-run` first); the plan then moves to
+kept the exact numbers as published (2026-09-25); finding #17 accepted the same day. (b) The paper was
+pushed to Overleaf from `esc-sizeLeak` on 2026-09-25 for RKB's review of section 7, the intro, abstract and
+conclusion (WP5). After it: `pull --dry-run`, then `pull` any online edits and commit them on the branch,
+then merge `esc-sizeLeak` into `main` (fast-forward if `main` has not moved); the plan then moves to
 `archive/notes/` with a pointer from the root log. W1 is rewritten inside WP5 and closes with it.
 
 **C5. A linear (Okun) term in the leak** -- follow-up to P1, decision D3. Under a purely quadratic loss the
