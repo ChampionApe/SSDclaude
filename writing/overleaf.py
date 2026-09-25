@@ -43,7 +43,7 @@ credential manager after the first push):
     A clone of the project lives in writing/exports/git-<project>/ (gitignored) and the URL is remembered
     beside it after the first use. `push` fast-forwards the clone, copies the export's file set over it --
     the same files, the same reference check -- DELETES clone files that no longer exist here, commits and
-    pushes. A file that was edited online since the last push and differs from the local copy is a
+    pushes. A file renamed here only in case is renamed on Overleaf, not deleted (caseRenames). A file that was edited online since the last push and differs from the local copy is a
     conflict: push refuses and says `pull` first (--force overwrites). `pull` records what it took, so
     pulling someone's edit, building on it and pushing it back is an ordinary push; a file the pull did
     NOT take (protected, binary) keeps conflicting until it is resolved at its source. On the FIRST push nothing is known
@@ -65,8 +65,9 @@ PROJECTS = {
     'note':  {'root': '.',     'main': 'main.tex',
               'include': ['main.tex', 'packages.tex', 'References.bib',
                           'informalAnalytical', 'informalSavings', 'US']},
-    # The paper's Overleaf project is https://da.overleaf.com/project/6a86b4569416ca8062f0b899; its git
-    # URL (Menu > Git in that project) is remembered under exports/ after the first push or pull.
+    # The paper's Overleaf project is https://da.overleaf.com/project/6a86b4569416ca8062f0b899 and the
+    # note's https://da.overleaf.com/project/6a4b74c7259adae491b45669; each git URL (Menu > Git in the
+    # project) is remembered under exports/ after the first push or pull.
     'paper': {'root': 'Paper', 'main': 'main.tex', 'include': ['.']},
 }
 
@@ -350,6 +351,25 @@ def sha(path, rel = None):
     return hashlib.sha1(norm(data, rel if rel is not None else path)).hexdigest()
 
 
+def caseRenames(files, online):
+    """ [(clone path, export path)] for files whose paths differ only in the case of the file name
+    (`Packages.tex` in the clone, `packages.tex` here). push must carry these as renames: on a
+    case-insensitive disk the copy writes into the clone's old-case file, and the delete step, which
+    compares names exactly, then removes it, so Overleaf would lose the file. A case change in a
+    DIRECTORY name raises instead, since per-file `git mv` cannot rename the directory on such a disk. """
+    local = {rel.casefold(): rel for rel in files}
+    out = []
+    for rel in online:
+        twin = local.get(rel.casefold())
+        if rel in files or twin is None or twin in online:
+            continue
+        if os.path.dirname(rel) != os.path.dirname(twin):
+            raise SystemExit('push refused: {} on Overleaf and {} here differ in the case of a directory '
+                             'name; rename the directory on Overleaf first'.format(rel, twin))
+        out.append((rel, twin))
+    return out
+
+
 def push(name, url = None, force = False, message = None):
     files = projectFiles(name)
     problems = checkReferences(name, files)
@@ -378,6 +398,11 @@ def push(name, url = None, force = False, message = None):
         print('Run `pull {} --dry-run` to review (it applies the import rules), then `push {} --force` '
               'to make Overleaf match this folder.'.format(name, name))
         raise SystemExit(1)
+    renamed = caseRenames(files, online)
+    for old, new in renamed:
+        git(clone, 'mv', old, new)
+    if renamed:
+        online = cloneFiles(clone)
     changed, removed = [], []
     for rel, src in sorted(files.items()):
         dst = os.path.join(clone, rel.replace('/', os.sep))
@@ -389,11 +414,13 @@ def push(name, url = None, force = False, message = None):
         if rel not in files:
             os.remove(p)
             removed.append(rel)
+    for old, new in renamed:
+        print('{:<12} {} (was {})'.format('rename', new, old))
     for rel in changed:
         print('{:<12} {}'.format('update', rel))
     for rel in removed:
         print('{:<12} {}'.format('delete', rel))
-    if not changed and not removed:
+    if not changed and not removed and not renamed:
         print('nothing to push: Overleaf already matches the {} export'.format(name))
         return
     git(clone, 'add', '-A')
@@ -404,7 +431,8 @@ def push(name, url = None, force = False, message = None):
     git(clone, 'push', '--quiet')
     with open(pushedFile(name), 'w', encoding = 'utf-8') as f:
         json.dump({rel: sha(p, rel) for rel, p in cloneFiles(clone).items()}, f, indent = 1)
-    print('{} updated, {} deleted -> pushed to Overleaf'.format(len(changed), len(removed)))
+    print('{} updated, {} renamed, {} deleted -> pushed to Overleaf'.format(len(changed), len(renamed),
+                                                                           len(removed)))
 
 
 def pull(name, url = None, dryRun = False, allFiles = False):

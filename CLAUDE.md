@@ -3,7 +3,7 @@
 ## Project overview
 The project develops an overlapping generations model with heterogeneous households and endogenous policy of the pension system and design. 
 
-The final output from the project is a research paper in Overleaf that can be accessed here: https://da.overleaf.com/project/6a4b74c7259adae491b45669. 
+The final output from the project is a research paper in Overleaf that can be accessed here: https://da.overleaf.com/project/6a86b4569416ca8062f0b899. The technical note (`writing/main.tex` and the model folders) is a separate Overleaf project: https://da.overleaf.com/project/6a4b74c7259adae491b45669. Both are synced with `writing/overleaf.py`.
 
 ## Structure
 The project is self-contained in the current repository. Subfolders:
