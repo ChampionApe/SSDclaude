@@ -37,6 +37,11 @@ France's design is a prediction the model cannot reach. A term linear in $1-\the
 the price of a second parameter, which the UK's design could pin (two targets, two parameters, France as
 the prediction). Not in this draft; one sentence in `sec:esc` says so.
 
+**W7. After the appendix split** (2026-09-29, root log) -- two calls for RKB. (a) France's LIS survey year
+is not stated anywhere in the draft; `sec:oecd` implies 2019. (b) `sec:esc` and the conclusion say the
+UK's own λ is "within 16%" of the US one: true at ρ = 1 (7.264 vs 8.643), but at ρ = 2 it is 61% above
+(2.786 vs 1.728; appendix G.2 says so). Also whether `sec:esc` gets one sentence on the UK-host results.
+
 ## Data tasks
 
 **D1. France regrouped at the UK's income cuts** -- done 2026-09-22, with two caveats for MGE. The source

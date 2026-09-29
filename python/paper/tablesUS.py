@@ -144,6 +144,7 @@ def _otherShocks(commonX = None, host = 'US'):
     df = D.usShocks(commonX = commonX, host = host)
     b = D.usBaseline(df, ρ)
     name = HOSTNAME[host]
+    theName = name if name.startswith('the ') else 'the ' + name      # 'the US', 'the UK'
     rows = [' & '.join(['Baseline'] + _cells(b)) + r' \\']
     for lab in ('Income distribution', 'Leisure preferences', 'Voting'):
         rows.append(' & '.join([lab] + _cells(D.usShockRow(df, ρ, lab, 'full'), b)) + r' \\')
@@ -159,14 +160,14 @@ def _otherShocks(commonX = None, host = 'US'):
             r'state, so the row describes a country that has always had this mix rather than ' + name
             + r' hit by a surprise in 2020. Income '
             r'distribution replaces $\eta_i$ with France\textquotesingle s while holding $X_i$ \emph{and} '
-            r'holding $\theta$ at the ' + name + r' design, so it is a change in inequality alone'
+            r'holding $\theta$ at ' + theName + r' design, so it is a change in inequality alone'
             + (';' if host == 'US' else '') + design
             + r' Leisure preferences rescales every $X_i$ to France\textquotesingle s population-weighted '
             r'mean $X$ at the productivity level of the income row; it is a pure rescaling of the hours '
             r'unit and moves hours and nothing else. All French characteristics '
             r'imposes France\textquotesingle s $\eta_i$, level of $X_i$ and voting weights $\mu_i$ at once. '
             r'The last row is France\textquotesingle s own calibrated path, its savings rate reported as '
-            r'the distance from the ' + name + r' baseline.'
+            r'the distance from ' + theName + r' baseline.'
             + (r' France\textquotesingle s income groups are cut at the UK\textquotesingle s own income '
                r'percentiles here (table \ref{table:a_US:CalibFRUK}).' if host == 'UK' else '')
             + C.variantNote(commonX))
@@ -257,7 +258,8 @@ def ukCrraOtherShocks(commonX = None):
 
 
 # ---------------------------------------------------------------------------------------------------
-COUNTRYNAME = {'US': 'US', 'UK': 'UK', 'FR': 'France', 'FRUK': 'France, UK income groups'}
+COUNTRYNAME = {'US': 'US', 'UK': 'UK', 'FR': 'France', 'FRUK': 'France, UK income groups',
+               'UKUS': 'UK, US income groups'}
 
 
 def usukfrCalibration(commonX = None):
@@ -366,6 +368,12 @@ def frukHouseholdHeterogeneity(commonX = None):
     return _householdHeterogeneity('FRUK', 'FRUK_householdheterogeneity', 'table:a_US:CalibFRUK', commonX)
 
 
+def ukusHouseholdHeterogeneity(commonX = None):
+    """ The UK regrouped at US income percentiles -- the third row of US_ESC_Country. Its group means are
+    a linear fit of the UK's own, not a microdata recount (data/UKMain.xlsx, sheet heterogeneityUS). """
+    return _householdHeterogeneity('UKUS', 'UKUS_householdheterogeneity', 'table:a_US:CalibUKUS', commonX)
+
+
 # ---------------------------------------------------------------------------------------------------
 # Endogenous system characteristics (app:ESC). All four experiment tables share one builder: rows
 # grouped by rho, four readings per group -- the endogenous-theta baseline, the counterfactual with
@@ -411,11 +419,13 @@ def _costSentence(spec = None):
             r'calibrated per $\rho$ (table \ref{table:US_ESC:calibration}).')
 
 
-def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False, anchor = False):
+def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False, anchor = False, host = 'US'):
     """ Rows grouped by reading, one row per rho within each. The savings change in every non-baseline
     row is against the printed baseline of the same rho -- the endogenous-theta reading, which is also
-    what figuresUS.escOverview differences against. """
-    df = D.escExperiments()
+    what figuresUS.escOverview differences against. host 'UK': the UK-host runs at the UK's own cost
+    parameter (escExperimentsUK.csv); `anchor` then means the UK anchor, UKANCHOR, which prints the UK's
+    lambda per rho. """
+    df = D.escExperiments(host)
     spec, ρs = C.US['esc']['spec'], C.US['esc']['ρTable']
     # The ESC leg runs under the headline calibration variant only -- there is no twin to select here,
     # and escRow filters on it so a stale vector-X row cannot be read in its place.
@@ -435,20 +445,37 @@ def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False,
     # Section sec:esc already states what every one of these tables is -- separate equilibrium paths,
     # read at 2020, pinned against chosen design -- so the note carries only what the text does not: the
     # cost specification and the units. ESCANCHOR spells those out once; the other three point at it.
-    if anchor:
+    if anchor and host == 'US':
         note = (r'\textit{Note:} ' + _costSentence(spec) + r' Each $\rho$ is separately calibrated and its '
                 r'workweek normalised against its own baseline. The savings rate is savings relative to '
                 r'GDP; the baseline rows report its level and every other row the change against the '
                 r'baseline at the same $\rho$, in percentage points.')
+    elif anchor:
+        cal = D.escCalibrationHost(host, spec = spec)
+        miss = [ρ for ρ in ρs if ρ not in cal]
+        if miss:
+            raise D.MissingInput('the {} own cost calibration at ρ = {} (escCountry.csv, escCalibrationCRRA{}.csv)'
+                                 .format(host, miss, host))
+        sym = _wedgeSymbol(spec)
+        note = (r'\textit{Note:} The cost specification and the units are those of table \ref{' + ESCANCHOR
+                + r'}, at the UK\textquotesingle s own cost parameter, calibrated per $\rho$ so that the UK '
+                r'electorate re-elects its observed design $\theta^{\ast} = '
+                + C.num(float(cal[C.US['ρBaseline']]['θStar']), 3) + r'$: $' + sym + ' = '
+                + ', '.join(C.num(float(cal[ρ]['p']), 3) for ρ in ρs) + r'$ at $\rho = '
+                + ', '.join(C.num(ρ, 1) for ρ in ρs) + r'$, with $\beta$ imposed from the US and $\omega$ '
+                r'recalibrated at each trial value. France\textquotesingle s income groups are cut at the '
+                r'UK\textquotesingle s own income percentiles (table \ref{table:a_US:CalibFRUK}).')
     else:
-        note = (r'\textit{Note:} The cost specification and the units are those of table \ref{'
-                + ESCANCHOR + r'}.')
+        note = (r'\textit{Note:} The cost specification' + ('' if host == 'US' else ', the cost parameter')
+                + r' and the units are those of table \ref{' + (ESCANCHOR if host == 'US' else UKANCHOR)
+                + r'}.')
     note += extraNote + C.variantNote(C.US['commonX'])
     if france:
-        note += (r" The France row is France's own calibrated path rather than a counterfactual on the "
-                 r'US model: it carries France\textquotesingle s own $\omega$ as well as its '
+        hostName = HOSTNAME[host] if HOSTNAME[host].startswith('the ') else 'the ' + HOSTNAME[host]
+        note += (r" The France row is France's own calibrated path rather than a counterfactual on "
+                 + hostName + r' model: it carries France\textquotesingle s own $\omega$ as well as its '
                  r'characteristics, and its workweek is a calibration target rather than a prediction.')
-    return _xwrap(name, 'results/esc/escExperiments.csv', caption, label, 'p{2.6cm}YYYYY',
+    return _xwrap(name, df.attrs['source'], caption, label, 'p{2.6cm}YYYYY',
                   ESCHEAD, '\n'.join(out), note, width = r'\textwidth')
 
 
@@ -486,6 +513,32 @@ def escFrenchAll():
                      'table:US_ESC:frenchAll',
                      r' The scenario replaces the US $\eta_i$, the level of $X_i$ and the voting weights '
                      r'$\mu_i$ with France\textquotesingle s simultaneously.', france = True)
+
+
+# The UK counterparts (appendix app:UKUS): France's characteristics on the UK at the UK's OWN cost
+# parameter, France cut at the UK's income groups. The first carries the UK's lambda per rho.
+UKANCHOR = 'table:UK_ESC:incomeDistr'
+
+
+def ukEscIncomeDistr():
+    r""" Table \ref{table:UK_ESC:incomeDistr}. """
+    return _escTable('UK_ESC_IncomeDistr', 'frIncome',
+                     'Endogenous design and the French income distribution in the UK',
+                     UKANCHOR, france = True, anchor = True, host = 'UK')
+
+
+def ukEscVoting():
+    r""" Table \ref{table:UK_ESC:voting}. """
+    return _escTable('UK_ESC_Voting', 'frVoting', 'Endogenous design and French voting patterns in the UK',
+                     'table:UK_ESC:voting', france = True, host = 'UK')
+
+
+def ukEscFrenchAll():
+    r""" Table \ref{table:UK_ESC:frenchAll}. """
+    return _escTable('UK_ESC_FrenchAll', 'frAll', 'Endogenous design and all French characteristics in the UK',
+                     'table:UK_ESC:frenchAll',
+                     r' The scenario replaces the UK $\eta_i$, the level of $X_i$ and the voting weights '
+                     r'$\mu_i$ with France\textquotesingle s simultaneously.', france = True, host = 'UK')
 
 
 def escCalibrationTable(spec = None):

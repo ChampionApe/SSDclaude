@@ -4,6 +4,15 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_paper.md`, in
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-29 — the UK under the chosen design; 54 outputs
+
+`config.US['esc']['uk']` (brackets, per-ρ scan grid, scenarios); stage (i) `--prepub` calibrates the UK's
+own λ under CRRA; stage (ii) `escShocksUK`, `escShocksCRRAUK` (prepub), `escExperimentsUK` (always).
+`datasets.escExperiments(host)`, `escCalibrationHost`. `tablesUS._escTable(host=)` builds
+`UK_ESC_{IncomeDistr,Voting,FrenchAll}` (the first prints the UK's λ per ρ); `ukusHouseholdHeterogeneity`;
+`figuresUS.ukusFrench` (+ twin) and `ukusEscFrench`, hosts as rows on shared axes. Two "the the UK" in
+generated notes fixed at source (`_otherShocks`, `_escTable`); every US output rebuilt byte-identical.
+
 ## 2026-09-24 — the pipeline reads the `'size'` cost spec (WP3); `US_ESC_Country`, `US_ESC_ScaleWedge`, WP5
 
 `config.US['esc']`: `spec = 'size'`, `comparisonSpec = 'scale'`, per-(spec, ρ) `bracket` through

@@ -413,7 +413,28 @@ def escWedge(rec, spec):
     return out
 
 
-def escExperiments():
+def escCalibrationHost(host = 'UK', commonX = None, spec = None):
+    """ A non-US host's OWN calibrated cost per rho, {rho: record} with p (lambda under 'size'): rho = 1
+    from escCountry.csv (wedgeFrom 'own'), the other rho from escCalibrationCRRA<host>.csv at the
+    published method. Converged rows at the variant, spec and phi only, as escCalibration. """
+    commonX = C.US['commonX'] if commonX is None else commonX
+    spec = C.US['esc']['spec'] if spec is None else spec
+    phi = C.US['esc']['phi']
+    out = {}
+    cty = escCountry(commonX = commonX, spec = spec)
+    own = cty[(cty['country'] == host) & (cty['wedgeFrom'] == 'own')]
+    if not own.empty:
+        out[1.0] = own.iloc[-1].to_dict()
+    path = os.path.join(C.ESCDIR, 'escCalibrationCRRA' + host + '.csv')
+    if os.path.exists(path):
+        for rec in pd.read_csv(path).to_dict('records'):
+            if (_escVariant(rec, commonX) and _escMethodOK(rec) and bool(rec['converged'])
+                    and rec['spec'] == spec and np.isclose(float(rec['phi']), phi)):
+                out[float(rec['ρ'])] = rec
+    return out
+
+
+def escExperiments(host = 'US'):
     """ collectESCexperiments.py's merged long csv: one row per (rho, spec, scenario, reading), with the
     design, tax, savings rate and workweek at t0 AND t0+1. `θpinned` True is the exogenous-theta reading
     (design held at the shocked model's own exogenous value), False the endogenous one.
@@ -422,8 +443,11 @@ def escExperiments():
     parameters hold over the whole horizon and the political choice binds from the first period -- so
     theta_{t0} is an equilibrium outcome and 2020 already carries the design response. (Under the
     superseded copy-from-2020 convention it did not, and the tables read t0+1.) The scenario 'France' is France's own calibrated path, not a shock on the US
-    model, and carries only the pinned reading. """
-    return pd.read_csv(_need(os.path.join(C.ESCDIR, 'escExperiments.csv')))
+    model, and carries only the pinned reading. host 'UK' reads escExperimentsUK.csv: the French
+    scenarios on the UK at its own cost parameter (collectESCexperiments.py --host UK). """
+    df = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escExperiments' + ('' if host == 'US' else host) + '.csv')))
+    df.attrs['source'] = 'results/esc/escExperiments' + ('' if host == 'US' else host) + '.csv'
+    return df
 
 
 def escRow(df, ρ, spec, scenario, pinned, commonX = None):
@@ -442,6 +466,6 @@ def escRow(df, ρ, spec, scenario, pinned, commonX = None):
              & (df['θpinned'].astype(bool) == bool(pinned)) & (cx == bool(commonX))
              & np.isclose(df['phi'], C.US['esc']['phi']) & (isLOG | (meth == escMethod()))]
     if hit.empty:
-        raise MissingInput('{} (ρ={}, {}, pinned={}, commonX={}, method={}) in results/esc/escExperiments.csv'
+        raise MissingInput('{} (ρ={}, {}, pinned={}, commonX={}, method={}) in results/esc/escExperiments{{,UK}}.csv'
                            .format(scenario, ρ, spec, pinned, commonX, escMethod()))
     return hit.iloc[-1]

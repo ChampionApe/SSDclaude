@@ -31,6 +31,8 @@ python\US\calibrateRhoGridEU.py --country FR|UK [--grouping US|UK] [--commonX]  
 python\US\runShocksUS.py        [--commonX] [--family theta] [--rho 1] [--host US|UK|UKUS]
 python\US\runESC.py | runESCcrra.py    [--commonX]           # endogenous theta
 python\US\collectESCexperiments.py                           # merge -> results/esc/escExperiments.csv
+python\US\runESC.py --stage shocks --host UK | runESCcrra.py --exact --host UK   # French shocks on the UK, own λ
+python\US\collectESCexperiments.py --host UK                 # -> escExperimentsUK.csv
 ```
 
 Sweeps write their csv after every point and resume from it; `python/paper/` drives all of this. Instance
@@ -135,7 +137,11 @@ choice (LOG, CRRA path iteration, exact 2-D) and permanent timing, and the `pyth
 Under `'size'` the UK (own `λ` = 7.26 against the US's 8.64) and the UK-at-US-percentiles (6.52) have
 own calibrations; France has none, by construction: its observed design is the `θ = 1` corner, and under a
 cost quadratic in the redistribution performed the first unit of redistribution is free at the margin, so
-no finite `λ` places the choice there (`results/esc/escCountry.csv`).
+no finite `λ` places the choice there (`results/esc/escCountry.csv`). **The UK as ESC host**
+(2026-09-29): `--host UK` in both ESC drivers runs the French scenarios on the UK at its OWN `λ` (LOG from
+`escCountry.csv`; CRRA calibrated by the exact recursion into `escCalibrationCRRAUK.csv`), France cut at
+the UK's groups; every UK file carries the host in its name. At `ρ` = 0.5 the UK's exact calibration must
+scan at `ns` = 150: its β-imposed calibration does not converge on the `ns` = 50 grid there.
 
 **Open**: `PermanentCRRA` (run 2026-09-11, `results/esc/escPermanentCRRA.csv`) puts the costless permanent
 choice at θ = 0 for ρ ≤ 1.3 and at θ = 1 for ρ ≥ 1.4 -- the paper's wording is RKB's (`notes/TODO.md`

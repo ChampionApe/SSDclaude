@@ -66,8 +66,8 @@ os.chdir(HERE)
 import test as testmod
 import shocks as sh
 from modelESC import ModelESC
-from runESC import SHOCKS_ESC, mergeWrite, buildEU, readout as escReadout, wedgeReadout
-from runShocksUS import frenchData
+from runESC import SHOCKS_ESC, HOSTS, mergeWrite, buildEU, readout as escReadout, wedgeReadout
+from runShocksUS import frenchData, hostRow
 
 OUTDIR = os.path.join(REPO, 'results', 'esc')
 GSC = {'n': 101, 'ns': 150, 'smoothKnots': 4, 'interpKind': 'linear'}
@@ -103,12 +103,25 @@ def buildUS(ρ, wedge = None, nθCandCRRA = 13, commonX = False, gs = None, nθC
     return m
 
 
-def franceRowCRRA(m, ρ, spec, phi, p, hbarRef, commonX = False, gs = None):
+def buildHost(host, ρ, wedge = None, nθCandCRRA = 13, commonX = False, gs = None, nθCand2D = 21):
+    """ buildUS for host 'US'; for 'UK' the UK's ModelESCFR (beta imposed from the US, omega calibrated),
+    omega seeded from the UK's no-wedge sweep at this rho, with the same grid settings. """
+    if host == 'US':
+        return buildUS(ρ, wedge, nθCandCRRA = nθCandCRRA, commonX = commonX, gs = gs, nθCand2D = nθCand2D)
+    gs = GSC if gs is None else gs
+    m = buildEU(host, wedge, ρ = ρ, commonX = commonX, ω = float(hostRow(ρ, commonX, host)['ω']),
+                nθCandCRRA = nθCandCRRA, nθCand2D = nθCand2D)
+    m.CRRA.initGS(gs)
+    m.LOG.initGS({k: v for k, v in gs.items() if k != 'ns'})
+    return m
+
+
+def franceRowCRRA(m, ρ, spec, phi, p, hbarRef, commonX = False, gs = None, grouping = None):
     """ runESC.franceRow at rho != 1: France's own calibrated equilibrium at 2020 under the same wedge,
     exogenous theta, in escShocksCRRA's row schema. See runESC.franceRow for what the row means and why
     its workweek is a target rather than a prediction. Exogenous theta, so the row is method-free; the
-    caller stamps the method it is filed under. """
-    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
+    caller stamps the method it is filed under. grouping: France cut at the host's groups. """
+    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, grouping = grouping, ρ = ρ, commonX = commonX)
     mFR.CRRA.initGS(GSC if gs is None else gs)
     mFR.calibrate(preferences = 'CRRA')
     pos = mFR.db['t0']
@@ -281,11 +294,17 @@ def main():
     p.add_argument('--nCand', type = int, default = 13)
     p.add_argument('--maxIter', type = int, default = 4)
     p.add_argument('--tag', default = '')
+    p.add_argument('--host', default = 'US', choices = tuple(HOSTS),
+                   help = "'UK': calibrate the UK's OWN cost and impose France's characteristics (cut at the "
+                          "UK's groups) on it; every csv name carries the host (escCalibrationCRRAUK.csv, "
+                          "escShocksCRRAUK.csv). Pass --scenarios without the ageing ones.")
     a = p.parse_args()
     os.makedirs(OUTDIR, exist_ok = True)
-    fCal = os.path.join(OUTDIR, f'escCalibrationCRRA{a.tag}.csv')
-    fPath = os.path.join(OUTDIR, f'escPathCRRA{a.tag}.csv')
-    fShk = os.path.join(OUTDIR, f'escShocksCRRA{a.tag}.csv')
+    hs = '' if a.host == 'US' else a.host
+    fCal = os.path.join(OUTDIR, f'escCalibrationCRRA{hs}{a.tag}.csv')
+    fPath = os.path.join(OUTDIR, f'escPathCRRA{hs}{a.tag}.csv')
+    fShk = os.path.join(OUTDIR, f'escShocksCRRA{hs}{a.tag}.csv')
+    frGrouping = HOSTS[a.host]
     method = 'exact' if a.exact else 'path'
     gs = GSC | {'ns': a.ns}
     nScan = a.nScan if a.nScan is not None else (6 if a.exact else 14)
@@ -332,7 +351,7 @@ def main():
                                 nScanHere = max(nScan, 14)
                                 print('  no path-iteration p on file: full bracket, nScan = {}'
                                       .format(nScanHere))
-                    m = buildUS(ρ, {'spec': spec, 'phi': phi, 'p': 0.2}, nθCandCRRA = a.nCand,
+                    m = buildHost(a.host, ρ, {'spec': spec, 'phi': phi, 'p': 0.2}, nθCandCRRA = a.nCand,
                                 commonX = a.commonX, gs = gs, nθCand2D = a.nCand2D)
                     try:
                         rec = m.calibrateWedge(spec = spec, phi = phi,
@@ -345,7 +364,7 @@ def main():
                         # the path stage's targetDrift measures the solved path against
                         wr = (wedgeReadout(m, float(m.db['τ0'])) if rec['converged']
                               else {'Vtilde': float(m.B.Vtilde(m.t0Year))})
-                        calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': a.commonX,
+                        calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': a.commonX, 'host': a.host,
                                         'method': method, 'p': rec['p'],
                                         'converged': rec['converged'], 'θStar': rec['θ'],
                                         'residual': rec['residual'], 'message': rec['message'],
@@ -357,13 +376,13 @@ def main():
                         print('  -> p={}  ({})  [{:.0f}s]'.format(rec['p'], rec['message'], time.time()-tic))
                     except Exception as e:
                         print(f'  FAILED {type(e).__name__}: {e}')
-                        calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': a.commonX,
+                        calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': a.commonX, 'host': a.host,
                                         'method': method, 'p': np.nan,
                                         'converged': False, 'message': f'{type(e).__name__}: {e}'})
                     mergeWrite(fCal, calRows, KEYCAL)
                 else:
                     # a --tag run without its own calibration reads the untagged one (smoke runs)
-                    for fc in (fCal, os.path.join(OUTDIR, 'escCalibrationCRRA.csv')):
+                    for fc in (fCal, os.path.join(OUTDIR, f'escCalibrationCRRA{hs}.csv')):
                         pCal, from_ = readCalibratedP(fc, ρ, spec, phi, a.commonX, method)
                         if np.isfinite(pCal):
                             break
@@ -375,7 +394,7 @@ def main():
                     continue
 
                 # ---------------------------------------------------- the design path
-                m = buildUS(ρ, {'spec': spec, 'phi': phi, 'p': pCal}, nθCandCRRA = a.nCand,
+                m = buildHost(a.host, ρ, {'spec': spec, 'phi': phi, 'p': pCal}, nθCandCRRA = a.nCand,
                             commonX = a.commonX, gs = gs, nθCand2D = a.nCand2D)
                 m.calibrate()
                 t0 = m.t0Year
@@ -428,7 +447,8 @@ def main():
                     if any(n.startswith('fr') for n in a.scenarios):
                         if ρ not in frDataCache:
                             print('  calibrating France at rho={} for the French scenarios ...'.format(ρ))
-                            frDataCache[ρ] = frenchData(m, ρ, 'CRRA', gs = gs, commonX = a.commonX)
+                            frDataCache[ρ] = frenchData(m, ρ, 'CRRA', gs = gs, commonX = a.commonX,
+                                                       grouping = frGrouping)
                         frData = frDataCache[ρ]
                     for name in a.scenarios:
                         for pin in (True, False):
@@ -460,7 +480,8 @@ def main():
                                 r1 = sh.readout(mt, out['τ'], out['report'], float(mt.db['workweek']),
                                                 hbarRef, pos = pos0+1)
                                 shkRows.append({'ρ': ρ, 'spec': spec, 'phi': phi,
-                                                'commonX': a.commonX, 'method': method, 'p': pCal,
+                                                'commonX': a.commonX, 'host': a.host, 'method': method,
+                                                'p': pCal,
                                                 'scenario': name, 'θpinned': pin,
                                                 'θ_tm1': float(θPath.iloc[pos0-1]),
                                                 'θ_t0': float(θPath.iloc[pos0]),
@@ -479,8 +500,9 @@ def main():
                     # rows are read against (runESC.franceRow's CRRA counterpart, exogenous theta).
                     try:
                         tic = time.time()
-                        f = franceRowCRRA(m, ρ, spec, phi, pCal, hbarRef, commonX = a.commonX, gs = gs)
-                        f['method'] = method
+                        f = franceRowCRRA(m, ρ, spec, phi, pCal, hbarRef, commonX = a.commonX, gs = gs,
+                                          grouping = frGrouping)
+                        f['method'], f['host'] = method, a.host
                         shkRows.append(f)
                         print('  {:<9} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}'
                               '  [{:.0f}s]'.format('France', 'True', f['θ_t0'], f['τ_t0'], f['sr_t0'],

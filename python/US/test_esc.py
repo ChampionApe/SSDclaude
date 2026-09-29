@@ -643,4 +643,23 @@ check("'size': theta* is 0.7382263650 (unchanged by lambda: the cost is proporti
 A_S, B_S = mSc.B.wedgeA(θS, τ0S, t0), mSc.B.wedgeB(θS, τ0S, t0)
 check("'size': B/A reproduces the data ratio (1-theta)/theta at any tau", np.isclose(B_S/A_S, (1-θS)/θS, rtol = 1e-12))
 
+# ---- S15. the UK as host (runESC.py --host UK): at its own calibrated lambda the free UK baseline
+# re-elects the UK's observed design and the pinned one hits its tax target; a French shock on the UK
+# pins theta at the UK's design, not the US's (frenchData's 'θUS' is the host's)
+import runESC
+λUK = 7.264281      # results/esc/escCountry.csv: UK, 'own', 'size', common X
+mUK = runESC.buildEU('UK', {'spec': 'size', 'phi': 0.5, 'p': λUK}, commonX = True)
+mUK.calibrate()
+_, hRefUK = runESC.baselineRefs(mUK)
+θUK = float(mUK.db['θ'].xs(mUK.t0Year))
+freeUK = runESC.leadedNewPath(mUK, hRefUK)
+pinUK = runESC.leadedNewPath(mUK, hRefUK, pin = True)
+check('UK host at its own lambda: the free baseline re-elects its observed design', abs(freeUK['θ0'] - θUK) < 1e-3,
+      '-> chosen {:.5f}, observed {:.5f}'.format(freeUK['θ0'], θUK))
+check('...and the pinned UK baseline hits the UK tax target', abs(pinUK['t0']['τ'] - float(mUK.db['τ0'])) < 1e-8)
+dUK = runESC.frenchData(mUK, commonX = True, grouping = 'UK')
+rUK = runESC.leadedNewPath(mUK, hRefUK, runESC.SHOCKS_ESC['frIncome'][1], dUK, pin = True)
+check("French income distribution on the UK holds theta at the UK's design",
+      abs(dUK['θUS'] - θUK) < 1e-14 and abs(rUK['θ0'] - θUK) < 1e-12, '-> {:.6f}'.format(rUK['θ0']))
+
 report()

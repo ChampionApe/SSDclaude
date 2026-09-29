@@ -4,6 +4,17 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-29 — the OECD appendix split in three; the UK as host under the chosen design
+
+RKB's layout: old appendix E (`USauxiliary.tex`, deleted) is now `Appendix/CalibrationOECD.tex` (E, five
+heterogeneity tables), `US.tex` (F: CRRA, vector X, ESC ageing + the old wedge) and `UKvsUS.tex` (G: French
+characteristics on the US and the UK, pinned then chosen design). Every old label kept; `placeins` added and
+`\FloatBarrier` precedes every appendix (sub)section so a heading never starts before the previous floats.
+Text written around every table block, each number checked against its table or csv. New content: the UK at
+its own λ under the chosen design at ρ = 0.5, 1, 2 (exact CRRA, ~5 h per ρ; module logs of the same date),
+`UKUS_householdheterogeneity`, two US-vs-UK figures. RKB's calls: layout kept with three placements moved
+(US CRRA French table and the US French ESC tables into G; vector X kept whole in F).
+
 ## 2026-09-29 — section 7.2 rewritten: the cost as a loss on margins the model lacks
 
 The derivation of $f$ used the flat component's *average* implicit tax, but the model already contains its

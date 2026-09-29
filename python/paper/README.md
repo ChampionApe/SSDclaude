@@ -43,6 +43,11 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 - **The UK exercise** (2026-09-22): `config.US['ukHost']` names the host of the second French-characteristics
   arm; stage (i) sweeps `FRUK`, stage (ii) runs `runShocksUS.py --host UK` under a `requires` guard, stage
   (iii) builds `UK_OtherShocks`, `UK_CRRA_OtherShocks`, `FRUK_householdheterogeneity` (+ twins).
+  Since 2026-09-29 also under the chosen design, at the UK's own λ (`config.US['esc']['uk']`): stage (i)
+  `--prepub` calibrates it under CRRA, stage (ii) runs `escShocksUK` (LOG), `escShocksCRRAUK` (prepub) and
+  the `escExperimentsUK` merge, stage (iii) builds `UK_ESC_{IncomeDistr,Voting,FrenchAll}` and the two
+  US-vs-UK figures `UKUS_French` (+ twin), `UKUS_ESC_French`; `UKUS_householdheterogeneity` documents the
+  UK at US income groups.
 - **The ESC cost specification** (2026-09-24, `notes/plan_escSizeLeak.md`): `config.US['esc']['spec'] =
   'size'` is the paper's, `comparisonSpec = 'scale'` the previous wedge, kept as one appendix table
   (`US_ESC_ScaleWedge`). `phi` is a dummy key under `'size'` (every ESC csv is keyed on it); the `p` column
@@ -64,17 +69,18 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `build.py` | stage (iii): the output registry for both arms, and the copy into `writing/Paper` |
 | `dataTargets.py` | stage (0) |
 
-## Outputs wired (46)
+## Outputs wired (54)
 
 Each built file names its own input: every generated `.tex` and its `.pdf` sibling carry a
 `%% Source:` banner with the csv it was read from, and `--list` reports what is buildable now. The
-registry itself is `build.py`'s table -- that, not this file, is the list of 46.
+registry itself is `build.py`'s table -- that, not this file, is the list of 54.
 
 Every US and Argentina table and figure is registered twice (headline and `_vectorX`); the ESC outputs
-headline only. Only `ArgentinaCalibration_vectorX` is `\input` in the paper. Since 2026-09-22
-`US_OtherShocks`, `US_CRRA_PensChars` and the ESC experiment tables are `\input` from appendix E
-(`app:US`, `app:US:escTables`), `US_ESC_Country` from `app:US:ukESC` and `US_ESC_ScaleWedge` from the
-appendix's robustness paragraph; the main text keeps the discussion. Every US counterfactual is a new
+headline only. Only `ArgentinaCalibration_vectorX` is `\input` in the paper. Since 2026-09-29 the OECD
+appendix is three files: `Appendix/CalibrationOECD.tex` (`app:US`, the five heterogeneity tables),
+`US.tex` (`app:USrob`: CRRA, every `_vectorX` twin, `US_ESC_Ageing` + `US_ESC_ScaleWedge`) and
+`UKvsUS.tex` (`app:UKUS`: the French-characteristics tables, US and UK, pinned then chosen design, with
+`US_ESC_Country`); the main text keeps the discussion. Every US counterfactual is a new
 equilibrium path read at 2020 (`python/US/shocks.py`, `writing/US/num_esc.tex`); the French tables carry the
 all-three row and France's own path.
 

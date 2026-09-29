@@ -1,0 +1,38 @@
+\FloatBarrier
+\section{Calibration -- the U.S., France, and the UK}\label{app:US}\setcounter{equation}{0}
+This appendix documents the household heterogeneity behind the calibrations of section \ref{sec:oecd}, whose country-level parameters are in table \ref{table:US:Calib}. Each country has three income groups. The tables report, group by group, the population share $\gamma_i$, the taste for leisure $X_i$ and the productivity $\eta_i$ that the calibration assigns, and the propensity to vote $\mu_i$ taken from the data. Under the calibration of section \ref{sec:oecd} the taste for leisure is common across groups, so the $X_i$ row repeats one number, fixed by the country's average workweek, and the income distribution is carried by $\eta_i$ alone.
+
+\subsection{The U.S.}
+For the U.S.\ we use the CPS March Supplement 2019. The low and medium income groups are cut so that their mean incomes are half the mean and the mean, which is what identifies $\theta$ from the replacement rates at those two income levels reported in \textcite{OECDpen}; the remaining households form the high income group. The propensity to vote is from the U.S.\ Census, Voting and Registration in the Election of November 2020. Pension spending is from \textcite{OECDpen}, to which we add Medicare spending from the 2020 Data Book of the Medicare Payment Advisory Commission.
+
+Table \ref{table:a_US:CalibUS} shows the two features that set the U.S.\ apart. Productivity rises steeply across the groups, from $0.82$ in the low group to $2.52$ in the high one, and the propensity to vote rises with income, from $0.47$ to $0.77$, so the political objective weighs high-income households well above their population share. The low group holds $58\%$ of households.
+
+\input{Tables/US_householdheterogeneity}
+
+\FloatBarrier
+\subsection{France}
+For France we use the Luxembourg Income Study. France's system is fully Bismarckian, so $\theta = 1$ whatever the income cuts, and the groups need not be cut at half-mean and mean income. We cut them at the U.S.\ percentiles instead, which puts the two countries' household types in one-to-one correspondence and makes the counterfactuals of appendix \ref{app:US:french} a type-by-type replacement. The propensity to vote is from the Comparative Study of Electoral Systems.\footnote{\url{https://cses.org/}.}
+
+At the same percentiles France's productivity profile is flatter than the U.S.\ one (table \ref{table:a_US:CalibFR}): it runs from $1.12$ to $2.56$, a ratio of the high to the low group of $2.29$ against $3.08$ in the U.S.\ (table \ref{table:US:Calib}). The propensity to vote is nearly flat, between $0.81$ and $0.86$. The common taste for leisure is $7.27$ against $4.03$ in the U.S., which is how the calibration accounts for France's shorter workweek.
+
+\input{Tables/FR_householdheterogeneity}
+
+\FloatBarrier
+\subsection{The UK}
+For the UK we use the Harmonised British Household Panel Survey, wave 17, which refers to 2006--07 and is distributed by the UK Data Service. Income groups are cut as for the U.S., at half-mean and mean income. The propensity to vote is from the Comparative Study of Electoral Systems, and pension spending from \textcite{OECDpen}.
+
+The UK's cuts put fewer households in the low group than the U.S.\ cuts do, $29\%$ against $58\%$, and most of them in the medium group (table \ref{table:a_US:CalibUK}). The ratio of high to low productivity is close to the U.S.\ one, $3.06$ against $3.08$, and the propensity to vote lies between the other two countries, rising from $0.61$ to $0.74$.
+
+\input{Tables/UK_householdheterogeneity}
+
+\FloatBarrier
+\subsection{France at the UK's income groups}\label{app:US:calibFRUK}
+Since France's system is fully Bismarckian, its income groups can also be cut at the UK's own income percentiles without disturbing the identification of $\theta$, which puts France's and the UK's household types in one-to-one correspondence exactly as the U.S.\ percentiles do above. Table \ref{table:a_US:CalibFRUK} reports France's household heterogeneity on those groups; appendix \ref{app:US:french} imposes them on the UK.\footnote{Income, hours and group sizes are the same Luxembourg Income Study sample as table \ref{table:a_US:CalibFR}, regrouped. Voting propensities are only observed at the U.S.\ cuts; at the UK's cuts each group carries the population-weighted average of the observed values it overlaps with.} At the UK's cuts France is the more unequal of the two: the productivity of its top group relative to its bottom group is 3.30 against the UK's 3.06, whereas at the U.S.\ cuts France is well below the U.S.\ (table \ref{table:US:Calib}). The regrouping moves none of France's aggregates: its political weight of the old, tax rate and savings rate are those of table \ref{table:US:Calib}.
+
+\input{Tables/FRUK_householdheterogeneity}
+
+\FloatBarrier
+\subsection{The UK at the U.S.\ income groups}\label{app:US:calibUKUS}
+Table \ref{table:US_ESC:country} also reports the UK with its households regrouped at the U.S.\ income percentiles, which tests whether the cross-country result of section \ref{sec:esc} turns on how the income groups are cut. Table \ref{table:a_US:CalibUKUS} reports that grouping. Its group means are not a recount of the survey: they are a linear fit of the UK's own three group means against cumulative population shares, evaluated at the U.S.\ percentiles.\footnote{Applied to France, the same method predicts a negative mean income for the bottom group, so we use it only for this robustness row.} At these cuts the UK's ratio of high to low productivity is $1.58$, against $3.06$ at its own cuts, and the replacement rates imply $\theta = 0.543$ rather than $0.560$.
+
+\input{Tables/UKUS_householdheterogeneity}

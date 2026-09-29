@@ -234,6 +234,37 @@ EXPERIMENTS = {
         'outputs': lambda: [os.path.join(C.NUMDIR, 'US_ESC_stationaryApprox.csv')],
         'note':    'stationary vs date-specific design policies, LOG and exact CRRA (~1 h)',
     },
+    # --- The UK as host under the chosen design (appendix app:UKUS): France's characteristics at the UK's
+    # own cost parameter, France cut at the UK's groups. LOG reads the UK's own lambda off escCountry.csv
+    # (seconds); CRRA reads the exact escCalibrationCRRAUK.csv of stage (i) --prepub (~1 h per rho).
+    'escShocksUK': {
+        'part':    'main',
+        'script':  'runESC.py',
+        'args':    ['--stage', 'shocks', '--host', 'UK'] + ESCSPEC + ESCVARIANT,
+        'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksUK.csv')],
+        'requires': lambda: [os.path.join(C.ESCDIR, 'escCountry.csv')],
+        'note':    'French characteristics on the UK, endogenous theta, LOG',
+    },
+    'escShocksCRRAUK': {
+        'part':    'prepub',
+        'script':  'runESCcrra.py',
+        'args':    (['--exact', '--host', 'UK', '--stage', 'shocks', '--rho'] + ESCRHO + ESCSPEC
+                    + ['--ns', str(ESC['ns2D']), '--nCand2D', str(ESC['nCand2D']), '--scenarios']
+                    + ESC['uk']['scenarios'] + ESCVARIANT),
+        'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksCRRAUK.csv')],
+        'complete': lambda: _hasExactRows(os.path.join(C.ESCDIR, 'escShocksCRRAUK.csv')),
+        'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibrationCRRAUK.csv')],
+        'note':    'French characteristics on the UK, endogenous theta, CRRA, EXACT',
+    },
+    'escExperimentsUK': {
+        'part':    'both',
+        'always':  True,
+        'script':  'collectESCexperiments.py',
+        'args':    ['--host', 'UK'],
+        'outputs': lambda: [os.path.join(C.ESCDIR, 'escExperimentsUK.csv')],
+        'requires': lambda: [os.path.join(C.ESCDIR, 'escShocksUK.csv')],
+        'note':    'merge the UK-host LOG and CRRA legs',
+    },
     # The merge stage (iii) reads. Listed last so a run rebuilds it after the producers, in BOTH parts,
     # and NEVER skipped ('always'): it costs a second, and a merge left over from before a producer ran
     # is exactly the stale-but-present output that blocked the build on 2026-09-11.

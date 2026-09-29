@@ -1,6 +1,6 @@
 r""" Collect the endogenous-theta counterfactual runs across rho into one table.
 
-Run:  .venv\Scripts\python.exe python\US\collectESCexperiments.py
+Run:  .venv\Scripts\python.exe python\US\collectESCexperiments.py [--host UK]
 
 Inputs (results/esc/): escShocks.csv (rho = 1, LOG, runESC.py) and escShocksCRRA.csv (rho != 1, CRRA,
 runESCcrra.py --stage shocks). Writes results/esc/escExperiments.csv (long form, one row per
@@ -16,7 +16,7 @@ a change to the merge belongs here, not in the pipeline.
 -- and a CRRA row written before the column existed is a path-iteration row. Both vintages are carried
 through; python/paper/datasets.escRow selects by config.US['esc']['exact'].
 """
-import os, sys
+import os, sys, argparse
 import numpy as np, pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -52,9 +52,15 @@ def merge(log, crra):
 
 def main():
     sys.stdout.reconfigure(encoding = 'utf-8', line_buffering = True)
-    d = merge(pd.read_csv(os.path.join(ESC, 'escShocks.csv')),
-              pd.read_csv(os.path.join(ESC, 'escShocksCRRA.csv')))
-    out = os.path.join(ESC, 'escExperiments.csv')
+    # --host UK merges the UK-host runs (runESC.py / runESCcrra.py --host UK) into escExperimentsUK.csv.
+    # A missing CRRA file is an empty frame there, so the LOG rows can be built before the CRRA leg ends.
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--host', default = 'US', choices = ('US', 'UK'))
+    hs = '' if ap.parse_args().host == 'US' else ap.parse_args().host
+    fCRRA = os.path.join(ESC, f'escShocksCRRA{hs}.csv')
+    d = merge(pd.read_csv(os.path.join(ESC, f'escShocks{hs}.csv')),
+              pd.read_csv(fCRRA) if (hs == '' or os.path.exists(fCRRA)) else pd.DataFrame(columns = ['ρ']))
+    out = os.path.join(ESC, f'escExperiments{hs}.csv')
     d.to_csv(out, index = False)
     print(f'-> {os.path.relpath(out, REPO)}  ({len(d)} rows)\n')
 

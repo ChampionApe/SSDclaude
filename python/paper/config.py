@@ -199,6 +199,16 @@ US = {
         'nCand2D':   41,
         # The pre-publication timing checks (TODO R3): the permanent choice traced in rho under CRRA.
         'ρPermanentCRRA': [1.1, 1.2, 1.3, 1.4, 1.5, 2.0],
+        # The UK as host of the French characteristics under the chosen design (appendix app:UKUS), at the
+        # UK's OWN cost parameter, calibrated per rho as the US one is: LOG from escCountry.csv ('own'), CRRA
+        # by the exact recursion into escCalibrationCRRAUK.csv (stage (i) --prepub). Brackets set from
+        # coarse probes (2026-09-29): the UK's design is 0.23/0.57 at lambda 1.45/3.0 (rho = 2) and
+        # 0.46/0.71 at 12/25 (rho = 0.5). nsScan 0 at rho = 0.5 scans at ns2D: the UK's (beta-imposed)
+        # calibration does not converge on the ns = 50 grid there.
+        'uk': {'bracket':   {0.5: (12.0, 25.0), 2.0: (1.5, 4.5)},
+               'nsScan':    {0.5: 0, 2.0: 50},
+               'nScan':     4,
+               'scenarios': ['baseline', 'frIncome', 'frLeisure', 'frVoting', 'frBoth', 'frAll']},
         # escExperiments.csv scenario keys -> the labels the appendix tables print.
         # 'frLeisure' is run and merged but no longer printed (dropped from the paper 2026-09-11).
         'scenarios': {'acute': 'Acute ageing', 'frIncome': 'Income distribution',

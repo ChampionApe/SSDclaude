@@ -8,6 +8,7 @@ Run:  .venv\Scripts\python.exe python\US\runESC.py                     # every s
       ... --stage country                      France and the UK
       ... --spec scale flat  --phi 0.25 0.5 0.75
       ... --spec size --phi 0.5 --commonX --stage calib path shocks country     # the paper's wedge
+      ... --spec size --phi 0.5 --commonX --stage shocks --host UK   # French characteristics on the UK
 
 Four stages, each writing its own csv under results/esc/:
 
@@ -29,6 +30,8 @@ Four stages, each writing its own csv under results/esc/:
   country  France and the UK under (i) the US-calibrated wedge and (ii) their own. (i) asks whether one
            common technology of redistribution puts the three countries in the observed order; (ii) is the
            appendix's own convention (a separately calibrated p per country).
+  shocks --host UK   the French scenarios on the UK at its own calibrated p (country stage, 'own'),
+           France cut at the UK's income groups -> escShocksUK.csv (appendix app:UKUS).
 
 Everything is LOG (rho = 1). The CRRA case needs a two-dimensional (s, theta) state and is not this file.
 """
@@ -148,17 +151,19 @@ def buildUS(wedge = None, ρ = 1.0, nθ = 41, nθCand = 121, commonX = False):
     return m
 
 
-def buildEU(country, wedge = None, grouping = None, nθ = 41, nθCand = 121, ρ = 1.0, commonX = False):
+def buildEU(country, wedge = None, grouping = None, nθ = 41, nθCand = 121, ρ = 1.0, commonX = False,
+            ω = 2., **escKw):
     """ France or the UK under the wedge. commonX must MATCH the US model it is compared against: under
     commonX France's X_i is a single scalar and its eta_i inverts z^eta directly, so both characteristics
     differ from the vector-X calibration and a mismatched pair would put a France that does not exist in
-    this run's units next to the US rows (runShocksUS.frenchData says the same about the shock data). """
+    this run's units next to the US rows (runShocksUS.frenchData says the same about the shock data).
+    ω only seeds calibrate(); escKw goes to ModelESC (nθCandCRRA, nθCand2D). """
     pars, kwargs, dates, workweek = testEU.load(country, grouping = grouping)
-    pars.update({'ρ': float(ρ), 'ω': 2.})
+    pars.update({'ρ': float(ρ), 'ω': float(ω)})
     # usReference must be read off the SAME variant's sweep: it carries hbar_US, and hbar differs
     # between vector X and common X by construction (python/US/README.md).
     m = ModelESCFR(pars = pars, wedge = wedge, usRef = testEU.usReference(commonX = commonX), nθ = nθ,
-                   nθCand = nθCand, commonX = commonX, **kwargs)
+                   nθCand = nθCand, commonX = commonX, **escKw, **kwargs)
     m.db['dates'], m.db['workweek'], m.db['country'] = dates, workweek, country + (grouping or '')
     m.LOG.initGS(GS)
     return m
@@ -315,20 +320,26 @@ def leadedNewPath(m, hbarRef, apply = None, data = None, pin = False):
             'θ1': float(θPath.iloc[pos+1]), 'm': mt}
 
 
-def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False):
+def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, host = 'US'):
+    """ host 'US': the cost parameter is the US calibration (escCalibration.csv). host 'UK': the UK's OWN
+    calibrated parameter (escCountry.csv, wedgeFrom 'own'; `calib` is that frame), France regrouped at the
+    UK's income cuts, and the French scenarios only (HOST_SCENARIOS). """
     rows = []
+    frGrouping = HOSTS[host]
     for spec in specs:
         for phi in phis:
-            hit = pickCalib(calib, spec, phi, commonX)
+            hit = pickCalib(calib, spec, phi, commonX) if host == 'US' else pickOwn(calib, host, spec, phi, commonX)
             if hit.empty:
+                print(f'  [{spec}, φ={phi}] no calibrated cost for host {host} -- skipped')
                 continue
             p = float(hit.iloc[0]['p'])
-            m = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
+            m = (buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX) if host == 'US'
+                 else buildEU(host, {'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX))
             m.calibrate()
             _, hbarRef = baselineRefs(m)
-            data = frenchData(m, commonX = commonX)
-            print(f'\n[{spec}, φ={phi}, p={p:.4f}] counterfactuals')
-            for name in ESC_SCENARIOS:
+            data = frenchData(m, commonX = commonX, grouping = frGrouping)
+            print(f'\n[{host}: {spec}, φ={phi}, p={p:.4f}] counterfactuals')
+            for name in (ESC_SCENARIOS if host == 'US' else HOST_SCENARIOS):
                 apply, d = (None, None) if name == 'baseline' else (SHOCKS_ESC[name][1], data)
                 for pin in (True, False):
                     tic = time.time()
@@ -337,7 +348,7 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False):
                     except Exception as e:
                         print(f'  {name:<10} pin={pin}: FAILED {type(e).__name__}: {e}')
                         continue
-                    rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p,
+                    rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'host': host, 'p': p,
                                  'scenario': name,
                                  'θpinned': pin, 'θ_tm1': r['θ_'], 'θ_t0': r['θ0'], 'θ_t1': r['θ1'],
                                  'τ_t0': r['t0']['τ'], 'sr_t0': r['t0']['sr'], 'ww_t0': r['t0']['workweek'],
@@ -352,8 +363,8 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False):
             # rows are read against. Exogenous theta only: France's design is a datum here, and a leaded
             # France would be a different exercise (that is stageCountry's question).
             try:
-                f = franceRow(m, spec, phi, p, hbarRef, ρ = ρ, commonX = commonX)
-                rows.append(f)
+                f = franceRow(m, spec, phi, p, hbarRef, ρ = ρ, commonX = commonX, grouping = frGrouping)
+                rows.append(f | {'host': host})
                 print('  {:<10} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}'
                       .format('France', 'True', f['θ_t0'], f['τ_t0'], f['sr_t0'], f['ww_t0']))
                 mergeWrite(out, rows, KEYSHK)
@@ -362,15 +373,15 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False):
     return pd.DataFrame(rows)
 
 
-def franceRow(m, spec, phi, p, hbarRef, ρ = 1.0, commonX = False):
+def franceRow(m, spec, phi, p, hbarRef, ρ = 1.0, commonX = False, grouping = None):
     """ France's own calibrated equilibrium at 2020 under the same wedge, in escShocks' row schema.
 
-    Not a shock on the US model: France carries its own eta, X, mu, nu AND its own calibrated omega, so
+    Not a shock on the host model: France carries its own eta, X, mu, nu AND its own calibrated omega, so
     what separates it from the all-French-characteristics row is precisely what the observable
-    characteristics do not explain. The workweek is on the US scale (hbarRef, and the US datum passed
-    explicitly to readout) and is ModelFR's own hours target, so that cell reproduces the datum rather
-    than predicting it. """
-    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
+    characteristics do not explain. The workweek is on the host's scale (hbarRef, and the host's datum
+    passed explicitly to readout) and is ModelFR's own hours target, so that cell reproduces the datum
+    rather than predicting it. grouping: France's income cuts, those of the host (None = US, 'UK'). """
+    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, grouping = grouping, ρ = ρ, commonX = commonX)
     mFR.calibrate()
     pos = mFR.db['t0']
     out = mFR.solvePEE_LOG()
@@ -413,12 +424,25 @@ SHOCKS_ESC = dict(sh.SHOCKS) | {
 # the two characteristics that move the DESIGN in opposite directions.
 ESC_SCENARIOS = ('baseline', 'mild', 'acute', 'frIncome', 'frLeisure', 'frVoting', 'frBoth', 'frAll')
 
+# A host other than the US runs the French characteristics only (appendix app:UKUS). HOSTS: host -> the
+# grouping France's households are cut at for that host (runShocksUS.HOSTS' third entry).
+HOST_SCENARIOS = ('baseline', 'frIncome', 'frLeisure', 'frVoting', 'frBoth', 'frAll')
+HOSTS = {'US': None, 'UK': 'UK'}
 
-def frenchData(m, commonX = False):
-    """ France's characteristics in the form shocks.py wants (runShocksUS.frenchData, LOG only).
 
-    commonX must match the US model being shocked, for the reason buildEU gives. """
-    parsFR, kwFR, datesFR, wwFR = testEU.load('FR')
+def pickOwn(country, host, spec, phi, commonX):
+    """ The host's OWN converged cost calibration from escCountry.csv's frame, or an empty frame. """
+    hit = country[(country['country'] == host) & (country['wedgeFrom'] == 'own') & (country['spec'] == spec)
+                  & (country['phi'] == phi) & (country['converged'].astype(str) == 'True')]
+    return hit[hit['commonX'].astype(bool) == bool(commonX)]
+
+
+def frenchData(m, commonX = False, grouping = None):
+    """ France's characteristics in the form shocks.py wants (runShocksUS.frenchData, LOG only), cut at
+    `grouping` (None = US percentiles, 'UK' = the UK's cuts). 'θUS' is the HOST's design.
+
+    commonX must match the host model being shocked, for the reason buildEU gives. """
+    parsFR, kwFR, datesFR, wwFR = testEU.load('FR', grouping = grouping)
     mFR = ModelFR(pars = parsFR | {'ρ': 1., 'ω': 2.}, usRef = testEU.usReference(commonX = commonX),
                   commonX = commonX, **kwFR)
     mFR.db['dates'], mFR.db['workweek'] = datesFR, wwFR
@@ -624,9 +648,21 @@ def main():
                    help = 'the scan bracket for the wedge parameter (p, or lambda under size); default per '
                           'spec, ModelESC.WEDGE_BRACKET. Applies to every spec asked for in one run.')
     p.add_argument('--tag', default = '')
+    p.add_argument('--host', default = 'US', choices = tuple(HOSTS),
+                   help = "the economy the shocks stage imposes France's characteristics on. 'UK': the "
+                          "UK's own calibrated cost (escCountry.csv, run the country stage first), France "
+                          "cut at the UK's groups; writes escShocksUK.csv. Only the shocks stage takes it.")
     a = p.parse_args()
     os.makedirs(OUTDIR, exist_ok = True)
     f = lambda n: os.path.join(OUTDIR, f'{n}{a.tag}.csv')
+
+    if a.host != 'US':
+        if set(a.stage) != {'shocks'}:
+            raise SystemExit('--host {} runs the shocks stage only (--stage shocks)'.format(a.host))
+        stageShocks(a.spec, a.phi, pd.read_csv(f('escCountry')), f('escShocks' + a.host), ρ = a.rho,
+                    commonX = a.commonX, host = a.host)
+        print('\n-> {}'.format(os.path.relpath(OUTDIR, REPO)))
+        return 0
 
     calib = None
     if 'calib' in a.stage:

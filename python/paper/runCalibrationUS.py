@@ -151,6 +151,25 @@ def escMissing(part = 'main', force = False, strict = True):
         for ρ in lackρ:
             if brackets[ρ] is not None:
                 cmds.append(exact + ['--rho', str(ρ), '--bracket'] + [str(b) for b in brackets[ρ]] + opts)
+        # The UK's own exact CRRA cost (appendix app:UKUS), one command per missing rho, its bracket and
+        # scan grid from esc['uk'].
+        uk = esc['uk']
+        pathUK = os.path.join(C.ESCDIR, 'escCalibrationCRRAUK.csv')
+        haveUK = set()
+        if os.path.exists(pathUK) and not force:
+            df = pd.read_csv(pathUK)
+            ok = df[df['converged'].astype(bool) & (df['method'] == 'exact') & (df['spec'] == spec)
+                    & (df['commonX'].astype(bool) == bool(C.US['commonX']))]
+            haveUK = {round(float(r), 6) for r in ok['ρ']}
+        for ρ in esc['ρTable']:
+            if ρ == C.US['ρAnchor'] or round(ρ, 6) in haveUK:
+                continue
+            cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESCcrra.py'), '--exact', '--host', 'UK',
+                         '--stage', 'calib', '--rho', str(ρ), '--bracket']
+                        + [str(b) for b in uk['bracket'][ρ]]
+                        + ['--nScan', str(uk['nScan']), '--spec', spec, '--phi', str(phi),
+                           '--ns', str(esc['ns2D']), '--nsScan', str(uk['nsScan'][ρ]),
+                           '--nCand2D', str(esc['nCand2D'])] + variant)
         # phi is a parameter of f only under 'scale'/'flat'; under 'size' it is a dummy key and a
         # run at another phi would reproduce the esc['phi'] calibration under a different key.
         lackφ = [p for p in PHIROBUST if spec in ('scale', 'flat') and (spec, round(p, 6)) not in haveL]

@@ -4,6 +4,16 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_US.md`, index
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-29 — the UK as ESC host (`--host UK`)
+
+`runESC.py --stage shocks --host UK` and `runESCcrra.py --exact --host UK` run the French scenarios on the
+UK at its OWN λ (LOG from `escCountry.csv`; CRRA calibrated into `escCalibrationCRRAUK.csv`), France cut at
+the UK's groups; `buildEU` seeds ω and passes ModelESC options, `runESCcrra.buildHost`, `frenchData`/
+`franceRow` take the grouping, rows carry `host`, UK files carry it in their names; `collectESCexperiments.py
+--host UK` -> `escExperimentsUK.csv`. UK λ = 15.089, 7.264, 2.786 at ρ = 0.5, 1, 2 (US 18.242, 8.643, 1.728);
+every free baseline re-elects 0.5597. Trap: at ρ = 0.5 the UK's β-imposed calibration does not converge on
+the ns = 50 scan grid (7.5e-4), so that ρ scans at 150 (~35 min per trial, 5 h in all). `test_esc.py` S15.
+
 ## 2026-09-24 — the `'size'` wedge f(θ, τ) (WP2 and WP4 of `notes/plan_escSizeLeak.md`)
 
 `Base.fWedge/wedgeA/wedgeB(θ, τ, t, lag)` gain the spec `'size'`; `Vtilde(t, lag)` memoised and zero-mass

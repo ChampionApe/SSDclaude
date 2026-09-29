@@ -72,6 +72,8 @@ OUTPUTS = {
     **_variants('FRUK_householdheterogeneity', tablesUS.frukHouseholdHeterogeneity, 'Tables'),
     **_variants('UK_OtherShocks',           tablesUS.ukOtherShocks,            'Tables'),
     **_variants('UK_CRRA_OtherShocks',      tablesUS.ukCrraOtherShocks,        'Tables'),
+    **_variants('UKUS_householdheterogeneity', tablesUS.ukusHouseholdHeterogeneity, 'Tables'),
+    **_variants('UKUS_French',              figuresUS.ukusFrench,        'Figs', ext = 'pdf'),
     # --- Endogenous system characteristics (app:ESC). Headline variant only -- see paper/README.md. ---
     'US_ESC_overview':        ('figure', figuresUS.escOverview,       'Figs/US_ESC_overview.pdf'),
     'US_ESC_Calibration':     ('table', tablesUS.escCalibrationTable, 'Tables/US_ESC_Calibration.tex'),
@@ -85,6 +87,11 @@ OUTPUTS = {
     'US_ESC_Country':         ('table', tablesUS.escCountryTable,     'Tables/US_ESC_Country.tex'),
     # The previous cost specification (config.US['esc']['comparisonSpec']) as one appendix table.
     'US_ESC_ScaleWedge':      ('table', tablesUS.escScaleWedge,       'Tables/US_ESC_ScaleWedge.tex'),
+    # France's characteristics on the UK at the UK's own cost parameter (app:UKUS), and the US-UK figure.
+    'UK_ESC_IncomeDistr':     ('table', tablesUS.ukEscIncomeDistr,    'Tables/UK_ESC_IncomeDistr.tex'),
+    'UK_ESC_Voting':          ('table', tablesUS.ukEscVoting,         'Tables/UK_ESC_Voting.tex'),
+    'UK_ESC_FrenchAll':       ('table', tablesUS.ukEscFrenchAll,      'Tables/UK_ESC_FrenchAll.tex'),
+    'UKUS_ESC_French':        ('figure', figuresUS.ukusEscFrench,     'Figs/UKUS_ESC_French.pdf'),
 }
 
 
