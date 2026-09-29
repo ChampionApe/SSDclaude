@@ -4,6 +4,18 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-29 — section 7.2 rewritten: the cost as a loss on margins the model lacks
+
+The derivation of $f$ used the flat component's *average* implicit tax, but the model already contains its
+*marginal* wedge, which is common to all types (through $\Theta_h$, with GHH ruling out income effects), so
+a compensated-elasticity reading double-counted and could not produce $\tilde V$. Subsection 7.2 now reads
+$f$ as the Harberger loss of the tax component on participation and reporting margins, where the average
+wedge matters; it also covers the advance-timing conditions and why only that timing; calibration and
+solution moved to open 7.3. Six references added (all checked online), and `model_esc.tex`/`num_esc.tex`
+reframed alike; both Overleaf projects pushed. Literature and strategy: `notes/esc_costLiterature.md`.
+`notes/plan_escSizeLeak.md` was deleted from the working tree during the session (not moved) and committed
+as deleted on RKB's instruction; it is in history at `264cbd7`, and five live pointers to it remain.
+
 ## 2026-09-25 — `esc-sizeLeak` closed out and on Overleaf for review; the merge waits for MGE
 
 WP4's CRRA leg finished (S4 diagnosed, exact numbers kept by RKB), WP6 committed, finding #17 accepted. The

@@ -27,6 +27,9 @@ technical note were pushed to Overleaf from `esc-sizeLeak` on 2026-09-25 for rev
 --dry-run`, pull and commit any online edits on the branch, merge `esc-sizeLeak` into `main`
 (fast-forward if `main` has not moved); the plan then moves to
 `archive/notes/` with a pointer from the root log. W1 is rewritten inside WP5 and closes with it.
+(c) 2026-09-29: 7.2 rewritten with the cost as an extensive-margin loss on the tax component
+(`notes/esc_costLiterature.md`), technical note alike; both projects pushed again. The plan file is
+deleted (in history at `264cbd7`); restore it to `archive/notes/` at the merge and repoint its five citers.
 
 **C5. A linear (Okun) term in the leak** -- follow-up to P1, decision D3. Under a purely quadratic loss the
 first unit of redistribution is free at the margin, so no electorate chooses exactly $\theta = 1$ and
