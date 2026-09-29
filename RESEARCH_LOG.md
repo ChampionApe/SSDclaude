@@ -13,7 +13,8 @@ characteristics on the US and the UK, pinned then chosen design). Every old labe
 Text written around every table block, each number checked against its table or csv. New content: the UK at
 its own λ under the chosen design at ρ = 0.5, 1, 2 (exact CRRA, ~5 h per ρ; module logs of the same date),
 `UKUS_householdheterogeneity`, two US-vs-UK figures. RKB's calls: layout kept with three placements moved
-(US CRRA French table and the US French ESC tables into G; vector X kept whole in F).
+(US CRRA French table and the US French ESC tables into G; vector X kept whole in F). Committed `e68f269`;
+the paper pushed to Overleaf the same evening (17 files updated, `USauxiliary.tex` deleted there).
 
 ## 2026-09-29 — section 7.2 rewritten: the cost as a loss on margins the model lacks
 
