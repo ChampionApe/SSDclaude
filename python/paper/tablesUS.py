@@ -389,10 +389,10 @@ ESCHEAD = [r'\textbf{Scenario}', r'\textbf{CRRA} ($\rho$)', r'$\bm{\theta}$ \tex
 def _escCells(r, base = None):
     """ The design in force at t0 and the three t0 outcomes of one escExperiments row. The csv's
     savings rate is s/(w h) and is converted to s/Y here; with `base` (that rho's baseline row) it is
-    reported as the change against it in p.p. """
+    reported as the change against it in p.p. The design prints to three decimals (style guide §3). """
     sr = D.escSavingsOverY(r['sr_t0'])
     srCell = C.pct(sr) if base is None else C.pp(sr - D.escSavingsOverY(base['sr_t0']))
-    return [C.num(r['θ_t0']), C.pct(r['τ_t0']), srCell, C.num(r['ww_t0'])]
+    return [C.num(r['θ_t0'], 3), C.pct(r['τ_t0']), srCell, C.num(r['ww_t0'])]
 
 
 ESCANCHOR = 'table:US_ESC:ageing'    # the first ESC table; the other three refer to its note
