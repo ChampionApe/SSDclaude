@@ -4,6 +4,18 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-30 — the paper rewrite planned (P2); `esc-sizeLeak` merged; Opus 5.5 agent types
+
+The whole draft read against the root log, the TODO and the style guide, and `notes/paper_presentationPlan.md`
+written: diagnosis (section 7 is 28 % of a 17.5k-word main text while the framing still leads with
+tractability), the recommended thesis (design shapes political support, support shapes design, the size of
+the system as the link), a section-by-section recommendation with targets, what is missing (a size–design
+panel in figure 1, an equal-weights corner proposition, ξ robustness for the chosen design, six references),
+eleven inconsistencies, and, after RKB's decisions D1–D6, a five-session work plan with review gates (§8).
+`main` fast-forwarded to `77ba943` and `paper-rewrite` opened; P1 closed with its plan restored to
+`archive/notes/` and five citers repointed. Agents run on Opus 5.5 through `.claude/agents/paper-*.md`;
+worktree isolation waits on `worktree.baseRef: head` in `.claude/settings.json`, RKB's to add.
+
 ## 2026-09-29 — the OECD appendix split in three; the UK as host under the chosen design
 
 RKB's layout: old appendix E (`USauxiliary.tex`, deleted) is now `Appendix/CalibrationOECD.tex` (E, five
