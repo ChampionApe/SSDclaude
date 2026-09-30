@@ -4,6 +4,22 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-30 — paper rewrite session 3: the framing by one hand, C1's referee pass, pushed for gate 3
+
+Gate 2's decisions applied (all as recommended; G2.2 puts the Argentine workweek change at one decimal). The
+abstract, introduction and conclusion were rewritten by the main session against the final sections 3–7 per
+`notes/paper_presentationPlan.md` §3: figure 1 in the introduction with the size–design co-movement as the
+fact and the paper's question; the corner as a proved result; the cost's three predictions each tied to figure
+1; A3's seven references in the literature block (G3.1 asks whether G1.4 meant none at all); `TODO-W1` resolved
+by the rewrite; the conclusion's units fixed and "within 16%" qualified. 2,194 → 1,754, 696 → 495, abstract 248
+→ 226 by `checkPaper.py` (its count includes the JEL lines and figure 1's footnote). C1 (`paper-reviewer`, no
+notes read) returned eight framing claims, nine number mismatches, a terminology list and three referee points;
+the confirmed ones in the main session's files were fixed before the push (no "closed form" claimed, section
+7.3's dispersion cuts and the UK's own cost across ρ corrected, three literature links reworded), the
+substantive ones (the ρ = 2 exceptions to "inequality moves the design little" and "voting minor", the
+compressed ordering, proposition 2's assumptions, appendix D's ε formula) are RKB's calls in
+`notes/paper_gate3.md`, session 4's entry point after §8. Pushed to Overleaf after a clean dry-run pull.
+
 ## 2026-09-30 — paper rewrite session 2: sections 2–6 cut by four writers, gate 1 follow-ups closed, pushed for gate 2
 
 Four `paper-writer` agents (B1–B4) cut sections 4, 6, 5 and 2–3 per `notes/paper_presentationPlan.md` §3, in the
