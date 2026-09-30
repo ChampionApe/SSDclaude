@@ -353,10 +353,10 @@ section as their entry point.
   **Worktree isolation is conditional** (2026-09-30): a subagent worktree is cut from `origin/HEAD` unless
   `.claude/settings.json` carries `{"worktree": {"baseRef": "head"}}`, and `main` is ahead of `origin`,
   so without that line a worktree would check out the paper as it was before the size-leak branch. RKB
-  adds the line (the auto-mode classifier refused it from the session); with it, writers run in worktrees
-  and commit there, and the main session merges after the gate. Without it, agents work in the main
-  checkout, commit nothing, and the main session commits per file after the gate; the per-file diff is the
-  review object either way. A worktree holds committed files only: `results/` is tracked and present,
+  added the line on 2026-09-30 (the auto-mode classifier had refused it from the session), so agents run
+  in worktrees and commit there, and the main session merges after the gate. Should the file ever be
+  missing, agents work in the main checkout, commit nothing, and the main session commits per file after
+  the gate; the per-file diff is the review object either way. A worktree holds committed files only: `results/` is tracked and present,
   `.venv/` is not, so agents call the repo's interpreter by absolute path. Generated tables and their labels
   are never edited; a number that must change goes through `python/paper`.
 - Pending numbers are written as `\todo{...}` per the style guide, listed in the agent's report, and
