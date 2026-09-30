@@ -14,7 +14,7 @@ the UK's groups; `buildEU` seeds ω and passes ModelESC options, `runESCcrra.bui
 every free baseline re-elects 0.5597. Trap: at ρ = 0.5 the UK's β-imposed calibration does not converge on
 the ns = 50 scan grid (7.5e-4), so that ρ scans at 150 (~35 min per trial, 5 h in all). `test_esc.py` S15.
 
-## 2026-09-24 — the `'size'` wedge f(θ, τ) (WP2 and WP4 of `notes/plan_escSizeLeak.md`)
+## 2026-09-24 — the `'size'` wedge f(θ, τ) (WP2 and WP4 of `archive/notes/plan_escSizeLeak.md`)
 
 `Base.fWedge/wedgeA/wedgeB(θ, τ, t, lag)` gain the spec `'size'`; `Vtilde(t, lag)` memoised and zero-mass
 masked; `dlnfWedge_dτ`; τ passed at every call site (same-date pairs); `dlnc2i_dτ` × (1+τ∂τ ln f); `model.py`'s

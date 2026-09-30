@@ -9,27 +9,13 @@ Items are labelled so they can cite each other: `C` code, `R` compute runs, `W` 
 R1, R3, R4 and W3 closed on 2026-09-11 (`python/US/RESEARCH_LOG.md`, `python/paper/RESEARCH_LOG.md`); C4
 and W2 on 2026-09-12, W4 the same day on RKB's instruction, W2b on 2026-09-15 along with the rest of W5.
 Open: W1, a wording call; W5's one remaining part, whether the paper carries a verification paragraph;
-one data caveat under D1, France's voting at the UK cuts, MGE's; and P1 below, the branch.
+one data caveat under D1, France's voting at the UK cuts, MGE's; P1 closed 2026-09-30 with the merge into `main`; P2 below is the paper rewrite, whose plan is `notes/paper_presentationPlan.md`.
 
 ## Plan in progress
 
-**P1. The size-scaled leak as the paper's endogenous design** -- branch `esc-sizeLeak`, opened and
-executed 2026-09-24 (WP1 to WP6 of `notes/plan_escSizeLeak.md`; decisions D1 to D6 at their defaults on
-RKB's instruction). Section 7's wedge $f(\theta)$ burned revenue at a given $\theta$ whatever the income
-distribution, which is why France's income distribution cornered the chosen design and the US wedge
-cornered the UK; the branch replaces it by a leak quadratic in the cross-subsidy and proportional to the
-size of the system. Diagnosis, candidates, the pilot and the outcome: `notes/esc_inequalityChannel.md`.
-**Open on P1**: (a) stop condition S4 fired -- the path-iteration cross-check separates from the published
-exact solver by up to 0.09 on the French voting rows, the path iteration's own approximation -- and RKB
-kept the exact numbers as published (2026-09-25); finding #17 accepted the same day. (b) The paper and the
-technical note were pushed to Overleaf from `esc-sizeLeak` on 2026-09-25 for review. **The merge into
-`main` waits until RKB has discussed the progress with MGE.** Then: `pull paper --dry-run` and `pull note
---dry-run`, pull and commit any online edits on the branch, merge `esc-sizeLeak` into `main`
-(fast-forward if `main` has not moved); the plan then moves to
-`archive/notes/` with a pointer from the root log. W1 is rewritten inside WP5 and closes with it.
-(c) 2026-09-29: 7.2 rewritten with the cost as an extensive-margin loss on the tax component
-(`notes/esc_costLiterature.md`), technical note alike; both projects pushed again. The plan file is
-deleted (in history at `264cbd7`); restore it to `archive/notes/` at the merge and repoint its five citers.
+**P1. The size-scaled leak as the paper's endogenous design** -- closed 2026-09-30. Branch `esc-sizeLeak` (opened and executed 2026-09-24, WP1 to WP6, decisions D1 to D6 at their defaults; 7.2 rewritten 2026-09-29 with the cost as an extensive-margin loss on the tax component, `notes/esc_costLiterature.md`) was fast-forwarded into `main` at `77ba943` after both Overleaf projects were checked unchanged. The plan is restored from history to `archive/notes/plan_escSizeLeak.md` and its five live citers repointed. What stays open from it is C5 below. Diagnosis and outcome: `notes/esc_inequalityChannel.md`; finding #17.
+
+**P2. The paper rewrite** -- branch `paper-rewrite`, opened 2026-09-30 from `main`. Diagnosis, the thesis, the section-by-section recommendation, RKB's decisions D1 to D6 and the five-session work plan with its review gates are all in `notes/paper_presentationPlan.md` (§8 is the entry point for a fresh session). Agents run on Opus 5.5 through `.claude/agents/paper-*.md`. W7 is folded into it: (a) is agent A4's brief, (b) is fixed in session 1.
 
 **C5. A linear (Okun) term in the leak** -- follow-up to P1, decision D3. Under a purely quadratic loss the
 first unit of redistribution is free at the margin, so no electorate chooses exactly $\theta = 1$ and
@@ -40,7 +26,7 @@ the prediction). Not in this draft; one sentence in `sec:esc` says so.
 **W7. After the appendix split** (2026-09-29, root log) -- two calls for RKB. (a) France's LIS survey year
 is not stated anywhere in the draft; `sec:oecd` implies 2019. (b) `sec:esc` and the conclusion say the
 UK's own λ is "within 16%" of the US one: true at ρ = 1 (7.264 vs 8.643), but at ρ = 2 it is 61% above
-(2.786 vs 1.728; appendix G.2 says so). Also whether `sec:esc` gets one sentence on the UK-host results.
+(2.786 vs 1.728; appendix G.2 says so). Also whether `sec:esc` gets one sentence on the UK-host results. Folded into P2 (2026-09-30): (a) is agent A4's brief, (b) is fixed in session 1 of `notes/paper_presentationPlan.md` §8; the UK-host sentence is a session 1 call.
 
 ## Data tasks
 

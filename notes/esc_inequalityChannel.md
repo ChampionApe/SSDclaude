@@ -133,7 +133,7 @@ Reading.
 ## 5. Status
 
 Candidate B adopted on 2026-09-24 as the branch `esc-sizeLeak`; the execution plan, with the derivation
-behind the form, the work packages and the stop conditions, is `notes/plan_escSizeLeak.md`. The pilot's
+behind the form, the work packages and the stop conditions, is `archive/notes/plan_escSizeLeak.md`. The pilot's
 script, result csvs and log are in `archive/pilots/escSizeLeak_2026-09-24/`.
 
 Outcome (2026-09-24, the branch executed with $\tilde V$ in place of $V$ and $\tau$ inside $f$): at $\rho = 1$

@@ -48,7 +48,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
   the `escExperimentsUK` merge, stage (iii) builds `UK_ESC_{IncomeDistr,Voting,FrenchAll}` and the two
   US-vs-UK figures `UKUS_French` (+ twin), `UKUS_ESC_French`; `UKUS_householdheterogeneity` documents the
   UK at US income groups.
-- **The ESC cost specification** (2026-09-24, `notes/plan_escSizeLeak.md`): `config.US['esc']['spec'] =
+- **The ESC cost specification** (2026-09-24, `archive/notes/plan_escSizeLeak.md`): `config.US['esc']['spec'] =
   'size'` is the paper's, `comparisonSpec = 'scale'` the previous wedge, kept as one appendix table
   (`US_ESC_ScaleWedge`). `phi` is a dummy key under `'size'` (every ESC csv is keyed on it); the `p` column
   holds λ, printed as $\lambda$. Stage (i) calibrates both specs under LOG and the paper's spec under CRRA,

@@ -34,7 +34,7 @@ Two more since the counterfactuals became new equilibrium paths read at 2020 (se
      (crossCuttingFindings.md #9).
 
 And the 'size' spec, f(theta_t, tau_t) = exp(-lambda tau_t Vtilde (1-theta_t)^2 / 2), the paper's wedge since
-2026-09-24 (notes/plan_escSizeLeak.md; sections S9-S14 keep that plan's test numbers):
+2026-09-24 (archive/notes/plan_escSizeLeak.md; sections S9-S14 keep that plan's test numbers):
 
   9. lambda = 0 IS ModelUS bitwise; the retirees' analytic tau-derivative carries (1 + tau d ln f/d tau) and
      equals its finite difference at fixed s_{t-1,i}/s_{t-1}; z_t still does not see (tau_{t+1}, theta_{t+1})
@@ -309,7 +309,7 @@ check('at the calibrated p the FREE path reproduces theta* at t0', rec['converge
           rec['p'], float(led['θ'].iloc[mCal.db['t0']]), float(mCal.db['θ'].xs(t0))))
 check('...and the tax target is still hit there', abs(led['targetDrift']['τ']) < 1e-6,
       '-> tauDrift={:.2e} RDrift={:.2e}'.format(led['targetDrift']['τ'], led['targetDrift']['R']))
-# The regression gate for every path the 'size' spec must leave untouched (plan_escSizeLeak.md, check 2).
+# The regression gate for every path the 'size' spec must leave untouched (archive/notes/plan_escSizeLeak.md, check 2).
 check("the calibrated 'scale' p at rho = 1 reproduces 0.4076119851", abs(rec['p'] - 0.4076119851) < 1e-8,
       '-> p={:.10f}'.format(rec['p']))
 
@@ -452,7 +452,7 @@ check('...at every non-terminal period of the horizon', worst[0] < 0.,
 
 
 # ==== the 'size' spec: f(theta_t, tau_t) = exp(-lambda tau_t Vtilde (1-theta_t)^2 / 2) ===================
-# notes/plan_escSizeLeak.md, section 1 and WP2 tests 9-14 (the section labels below keep those numbers).
+# archive/notes/plan_escSizeLeak.md, section 1 and WP2 tests 9-14 (the section labels below keep those numbers).
 # Vtilde = sum_i gamma_i (y_i-1)^2/y_i with y_i = hηRatio: the Harberger weight of the flat component's
 # implicit taxes. lambda sits in the 'p' slot; phi is a dummy the spec never reads. Everything is measured
 # on the US model at rho = 1, calibrated under 'size' where a check needs the calibrated wedge.
