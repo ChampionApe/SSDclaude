@@ -4,6 +4,22 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-30 — paper rewrite session 2: sections 2–6 cut by four writers, gate 1 follow-ups closed, pushed for gate 2
+
+Four `paper-writer` agents (B1–B4) cut sections 4, 6, 5 and 2–3 per `notes/paper_presentationPlan.md` §3, in the
+main checkout on disjoint files (worktree isolation refused again on path case; the types loaded this time):
+section 3 1,435 → 1,133, 4 1,485 → 609, 5 1,646 → 1,191, 6 2,910 → 2,017 words by `checkPaper.py`, section 2
+edits only. The hand-over held: section 4 carries the horizon sentence, the PEE fixed-point note, section 3's
+informal-savings state paragraph and section 7's two "Solution" sentences, and nothing is said twice. The main
+session closed `notes/paper_gate1.md` §6: the corner proposition stated in 7.1 (appendix B proof as prose under
+a run-in heading), the ξ result as a footnote to 7.4 with the drift sentence qualitative, `tablesUS._escCells`
+at three decimals with the seven ESC counterfactual tables rebuilt and 7.4 re-cut, figure 1 on `Figs/OECDdata.pdf`
+with the sourced footnote. First-line review passed on all four diffs; each writer's files committed as one
+commit after it, per the gate 1 merge rule. Checker clean (`TODO-W1` alone remains, session 3's). Pushed to
+Overleaf after a clean pull. The reports, six decisions for RKB (a γ₀ clause dropped from proposition 1, three
+corrections in section 6 beyond a cut, two rounding calls) and the out-of-scope items for sessions 3–4 are in
+`notes/paper_gate2.md`, session 3's entry point after §8.
+
 ## 2026-09-30 — paper rewrite session 1: section 7 drafted, `checkPaper.py`, four agents reported
 
 Section 7 rewritten per `notes/paper_presentationPlan.md` §3 into four labelled subsections (`sec:esc:corner`,
