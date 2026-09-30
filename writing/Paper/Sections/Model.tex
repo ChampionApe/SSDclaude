@@ -3,9 +3,9 @@
 We consider an economy populated by overlapping generations of workers and retirees. Within each generational cohort, we consider $J+1$ household types indexed $j = 0, ..., J$. The $j>0$ household types allocate time between labor and leisure, pay taxes on labor income, consume, and save. When they reach retirement, they spend the return on their savings and any social security benefits they may receive, and die. Type $j=0$ households similarly allocate time between labor and leisure, consume, and save for retirement. However, they supply labor to an informal labor market, thus not subject to labor income taxes, and they save for retirement using an informal savings technology. The distribution of type $j>0$ households is given by $\gamma_j$ with $\sum_{j>0} \gamma_j = 1$, and the share of type $j=0$ households is $\gamma_0$. The ratio of workers to retirees in period $t$ follows a deterministic process, and is given by $\nu_t$. 
 
 
-The government runs a pay-as-you-go (PAYG) pension system with a balanced budget. Each period, the government imposes a tax on labor supplied in the formal sector and transfers the collected amount directly to retirees. We consider social security systems that differ along two dimensions: whether workers need to qualify to receive full benefits or not and the type of benefits provided - either tied to earnings or flat-rate. We describe the different systems in section \ref{sec:model:socialSecurity}. 
+The government runs a pay-as-you-go (PAYG) pension system with a balanced budget. Each period, the government imposes a tax on labor supplied in the formal sector and transfers the collected amount directly to retirees. We consider social security systems that differ along two dimensions: whether workers need to qualify to receive full benefits or not and the type of benefits provided, either tied to earnings or flat-rate. We describe the different systems in section \ref{sec:model:socialSecurity}. 
 
-Policy decisions are taken by a government that acts in the interest of voters, but lacks commitment. We consider both finite and infinite horizon economies.
+Policy decisions are taken by a government that acts in the interest of voters, but lacks commitment.
 
 \subsection{Technology}
 \begin{subequations}\label{eq:model:aggStates}
@@ -29,7 +29,7 @@ In equilibrium this implies the following factor prices:
     R_t = \alpha A_t \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha-1}, \qquad w_t = (1-\alpha)A_t \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha}.
 \end{align}
 
-In the informal sector, workers' wage is given by $w_t^0$ and retirees' return on savings is given by $R^0_t$. These are independent of informal workers' labor supply and aggregate savings, and proportional to formal sector's factor prices. 
+Informal households produce with a linear technology, so the informal wage $w_t^0$ and the return on informal savings $R_t^0$ do not depend on informal labor supply or informal savings. The informal wage per efficiency unit equals the wage the formal sector would pay at the same capital stock in the absence of the pension system (appendix \ref{app:EE:CRRA}), so it moves with capital accumulation but not directly with taxes, and an informal household earns $\eta_0w_t^0$ per hour. Informal savings do not enter the capital stock but earn a return proportional to the formal one, $R_t^0 = r_0R_t$, and we set $r_0 = 1$, so that formal and informal households face the same return on savings.
 
 \subsection{Preferences and Household Choices}
 
@@ -69,7 +69,7 @@ Optimal savings and labor supply decisions can, in general, be written as
     s_t^i &= s_t^i\left(s_{t-1}, s_t, h_t, h_{t+1}, \tau_t, \tau_{t+1}\right),
 \end{align}
 \end{subequations}
-where the dependence on $h_{t+1}, \tau_{t+1}$ comes from the pension system. We consider two cases: An \textit{analytical} model with hand-to-mouth informal households (for which equation (\ref{6d}) need not hold), and a \textit{numerical} model with informal households saving for retirement.
+where the dependence on $h_{t+1}, \tau_{t+1}$ comes from the pension system.
 
 
 \subsection{Social Security System}\label{sec:model:socialSecurity}
@@ -148,6 +148,6 @@ A \emph{politico-economic equilibrium} as of period $t$ conditional on $z_t$ con
     and $\{\tau^{\star}_{\iota} \}_{ \iota \geq t} $ implements a competitive equilibrium allocation.
 \end{enumerate}
 \end{definition}
-Note that for infinite horizon and a recursive time-autonomous structure, the policy and continuation policy functions are time-autonomous functions of the state as well, and conditions i.\ and ii.\ above are combined in a fixed point requirement. 
+Section \ref{sec:LOG} characterizes both equilibria analytically under log-GHH preferences.
 
 
