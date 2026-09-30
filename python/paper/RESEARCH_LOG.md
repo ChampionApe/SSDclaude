@@ -4,6 +4,17 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_paper.md`, in
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-30 — figure 1 rebuilt from its sources (paper rewrite, agent A4); 55 outputs
+
+`oecdFigure1.py`: stage (0) fetch into `data/oecdFigure1.csv` + `_sources.csv` (every column sourced), and
+the builder for the new entry `OECDdata` (2x3: the four panels plus spending against the index; writes
+`oecdCorrelations.csv`). The Stata EPS was read back point by point (`eps_*`): it is reproduced by SOCX old
+age cash **plus in kind**, World Bank population (not OECD: France's OECD series breaks in 1991) and the
+**mean of men and women** of PaG 2021 table 4.1 (the OECD API now serves only 2024: StatLink). Its Gini is
+in no WIID version (2023, 2025, 2026: US 2015-22 tops out at 0.521, the EPS plots 0.591); nearest is WID
+pre-tax income (r = 0.96). Both concept sets are in the csv; `PLOT` = the footnote's (OECD, men, WIID
+disposable) until gate 1. The paper still inputs the EPS.
+
 ## 2026-09-29 — the UK under the chosen design; 54 outputs
 
 `config.US['esc']['uk']` (brackets, per-ρ scan grid, scenarios); stage (i) `--prepub` calibrates the UK's

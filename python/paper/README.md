@@ -40,6 +40,10 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
   X): the paper is the common-X calibration throughout and says so nowhere.
 - Stage (0) is the only network access (Penn World Table via FRED); it writes a calibration *input* to
   `data/` and skips existing output, so the committed csv means no other stage touches the network.
+- **Figure 1** (2026-09-30): a second stage (0) script, `oecdFigure1.py`, writes
+  `data/oecdFigure1{,_sources}.csv` (OECD, PaG 2021, World Bank, WIID, WID); the entry `OECDdata` builds
+  `Figs/OECDdata.pdf` and `oecdCorrelations.csv` from that csv alone. The paper still inputs the EPS;
+  `oecdFigure1.PLOT` picks the concepts (gate 1).
 - **The UK exercise** (2026-09-22): `config.US['ukHost']` names the host of the second French-characteristics
   arm; stage (i) sweeps `FRUK`, stage (ii) runs `runShocksUS.py --host UK` under a `requires` guard, stage
   (iii) builds `UK_OtherShocks`, `UK_CRRA_OtherShocks`, `FRUK_householdheterogeneity` (+ twins).
@@ -69,11 +73,11 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `build.py` | stage (iii): the output registry for both arms, and the copy into `writing/Paper` |
 | `dataTargets.py` | stage (0) |
 
-## Outputs wired (54)
+## Outputs wired (55)
 
 Each built file names its own input: every generated `.tex` and its `.pdf` sibling carry a
 `%% Source:` banner with the csv it was read from, and `--list` reports what is buildable now. The
-registry itself is `build.py`'s table -- that, not this file, is the list of 54.
+registry itself is `build.py`'s table -- that, not this file, is the list of 55.
 
 Every US and Argentina table and figure is registered twice (headline and `_vectorX`); the ESC outputs
 headline only. Only `ArgentinaCalibration_vectorX` is `\input` in the paper. Since 2026-09-29 the OECD
