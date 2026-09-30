@@ -409,7 +409,10 @@ four-part structure and the placement of the cross-country test; the voice, sinc
 exemplar every later writer is pointed at; that every number quoted stands in a table beside it. Then A1's
 proof (with MGE if he wants to see it), A2's numbers for sanity, A3's entries, and A4: whether the rebuilt
 figure replaces the EPS, which panel layout, and the footnote. Sign-off merges the four worktrees; no
-Overleaf push yet unless MGE wants section 7 early.
+Overleaf push yet unless MGE wants section 7 early. *Session 1 done 2026-09-30: the four reports and the
+checklist are condensed in `notes/paper_gate1.md`, whose DECISIONS block is where RKB records the gate 1
+calls; the paper was pushed to Overleaf for the read at RKB's request, and the agents ran in the main checkout
+(no worktrees; see the note's §6).*
 
 ### Session 2: the four independent cuts, in parallel
 

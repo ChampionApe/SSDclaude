@@ -4,6 +4,23 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-30 — paper rewrite session 1: section 7 drafted, `checkPaper.py`, four agents reported
+
+Section 7 rewritten per `notes/paper_presentationPlan.md` §3 into four labelled subsections (`sec:esc:corner`,
+`:cost`, `:calibration`, `:results`): the cross-country test and `US_ESC_Country` moved up into 7.3 (its
+`\input` left appendix G.2), "within 16%" qualified as specific to ρ = 1, the mild-ageing number and the
+"Solution" paragraph out (the latter parked in a `%% TODO-B1` comment for section 4), `%% TODO-PROP3` and
+`\todo{xi:}`/`\todo{drift:}` placeholders in; 4,542 → 3,627 words by `writing/checkPaper.py` (new: refs, cites,
+inputs, control bytes, words, todos, dashes; clean). The four agents ran in the main checkout, since the
+`paper-*` types load only at startup and worktree isolation failed on path case (both in memory): A1 proved
+the equal-weights corner (appendix B, `prop:esc:corner`); A2 ran ξ = 0.2/0.4 (`results/esc/escXiRobustness.csv`:
+design and drift within 0.002 of ξ = 0.3); A3 added seven verified references; A4 rebuilt figure 1 from its
+sources (`python/paper/oecdFigure1.py`): the EPS reproduces only under other concepts than the footnote names,
+and its Ginis are WID pre-tax, not WIID; France's LIS year is 2018. Nothing integrated or committed before gate 1;
+on RKB's instruction the paper was pushed to Overleaf for the gate 1 read (6 files, the online copy having
+been checked unchanged first), and the four stale agent worktrees were removed. The reports and the gate 1
+checklist are in `notes/paper_gate1.md`, with a DECISIONS block for RKB's calls (session 2's entry point after §8).
+
 ## 2026-09-30 — the paper rewrite planned (P2); `esc-sizeLeak` merged; Opus 5.5 agent types
 
 The whole draft read against the root log, the TODO and the style guide, and `notes/paper_presentationPlan.md`
