@@ -128,6 +128,7 @@ calibration (`--noFrance` skips).
   `runESCcrra.py --stage sequential` under CRRA). Negative on [0,1] at every dated period.
 - Permanent timing: the joint `(τ_{t0}, θ)` choice concentrates to a 1-D search; the savings ratio is
   pinned at the fixed point `θ*` (`solveFixedPoint`, default), not at the incumbent (#11/#11b).
+- **Frisch robustness** (`runESCxi.py`, 2026-09-30, LOG, common X): recalibrated at ξ = 0.2/0.3/0.4 (β, ω, X, λ; θ* and `Ṽ` ξ-free, asserted), λ = 8.736/8.643/8.547, design in 2110 0.809 at all three, acute ageing chosen 0.825/0.825/0.826; `results/esc/escXiRobustness.csv`, ξ = 0.3 reproduces the published rows bitwise.
 
 ## Status
 

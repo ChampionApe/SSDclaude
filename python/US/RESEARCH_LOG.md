@@ -4,6 +4,16 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_US.md`, index
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-09-30 — Frisch-elasticity robustness of the endogenous design (`runESCxi.py`)
+
+New driver, LOG under 'size' and common X: per ξ the model is rebuilt with ξ in the workbook parameters (`buildUSxi` swaps it
+into `testmod.pars` around `runESC.buildUS`, since η_i derive from it in the constructor), λ calibrated by `calibrateWedge`
+with (β, ω, X) recalibrated at every trial, then runESC's path and acute-ageing code. θ* and Ṽ are ξ-free (asserted; gap
+1.1e-16). Self-check at ξ = 0.3: λ, path and acute rows equal to the published ones bitwise. ξ = 0.2/0.3/0.4: λ = 8.736/
+8.643/8.547, one sign change each, no corner; design 2050/2080/2110 0.798/0.805/0.809, 0.797/0.804/0.809, 0.796/0.804/0.809;
+tax 2110 0.212/0.209/0.206; acute ageing chosen 0.825/0.825/0.826 (τ 2020 pinned 0.229/0.225/0.221, chosen 0.232/0.228/
+0.224); R drift 2.0/2.9/3.7e-3 (the headline's fixed-point caveat). `results/esc/escXiRobustness.csv`, `logs/escXi.log`, 7.6 min.
+
 ## 2026-09-29 — the UK as ESC host (`--host UK`)
 
 `runESC.py --stage shocks --host UK` and `runESCcrra.py --exact --host UK` run the French scenarios on the
