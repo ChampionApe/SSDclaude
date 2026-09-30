@@ -132,18 +132,18 @@ Fill in below; a blank line means "as recommended".
 
 - **G2.1 Proposition 1, part v.** The γ₀ clause dropped (recommended: accept; appendix A's proof aligned in
   session 4).
-  RKB:
+  RKB: Agreed as recommended.
 - **G2.2 Rounding of the Argentine workweek change.** "about 0.15 hours" against the 0.143 in the csv
   (recommended: keep, it matches the table's printed levels; the style guide's one decimal would give 0.1).
-  RKB:
+  RKB: Use style guide's one decimal. 
 - **G2.3 Section 6's three corrections.** (a) hours and pension design; (b) the figure note; (c) the "θ dampens
   ageing" claim dropped (recommended: accept all three).
-  RKB:
+  RKB: Agreed as recommended.
 - **G2.4 Sections 2–6 as cut.** Accept, or name the paragraphs to revisit.
-  RKB:
+  RKB: Agreed as recommended.
 - **G2.5 Section 7 at 3,703 words.** Stop here (recommended), or cut 7.2/7.4 toward 2,800 in session 5.
-  RKB:
+  RKB: Agreed as recommended.
 - **G2.6 Section 4's accuracy footnote.** "0.3 p.p. in Argentina" as an upper bound on 0.240 (recommended:
   keep as the bound the old text stated; strict rounding would say 0.2), and 609 words or the four cuts to 540
   (recommended: stop at 609).
-  RKB:
+  RKB: Agreed as recommended.
