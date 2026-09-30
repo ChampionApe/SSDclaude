@@ -16,7 +16,7 @@ a run-in heading), the ξ result as a footnote to 7.4 with the drift sentence qu
 at three decimals with the seven ESC counterfactual tables rebuilt and 7.4 re-cut, figure 1 on `Figs/OECDdata.pdf`
 with the sourced footnote. First-line review passed on all four diffs; each writer's files committed as one
 commit after it, per the gate 1 merge rule. Checker clean (`TODO-W1` alone remains, session 3's). Pushed to
-Overleaf after a clean pull. The reports, six decisions for RKB (a γ₀ clause dropped from proposition 1, three
+Overleaf; the real pull before the push reverted the nine committed section files to the stale online copy (finding #16 extended: after a clean dry run at session start, the pre-push pull is a dry run too), restored with `git checkout` and pushed again, 64 files verified in sync. The reports, six decisions for RKB (a γ₀ clause dropped from proposition 1, three
 corrections in section 6 beyond a cut, two rounding calls) and the out-of-scope items for sessions 3–4 are in
 `notes/paper_gate2.md`, session 3's entry point after §8.
 

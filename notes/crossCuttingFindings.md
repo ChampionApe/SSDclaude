@@ -231,7 +231,7 @@ single file was expected -- or a file you edited minutes ago reappears in its re
 
 **Habit.** Run `git status` before any command that pulls a remote over the working tree, and commit (or
 stash) first. Read the count in the tool's own summary line against the number of files expected, and
-treat a mismatch as a revert until proven otherwise; `--dry-run` says exactly which files are in play.
+treat a mismatch as a revert until proven otherwise; `--dry-run` says exactly which files are in play. A committed tree is not exempt (2026-09-30, nine section files reverted by a pre-push pull over a stale online copy; `git checkout` restored them): when the dry run at the start of the session listed nothing, the pull before the push is a dry run too.
 
 ## 17. A reduced-form cost must vanish when the quantity it prices vanishes
 

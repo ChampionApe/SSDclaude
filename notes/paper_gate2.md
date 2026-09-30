@@ -3,8 +3,10 @@
 For RKB. Session 2 of `notes/paper_presentationPlan.md` §8 is done: the four writers B1–B4 cut sections 2–6, the
 main session closed the gate 1 follow-ups of `notes/paper_gate1.md` §6, everything passed the first-line review
 (style guide §7, cross-references, numbers against tables, the B1/B4 hand-over) and is committed on `paper-rewrite`
-per file, and the paper is pushed to Overleaf for this read (pulled first; the online copy was unchanged). A gate
-change comes back as an edit on the branch. **Record decisions in the DECISIONS block at the end of this file.**
+per file, and the paper is pushed to Overleaf for this read; the online copy was unchanged (a real pull before
+the push reverted the nine committed section files to the stale online copy, finding #16; restored from the
+branch and pushed again, all 64 files verified in sync by a dry-run pull). A gate change comes back as an edit
+on the branch. **Record decisions in the DECISIONS block at the end of this file.**
 
 The writers ran in the main checkout with disjoint files (worktree isolation refused again: the session's path
 spells `Github`, git's `GitHub`; see the memory note). The checker is clean on the whole draft; two tags remain,
