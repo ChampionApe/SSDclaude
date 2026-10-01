@@ -8,22 +8,17 @@ The final output from the project is a research paper in Overleaf that can be ac
 ## Structure
 The project is self-contained in the current repository. Subfolders:
 - `data/` - raw and processed data (not results).
-- `python/` - python files.
 - `results` - output tables, figures, and model instances and solution databases.
 - `notes` - use this for smaller tasks and working notes. 
 - `archive` - history: session logs to 2026-09-11, long-form findings, pre-cut READMEs, closed to-dos. Indexed in `archive/INDEX.md`; excluded from default searches by `.rgignore`. Do not read it unless a live file points there or you are stuck on something the index names, and never restate its content into a live file.
 - `writing` - use this to generate tex and markdown files like model documentation. 
 - `writing/Paper` - contains copy of latest draft of the final paper.
 
-The `python/` folder organizes the code in five folders: Three of them implement different variations of the economic model (informalAnalytical, informalSavings, US), the fourth includes a small homemade package to use to solve tricky numerical problems using gridsearches (to be developed), and the fifth (`paper`) is the pipeline that turns solved models into the tables and figures in `writing/Paper`. 
+ 
 
-### Model structure
+### Model structure (informalAnalytical, informalSavings, US)
 The three models are similar, but the code and documentation is self-contained. For each model, we have:
 * A tex documentation folder `writing/x/` with x being the model version, pulled into `writing/main.tex` by `\subimport`. Inside it, `model*.tex` define the model and its equilibria, `num*.tex` the numerical solution — split one file per section (see `writing/informalSavings/num.tex` for the pattern). Equations carry `\refeq:` labels that the `.py` docstrings reference by name, so a label rename has to be followed through the code.
-* Three .py files that are linked:
-    * `base.py` includes base classes that defines all the relevant functions from the documentation.
-    * `policy.py` includes classes that implement the identification of sequences of policy functions.
-    * `model.py` defines the parent class with database structure. Draws on `base.py` and `policy.py` classes directly.
 * A `python/<module>/README.md` describing the module's purpose, file map, and current implementation status (what's solved vs. still a stub). Update this whenever the status changes materially — it's the fastest way for us (or a future session) to know what's actually working without re-reading all the code.
 * A `python/<module>/RESEARCH_LOG.md` for session entries specific to that model (or to the gridsearch package).
 
@@ -42,7 +37,6 @@ updated whenever a data file, a stage or a figure outside the pipeline is added 
 
 
 ## Key conventions
-- Language: Mainly Python.
 - Writing: Do not waste energy on compiling tex files; add as local tex file under `writing` and let the user compile locally. 
 - After a full working session, before the user shuts down the session (not during every interaction), append a short entry to the relevant log: the root `RESEARCH_LOG.md` for cross-cutting/structural work (repo organization, conventions, decisions spanning modules), or `python/<module>/RESEARCH_LOG.md` for work specific to one model (informalAnalytical, InformalSavings, US) or the gridsearch package.
 - Context budget, so the docs stay cheap to read: a `README.md` stays under ~100 lines and holds orientation only (purpose, file map, how to run, invariants as one-liners, status, open items). A log entry is at most ~10 lines: what changed, why, where to look. A lesson that recurs goes to `notes/crossCuttingFindings.md` once, as statement/tell/habit, cited by number; its numbering is referenced from code and must not change. Anything longer (measurements, investigations, superseded plans) goes to `archive/` with a pointer from the live file.
