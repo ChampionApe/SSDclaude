@@ -136,7 +136,9 @@ Fill in below; a blank line means "as recommended".
   "designs"; Bethencourt–Galasso 2008 for Medicare; Levy 2008 for informality), and nowhere else, which is how
   the main session read G1.4 ("not here" = not in section 7). If G1.4 meant no citation at all, the sentence
   block is one paragraph to delete (recommended: keep; a design paper without these will be asked for them).
-  RKB:
+  RKB: 2026-10-01, in session: the block ends at "and take it to the data"; the Tabellini, Cremer-myopia and
+  Galasso–Profeta 2004 sentence cut (both now uncited); Galasso–Profeta 2002's open question opens the design
+  paragraph; Bethencourt–Galasso in section 6's Medicare footnote; Levy's footnote in section 2 cut by RKB online.
 - **G3.2 `TODO-W1`.** Resolved by the rewrite as described (recommended: accept).
   RKB:
 - **G3.3 Argentine coverage.** "almost universal" in the introduction and section 5; the 91% dropped
@@ -148,7 +150,9 @@ Fill in below; a blank line means "as recommended".
 - **G3.5 C1's list.** Which items the main session acts on in session 4 (recommended: every number mismatch
   and terminology drift C1 confirms; the three referee points are for the reply, not the text, unless one
   names a sentence to change).
-  RKB:
+  RKB: 2026-10-01, in session: referee point c led to a re-derivation of proposition 2; the ε threshold claim is
+  replaced by the pension-share condition `eq:LOG:epsCondition` (`notes/prop2_epsilonCheck.md`), the ν sign gets
+  its condition in appendix B.1; the equal-μ statement of the proposition stays for session 4.
 - **G3.6 MGE's read.** Push done; the line to MGE: sections 2–7 are settled at this gate, sessions 4–5 touch
   the appendices, `main.tex` (the online switch) and the technical note, so online edits to those stay
   comments until gate 5, or he says which he edits (recommended: send as is).

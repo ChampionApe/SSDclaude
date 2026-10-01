@@ -4,6 +4,20 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-01 — the introduction's last two parts settled, proposition 2's ε claim replaced
+
+With RKB, on `paper-rewrite`: the literature block ends at "and take it to the data" (the Tabellini, Cremer-myopia
+and Galasso–Profeta 2004 sentence cut, both references now uncited), the Galasso–Profeta 2002 open question opens
+the design paragraph, figure 1's note is sources only, and "closed form" became "carries no state" or "a function of
+parameters and demographics alone" in the introduction and sections 3 and 4 (section 3's own literature sentence
+had said so). RKB's online edits to sections 2 and 3 pulled in three round trips; the infinite-horizon fixed-point
+sentence now lives only in section 2. Proposition 2 checked by derivation (`notes/prop2_epsilonCheck.md`): the γ₀
+threshold for the effect of ε is not a result, since the formal retirees' loss is γ₀ times the informal gain and
+both sides of the FOC derivative vanish together; replaced by the pension-share condition `eq:LOG:epsCondition`,
+derived in appendix B.1 with a ν qualifier, and the abstract, introduction, section 3, the section 5 footnote and
+the conclusion aligned. Gate 3 decisions G3.1 and G3.5 recorded in `notes/paper_gate3.md`. Open: the proposition's
+equal-μ statement (C1's point c, session 4), and section 3's "as in Argentina" rests on the hand-to-mouth variant.
+
 ## 2026-09-30 — paper rewrite session 3: the framing by one hand, C1's referee pass, pushed for gate 3
 
 Gate 2's decisions applied (all as recommended; G2.2 puts the Argentine workweek change at one decimal). The
