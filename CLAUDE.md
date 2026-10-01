@@ -35,6 +35,11 @@ into a solve. Do not hand-edit a generated `.tex` in `writing/Paper`: it carries
 and the next build overwrites it. Change the number at its source (`python/paper/config.py`, or the
 experiment that produced the csv) and rebuild. See `python/paper/README.md`.
 
+A referee must be able to trace every table, figure and data input of the paper from the GitHub repo:
+`REPLICATION.md` (root) is that map and `data/README.md` sources every input file. `build.py --map`
+regenerates the output table in `REPLICATION.md`; the hand-written parts and `data/README.md` are
+updated whenever a data file, a stage or a figure outside the pipeline is added or changed.
+
 
 ## Key conventions
 - Language: Mainly Python.

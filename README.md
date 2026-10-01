@@ -1,13 +1,15 @@
 # SSDclaude
 
 Code repository for *Social Security Design and Its Political Support* (2026). See `CLAUDE.md` for project
-conventions; this file is a map.
+conventions; this file is a map. **`REPLICATION.md`** walks a reader from every table and figure of the
+paper to the data, the script and the command that produce it.
 
 ## Layout
 
 **`data/`**: raw and processed inputs (not results). `ArgentinaTest.xlsx`, `USMain_test.xlsx`,
 `FRMain.xlsx`, `UKMain.xlsx` (the last also regrouped at US percentiles), plus `argentina_*.csv`, the
-calibration targets `python/paper/dataTargets.py` derives from the Penn World Table.
+calibration targets `python/paper/dataTargets.py` derives from the Penn World Table, and `oecdFigure1*.csv`
+behind figure 1. Each file's source, vintage and reader: `data/README.md`.
 
 **`python/`**: three model variants, a shared numerical package, and the paper pipeline. Each subfolder
 has a `README.md` (purpose, files, how to run, invariants, status, open items) and a terse `RESEARCH_LOG.md`.
@@ -59,6 +61,6 @@ and workbooks under `data/` must be edited through Excel, not openpyxl (`notes/T
 
 ## Status
 
-All three model variants solve, calibrate and run their counterfactuals, and all 45 paper outputs are
-wired end to end. The endogenous-`θ` layer (leaded and permanent timings, LOG and CRRA) is implemented
+All three model variants solve, calibrate and run their counterfactuals, and all 55 paper outputs are
+wired end to end (`python/paper/build.py --list`). The endogenous-`θ` layer (leaded and permanent timings, LOG and CRRA) is implemented
 and calibrated; only the *sequential* timing is not. Open items: `notes/TODO.md` and the module READMEs.

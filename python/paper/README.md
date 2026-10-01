@@ -42,8 +42,11 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
   `data/` and skips existing output, so the committed csv means no other stage touches the network.
 - **Figure 1** (2026-09-30): a second stage (0) script, `oecdFigure1.py`, writes
   `data/oecdFigure1{,_sources}.csv` (OECD, PaG 2021, World Bank, WIID, WID); the entry `OECDdata` builds
-  `Figs/OECDdata.pdf` and `oecdCorrelations.csv` from that csv alone. The paper still inputs the EPS;
-  `oecdFigure1.PLOT` picks the concepts (gate 1).
+  `Figs/OECDdata.pdf` and `oecdCorrelations.csv` from that csv alone. The paper inputs the PDF;
+  `oecdFigure1.PLOT = NAMED` picks the sourced concepts (gate 1 call, 2026-09-30).
+- **`--map`** rewrites the output table of `REPLICATION.md`, the referee-facing map: one row per registered
+  output with the files it reads (traced through pandas at build time, not declared) and the tex files that
+  input it. Run it after adding or renaming an output.
 - **The UK exercise** (2026-09-22): `config.US['ukHost']` names the host of the second French-characteristics
   arm; stage (i) sweeps `FRUK`, stage (ii) runs `runShocksUS.py --host UK` under a `requires` guard, stage
   (iii) builds `UK_OtherShocks`, `UK_CRRA_OtherShocks`, `FRUK_householdheterogeneity` (+ twins).
