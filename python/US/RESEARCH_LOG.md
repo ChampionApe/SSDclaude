@@ -4,6 +4,15 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_US.md`, index
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-02 — the CRRA design choice moves a predetermined state (found by reading, nothing run)
+
+While section 4 of the paper was being drafted: `LeadedCRRA2D._econAt` (policyESC.py 603–605) evaluates every
+candidate θ_{t+1} with s_{t-1,i}/s_{t-1} recomputed at the candidate's own τ* and h_t, through B_t(R_t) under
+ρ ≠ 1, so the design comparison includes a channel the electorate does not control. The tax FOC holds the ratio
+fixed correctly; LOG is immune (B = β, and the tax does not see θ_{t+1}). The path iteration and `PermanentCRRA`
+(level of past savings) share the class. Size unmeasured; RKB wants a new algorithm, designed in a fresh session:
+`notes/esc_crraDesignChoiceProblem.md`, TODO C6. num_esc.tex line 8 states the opposite and is fixed with it.
+
 ## 2026-09-30 — Frisch-elasticity robustness of the endogenous design (`runESCxi.py`)
 
 New driver, LOG under 'size' and common X: per ξ the model is rebuilt with ξ in the workbook parameters (`buildUSxi` swaps it

@@ -23,6 +23,13 @@ France's design is a prediction the model cannot reach. A term linear in $1-\the
 the price of a second parameter, which the UK's design could pin (two targets, two parameters, France as
 the prediction). Not in this draft; one sentence in `sec:esc` says so.
 
+**C6. The CRRA design choice lets past savings shares move with the candidate design** -- opened
+2026-10-02, RKB: design a new algorithm in a fresh session, not a patch. `LeadedCRRA2D` evaluates each
+candidate θ_{t+1} with s_{t-1,i}/s_{t-1} recomputed at that candidate's own tax and hours, so the electorate
+is credited with moving a predetermined state; log is immune, every CRRA endogenous-design row (ρ = 0.5, 2)
+is exposed, size unmeasured. Problem statement, equilibrium conditions, affected outputs and the structure a
+new solver can use: `notes/esc_crraDesignChoiceProblem.md`. The paper's `%% TODO-CRRA2D` (section 4) waits on it.
+
 **W7. After the appendix split** (2026-09-29, root log) -- two calls for RKB. (a) France's LIS survey year
 is not stated anywhere in the draft; `sec:oecd` implies 2019. (b) `sec:esc` and the conclusion say the
 UK's own λ is "within 16%" of the US one: true at ρ = 1 (7.264 vs 8.643), but at ρ = 2 it is 61% above

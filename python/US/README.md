@@ -144,6 +144,11 @@ no finite `λ` places the choice there (`results/esc/escCountry.csv`). **The UK 
 the UK's groups; every UK file carries the host in its name. At `ρ` = 0.5 the UK's exact calibration must
 scan at `ns` = 150: its β-imposed calibration does not converge on the `ns` = 50 grid there.
 
+**Known defect** (2026-10-02, `notes/TODO.md` C6): `LeadedCRRA2D`, and the path iteration, evaluate each
+candidate design with `s_{t-1,i}/s_{t-1}` recomputed at that candidate's own tax and hours, so every CRRA
+endogenous-design row is suspect until the solver is redesigned (`notes/esc_crraDesignChoiceProblem.md`);
+LOG is unaffected.
+
 **Open**: `PermanentCRRA` (run 2026-09-11, `results/esc/escPermanentCRRA.csv`) puts the costless permanent
 choice at θ = 0 for ρ ≤ 1.3 and at θ = 1 for ρ ≥ 1.4 -- the paper's wording is RKB's (`notes/TODO.md`
 W2b). **The UK exercise** (2026-09-22): the French-characteristics shocks run on the UK's own calibration with

@@ -4,6 +4,18 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-02 — sections 3–4 tightened with RKB; the CRRA design solver moves a predetermined state
+
+With RKB on `paper-rewrite`, in Overleaf round trips (push, RKB's online edits pulled back): proposition 2 now says
+only that the effect of ε is ambiguous, the condition `eq:LOG:epsCondition` lives in appendix B.1, and the text
+after it, the introduction's ε sentence and the conclusion's γ₀ clause give the mechanism alone; the
+introduction's CRRA paragraph is cut (it misread 7.4). Section 4: the stationary footnote interprets before it
+quotes (Argentina's miss is 0.24 p.p., not 0.3); the horizon footnote moved to appendix C; the state paragraph
+says why first order conditions (past savings shares held fixed, then substituted) and gives the continuation
+derivative and the root/corner selection in words. Reading the CRRA design solver against the code found that
+`LeadedCRRA2D` recomputes s_{t-1,i}/s_{t-1} at each candidate design: log is immune, every CRRA endogenous-design
+row is exposed, the size is unmeasured. `notes/esc_crraDesignChoiceProblem.md`, TODO C6, `%% TODO-CRRA2D` in section 4.
+
 ## 2026-10-01 — the introduction's last two parts settled, proposition 2's ε claim replaced
 
 With RKB, on `paper-rewrite`: the literature block ends at "and take it to the data" (the Tabellini, Cremer-myopia
