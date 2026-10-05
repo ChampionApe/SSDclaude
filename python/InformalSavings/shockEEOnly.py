@@ -39,8 +39,9 @@ R_t0/h_t0 -- exact, not an approximation, and asserted against stateAtT0's seed 
 
 OUTPUT (results/shocks/eeOnly_<rule>_rho<rho>.csv) mirrors the full-effect file's layout with `_reform`
 replaced by `_ee`, and adds `s_` (the lagged savings level) and `sr` (the savings rate) to both blocks:
-t, rho, <series>_base, <series>_ee, d_<series> = ee/base - 1. tau_ee equals tau_base exactly by
-construction and is asserted on. s__base(t0) is the seed state s_{t0-1}, common to all three scenarios,
+t, rho, <series>_base, <series>_ee, d_<series> = ee/base - 1, and the tax candidates' counts nEqMax/
+nCandMax/nFallback (-1 unless --resolveBaseline: no political problem is solved here). tau_ee equals
+tau_base exactly by construction and is asserted on. s__base(t0) is the seed state s_{t0-1}, common to all three scenarios,
 and is the number the full effect's own savings rate has to be built from.
 
 --control solves the copy at the baseline tau AND the baseline eps before installing the reform. That is
@@ -58,6 +59,7 @@ sys.path.insert(0, HERE)
 os.chdir(HERE)                                  # test.py resolves data/ relative to the repo root
 
 import shockUniversal as su                     # installEps/universalEps/loadCalibrated/frame: one code path
+from policy import multiplicityColumns
 from gridsearch.testing import utf8Stdout
 
 utf8Stdout()                                    # this module prints Greek; see gridsearch/testing.py
@@ -245,6 +247,10 @@ def runEEOnly(ρ, settings, rule, refType, scale, control, resolveBaseline, out,
             df['d_'+k] = df[k+'_ee']/df[k+'_base'] - 1
     df.insert(0, 'ρ', ρ)
     df.index.name = 't'
+    # The tax candidates' counts (num_robustroot.tex) of the political solves behind the row: the EE-only
+    # solve has none, so only a re-solved baseline (--resolveBaseline) supplies them; -1 otherwise.
+    for k, v in multiplicityColumns(*([base.get('multiplicity')] if resolveBaseline else [])).items():
+        df[k] = v
     dτ = float(np.max(np.abs(df['τ_ee'].values - df['τ_base'].values)))
     if dτ != 0:                                 # tau is EXOGENOUS here: the two columns are one array
         raise RuntimeError('tau_ee != tau_base (max|Δ| = {:.3e}) -- the tax path was not held fixed'.format(dτ))

@@ -51,6 +51,7 @@ os.chdir(HERE)                                        # testEU.py reads data/ re
 
 import testEU
 from gridsearch import continuation
+from policy import multiplicityColumns
 
 OUTDIR = os.path.join(REPO, 'results', 'calibration')
 
@@ -58,6 +59,7 @@ OUTDIR = os.path.join(REPO, 'results', 'calibration')
 COLUMNS = ['ρ', 'preferences', 'requested', 'residual', 'verifyResidual', 'hoursDrift',
            'β', 'ω', 'λ', 'X',
            'R', 'τ', 'sr', 'h', 'hbar', 'nfev', 'time', 'n', 'ns', 'smoothKnots', 'interpKind',
+           'nEqMax', 'nCandMax', 'nFallback',
            'x0', 'commit', 'timestamp']
 
 
@@ -70,7 +72,8 @@ def gitCommit():
 
 
 def toRow(rec, requested, commit):
-    """ calibratePoint's record -> one flat csv row. """
+    """ calibratePoint's record -> one flat csv row, with the tax counts of its solve (nEqMax, nCandMax,
+    nFallback; policy.multiplicityColumns), -1 while calibratePoint's record carries none. """
     g = rec['gridSettings']
     row = {k: rec.get(k) for k in ('ρ', 'preferences', 'residual', 'verifyResidual', 'hoursDrift',
                                    'β', 'ω', 'λ', 'X', 'R', 'τ', 'sr', 'h', 'hbar', 'nfev', 'time')}
@@ -78,7 +81,7 @@ def toRow(rec, requested, commit):
             'smoothKnots': g.get('smoothKnots'), 'interpKind': g.get('interpKind'), 'commit': commit,
             'timestamp': datetime.datetime.now().isoformat(timespec = 'seconds')}
     row |= {f'x{i}': v for i, v in enumerate(rec['x'])}
-    return row
+    return row | multiplicityColumns(rec.get('multiplicity'))
 
 
 def readDone(path):

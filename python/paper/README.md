@@ -74,6 +74,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `tables.py`, `figures.py` | Argentina builders, one function per output; `figures` owns the house style |
 | `tablesUS.py`, `figuresUS.py` | US/France/UK builders |
 | `build.py` | stage (iii): the output registry for both arms, and the copy into `writing/Paper` |
+| `compareResults.py` | reading a run: every changed csv under `results/` against a commit, rows aligned on the file's keys, the largest difference per column and the columns added (writes nothing) |
 | `dataTargets.py` | stage (0) |
 
 ## Outputs wired (55)

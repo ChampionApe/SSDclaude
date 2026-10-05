@@ -104,6 +104,9 @@ check('calibrate returns the expected keys', set(cal) == {'pars', 'x', 'residual
 check('all four residuals below tol', np.max(np.abs(cal['residual'])) < 1e-8,
       '-> max|residual|={:.2e}'.format(np.max(np.abs(cal['residual']))))
 calRep = cal['report']
+mltLOG = calRep['PEE']['multiplicity']
+check('the calibrated LOG solve reports the tax candidates\' counts, and every state has an equilibrium (no fallback)',
+      mltLOG['nEqMax'] >= 1 and mltLOG['nFallback'] == 0, f'-> {mltLOG}')
 check('capital-output target hit at t0', np.isclose(calRep['KY'], m.db['KY0'], rtol = 1e-7),
       '-> K/Y={:.6f} vs target {:.6f}'.format(calRep['KY'], m.db['KY0']))
 check('tax-rate target hit at t0', np.isclose(calRep['τ'], m.db['τ0'], rtol = 1e-7),
@@ -229,6 +232,9 @@ calC = mC.calibrate(preferences = 'CRRA', x0 = cal['x'])
 check('CRRA (ρ={}) calibration converges on the resolved grid'.format(ρC),
       np.max(np.abs(calC['residual'])) < 1e-8,
       '-> max|residual|={:.2e}'.format(np.max(np.abs(calC['residual']))))
+mltCRRA = calC['report']['PEE']['multiplicity']
+check('the calibrated CRRA (ρ={}) solve reports the counts, and every state has an equilibrium (no fallback)'.format(ρC),
+      mltCRRA['nEqMax'] >= 1 and mltCRRA['nFallback'] == 0, f'-> {mltCRRA}')
 gap = max(abs(calC['pars'][k]/cal['pars'][k]-1) for k in m._calPars)
 check('CRRA (ρ={}) parameters land near the LOG ones'.format(ρC), gap < 0.05,
       '-> ' + ', '.join('{}={:.5f} ({:+.2%})'.format(k, calC['pars'][k], calC['pars'][k]/cal['pars'][k]-1)

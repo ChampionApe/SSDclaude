@@ -56,6 +56,8 @@ REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, HERE)
 os.chdir(HERE)                                  # test.py resolves data/ relative to the repo root
 
+from policy import multiplicityColumns
+
 CSV    = os.path.join(REPO, 'results', 'calibration', 'informalSavings_rhoGrid.csv')
 PKLDIR = os.path.join(REPO, 'results', 'calibration', 'instances')
 OUTDIR = os.path.join(REPO, 'results', 'shocks')
@@ -204,6 +206,12 @@ def runShock(ρ, settings, rule, refType, scale, control, out, commonSettings = 
             df['d_'+k] = df[k+'_reform']/df[k+'_base'] - 1
     df.insert(0, 'ρ', ρ)
     df.index.name = 't'
+    # The tax candidates' counts (num_robustroot.tex) over the two political solves behind every row,
+    # baseline and reform: non-key columns, unsuffixed so that shockEEOnly's '_base' reader skips them.
+    counts = multiplicityColumns(base.get('multiplicity'), shock.get('multiplicity'))
+    for k, v in counts.items():
+        df[k] = v
+    print('tax candidates (baseline and reform): ' + ', '.join('{}={}'.format(k, v) for k, v in counts.items()))
 
     show = ['τ_base', 'τ_reform', 'd_τ', 'd_s', 'd_h', 'd_ι', 'd_c10', 'd_c20']
     print('\nrelative change (reform/baseline - 1), tau in levels:')

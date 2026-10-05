@@ -170,4 +170,56 @@ try:
 except ValueError as e:
     check('rho=1 t<T solve raises ValueError naming LOG', 'LOG' in str(e))
 
+# ---- 7. the selection at frozen savings shares at t<T (num_robustroot.tex, eq:equilibriumTest), on §4's
+# rho=1.5 recursion. focGrid_t is split into focParts_t (every spline) and zAtShares (the formal retirees'
+# term at given shares) so that the frozen objective reuses the splines; the split must be the old formula
+# bitwise. The old formula is restated here as it stood before the split.
+from gridsearch import griddedGradient1D
+
+def focGridPreSplit(CRx, d, g, t, θ, ε):
+    BGx, τ, τGrid = CRx.BG, d['τ'], g.values('τ')
+    p = 1 - 1/BGx.get('ρ', t)
+    grad = lambda y: griddedGradient1D(τGrid, g.reshape(y)).reshape(np.shape(y))
+    dln = lambda x: grad(np.log(x))
+    dlnh = dln(d['h'])
+    dv1i = d['hatc1iPow'] * grad(d['lnhatc1i'])
+    dv10 = BGx.get('β0', t) * d['tc20_1']**p * dln(d['tc20_1'])
+    dv2i = d['c2i']**p * BGx.dlnc2i_dτ(dlnh, τ, θ, d['si_s_'], t)
+    dv20 = d['tc20']**p * BGx.dlnc20_dτ(dlnh, τ, ε, d['Θh'], t)
+    return BGx.FOC(dv1i, dv10, dv2i, dv20, t)
+
+with m2.BG.cacheParams():
+    zPre = focGridPreSplit(CR2, d2, g2, t2, th2[p2], eps2[p2])
+    zNew = CR2.focGrid_t(d2, g2, t2, th2[p2], eps2[p2])
+    parts2 = CR2.focParts_t(d2, g2, t2, eps2[p2])
+    zShares = CR2.zAtShares(d2, parts2, th2[p2], d2['si_s_'], t2)
+check('focGrid_t after the split == the pre-split formula, bitwise (NaN cells included)',
+      np.array_equal(zNew, zPre, equal_nan = True),
+      '-> Σz {!r}, {} NaN cells'.format(float(np.nansum(zNew)), int(np.isnan(zNew).sum())))
+check('zAtShares at the consistent shares is focGrid_t, bitwise', np.array_equal(zShares, zNew, equal_nan = True))
+
+# the upper end of a feasible sub-grid that borders an infeasible node is a candidate like any other: its
+# frozen shares need the hours AT the node, not a linear weight that multiplies the infeasible neighbour
+fin2 = np.isfinite(z2c)
+last2 = z2c.shape[0] - 1 - fin2[::-1, :].argmax(axis = 0)
+cut = fin2.any(axis = 0) & (last2 < z2c.shape[0] - 1)
+W2 = CR2.objectiveFrozen(tauG2[last2][None, :], g2, d2, parts2, th2[p2], t2, t2Lag)
+check('upper-end candidates next to an infeasible cell get a finite frozen objective on the feasible sub-grid',
+      cut.any() and all(np.isfinite(W2[0, fin2[:, j], j]).all() for j in np.flatnonzero(cut)),
+      '-> {} of {} states end below the top of 𝒯'.format(int(cut.sum()), cut.size))
+
+# the recursion under both rules (§4's tables are 'frozen', the default)
+mult2 = dict(CR2.lastMultiplicity)
+CR2.selection = 'legacy'
+solsL = CR2.solveBackward(th2, eps2, sGrid = sG2, smooth = 0.0)
+CR2.selection = 'frozen'
+worst = max(float(np.nanmax(np.abs(sols[tt]['τ'].values - solsL[tt]['τ'].values))) for tt in m2.db['t'])
+same = all(np.array_equal(sols[tt]['τ'].values, solsL[tt]['τ'].values, equal_nan = True) for tt in m2.db['t'])
+check('CRRA ρ=1.5 recursion: counts in every period, one equilibrium at every state, no fallback',
+      all('nEq' in sols[tt] for tt in m2.db['t']) and mult2['nEqMax'] == 1 and mult2['nFallback'] == 0,
+      f'-> {mult2}')
+check('CRRA ρ=1.5 recursion: policy tables bitwise the integral criterion\'s (the rule never bound)',
+      same, '-> max|Δτ| over all periods and states {:.1e}; Σ τ at T-1 {!r}'.format(
+          worst, float(np.nansum(sols[m2.db['t'][-2]]['τ'].values))))
+
 report()

@@ -4,6 +4,18 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_InformalSavin
 `archive/INDEX.md`. Format: one entry per session, at most ~10 lines: what changed, why, where to look. A
 lesson that would recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-02 — tax candidates tested and ranked at frozen savings shares (finding #18)
+
+As informalAnalytical (its log, same date): `LOG/CRRA.objectiveFrozen` through `zbarParts_T/_t` + `zbarAtShares` (shares
+per (s_, ι_) column) and the reused `_stateTerm(CRRA)`; the ι/s fixed points bitwise untouched. Counts
+(`multiplicitySummary`/`multiplicityColumns`) in `solvePEE_*`, `approximatePEE`, `calibratePoint` and as non-key csv
+columns of calibrateRhoGrid, shockUniversal, shockEEOnly (-1 without `--resolveBaseline`), sweepEpsThetaGrid,
+stationaryApprox. Quick-test models: rule never binds, all bitwise. Headline instances: nEq = 2 at 27/63/563 states
+(ρ = 1/2/0.5, periods 0–3), always the lower corner and a crossing ≤ 1.55 cells away, many passing only the one-cell
+clause; walked τ moves ≤ 1.3e-3/3.8e-6/4.3e-3, τ(t0) 2.5e-5/<1e-6/6.3e-5; ρ = 1 recalibrated β 0.650578 → 0.650178.
+test_calibration: the CRRA grid-refinement checks fail under the frozen rule (60x60 residual 1.50e-3, 30x30 0.7x it) and
+pass under `'legacy'` (1.08e-5, 2.9x): the corner/crossing switch is a resolution-dependent jump (#5). `logs/informalFrozen/`.
+
 ## 2026-09-12 — stationary vs date-specific policy functions (prepub check)
 
 `stationaryApprox.py` (driven by `python/paper/runShocks.py --prepub`, headline variant): on the pickled

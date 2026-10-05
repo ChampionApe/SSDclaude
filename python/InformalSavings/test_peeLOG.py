@@ -284,4 +284,62 @@ check('at ε≡0 every period\'s τ_t(ι_{t-1}) is flat (A_t=0 removes the only 
       all(np.allclose(s['τ'].values, s['τ'].values[0], atol = 1e-12, rtol = 0) for s in sols0.values()),
       '-> max range={:.3e}'.format(max(s['τ'].values.max() - s['τ'].values.min() for s in sols0.values())))
 
+# ---- 11. the selection at frozen savings shares (num_robustroot.tex, eq:candidates/eq:equilibriumTest) --
+# Each candidate is tested and ranked on W_t at the formal shares s_{t-1,i}/s_{t-1} it implies, held fixed
+# along 𝒯 (LOG.objectiveFrozen). At T, where z_T is closed form: the frozen objective's τ-derivative at the
+# shares consistent with the evaluation point is z_T; and against §2's primitive W_T it IS the objective at
+# the frozen shares up to a constant, along 𝒯 and across candidates (the retirees' level carries that).
+hFD = 1e-5
+ιTwo = np.array([0.08, 1.0])
+with BG.cacheParams():
+    for τ0 in (0.05, 0.25, 0.60):
+        τg = np.array([τ0 - hFD, τ0, τ0 + hFD])
+        dLoc = LOG.stateGrid_T(τg, θ, t, tLag)
+        W = LOG.objectiveFrozen(np.full((1, 2), τ0), LOG.zbarParts_T(dLoc, t), θ, ε, ιTwo, t, tLag)
+        dW = (W[0, 2, :] - W[0, 0, :])/(2*hFD)
+        zc = np.array([zPolicy(τ0, ι0)[0] for ι0 in ιTwo])
+        err = np.max(np.abs(dW - zc)/np.maximum(1., np.abs(zc)))
+        check('LOG T: dW/dτ of the frozen objective at its own shares equals z_T at τ={}, ι_ = 0.08 and 1.0'.format(τ0),
+              err <= 1e-6, '-> max rel err {:.2e}'.format(err))
+    τFine = np.linspace(0.15, 0.40, 1001)
+    cTwo = (0.20, 0.35)
+    WF = LOG.objectiveFrozen(np.array([[cTwo[0]], [cTwo[1]]]), LOG.zbarParts_T(LOG.stateGrid_T(τFine, θ, t, tLag), t),
+                             θ, ε, np.array([1.0]), t, tLag)[:, :, 0]
+with B.cacheParams():
+    Dc = [LOG.stateGrid_T(np.array([c]), θ, t, tLag)['si_s_'][0] for c in cTwo]
+    PW = np.array([[politicalObjective(τv, 2.0, 1.0, D) for τv in τFine] for D in Dc])
+along = max(np.max(np.abs((WF[k] - WF[k, 0]) - (PW[k] - PW[k, 0]))) for k in range(2))
+across = np.max(np.abs((WF[0] - WF[1]) - (PW[0] - PW[1])))
+check('LOG T: the frozen objective is W_T(τ; D_c) from the primitives up to a constant, along 𝒯 and across candidates',
+      max(along, across) < 1e-6*np.ptp(PW), '-> along {:.1e}, across {:.1e}, range of W_T {:.2e}'.format(
+          along, across, np.ptp(PW)))
+
+# The rule against the integral criterion, at T and through the recursion, and the counts.
+from policy import multiplicitySummary
+LOG.selection = 'legacy'
+solTL = LOG.solveTerminal(θ, ε, t = t, ιGrid = ιGrid)
+solsL = LOG.solveBackward(θpath, εpath, ιGrid = ιGrid, ιCandGrid = ιCandFine)
+LOG.selection = 'frozen'
+oneT = sol['nEq'] == 1
+check('LOG T: counts reported per state; one equilibrium at every state, no fallback',
+      sol['nEq'].shape == ιGrid.shape and oneT.all() and not sol['fallback'].any() and sol['nCand'].min() >= 2,
+      '-> nEq max {}, nCand max {}, fallback {}'.format(sol['nEq'].max(), sol['nCand'].max(), int(sol['fallback'].sum())))
+check('LOG T: bitwise the integral criterion at the states with one equilibrium',
+      np.array_equal(sol['τ'].values[oneT], solTL['τ'].values[oneT]),
+      '-> {}/{} single; Σ τ_T {!r} (frozen) vs {!r} (legacy)'.format(int(oneT.sum()), oneT.size,
+                                                                      float(sol['τ'].sum()), float(solTL['τ'].sum())))
+multF = multiplicitySummary(sols)
+check('LOG recursion: counts in every period; one equilibrium at every state, no fallback',
+      all('nEq' in s for s in sols.values()) and multF['nEqMax'] == 1 and multF['nFallback'] == 0, f'-> {multF}')
+worst = max(float(np.max(np.abs(sols[k]['τ'].values - solsL[k]['τ'].values))) for k in tIdx)
+check('LOG recursion: policy tables bitwise the integral criterion\'s where one equilibrium exists',
+      all(np.array_equal(sols[k]['τ'].values[sols[k]['nEq'] == 1], solsL[k]['τ'].values[sols[k]['nEq'] == 1])
+          for k in tIdx), '-> max|Δτ| {:.1e}; Σ τ at T-1 {!r}'.format(worst, float(sols[tR]['τ'].sum())))
+# The ι_t fixed point is a root problem and no part of the selection: the same continuation gives the same
+# ι_t(τ_t) and root counts whichever rule produced it.
+ιL, nRootsL = LOG.solveStateApprox_t(τGrid, ιCandFine, tR, θR1, εR1, solTL)
+check('the ι_t fixed point is untouched: ι_t(τ_t) and its root counts bitwise under both rules',
+      np.array_equal(ιOfτ, ιL, equal_nan = True) and np.array_equal(nRoots, nRootsL),
+      '-> Σ ι_t {!r}'.format(float(np.nansum(ιOfτ))))
+
 report()

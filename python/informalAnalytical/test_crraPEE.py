@@ -56,7 +56,16 @@ check('approximatePEE Γs[0]/h[0]/s[0] match report_t data at the node, exactly'
 sol1 = m.solvePEE_CRRA(θ = th, ε = eps, warmStart = True)
 m.x0.pop('EE_CRRA', None)
 sol2 = m.solvePEE_CRRA(θ = th, ε = eps, warmStart = False)
-check('solvePEE_CRRA returns the expected keys', set(sol1) == {'sols', 'τ', 'sol', 'report'})
+check('solvePEE_CRRA returns the expected keys', set(sol1) == {'sols', 'τ', 'sol', 'report', 'multiplicity'})
+# the tax candidates' counts (num_robustroot.tex) travel into the solve output, via approximatePEE
+mult1 = sol1['multiplicity']
+check('solvePEE_CRRA carries the counts: one equilibrium at every state of every period, no fallback',
+      isinstance(mult1, dict) and mult1['nEqMax'] == 1 and mult1['nFallback'] == 0 and mult1['nCandMax'] >= 2,
+      f'-> {mult1}')
+from policy import multiplicitySummary
+check('approximatePEE carries the summary of the policy functions it walks',
+      path['multiplicity'] == multiplicitySummary(sols) and path['multiplicity']['nEqMax'] == 1,
+      f"-> {path['multiplicity']}")
 s1v, s2v = sol1['report']['s'].values, sol2['report']['s'].values
 check('warmStart True/False converge to the SAME exact equilibrium',
       np.allclose(s1v, s2v, rtol = 1e-6, atol = 1e-10),
@@ -75,5 +84,8 @@ solLOG = mLOG.solvePEE_LOG()
 diff = np.abs(solCRRA['τ'].values - solLOG['policy']['τ'].values)
 check('ρ=1.02 CRRA PEE is close to LOG (ρ=1) PEE', diff.max() < 0.05,
       '-> max|diff|={:.4f}'.format(diff.max()))
+check('solvePEE_LOG and solvePEE_CRRA both carry the counts',
+      solLOG['multiplicity']['nEqMax'] == 1 and solCRRA['multiplicity']['nEqMax'] == 1,
+      '-> LOG {}; CRRA ρ=1.02 {}'.format(solLOG['multiplicity'], solCRRA['multiplicity']))
 
 report()

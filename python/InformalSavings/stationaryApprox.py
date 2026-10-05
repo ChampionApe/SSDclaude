@@ -26,7 +26,8 @@ The exact solution's last periods carry the terminal condition rather than demog
 constant from 2070 on and the last three periods are appended steady-state periods); read the dated rows
 for the non-stationarity cost and the tail for the finite-horizon effect.
 
-Writes results/numerical/ARG_stationaryApprox{,_commonX}.csv, one row per (rho, t).
+Writes results/numerical/ARG_stationaryApprox{,_commonX}.csv, one row per (rho, t), with the tax
+candidates' counts nEqMax/nCandMax/nFallback over every recursion behind a rho (num_robustroot.tex).
 """
 import os, sys, argparse, time
 from copy import deepcopy
@@ -40,6 +41,7 @@ os.chdir(HERE)
 
 import test as testmod
 from shockUniversal import loadCalibrated, solvePEE, PKLDIR
+from policy import multiplicitySummary, multiplicityColumns
 
 OUTDIR = os.path.join(REPO, 'results', 'numerical')
 
@@ -72,8 +74,8 @@ def convergence(sol0, sol1, prefs, sRange, ιRange):
 
 
 def stationary(m, ν, prefs, grids, sRange, ιRange):
-    """ The frozen-nu model, its policy functions read at the first period, the convergence gap and the
-    steady-state politico-economic tax tau* at nu. """
+    """ The frozen-nu model, its policy functions read at the first period, the convergence gap, the
+    steady-state politico-economic tax tau* at nu, and the tax candidates' counts of its recursion. """
     ms = frozen(m, ν)
     θ, ε = ms.db['θ'].values, ms.db['eps'].values
     sols = getattr(ms, prefs).solveBackward(θ, ε, **grids)
@@ -84,7 +86,7 @@ def stationary(m, ν, prefs, grids, sRange, ιRange):
     except RuntimeError as e:
         print('   steady-state PEE at nu={:.4f} failed: {}'.format(ν, str(e).split('\n')[0][:120]))
         τStar = np.nan
-    return {'m': ms, 'sols': sols, 'conv': conv, 'τStar': τStar}
+    return {'m': ms, 'sols': sols, 'conv': conv, 'τStar': τStar, 'mult': multiplicitySummary(sols)}
 
 
 def runRho(ρ, settings, pkldir):
@@ -152,6 +154,11 @@ def runRho(ρ, settings, pkldir):
         return np.array([float(m.B.savingsRate(r['s'].xs(t), r['s_'].xs(t), r['h'].xs(t), t)) for t in tIdx])
     srE, srA = srOverY(rep), srOverY(repA)
     dates = list(testmod.dates)
+    # the tax candidates' counts over every political solve this rho's rows draw on: the exact recursion
+    # and the stationary one at every nu (the walk passes through all of them); non-key columns
+    counts = multiplicityColumns(exact.get('multiplicity'), *(st['mult'] for st in stat.values()))
+    print('   tax candidates (exact and every stationary recursion): ' + ', '.join(
+        '{}={}'.format(k, v) for k, v in counts.items()))
     rows = []
     for pos, t in enumerate(tIdx):
         νt = np.round(ν[pos], 12)
@@ -162,7 +169,7 @@ def runRho(ρ, settings, pkldir):
                      'gapSS_pp': 100*(τSS[pos] - τE[pos]), 'gapLongRun_pp': 100*(τLR[pos] - τE[pos]),
                      's_exact': sE_[pos], 's_stat': sA_[pos], 'ι_exact': ιE_[pos], 'ι_stat': ιA_[pos],
                      'srY_exact': srE[pos], 'srY_stat': srA[pos],
-                     'statConv': stat[νt]['conv']})
+                     'statConv': stat[νt]['conv']} | counts)
     return pd.DataFrame(rows)
 
 

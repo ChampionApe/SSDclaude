@@ -44,7 +44,9 @@ which are at US percentiles already. Both France and the host are calibrated aga
 the same rho, so France's workweek on the host's scale is France's observed one whichever the host. The
 theta family on a UK host is the UK's own design moved to the corners; ageing halves the UK's nu_t.
 
-Writes results/shocks/<host>_shocks{,CommonX}.csv -- one row per (rho, family, scenario, effect).
+Writes results/shocks/<host>_shocks{,CommonX}.csv -- one row per (rho, family, scenario, effect), each with the
+tax counts of its solve (nEqMax, nCandMax, nFallback; policy.multiplicityColumns): the baseline's and France's;
+-1 on the scenario rows (shocks.runOne returns no counts) and the 'ee' rows (no tax solve).
 """
 import os, sys, argparse, time
 import numpy as np, pandas as pd
@@ -58,6 +60,7 @@ os.chdir(HERE)
 import test as testmod
 import testEU
 import shocks as sh
+from policy import multiplicityColumns
 from model import ModelUS
 
 OUTDIR = os.path.join(REPO, 'results', 'shocks')
@@ -183,7 +186,7 @@ def franceReference(ρ, preferences, gs = None, commonX = False, workweekData = 
     r = sh.readout(mFR, out['τ'], out['report'], workweekData, hbarRef, pos = mFR.db['t0'])
     r['θ'] = float(mFR.db['θ'].xs(mFR.db['t'][mFR.db['t0']]))
     r['ω'] = float(mFR.db['ω'].xs(mFR.db['t'][mFR.db['t0']]))
-    return r
+    return r | multiplicityColumns(out.get('multiplicity'))
 
 
 def main():
@@ -243,7 +246,7 @@ def main():
             raise RuntimeError('{} baseline at ρ={} gives τ={:.6f} but the sweep recorded {:.6f}: the reinstalled '
                                'calibration does not reproduce the sweep'.format(a.host, ρ, b['τ'], float(row['τ'])))
         rows.append({'ρ': ρ, 'preferences': preferences, 'family': 'baseline', 'scenario': 'Baseline',
-                     'effect': 'baseline', **b})
+                     'effect': 'baseline', **b} | multiplicityColumns(base.get('multiplicity')))
 
         gsFR = gs
         data = (frenchData(m, ρ, preferences, gsFR, a.commonX, grouping = frGrouping)
@@ -260,7 +263,7 @@ def main():
             r = sh.runOne(m, base, name, data, preferences, workweek, hbarRef)
             for eff in ('full', 'ee'):
                 rows.append({'ρ': ρ, 'preferences': preferences, 'family': famOf[name],
-                             'scenario': r['label'], 'effect': eff, **r[eff]})
+                             'scenario': r['label'], 'effect': eff, **r[eff]} | multiplicityColumns(None))
             print('  {:<22} full: tau={:.4f} sr={:.4f} ww={:.2f}   |   EE-only: tau={:.4f} sr={:.4f} '
                   'ww={:.2f}   {:.0f}s'.format(
                       name, r['full']['τ'], r['full']['sr'], r['full']['workweek'],

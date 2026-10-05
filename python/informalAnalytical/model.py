@@ -601,12 +601,14 @@ class ModelInformalAnalytical:
     def solvePEE_LOG(self, θ = None, ε = None, s0 = None, solver = 'Robust', **kwargs):
         """ Solve the LOG politico-economic equilibrium end to end. θ, ε: full length-T paths; default to
         db['θ']/db['eps']. s0: if None, the LOG steady state at db['t'][0], evaluated at the *solved*
-        τ[db['t'][0]]. Returns {'policy','sol','report'}.
+        τ[db['t'][0]]. Returns {'policy','τ','sol','report','multiplicity'}: 'multiplicity' is the tax
+        candidates' counts (policy.multiplicitySummary, num_robustroot.tex), None under 'Vectorized'.
 
         solver picks which policy.py method identifies τ:
-        - 'Robust'     (default) LOG.solveRobust -- gradient solve (alg:fast), falling back to the
-                       backward grid search + warm-started gradient polish if it fails (e.g. a high
-                       political weight ω moves the solution far from the constant-db['τ0'] guess).
+        - 'Robust'     (default) LOG.solveRobust -- gradient solve (alg:fast), checked against the full
+                       backward grid search and its selection rule, which also supplies the counts; the
+                       grid selection, polished, replaces the gradient solution where they disagree or
+                       the gradient solve fails.
         - 'Vectorized' LOG.solveVectorized alone. Fails loudly rather than falling back.
         - 'Backward'   LOG.solveBackward alone. Capped at grid resolution -- for diagnosing the FOC. """
         if θ is None:
@@ -621,7 +623,8 @@ class ModelInformalAnalytical:
             s0 = self.steadyState_LOG_solve(τ[self.B.tFirst], θ[self.B.tFirst], t = self.B.tFirst)['s']
         sol = self.EE_LOG_solve(τ, θ, ε, s0)
         report = self.EE_report(sol, τ, θ, ε, s0)
-        return {'policy': policy, 'τ': policy['τ'], 'sol': sol, 'report': report}
+        return {'policy': policy, 'τ': policy['τ'], 'sol': sol, 'report': report,
+                'multiplicity': policy.get('multiplicity')}
 
     #######################################################################
     ##########   7. Politico-economic equilibrium (PEE) solve, CRRA   ######
@@ -659,9 +662,10 @@ class ModelInformalAnalytical:
         default (a LOG closed-form proxy, exact only at ρ=1) -- scoped to this call only; passing
         solveKwargs={'x0': ...} overrides it regardless.
 
-        Returns {'sols','τ','sol','report'}: sols is CRRA.solveBackward's {t: report dict} ; τ is
-        the path fed to EE_CRRA_solve; sol/report are its usual outputs. ('τ'/'sol'/'report' are named
-        to match solvePEE_LOG's return, so §8's calibration can drive either one interchangeably.) """
+        Returns {'sols','τ','sol','report','multiplicity'}: sols is CRRA.solveBackward's {t: report
+        dict} ; τ is the path fed to EE_CRRA_solve; sol/report are its usual outputs; 'multiplicity' the
+        tax candidates' counts over every period (policy.multiplicitySummary). ('τ'/'sol'/'report' are
+        named to match solvePEE_LOG's return, so §8's calibration can drive either one interchangeably.) """
         if θ is None:
             θ = self.db['θ'].values
         if ε is None:
@@ -675,7 +679,8 @@ class ModelInformalAnalytical:
             kwargs['x0'] = np.concatenate([path['Γs'], path['h'], path['s']])
         sol = self.EE_CRRA_solve(path['τ'].values, θ, ε, s0, **kwargs)
         report = self.EE_report(sol, path['τ'].values, θ, ε, s0)
-        return {'sols': sols, 'τ': path['τ'], 'sol': sol, 'report': report}
+        return {'sols': sols, 'τ': path['τ'], 'sol': sol, 'report': report,
+                'multiplicity': path.get('multiplicity')}
 
     #######################################################################
     ##########   8. Calibration (docs §calibration, eq:calibration)   ######

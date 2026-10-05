@@ -24,11 +24,36 @@ the price of a second parameter, which the UK's design could pin (two targets, t
 the prediction). Not in this draft; one sentence in `sec:esc` says so.
 
 **C6. The CRRA design choice lets past savings shares move with the candidate design** -- opened
-2026-10-02, RKB: design a new algorithm in a fresh session, not a patch. `LeadedCRRA2D` evaluates each
-candidate θ_{t+1} with s_{t-1,i}/s_{t-1} recomputed at that candidate's own tax and hours, so the electorate
-is credited with moving a predetermined state; log is immune, every CRRA endogenous-design row (ρ = 0.5, 2)
-is exposed, size unmeasured. Problem statement, equilibrium conditions, affected outputs and the structure a
-new solver can use: `notes/esc_crraDesignChoiceProblem.md`. The paper's `%% TODO-CRRA2D` (section 4) waits on it.
+2026-10-02 (`notes/esc_crraDesignChoiceProblem.md`), closed 2026-10-03 with the final run. The root-in-a
+layer (alg `esc:crra2D`, `LeadedCRRA2D` `designRule = 'root'`) won the pilot against the first order
+condition layer (finding #19) and produced every CRRA endogenous-design row of the paper: the exact λ moved
+by less than a third of a percent and the chosen designs by at most 1.3e-3 (five third decimals of the paper),
+read in `notes/todo_finalRun_2026-10-02.md` and item 18 of `num_esc.tex`'s checks; the paper's section 4
+paragraph is rewritten. History: root log 2026-10-02 (evening) and 2026-10-03, `python/US/RESEARCH_LOG.md`.
+
+**C7. Tax candidates compared at frozen savings shares** -- done 2026-10-02/03 (`roots1d.selectMaxFrozen`
+with the equilibrium test's cell clause restricted and candidates within a cell merged, all seven solvers,
+`writing/*/num_robustroot.tex`, findings #18 and #5; history in the gridsearch, US and informal logs). The
+final run of 2026-10-03 found one equilibrium and no fallback at every counted state of both arms, so the
+rule never bound and every published number is bitwise or within cross-process noise of the earlier one
+except the CRRA design rows of C6. **Open: RKB to confirm the restatement of the equilibrium test in the
+three `num_robustroot.tex` and the section 4 sentences of the paper.**
+
+**W8. The reviewer's reading of the rebuilt draft** (2026-10-03, paper-reviewer, numbers against the tables
+regenerated after the final run; the stale numbers it listed were fixed the same day). Five findings that are
+RKB's calls, not number fixes: (a) "inequality moves the design little" (abstract, introduction, `sec:esc`
+twice, conclusion) is contradicted at ρ = 2, where France's income distribution moves the chosen design from
+0.738 to 0.918 against 0.826 under acute ageing; it holds at ρ ≤ 1 (+0.034/−0.031 against +0.087/+0.078), and
+section 7 argues ρ = 2 is the plausible cost. (b) The ranking "ageing, the earnings link, then inequality and
+voting minor" (abstract, introduction, `sec:oecd`, conclusion) fails at ρ = 2 with θ fixed: French voting
+moves the tax by 1.7 p.p., the whole earnings link by 1.5 p.p. (`US_CRRA_OtherShocks`, `US_CRRA_PensChars`).
+(c) `Sections/Argentina.tex` quotes relative hours "1.18 against 1.10" and `HouseholdSurveyArg.tex` "about 8%"
+with a cross-reference to `table:Arg:Calib`, which carries no relative-hours entry (correct against
+`calibrationSummary.csv`): restore the entry through `python/paper` or drop the reference. (d) Introduction:
+"unless propensities to vote rise sharply with income" against `prop:esc:corner`, which assumes propensities
+that do not rise; the conclusion's wording is right. (e) `US_ESC_ScaleWedge`'s caption and note and
+`Appendix/US.tex` say "the previous draft"/"an earlier draft" (revision history in referee-facing text; the
+generator in `python/paper`), and the appendix's "the UK chose θ = 1" is in no table.
 
 **W7. After the appendix split** (2026-09-29, root log) -- two calls for RKB. (a) France's LIS survey year
 is not stated anywhere in the draft; `sec:oecd` implies 2019. (b) `sec:esc` and the conclusion say the

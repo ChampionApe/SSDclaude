@@ -47,6 +47,8 @@ SUITES = [
     ('US/test_eu.py',                             False, 'the FR/UK workbooks end to end through ModelFR'),
     ('US/test_createCopyFromt0.py',               False, 'model copies from t0 -- the shock machinery'),
     ('US/test_esc.py',                            False, '~235 s: the θ wedge (scale, size), leaded/permanent structure, sequential FOC sign, ESC method column'),
+    ('US/test_frozenSelection.py',                False, '~1-2 min: tax candidates at frozen shares -- objective vs FOC, rule vs the earlier criterion, counts'),
+    ('US/test_designChoicePilot.py',              False, "~25 s: LeadedCRRA2D's root design layer (secant, cell-local crossing) and the FOC layer, the split period, the design counts through solvePolicies and runESCcrra's rows"),
     ('informalAnalytical/test_calibration.py',    True,  'nested-fixed-point calibration'),
     ('US/test_escTiming.py',                      True,  '~75 s: the permanent timing\'s LOG reference numbers and calibrated p'),
     ('InformalSavings/test_calibration.py',       True,  '~15 min: five LOG calibrations (one common X) and one CRRA'),

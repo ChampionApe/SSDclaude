@@ -27,7 +27,7 @@ This is barely an algorithm, in the sense that it includes no fallback options, 
 \begin{alg}[Backward grid search]\label{\refalg:LOG:gridsearch}
 Fix $\bm{\theta},\bm{\epsilon}$ and a global grid $\mathcal{T}$, extended to $\tilde{\mathcal{T}}$ as in \eqref{\refeq:extendedGrid}. Exploiting \eqref{\refeq:recursive}, solve backwards.
 
-\smallskip\noindent\emph{Terminal period.} Evaluate $z_T$ on all of $\mathcal{T}$. \emph{Initial boundary check}: if $z_T<0$ throughout, set $\tau_T = l$; if $z_T>0$ throughout, set $\tau_T = u$. Otherwise construct the candidate set $\mathcal{C}_T$ from \eqref{\refeq:candidates} and set $\tau_T = \arg\max_{\mathcal{C}_T}\hat{\mathcal{V}}_T$.
+\smallskip\noindent\emph{Terminal period.} Evaluate $z_T$ on all of $\mathcal{T}$. \emph{Initial boundary check}: if $z_T<0$ throughout, set $\tau_T = l$; if $z_T>0$ throughout, set $\tau_T = u$. Otherwise construct the candidate set $\mathcal{C}_T$ from \eqref{\refeq:candidates}, apply the equilibrium test \eqref{\refeq:equilibriumTest} at each candidate's own savings shares, and select among the equilibria as in \cref{\refsec:RobustRoot}.
 
 \smallskip\noindent\emph{Recursion, $t = T-1,...,1$.} Given the solved $\tau_{t+1}$:
 \begin{enumerate}

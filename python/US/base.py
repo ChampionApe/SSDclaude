@@ -502,6 +502,15 @@ class Base:
     #######################################################################
     ##########   9. Political first-order condition (eq:fast, eq:PEELOG)  ##
     #######################################################################
+    def politicalWeights(self, t = None):
+        """ The bloc weights of the political objective, exactly as FOC combines them: old formal (ni,),
+        old informal (scalar), young formal (ni,), young informal (scalar). Used to assemble W_t itself
+        (policy.py's objectiveFrozen) so that the objective and the FOC cannot be weighted differently. """
+        γi, γi_ = self.get('γi', t), self.get('γi[t-1]', t)
+        γ0, γ0_ = self.get('γ0', t), self.get('γ0[t-1]', t)
+        ν = self.get('ν', t)
+        return γi_*self.ω2i(t), γ0_*self.ω20(t), ν*γi*self.ω1i(t), ν*γ0*self.ω10(t)
+
     # FOC is the preference-agnostic combiner; `_LOG` methods below are LOG-specific closed forms (see
     # README's "Political first-order condition").
     def FOC(self, dv1i, dv10, dv2i, dv20, t = None):

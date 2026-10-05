@@ -219,4 +219,23 @@ for name, out in (('LOG', outLOG), ('CRRA', outCRRA)):
           {'τ', 'sol', 'report'} <= set(out)
           and {'h', 's', 's_'} <= set(out['report']))
 
+# ...and the tax candidates' counts (num_robustroot.tex), which the Argentine drivers write as non-key
+# columns: solvePEE_* and the walk (approximatePEE) carry multiplicitySummary of the policy functions used.
+from policy import multiplicitySummary, multiplicityColumns
+for name, out in (('LOG', outLOG), ('CRRA', outCRRA)):
+    mlt = out.get('multiplicity')
+    check(f'solvePEE_{name} carries the counts of every period and state; one equilibrium, no fallback',
+          isinstance(mlt, dict) and mlt == out['path']['multiplicity'] == multiplicitySummary(out['sols'])
+          and mlt['nEqMax'] == 1 and mlt['nFallback'] == 0, f'-> {mlt}')
+check('multiplicityColumns: the csv columns over several solves, -1 where a solve has no summary',
+      multiplicityColumns(outLOG['multiplicity'], outCRRA['multiplicity'])
+      == {'nEqMax': 1, 'nCandMax': max(outLOG['multiplicity']['nCandMax'], outCRRA['multiplicity']['nCandMax']),
+          'nFallback': 0}
+      and multiplicityColumns(outLOG['multiplicity'], None) == {'nEqMax': -1, 'nCandMax': -1, 'nFallback': -1}
+      and multiplicityColumns() == {'nEqMax': -1, 'nCandMax': -1, 'nFallback': -1})
+# The drivers solve on pickled instances, whose policy objects are restored without __init__: the rule
+# must be the class default, not an attribute only __init__ sets.
+check('a policy object restored without __init__ (as unpickling does) selects by the frozen rule',
+      object.__new__(type(m.LOG)).selection == 'frozen' and object.__new__(type(m.CRRA)).selection == 'frozen')
+
 report()

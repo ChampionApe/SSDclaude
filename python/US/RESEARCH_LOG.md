@@ -4,6 +4,58 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_US.md`, index
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-03 — the final run's US arm read (C6 closed)
+
+`logs/finalRun1002/US_stage{1,2}.log`, 19:57 → 09:50; the four exact CRRA costs took 1.7–2.3 h each under `designRule
+= 'root'`, `Ma = 5`. Exact λ against the earlier layer: US 18.242 → 18.267 (ρ = 0.5), 1.728 → 1.724 (ρ = 2); UK
+15.089 → 15.117, 2.786 → 2.777; scan brackets unchanged. Design counts 1/1/0 (`nEqθMax`, `nBrθMax`, `nFallbackθ`) at
+every chosen row of the five CRRA esc files; tax counts nEq = 1, no fallback wherever counted (−1 on the calibration
+grids, the EE-only files and pinned rows). Designs moved ≤ 1.3e-3 (French voting, ρ = 2; ≤ 4e-4 at ρ = 0.5; UK
+≤ 3e-4), taxes ≤ 7e-5, workweek ≤ 1.2e-3 h, design path ≤ 6e-4, stationary misplacement 0.042/0.059 and the placebo
+unchanged at the printed precision; exact-vs-path gaps 0.031 (ρ = 0.5) and 0.061/0.090 (ρ = 2). LOG rows within 1e-11
+(#1). `escPermanentCRRA.csv` aligns on no key after its label change (read by no output). `num_esc.tex` checks list
+filled (items 8–11, 15, 17, 18); README status updated; `compareResults.py` listed in `python/paper/README.md`.
+
+## 2026-10-02 (evening) — the equilibrium test's cell clause, and two edge cases of the frozen objective
+
+`roots1d.selectMaxFrozen` (gridsearch log, same date): the one-cell form of eq:equilibriumTest now applies only to a
+crossing whose stencil touches an infeasible cell, a crossing also passes when its nearest node attains its own
+objective's maximum, and passing candidates within a cell merge into one equilibrium (`nEqRaw`, `nMerged`). Found on
+the Argentine instances (TODO C7); the US checks are unchanged. `CRRA.objectiveFrozen`: hours read at the node for a
+candidate sitting on one (an upper feasible end next to an infeasible cell no longer drops out), and `ln c` as the
+retirees' level at ρ = 1 (the terminal period now selects instead of falling back; τ bitwise). `test_frozenSelection.py`
+33 checks. The final run of both arms restarted after it (`logs/finalRun1002/`).
+
+## 2026-10-02 (production) — the root layer is LeadedCRRA2D's design layer (C6)
+
+`designRule = 'root'` (alg esc:crra2D, `_chooseRoot`) is the default; `'legacy'` (`_chooseLegacy`) stays for comparisons and pinned periods. `aOf`, `sharesFrom`, `frozenTaxPass` and helpers moved to `policyESC` (module level); `LeadedCRRA2DRoot` removed, the FOC layer stays in `policyESCpilot`.
+Cost: `Ma = 5`, a bracketed secant (`_closeSecant`, Illinois + bisection safeguard; `aClose = 'bisection'` kept for T9), the cell-local crossing `_cellCrossing`. One period ρ=2 baseline ns=150 nCand=41: 458 → 126 frozen passes, 0.477 → 0.400 s per pass, root/legacy tChoose 5.46 → 1.06; θ' equals the pilot's to 1.4e-12 (bitwise in one process at Ma 9, bisection). `logs/designChoiceProduction/`.
+Counts: `LeadedCRRA2D.multiplicity` (tax + design, `policy.DESIGN_NAMES`, -1 = not counted) from `solvePolicies`/`solveLeaded2D`; `runESCcrra.py --designRule/--Ma`, its rows carry both and six counts (`solverColumns`); the other drivers the tax counts (`policy.multiplicityColumns`); `config.US['esc']` designRule/Ma forwarded by both paper stages. `test_designChoicePilot.py` T8–T11 (22 checks); `test_frozenSelection.py` §5 now runs `'legacy'`.
+M7/M8 (ρ=2 French voting, ns=50, `pilotDesignChoice.py --item M78`): resolveAt instead of the grid reading moves θ' by 2.6e-6 at (s0, θ*) (6.5e-3 at worst over states); nθ2D 21 vs 13 by 6.3e-4. Nothing in `results/` re-run.
+
+## 2026-10-02 (pilot) — the two frozen-state design layers for the CRRA leaded choice, measured (C6)
+
+`LeadedCRRA2D.solveBackward_t2D` is now `_periodCore` + `_choose` + `_handBack` (the unsplit period dict bitwise in one process; `tCore`/`tChoose` added). `policyESCpilot.py`: `LeadedCRRA2DRoot` (alg esc:crra2D, bisection of eq:esc:aResidual) and `LeadedCRRA2DFOC` (alg esc:crra2Dfoc, `selectMaxFrozen` on z^θ) override `_choose` only, sharing `frozenTaxPass`, `aOf`/`sharesFrom` (eq:esc:aDef, common βi asserted), `resolveAt`, `deviationCheck`; `test_designChoicePilot.py`, 13 checks. Measurements: `pilotDesignChoice.py`, `logs/pilotDesignChoice/pilotDesignChoice.csv`.
+Root: one closed bracket and no fallback at every state of every run, deviation gain ≤ 0. Design in force at t0 0.7385/0.3366/0.7334 (ρ=2 baseline, ρ=2 French voting, ρ=0.5) against the earlier layer's 0.7383/0.3347/0.7364, and equal to it to 2e-6 at ρ=1.05. 5–9× the earlier layer's choice cost (23 min per recursion at ns=50 under load).
+FOC: 0.8–1.5× the cost, and the least sensitive to the candidate grid (0.002 between 41 and 81 against 0.006 for root). But its fixed-knot θ' spline misses the young's slope by 18–23% (M4), its deviation gains reach 1.6e-5 relative, and its t0 design is off root by up to 0.023 (0.7152 at ρ=2). Not wired into any driver; nothing in `results/` re-run.
+
+## 2026-10-02 (later) — tax candidates tested and ranked at frozen savings shares (C7)
+
+RKB's point on `num_robustroot.tex`: the integral of the consistent z_t along the tax grid moves the shares with
+it, so it ranked candidates at different predetermined states and said nothing about multiplicity. Now every
+candidate (both corners, every crossing) is tested and ranked on z_t re-evaluated at its own frozen shares and
+integrated (`roots1d.selectMaxFrozen`; `LOG.objectiveFrozen`, `CRRA.objectiveFrozen`, with `focParts_t`/
+`zAtShares` splitting the splines from the retirees' term so `focGrid_t` is bitwise what it was); the four US
+solvers report `nCand`/`nEq`/`fallback` per state and `multiplicity` in `solvePEE_*`/`solveLeaded*`;
+`solveRobust(check = True)` runs the full-grid pass on every log solve (+19 ms, 1.0 s per calibration) and keeps
+the gradient solution bitwise when it is the selected equilibrium. Raw CRRA utility levels are NOT the right
+frozen objective (the FOC carries smoothed derivatives; 140 spurious test failures at ρ = 2 before switching to
+the integrated condition). `test_frozenSelection.py` (31 checks): the frozen objective's τ-derivative equals z_t
+to 1e-6 (log) and 1e-9 (CRRA T); bitwise the earlier criterion wherever one equilibrium exists; one equilibrium at
+every state, no fallback, at ρ = 1, 2, 0.5, in the leaded log recursion and one 2-D ESC period. Fast registry:
+23 of 23 suites pass in 309 s (`logs/fastSuites_frozenSelection_1002.log`), `test_esc.py`'s pinned numbers
+included. Nothing in `results/` re-run; checklist `notes/todo_finalRun_2026-10-02.md`.
+
 ## 2026-10-02 — the CRRA design choice moves a predetermined state (found by reading, nothing run)
 
 While section 4 of the paper was being drafted: `LeadedCRRA2D._econAt` (policyESC.py 603–605) evaluates every

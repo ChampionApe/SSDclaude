@@ -4,6 +4,43 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-03 — the final run read, the paper rebuilt on it, both Overleaf projects pushed
+
+The session watching the run was stopped by accident at 08:35 and resumed at 08:40 (the detached chain untouched;
+memory `pipeline-chains-survive-session-stop`). Chain DONE 09:50; Argentine arm 01:15. Reading, in
+`notes/todo_finalRun_2026-10-02.md`: no csv of either arm has two equilibria or a fallback at any counted state, tax
+or design counts (1245 counted rows), so neither selection rule ever bound; every LOG number within 1e-11 of the
+committed one; the CRRA endogenous-design rows carry the design-layer correction (C6): exact λ moved < 1/3 %, designs
+≤ 1.3e-3, five third decimals of the paper. `build.py` (55 outputs, six ESC tables changed), `--map`,
+`compareResults.py` → `logs/finalRun1002/compare_0103_final.txt`. Note: `num_esc.tex` checks 8–11, 15, 17, 18 filled;
+`REPLICATION.md` names the count columns. Paper (paper-writer ×2, paper-reviewer): section 4's selection and CRRA
+design paragraphs, the stale numbers, three-decimal designs in appendix G; the reviewer's framing findings at ρ = 2
+are TODO W8 for RKB. C6 closed, C7 open only on RKB's confirmation. Nothing committed.
+
+## 2026-10-02 (evening) — the CRRA design layer decided by pilot and made production; both pipeline arms restarted
+
+With RKB: the CRRA leaded choice restated as a per-state equilibrium with the inherited shares frozen through both
+choices and closed by a scalar fixed point (`num_esc.tex`, alg `esc:crra2D` first, the path iteration as its
+approximation, a first order condition form `esc:crra2Dfoc` added for discussion). RKB: pilot both, nested solves not a
+joint search, then implement the winner and re-run the paper's pipeline. Three model-coder rounds (briefs under
+`notes/brief_*_2026-10-02.md`): the pilot (root layer clean, FOC layer's derivative biased by the continuation's kinks,
+finding #19), production (root layer at 1.06x cost, counts through the drivers), the informal solvers' frozen selection
+(which exposed the one-cell clause of the equilibrium test: restricted and merged in `roots1d`, three notes restated).
+`python/paper/compareResults.py` for reading the run; checklist `notes/todo_finalRun_2026-10-02.md` (plan steps 1–8);
+both arms launched 19:57 as detached chains (`logs/finalRun1002/`). Next session reads the run (checklist, step 7–8).
+
+## 2026-10-02 (later) — the selection rule of the technical note rebuilt at frozen predetermined states
+
+With RKB: the robust-root section's "integrate z to reconstruct the objective" compared candidates at different
+savings shares (finding #18). Rewritten in all three notes (`writing/*/num_robustroot.tex`: candidates,
+eq:objectiveProfile as the FOC integrated at a frozen state, eq:equilibriumTest, payoff-dominance selection as a
+stated equilibrium-selection assumption, per-state counts, fallback) with the referring sentences in `num.tex`,
+`num_pee*.tex`, `num_calibration.tex` (IS) and `num_esc.tex`, whose predetermined-states paragraph now states the
+CRRA design-solver caveat (C6) instead of the claim it contradicted. Package: `roots1d.selectMaxFrozen`; US
+solvers wired (`python/US/RESEARCH_LOG.md`); the informal models still call `selectMax`, and the notes say so.
+Process: `.claude/agents/model-coder.md` (Opus xhigh) for the coming rounds, main session = diagnosis + brief +
+review; checklist for the final run `notes/todo_finalRun_2026-10-02.md`; TODO C7.
+
 ## 2026-10-02 — sections 3–4 tightened with RKB; the CRRA design solver moves a predetermined state
 
 With RKB on `paper-rewrite`, in Overleaf round trips (push, RKB's online edits pulled back): proposition 2 now says

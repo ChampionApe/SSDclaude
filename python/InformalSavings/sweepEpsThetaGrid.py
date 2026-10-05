@@ -64,12 +64,15 @@ sys.path.insert(0, HERE)
 os.chdir(HERE)                                  # test.py resolves data/ relative to this directory
 
 from shockUniversal import loadCalibrated, installEps, solvePEE, universalEps, PKLDIR
+from policy import multiplicityColumns
 
 OUTDIR = os.path.join(REPO, 'results', 'sweeps')
 # Ordered so the csv reads as: the (eps, theta) the row is keyed on, the system it defines and which two
-# distinguished points it is, then the equilibrium it produced, then what it cost.
+# distinguished points it is, then the equilibrium it produced, then what it cost. nEqMax/nCandMax/
+# nFallback are the tax candidates' counts of the row's solve (num_robustroot.tex): non-key (#13), and
+# NaN on a row resumed from a csv written before they existed.
 COLUMNS = ['eps', 'theta', 'ρ', 'statusQuo', 'universalEps',
-           'τ', 'sr', 'h', 'ι', 's', 's_', 'c10', 'c20', 'nRoots', 'time']
+           'τ', 'sr', 'h', 'ι', 's', 's_', 'c10', 'c20', 'nRoots', 'nEqMax', 'nCandMax', 'nFallback', 'time']
 
 
 def installTheta(m, θ):
@@ -85,13 +88,13 @@ def installTheta(m, θ):
 def atT0(m, sol, t0):
     """ The reported equilibrium at the single year t0, as the csv's columns. s_/h/c10/c20 report on
     db['t'] and iota on db['txE'] (README, "Reporting domains"), so both are looked up by label at t0
-    rather than positionally. """
+    rather than positionally. The tax candidates' counts cover the whole recursion, not t0 alone. """
     r = sol['report']
     s, s_, h = (float(r[k].xs(t0)) for k in ('s', 's_', 'h'))
     return {'τ': float(sol['τ'].xs(t0)), 'sr': float(m.B.savingsRate(s, s_, h, t0)), 'h': h,
             'ι': float(r['ι'].xs(t0)), 's': s, 's_': s_,
             'c10': float(r['c10'].xs(t0)), 'c20': float(r['c20'].xs(t0)),
-            'nRoots': (sol['init'] or {}).get('nRoots')}
+            'nRoots': (sol['init'] or {}).get('nRoots')} | multiplicityColumns(sol.get('multiplicity'))
 
 
 def buildGrid(explicit, lo, hi, n, pinned):
@@ -211,6 +214,10 @@ def main():
     if len(bad):
         print('WARNING: {} row(s) with nRoots != 1:'.format(len(bad)))
         print(bad[['eps', 'theta', 'τ', 'nRoots']].to_string(index = False))
+    bound = df[(df['nEqMax'] > 1) | (df['nFallback'] > 0)]
+    if len(bound):
+        print('WARNING: {} row(s) where the equilibrium selection bound (nEqMax > 1) or fell back:'.format(len(bound)))
+        print(bound[['eps', 'theta', 'τ', 'nEqMax', 'nCandMax', 'nFallback']].to_string(index = False))
     sq = df[df['statusQuo'] == True]
     print('status quo row (must reproduce the baseline solve):')
     print(sq[['eps', 'theta', 'τ', 'sr', 'h', 'ι']].to_string(index = False))

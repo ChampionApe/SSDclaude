@@ -249,3 +249,46 @@ where the policy's options are observationally equivalent.
 require no loss there, as a test (`test_esc.py` section 13: $\tilde V=0$ gives $f\equiv1$). Prefer a form
 whose derivation names the quantity, such as the Harberger loss of the implicit tax, so that its scaling is
 derived rather than chosen.
+
+## 18. A rule that ranks candidates must compare them at one predetermined state
+
+The tax candidates were classified by the direction of the consistent first order condition $z$ and
+ranked by its integral along the tax grid. Along that grid the predetermined savings shares move with the
+tax, so $z$ is the derivative of no single objective: its slope is not the second-order condition and its
+integral is neither a frozen-state objective nor the consistent one. With one crossing clear of the corners
+nothing went wrong; with two candidates the ranking had no equilibrium reading, and no run recorded how
+often that happened (2026-10-02, `writing/*/num_robustroot.tex`, `roots1d.selectMaxFrozen`).
+
+**Tell.** A selection criterion built from an object that substitutes a state consistently with the point
+of evaluation; an "objective reconstructed from the first order condition"; a solver that reports a root
+but not how many candidates it had.
+
+**Habit.** Locate candidates from the consistent condition, then test and rank each at its own frozen
+state: re-evaluate the condition with the state frozen and integrate that, so the test is consistent with
+the condition's own numerical derivatives (the raw utility levels are not: they carry the kinks the
+smoothing removed, #4, and put the maximum a few cells from the crossing), and report the number of
+candidates and of equilibria at every state. A choice among several equilibria is an assumption about
+expectations and belongs in the equilibrium definition, not in a numerical footnote.
+
+## 19. A numerical derivative along a coarse axis is only as good as the interpolants it differentiates
+
+To choose the pension design under CRRA, a first order condition in the design was built from a smoothed
+spline derivative of the political objective along the 41-node candidate axis. The objective there is
+assembled from continuation policies interpolated piecewise-linearly over a 13-node design-state grid, so
+it has a kink every three or four candidate cells; the fixed-knot spline missed a central finite
+difference by 18 to 23 percent, the located design failed the one-shot deviation test at its own frozen
+state by $10^{-5}$ relative, and the baseline design at $t_0$ came out 0.023 below the direct-evaluation
+answer (2026-10-02, `notes/brief_designChoicePilot_2026-10-02.md`, `python/US/policyESCpilot.py`). The
+same construction along the tax axis works, because there the kinks are dense relative to the 101-node
+grid and small. Direct evaluation with a parabola through three nodes straddles the same kinks and is
+biased by at most a fraction of a cell, which the deviation test confirmed.
+
+**Tell.** A derivative taken numerically along an axis whose interpolants live on a coarser grid than the
+axis; a smoothed derivative whose knots are sparser than the kinks; a condition whose crossings move with
+the smoother's settings; a selection rule's one-cell tolerance applied on an axis where a cell is 0.08.
+
+**Habit.** Before building a condition on a numerical derivative, compare it with a central finite
+difference of the directly evaluated objective at a point between the interpolants' nodes, and report
+the forward–backward asymmetry as the kink size. Where the derivative misses by more than a few percent,
+locate the maximum from the objective and verify the choice by a one-shot deviation check at the frozen
+state rather than by a residual.

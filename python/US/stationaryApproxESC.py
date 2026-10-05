@@ -18,7 +18,8 @@ stat   for each distinct nu_t, the same recursion on a deep copy with nu frozen 
        stationary functions from the exact initial state (theta*, and s_0 under CRRA).
 Also: the stationary function evaluated at the exact path's own states (the error in the function alone).
 
-Writes results/numerical/US_ESC_stationaryApprox.csv, one row per (rho, t).
+Writes results/numerical/US_ESC_stationaryApprox.csv, one row per (rho, t), each with the exact solve's tax
+counts (nEqMax, nCandMax, nFallback; policy.multiplicityColumns).
 """
 import os, sys, argparse, time
 from copy import deepcopy
@@ -33,6 +34,7 @@ os.chdir(HERE)
 import runESC, runESCcrra
 from runESC import pickCalib
 from runESCcrra import readCalibratedP, GSC
+from policy import multiplicityColumns
 
 ESCDIR = os.path.join(REPO, 'results', 'esc')
 OUT = os.path.join(REPO, 'results', 'numerical', 'US_ESC_stationaryApprox.csv')
@@ -47,7 +49,7 @@ def frozen(m, ν):
     return ms
 
 
-def rows(ρ, method, m, ν, θE, θA, θAatE, τE, τA, τAatE, sE_, sA_, conv):
+def rows(ρ, method, m, ν, θE, θA, θAatE, τE, τA, τAatE, sE_, sA_, conv, mult = None):
     dates = m.db['dates']
     out = []
     for pos, t in enumerate(m.db['t']):
@@ -59,7 +61,7 @@ def rows(ρ, method, m, ν, θE, θA, θAatE, τE, τA, τAatE, sE_, sA_, conv):
                     'gapτ_pp': 100*(τA[pos] - τE[pos]), 'gapτAtExactState_pp': 100*(τAatE[pos] - τE[pos]),
                     's_exact': sE_[pos] if sE_ is not None else np.nan,
                     's_stat': sA_[pos] if sA_ is not None else np.nan,
-                    'statConvθ': conv[νt][0], 'statConvτ': conv[νt][1]})
+                    'statConvθ': conv[νt][0], 'statConvτ': conv[νt][1]} | multiplicityColumns(mult))
     return out
 
 
@@ -107,7 +109,7 @@ def runLOG(spec, phi, commonX):
         if pos < T - 1:
             θA[pos+1] = choice(νt, θA[pos])
             θAatE[pos+1] = choice(νt, θE[pos])
-    return rows(1.0, 'LOG', m, ν, θE, θA, θAatE, τE, τA, τAatE, None, None, conv)
+    return rows(1.0, 'LOG', m, ν, θE, θA, θAatE, τE, τA, τAatE, None, None, conv, led['multiplicity'])
 
 
 def runCRRA(ρ, spec, phi, commonX, ns, nCand2D):
@@ -156,7 +158,7 @@ def runCRRA(ρ, spec, phi, commonX, ns, nCand2D):
             θA[pos+1] = float(sol0['θPolicy'](s_, θA[pos]))
             θAatE[pos+1] = float(sol0['θPolicy'](sE_[pos], θE[pos]))
             s_ = float(sol0['sPolicy'](s_, θA[pos]))
-    return rows(ρ, 'CRRA2D', m, ν, θE, θA, θAatE, τE, τA, τAatE, sE_, sA_, conv)
+    return rows(ρ, 'CRRA2D', m, ν, θE, θA, θAatE, τE, τA, τAatE, sE_, sA_, conv, led['multiplicity'])
 
 
 def main():

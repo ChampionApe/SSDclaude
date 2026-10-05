@@ -4,7 +4,7 @@ from copy import deepcopy
 from symMaps import SimpleSys, Lag, Lead
 from gridsearch import continuation
 from base import Base, BaseGrid, BaseTime
-from policy import LOG, CRRA
+from policy import LOG, CRRA, multiplicityColumns
 
 
 def _shiftT(idx, t0, tName):
@@ -785,9 +785,11 @@ class ModelInformalSavings:
         LOG.approximatePEE (strict=False to inspect a path that leaves 𝒮_0 instead of raising;
         exact=False to walk the reported state interpolants rather than re-solving the transition).
 
-        Returns {'sols','path','init','τ','sol','report'}. Everything reported comes from the exact
-        closed-form re-solve; 'path' is kept for the docs' grid diagnostic -- its simulated ι against
-        report['ι'], which is the one error the first order condition residual cannot see. 'init' is §6's
+        Returns {'sols','path','init','τ','sol','report','multiplicity'}; 'multiplicity' is the tax
+        candidates' counts over every period and state (policy.multiplicitySummary, num_robustroot.tex).
+        Everything reported comes from the exact closed-form re-solve; 'path' is kept for the docs' grid
+        diagnostic -- its simulated ι against report['ι'], which is the one error the first order
+        condition residual cannot see. 'init' is §6's
         own dict (None when ι0 was supplied): it carries nRoots, the branch diagnostic §8 has to watch,
         since a calibration that steps between branches of eq:initialFixedPoint shows up as a
         discontinuous outer residual rather than as an error. """
@@ -805,7 +807,8 @@ class ModelInformalSavings:
             s0 = self.steadyState_LOG_solve(τ[self.B.tFirst], θ[self.B.tFirst], t = self.B.tFirst)['s']
         sol = self.EE_LOG_solve(τ, θ, ε, s0)
         report = self.EE_report(sol, τ, θ, ε, s0)
-        return {'sols': sols, 'path': path, 'init': init, 'τ': path['τ'], 'sol': sol, 'report': report}
+        return {'sols': sols, 'path': path, 'init': init, 'τ': path['τ'], 'sol': sol, 'report': report,
+                'multiplicity': path.get('multiplicity')}
 
     def solvePEE_CRRA(self, θ = None, ε = None, s0 = None, ι0 = None, warmStart = True,
                       backwardKwargs = None, pathKwargs = None, solveKwargs = None):
@@ -815,7 +818,7 @@ class ModelInformalSavings:
 
         warmStart: build EE_CRRA_solve's x0 from the simulated (Γ_{s,t}, h_t, s_t) rather than its own
         default (the LOG closed form, exact only at ρ=1) -- scoped to this call, and overridden by
-        solveKwargs={'x0': ...}. 'init' is reported for the same reason as in solvePEE_LOG. """
+        solveKwargs={'x0': ...}. 'init' and 'multiplicity' are reported as in solvePEE_LOG. """
         θ = self.db['θ'].values if θ is None else θ
         ε = self.db['eps'].values if ε is None else ε
         sols = self.CRRA.solveBackward(θ, ε, **(backwardKwargs or {}))
@@ -831,7 +834,8 @@ class ModelInformalSavings:
             kwargs['x0'] = np.concatenate([path['Γs'], path['h'], path['s']])
         sol = self.EE_CRRA_solve(τ, θ, ε, s0, **kwargs)
         report = self.EE_report(sol, τ, θ, ε, s0)
-        return {'sols': sols, 'path': path, 'init': init, 'τ': path['τ'], 'sol': sol, 'report': report}
+        return {'sols': sols, 'path': path, 'init': init, 'τ': path['τ'], 'sol': sol, 'report': report,
+                'multiplicity': path.get('multiplicity')}
 
     #######################################################################
     ##########   8. Calibration (docs §calibration, eq:calibration)   ######
@@ -1094,7 +1098,8 @@ class ModelInformalSavings:
         """ Set db[par] = value, then calibrate there. Returns one flat record: the calibrated parameters,
         the unbounded x (which is what seeds the next point -- see calibrateGrid), max|residual|, the four
         target quantities, and the diagnostics a sweep has to be readable by afterwards (ι at t0, the
-        initial fixed point's nRoots, scipy's nfev, wall time, and the inner grid actually used).
+        initial fixed point's nRoots, scipy's nfev, wall time, the inner grid actually used, and the tax
+        candidates' counts nEqMax/nCandMax/nFallback of the final solve, policy.multiplicityColumns).
 
         x0 is the *unbounded* vector, not a parameter dict. gridSettings -> the active policy's initGS and
         verify -> _calVerify's refined settings (None to skip), both flat or keyed by 'LOG'/'CRRA' (see
@@ -1120,6 +1125,7 @@ class ModelInformalSavings:
         rec.update({k: float(v) for k, v in cal['pars'].items()})
         rec['hbar'] = float(rep['hbar'])
         rec['commonX'] = self.commonX
+        rec.update(multiplicityColumns(cal['report']['PEE'].get('multiplicity')))
         rec.update(self._calOccupancy(policy, cal['report']['PEE']))
         verifySettings = self._calGridSettings(verify, preferences) if verify else None
         if verifySettings:

@@ -265,4 +265,94 @@ check('the policy interpolants reproduce the solution at the nodes',
       np.allclose(sR['τPolicy'](*np.meshgrid(sGrid, ιGrid, indexing = 'ij')), sR['τ'].values)
       and np.allclose(sR['sPolicy'](*np.meshgrid(sGrid, ιGrid, indexing = 'ij')), sR['s'].values))
 
+# ---- 5. the selection at frozen savings shares (num_robustroot.tex, eq:candidates/eq:equilibriumTest) --
+# Each candidate is tested and ranked on W_t at the formal shares it implies -- at its own tax and the hours
+# there, through B_t(s_{t-1}, h_t) -- held fixed along 𝒯 (CRRA.objectiveFrozen, on 𝒯×𝒮×𝒮_0). At T, where
+# z_T is closed form: the τ-derivative at the consistent shares is z_T at two s_ and two ι_ states; and
+# against §2a's primitive W_T the frozen objective IS the objective at the frozen shares up to a constant.
+hFD = 1e-5
+sTwo, ιTwo = sGrid[[5, 20]], ιGrid[[5, 20]]
+
+def frozenAtT(τv, sv, ιv):
+    """ The terminal period's consistent z (M, Ns, Nι) and the frozen-objective callback on a local grid. """
+    gL = CartesianGrid(τ = τv, s_ = sv)
+    dL = CRRA.stateGrid_T(gL.flat['τ'], gL.flat['s_'], θ, t, tLag)
+    pL = CRRA.zbarParts_T(dL, t)
+    zbL = np.where(CRRA._positiveLevels(dL), CRRA.zbarAtShares(θ, t, dL['si_s_'], pL), np.nan)
+    zιL = CRRA._stateTermCRRA(dL, ε, ιv, t, gL)
+    zL = CRRA._zStateCRRA(zbL, dL, ε, ιv, t, gL, zι = zιL)
+    return zL, lambda cand: CRRA.objectiveFrozen(cand, gL, dL, pL, zιL, zL, θ, ιv, t, tLag)
+
+with BG.cacheParams():
+    for τm in (0.10, 0.30, 0.55):
+        zL, fz = frozenAtT(np.array([τm - hFD, τm, τm + hFD]), sTwo, ιTwo)
+        W = fz(np.full((1, 4), τm))
+        dW = (W[0, 2] - W[0, 0])/(2*hFD)
+        zc = zL[1].reshape(-1)
+        err = np.max(np.abs(dW - zc)/np.maximum(1., np.abs(zc)))
+        check('CRRA T: dW/dτ of the frozen objective at its own shares equals z_T at τ={}, 2 s_ x 2 ι_ states'.format(τm),
+              err <= 1e-6, '-> max rel err {:.2e}'.format(err))
+    τFine = np.linspace(0.15, 0.40, 1001)
+    cTwo, s0F, ι0F = (0.20, 0.35), sGrid[10], ιGrid[10]
+    _, fz = frozenAtT(τFine, np.array([s0F]), np.array([ι0F]))
+    WF = fz(np.array([[cTwo[0]], [cTwo[1]]]))[:, :, 0]
+with B.cacheParams():
+    Dc = [CRRA.stateGrid_T(np.array([c]), np.array([s0F]), θ, t, tLag)['si_s_'][0] for c in cTwo]
+    PW = np.array([[politicalObjective_T(τv, s0F, ι0F, D) for τv in τFine] for D in Dc])
+along = max(np.max(np.abs((WF[k] - WF[k, 0]) - (PW[k] - PW[k, 0]))) for k in range(2))
+across = np.max(np.abs((WF[0] - WF[1]) - (PW[0] - PW[1])))
+check('CRRA T: the frozen objective is W_T(τ; D_c) from the primitives up to a constant, along 𝒯 and across candidates',
+      max(along, across) < 1e-6*np.ptp(PW), '-> along {:.1e}, across {:.1e}, range of W_T {:.2e}'.format(
+          along, across, np.ptp(PW)))
+
+# The rule against the integral criterion, at T, through the recursion, and the counts.
+from policy import multiplicitySummary
+CRRA.selection = 'legacy'
+solTL = CRRA.solveTerminal(θ, ε, t = t, ιGrid = ιGrid, sGrid = sGrid)
+solsL = CRRA.solveBackward(θpath, εpath, sGrid = sGrid, ιGrid = ιGrid)
+CRRA.selection = 'frozen'
+oneT = solT['nEq'] == 1
+check('CRRA T: counts reported per (s_, ι_) state; one equilibrium everywhere, no fallback',
+      solT['nEq'].shape == solT['τ'].shape and oneT.all() and not solT['fallback'].any()
+      and solT['nCand'].min() >= 2,
+      '-> nEq max {}, nCand max {}, fallback {}'.format(solT['nEq'].max(), solT['nCand'].max(),
+                                                         int(solT['fallback'].sum())))
+check('CRRA T: bitwise the integral criterion at the states with one equilibrium',
+      np.array_equal(solT['τ'].values[oneT], solTL['τ'].values[oneT]),
+      '-> {}/{} single; Σ τ_T {!r} (frozen) vs {!r} (legacy)'.format(
+          int(oneT.sum()), oneT.size, float(solT['τ'].values.sum()), float(solTL['τ'].values.sum())))
+check('at ρ=1 the CRRA terminal rule finds one equilibrium per state (the LOG collapse; ln c level)',
+      (solT_1['nEq'] == 1).all() and not solT_1['fallback'].any(), '-> nEq {}'.format(np.unique(solT_1['nEq'])))
+multF = multiplicitySummary(sols)
+check('CRRA recursion: counts in every period; one equilibrium at every state, no fallback',
+      all('nEq' in s for s in sols.values()) and multF['nEqMax'] == 1 and multF['nFallback'] == 0, f'-> {multF}')
+worst = max(float(np.nanmax(np.abs(sols[k]['τ'].values - solsL[k]['τ'].values))) for k in tIdx)
+check('CRRA recursion: policy tables bitwise the integral criterion\'s where one equilibrium exists',
+      all(np.array_equal(sols[k]['τ'].values[sols[k]['nEq'] == 1], solsL[k]['τ'].values[sols[k]['nEq'] == 1])
+          for k in tIdx), '-> max|Δτ| {:.1e}; Σ τ at T-1 {!r}'.format(worst, float(sols[tR]['τ'].values.sum())))
+# The two state roots are root problems and no part of the selection: the same continuation gives the same
+# (s_t, ι_t) and root counts whichever rule produced it.
+sL_, ιL_, nSL, nιL = CRRA.solveStateApprox_t(τGrid, sGrid, sCandGrid, ιGrid, tR, θR1, εR1, solTL)
+check('the (s_t, ι_t) fixed point is untouched: both roots and their counts bitwise under both rules',
+      np.array_equal(sSol, sL_, equal_nan = True) and np.array_equal(ιSol, ιL_, equal_nan = True)
+      and np.array_equal(nRootsS, nSL) and np.array_equal(nRootsι, nιL),
+      '-> Σ s_t {!r}, Σ ι_t {!r}'.format(float(np.nansum(sSol)), float(np.nansum(ιSol))))
+
+# an upper end of a feasible sub-grid that borders an infeasible node is a candidate like any other: its
+# frozen shares need the hours AT the node (_interpAtCand), not a zero weight on the infeasible neighbour
+with BG.cacheParams():
+    feasR = g2.reshape(CRRA._positiveLevels(dR)) & ~np.isnan(sSol) & ~np.isnan(ιSol)
+    pR = CRRA.zbarParts_t(dR, g2, tR)
+    zbR = np.where(feasR.reshape(-1), CRRA.zbarAtShares(θR, tR, dR['si_s_'], pR), np.nan)
+    zιR = CRRA._stateTermCRRA(dR, εR, ιTwo, tR, g2)
+    zR = CRRA._zStateCRRA(zbR, dR, εR, ιTwo, tR, g2, zι = zιR)
+    zRc = zR.reshape(τGrid.size, -1)
+    finR = np.isfinite(zRc)
+    lastR = τGrid.size - 1 - finR[::-1, :].argmax(axis = 0)
+    cutR = finR.any(axis = 0) & (lastR < τGrid.size - 1)
+    WR = CRRA.objectiveFrozen(τGrid[lastR][None, :], g2, dR, pR, zιR, zR, θR, ιTwo, tR, tRLag)
+check('upper-end candidates next to an infeasible cell get a finite frozen objective on the feasible sub-grid',
+      cutR.any() and all(np.isfinite(WR[0, finR[:, j], j]).all() for j in np.flatnonzero(cutR)),
+      '-> {} of {} states end below the top of 𝒯'.format(int(cutR.sum()), cutR.size))
+
 report()

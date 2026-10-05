@@ -60,6 +60,8 @@ ESCSPEC = ['--spec', ESC['spec'], '--phi', str(ESC['phi'])]
 ESCSPEC_LOG = (['--spec', ESC['spec']] + ([ESC['comparisonSpec']] if ESC.get('comparisonSpec') else [])
                + ['--phi', str(ESC['phi'])])
 ESCRHO = [str(r) for r in ESC['ρTable'] if r != C.US['ρAnchor']]
+# The exact recursion's design layer, forwarded to every runESCcrra.py command (config.US['esc']).
+ESCLAYER = ['--designRule', ESC['designRule'], '--Ma', str(ESC['Ma'])]
 
 
 def _hasExactRows(path, ρs = None):
@@ -181,14 +183,14 @@ EXPERIMENTS = {
         'part':    'prepub',
         'script':  'runESCcrra.py',
         'args':    ['--stage', 'permanent', '--rho'] + [str(r) for r in ESC['ρPermanentCRRA']]
-                   + ESCSPEC + ESCVARIANT,
+                   + ESCSPEC + ESCVARIANT + ESCLAYER,
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escPermanentCRRA.csv')],
         'note':    'permanent timing, CRRA, traced in rho (~30 min)',
     },
     'escSequentialCRRA': {
         'part':    'prepub',
         'script':  'runESCcrra.py',
-        'args':    ['--stage', 'sequential', '--rho'] + ESCRHO + ESCVARIANT,
+        'args':    ['--stage', 'sequential', '--rho'] + ESCRHO + ESCVARIANT + ESCLAYER,
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escSequentialCRRA.csv')],
         'note':    'sequential timing, CRRA: the costless FOC over theta (~2 min)',
     },
@@ -202,7 +204,7 @@ EXPERIMENTS = {
         'script':  'runESCcrra.py',
         'args':    (['--exact', '--stage', 'path', 'shocks', '--rho'] + ESCRHO + ESCSPEC
                     + ['--ns', str(ESC['ns2D']), '--nsScan', str(ESC['nsScan']),
-                       '--nCand2D', str(ESC['nCand2D'])] + ESCVARIANT),
+                       '--nCand2D', str(ESC['nCand2D'])] + ESCVARIANT + ESCLAYER),
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksCRRA.csv'),
                             os.path.join(C.ESCDIR, 'escPathCRRA.csv')],
         'complete': lambda: all(_hasExactRows(os.path.join(C.ESCDIR, f))
@@ -250,7 +252,7 @@ EXPERIMENTS = {
         'script':  'runESCcrra.py',
         'args':    (['--exact', '--host', 'UK', '--stage', 'shocks', '--rho'] + ESCRHO + ESCSPEC
                     + ['--ns', str(ESC['ns2D']), '--nCand2D', str(ESC['nCand2D']), '--scenarios']
-                    + ESC['uk']['scenarios'] + ESCVARIANT),
+                    + ESC['uk']['scenarios'] + ESCVARIANT + ESCLAYER),
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksCRRAUK.csv')],
         'complete': lambda: _hasExactRows(os.path.join(C.ESCDIR, 'escShocksCRRAUK.csv')),
         'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibrationCRRAUK.csv')],

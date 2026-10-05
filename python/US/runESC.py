@@ -50,6 +50,7 @@ import testEU
 import shocks as sh
 from modelESC import ModelESC
 from modelFR import ModelFR
+from policy import multiplicityColumns
 
 OUTDIR = os.path.join(REPO, 'results', 'esc')
 GS = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}
@@ -99,6 +100,10 @@ def _keyOf(d, key):
     """ The row keys of frame d over the columns `key`, canonicalised cell by cell (_keyCell). """
     return pd.MultiIndex.from_arrays([[_keyCell(v) for v in d[k].tolist()] for k in key])
 
+
+# Every row also carries the tax rule's counts of the solve behind it, nEqMax, nCandMax, nFallback, as
+# non-key columns (policy.multiplicityColumns; -1 where that solve returns none: the permanent timing, a
+# calibration that did not converge).
 
 # The row-identity keys of the merged csvs, one per stage. spec and commonX are in every one -- see
 # mergeWrite -- so the 'size' rows coexist with the 'scale' rows (the comparison arm) in one file and a
@@ -217,7 +222,7 @@ def stageCalib(specs, phis, out, ρ = 1.0, commonX = False, bracket = None):
     rows.append({'spec': 'none', 'phi': np.nan, 'commonX': commonX, 'p': np.nan, 'converged': True,
                  'θStar': float(m.db['θ'].xs(t0)), 'choice': m.leadedDesignAtT0(sols),
                  'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(t0)), 'τDrift': np.nan, 'RDrift': np.nan}
-                | wedgeReadout(m, float(m.db['τ0'])))
+                | wedgeReadout(m, float(m.db['τ0'])) | multiplicityColumns(m.ESC.lastMultiplicity))
     print('no wedge: θ*={θStar:.4f} -> choice {choice:.4f}  (Vtilde={Vtilde:.4f})'.format(**rows[-1]))
     mergeWrite(out, rows, KEYCAL)
 
@@ -231,7 +236,7 @@ def stageCalib(specs, phis, out, ρ = 1.0, commonX = False, bracket = None):
             except Exception as e:
                 print(f'  FAILED: {type(e).__name__}: {e}')
                 rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': np.nan,
-                             'converged': False})
+                             'converged': False} | multiplicityColumns(None))
                 mergeWrite(out, rows, KEYCAL); continue
             r = {'spec': spec, 'phi': phi, 'commonX': commonX, 'p': rec['p'],
                  'converged': rec['converged'],
@@ -246,6 +251,7 @@ def stageCalib(specs, phis, out, ρ = 1.0, commonX = False, bracket = None):
                       'choice': float(led['θ'].iloc[m.db['t0']]),
                       'choiceAtT0': float(led['θ'].iloc[m.db['t0']+1])}
                 r |= wedgeReadout(m, float(led['τ'].xs(m.t0Year)))
+            r |= multiplicityColumns(led['multiplicity'] if rec['converged'] else None)
             rows.append(r)
             print('  -> p={p}  θ*={θStar:.4f}  β={β:.4f} ω={ω:.4f}  Vtilde={Vtilde:.4f} f(θ*)={fStar} f(0)={f0}  ({:.0f}s)'
                   .format(time.time()-tic, **({'fStar': np.nan, 'f0': np.nan} | r)))
@@ -278,7 +284,8 @@ def stagePath(specs, phis, calib, out, ρ = 1.0, commonX = False):
                              'ν': float(m.db['ν'].xs(t)),
                              'θ': float(led['θ'].xs(t)), 'τ': r['τ'], 'sr': r['sr'],
                              'workweek': r['workweek'], 'R': r['R'],
-                             'τExo': rb['τ'], 'srExo': rb['sr'], 'workweekExo': rb['workweek']})
+                             'τExo': rb['τ'], 'srExo': rb['sr'], 'workweekExo': rb['workweek']}
+                            | multiplicityColumns(led['multiplicity']))
             mergeWrite(out, rows, KEYPATH)
             print('[{}, φ={}] θ path: {}'.format(spec, phi,
                   '  '.join('{:.3f}'.format(x) for x in led['θ'].values[:8])))
@@ -299,7 +306,7 @@ def leadedNewPath(m, hbarRef, apply = None, data = None, pin = False):
     through 2020 and the two readings agreed there by construction, so the tables had to be read at 2050.
 
     Returns readouts at t0 and t0+1 (t0 is what the tables print; t0+1 is kept because the design path's
-    drift is the ageing prediction) plus the design at t0-1, t0, t0+1. """
+    drift is the ageing prediction) plus the design at t0-1, t0, t0+1 and the solve's multiplicity. """
     pos = m.db['t0']
     mt = deepcopy(m)
     # as shocks.shockedCopy: the warm starts hold the BASELINE's solution, so clearing them is what keeps
@@ -311,13 +318,13 @@ def leadedNewPath(m, hbarRef, apply = None, data = None, pin = False):
     if pin:
         θ = mt.db['θ'].values.astype(float)
         pol = mt.solvePEE_LOG(θ = θ, ε = ε)
-        τ, report, θPath = pol['τ'], pol['report'], pd.Series(θ, index = mt.db['t'])
+        τ, report, θPath, mult = pol['τ'], pol['report'], pd.Series(θ, index = mt.db['t']), pol.get('multiplicity')
     else:
         led = mt.solveLeaded(pinAtT0 = False)
-        τ, report, θPath = led['τ'], led['report'], led['θ']
+        τ, report, θPath, mult = led['τ'], led['report'], led['θ'], led['multiplicity']
     return {'t0': readout(mt, τ, report, hbarRef, pos), 't1': readout(mt, τ, report, hbarRef, pos+1),
             'θ_': float(θPath.iloc[pos-1]), 'θ0': float(θPath.iloc[pos]),
-            'θ1': float(θPath.iloc[pos+1]), 'm': mt}
+            'θ1': float(θPath.iloc[pos+1]), 'm': mt, 'multiplicity': mult}
 
 
 def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, host = 'US'):
@@ -352,7 +359,8 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, host = 'US')
                                  'scenario': name,
                                  'θpinned': pin, 'θ_tm1': r['θ_'], 'θ_t0': r['θ0'], 'θ_t1': r['θ1'],
                                  'τ_t0': r['t0']['τ'], 'sr_t0': r['t0']['sr'], 'ww_t0': r['t0']['workweek'],
-                                 'τ_t1': r['t1']['τ'], 'sr_t1': r['t1']['sr'], 'ww_t1': r['t1']['workweek']})
+                                 'τ_t1': r['t1']['τ'], 'sr_t1': r['t1']['sr'], 'ww_t1': r['t1']['workweek']}
+                                | multiplicityColumns(r['multiplicity']))
                     print('  {:<10} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}'
                           '  (θ_t1={:.4f}, {:.0f}s)'
                           .format(name, str(pin), r['θ0'], r['t0']['τ'], r['t0']['sr'],
@@ -393,7 +401,7 @@ def franceRow(m, spec, phi, p, hbarRef, ρ = 1.0, commonX = False, grouping = No
             'θpinned': True,
             'θ_tm1': float(θ[pos-1]), 'θ_t0': float(θ[pos]), 'θ_t1': float(θ[pos+1]),
             'τ_t0': r0['τ'], 'sr_t0': r0['sr'], 'ww_t0': r0['workweek'],
-            'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek']}
+            'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek']} | multiplicityColumns(out.get('multiplicity'))
 
 
 def shockIncomeAndVoting(mt0, d):
@@ -480,13 +488,15 @@ def stageCountry(specs, phis, calib, out, commonX = False):
                     m.calibrate()
                     t0 = m.t0Year
                     sols = m.ESC.solveBackward()
+                    mult = m.ESC.lastMultiplicity
                     θStar = float(m.db['θ'].xs(t0))
                     ch = m.leadedDesignAtT0(sols)
                     τc = float(m.solvePEE_LOG()['τ'].xs(t0))
                     rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'country': label,
                                  'wedgeFrom': 'US',
                                  'p': pUS, 'θStar': θStar, 'choice': ch,
-                                 'ω': float(m.db['ω'].xs(t0)), 'τ': τc} | wedgeReadout(m, τc))
+                                 'ω': float(m.db['ω'].xs(t0)), 'τ': τc} | wedgeReadout(m, τc)
+                                | multiplicityColumns(mult))
                     print('[{}, φ={}] {:<5} US wedge p={:.4f}: θ*={:.4f} -> choice {:.4f}  (Vtilde={:.4f})'
                           .format(spec, phi, label, pUS, θStar, ch, rows[-1]['Vtilde']))
                 except Exception as e:
@@ -502,7 +512,9 @@ def stageCountry(specs, phis, calib, out, commonX = False):
                                  'wedgeFrom': 'own',
                                  'p': rec['p'], 'θStar': rec['θ'], 'choice': rec['θ'] + rec['residual'],
                                  'converged': rec['converged'],
-                                 'ω': float(m.db['ω'].xs(m.t0Year))} | own)
+                                 'ω': float(m.db['ω'].xs(m.t0Year))} | own
+                                # calibrateWedge's last recursion is the one at the calibrated p
+                                | multiplicityColumns(m.ESC.lastMultiplicity if rec['converged'] else None))
                     print('[{}, φ={}] {:<5} own wedge: p={} θ*={:.4f} ({})'
                           .format(spec, phi, label, rec['p'], rec['θ'], rec['message']))
                 except Exception as e:
@@ -537,7 +549,7 @@ def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None, commonX = False):
                  'converged': r['converged'], 'θPermIncumbent': r['θIncumbent'],
                  'θPermMovingSi': r['θMoving'],
                  'θLeaded': m.leadedDesignAtT0(m.ESC.solveBackward()),
-                 'τAtChoice': r['τAtChoice']})
+                 'τAtChoice': r['τAtChoice']} | multiplicityColumns(None))
     print('no wedge: θ_perm={:.4f} (corner={}, turns={})'.format(r['θ'], r['atBound'], r['nTurning']))
     mergeWrite(out, rows, KEYPERM)
 
@@ -558,7 +570,7 @@ def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None, commonX = False):
                              'nTurning': r['nTurning'], 'converged': r['converged'],
                              'θPermIncumbent': r['θIncumbent'], 'θPermMovingSi': r['θMoving'],
                              'θLeaded': m.leadedDesignAtT0(m.ESC.solveBackward()),
-                             'τAtChoice': r['τAtChoice']})
+                             'τAtChoice': r['τAtChoice']} | multiplicityColumns(None))
                 print('  own p={:.4f}: θ_perm={:.4f} (target {:.4f}), leaded at the same wedge={:.4f}'.format(
                     rec['p'], r['θ'], rec['θ'], rows[-1]['θLeaded']))
             mergeWrite(out, rows, KEYPERM)
@@ -616,7 +628,8 @@ def stageFig1(specs, phis, calib, out, ρ = 1.0, commonX = False):
                                      'ν': float(m.db['ν'].xs(t0)), 'θData': θStar, 'θChoice': ch,
                                      'τ': m.ESC.τAt(t0, θStar),
                                      'τAtChoice': m.ESC.τAt(t0, ch),
-                                     'ηRatio': float(m.db['ηi'].xs(t0).values[-1]/m.db['ηi'].xs(t0).values[0])})
+                                     'ηRatio': float(m.db['ηi'].xs(t0).values[-1]/m.db['ηi'].xs(t0).values[0])}
+                                    | multiplicityColumns(m.ESC.lastMultiplicity))
                     except Exception as e:
                         print(f'  {axis}={v:.3f} FAILED {type(e).__name__}: {e}')
                     mergeWrite(out, rows, KEYFIG)

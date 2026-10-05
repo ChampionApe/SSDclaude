@@ -13,13 +13,15 @@
 | `base.py`, `policy.py`, `model.py` | copied from `informalAnalytical` and adjusted |
 | `modelFR.py` | `ModelFR(ModelUS)`, the France/UK calibration protocol |
 | `shocks.py` | counterfactual machinery: `shockedCopy`, one function per scenario |
-| `policyESC.py`, `modelESC.py` | endogenous `θ`: `LeadedLOG`, `LeadedCRRA`, `LeadedCRRA2D`, `PermanentLOG/CRRA`, `ModelESC` |
+| `policyESC.py`, `modelESC.py` | endogenous `θ`: `LeadedLOG`, `LeadedCRRA`, `LeadedCRRA2D` (design layer `designRule = 'root'`, alg `esc:crra2D`; `'legacy'` the earlier one), `PermanentLOG/CRRA`, `ModelESC` |
+| `policyESCpilot.py`, `pilotDesignChoice.py` | sandbox: the first-order-condition design layer (`LeadedCRRA2DFOC`, alg `esc:crra2Dfoc`, not adopted) and the pilot's measurements (`logs/pilotDesignChoice/`) |
 | `thetaStakes.py` | diagnostic: who gains from a marginal change in `θ_{t+1}`; showed the leaded choice needs a wedge |
 | `test.py`, `testEU.py` | workbook loaders: `USMain_test.xlsx`; `FRMain.xlsx`/`UKMain.xlsx` via `testEU.model('FR'|'UK'[, grouping])` -- a grouping is a sheet suffix: `('UK', 'US')` the UK at US percentiles, `('FR', 'UK')` France at the UK's cuts (sheets `heterogeneityUK`/`calibrationUK`) |
 | `calibrateRhoGrid.py`, `calibrateRhoGridEU.py`, `runShocksUS.py`, `runESC.py`, `runESCcrra.py`, `collectESCexperiments.py` | drivers |
 | `stationaryApprox.py`, `stationaryApproxESC.py` | prepub checks: a stationary policy function (ν frozen at each date's value) against the exact date-specific one along the demographic path, for taxes (CRRA) and for the endogenous design (LOG, exact 2-D CRRA); `results/numerical/` |
 
-Eight fast test suites (~5 min; `test_esc.py` alone ~235 s, both cost specs) and two slow ones
+Ten fast test suites (~6 min; `test_designChoicePilot.py` ~2 min, the CRRA design layer; `test_esc.py` alone ~235 s, both cost specs; `test_frozenSelection.py`
+~15 s, the tax-candidate selection) and two slow ones
 (`test_escTiming.py`, the permanent timing's reference numbers, ~75 s; `test_escCRRA.py`, ~7 min),
 registered in `python/runTests.py`.
 
@@ -52,6 +54,25 @@ separate csv, used to run two `ρ` in parallel without racing on one file).
   (`0·NaN` poisons the FOC; `test_ee.py` perturbs the slot). `getEps` raises if `γ_0 > 0`.
 - **The LOG FOC decouples across `t`** (`eq:us:model:PEELOG:decoupling`); the backward solver is still
   used. Not true under CRRA.
+- **Tax candidates are compared at frozen shares** (2026-10-02; `num_robustroot.tex`,
+  `roots1d.selectMaxFrozen`). `z_t` substitutes the consistent shares at every node, which makes its
+  root the equilibrium and makes it the derivative of no single objective, so every candidate (both
+  corners and every crossing) is tested and ranked on `z_t` re-evaluated at its own frozen shares and
+  integrated (`LOG.objectiveFrozen`, `CRRA.objectiveFrozen`; `CRRA.focParts_t`/`zAtShares` split the
+  splines from the retirees' term). Every solver reports `nCand`/`nEq`/`fallback` per state and a
+  `multiplicity` summary (`solvePEE_*`, `solveLeaded*`; `policy.multiplicitySummary`).
+  `LOG.solveRobust(check = True)` runs the full-grid pass on every solve (+19 ms) and keeps the gradient
+  solution bitwise when it is the selected equilibrium. `selection = 'legacy'` on a solver reinstates the
+  integral criterion for comparisons. Quick checks: one equilibrium at every state, no fallback
+  (`test_frozenSelection.py`); finding #18.
+- **The CRRA design is chosen at frozen savings shares** (2026-10-02, C6; `num_esc.tex` alg `esc:crra2D`,
+  finding #11/#18). `LeadedCRRA2D._chooseRoot`: every candidate design, and the tax it is paired with, is
+  valued at one scalar `a` (the one-parameter family of shares, `aOf`/`sharesFrom`), and `a` is closed by a
+  root of `eq:esc:aResidual` on a 5-node grid with an Illinois secant; one bracket at every state so far.
+  Counts `nEqθ`/`nBrθ`/`fallbackθ` per state, `multiplicity` summary with both tax and design keys; the
+  drivers write them as non-key columns. The earlier layer (`'legacy'`) valued each candidate at its own
+  consistent shares and is kept for comparisons; the first-order-condition layer was piloted and rejected
+  (finding #19).
 - **Two invariances**: scale (`y^η → λy^η`, normalised away by `Γ_h = 1`) and hours unit (`y^x → μy^x`,
   moves only `h_i` and `h̄`). `test_invariance.py`. Both normalisations are spent in
   `addEigenVectors`: `Γ_h = 1` and `μ = ∑γ_i y^x_i = 1`, the latter since 2026-09-12 (so `h̄ = h` under
@@ -144,10 +165,14 @@ no finite `λ` places the choice there (`results/esc/escCountry.csv`). **The UK 
 the UK's groups; every UK file carries the host in its name. At `ρ` = 0.5 the UK's exact calibration must
 scan at `ns` = 150: its β-imposed calibration does not converge on the `ns` = 50 grid there.
 
-**Known defect** (2026-10-02, `notes/TODO.md` C6): `LeadedCRRA2D`, and the path iteration, evaluate each
-candidate design with `s_{t-1,i}/s_{t-1}` recomputed at that candidate's own tax and hours, so every CRRA
-endogenous-design row is suspect until the solver is redesigned (`notes/esc_crraDesignChoiceProblem.md`);
-LOG is unaffected.
+**Selection rule and design layer** (2026-10-02/03): the tax solvers run the frozen-share equilibrium
+test (`roots1d.selectMaxFrozen`, finding #18) and `LeadedCRRA2D` chooses the design at frozen shares
+(`designRule = 'root'`, alg `esc:crra2D`, TODO C6); every driver writes the counts as non-key columns.
+Final run 2026-10-03 (`logs/finalRun1002/`, read in `notes/todo_finalRun_2026-10-02.md`): one equilibrium
+and no fallback at every counted state of every csv, tax and design counts alike; exact `λ` 18.267/1.724
+(US) and 15.117/2.777 (UK) at ρ = 0.5/2, each within a third of a percent of the earlier layer's; the
+chosen designs moved by at most 1.3e-3 (French voting, ρ = 2). The path iteration (`method = 'path'`)
+still values each candidate on its own re-solved path and is reported as an approximation (`num_esc.tex`).
 
 **Open**: `PermanentCRRA` (run 2026-09-11, `results/esc/escPermanentCRRA.csv`) puts the costless permanent
 choice at θ = 0 for ρ ≤ 1.3 and at θ = 1 for ρ ≥ 1.4 -- the paper's wording is RKB's (`notes/TODO.md`

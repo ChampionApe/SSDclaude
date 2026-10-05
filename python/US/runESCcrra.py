@@ -19,8 +19,14 @@ by it (python/paper/datasets.py, config.US['esc']['exact']).
             therefore SCANS on the coarse grid (--nsScan) and refines the bracketed root on --ns, so it
             needs no warm start from the path iteration; a path p on file only narrows the scanned
             bracket to half..double of it.
+            --designRule picks its design layer: 'root' (the default, alg esc:crra2D of num_esc.tex, --Ma
+            tabulation nodes) or 'legacy' (the earlier layer, for comparisons).
   default   LeadedCRRA's path iteration, the development stand-in certified against the exact recursion
             to ~0.01 in the design (test_escCRRA.py). No paper output reads it.
+
+Every row also carries designRule, Ma and the counts of the solve behind it (solverColumns), as non-key
+columns: nEqMax, nCandMax, nFallback (the tax rule) and nEqθMax, nBrθMax, nFallbackθ (the root design
+layer), -1 where that solve counted nothing.
 
 Why this is a separate driver from runESC.py: under CRRA nothing about the leaded choice is cheap. The tau
 FOC depends on s_{t-1}, so there is no static tauPolicy(theta); W_t is not additively separable, so the
@@ -68,6 +74,7 @@ import shocks as sh
 from modelESC import ModelESC
 from runESC import SHOCKS_ESC, HOSTS, mergeWrite, buildEU, readout as escReadout, wedgeReadout
 from runShocksUS import frenchData, hostRow
+from policy import multiplicityColumns
 
 OUTDIR = os.path.join(REPO, 'results', 'esc')
 GSC = {'n': 101, 'ns': 150, 'smoothKnots': 4, 'interpKind': 'linear'}
@@ -84,33 +91,37 @@ KEYPATH = ['ρ', 'spec', 'phi', 'commonX', 'method', 'pos']
 KEYSHK = ['ρ', 'spec', 'phi', 'commonX', 'method', 'scenario', 'θpinned']
 
 
-def buildUS(ρ, wedge = None, nθCandCRRA = 13, commonX = False, gs = None, nθCand2D = 21):
+def buildUS(ρ, wedge = None, nθCandCRRA = 13, commonX = False, gs = None, nθCand2D = 21, designRule = 'root',
+            Ma = 5):
     """ runESC.buildUS's CRRA counterpart: (beta, omega) seeded from the matching variant's sweep, the
     calibration itself redone by the caller. gs: the CRRA grid settings (GSC by default); LeadedCRRA2D
     borrows them at solve time, so --ns reaches the exact solver through here. nθCand2D: the exact
     recursion's candidate grid for θ_{t+1} -- the objective is flat near its maximum (~1e-5 in W over
-    ±0.01 in θ at the frVoting choice), so the grid sets the resolution of the reported design. """
+    ±0.01 in θ at the frVoting choice), so the grid sets the resolution of the reported design.
+    designRule, Ma: LeadedCRRA2D's design layer and the root layer's tabulation nodes. """
     gs = GSC if gs is None else gs
     row = pd.read_csv(os.path.join(REPO, 'results', 'calibration',
                                    'US_rhoGridCommonX.csv' if commonX else 'US_rhoGrid.csv'))
     row = row.loc[(row['ρ'] - ρ).abs() < 1e-9].iloc[-1]
     m = ModelESC(pars = testmod.pars | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])},
                  wedge = wedge, nθCandCRRA = nθCandCRRA, nθCand2D = nθCand2D, commonX = commonX,
-                 **testmod.kwargs)
+                 designRule = designRule, Ma = Ma, **testmod.kwargs)
     m.db['dates'], m.db['workweek'] = testmod.dates, testmod.workweek
     m.CRRA.initGS(gs)
     m.LOG.initGS({k: v for k, v in gs.items() if k != 'ns'})
     return m
 
 
-def buildHost(host, ρ, wedge = None, nθCandCRRA = 13, commonX = False, gs = None, nθCand2D = 21):
+def buildHost(host, ρ, wedge = None, nθCandCRRA = 13, commonX = False, gs = None, nθCand2D = 21,
+              designRule = 'root', Ma = 5):
     """ buildUS for host 'US'; for 'UK' the UK's ModelESCFR (beta imposed from the US, omega calibrated),
-    omega seeded from the UK's no-wedge sweep at this rho, with the same grid settings. """
+    omega seeded from the UK's no-wedge sweep at this rho, with the same grid and design-layer settings. """
     if host == 'US':
-        return buildUS(ρ, wedge, nθCandCRRA = nθCandCRRA, commonX = commonX, gs = gs, nθCand2D = nθCand2D)
+        return buildUS(ρ, wedge, nθCandCRRA = nθCandCRRA, commonX = commonX, gs = gs, nθCand2D = nθCand2D,
+                       designRule = designRule, Ma = Ma)
     gs = GSC if gs is None else gs
     m = buildEU(host, wedge, ρ = ρ, commonX = commonX, ω = float(hostRow(ρ, commonX, host)['ω']),
-                nθCandCRRA = nθCandCRRA, nθCand2D = nθCand2D)
+                nθCandCRRA = nθCandCRRA, nθCand2D = nθCand2D, designRule = designRule, Ma = Ma)
     m.CRRA.initGS(gs)
     m.LOG.initGS({k: v for k, v in gs.items() if k != 'ns'})
     return m
@@ -134,7 +145,7 @@ def franceRowCRRA(m, ρ, spec, phi, p, hbarRef, commonX = False, gs = None, grou
             'θpinned': True,
             'θ_tm1': float(θ[pos-1]), 'θ_t0': float(θ[pos]), 'θ_t1': float(θ[pos+1]),
             'τ_t0': r0['τ'], 'sr_t0': r0['sr'], 'ww_t0': r0['workweek'],
-            'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek']}
+            'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek'], 'multiplicity': out.get('multiplicity')}
 
 
 def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21, commonX = False):
@@ -231,8 +242,26 @@ def readCalibratedP(fCal, ρ, spec, phi, commonX, method):
     return np.nan, None
 
 
-def pathRowsFrom(m, led, base, ρ, spec, phi, pCal, commonX, method):
-    """ escPathCRRA rows from a solved design path (solveLeadedCRRA or solveLeaded2D return). """
+def solverColumns(designRule, Ma, mult):
+    """ The non-key columns every row of this driver carries: the run's design-layer settings (designRule,
+    Ma; LeadedCRRA2D under --exact) and the counts of the solve behind the row (policy.multiplicityColumns:
+    nEqMax, nCandMax, nFallback for the tax rule, nEqθMax, nBrθMax, nFallbackθ for the root design layer,
+    -1 where that solve counted nothing). Never part of a merge key (finding #13). """
+    return {'designRule': designRule, 'Ma': int(Ma)} | multiplicityColumns(mult, design = True)
+
+
+def multiplicityOf(led):
+    """ The multiplicity summary of a solved design path: solveLeaded2D's own, or the path iteration's
+    last equilibrium solve (tax counts only); None if neither carries one. """
+    if 'multiplicity' in led:
+        return led['multiplicity']
+    return led['out'].get('multiplicity') if 'out' in led else None
+
+
+def pathRowsFrom(m, led, base, ρ, spec, phi, pCal, commonX, method, designRule = 'root', Ma = 5):
+    """ escPathCRRA rows from a solved design path (solveLeadedCRRA or solveLeaded2D return), each with
+    solverColumns. """
+    solver = solverColumns(designRule, Ma, multiplicityOf(led))
     t0 = m.t0Year
     hbarRef = float(m.B.avgHours(base['report']['h'].xs(t0), t0))
     dates = m.db['dates']
@@ -249,7 +278,7 @@ def pathRowsFrom(m, led, base, ρ, spec, phi, pCal, commonX, method):
                      'τ': r['τ'], 'sr': r['sr'], 'workweek': r['workweek'],
                      'τExo': rb['τ'], 'srExo': rb['sr'],
                      'converged': led.get('converged', True), 'step': led.get('step', np.nan),
-                     'τDrift': led['targetDrift']['τ'], 'RDrift': led['targetDrift']['R']})
+                     'τDrift': led['targetDrift']['τ'], 'RDrift': led['targetDrift']['R']} | solver)
     return rows
 
 
@@ -279,6 +308,12 @@ def main():
                           '--ns (the warm start; 0 = scan at --ns too)')
     p.add_argument('--nCand2D', type = int, default = 21,
                    help = 'under --exact, the candidate grid for θ_{t+1} (see buildUS)')
+    p.add_argument('--designRule', default = 'root', choices = ('root', 'legacy'),
+                   help = "under --exact, LeadedCRRA2D's design layer: 'root' (alg esc:crra2D) or 'legacy' "
+                          '(the earlier layer, for comparisons)')
+    p.add_argument('--Ma', type = int, default = 5,
+                   help = "under --exact and designRule 'root', the nodes on which the residual in a is "
+                          'tabulated before its sign changes are closed')
     # ONE bracket cannot serve every rho. The required cost falls steeply in the intertemporal
     # elasticity -- p is about 0.95, 0.41, 0.09 at rho = 0.5, 1, 2 -- so the old default [0.01, 0.6],
     # chosen for rho = 2, sits entirely BELOW the root at rho = 0.5 and the scan correctly reports no
@@ -310,7 +345,9 @@ def main():
     nScan = a.nScan if a.nScan is not None else (6 if a.exact else 14)
     xtol = a.xtol if a.xtol is not None else (2e-5 if a.exact else 1e-6)
     gsScan = gs | {'ns': a.nsScan} if (a.exact and a.nsScan > 0) else gs
-    print('method = {}, ns = {}{}'.format(method, a.ns, f', scan at ns = {a.nsScan}' if a.exact else ''))
+    print('method = {}, ns = {}{}'.format(method, a.ns, f', scan at ns = {a.nsScan}, designRule = '
+                                          f'{a.designRule}, Ma = {a.Ma}' if a.exact else ''))
+    layer = {'designRule': a.designRule, 'Ma': a.Ma}
 
     if 'permanent' in a.stage:
         print('=== the permanent choice under CRRA, traced in rho ===')
@@ -352,7 +389,7 @@ def main():
                                 print('  no path-iteration p on file: full bracket, nScan = {}'
                                       .format(nScanHere))
                     m = buildHost(a.host, ρ, {'spec': spec, 'phi': phi, 'p': 0.2}, nθCandCRRA = a.nCand,
-                                commonX = a.commonX, gs = gs, nθCand2D = a.nCand2D)
+                                commonX = a.commonX, gs = gs, nθCand2D = a.nCand2D, **layer)
                     try:
                         rec = m.calibrateWedge(spec = spec, phi = phi,
                                                preferences = 'CRRA2D' if a.exact else 'CRRA',
@@ -372,13 +409,18 @@ def main():
                                         'ns': a.ns, 'nsScan': a.nsScan if a.exact else np.nan,
                                         'nCand2D': a.nCand2D if a.exact else np.nan,
                                         'nScan': len(rec['scan']),
-                                        'seconds': time.time()-tic} | wr)
+                                        'seconds': time.time()-tic} | wr
+                                       # calibrateWedge's last recursion is the one at the calibrated p
+                                       | solverColumns(a.designRule, a.Ma,
+                                                       getattr(m.ESCC2, 'lastMultiplicity', None)
+                                                       if a.exact and rec['converged'] else None))
                         print('  -> p={}  ({})  [{:.0f}s]'.format(rec['p'], rec['message'], time.time()-tic))
                     except Exception as e:
                         print(f'  FAILED {type(e).__name__}: {e}')
                         calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': a.commonX, 'host': a.host,
                                         'method': method, 'p': np.nan,
-                                        'converged': False, 'message': f'{type(e).__name__}: {e}'})
+                                        'converged': False, 'message': f'{type(e).__name__}: {e}'}
+                                       | solverColumns(a.designRule, a.Ma, None))
                     mergeWrite(fCal, calRows, KEYCAL)
                 else:
                     # a --tag run without its own calibration reads the untagged one (smoke runs)
@@ -395,7 +437,7 @@ def main():
 
                 # ---------------------------------------------------- the design path
                 m = buildHost(a.host, ρ, {'spec': spec, 'phi': phi, 'p': pCal}, nθCandCRRA = a.nCand,
-                            commonX = a.commonX, gs = gs, nθCand2D = a.nCand2D)
+                            commonX = a.commonX, gs = gs, nθCand2D = a.nCand2D, **layer)
                 m.calibrate()
                 t0 = m.t0Year
                 θStar = float(m.db['θ'].xs(t0))
@@ -410,7 +452,8 @@ def main():
                         # theta_{t0} is the equilibrium design the shocks stage and the tables read.
                         ledBase = (m.solveLeaded2D(pinAtT0 = False, verbose = True) if a.exact
                                    else m.solveLeadedCRRA(maxIter = a.maxIter, pinAtT0 = False))
-                        pathRows += pathRowsFrom(m, ledBase, base, ρ, spec, phi, pCal, a.commonX, method)
+                        pathRows += pathRowsFrom(m, ledBase, base, ρ, spec, phi, pCal, a.commonX, method,
+                                                 **layer)
                         print('  θ path: {}   (converged={}, {:.0f}s)'.format(
                             '  '.join('{:.4f}'.format(x) for x in ledBase['θ'].values[:7]),
                             ledBase.get('converged', True), time.time()-tic))
@@ -465,16 +508,20 @@ def main():
                                     θp = mt.db['θ'].values.astype(float)
                                     o = mt.solvePEE_CRRA(θ = θp, ε = mt.db['eps'].values.astype(float))
                                     θPath, out = pd.Series(θp, index = mt.db['t']), o
+                                    mult = o.get('multiplicity')
                                 elif name == 'baseline' and ledBase is not None:
                                     θPath = ledBase['θ']          # the path stage already solved it
                                     out = ledBase['out'] if 'out' in ledBase else ledBase
+                                    mult = multiplicityOf(ledBase)
                                 elif a.exact:
                                     rec = mt.solveLeaded2D(pinAtT0 = False)
                                     θPath, out = rec['θ'], rec
+                                    mult = multiplicityOf(rec)
                                 else:
                                     rec = mt.solveLeadedCRRA(maxIter = a.maxIter, verbose = False,
                                                              pinAtT0 = False)
                                     θPath, out = rec['θ'], rec['out']
+                                    mult = multiplicityOf(rec)
                                 r0 = sh.readout(mt, out['τ'], out['report'], float(mt.db['workweek']),
                                                 hbarRef, pos = pos0)
                                 r1 = sh.readout(mt, out['τ'], out['report'], float(mt.db['workweek']),
@@ -487,7 +534,8 @@ def main():
                                                 'θ_t0': float(θPath.iloc[pos0]),
                                                 'θ_t1': float(θPath.iloc[pos0+1]),
                                                 'τ_t0': r0['τ'], 'sr_t0': r0['sr'], 'ww_t0': r0['workweek'],
-                                                'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek']})
+                                                'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek']}
+                                               | solverColumns(a.designRule, a.Ma, mult))
                                 print('  {:<9} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} '
                                       'ww_t0={:.2f}  (θ_t1={:.4f}, {:.0f}s)'.format(
                                           name, str(pin), float(θPath.iloc[pos0]), r0['τ'], r0['sr'],
@@ -503,6 +551,7 @@ def main():
                         f = franceRowCRRA(m, ρ, spec, phi, pCal, hbarRef, commonX = a.commonX, gs = gs,
                                           grouping = frGrouping)
                         f['method'], f['host'] = method, a.host
+                        f |= solverColumns(a.designRule, a.Ma, f.pop('multiplicity'))
                         shkRows.append(f)
                         print('  {:<9} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}'
                               '  [{:.0f}s]'.format('France', 'True', f['θ_t0'], f['τ_t0'], f['sr_t0'],

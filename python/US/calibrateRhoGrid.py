@@ -58,6 +58,7 @@ os.chdir(HERE)                                        # test.py reads data/ rela
 import test as testmod
 from model import ModelUS
 from gridsearch import continuation
+from policy import multiplicityColumns
 
 OUTDIR = os.path.join(REPO, 'results', 'calibration')
 
@@ -65,6 +66,7 @@ OUTDIR = os.path.join(REPO, 'results', 'calibration')
 COLUMNS = ['ρ', 'preferences', 'requested', 'residual', 'verifyResidual',
            'β', 'ω', 'X',
            'R', 'τ', 'sr', 'h', 'hbar', 'nfev', 'time', 'n', 'ns', 'smoothKnots', 'interpKind',
+           'nEqMax', 'nCandMax', 'nFallback',
            'x0', 'x1', 'commit', 'timestamp']
 # R and τ are targets, so they are constants down the csv by construction -- kept anyway, because a column
 # that is supposed to be constant is the cheapest possible check that a point converged to the right thing
@@ -81,7 +83,8 @@ def gitCommit():
 
 
 def toRow(rec, requested, commit):
-    """ calibratePoint's record -> one flat csv row. """
+    """ calibratePoint's record -> one flat csv row, with the tax counts of its solve (nEqMax, nCandMax,
+    nFallback; policy.multiplicityColumns), -1 while calibratePoint's record carries none. """
     g = rec['gridSettings']
     row = {k: rec.get(k) for k in ('ρ', 'preferences', 'residual', 'verifyResidual', 'β', 'ω', 'X',
                                    'R', 'τ', 'sr', 'h', 'hbar', 'nfev', 'time')}
@@ -89,7 +92,7 @@ def toRow(rec, requested, commit):
             'smoothKnots': g.get('smoothKnots'), 'interpKind': g.get('interpKind'), 'commit': commit,
             'timestamp': datetime.datetime.now().isoformat(timespec = 'seconds')}
     row |= {f'x{i}': v for i, v in enumerate(rec['x'])}
-    return row
+    return row | multiplicityColumns(rec.get('multiplicity'))
 
 
 def readDone(path):

@@ -48,6 +48,7 @@ held at this parameter point, and it costs nothing.
 import numpy as np, pandas as pd
 from scipy import optimize
 from model import ModelUS
+from policy import multiplicitySummary
 from policyESC import LeadedLOG, LeadedCRRA, LeadedCRRA2D, PermanentLOG, PermanentCRRA
 
 WEDGE_SPECS = (None, 'scale', 'flat', 'size')
@@ -63,17 +64,18 @@ class ModelESC(ModelUS):
     _defaultWedge = {'spec': None, 'phi': 0.5, 'p': 1.0}
 
     def __init__(self, *args, wedge = None, nθ = 41, nθCand = 121, nθCandCRRA = 13,
-                 nθCandPerm = 21, nθ2D = 13, nθCand2D = 21, **kwargs):
+                 nθCandPerm = 21, nθ2D = 13, nθCand2D = 21, designRule = 'root', Ma = 5, **kwargs):
         """ wedge: {'spec': None|'scale'|'flat'|'size', 'phi': float, 'p': float} ('p' is lambda under
         'size'). spec=None reproduces ModelUS exactly (Base.wedgeA/wedgeB are then the identity), which is
-        what test_esc.py pins. """
+        what test_esc.py pins. designRule, Ma: LeadedCRRA2D's design layer ('root', alg esc:crra2D, or
+        'legacy') and the root layer's tabulation nodes. """
         self._wedge0 = self._defaultWedge | (wedge or {})
         if self._wedge0['spec'] not in WEDGE_SPECS:
             raise ValueError(f"ModelESC: unknown wedge spec {self._wedge0['spec']!r}; one of {WEDGE_SPECS}.")
         super().__init__(*args, **kwargs)
         self.ESC = LeadedLOG(self, nθ = nθ, nθCand = nθCand)
         self.ESCC = LeadedCRRA(self, nθCand = nθCandCRRA)
-        self.ESCC2 = LeadedCRRA2D(self, nθ = nθ2D, nθCand = nθCand2D)
+        self.ESCC2 = LeadedCRRA2D(self, nθ = nθ2D, nθCand = nθCand2D, designRule = designRule, Ma = Ma)
         self.ESCP = PermanentLOG(self, nθ = nθ, nθCand = nθCand)
         self.ESCPC = PermanentCRRA(self, nθCand = nθCandPerm)
 
@@ -163,7 +165,8 @@ class ModelESC(ModelUS):
         drift = {'R': float(report['R'].xs(t0)) - float(self.db['R0']),
                  'τ': float(τPath.xs(t0)) - float(self.db['τ0'])}
         return {'sols': sols, 'θ': θPath, 'τ': τPath, 'sol': sol, 'report': report,
-                'targetDrift': drift}
+                'targetDrift': drift,
+                'multiplicity': multiplicitySummary(sols, keys = ('nEqτ', 'nCandτ', 'fallbackτ'))}
 
     def leadedChoiceAtT0(self, sols = None):
         """ thetaPolicy_{t0}(theta*) -- the design the t0 electorate picks FOR t0+1, given theta* in force.
@@ -248,7 +251,9 @@ class ModelESC(ModelUS):
         simulated design/tax path, the exact economic equilibrium at that path, and the same targetDrift
         diagnostic the other solvers report. pinAtT0 as solveLeaded: the design is history up to and
         including t0 -- and here the pinning has to reach the RECURSION, not just the simulation, because
-        τ_t responds to θ_{t+1} under CRRA (see LeadedCRRA2D's docstring). """
+        τ_t responds to θ_{t+1} under CRRA (see LeadedCRRA2D's docstring). 'multiplicity': the tax rule's
+        and the design layer's counts over the recursion (LeadedCRRA2D.multiplicity; -1 for a set no period
+        counted). """
         θStar = float(self.db['θ'].xs(self.t0Year))
         pinPos = int(self.db['t0']) if pinAtT0 else None
         if sols is None:
@@ -264,14 +269,16 @@ class ModelESC(ModelUS):
         drift = {'R': float(report['R'].xs(t0)) - float(self.db['R0']),
                  'τ': float(τPath.xs(t0)) - float(self.db['τ0'])}
         return {'sols': sols, 'θ': θPath, 'τ': τPath, 'sol': sol, 'report': report,
-                'targetDrift': drift, 's0': s0}
+                'targetDrift': drift, 's0': s0, 'multiplicity': LeadedCRRA2D.multiplicity(sols)}
 
-    def leadedDesignAtT0_2D(self, verbose = False):
+    def leadedDesignAtT0_2D(self, verbose = False, withMultiplicity = False):
         """ θ_{t0} on the FREELY simulated 2-D path (LeadedCRRA2D, every period chooses): the design in
         force at the baseline year, the exact CRRA counterpart of leadedDesignAtT0 and what calibrateWedge
-        targets under preferences = 'CRRA2D'. One full recursion per call. """
+        targets under preferences = 'CRRA2D'. One full recursion per call. withMultiplicity: return
+        (θ_{t0}, solveLeaded2D's combined multiplicity) instead of θ_{t0} alone. """
         out = self.solveLeaded2D(pinAtT0 = False, verbose = verbose)
-        return float(out['θ'].xs(self.t0Year))
+        θ0 = float(out['θ'].xs(self.t0Year))
+        return (θ0, out['multiplicity']) if withMultiplicity else θ0
 
     def leadedChoiceAtT0_2D(self, out = None, verbose = False):
         """ θPolicy_{t0}(s_{t0-1}, θ*) from the 2-D solver -- the exact counterpart of what

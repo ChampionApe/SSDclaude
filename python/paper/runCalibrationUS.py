@@ -133,8 +133,10 @@ def escMissing(part = 'main', force = False, strict = True):
             haveC = {(round(float(r), 6), s) for r, s in zip(ok['ρ'], ok['spec'])}
         lackρ = [ρ for ρ in esc['ρTable'] if ρ != C.US['ρAnchor'] and (round(ρ, 6), spec) not in haveC]
         exact = [C.PYTHON, os.path.join(C.USDIR, 'runESCcrra.py'), '--exact', '--stage', 'calib']
+        # the exact recursion's design layer (config.US['esc']), on every runESCcrra.py command below
+        layer = ['--designRule', esc['designRule'], '--Ma', str(esc['Ma'])]
         opts = ['--spec', spec, '--phi', str(phi), '--ns', str(esc['ns2D']),
-                '--nsScan', str(esc['nsScan']), '--nCand2D', str(esc['nCand2D'])] + variant
+                '--nsScan', str(esc['nsScan']), '--nCand2D', str(esc['nCand2D'])] + variant + layer
         # A rho with its own bracket gets its own command (the bracket is one pair); the rest share one
         # command and runESCcrra.py's own default scan for the spec.
         brackets = {}
@@ -169,7 +171,7 @@ def escMissing(part = 'main', force = False, strict = True):
                         + [str(b) for b in uk['bracket'][ρ]]
                         + ['--nScan', str(uk['nScan']), '--spec', spec, '--phi', str(phi),
                            '--ns', str(esc['ns2D']), '--nsScan', str(uk['nsScan'][ρ]),
-                           '--nCand2D', str(esc['nCand2D'])] + variant)
+                           '--nCand2D', str(esc['nCand2D'])] + variant + layer)
         # phi is a parameter of f only under 'scale'/'flat'; under 'size' it is a dummy key and a
         # run at another phi would reproduce the esc['phi'] calibration under a different key.
         lackφ = [p for p in PHIROBUST if spec in ('scale', 'flat') and (spec, round(p, 6)) not in haveL]

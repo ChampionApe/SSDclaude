@@ -49,6 +49,7 @@ os.chdir(HERE)
 
 import test as testmod
 import runESC
+from policy import multiplicityColumns
 
 ESCDIR = os.path.join(REPO, 'results', 'esc')
 OUT = os.path.join(ESCDIR, 'escXiRobustness.csv')
@@ -126,10 +127,13 @@ def stageCalib(ξ, out, commonX, θ0, bracket = None):
               'τDrift': led['targetDrift']['τ'], 'RDrift': led['targetDrift']['R'],
               'choice': float(led['θ'].iloc[pos]), 'choiceAtT0': float(led['θ'].iloc[pos+1])}
         r |= runESC.wedgeReadout(m, float(led['τ'].xs(t0)))
+        r |= multiplicityColumns(led['multiplicity'])
         print('  -> λ={p:.6f}  θ*={θStar:.4f}  β={β:.4f} ω={ω:.4f} X={X:.4f}  Ṽ={Vtilde:.4f} f(θ*)={fStar:.4f} '
               'f(0)={f0:.4f}  sign changes {nSignChanges}  ({s:.0f}s)'.format(s = time.time()-tic, **r))
     r |= {'message': rec['message'],
           'scan': ';'.join('{:.4f}:{:+.5f}'.format(s['p'], s['residual']) for s in rec['scan'])}
+    if not rec['converged']:
+        r |= multiplicityColumns(None)
     if not rec['converged']:
         print(f"  -> NOT CONVERGED ({r['message']}); scan: {r['scan']}")
     runESC.mergeWrite(out, [r], KEYXI)
@@ -153,7 +157,7 @@ def stagePath(ξ, λ, out, commonX):
         rows.append(_ids(ξ, commonX, 'path', pos, dates[pos] if pos < len(dates) else np.nan, λ) | {
             'ν': float(m.db['ν'].xs(t)), 'θ': float(led['θ'].xs(t)), 'τ': r['τ'], 'sr': r['sr'],
             'workweek': r['workweek'], 'R': r['R'],
-            'τExo': rb['τ'], 'srExo': rb['sr'], 'workweekExo': rb['workweek']})
+            'τExo': rb['τ'], 'srExo': rb['sr'], 'workweekExo': rb['workweek']} | multiplicityColumns(led['multiplicity']))
     runESC.mergeWrite(out, rows, KEYXI)
     print('[ξ={}] θ path: {}   τ path: {}  ({:.0f}s)'.format(
         ξ, '  '.join('{:.4f}'.format(x) for x in led['θ'].values[:8]),
@@ -176,7 +180,7 @@ def stageAcute(ξ, λ, out, commonX):
             'ν': float(mt.db['ν'].xs(mt.db['t'][pos])), 'θ': r['θ0'], 'τ': r['t0']['τ'],
             'sr': r['t0']['sr'], 'workweek': r['t0']['workweek'], 'R': r['t0']['R'],
             'θ_tm1': r['θ_'], 'θ_t1': r['θ1'], 'τ_t1': r['t1']['τ'], 'sr_t1': r['t1']['sr'],
-            'ww_t1': r['t1']['workweek']})
+            'ww_t1': r['t1']['workweek']} | multiplicityColumns(r['multiplicity']))
         print('[ξ={}] acute {:<6}: θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}  (θ_t1={:.4f})'.format(
             ξ, 'pinned' if pin else 'chosen', r['θ0'], r['t0']['τ'], r['t0']['sr'], r['t0']['workweek'], r['θ1']))
     runESC.mergeWrite(out, rows, KEYXI)

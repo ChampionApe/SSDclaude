@@ -51,6 +51,7 @@ PKLDIR = os.path.join(OUTDIR, 'instances')
 
 # Ordered so the csv reads as: what was solved, what it cost, whether to believe it, then the answer.
 COLUMNS = ['ρ', 'preferences', 'requested', 'residual', 'verifyResidual', 'occupancyι', 'occupancys',
+           'nEqMax', 'nCandMax', 'nFallback',
            'β', 'ω', 'η0', 'X0', 'X', 'hbar', 'commonX',
            'KY', 'sr', 'τ', 'ι', 'nRoots', 'nfev', 'time', 'nι', 'ns', 'nτ', 'x0', 'x1', 'x2', 'x3',
            'commit', 'timestamp']
@@ -59,6 +60,9 @@ COLUMNS = ['ρ', 'preferences', 'requested', 'residual', 'verifyResidual', 'occu
 # grid whose nodes are mostly somewhere the dynamics never go. A grid that is too NARROW announces itself
 # (states outside it are reported infeasible, never clipped); one that is too WIDE is silent, and this is
 # the column that makes it visible. toRow reindexes to this list, so a record key absent here is dropped.
+# nEqMax/nCandMax/nFallback are the tax candidates' counts of the point's final solve (num_robustroot.tex):
+# nEqMax > 1 means the equilibrium selection bound somewhere, nFallback > 0 that some state had no
+# equilibrium on the grid. Non-key, like every column but ρ (finding #13); -1 on a failed point.
 
 
 def gitCommit():
@@ -76,6 +80,7 @@ def toRow(rec, requested, commit):
     row = {k: rec.get(k) for k in ('ρ', 'preferences', 'residual', 'verifyResidual', 'occupancyι',
                                    'occupancys', 'β', 'ω', 'η0', 'X0', 'X', 'hbar', 'commonX', 'KY',
                                    'sr', 'τ', 'ι', 'nRoots', 'nfev', 'time')}
+    row |= {k: rec.get(k, -1) for k in ('nEqMax', 'nCandMax', 'nFallback')}
     row |= {'requested': requested, 'nι': g.get('nι'), 'ns': g.get('ns'), 'nτ': g.get('n'),
             'commit': commit, 'timestamp': datetime.datetime.now().isoformat(timespec = 'seconds')}
     row |= {f'x{i}': v for i, v in enumerate(rec['x'])}
@@ -262,6 +267,7 @@ def main():
         rows[round(float(r['value']), 6)] = {
             'ρ': round(float(r['value']), 6), 'requested': r['requested'], 'commit': commit,
             'residual': np.nan, 'preferences': 'FAILED: ' + r['error'][:120],
+            'nEqMax': -1, 'nCandMax': -1, 'nFallback': -1,
             'timestamp': datetime.datetime.now().isoformat(timespec = 'seconds')}
     write()
 

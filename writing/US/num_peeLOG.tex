@@ -23,7 +23,7 @@ Fix $\bm{\theta}$ and a global grid $\mathcal{T}$, extended to $\tilde{\mathcal{
 
 \smallskip\noindent\emph{Evaluate.} Form $z_t$ on $\left\lbrace 1,...,T\right\rbrace\times\tilde{\mathcal{T}}$ in a single vectorized pass, using \eqref{\refmodeleq:terminalPEELOG} in the row $t=T$ and \eqref{\refmodeleq:PEELOG} elsewhere. Every entry is a closed-form expression of $\tau_t$ and the period's parameter vintage; nothing is carried between rows.
 
-\smallskip\noindent\emph{Select.} For each $t$ independently: if $z_t<0$ throughout $\mathcal{T}$, set $\tau_t = l$; if $z_t>0$ throughout, set $\tau_t = u$; otherwise construct the candidate set $\mathcal{C}_t$ from \eqref{\refeq:candidates} and set $\tau_t = \arg\max_{\mathcal{C}_t}\hat{\mathcal{V}}_t$.
+\smallskip\noindent\emph{Select.} For each $t$ independently: construct the candidate set $\mathcal{C}_t$ from \eqref{\refeq:candidates} --- the two corners alone when $z_t$ does not change sign on $\mathcal{T}$ --- apply the equilibrium test \eqref{\refeq:equilibriumTest} at each candidate's own savings shares, and select among the equilibria as in \cref{\refsec:RobustRoot}, recording their number.
 
 \smallskip\noindent\emph{Polish.} Optionally refine the selected path with Algorithm \ref{\refalg:LOG:fast}, started at the $\tilde{\bm{\tau}}$ implied by $\bm{\tau}$. This is the recommended default, using the grid search to locate the correct branch and the gradient step to attain machine precision.
 

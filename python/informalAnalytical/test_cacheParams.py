@@ -92,6 +92,70 @@ dSolvers = np.max(np.abs(tauV - tauB))
 check('solveVectorized == solveBackward to grid resolution', dSolvers < 5e-5,
       '-> max|diff|={:.2e}'.format(dSolvers))
 
+# ---- 7. LOG: the selection among tax candidates at frozen savings shares (num_robustroot.tex,
+# eq:candidates/eq:equilibriumTest; policy.LOG.objectiveFrozen). The frozen objective's τ-derivative at the
+# shares consistent with the evaluation point is the solver's own z_t (closed form); the rule reproduces the
+# integral criterion bitwise wherever one equilibrium exists; the counts reach every solve output.
+tIdx = m.db['t']
+pos0 = int(m.db['t0'])
+hFD = 1e-5
+with BG.cacheParams():
+    for (tt, tl, terminal, label) in ((tIdx[pos0], tIdx[pos0 - 1], False, 't0'), (tIdx[-1], tIdx[-2], True, 'T')):
+        pp = tIdx.get_loc(tt)
+        θt, εt = float(th[pp]), float(eps[pp])
+        τ1c = 0.2                                     # a fixed continuation τ_{t+1}; ignored at T
+        for τc in (0.08, 0.15, 0.30):
+            z = float(LOG.focGrid(LOG.stateGrid(np.array([τc]), tt, θt, tl, terminal, τ1c, θt), tt, θt, εt, terminal)[0])
+            τg = np.array([τc - hFD, τc, τc + hFD])
+            W = LOG.objectiveFrozen(np.array([[τc]]), τg, LOG.stateGrid(τg, tt, θt, tl, terminal, τ1c, θt),
+                                    θt, tt, εt, tl, terminal)
+            dW = (W[0, 2, 0] - W[0, 0, 0])/(2*hFD)
+            check(f'LOG {label}: dW/dτ of the frozen objective at its own shares equals z_t at τ={τc}',
+                  abs(dW - z) <= 1e-6*max(1., abs(z)), f'-> {dW:.9f} vs {z:.9f}')
+        τg = np.array([0.15 - hFD, 0.15, 0.15 + hFD])
+        W2 = LOG.objectiveFrozen(np.array([[0.30]]), τg, LOG.stateGrid(τg, tt, θt, tl, terminal, τ1c, θt),
+                                 θt, tt, εt, tl, terminal)
+        z15 = float(LOG.focGrid(LOG.stateGrid(np.array([0.15]), tt, θt, tl, terminal, τ1c, θt), tt, θt, εt, terminal)[0])
+        check(f'LOG {label}: at shares frozen at another candidate the derivative is a different number',
+              abs((W2[0, 2, 0] - W2[0, 0, 0])/(2*hFD) - z15) > 1e-6,
+              '-> {:.6f} vs z_t {:.6f}'.format((W2[0, 2, 0] - W2[0, 0, 0])/(2*hFD), z15))
+
+nτ = LOG.GS['PEE']['solGrids']['τ'].size
+LOG.selection = 'frozen'
+gridF = LOG.solveBackward(th, eps, Δl = nτ, Δu = nτ, update = False)
+winF = LOG.solveBackward(th, eps, update = False)
+LOG.selection = 'legacy'
+gridL = LOG.solveBackward(th, eps, Δl = nτ, Δu = nτ, update = False)
+winL = LOG.solveBackward(th, eps, update = False)
+LOG.selection = 'frozen'
+mult = gridF['multiplicity']
+nEqT = np.array([d['nEq'] for d in gridF['diagnostics'].values()])
+single = nEqT == 1
+check('LOG full grid: counts reported at every period; one equilibrium everywhere, no fallback',
+      mult['nEqMax'] == 1 and mult['nFallback'] == 0 and mult['nCandMax'] >= 3 and single.all(), f'-> {mult}')
+check('LOG full grid: the rule reproduces the integral criterion bitwise where one equilibrium exists',
+      np.array_equal(gridF['τ'].values[single], gridL['τ'].values[single]),
+      '-> τ sum {!r} (frozen) vs {!r} (legacy); τ_T={!r}, τ_t0={!r}'.format(
+          float(gridF['τ'].sum()), float(gridL['τ'].sum()), float(gridF['τ'].iloc[-1]), float(gridF['τ'].iloc[pos0])))
+check('LOG refinement window: same, bitwise', np.array_equal(winF['τ'].values, winL['τ'].values)
+      and winL['multiplicity']['nEqMax'] == 0, '-> legacy counts {}'.format(winL['multiplicity']))
+x0 = np.full(m.T, float(m.db['τ0']))
+fast = LOG.solveVectorized(th, eps, x0 = x0.copy(), update = False)
+rob = LOG.solveRobust(th, eps, x0 = x0.copy(), update = False)
+check('solveRobust (check=True): the gradient solution is returned bitwise when it is the selected equilibrium',
+      np.array_equal(fast['τ'].values, rob['τ'].values) and 'warm start' not in rob['message'],
+      f"-> {rob['message']}")
+check('solveRobust (check=True) attaches the counts of the full-grid pass',
+      rob.get('multiplicity') == mult, f"-> {rob.get('multiplicity')}")
+check('solveRobust(check=False) is the gradient solve alone, without counts',
+      'multiplicity' not in LOG.solveRobust(th, eps, x0 = x0.copy(), update = False, check = False))
+m.LOG.x0.pop('vectorized', None)
+out = m.solvePEE_LOG()
+check('solvePEE_LOG carries the multiplicity summary', isinstance(out.get('multiplicity'), dict)
+      and out['multiplicity']['nEqMax'] == 1, f"-> {out.get('multiplicity')}")
+check("solvePEE_LOG(solver='Vectorized') reports no counts (None)",
+      m.solvePEE_LOG(solver = 'Vectorized')['multiplicity'] is None)
+
 # ---- speed (reported, not asserted -- timings are machine-dependent)
 def timeit(fn, r = 100):
     fn()

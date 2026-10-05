@@ -734,7 +734,8 @@ class ModelUS:
             s0 = self.steadyState_LOG_solve(τ[self.B.tFirst], θ[self.B.tFirst], t = self.B.tFirst)['s']
         sol = self.EE_LOG_solve(τ, θ, ε, s0)
         report = self.EE_report(sol, τ, θ, ε, s0)
-        return {'policy': policy, 'τ': policy['τ'], 'sol': sol, 'report': report}
+        return {'policy': policy, 'τ': policy['τ'], 'sol': sol, 'report': report,
+                'multiplicity': policy.get('multiplicity')}   # the tax candidates' counts (num_robustroot.tex)
 
     #######################################################################
     ##########   7. Politico-economic equilibrium (PEE) solve, CRRA   ######
@@ -788,7 +789,8 @@ class ModelUS:
             kwargs['x0'] = np.concatenate([path['Γs'], path['h'], path['s']])
         sol = self.EE_CRRA_solve(path['τ'].values, θ, ε, s0, **kwargs)
         report = self.EE_report(sol, path['τ'].values, θ, ε, s0)
-        return {'sols': sols, 'τ': path['τ'], 'sol': sol, 'report': report}
+        return {'sols': sols, 'τ': path['τ'], 'sol': sol, 'report': report,
+                'multiplicity': getattr(self.CRRA, 'lastMultiplicity', None)}
 
     #######################################################################
     ##########   8. Calibration (docs §calibration, eq:calibration)   ######

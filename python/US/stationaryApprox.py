@@ -26,7 +26,8 @@ terminal condition rather than demographic change: read the 1960-2080 rows for t
 the tail for the finite-horizon effect. Both solves share one state grid (the baseline's default sGrid) and
 grid settings, so the gaps are not interpolation artefacts of different grids.
 
-Writes results/numerical/US_stationaryApprox.csv, one row per (rho, t).
+Writes results/numerical/US_stationaryApprox.csv, one row per (rho, t), each with the exact solve's tax counts
+(nEqMax, nCandMax, nFallback; policy.multiplicityColumns).
 """
 import os, sys, argparse, time
 import numpy as np, pandas as pd
@@ -40,6 +41,7 @@ os.chdir(HERE)
 
 import test as testmod
 from model import ModelUS
+from policy import multiplicityColumns
 
 OUT = os.path.join(REPO, 'results', 'numerical', 'US_stationaryApprox.csv')
 
@@ -151,7 +153,8 @@ def runRho(ρ, commonX, gs, Tstat):
                      'srY_exact': srOverY(rep)[pos], 'srY_stat': srOverY(repA)[pos],
                      'R_exact': rep['R'].values[pos], 'R_stat': repA['R'].values[pos],
                      'statConv': conv[np.round(ν[pos], 12)],
-                     'inGrid_stat': bool(sGrid[0] <= sA_[pos] <= sGrid[-1])})
+                     'inGrid_stat': bool(sGrid[0] <= sA_[pos] <= sGrid[-1])}
+                    | multiplicityColumns(exact.get('multiplicity')))
     return pd.DataFrame(rows)
 
 

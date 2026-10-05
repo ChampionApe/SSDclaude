@@ -62,8 +62,13 @@ diagnosing the FOC), and **`solveRobust`** (vectorised, else backward then polis
 flagged; catches only `RuntimeError`). `solveVectorized` genuinely fails at `ω ≥ 5` on Argentina.
 
 - `tLag` is an explicit argument resolved by `db['t'].get_loc(t)`, never `t - 1`.
-- Corners and multiplicity go through `roots1d.selectMax`, not `robustRoot`'s extended grid; `maxResid`
-  is restricted to periods with an interior maximum.
+- Corners and multiplicity go through `roots1d.selectMaxFrozen`, not `robustRoot`'s extended grid: every tax
+  candidate (both corners, every crossing) is tested and ranked at its own frozen formal savings shares
+  (`LOG.objectiveFrozen`, `CRRA.objectiveFrozen`; `CRRA.focParts_t`/`zAtShares` split the splines from the
+  retirees' term; `num_robustroot.tex`, finding #18, wired 2026-10-02). Every solve reports `nCand`/`nEq`/
+  `fallback` per period and state and a `multiplicity` summary; `selection = 'legacy'` reinstates the
+  integral criterion for comparisons; `solveRobust(check = True)` runs the full-grid pass (+30 ms).
+  `maxResid` is restricted to periods with an interior maximum.
 - Under CRRA the terminal period needs no numerical differentiation (chain rule on the LOG derivatives),
   but `B_T^i ≠ β_i` makes it state-dependent, `z_T(τ_T, s_{T-1})`; numerical derivatives start at `t<T`.
 - `self.GS` holds the named political problems (`solGrids`, `stateGrids`, `gridSettings`), symmetric

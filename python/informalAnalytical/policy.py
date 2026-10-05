@@ -4,6 +4,50 @@ from gridsearch import (robustRoot, roots1d, CartesianGrid, griddedInterp1D,
                         griddedSmooth1D, griddedGradient1D)
 
 
+def multiplicitySummary(sols, keys = ('nEq', 'nCand', 'fallback')):
+    """ One dict over a {t: period dict} solution: the largest number of equilibria at any state, the
+    largest candidate count, the number of states where more than one equilibrium passed the test and
+    where none did (num_robustroot.tex, eq:equilibriumTest), and the periods concerned. `keys` names the
+    per-period entries. Periods without them and -1 entries (the legacy rule) are skipped. """
+    kEq, kCand, kFb = keys
+    out = {'nEqMax': 0, 'nCandMax': 0, 'nStatesMultiple': 0, 'nFallback': 0,
+           'periodsMultiple': [], 'periodsFallback': []}
+    for t, rep in sols.items():
+        if not isinstance(rep, dict) or rep.get(kEq) is None:
+            continue
+        nEq, nCand = np.asarray(rep[kEq]), np.asarray(rep[kCand])
+        fb = np.asarray(rep[kFb], dtype = bool)
+        if nEq.size == 0 or (nEq < 0).all():
+            continue
+        out['nEqMax'] = max(out['nEqMax'], int(nEq.max()))
+        out['nCandMax'] = max(out['nCandMax'], int(nCand.max()))
+        nm, nf = int((nEq > 1).sum()), int(fb.sum())
+        out['nStatesMultiple'] += nm
+        out['nFallback'] += nf
+        if nm:
+            out['periodsMultiple'].append(t)
+        if nf:
+            out['periodsFallback'].append(t)
+    return out
+
+
+def _interpAtCand(x, Y, cand):
+    """ roots1d.interpAlong(x, Y, cand) for Y (M, N) and cand (K, N), except that a candidate sitting
+    exactly on a node takes that node's value. interpAlong weights the next node by zero there, and 0·NaN
+    is NaN: the upper end of a feasible sub-grid bordering an infeasible node would lose its value. """
+    out = roots1d.interpAlong(x, Y, cand)
+    c = np.where(np.isfinite(cand), cand, x[0])
+    j = np.clip(np.searchsorted(x, c), 0, x.size - 1)
+    n = np.broadcast_to(np.arange(cand.shape[1]), cand.shape)
+    return np.where(np.isfinite(cand) & (x[j] == c), Y[j, n], out)
+
+
+def _retireeLevel(w, c2, p):
+    """ Σ_i w_i υ(c_{2,t}^i), υ(c) = c^p/p with p = 1-1/ρ, and ln c at p = 0 (ρ = 1, where the CRRA
+    terminal period is solved too and c^p/p is undefined). c2: (..., ni). """
+    return (w*np.log(c2)).sum(axis = -1) if p == 0 else (w*c2**p).sum(axis = -1)/p
+
+
 class LOG:
     """
     Identify Sequence of Policy Functions.
@@ -12,6 +56,10 @@ class LOG:
     The analytical LOG model does not involve identifying policy
     functions when pension characteristics (θ,ϵ) are fixed.
     """
+    # 'legacy' reinstates the integral criterion (roots1d.selectMax), for comparisons only. A class
+    # attribute, so that an instance unpickled from before it existed selects by the frozen rule too.
+    selection = 'frozen'
+
     def __init__(self, m, style = 'Vector', grid = None, **kwargs):
         self.m = m
         self.B  = m.B # refer to base class
@@ -137,10 +185,11 @@ class LOG:
     # T-dimensional simultaneous root is triangular, solved exactly by backward recursion over *scalar*
     # problems, with no initial-guess dependence.
     #
-    # Corners and multiplicity are resolved by gridsearch.roots1d.selectMax (docs eq:candidates): the
-    # maximiser of the interpolated political objective over {l, u} ∪ {downward crossings}. Does NOT use
-    # robustRoot's extended grid -- that exists for a *root*-finder; selectMax already puts l/u in the
-    # candidate set on the same footing as interior maxima.
+    # Corners and multiplicity are resolved by gridsearch.roots1d.selectMaxFrozen (docs eq:candidates,
+    # eq:equilibriumTest): every crossing of z_t and both ends of 𝒯 are candidates, each tested and ranked
+    # on the objective at the savings shares it implies (objectiveFrozen). Does NOT use robustRoot's
+    # extended grid -- that exists for a *root*-finder; the corners are candidates on the same footing as
+    # the crossings.
     #
     # As in solveVectorized, no s0 anywhere: under LOG the whole FOC is independent of the savings level.
 
@@ -172,19 +221,96 @@ class LOG:
         return BG.FOC(BG.dv1i_dτ_LOG(β, τ, t), BG.dv10_dτ_LOG(β0, τ, t),
                       BG.dv2i_dτ_LOG(τ, θ, d['si_s_'], t), BG.dv20_dτ_LOG(τ, ε, d['Θh'], t), t)
 
+    #######################################################################
+    ##########   Selection among tax candidates at frozen shares       ####
+    ##########   (num_robustroot.tex, eq:candidates / eq:equilibriumTest) #
+    #######################################################################
+    # z_t substitutes the formal savings shares consistent with every node, which is what makes its root
+    # the equilibrium -- and what makes z_t the derivative of no single objective. The candidates (every
+    # crossing plus the corners) are therefore tested and ranked on W_t evaluated at the shares each
+    # candidate implies, held fixed along the whole grid (roots1d.selectMaxFrozen). The informal blocs'
+    # terms carry no formal shares and are the same at every candidate.
+    def _oldFormalWeights(self, t):
+        """ (ni,) weights of the formal retirees' term in W_t, exactly as Base.FOC applies them to dv2i. """
+        return self.BG.get('γi[t-1]', t) * self.BG.ω2i(t)
+
+    def objectiveFrozen(self, cand, τGrid, d, θ, t, ε, tLag, terminal):
+        """ W_t(τ; D) on τGrid at the formal savings shares D frozen at each candidate tax, up to a
+        constant common to a column -- the callback of roots1d.selectMaxFrozen (eq:objectiveProfile).
+        d: a stateGrid dict over the τ-first mesh of τGrid and the N columns (flat length M·N); cand:
+        (K, N) candidate taxes, NaN-padded; θ: the design in force, scalar or (N,) per column. Returns
+        (K, M, N).
+
+        It is z_t (focGrid) re-evaluated along the grid with d['si_s_'] replaced by the frozen shares and
+        integrated in τ (roots1d.cumtrapzColumns), plus the formal retirees' level Σ_i w_i ln c_{2,t}^i at
+        the first feasible node and the frozen shares; the young's and the informal retirees' levels
+        there are common to the column and drop out. The frozen shares are Eq EE:si_s at vintage t-1 at
+        the candidate's own tax (exact under LOG, where B = β). c_{2,t}^i is evaluated at h = s_ = 1:
+        its outer factor is common to the column and drops out with the rest. """
+        BG = self.BG
+        cand = np.asarray(cand, dtype = float)
+        K, N = cand.shape
+        M = τGrid.size
+        θc = np.broadcast_to(np.asarray(θ, dtype = float), (N,))
+        # the shares each candidate implies: Eq EE:si_s at vintage t-1, at the candidate's own tax
+        cF, θF = cand.reshape(-1), np.broadcast_to(θc[None, :], (K, N)).reshape(-1)
+        ok = np.isfinite(cF)
+        D = np.full((K*N, self.ni), np.nan)
+        if ok.any():
+            βi_ = BG.get('βi', tLag)
+            Γs_ = BG.Γs(βi_, cF[ok], θF[ok], tLag)
+            D[ok] = BG.si_s(βi_, cF[ok], θF[ok], Γs_, tLag)
+        θB = np.broadcast_to(θc[None, :], (M, N)).reshape(-1)
+        oldW = self._oldFormalWeights(t)
+        n = np.arange(N)
+        W = np.full((K, M, N), np.nan)
+        with np.errstate(divide = 'ignore', invalid = 'ignore'):
+            for k in range(K):
+                Dk = np.broadcast_to(D[k*N:(k+1)*N][None, :, :], (M, N, self.ni)).reshape(-1, self.ni)
+                zk = np.asarray(self.focGrid(d | {'si_s_': Dk}, t, θB, ε, terminal), dtype = float).reshape(M, N)
+                Lk = (oldW*np.log(BG.c2i(1., 1., d['τ'], θB, Dk, t))).sum(axis = -1).reshape(M, N)
+                fin = np.isfinite(zk)
+                first = np.where(fin.any(axis = 0), fin.argmax(axis = 0), 0)
+                W[k] = roots1d.cumtrapzColumns(τGrid, zk) + Lk[first, n][None, :]
+        return W
+
+    def _select(self, x, z, frozen, tol = 0.0):
+        """ roots1d.selectMaxFrozen, or the integral criterion roots1d.selectMax when self.selection ==
+        'legacy' (kept for row-by-row comparisons; the counts are then -1 and W NaN). """
+        if self.selection == 'legacy':
+            sel = roots1d.selectMax(x, z, tol = tol)
+            shape = np.shape(sel['x'])
+            return sel | {'nCand': np.full(shape, -1), 'nEq': np.full(shape, -1),
+                          'fallback': np.zeros(shape, dtype = bool), 'W': np.full(shape, np.nan)}
+        return roots1d.selectMaxFrozen(x, z, frozen, tol = tol)
+
+    def _selectND(self, g, z, name, frozen, tol = 0.0):
+        """ _select over a CartesianGrid (roots1d.selectMaxFrozenND / selectMaxND). """
+        if self.selection == 'legacy':
+            sel = roots1d.selectMaxND(g, z, name, tol = tol)
+            shape = g.stateShape(name)
+            return sel | {'nCand': np.full(shape, -1), 'nEq': np.full(shape, -1),
+                          'fallback': np.zeros(shape, dtype = bool), 'W': np.full(shape, np.nan)}
+        return roots1d.selectMaxFrozenND(g, z, name, frozen, tol = tol)
+
     def solveBackward_t(self, t, θ, ε, tLag, terminal, τ1 = None, θ1 = None,
                         Δl = None, Δu = None, maxExpand = 8, tol = 0.0):
         """ Solve the scalar problem for one period: refine the grid around τ_{t+1}, evaluate z_t,
-        select the maximiser (steps 1-3 of alg:gridsearch). Terminal period searches the full grid.
+        select among the candidates (steps 1-3 of alg:gridsearch, eq:equilibriumTest). Terminal period
+        searches the full grid.
 
         The expansion step guards the refinement window: if the selection sits on a window edge that
         isn't a global-grid edge, the window may have excluded the true maximum, so the binding side is
         doubled and the period re-solved (nodes are not cached across expansions -- z_t is closed-form
         and cheap; that changes for CRRA, where z needs numerical derivatives).
 
-        Returns {'τ', 'z', 'nMax', 'atBound', 'expansions', 'windowed'} -- 'nMax'>1 flags genuine
-        multiplicity, 'atBound' a legitimate corner solution (z_t(τ_t)!=0 there is correct, not a
-        failure), 'windowed' that the expansion budget ran out still stuck on an edge. """
+        Returns {'τ', 'z', 'nMax', 'nCand', 'nEq', 'fallback', 'atBound', 'expansions', 'windowed'} --
+        'nCand'/'nEq' the candidates tested and the equilibria among them ('nEq' > 1 means the selection
+        rule bound), 'fallback' that no candidate passed the equilibrium test and the integral
+        criterion's choice is returned, 'atBound' a legitimate corner solution (z_t(τ_t)!=0 there is
+        correct, not a failure), 'windowed' that the expansion budget ran out still stuck on an edge. A
+        window only sees the candidates inside it; pass Δl = Δu = n for the full candidate count
+        (solveRobust's check does). """
         τGrid = self.GS['PEE']['solGrids']['τ']
         n = τGrid.size
         if terminal:
@@ -198,8 +324,10 @@ class LOG:
             if not terminal:
                 lo, hi = max(centre - dl, 0), min(centre + du + 1, n)
             g = τGrid[lo:hi]
-            z = self.focGrid(self.stateGrid(g, t, θ, tLag, terminal, τ1, θ1), t, θ, ε, terminal)
-            sel = roots1d.selectMax(g, z, tol = tol)
+            d = self.stateGrid(g, t, θ, tLag, terminal, τ1, θ1)
+            z = self.focGrid(d, t, θ, ε, terminal)
+            frozen = lambda cand, g = g, d = d: self.objectiveFrozen(cand, g, d, θ, t, ε, tLag, terminal)
+            sel = self._select(g, z, frozen, tol = tol)
             τ = sel['x']
             atLo, atHi = (lo > 0) and (τ <= g[0]), (hi < n) and (τ >= g[-1])
             if not (atLo or atHi):
@@ -207,16 +335,18 @@ class LOG:
             dl = max(2*dl, 1) if atLo else dl
             du = max(2*du, 1) if atHi else du
         return {'τ': τ, 'z': float(np.interp(τ, g, z)), 'nMax': int(sel['nMax']),
+                'nCand': int(sel['nCand']), 'nEq': int(sel['nEq']), 'fallback': bool(sel['fallback']),
                 'atBound': bool(sel['atBound']), 'expansions': k, 'windowed': bool(atLo or atHi)}
 
     def solveBackward(self, θ, ε, Δl = None, Δu = None, maxExpand = 8, tol = 0.0, update = True):
         """ Solve the whole tax path by backward recursion over scalar grid searches (docs alg:gridsearch).
         No x0/s0 needed -- self-starting from the terminal period.
 
-        Returns {'τ', 'maxResid', 'success', 'message', 'diagnostics'}, matching reportVectorized's keys.
-        'maxResid' = max|z_t| over *interior* selections only (a corner's z_t!=0 is correct, not a
-        residual), and only as accurate as the grid (~O(spacing^2)) -- no self._checkConverged call here;
-        use solveRobust to polish to solver tolerance.
+        Returns {'τ', 'maxResid', 'success', 'message', 'diagnostics', 'multiplicity'}, the first four
+        matching reportVectorized's keys; 'multiplicity' is multiplicitySummary over the per-period
+        diagnostics. 'maxResid' = max|z_t| over *interior* selections only (a corner's z_t!=0 is correct,
+        not a residual), and only as accurate as the grid (~O(spacing^2)) -- no self._checkConverged call
+        here; use solveRobust to polish to solver tolerance.
 
         Loops over db['t']'s actual values (not range(self.T)), since it need not be a literal integer
         range; tLag is resolved via tIdx.get_loc(t) (position within the Index), which works for any
@@ -242,32 +372,57 @@ class LOG:
         interior = [d['z'] for d in diagnostics.values() if not d['atBound']]
         maxResid = max((abs(z) for z in interior), default = 0.0)
         stuck = [k for k, d in diagnostics.items() if d['windowed']]
-        multiple = [k for k, d in diagnostics.items() if d['nMax'] > 1]
+        multiple = [k for k, d in diagnostics.items() if d['nEq'] > 1]
+        fallback = [k for k, d in diagnostics.items() if d['fallback']]
+        legacyMultiple = [k for k, d in diagnostics.items() if d['nEq'] < 0 and d['nMax'] > 1]
         msgs = ([f"refinement window still binding at t={stuck} after maxExpand={maxExpand}"] if stuck else []) + \
-               ([f"multiple interior maxima at t={multiple}; selected by objective (eq:candidates)"] if multiple else [])
+               ([f"several equilibria at t={multiple}; selected by the political objective (num_robustroot.tex)"] if multiple else []) + \
+               ([f"no candidate passed the equilibrium test at t={fallback}; integral criterion used"] if fallback else []) + \
+               ([f"multiple interior maxima at t={legacyMultiple}; selected by the integral criterion"] if legacyMultiple else [])
         return {'τ': pd.Series(τ, index = tIdx), 'maxResid': maxResid, 'success': not stuck,
-                'message': '; '.join(msgs) if msgs else 'grid search completed', 'diagnostics': diagnostics}
+                'message': '; '.join(msgs) if msgs else 'grid search completed', 'diagnostics': diagnostics,
+                'multiplicity': multiplicitySummary(diagnostics)}
 
-    def solveRobust(self, θ, ε, tol = 1e-8, gridkwargs = None, **kwargs):
-        """ Practical entry point: try the cheap gradient solve first, fall back to the grid search.
-        1. solveVectorized -- cheap, exact, but can fail (e.g. high political weight ω moves the
-           solution far from the constant-db['τ0'] starting guess).
-        2. solveBackward, self-starting and can't be misled -- then a warm-started solveVectorized to
-           sharpen it from grid resolution to solver tolerance.
-        3. If even that fails, return the grid solution, flagged.
+    def solveRobust(self, θ, ε, tol = 1e-8, gridkwargs = None, check = True, **kwargs):
+        """ Practical entry point: the cheap gradient solve, checked against the grid search.
+        1. solveVectorized -- cheap, exact, but it can fail (e.g. a high political weight ω moves the
+           solution far from the constant-db['τ0'] starting guess) and it reports one root with no view
+           of the others.
+        2. solveBackward on the full grid, which applies the selection rule of num_robustroot.tex and
+           reports the candidate and equilibrium counts. With check = True it runs on every solve: when
+           the gradient solve converged to the selected equilibrium (within one grid cell) that solution
+           is returned unchanged, with the counts attached under 'multiplicity'; otherwise the grid
+           selection is polished by a warm-started solveVectorized and returned instead. check = False
+           runs the grid only as a fallback, and a gradient solution then carries no counts.
+        3. If the polish fails, the grid solution is returned, flagged.
         Only RuntimeError is caught (the specific error self.m._checkConverged raises) -- a bare `except`
         would swallow genuine bugs and misreport them as "didn't converge". """
         try:
-            return self.solveVectorized(θ, ε, tol = tol, **kwargs)
+            fast = self.solveVectorized(θ, ε, tol = tol, **kwargs)
         except RuntimeError:
-            pass
-        grid = self.solveBackward(θ, ε, **(gridkwargs or {}))
+            fast = None
+        if fast is not None and not check:
+            return fast
+        gk = dict(gridkwargs or {})
+        if check:
+            n = self.GS['PEE']['solGrids']['τ'].size
+            gk = {'Δl': n, 'Δu': n} | gk                     # the full grid: a window hides candidates
+        grid = self.solveBackward(θ, ε, update = fast is None, **gk)   # keep the gradient warm start
+        gap = np.nan
+        if fast is not None:
+            cell = float(np.max(np.diff(self.GS['PEE']['solGrids']['τ'])))
+            gap = float(np.max(np.abs(fast['τ'].values - grid['τ'].values)))
+            if gap <= cell:
+                return fast | {'multiplicity': grid['multiplicity'], 'gridMessage': grid['message']}
         try:
-            polished = self.solveVectorized(θ, ε, x0 = grid['τ'].values, tol = tol, **kwargs)
+            polished = self.solveVectorized(θ, ε, x0 = grid['τ'].values, tol = tol,
+                                            **{k: v for k, v in kwargs.items() if k != 'x0'})
         except RuntimeError as e:
             return grid | {'success': False,
                            'message': f"{grid['message']}; gradient polish failed ({e}) -- returning grid solution"}
-        return polished | {'message': f"solveVectorized converged after grid warm start ({grid['message']})"}
+        note = '' if fast is None else f'; the cold-started gradient solve sat {gap:.3g} from the selected equilibrium and was replaced'
+        return polished | {'message': f"solveVectorized converged after grid warm start ({grid['message']}){note}",
+                           'multiplicity': grid['multiplicity']}
 
 
 class CRRA(LOG):
@@ -283,7 +438,7 @@ class CRRA(LOG):
 
     The one genuinely new ingredient: B_T^i is Base.B(s_{T-1}, h_T), not the LOG primitive β_i -- so the
     terminal problem is z_T(τ_T, s_{T-1}), solved on the whole (τ, s_) Cartesian grid at once
-    (gridsearch.CartesianGrid + roots1d.selectMaxND), reusing LOG's terminal corner/multiplicity handling.
+    (gridsearch.CartesianGrid + roots1d.selectMaxFrozenND), with LOG's selection rule applied per state.
     Evaluating the whole grid is the cheap design, not just the simple one: base.py's cacheParams()
     profiling showed grid-evaluation cost is dominated by per-call db overhead and flat in grid size.
 
@@ -351,11 +506,12 @@ class CRRA(LOG):
         fresh defaultSGrid(θ, t) (never cached back -- see self.GS's header comment). sGrid overrides
         both, and is how solveBackward pins one shared state grid across every period.
 
-        Corner/multiplicity handling matches LOG's terminal solve (roots1d.selectMax's candidate-set
-        criterion), applied once per state via selectMaxND. No self.x0/warm start needed -- closed-form,
-        self-starting at every state simultaneously.
+        Corner/multiplicity handling is LOG's selection rule (eq:candidates, eq:equilibriumTest), applied
+        once per state via _selectND with objectiveFrozen at the terminal period. No self.x0/warm start
+        needed -- closed-form, self-starting at every state simultaneously.
 
-        Returns report_T's full solution dict plus 'nMax'/'atBound' diagnostics. """
+        Returns report_T's full solution dict plus the per-state 'nMax'/'atBound'/'nCand'/'nEq'/
+        'fallback' diagnostics. """
         tIdx = self.db['t']
         t = tIdx[-1] if t is None else t
         pos = tIdx.get_loc(t)
@@ -370,10 +526,72 @@ class CRRA(LOG):
         with self.BG.cacheParams():
             d = self.stateGrid_T(g.flat['τ'], g.flat['s_'], θ, ε, t, tLag)
             z = self.focGrid_T(d, θ, ε, t)
-        sel = roots1d.selectMaxND(g, z, 'τ', tol = tol)
+            frozen = lambda cand: self.objectiveFrozen(cand, g, d, None, θ, t, tLag, ε = ε, terminal = True)
+            sel = self._selectND(g, z, 'τ', frozen, tol = tol)
         report = self.report_T(sGrid, sel['x'], θ, ε, t, tLag)
         report['nMax'], report['atBound'] = sel['nMax'], sel['atBound']
+        report['nCand'], report['nEq'], report['fallback'] = sel['nCand'], sel['nEq'], sel['fallback']
         return report
+
+    # ------------------------------------------------------------------ W_t at frozen shares (CRRA)
+    def objectiveFrozen(self, cand, g, d, parts, θ, t, tLag, ε = None, terminal = False):
+        """ W_t(τ; D) over the grid g (τ its first axis) at formal shares frozen at each column's
+        candidates, up to a column constant -- the callback of roots1d.selectMaxFrozenND
+        (eq:objectiveProfile). d: the grid dict (stateGrid_T / stateGrid_t) with 'h', 's_', 'τ' flat
+        over g; parts: focParts_t(d) at t < T, None at T (pass ε and terminal = True there); θ: the
+        design in force, scalar or flat over g (constant along τ within a column). Returns (K, M, N) in
+        g.asColumns order.
+
+        It is z_t re-evaluated with the formal retirees' shares frozen (zAtShares at t < T, focGrid_T at
+        T) and integrated in τ (roots1d.cumtrapzColumns), plus Σ_i w_i (c_{2,t}^i)^{1-1/ρ}/(1-1/ρ) (ln c
+        at ρ = 1, _retireeLevel) at the first feasible node and the frozen shares; the young's and the
+        informal retirees' levels there are common to the column and drop out. Integrating the condition
+        rather than reading utility levels keeps the smoothed numerical derivatives z_t carries at t < T
+        (finding #18). The frozen shares are Eq EE:si_s at vintage t-1 at the candidate's own tax and the
+        hours there, B_t(s_{t-1}, h_t) with h interpolated linearly along τ (_interpAtCand). Cells where
+        z_t is infeasible stay NaN. """
+        BG = self.BG
+        if g.axis('τ') != 0:
+            raise ValueError('objectiveFrozen expects τ as the first axis of the grid.')
+        τGrid = g.values('τ')
+        M = τGrid.size
+        cand = np.asarray(cand, dtype = float)
+        K, N = cand.shape
+        hF, s_F = np.asarray(d['h'], dtype = float), np.asarray(d['s_'], dtype = float)
+        θF = np.broadcast_to(np.asarray(θ, dtype = float), (M*N,))
+        hG, s_G, θG = hF.reshape(M, N), s_F.reshape(M, N), θF.reshape(M, N)
+        # the shares each candidate implies, at its own tax and the hours there
+        hc = _interpAtCand(τGrid, hG, cand)                                # (K, N)
+        cF = cand.reshape(-1)
+        hcF = hc.reshape(-1)
+        scF = np.broadcast_to(s_G[0][None, :], (K, N)).reshape(-1)
+        θcF = np.broadcast_to(θG[0][None, :], (K, N)).reshape(-1)
+        ok = np.isfinite(cF) & np.isfinite(hcF)
+        D = np.full((K*N, self.ni), np.nan)
+        if ok.any():
+            with np.errstate(divide = 'ignore', invalid = 'ignore'):
+                Bc = BG.B(scF[ok], hcF[ok], tLag)
+                Γc = BG.Γs(Bc, cF[ok], θcF[ok], tLag)
+                D[ok] = BG.si_s(Bc, cF[ok], θcF[ok], Γc, tLag)
+        p = 1 - 1/float(BG.get('ρ', t))
+        oldW = self._oldFormalWeights(t)
+        n = np.arange(N)
+        W = np.full((K, M, N), np.nan)
+        θz = θ if np.ndim(θ) == 0 else θF
+        with np.errstate(divide = 'ignore', invalid = 'ignore'):
+            for k in range(K):
+                Dk = np.broadcast_to(D[k*N:(k+1)*N][None, :, :], (M, N, self.ni)).reshape(-1, self.ni)
+                c2k = BG.c2i(hF, s_F, d['τ'], θz, Dk, t)
+                if terminal:
+                    zk = self.focGrid_T(d | {'si_s_': Dk, 'c2i': c2k}, θz, ε, t)
+                else:
+                    zk = self.zAtShares(d, parts, θz, Dk, t)
+                zk = np.asarray(zk, dtype = float).reshape(M, N)
+                Lk = _retireeLevel(oldW, c2k, p).reshape(M, N)
+                fin = np.isfinite(zk)
+                first = np.where(fin.any(axis = 0), fin.argmax(axis = 0), 0)
+                W[k] = roots1d.cumtrapzColumns(τGrid, zk) + Lk[first, n][None, :]
+        return W
 
     def report_T(self, sGrid, τ, θ, ε, t, tLag):
         """ Expand a solved τ(s_{T-1}) into the full terminal solution dict, evaluated along the SOLVED
@@ -413,7 +631,7 @@ class CRRA(LOG):
     #      precision). dln(c̃_{2,t}^0) could go either way; closed form used for consistency.
     #
     # Infeasibility is first-class here (unlike at T): for a given s_{t-1}, the implied s_t leaves the
-    # grid once τ_t is extreme enough. Those cells stay NaN through to selectMax, which maximises each
+    # grid once τ_t is extreme enough. Those cells stay NaN through to the selection, which treats each
     # state over its own feasible sub-grid.
 
     def _requireCRRA(self, t):
@@ -495,7 +713,15 @@ class CRRA(LOG):
         along τ *within each state*, so flat vectors are viewed as (Mτ,Ns_) before differentiating and
         flattened back after. griddedGradient1D passes NaN through, so infeasible cells stay infeasible
         rather than contaminating a spline fit. See the §header comment for which derivatives are
-        numerical vs. closed-form. """
+        numerical vs. closed-form. It is zAtShares at the consistent shares d['si_s_']: focParts_t holds
+        everything that does not involve them, so the selection rule can re-evaluate z_t at frozen shares
+        without redoing the splines. """
+        return self.zAtShares(d, self.focParts_t(d, g, t, ε), θ, d['si_s_'], t)
+
+    def focParts_t(self, d, g, t, ε):
+        """ The terms of z_t that do not involve the formal retirees' shares, including every numerical
+        τ-derivative (the splines dominate a period's cost): {'p', 'dlnh', 'dv1i', 'dv10', 'dv20'},
+        flat over g. Computed once per period and shared by focGrid_t and objectiveFrozen. """
         BG, τ, τGrid = self.BG, d['τ'], g.values('τ')
         p = 1 - 1/BG.get('ρ', t)                             # ρ=1 already refused by stateGrid_t upstream
         grad = lambda y: griddedGradient1D(τGrid, g.reshape(y)).reshape(np.shape(y))
@@ -503,23 +729,36 @@ class CRRA(LOG):
         dlnh = dln(d['h'])
         dv1i = d['hatc1iPow'] * grad(d['lnhatc1i'])          # already a log; differentiate it directly
         dv10 = BG.get('β0', t) * d['tc20_1']**p * dln(d['tc20_1'])
-        dv2i = d['c2i']**p * BG.dlnc2i_dτ(dlnh, τ, θ, d['si_s_'], t)
         dv20 = d['tc20']**p * BG.dlnc20_dτ(dlnh, τ, ε, d['Θh'], t)
-        return BG.FOC(dv1i, dv10, dv2i, dv20, t)
+        return {'p': p, 'dlnh': dlnh, 'dv1i': dv1i, 'dv10': dv10, 'dv20': dv20}
+
+    def zAtShares(self, d, parts, θ, si_s_, t):
+        """ z_t with the formal retirees' term rebuilt at the shares si_s_ (flat (M·N, ni)) -- c_{2,t}^i
+        (Eq EE:ci) and the closed-form dln(c_{2,t}^i)/dτ_t (base.dlnc2i_dτ, which holds the shares
+        fixed) -- and every other term from parts (focParts_t). zAtShares(d, parts, θ, d['si_s_'], t) is
+        the consistent z_t, bitwise focGrid_t. """
+        BG, τ = self.BG, d['τ']
+        c2i = BG.c2i(d['h'], d['s_'], τ, θ, si_s_, t)
+        dv2i = c2i**parts['p'] * BG.dlnc2i_dτ(parts['dlnh'], τ, θ, si_s_, t)
+        return BG.FOC(parts['dv1i'], parts['dv10'], dv2i, parts['dv20'], t)
 
     def solveBackward_t(self, solp, t, tLag, t1, θ, θ1, ε, ε1, sGrid, sCandGrid, tol = 0.0, smooth = 1e-5):
         """ One period of the backward recursion (steps 1-4 of docs alg:CRRA:grid), returning the same
-        kind of dict as solveTerminal. smooth: passed to griddedSmooth1D for the selected τ_t(s_{t-1})
-        before interpolation -- the profile inherits small kinks from the continuation interpolants,
-        amplified by the next period's numerical derivatives; pass 0 to disable. """
+        kind of dict as solveTerminal. The selection is LOG's rule per state (eq:equilibriumTest), the
+        frozen objective built from the same focParts_t as z_t. smooth: passed to griddedSmooth1D for the
+        selected τ_t(s_{t-1}) before interpolation -- the profile inherits small kinks from the
+        continuation interpolants, amplified by the next period's numerical derivatives; pass 0 to
+        disable. """
         τGrid = self.GS['PEE']['solGrids']['τ']
         with self.BG.cacheParams():
             sSol, nRoots = self.solveStateApprox_t(τGrid, sCandGrid, sGrid, t, θ1, solp)
             g = CartesianGrid(τ = τGrid, s_ = sGrid)
             d = self.stateGrid_t(g.flat['τ'], sSol.reshape(-1), g.flat['s_'],
                                  t, tLag, t1, θ, θ1, ε, ε1, solp)
-            z = self.focGrid_t(d, g, t, θ, ε)
-            sel = roots1d.selectMaxND(g, z, 'τ', tol = tol)
+            parts = self.focParts_t(d, g, t, ε)
+            z = self.zAtShares(d, parts, θ, d['si_s_'], t)        # = focGrid_t, splines done once
+            frozen = lambda cand: self.objectiveFrozen(cand, g, d, parts, θ, t, tLag)
+            sel = self._selectND(g, z, 'τ', frozen, tol = tol)
 
             τ = sel['x']
             if smooth:
@@ -527,6 +766,7 @@ class CRRA(LOG):
                 τ = np.where(ok, griddedSmooth1D(sGrid, np.where(ok, τ, np.nan), s = smooth), np.nan)
             report = self.report_t(sGrid, τ, sCandGrid, t, tLag, t1, θ, θ1, ε, ε1, solp)
         report['nMax'], report['atBound'] = sel['nMax'], sel['atBound']
+        report['nCand'], report['nEq'], report['fallback'] = sel['nCand'], sel['nEq'], sel['fallback']
         report['nRoots'], report['feasible'] = nRoots, ~np.isnan(sSol)
         return report
 
@@ -564,11 +804,11 @@ class CRRA(LOG):
 
         sols: policy.py's own {t: report dict}. s0: the state entering the first period (docs' s_0).
 
-        Returns {'τ': pd.Series over db['t'], 'Γs','h','s': (T-1,) ndarrays over db['txE']}. τ is
-        model.py's solvePEE_CRRA's input to EE_CRRA_solve; Γs/h/s let that caller build a CRRA-consistent
-        x0. Nothing here is an equilibrium guarantee -- s_t is only as accurate as sGrid's interpolation,
-        which is why solvePEE_CRRA re-solves EE_CRRA_solve exactly given this τ rather than reporting
-        these Γs/h/s directly. """
+        Returns {'τ': pd.Series over db['t'], 'Γs','h','s': (T-1,) ndarrays over db['txE'],
+        'multiplicity': multiplicitySummary(sols)}. τ is model.py's solvePEE_CRRA's input to
+        EE_CRRA_solve; Γs/h/s let that caller build a CRRA-consistent x0. Nothing here is an equilibrium
+        guarantee -- s_t is only as accurate as sGrid's interpolation, which is why solvePEE_CRRA
+        re-solves EE_CRRA_solve exactly given this τ rather than reporting these Γs/h/s directly. """
         tIdx = self.db['t']
         l, u = self.GS['PEE']['gridSettings']['l'], self.GS['PEE']['gridSettings']['u']
         τ = np.empty(self.T)
@@ -580,11 +820,13 @@ class CRRA(LOG):
                 Γs[pos], h[pos] = float(sols[t]['ΓsPolicy'](s_)), float(sols[t]['hPolicy'](s_))
                 s_ = float(sols[t]['sPolicy'](s_))
                 s[pos] = s_
-        return {'τ': pd.Series(τ, index = tIdx), 'Γs': Γs, 'h': h, 's': s}
+        return {'τ': pd.Series(τ, index = tIdx), 'Γs': Γs, 'h': h, 's': s,
+                'multiplicity': multiplicitySummary(sols)}
 
     def solveBackward(self, θ, ε, sGrid = None, sCandGrid = None, tol = 0.0, smooth = 1e-5):
         """ The full CRRA politico-economic equilibrium: τ_t(s_{t-1}), solved backwards from the terminal
-        period (docs alg:CRRA:grid). Returns {t: solution dict}, one entry per db['t'].
+        period (docs alg:CRRA:grid). Returns {t: solution dict}, one entry per db['t'], each carrying the
+        per-state 'nCand'/'nEq'/'fallback'; their multiplicitySummary is left in self.lastMultiplicity.
 
         sGrid: the state grid 𝒮, shared by every period (adjacent periods' interpolants need a common
         grid) -- resolved once here and pinned, defaulting to self.GS['PEE']['stateGrids']['s_'] else
@@ -612,4 +854,5 @@ class CRRA(LOG):
             t1 = tIdx[pos + 1]
             sols[t] = self.solveBackward_t(sols[t1], t, tLag, t1, θ[pos], θ[pos+1], ε[pos], ε[pos+1],
                                            sGrid, sCandGrid, tol = tol, smooth = smooth)
+        self.lastMultiplicity = multiplicitySummary(sols)   # read by model.solvePEE_CRRA; per state in sols
         return sols

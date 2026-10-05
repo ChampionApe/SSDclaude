@@ -122,4 +122,37 @@ check('report_T re-run on its own output reproduces it exactly',
       np.array_equal(reportAgain['h'].values, res2['h'].values) and
       np.array_equal(reportAgain['Θh'], res2['Θh']))
 
+# ---- 5. the selection at frozen savings shares (num_robustroot.tex, eq:candidates/eq:equilibriumTest).
+# At T both sides are closed form: the frozen objective's τ-derivative at the shares (and hours) consistent
+# with the evaluation point is z_T, at every state; and the rule reproduces the integral criterion bitwise
+# wherever a state has exactly one equilibrium.
+hFD = 1e-5
+sFive = sGrid2[::5]
+with m2.BG.cacheParams():
+    for τm in (0.10, 0.25, 0.40):
+        gLoc = CartesianGrid(τ = np.array([τm - hFD, τm, τm + hFD]), s_ = sFive)
+        dLoc = CRRA2.stateGrid_T(gLoc.flat['τ'], gLoc.flat['s_'], th2[pos], eps2[pos], t2, tLag2)
+        zLoc = CRRA2.focGrid_T(dLoc, th2[pos], eps2[pos], t2).reshape(3, -1)
+        W = CRRA2.objectiveFrozen(np.full((1, sFive.size), τm), gLoc, dLoc, None, th2[pos], t2, tLag2,
+                                  ε = eps2[pos], terminal = True)
+        dW = (W[0, 2, :] - W[0, 0, :])/(2*hFD)
+        err = np.max(np.abs(dW - zLoc[1])/np.maximum(1., np.abs(zLoc[1])))
+        check('CRRA ρ=2 T: dW/dτ of the frozen objective at its own shares equals z_T at τ={}, {} states'.format(
+              τm, sFive.size), err <= 1e-6, '-> max rel err {:.2e}'.format(err))
+CRRA2.selection = 'legacy'
+res2L = CRRA2.solveTerminal(th2[pos], eps2[pos], t = t2)
+CRRA2.selection = 'frozen'
+one = res2['nEq'] == 1
+check('CRRA ρ=2 T: counts reported per state, every state has one equilibrium, no fallback',
+      res2['nEq'].shape == res2['τ'].shape and one.all() and not res2['fallback'].any()
+      and res2['nCand'].min() >= 2,
+      '-> nEq max {}, nCand max {}, fallback {}'.format(res2['nEq'].max(), res2['nCand'].max(),
+                                                         int(res2['fallback'].sum())))
+check('CRRA ρ=2 T: bitwise the integral criterion at the states with one equilibrium',
+      np.array_equal(res2['τ'].values[one], res2L['τ'].values[one]),
+      '-> {}/{} states single; Σ τ {!r} (frozen) vs {!r} (legacy)'.format(
+          int(one.sum()), one.size, float(res2['τ'].sum()), float(res2L['τ'].sum())))
+check('at ρ=1 the terminal rule finds one equilibrium per state (the LOG collapse)',
+      (res['nEq'] == 1).all(), '-> nEq {}'.format(np.unique(res['nEq'])))
+
 report()

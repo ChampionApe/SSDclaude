@@ -38,10 +38,11 @@ so the solver must be able to return a corner as a corner. Both solvers evaluate
 candidates, take the argmax, and refine it parabolically when interior; a corner is reported as such.
 Differentiating W_t would buy speed and cost exactly the property being measured.
 """
+import time
 import numpy as np, pandas as pd
 from scipy import optimize
 from gridsearch import roots1d, CartesianGrid, griddedInterp1D, griddedSmooth1D, griddedGradient1D
-from policy import CRRA
+from policy import CRRA, multiplicitySummary, DESIGN_KEYS, DESIGN_NAMES
 
 
 class LeadedBase:
@@ -110,10 +111,15 @@ class LeadedLOG(LeadedBase):
         FOC, README's "zero-mass slot"). test_esc.py drives the placeholder over the whole unit square,
         under 'scale' and under 'size', and asserts z_t does not move; if the informal type is ever given
         mass, that test fails and this shortcut has to go. """
+        return self.stateAndZ(t, τ, θ, tLag, terminal)[1]
+
+    def stateAndZ(self, t, τ, θ, tLag, terminal):
+        """ z as above, together with the stateGrid dict it was evaluated on (the selection rule
+        re-evaluates z_t on that dict with the retirees' shares frozen). """
         τ = np.atleast_1d(np.asarray(τ, dtype = float))
         θ = np.broadcast_to(np.asarray(θ, dtype = float), τ.shape)
         d = self.m.LOG.stateGrid(τ, t, θ, tLag, terminal, τ1 = τ, θ1 = θ)
-        return self.m.LOG.focGrid(d, t, θ, float(self.db['eps'].xs(t)), terminal)
+        return d, self.m.LOG.focGrid(d, t, θ, float(self.db['eps'].xs(t)), terminal)
 
     def τOfθ(self, t, θ, tLag, terminal, tol = 0.0, polish = True):
         """ tauPolicy_t evaluated on a vector of states theta (shape (K,)): for each, the maximiser of the
@@ -126,20 +132,31 @@ class LeadedLOG(LeadedBase):
         CALIBRATION TARGET matched at 1e-8 -- without this the wedge calibration would chase grid noise.
         Corners are never polished: z_t != 0 there is the correct answer, not a residual.
 
-        Returns (tau, atBound, nMax), each (K,). """
+        The candidates are tested and ranked at the savings shares each implies, held fixed along the
+        grid (policy.LOG._select / roots1d.selectMaxFrozen, num_robustroot.tex); the polish re-locates
+        the selected crossing on z_t itself, whose root is the equilibrium.
+
+        Returns (tau, atBound, nMax, extra), the first three (K,) and extra = {'nCand', 'nEq',
+        'fallback', 'W'}, each (K,): the candidates tested, the equilibria among them, whether the
+        integral criterion had to stand in, and the selected equilibrium's own objective. """
         θ = np.atleast_1d(np.asarray(θ, dtype = float))
         τGrid = self.m.LOG.GS['PEE']['solGrids']['τ']
         K, M = θ.size, τGrid.size
-        τMesh = np.tile(τGrid, K)                      # (K*M,)
-        θMesh = np.repeat(θ, M)                        # (K*M,)
-        zz = self.z(t, τMesh, θMesh, tLag, terminal).reshape(K, M)
-        τ = np.empty(K); atBound = np.empty(K, dtype = bool); nMax = np.empty(K, dtype = int)
+        τMesh = np.repeat(τGrid, K)                    # (M*K,), τ-first: node m, state k at m*K + k
+        θMesh = np.tile(θ, M)                          # (M*K,)
+        d, zF = self.stateAndZ(t, τMesh, θMesh, tLag, terminal)
+        zz = zF.reshape(M, K)                          # columns = the K states
+        εt = float(self.db['eps'].xs(t))
+        frozen = lambda cand: self.m.LOG.objectiveFrozen(cand, τGrid, d, θ, t, εt, tLag, terminal)
+        sel = self.m.LOG._select(τGrid, zz, frozen, tol = tol)
+        τ = np.array(sel['x'], dtype = float).reshape(K)
+        atBound = np.asarray(sel['atBound'], dtype = bool).reshape(K)
+        nMax = np.asarray(sel['nMax'], dtype = int).reshape(K)
         for k in range(K):
-            sel = roots1d.selectMax(τGrid, zz[k], tol = tol)
-            τ[k], atBound[k], nMax[k] = sel['x'], bool(sel['atBound']), int(sel['nMax'])
             if polish and not atBound[k]:
                 τ[k] = self._polish(t, τ[k], θ[k], tLag, terminal, τGrid)
-        return τ, atBound, nMax
+        extra = {kk: np.asarray(sel[kk]).reshape(K) for kk in ('nCand', 'nEq', 'fallback', 'W')}
+        return τ, atBound, nMax, extra
 
     def _polish(self, t, τ, θt, tLag, terminal, τGrid):
         """ Sharpen one interior crossing to solver tolerance. Brackets by the grid cell containing it and
@@ -162,7 +179,7 @@ class LeadedLOG(LeadedBase):
         tIdx = self.db['t']
         pos = tIdx.get_loc(t)
         tLag = tIdx[pos-1] if pos > 0 else self.B.tFirst
-        τ, _, _ = self.τOfθ(t, np.atleast_1d(θt), tLag, terminal = (t == tIdx[-1]))
+        τ = self.τOfθ(t, np.atleast_1d(θt), tLag, terminal = (t == tIdx[-1]))[0]
         return float(τ[0])
 
     # ------------------------------------------------------------------ the objective
@@ -221,7 +238,7 @@ class LeadedLOG(LeadedBase):
 
         cont: {'τPolicy1': callable theta1 -> tau_{t+1}, 'θPolicy1': callable or None (None iff t+1 is
         terminal), 'τPolicy2': callable theta2 -> tau_{t+2} or None}. """
-        τState, atBoundτ, nMaxτ = self.τOfθ(t, self.θGrid, tLag, terminal = False)
+        τState, atBoundτ, nMaxτ, extraτ = self.τOfθ(t, self.θGrid, tLag, terminal = False)
 
         K, C = self.nθ, self.nθCand
         θtM = np.repeat(self.θGrid, C)                 # (K*C,)
@@ -242,7 +259,8 @@ class LeadedLOG(LeadedBase):
         for k in range(K):
             θNext[k], atBoundθ[k] = self._argmax(self.θCand, W[k])
         return {'θGrid': self.θGrid.copy(), 'τ': τState, 'θNext': θNext,
-                'atBoundτ': atBoundτ, 'nMaxτ': nMaxτ, 'atBoundθ': atBoundθ, 'W': W,
+                'atBoundτ': atBoundτ, 'nMaxτ': nMaxτ, 'nCandτ': extraτ['nCand'], 'nEqτ': extraτ['nEq'],
+                'fallbackτ': extraτ['fallback'], 'atBoundθ': atBoundθ, 'W': W,
                 'stateSpread': float(θNext.max() - θNext.min())}
 
     # ------------------------------------------------------------------ the recursion
@@ -264,9 +282,11 @@ class LeadedLOG(LeadedBase):
             tT = tIdx[-1]
             posT = tIdx.get_loc(tT)
             tLagT = tIdx[posT-1] if posT > 0 else self.B.tFirst
-            τT, atBoundτT, nMaxτT = self.τOfθ(tT, self.θGrid, tLagT, terminal = True)
+            τT, atBoundτT, nMaxτT, extraT = self.τOfθ(tT, self.θGrid, tLagT, terminal = True)
             sols[tT] = {'θGrid': self.θGrid.copy(), 'τ': τT, 'θNext': None,
-                        'atBoundτ': atBoundτT, 'nMaxτ': nMaxτT, 'atBoundθ': None, 'terminal': True}
+                        'atBoundτ': atBoundτT, 'nMaxτ': nMaxτT, 'nCandτ': extraT['nCand'],
+                        'nEqτ': extraT['nEq'], 'fallbackτ': extraT['fallback'],
+                        'atBoundθ': None, 'terminal': True}
 
             for pos in range(len(tIdx)-2, -1, -1):
                 t, t1 = tIdx[pos], tIdx[pos+1]
@@ -280,6 +300,7 @@ class LeadedLOG(LeadedBase):
                     s2 = sols[tIdx[pos+2]]
                     cont['τPolicy2'] = self._interp(s2['θGrid'], s2['τ'])
                 sols[t] = self.solveBackward_t(t, tLag, t1, cont, terminal1) | {'terminal': False}
+        self.lastMultiplicity = multiplicitySummary(sols, keys = ('nEqτ', 'nCandτ', 'fallbackτ'))
         return sols
 
     @staticmethod
@@ -476,6 +497,181 @@ class Interp2D:
         return ((1 - w)*V[idx, j] + w*V[idx, j+1]).reshape(shape)
 
 
+# ------------------------------------------------------------------ the frozen state (alg esc:crra2D)
+# The inherited distribution is the one-parameter family of eq:esc:aDef: with a discount factor common to
+# all types, s_{t-1,i}/s_{t-1} = 1 + a(y_i - 1). B_t at an off-grid tax is formed from h_t interpolated
+# along τ (B_t = B(s_{t-1}, h_t)), as CRRA.objectiveFrozen forms the shares of a tax candidate. The step-1
+# grid is CartesianGrid(τ, s_, θ1), flat in C-order; per θ_t the root layer works on (ns_, nθ1) arrays
+# (state rows, design columns).
+
+def aOf(BG, B, τ, θt, tLag):
+    """ Eq esc:aDef: a_t with s_{t-1,i}/s_{t-1} = 1 + a_t(y_i - 1), i.e. 1 minus the type-free term of
+    base.si_s at vintage tLag (its second term; the first and third are proportional to y_i once B_t is
+    common). B: B_t per type, (..., ni); τ, θt broadcast against B[..., 0]. Returns (...,). Raises unless
+    βi is the same for every type at tLag, which is what makes the family one-parameter. """
+    βi = np.asarray(BG.get('βi', tLag), dtype = float)
+    if βi.size > 1 and np.ptp(βi) != 0:
+        raise ValueError(f'aOf: βi differs across types at {tLag} ({βi}); the inherited distribution is '
+                         'then not the one-parameter family of eq:esc:aDef.')
+    Bc = np.asarray(B, dtype = float)[..., 0]
+    τ = np.asarray(τ, dtype = float)
+    α, p, κ = BG.get('α', tLag), BG.get('p', tLag), BG.get('κ', tLag)
+    return 1 + (1/(1+Bc)) * ((1-α)/α * p*BG.wedgeB(θt, τ, tLag)/κ*τ)
+
+
+def sharesFrom(BG, a, tLag):
+    """ s_{t-1,i}/s_{t-1} = 1 + a(y_i - 1) (eq:esc:aDef), y_i = hηRatio at vintage tLag, the y_i of
+    base.si_s. a (...,) -> (..., ni). """
+    y = np.asarray(BG.hηRatio(tLag), dtype = float)
+    return 1 + np.asarray(a, dtype = float)[..., None]*(y - 1)
+
+
+def _alongτ(x, Y, c):
+    """ Y (M, C, ...) read at c (C,) along its first axis: linear between nodes (roots1d.interpAlong),
+    the node value itself where c sits on a node, so that a point on the edge of the feasible sub-grid
+    does not pick up its infeasible neighbour. NaN c gives NaN. """
+    x = np.asarray(x, dtype = float)
+    c = np.asarray(c, dtype = float)
+    out = roots1d.interpAlong(x, Y, c[None, :])[0]
+    k = np.clip(np.searchsorted(x, np.where(np.isfinite(c), c, x[0])), 0, x.size - 1)
+    on = np.isfinite(c) & (x[k] == c)
+    if on.any():
+        out[on] = np.asarray(Y)[k[on], np.flatnonzero(on)]
+    return out
+
+
+def _interpRows(x, Y, q):
+    """ np.interp(q[j], x, Y[j]) per row of Y (n, M); NaN where q is NaN. """
+    out = np.full(Y.shape[0], np.nan)
+    for j in np.flatnonzero(np.isfinite(q)):
+        out[j] = np.interp(q[j], x, Y[j])
+    return out
+
+
+def _argmaxRows(x, Y):
+    """ LeadedBase._argmax per row of Y (n, M), non-finite entries excluded, together with the value at
+    the refined point (the parabola through the three nodes around the maximum when interior, the node
+    value at a corner). Returns (x*, atBound, value), each (n,); NaN rows with no finite entry. """
+    n, M = Y.shape
+    xs, vs = np.full(n, np.nan), np.full(n, np.nan)
+    ab = np.zeros(n, dtype = bool)
+    Ym = np.where(np.isfinite(Y), Y, -np.inf)
+    for j in range(n):
+        if not np.isfinite(Y[j]).any():
+            continue
+        xs[j], ab[j] = LeadedBase._argmax(x, Ym[j])
+        k = int(np.argmax(Ym[j]))
+        if ab[j] or not 0 < k < M - 1:
+            vs[j] = Ym[j, k]
+            continue
+        y0, y1, y2 = Ym[j, k-1], Ym[j, k], Ym[j, k+1]
+        denom = y0 - 2*y1 + y2
+        if denom == 0 or not np.isfinite(denom):
+            vs[j] = y1
+            continue
+        u = (xs[j] - x[k])/(x[k+1] - x[k])
+        vs[j] = y1 + 0.5*(y2 - y0)*u + 0.5*denom*u*u
+    return xs, ab, vs
+
+
+def _frozenCache(E, core):
+    """ What frozenTaxPass needs that does not move with a or θ_t, once per period on core: the young's
+    term of W_t on the step-1 grid, Σ_i young_i hatc1iPow_i/q as (nτ, ns_·nθ1), the retirees' weights,
+    q = 1 - 1/ρ and the τ grid. """
+    if '_frozen' not in core:
+        t, g = core['t'], core['g']
+        nτ, ns_, nθ1 = g.shape
+        q = float(1 - 1/E.BG.get('ρ', t))
+        old, young = E.weights(t)
+        core['_frozen'] = {'q': q, 'old': old, 'τGrid': g.values('τ'),
+                           'Wy': ((young*core['d']['hatc1iPow']).sum(axis = -1)/q).reshape(nτ, ns_*nθ1)}
+    return core['_frozen']
+
+
+def _cellCrossing(x, z, j, cols):
+    """ The crossing of the piecewise-linear interpolant of z (n, C) next to node j, for the columns cols
+    (j and cols (K,), 0 < j < n-1): in [x_{j-1}, x_j] or [x_j, x_{j+1}] wherever z changes sign there
+    (the one nearer x_j if both, the left one on a tie), at roots1d.allRoots' linear crossing; x_j itself
+    where neither cell does (a tangential maximum). At the maximising node of the integrated profile z
+    changes sign in one of the two cells unless z_j = 0, and a crossing further out is never nearer x_j,
+    so this is the root of the column nearest x_j (test_designChoicePilot.py T8). Returns (K,). """
+    x = np.asarray(x, dtype = float)
+    zl, z0, zr = z[j - 1, cols], z[j, cols], z[j + 1, cols]
+    xl, x0, xr = x[j - 1], x[j], x[j + 1]
+    with np.errstate(divide = 'ignore', invalid = 'ignore'):
+        rl = xl - zl*(x0 - xl)/(z0 - zl)
+        rr = x0 - z0*(xr - x0)/(zr - z0)
+    inL, inR = zl*z0 < 0, z0*zr < 0
+    left = inL & (~inR | (x0 - rl <= rr - x0))
+    return np.where(left, rl, np.where(inR, rr, x0))
+
+
+def frozenTaxPass(E, core, θt, a, fields = None):
+    """ The tax best response at a frozen distribution (eq:esc:stateEq:tax, step 3 of alg esc:crra2D) at
+    every (s_, θ1) of the core, for one θ_t. a: (ns_,) or (ns_, nθ1), constant along τ.
+
+    z_t is re-evaluated on the grid with the shares at D(a) (CRRA.zAtShares) and integrated along τ per
+    (s_, θ1) column (roots1d.cumtrapzColumns, feasible sub-grid). τ̂ is the corner where the profile's
+    maximum is at an end node, else the crossing of the piecewise-linear interpolant of that z_t in a cell
+    next to the maximising node (_cellCrossing). No equilibrium test: nothing moves along the grid at a
+    frozen a. V = W_t(τ̂, θ1; a) read from the grid by the quadratic through the three nodes nearest τ̂
+    (roots1d._quadAt; the node value at a corner), W_t = Σ young·hatc1iPow/q + Σ old·c_2(D(a))^q/q; Vy
+    its young's part.
+
+    fields: {name: flat (N,) or (N, ni) grid array} read at τ̂ as well. Returns {'τ', 'atBound', 'V', 'Vy',
+    'h', 'B'} (ns_, nθ1), 'B' (ns_, nθ1, ni) formed from h at τ̂, plus the fields; NaN where a column has
+    fewer than two feasible nodes. """
+    BG, g, d, parts = E.BG, core['g'], core['d'], core['parts']
+    t, tLag = core['t'], core['tLag']
+    fc = _frozenCache(E, core)
+    τGrid, q, old, Wy = fc['τGrid'], fc['q'], fc['old'], fc['Wy']
+    nτ, ns_, nθ1 = g.shape
+    C = ns_*nθ1
+    a = np.asarray(a, dtype = float)
+    aSC = np.broadcast_to(a[:, None] if a.ndim == 1 else a, (ns_, nθ1))
+    aF = np.broadcast_to(aSC[None], (nτ, ns_, nθ1)).reshape(-1)
+    D = sharesFrom(BG, aF, tLag)
+    with BG.cacheParams(), np.errstate(divide = 'ignore', invalid = 'ignore'):
+        z = np.asarray(E.zAtShares(d, parts, θt, D, t), dtype = float).reshape(nτ, C)
+        c2 = BG.c2i(d['h'], d['s_'], d['τ'], θt, D, t)
+        Wg = Wy + ((old*c2**q).sum(axis = -1)/q).reshape(nτ, C)
+    P = roots1d.cumtrapzColumns(τGrid, z)
+    fin = np.isfinite(z)
+    usable = fin.sum(axis = 0) >= 2
+    first = np.where(usable, fin.argmax(axis = 0), 0)
+    last = np.where(usable, nτ - 1 - fin[::-1].argmax(axis = 0), 0)
+    jmax = np.argmax(np.where(fin, P, -np.inf), axis = 0)
+    corner = (jmax == first) | (jmax == last)
+    τh = τGrid[jmax].astype(float)
+    inner = np.flatnonzero(usable & ~corner)
+    if inner.size:
+        τh[inner] = _cellCrossing(τGrid, z, jmax[inner], inner)
+    τh[~usable] = np.nan
+    cols = np.arange(C)
+    V = roots1d._quadAt(τGrid, Wg[None], τh[None])[0]
+    Vy = roots1d._quadAt(τGrid, Wy[None], τh[None])[0]
+    cc = usable & corner
+    V[cc], Vy[cc] = Wg[jmax[cc], cols[cc]], Wy[jmax[cc], cols[cc]]
+    h = _alongτ(τGrid, d['h'].reshape(nτ, C), τh)
+    s_C = np.repeat(core['sGrid'], nθ1)
+    with BG.cacheParams(), np.errstate(divide = 'ignore', invalid = 'ignore'):
+        B = BG.B(s_C, h, tLag)
+    out = {'τ': τh.reshape(ns_, nθ1), 'atBound': (corner & usable).reshape(ns_, nθ1),
+           'V': V.reshape(ns_, nθ1), 'Vy': Vy.reshape(ns_, nθ1), 'h': h.reshape(ns_, nθ1),
+           'B': B.reshape(ns_, nθ1, -1)}
+    for name, Y in (fields or {}).items():
+        Y = np.asarray(Y, dtype = float)
+        out[name] = _alongτ(τGrid, Y.reshape((nτ, C) + Y.shape[1:]), τh).reshape((ns_, nθ1) + Y.shape[1:])
+    return out
+
+
+def _legacyKeys(shape):
+    """ The tax-rule entries of the period dict where the legacy layer did not run: NaN / -1. """
+    return {'τStar': np.full(shape, np.nan), 'atBoundτ': np.zeros(shape, dtype = bool),
+            'nEqτ': np.full(shape, -1), 'nCandτ': np.full(shape, -1),
+            'fallbackτ': np.zeros(shape, dtype = bool), 'W': np.full(shape, np.nan)}
+
+
 class LeadedCRRA2D(CRRA, LeadedBase):
     r""" The TRUE leaded choice under CRRA: a sequence of policy functions over the two-dimensional state
     (s_{t-1}, θ_t), identified by backward iteration -- the "honest Markov object" LeadedCRRA's docstring
@@ -491,13 +687,32 @@ class LeadedCRRA2D(CRRA, LeadedBase):
          inherited design θ_t (θ_t enters only through the benefit split of the CURRENT old), so the
          grid carries no θ_t axis: dv2i alone is recomputed per θ_t node, with the numerical
          τ-derivatives (the expensive splines) shared across all of them.
-      3. τ*(s_, θ_t, θ1): selectMax along τ, per state and candidate -- the same corner/multiplicity
-         handling as everywhere else in this lineage.
-      4. W_t at the selected τ* (young: Σ γμν(1+B_{t+1})c̃_1^{1-1/ρ}/(1-1/ρ) = Σ young·hatc1iPow/q; old:
-         Σ γωpμ c_2^{1-1/ρ}/q), argmax over θ1 with parabolic refinement (LeadedBase._argmax), corners
-         preserved. τ at the refined θ1 by linear interpolation along the candidate axis.
+      3-4. The choice (τ_t, θ_{t+1}) at every state (s_{t-1}, θ_t), by designRule:
+         'root' (the default; alg esc:crra2D, the equilibrium at a state eq:esc:stateEq). The retirees'
+           shares are the one-parameter family of eq:esc:aDef (aOf, sharesFrom). At a frozen a: the tax
+           best response on the grid (frozenTaxPass), the design θ̂'(a) by LeadedBase._argmax over θ1 of
+           V(θ'; a) = W_t(τ̂(θ'; a), θ'; a), τ̂(a) and h_t by np.interp along θ1, and the residual
+           r(a) = a - a_t(τ̂(a), h_t) of eq:esc:aResidual (_bestAt). r is tabulated on Ma nodes spanning
+           the consistent a_t of every grid node of the state plus one cell at each end; every sign change
+           is closed to aTolBracket (aClose: 'secant', _closeSecant; 'bisection', _closeBisection) and is
+           an equilibrium if |r| <= aTolResidual there, a jump otherwise. Among several equilibria the
+           highest V(θ̂'; a); none: fallbackθ and the 'legacy' answer at that state.
+         'legacy': τ*(s_, θ_t, θ1) by the selection rule along τ (num_robustroot.tex) at every candidate
+           design, W_t there (young: Σ young·hatc1iPow/q; old: Σ old·c_2^{1-1/ρ}/q) with the retirees'
+           shares consistent with each candidate's own τ* and h_t, argmax over θ1 with parabolic
+           refinement, corners preserved, τ at the refined θ1 by linear interpolation. It values a
+           candidate design at shares the electorate does not control; kept for comparisons, and runs the
+           pinned periods (choose = False) under either rule.
       5. Tabulate τ/θNext/s/h/Γs at the chosen policies, smooth τ along s with PINNED knots
          (crossCuttingFindings #5), rebuild the tables' interpolants for period t-1.
+
+    Steps 1-2 are _periodCore, 3-4 _choose (_chooseRoot or _chooseLegacy), 5 _handBack.
+
+    Period-dict entries of the root layer, (nθ, ns_) unless noted: nBrθ (brackets), nEqθ (closed
+    brackets), fallbackθ, nIterθ (closing iterations), aStar, Vstar, rStar, τChosen (τ̂(a*) before the
+    smoothing of step 5); Vθ (nθ, ns_, nθ1) = V(θ'; a*); nPass (frozen passes in the period). Its
+    tax-rule entries (τStar3, nEqτ, nCandτ, fallbackτ, W) are NaN / -1 unless a fallback ran the legacy
+    layer in that period.
 
     The recursion is DIRECT -- terminal condition plus one backward pass -- so unlike LeadedCRRA's path
     iteration it needs no warm start and no convergence tolerance; the path iteration is kept as the
@@ -512,11 +727,26 @@ class LeadedCRRA2D(CRRA, LeadedBase):
     Grid settings are borrowed from the model's exogenous solver (self.GS = m.CRRA.GS at solve time), so
     a driver that tunes m.CRRA.initGS(...) tunes this class with it. """
 
-    def __init__(self, m, nθ = 13, nθCand = 21, **kwargs):
+    DESIGN_RULES = ('root', 'legacy')
+    _BEST = ('θ', 'atBound', 'V', 'τ', 'r', 'Vθ')        # _bestAt's per-state readings
+    _MAXCLOSE = 200                                       # closing iterations per bracket, a guard only
+
+    def __init__(self, m, nθ = 13, nθCand = 21, designRule = 'root', Ma = 5, aTolBracket = 1e-9,
+                 aTolResidual = 1e-6, aClose = 'secant', **kwargs):
+        """ designRule: 'root' or 'legacy' (class docstring). Ma (>= 4), aTolBracket, aTolResidual, aClose:
+        the root layer's tabulation nodes, closing tolerances and closing method. """
         super().__init__(m, **kwargs)
+        if designRule not in self.DESIGN_RULES:
+            raise ValueError(f'LeadedCRRA2D: designRule {designRule!r}, one of {self.DESIGN_RULES}.')
+        if Ma < 4:
+            raise ValueError('LeadedCRRA2D: Ma >= 4 (one cell beyond the range at each end).')
+        if aClose not in ('secant', 'bisection'):
+            raise ValueError(f"LeadedCRRA2D: aClose {aClose!r}, 'secant' or 'bisection'.")
         self.nθ, self.nθCand = nθ, nθCand
         self.θGrid = np.linspace(0., 1., nθ)
         self.θCand = np.linspace(0., 1., nθCand)
+        self.designRule, self.Ma, self.aClose = designRule, int(Ma), aClose
+        self.aTolBracket, self.aTolResidual = float(aTolBracket), float(aTolResidual)
 
     # ------------------------------------------------------------------ the one genuine override
     def stateApprox_t(self, τ, s, t, θ1, solp):
@@ -562,28 +792,17 @@ class LeadedCRRA2D(CRRA, LeadedBase):
         return d
 
     def _focParts(self, d, g, t, ε):
-        """ The θ_t-independent pieces of focGrid_t, including every numerical τ-derivative -- computed
-        once and shared across the θ_t loop (the splines dominate the period's cost). """
-        BG, τ, τGrid = self.BG, d['τ'], g.values('τ')
-        p = 1 - 1/BG.get('ρ', t)
-        grad = lambda y: griddedGradient1D(τGrid, g.reshape(y)).reshape(np.shape(y))
-        with np.errstate(divide = 'ignore', invalid = 'ignore'):
-            dlnh = grad(np.log(d['h']))
-            dv1i = d['hatc1iPow'] * grad(d['lnhatc1i'])
-            dv10 = BG.get('β0', t) * d['tc20_1']**p * grad(np.log(d['tc20_1']))
-            dv20 = d['tc20']**p * BG.dlnc20_dτ(dlnh, τ, ε, d['Θh'], t)
-        return {'p': p, 'dlnh': dlnh, 'dv1i': dv1i, 'dv10': dv10, 'dv20': dv20}
+        """ The θ_t-independent pieces of z_t, including every numerical τ-derivative -- CRRA.focParts_t,
+        computed once and shared across the θ_t loop (the splines dominate the period's cost). """
+        return self.focParts_t(d, g, t, ε)
 
     def _zAtθ(self, d, parts, θt, t, tLag):
-        """ z_t at one inherited design θt: only dv2i moves (see the class docstring), everything else is
-        read from parts. """
+        """ z_t at one inherited design θt: only the retirees' term moves (see the class docstring),
+        rebuilt at the shares consistent with each node (CRRA.zAtShares). """
         BG, τ = self.BG, d['τ']
         Γs_ = BG.Γs(d['B'], τ, θt, tLag)
         si_s_ = BG.si_s(d['B'], τ, θt, Γs_, tLag)
-        with np.errstate(divide = 'ignore', invalid = 'ignore'):
-            c2i = BG.c2i(d['h'], d['s_'], τ, θt, si_s_, t)
-            dv2i = c2i**parts['p'] * BG.dlnc2i_dτ(parts['dlnh'], τ, θt, si_s_, t)
-        return BG.FOC(parts['dv1i'], parts['dv10'], dv2i, parts['dv20'], t)
+        return self.zAtShares(d, parts, θt, si_s_, t)
 
     def _econAt(self, τF, s_F, θtF, θ1F, sCand, t, tLag, t1, ε, ε1, sol1):
         """ Re-solve the state fixed point and evaluate (W, s, h, Γs) at ARBITRARY flat points
@@ -607,23 +826,74 @@ class LeadedCRRA2D(CRRA, LeadedBase):
         return {'W': W, 's': sPt, 'h': d['h'], 'Γs': d['Γs'], 'nRoots': nR}
 
     # ------------------------------------------------------------------ one period
+    _CHOICE_KEYS = ('τStar', 'atBoundτ', 'nEqτ', 'nCandτ', 'fallbackτ', 'W', 'θNext', 'atBoundθ', 'τSel')
+
     def solveBackward_t2D(self, sol1, t, tLag, t1, ε, ε1, sGrid, sCand, θ1Grid, choose):
-        """ One period of the recursion (steps 1-5 of the class docstring). θ1Grid: the candidate grid
-        for θ_{t+1}; a pinned period passes the single forced value and choose = False. Returns the
-        period dict with (ns, nθ) tables and their Interp2D interpolants. """
+        """ One period of the recursion (steps 1-5 of the class docstring): _periodCore (step 1-2's
+        θ_t-free grid), _choose (steps 3-4) and _handBack (step 5). θ1Grid: the candidate grid for
+        θ_{t+1}; a pinned period passes the single forced value and choose = False. Returns the period
+        dict with (ns, nθ) tables and their Interp2D interpolants, plus the wall times tCore and tChoose
+        of the first two parts. A subclass replaces the choice layer by overriding _choose alone; keys
+        its _choose returns beyond _CHOICE_KEYS are carried into the period dict as they are. """
+        with self.BG.cacheParams():
+            tic = time.perf_counter()
+            core = self._periodCore(sol1, t, tLag, t1, ε, ε1, sGrid, sCand, θ1Grid)
+            tCore = time.perf_counter() - tic
+            tic = time.perf_counter()
+            ch = self._choose(core, θ1Grid, choose)
+            tChoose = time.perf_counter() - tic
+            extra = {'τStar3': ch['τStar'], 'W': ch['W'], 'atBoundτ': ch['atBoundτ'],
+                     'atBoundθ': ch['atBoundθ'].T, 'nEqτ': ch['nEqτ'], 'nCandτ': ch['nCandτ'],
+                     'fallbackτ': ch['fallbackτ']}
+            extra |= {k: v for k, v in ch.items() if k not in self._CHOICE_KEYS}
+            extra |= {'tCore': tCore, 'tChoose': tChoose}
+            return self._handBack(core, ch['θNext'], ch['τSel'], choose, extra)
+
+    def _periodCore(self, sol1, t, tLag, t1, ε, ε1, sGrid, sCand, θ1Grid):
+        """ Step 1 and the θ_t-free part of step 2: s_t on the (τ, s_, θ1) grid (_solveStateGrid), the
+        economics there (_econCore) and the share-free pieces of z_t with every numerical τ-derivative
+        (_focParts). Returns {'g', 's', 'nRoots', 'd', 'parts'} and the arguments, flat over g in
+        C-order (τ, s_, θ1). Neither θ_t nor the retirees' shares enter it, so every choice layer of
+        the period runs on one core. """
         τGrid = self.GS['PEE']['solGrids']['τ']
-        nθ, ns_, nθ1 = self.nθ, len(sGrid), len(θ1Grid)
         g = CartesianGrid(τ = τGrid, s_ = sGrid, θ1 = θ1Grid)
         with self.BG.cacheParams():
             s, nRoots = self._solveStateGrid(τGrid, sGrid, θ1Grid, sCand, t, sol1)
             d = self._econCore(g.flat['τ'], s, g.flat['s_'], g.flat['θ1'], t, tLag, t1, ε, ε1, sol1)
             parts = self._focParts(d, g, t, ε)
+        return {'g': g, 's': s, 'nRoots': nRoots, 'd': d, 'parts': parts, 'sol1': sol1, 't': t,
+                'tLag': tLag, 't1': t1, 'ε': ε, 'ε1': ε1, 'sGrid': sGrid, 'sCand': sCand,
+                'θ1Grid': θ1Grid}
 
+    def _choose(self, core, θ1Grid, choose):
+        """ Steps 3-4 by designRule: _chooseRoot under 'root' when the period chooses on at least three
+        candidate designs, _chooseLegacy otherwise (a pinned period under either rule). """
+        if self.designRule == 'root' and choose and len(θ1Grid) >= 3:
+            return self._chooseRoot(core, θ1Grid)
+        return self._chooseLegacy(core, θ1Grid, choose)
+
+    def _chooseLegacy(self, core, θ1Grid, choose):
+        """ Steps 3-4 under designRule 'legacy': per θ_t node the tax at every (s_, θ1) by the selection
+        rule (_selectND with the objectiveFrozen callback), W_t at that tax by re-solving the state
+        (_econAt, the retirees at the shares consistent with each candidate's own τ* and h_t), and the
+        design by _argmax over θ1Grid. Returns {'τStar', 'atBoundτ', 'nEqτ', 'nCandτ', 'fallbackτ', 'W'} of
+        shape (nθ, ns_, nθ1) and {'θNext', 'atBoundθ', 'τSel'} of shape (nθ, ns_). A pinned period
+        (choose = False) keeps θ1Grid[0] and the tax there. """
+        g, d, parts = core['g'], core['d'], core['parts']
+        t, tLag, t1, ε, ε1 = core['t'], core['tLag'], core['t1'], core['ε'], core['ε1']
+        sGrid, sCand, sol1 = core['sGrid'], core['sCand'], core['sol1']
+        nθ, ns_, nθ1 = self.nθ, len(sGrid), len(θ1Grid)
+        with self.BG.cacheParams():
             τStar = np.empty((nθ, ns_, nθ1))
             atBoundτ = np.zeros((nθ, ns_, nθ1), dtype = bool)
+            nEqτ = np.zeros((nθ, ns_, nθ1), dtype = int)
+            nCandτ = np.zeros((nθ, ns_, nθ1), dtype = int)
+            fallbackτ = np.zeros((nθ, ns_, nθ1), dtype = bool)
             for it, θt in enumerate(self.θGrid):
-                sel = roots1d.selectMaxND(g, self._zAtθ(d, parts, θt, t, tLag), 'τ')
+                frozen = lambda cand, θt = float(θt): self.objectiveFrozen(cand, g, d, parts, θt, t, tLag)
+                sel = self._selectND(g, self._zAtθ(d, parts, θt, t, tLag), 'τ', frozen)
                 τStar[it], atBoundτ[it] = sel['x'], sel['atBound']
+                nEqτ[it], nCandτ[it], fallbackτ[it] = sel['nEq'], sel['nCand'], sel['fallback']
 
             # --- W at the selected τ*, per (θt, s_, θ1)
             θtF = np.repeat(self.θGrid, ns_*nθ1)
@@ -647,9 +917,182 @@ class LeadedCRRA2D(CRRA, LeadedBase):
             else:
                 θNext[:] = θ1Grid[0]
                 τSel = τStar[:, :, 0].copy()
+        return {'τStar': τStar, 'atBoundτ': atBoundτ, 'nEqτ': nEqτ, 'nCandτ': nCandτ,
+                'fallbackτ': fallbackτ, 'W': W, 'θNext': θNext, 'atBoundθ': atBoundθ, 'τSel': τSel}
 
-            # --- smooth τ along s per θt column (pinned knots, #5), then retabulate the equilibrium at
-            # the final (τ, θNext) so the tables the previous period interpolates are self-consistent.
+    def _bestAt(self, core, θt, a):
+        """ Steps 3-4 of alg esc:crra2D at a frozen a (ns_,): frozenTaxPass, the design θ̂'(a) by
+        LeadedBase._argmax over θ1 of V(θ'; a) with the parabola's value at an interior maximum, τ̂(a) and
+        h_t by np.interp along θ1 at θ̂'(a), and the residual r(a) = a - a_t(τ̂(a), h_t) of
+        eq:esc:aResidual. Returns {'θ', 'atBound', 'V', 'τ', 'r'} (ns_,) and 'Vθ' (ns_, nθ1). """
+        BG, tLag = self.BG, core['tLag']
+        x = np.asarray(core['θ1Grid'], dtype = float)
+        fp = frozenTaxPass(self, core, θt, a)
+        θh, ab, Vh = _argmaxRows(x, fp['V'])
+        τh = _interpRows(x, fp['τ'], θh)
+        hh = _interpRows(x, fp['h'], θh)
+        with BG.cacheParams(), np.errstate(divide = 'ignore', invalid = 'ignore'):
+            r = a - aOf(BG, BG.B(core['sGrid'], hh, tLag), τh, θt, tLag)
+        return {'θ': θh, 'atBound': ab, 'V': Vh, 'τ': τh, 'r': r, 'Vθ': fp['V']}
+
+    def _chooseRoot(self, core, θ1Grid):
+        """ Steps 3-4 under designRule 'root' (alg esc:crra2D), per θ_t node and vectorised over s_: the
+        range of a, r tabulated on Ma nodes (_bestAt), the brackets (sign changes between neighbouring
+        nodes, and exact zeros at a node), their closing (_closeSecant or _closeBisection), the selection
+        among the equilibria. Returns _chooseLegacy's keys -- the tax-rule entries NaN / -1 unless a
+        fallback ran _chooseLegacy -- and the per-state report of the class docstring. """
+        BG, d, g, tLag = self.BG, core['d'], core['g'], core['tLag']
+        nτ, ns_, nθ1 = g.shape
+        nθ, Ma = self.nθ, self.Ma
+        close = self._closeSecant if self.aClose == 'secant' else self._closeBisection
+        θNext, τSel, aStar, Vstar, rStar = (np.full((nθ, ns_), np.nan) for _ in range(5))
+        atBoundθ = np.zeros((nθ, ns_), dtype = bool)
+        nBr, nEq, nIter = (np.zeros((nθ, ns_), dtype = int) for _ in range(3))
+        fallback = np.zeros((nθ, ns_), dtype = bool)
+        Vθ = np.full((nθ, ns_, nθ1), np.nan)
+        nPass = 0
+        for it, θt in enumerate(self.θGrid):
+            θt = float(θt)
+            with BG.cacheParams(), np.errstate(divide = 'ignore', invalid = 'ignore'):
+                aG = aOf(BG, d['B'], d['τ'], θt, tLag).reshape(nτ, ns_, nθ1)
+                lo = np.nanmin(np.where(np.isfinite(aG), aG, np.inf), axis = (0, 2))
+                hi = np.nanmax(np.where(np.isfinite(aG), aG, -np.inf), axis = (0, 2))
+            live = np.isfinite(lo) & np.isfinite(hi)
+            cell = np.where(live, np.maximum((hi - lo)/(Ma - 3), 1e-12), 1.)
+            A = np.where(live, lo - cell, 1.)[None, :] + cell[None, :]*np.arange(Ma)[:, None]   # (Ma, ns_)
+            tab = [self._bestAt(core, θt, A[k]) for k in range(Ma)]
+            nPass += Ma
+            T = {key: np.stack([np.asarray(b[key]) for b in tab]) for key in self._BEST}       # (Ma, ns_, ...)
+            R = T['r']
+            br = [[] for _ in range(ns_)]                 # (node lo, node hi) per bracket, per state
+            for j in np.flatnonzero(live):
+                for k in range(Ma):
+                    if R[k, j] == 0:
+                        br[j].append((k, k))
+                    elif (k < Ma - 1 and np.isfinite(R[k, j]) and np.isfinite(R[k+1, j])
+                          and R[k, j]*R[k+1, j] < 0):
+                        br[j].append((k, k + 1))
+            nBr[it] = [len(b) for b in br]
+            found = [[] for _ in range(ns_)]              # (V, a, θ, atBound, τ, r, Vθ) per closed root
+            for slot in range(int(nBr[it].max(initial = 0))):
+                js = np.flatnonzero(nBr[it] > slot)
+                kLo = np.array([br[j][slot][0] for j in js])
+                kHi = np.array([br[j][slot][1] for j in js])
+                res = close(core, θt, A[Ma//2], js, A[kLo, js], A[kHi, js],
+                            {key: T[key][kLo, js] for key in self._BEST},
+                            {key: T[key][kHi, js] for key in self._BEST})
+                nPass += res['nPass']
+                nIter[it, js] += res['nIter']
+                for n, j in enumerate(js):
+                    r_, V_ = res['r'][n], res['V'][n]
+                    if np.isfinite(r_) and abs(r_) <= self.aTolResidual and np.isfinite(V_):
+                        found[j].append((V_, res['a'][n], res['θ'][n], res['atBound'][n], res['τ'][n], r_,
+                                         res['Vθ'][n]))
+            for j in range(ns_):
+                nEq[it, j] = len(found[j])
+                if not found[j]:
+                    fallback[it, j] = bool(live[j])
+                    continue
+                V_, a_, θ_, ab_, τ_, r_, Vθ_ = max(found[j], key = lambda f: f[0])
+                θNext[it, j], atBoundθ[it, j], τSel[it, j] = θ_, ab_, τ_
+                aStar[it, j], Vstar[it, j], rStar[it, j], Vθ[it, j] = a_, V_, r_, Vθ_
+        legacy = _legacyKeys((nθ, ns_, nθ1))
+        if fallback.any():
+            legacy = self._chooseLegacy(core, θ1Grid, True)
+            θNext[fallback], τSel[fallback] = legacy['θNext'][fallback], legacy['τSel'][fallback]
+            atBoundθ[fallback] = legacy['atBoundθ'][fallback]
+        return {k: legacy[k] for k in ('τStar', 'atBoundτ', 'nEqτ', 'nCandτ', 'fallbackτ', 'W')} | {
+            'θNext': θNext, 'atBoundθ': atBoundθ, 'τSel': τSel, 'τChosen': τSel.copy(),
+            'nBrθ': nBr, 'nEqθ': nEq, 'fallbackθ': fallback, 'nIterθ': nIter, 'aStar': aStar,
+            'Vstar': Vstar, 'rStar': rStar, 'Vθ': Vθ, 'nPass': nPass}
+
+    def _closeSecant(self, core, θt, fill, js, lo, hi, bLo, bHi):
+        """ Close the brackets [lo, hi] (n,) of r (eq:esc:aResidual) at the states js by a bracketed
+        secant: false position with the Illinois modification (the value kept at an end retained twice in
+        a row is halved); bisection where the secant point is not finite or leaves the bracket, and where
+        the bracket has not halved in three iterations; every trial at least aTolBracket/4 inside the
+        bracket, so that next to the root a step straddles it. One frozen pass (_bestAt at every state,
+        `fill` where no bracket is open) per iteration, until every bracket is narrower than aTolBracket;
+        a NaN or exact-zero reading collapses its bracket onto the trial point. bLo, bHi: the _bestAt
+        readings at the two ends. Returns the reading at the end with the smaller |r|, {'a'} and _BEST
+        (n, ...), with 'nIter' (n,), the iterations each bracket was open, and 'nPass'. """
+        tol, δ = self.aTolBracket, 0.25*self.aTolBracket
+        lo, hi = np.array(lo, dtype = float), np.array(hi, dtype = float)
+        bLo = {k: np.array(v) for k, v in bLo.items()}
+        bHi = {k: np.array(v) for k, v in bHi.items()}
+        fLo, fHi = bLo['r'].astype(float), bHi['r'].astype(float)
+        n = lo.size
+        side, stall, nIter = (np.zeros(n, dtype = int) for _ in range(3))
+        ref = hi - lo
+        nPass = 0
+        for _ in range(self._MAXCLOSE):
+            live = hi - lo >= tol
+            if not live.any():
+                break
+            with np.errstate(divide = 'ignore', invalid = 'ignore'):
+                x = hi - fHi*(hi - lo)/(fHi - fLo)
+                bis = ~np.isfinite(x) | (x <= lo) | (x >= hi) | (stall >= 3)
+                x = np.clip(np.where(bis, 0.5*(lo + hi), x), lo + δ, hi - δ)
+            aFull = np.array(fill, dtype = float)
+            aFull[js[live]] = x[live]
+            b = self._bestAt(core, θt, aFull)
+            nPass += 1
+            nIter += live
+            new = {k: np.asarray(b[k])[js] for k in self._BEST}
+            rx = new['r']
+            bad = live & (~np.isfinite(rx) | (rx == 0))
+            toLo = live & ~bad & (np.sign(rx) == np.sign(bLo['r']))
+            toHi = live & ~bad & ~toLo
+            fHi = np.where(toLo & (side == -1), 0.5*fHi, fHi)       # Illinois: hi retained twice in a row
+            fLo = np.where(toHi & (side == 1), 0.5*fLo, fLo)        # ... lo retained twice in a row
+            fLo, fHi = np.where(toLo, rx, fLo), np.where(toHi, rx, fHi)
+            lo, hi = np.where(toLo | bad, x, lo), np.where(toHi | bad, x, hi)
+            for k in self._BEST:
+                bLo[k][toLo | bad], bHi[k][toHi | bad] = new[k][toLo | bad], new[k][toHi | bad]
+            side = np.where(toLo, -1, np.where(toHi, 1, side))
+            w = hi - lo
+            reset = (w <= 0.5*ref) | bis
+            ref, stall = np.where(reset, w, ref), np.where(reset, 0, stall + live)
+        pick = np.abs(bHi['r']) < np.abs(bLo['r'])
+        out = {k: np.where(pick.reshape((-1,) + (1,)*(bLo[k].ndim - 1)), bHi[k], bLo[k]) for k in self._BEST}
+        return out | {'a': np.where(pick, hi, lo), 'nIter': nIter, 'nPass': nPass}
+
+    def _closeBisection(self, core, θt, fill, js, lo, hi, bLo, bHi):
+        """ _closeSecant's brackets closed by bisection, all bisected together until every one is narrower
+        than aTolBracket, then read at the midpoint (one more pass): the reference _closeSecant is checked
+        against (test_designChoicePilot.py T9). Same arguments and return. """
+        aLo, aHi = np.array(lo, dtype = float), np.array(hi, dtype = float)
+        rLo = np.array(bLo['r'], dtype = float)
+        nIter = np.zeros(aLo.size, dtype = int)
+        nPass = 0
+        while np.any(aHi - aLo >= self.aTolBracket):
+            nIter += aHi - aLo >= self.aTolBracket
+            am = 0.5*(aLo + aHi)
+            aFull = np.array(fill, dtype = float)
+            aFull[js] = am
+            rm = self._bestAt(core, θt, aFull)['r'][js]
+            nPass += 1
+            same = np.sign(rm) == np.sign(rLo)
+            bad = ~np.isfinite(rm) | (rm == 0)
+            aLo = np.where(bad, am, np.where(same, am, aLo))
+            aHi = np.where(bad, am, np.where(same, aHi, am))
+            rLo = np.where(same, rm, rLo)
+        am = 0.5*(aLo + aHi)
+        aFull = np.array(fill, dtype = float)
+        aFull[js] = am
+        b = self._bestAt(core, θt, aFull)
+        nPass += 1
+        return {k: np.asarray(b[k])[js] for k in self._BEST} | {'a': am, 'nIter': nIter, 'nPass': nPass}
+
+    def _handBack(self, core, θNext, τSel, choose, extra):
+        """ Step 5: smooth τSel (nθ, ns_) along s per θt column (pinned knots, #5), then retabulate the
+        equilibrium at the final (τ, θNext) so the tables the previous period interpolates are
+        self-consistent. Returns the period dict; `extra` (the choice layer's per-state report) is
+        merged into it. """
+        sGrid, sCand, θ1Grid = core['sGrid'], core['sCand'], core['θ1Grid']
+        t, tLag, t1, ε, ε1, sol1 = core['t'], core['tLag'], core['t1'], core['ε'], core['ε1'], core['sol1']
+        nθ, ns_ = self.nθ, len(sGrid)
+        with self.BG.cacheParams():
             knots = self.GS['PEE']['gridSettings']['smoothKnots']
             τTab = griddedSmooth1D(sGrid, τSel.T, s = 1e-5, knots = knots)     # (ns, nθ)
             θTab = θNext.T                                                     # (ns, nθ)
@@ -658,17 +1101,17 @@ class LeadedCRRA2D(CRRA, LeadedBase):
             sTab, hTab = fin['s'].reshape(nθ, ns_).T, fin['h'].reshape(nθ, ns_).T
             ΓsTab = fin['Γs'].reshape(nθ, ns_).T
 
-        return {'sGrid': sGrid, 'θGrid': self.θGrid.copy(), 'θ1Grid': np.asarray(θ1Grid, dtype = float),
-                'τ': τTab, 'θNext': θTab, 's': sTab, 'h': hTab, 'Γs': ΓsTab,
-                'τStar3': τStar, 'W': W, 'atBoundτ': atBoundτ, 'atBoundθ': atBoundθ.T,
-                'choose': choose, 'terminal': False,
-                'θSpread_s': np.nan if not choose else float(np.nanmax(θTab, axis = 0).max()
-                                                            - np.nanmin(θTab, axis = 0).min()),
-                'τPolicy': Interp2D(sGrid, self.θGrid, τTab),
-                'hPolicy': Interp2D(sGrid, self.θGrid, hTab),
-                'sPolicy': Interp2D(sGrid, self.θGrid, sTab),
-                'ΓsPolicy': Interp2D(sGrid, self.θGrid, ΓsTab),
-                'θPolicy': Interp2D(sGrid, self.θGrid, θTab)}
+        return ({'sGrid': sGrid, 'θGrid': self.θGrid.copy(), 'θ1Grid': np.asarray(θ1Grid, dtype = float),
+                 'τ': τTab, 'θNext': θTab, 's': sTab, 'h': hTab, 'Γs': ΓsTab}
+                | extra
+                | {'choose': choose, 'terminal': False,
+                   'θSpread_s': np.nan if not choose else float(np.nanmax(θTab, axis = 0).max()
+                                                               - np.nanmin(θTab, axis = 0).min()),
+                   'τPolicy': Interp2D(sGrid, self.θGrid, τTab),
+                   'hPolicy': Interp2D(sGrid, self.θGrid, hTab),
+                   'sPolicy': Interp2D(sGrid, self.θGrid, sTab),
+                   'ΓsPolicy': Interp2D(sGrid, self.θGrid, ΓsTab),
+                   'θPolicy': Interp2D(sGrid, self.θGrid, θTab)})
 
     def solveTerminal2D(self, ε, sGrid, t, tLag):
         """ The terminal period has no design to choose -- θ_T is its state. One inherited (closed-form)
@@ -715,7 +1158,18 @@ class LeadedCRRA2D(CRRA, LeadedBase):
             if verbose:
                 print('    t={}: {}  [{:.1f}s]'.format(
                     t, 'choice' if choose else 'pinned', _time.time() - tic))
+        self.lastMultiplicity = self.multiplicity(sols)
         return sols
+
+    @staticmethod
+    def multiplicity(sols):
+        """ The tax rule's counts (nEqτ, nCandτ, fallbackτ, summarised as nEqMax, nCandMax, ...) and the root
+        design layer's (policy.DESIGN_KEYS as policy.DESIGN_NAMES: nEqθMax, nBrθMax, nStatesMultipleθ,
+        nFallbackθ) over a solution, in one dict. A set no period counted is -1: the design counts under
+        'legacy', the tax counts where every choosing period ran the root layer without a fallback and no
+        period was pinned. """
+        return (multiplicitySummary(sols, keys = ('nEqτ', 'nCandτ', 'fallbackτ'))
+                | multiplicitySummary(sols, keys = DESIGN_KEYS, names = DESIGN_NAMES))
 
     # ------------------------------------------------------------------ forward simulation
     def s0FixedPoint(self, sols, θ0):
@@ -846,13 +1300,13 @@ class PermanentLOG(LeadedLOG):
         t1 = tIdx[pos+1]
         terminal1 = (t1 == tIdx[-1])
 
-        τ0, _, _ = self.τOfθ(t0, th, tLag, terminal = False)
-        τ1, _, _ = self.τOfθ(t1, th, t0, terminal = terminal1)
+        τ0 = self.τOfθ(t0, th, tLag, terminal = False)[0]
+        τ1 = self.τOfθ(t1, th, t0, terminal = terminal1)[0]
         if terminal1:
             τ2 = None
         else:
             t2 = tIdx[pos+2]
-            τ2, _, _ = self.τOfθ(t2, th, t1, terminal = (t2 == tIdx[-1]))
+            τ2 = self.τOfθ(t2, th, t1, terminal = (t2 == tIdx[-1]))[0]
         cont = {'τ1': τ1, 'θ2': th, 'τ2': τ2, 'terminal1': terminal1}
         W, parts = self.objective(t0, tLag, t1, τ0, th, th, cont, s_ = s_, siRatio_ = siRatio_)
         return {'θ': th, 'W': W, 'τ0': τ0, 'τ1': τ1, 'parts': parts}

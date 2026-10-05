@@ -4,6 +4,62 @@ from gridsearch import (robustRoot, roots1d, CartesianGrid, griddedInterp1D, gri
                         griddedSmooth1D, griddedGradient1D)
 
 
+def multiplicitySummary(sols, keys = ('nEq', 'nCand', 'fallback')):
+    """ One dict over a {t: period dict} solution: the largest number of equilibria at any state, the
+    largest candidate count, the number of states where more than one equilibrium passed the test and
+    where none did (num_robustroot.tex, eq:equilibriumTest), and the periods concerned. `keys` names the
+    per-period entries. Periods without them and -1 entries (the legacy rule) are skipped. """
+    kEq, kCand, kFb = keys
+    out = {'nEqMax': 0, 'nCandMax': 0, 'nStatesMultiple': 0, 'nFallback': 0,
+           'periodsMultiple': [], 'periodsFallback': []}
+    for t, rep in sols.items():
+        if not isinstance(rep, dict) or rep.get(kEq) is None:
+            continue
+        nEq, nCand = np.asarray(rep[kEq]), np.asarray(rep[kCand])
+        fb = np.asarray(rep[kFb], dtype = bool)
+        if nEq.size == 0 or (nEq < 0).all():
+            continue
+        out['nEqMax'] = max(out['nEqMax'], int(nEq.max()))
+        out['nCandMax'] = max(out['nCandMax'], int(nCand.max()))
+        nm, nf = int((nEq > 1).sum()), int(fb.sum())
+        out['nStatesMultiple'] += nm
+        out['nFallback'] += nf
+        if nm:
+            out['periodsMultiple'].append(t)
+        if nf:
+            out['periodsFallback'].append(t)
+    return out
+
+
+def multiplicityColumns(*summaries):
+    """ The csv columns {'nEqMax', 'nCandMax', 'nFallback'} over the political solves behind one row of a
+    driver's output: the largest equilibrium and candidate counts and the total number of fallback states
+    across the multiplicitySummary dicts passed. -1 in all three when no summary is passed or any is None
+    (a solve that ran no selection rule). Non-key columns: they describe a row, never identify it (#13). """
+    if not summaries or any(s is None for s in summaries):
+        return {'nEqMax': -1, 'nCandMax': -1, 'nFallback': -1}
+    return {'nEqMax': max(int(s['nEqMax']) for s in summaries),
+            'nCandMax': max(int(s['nCandMax']) for s in summaries),
+            'nFallback': sum(int(s['nFallback']) for s in summaries)}
+
+
+def _interpAtCand(x, Y, cand):
+    """ roots1d.interpAlong(x, Y, cand) for Y (M, N) and cand (K, N), except that a candidate sitting
+    exactly on a node takes that node's value. interpAlong weights the next node by zero there, and 0·NaN
+    is NaN: the upper end of a feasible sub-grid bordering an infeasible node would lose its value. """
+    out = roots1d.interpAlong(x, Y, cand)
+    c = np.where(np.isfinite(cand), cand, x[0])
+    j = np.clip(np.searchsorted(x, c), 0, x.size - 1)
+    n = np.broadcast_to(np.arange(cand.shape[1]), cand.shape)
+    return np.where(np.isfinite(cand) & (x[j] == c), Y[j, n], out)
+
+
+def _retireeLevel(w, c2, p):
+    """ Σ_i w_i υ(c_{2,t}^i), υ(c) = c^p/p with p = 1-1/ρ, and ln c at p = 0 (ρ = 1, where the CRRA
+    terminal period is solved too and c^p/p is undefined). c2: (..., ni). """
+    return (w*np.log(c2)).sum(axis = -1) if p == 0 else (w*c2**p).sum(axis = -1)/p
+
+
 class LOG:
     """
     Identify Sequence of Policy Functions.
@@ -15,6 +71,10 @@ class LOG:
     through Θ_{s,t} (base.py's s0_s), so z_t = z_t(τ_t, τ_{t+1}, ι_{t-1}) and
     the tax path is no longer a triangular system in τ alone.
     """
+    # 'legacy' reinstates the integral criterion (roots1d.selectMax), for comparisons only. A class
+    # attribute, so that an instance unpickled from before it existed selects by the frozen rule too.
+    selection = 'frozen'
+
     def __init__(self, m, style = 'Vector', grid = None, **kwargs):
         self.m = m
         self.B  = m.B # refer to base class
@@ -148,15 +208,104 @@ class LOG:
     def _zState(self, zbar, τ, ε, ιGrid, t):
         """ Eq (zdecomposition): z_t(τ_t,ι_{t-1}) = z̄_t(τ_t) + ωγ_{t-1,0}p_{t-1,0}μ_{t-1,0}·A_t/(ι_{t-1}+A_tτ_t)
         -- the only channel through which the state reaches the first order condition. zbar: (M,), the pass
-        over 𝒯 that every state shares. Returns (M, M_ι).
+        over 𝒯 that every state shares, or (M, M_ι) when it differs per state (z̄ at shares frozen per
+        column, objectiveFrozen). Returns (M, M_ι).
 
         This rank-one correction is what the design rests on: the (M,M_ι) matrix is *assembled*, never
-        evaluated pointwise, so no CartesianGrid is built and refining 𝒮_0 is close to free. The weight is
-        FOC's own γ_{t-1,0}·ω20, read off it rather than restated, so the two cannot drift apart. """
+        evaluated pointwise, so no CartesianGrid is built and refining 𝒮_0 is close to free. """
+        zb = zbar if np.ndim(zbar) == 2 else zbar[:, None]
+        return zb + self._stateTerm(τ, ε, ιGrid, t)
+
+    def _stateTerm(self, τ, ε, ιGrid, t):
+        """ The old informal generation's state term of eq:zdecomposition on 𝒯×𝒮_0, (M, M_ι). It carries no
+        formal savings shares. The weight is FOC's own γ_{t-1,0}·ω20, read off it rather than restated, so
+        the two cannot drift apart. """
         BG = self.BG
         A = BG.auxInf1_(ε, t)
         w = BG.get('γ0[t-1]', t) * BG.ω20(t)
-        return zbar[:, None] + w*A/(ιGrid[None, :] + A*τ[:, None])
+        return w*A/(ιGrid[None, :] + A*τ[:, None])
+
+    #######################################################################
+    ##########   Selection among tax candidates at frozen shares       #####
+    ##########   (num_robustroot.tex, eq:candidates/eq:equilibriumTest) ###
+    #######################################################################
+    # z_t substitutes the formal savings shares s_{t-1,i}/s_{t-1} consistent with every node of 𝒯, which
+    # is what makes its root the equilibrium -- and what makes z_t the derivative of no single objective.
+    # The candidates (every crossing plus the ends of the feasible sub-grid) are therefore tested and
+    # ranked on W_t evaluated at the shares each candidate implies, held fixed along 𝒯
+    # (roots1d.selectMaxFrozen). ι_{t-1} (and s_{t-1} under CRRA) is a grid state, constant along a
+    # column, so already frozen; the ι_t fixed point along τ is a root problem and is not touched.
+    def _oldFormalWeights(self, t):
+        """ (ni,) weights of the formal retirees' term in W_t, exactly as Base.FOC applies them to dv2i. """
+        return self.BG.get('γi[t-1]', t) * self.BG.ω2i(t)
+
+    def zbarAtShares(self, θ, t, si_s_, parts):
+        """ Eq (zdecomposition)'s z̄_t with the formal retirees' term rebuilt at the shares si_s_ -- the
+        closed-form dln(c_{2,t}^i)/dτ_t (base.dlnc2i_dτ, which holds the shares fixed) -- and every other
+        term from parts (zbarParts_T/zbarParts_t: 'τ', 'dlnh', 'dv1i', 'dv10', flat and aligned with
+        si_s_). zbarAtShares(θ, t, d['si_s_'], parts) is the consistent z̄_t. """
+        BG, τ = self.BG, parts['τ']
+        dv2i = BG.dlnc2i_dτ(parts['dlnh'], τ, θ, si_s_, t)
+        return BG.FOC(parts['dv1i'], parts['dv10'], dv2i, (1-BG.get('α', t))*parts['dlnh'], t)
+
+    def objectiveFrozen(self, cand, parts, θ, ε, ιGrid, t, tLag):
+        """ W_t(τ; D) on 𝒯 at the formal savings shares D frozen at each candidate tax, per state ι_{t-1},
+        up to a constant common to a column -- the callback of roots1d.selectMaxFrozen
+        (eq:objectiveProfile). cand: (K, M_ι) candidate taxes, NaN-padded; parts: the period's
+        zbarParts_T/zbarParts_t on the full 𝒯 (NaN at infeasible nodes); θ: the design in force (scalar).
+        Returns (K, M, M_ι).
+
+        It is z_t re-evaluated along 𝒯 with the shares frozen -- _zState(zbarAtShares(...)), the shares
+        now per column -- and integrated in τ (roots1d.cumtrapzColumns), plus the formal retirees' level
+        Σ_i w_i ln c_{2,t}^i at the first feasible node and the frozen shares; the young's and the informal
+        retirees' levels there are common to the column and drop out, and c_{2,t}^i is evaluated at
+        h = s_ = 1 for the same reason. The frozen shares are Eq EE:si_s at vintage t-1 at the
+        candidate's own tax (exact under LOG, where B = β). Integrating the condition rather than reading
+        utility levels keeps the numerical derivatives z_t carries at t < T (finding #18). """
+        BG = self.BG
+        τGrid = np.asarray(parts['τ'], dtype = float)
+        cand = np.asarray(cand, dtype = float)
+        K, N = cand.shape
+        M = τGrid.size
+        cF = cand.reshape(-1)
+        ok = np.isfinite(cF)
+        D = np.full((K*N, self.ni), np.nan)
+        if ok.any():
+            βi_ = BG.get('βi', tLag)
+            Γs_ = BG.Γs(βi_, cF[ok], θ, tLag)
+            D[ok] = BG.si_s(βi_, cF[ok], θ, Γs_, tLag)
+        rep = {k: np.repeat(np.asarray(v), N, axis = 0) for k, v in parts.items()}   # C-order over (τ, ι_)
+        oldW = self._oldFormalWeights(t)
+        n = np.arange(N)
+        W = np.full((K, M, N), np.nan)
+        with np.errstate(divide = 'ignore', invalid = 'ignore'):
+            for k in range(K):
+                Dk = np.broadcast_to(D[k*N:(k+1)*N][None, :, :], (M, N, self.ni)).reshape(-1, self.ni)
+                zk = self._zState(self.zbarAtShares(θ, t, Dk, rep).reshape(M, N), τGrid, ε, ιGrid, t)
+                Lk = (oldW*np.log(BG.c2i(1., 1., rep['τ'], θ, Dk, t))).sum(axis = -1).reshape(M, N)
+                fin = np.isfinite(zk)
+                first = np.where(fin.any(axis = 0), fin.argmax(axis = 0), 0)
+                W[k] = roots1d.cumtrapzColumns(τGrid, zk) + Lk[first, n][None, :]
+        return W
+
+    def _select(self, x, z, frozen, tol = 0.0):
+        """ roots1d.selectMaxFrozen, or the integral criterion roots1d.selectMax when self.selection ==
+        'legacy' (kept for row-by-row comparisons; the counts are then -1 and W NaN). """
+        if self.selection == 'legacy':
+            sel = roots1d.selectMax(x, z, tol = tol)
+            shape = np.shape(sel['x'])
+            return sel | {'nCand': np.full(shape, -1), 'nEq': np.full(shape, -1),
+                          'fallback': np.zeros(shape, dtype = bool), 'W': np.full(shape, np.nan)}
+        return roots1d.selectMaxFrozen(x, z, frozen, tol = tol)
+
+    def _selectND(self, g, z, name, frozen, tol = 0.0):
+        """ _select over a CartesianGrid (roots1d.selectMaxFrozenND / selectMaxND). """
+        if self.selection == 'legacy':
+            sel = roots1d.selectMaxND(g, z, name, tol = tol)
+            shape = g.stateShape(name)
+            return sel | {'nCand': np.full(shape, -1), 'nEq': np.full(shape, -1),
+                          'fallback': np.zeros(shape, dtype = bool), 'W': np.full(shape, np.nan)}
+        return roots1d.selectMaxFrozenND(g, z, name, frozen, tol = tol)
 
     #######################################################################
     ##########   Grid placement diagnostics                            #####
@@ -270,26 +419,31 @@ class LOG:
         return {'τ': τ, 'Θh': BG.ΘhTerminal(τ, t), 'dlnh': BG.dlnΘhTerminal_dτ(τ, t),
                 'Γs_': Γs_, 'si_s_': BG.si_s(βi_, τ, θ, Γs_, tLag)}
 
+    def zbarParts_T(self, d, t):
+        """ The terms of z̄_T that do not involve the formal retirees' shares, from a stateGrid_T dict:
+        {'τ', 'dlnh', 'dv1i', 'dv10'} on 𝒯. dυ_{1,T}^0/dτ_T = 0 exactly (the informal young neither save
+        nor face a future at T). """
+        τ = d['τ']
+        return {'τ': τ, 'dlnh': d['dlnh'], 'dv1i': self.BG.dv1iTerminal_dτ_LOG(τ, t), 'dv10': np.zeros_like(τ)}
+
     def zbar_T(self, d, θ, t):
         """ Eq (zdecomposition)'s z̄_T on 𝒯, from a stateGrid_T dict: everything in z_T except the old
-        informal generation's state term. dυ_{1,T}^0/dτ_T = 0 exactly (the informal young neither save nor
-        face a future at T), and the dv20 slot carries only its (1-α)dln(h_T)/dτ_T part -- _zState adds the
-        rest. Returns (M,). """
-        BG, τ = self.BG, d['τ']
-        dv1i = BG.dv1iTerminal_dτ_LOG(τ, t)
-        dv2i = BG.dlnc2i_dτ(d['dlnh'], τ, θ, d['si_s_'], t)
-        return BG.FOC(dv1i, np.zeros_like(τ), dv2i, (1-BG.get('α', t))*d['dlnh'], t)
+        informal generation's state term; the dv20 slot carries only its (1-α)dln(h_T)/dτ_T part --
+        _zState adds the rest. zbarAtShares at the consistent shares d['si_s_']. Returns (M,). """
+        return self.zbarAtShares(θ, t, d['si_s_'], self.zbarParts_T(d, t))
 
     def solveTerminal(self, θ, ε, t = None, tol = 0.0, ιGrid = None):
         """ Terminal-period policy function τ_T(ι_{T-1}) over the state grid 𝒮_0, in one pass over 𝒯.
         θ, ε: scalars, period T's own pension characteristics.
 
-        Corner/multiplicity handling is roots1d.selectMax's candidate-set criterion (docs eq:candidates):
-        the maximiser of the interpolated political objective over {l,u} ∪ {downward crossings of ẑ_T},
-        applied per state. z is handed over as the (M,M_ι) matrix selectMax already consumes column-wise.
-        No feasibility mask at T: there is no fixed point to fail, and l_ι>0 keeps dv20's pole off the grid.
+        Corner/multiplicity handling is the selection rule of num_robustroot.tex (eq:candidates,
+        eq:equilibriumTest): both ends of 𝒯 and every crossing of ẑ_T are candidates, each tested and
+        ranked at its own frozen shares (objectiveFrozen), per state; z is handed over as the (M,M_ι)
+        matrix the rule consumes column-wise. No feasibility mask at T: there is no fixed point to fail,
+        and l_ι>0 keeps dv20's pole off the grid.
 
-        Returns report_T's dict plus the z matrix and selectMax's 'nMax'/'atBound' diagnostics. """
+        Returns report_T's dict plus the z matrix and the per-state 'nMax'/'atBound'/'nCand'/'nEq'/
+        'fallback' diagnostics. """
         tIdx = self.db['t']
         t = tIdx[-1] if t is None else t
         pos = tIdx.get_loc(t)
@@ -298,10 +452,13 @@ class LOG:
         ιGrid = self._ιGrid(ιGrid, θ, ε, t)
         with self.BG.cacheParams():
             d = self.stateGrid_T(τGrid, θ, t, tLag)
-            z = self._zState(self.zbar_T(d, θ, t), τGrid, ε, ιGrid, t)
-            sel = roots1d.selectMax(τGrid, z, tol = tol)
+            parts = self.zbarParts_T(d, t)
+            z = self._zState(self.zbarAtShares(θ, t, d['si_s_'], parts), τGrid, ε, ιGrid, t)
+            frozen = lambda cand: self.objectiveFrozen(cand, parts, θ, ε, ιGrid, t, tLag)
+            sel = self._select(τGrid, z, frozen, tol = tol)
             report = self.report_T(ιGrid, sel['x'], θ, t, tLag)
         report['z'], report['nMax'], report['atBound'] = z, sel['nMax'], sel['atBound']
+        report['nCand'], report['nEq'], report['fallback'] = sel['nCand'], sel['nEq'], sel['fallback']
         return report
 
     def report_T(self, ιGrid, τ, θ, t, tLag):
@@ -329,7 +486,7 @@ class LOG:
     #
     # (i) ι_t is no longer read off -- it is the root of eq:stateResidualLOG, since ι_t enters the
     #     right-hand side through τ^{t+1}(ι_t). It is a ROOT problem (any crossing solves it), so
-    #     roots1d.allRoots is used and NOT the selectMax apparatus, which belongs to the political
+    #     roots1d.allRoots is used and NOT the selection apparatus, which belongs to the political
     #     maximisation. Crucially the predetermined state does not appear in that fixed point at all
     #     (docs "The fixed point does not involve the state"): with B^i=β_i a primitive, Γ_{s,t} is a
     #     function of τ_{t+1} alone and Θ_{s,t} is a coefficient function with the level of past savings
@@ -425,19 +582,21 @@ class LOG:
         dydx = griddedGradient1D(np.log(1-τGrid), flat/σ, s = s) * σ
         return (dydx * (-1/(1-τGrid))[:, None]).reshape(y.shape)
 
-    def zbar_t(self, d, θ, t, s = 0.0):
-        """ Step 3: eq:zdecomposition's z̄_t on 𝒯, from a stateGrid_t dict. The two young profiles and
-        dln(h_t)/dτ_t = dln(Θ_{h,t})/dτ_t (eq:logsep) are grid derivatives; dv2i and the dv20 stub are
-        closed form. Infeasible nodes stay NaN throughout rather than being filled. Returns (M,).
+    def zbarParts_t(self, d, s = 0.0):
+        """ The terms of z̄_t that do not involve the formal retirees' shares, from a stateGrid_t dict:
+        {'τ', 'dlnh', 'dv1i', 'dv10'} on 𝒯. The two young profiles and dln(h_t)/dτ_t = dln(Θ_{h,t})/dτ_t
+        (eq:logsep) are grid derivatives (_gradProfile, the period's cost), computed once and shared by
+        zbar_t and objectiveFrozen. Infeasible nodes stay NaN. d['τ'] must be the full 𝒯 grid, not a
+        subset: the derivatives run along it. s: the scale-free smoothing budget of _gradProfile. """
+        τ = d['τ']
+        return {'τ': τ, 'dlnh': self._gradProfile(τ, np.log(d['Θh']), s),
+                'dv1i': self._gradProfile(τ, d['v1i'], s), 'dv10': self._gradProfile(τ, d['v10'], s)}
 
-        d['τ'] must be the full 𝒯 grid, not a subset: the derivatives run along it. s: the scale-free
-        smoothing budget of _gradProfile. """
-        BG, τ = self.BG, d['τ']
-        dlnh = self._gradProfile(τ, np.log(d['Θh']), s)
-        dv1i = self._gradProfile(τ, d['v1i'], s)
-        dv10 = self._gradProfile(τ, d['v10'], s)
-        dv2i = BG.dlnc2i_dτ(dlnh, τ, θ, d['si_s_'], t)
-        return BG.FOC(dv1i, dv10, dv2i, (1-BG.get('α', t))*dlnh, t)
+    def zbar_t(self, d, θ, t, s = 0.0):
+        """ Step 3: eq:zdecomposition's z̄_t on 𝒯, from a stateGrid_t dict: zbarAtShares at the
+        consistent shares d['si_s_'], with dv2i and the dv20 stub closed form. Infeasible nodes stay NaN
+        throughout rather than being filled. Returns (M,). """
+        return self.zbarAtShares(θ, t, d['si_s_'], self.zbarParts_t(d, s))
 
     def solveBackward_t(self, solp, t, tLag, θ, θ1, ε, ε1, ιGrid, ιCandGrid,
                         tol = 0.0, sGrad = 0.0, smooth = 1e-5, minFeasible = 2):
@@ -445,8 +604,9 @@ class LOG:
         kind of dict as solveTerminal.
 
         minFeasible: the doc's requirement that at least two nodes of 𝒯 admit a state before a maximum is
-        attempted -- selectMax enforces it per column anyway, but failing here gives the actual reason
-        instead of a column of NaNs. smooth: griddedSmooth1D on the selected τ_t(ι_{t-1}) before
+        attempted -- the selection enforces it per column anyway, but failing here gives the actual reason
+        instead of a column of NaNs. The selection is solveTerminal's rule, the frozen objective built from
+        the same zbarParts_t as z_t. smooth: griddedSmooth1D on the selected τ_t(ι_{t-1}) before
         interpolation (the profile inherits small kinks from the continuation interpolants, which the next
         period's numerical derivatives amplify); applied in log ι, since 𝒮_0 is geometrically spaced. Pass
         0 to disable. """
@@ -461,8 +621,10 @@ class LOG:
                                    "Widen 𝒮_0' or narrow 𝒯 -- the implied ι_t leaves the grid, it is not "
                                    "clipped back onto it.")
             d = self.stateGrid_t(τGrid, ι, t, tLag, θ, θ1, ε1, solp)
-            z = self._zState(self.zbar_t(d, θ, t, s = sGrad), τGrid, ε, ιGrid, t)
-            sel = roots1d.selectMax(τGrid, z, tol = tol)
+            parts = self.zbarParts_t(d, s = sGrad)
+            z = self._zState(self.zbarAtShares(θ, t, d['si_s_'], parts), τGrid, ε, ιGrid, t)
+            frozen = lambda cand: self.objectiveFrozen(cand, parts, θ, ε, ιGrid, t, tLag)
+            sel = self._select(τGrid, z, frozen, tol = tol)
             τ = sel['x']
             if smooth:
                 good = ~np.isnan(τ)
@@ -471,6 +633,7 @@ class LOG:
                 τ = np.clip(τ, settings['l'], settings['u'])   # a denoise must not leave the admissible set
             report = self.report_t(ιGrid, τ, ιCandGrid, t, tLag, θ, θ1, ε1, solp)
         report['z'], report['nMax'], report['atBound'] = z, sel['nMax'], sel['atBound']
+        report['nCand'], report['nEq'], report['fallback'] = sel['nCand'], sel['nEq'], sel['fallback']
         report['feasible'], report['nRoots'], report['ιOfτ'] = feasible, nRoots, ι
         return report
 
@@ -507,8 +670,9 @@ class LOG:
                       sGrad = 0.0, smooth = 1e-5, minFeasible = 2):
         """ The full LOG politico-economic equilibrium: the sequence of policy functions τ_t(ι_{t-1}),
         solved backwards from the terminal period (docs alg:LOG:gridsearch). Returns {t: solution dict},
-        one entry per db['t']. θ, ε: full length-T paths. No initial guess for the path is needed --
-        the recursion is self-starting from t=T.
+        one entry per db['t'], each carrying the per-state 'nCand'/'nEq'/'fallback'; their
+        multiplicitySummary is left in self.lastMultiplicity. θ, ε: full length-T paths. No initial guess
+        for the path is needed -- the recursion is self-starting from t=T.
 
         ιGrid: the state grid 𝒮_0, shared by every period (adjacent periods' interpolants must live on a
         common grid) -- resolved once here and pinned, defaulting to stateGrids['ι_'] else defaultIotaGrid
@@ -531,6 +695,7 @@ class LOG:
             sols[t] = self.solveBackward_t(sols[tIdx[pos + 1]], t, tLag, θ[pos], θ[pos + 1],
                                            ε[pos], ε[pos + 1], ιGrid, ιCandGrid, tol = tol,
                                            sGrad = sGrad, smooth = smooth, minFeasible = minFeasible)
+        self.lastMultiplicity = multiplicitySummary(sols)
         return sols
 
     #######################################################################
@@ -555,9 +720,10 @@ class LOG:
 
         Returns {'τ': pd.Series over db['t'], 'ι': (T-1,) the states this path generates (docs' ι_t,
         t=1..T-1, the db['txE'] domain), 'ι_': (T,) the state ENTERING each period, 'inGrid'/'atBound':
-        (T,) diagnostics}. Still not an equilibrium guarantee even at exact=True: τ_t itself comes off an
-        interpolant, and the re-solve reaches t+1 through the continuation interpolants. Which is why
-        model.py re-solves the economic equilibrium exactly at this τ.
+        (T,) diagnostics, 'multiplicity': multiplicitySummary(sols), the tax candidates' counts behind the
+        policy functions walked}. Still not an equilibrium guarantee even at exact=True: τ_t itself comes
+        off an interpolant, and the re-solve reaches t+1 through the continuation interpolants. Which is
+        why model.py re-solves the economic equilibrium exactly at this τ.
 
         strict: raise if an entering state leaves 𝒮_0 (or anything is non-finite -- including a period
         whose transition has no root inside 𝒮_0') instead of returning it. Past the grid's ends
@@ -582,7 +748,7 @@ class LOG:
         ιGrid = sols[tIdx[0]]['ι_']
         inGrid = (ι_ >= ιGrid[0]) & (ι_ <= ιGrid[-1]) & np.isfinite(ι_) & np.isfinite(τ)
         out = {'τ': pd.Series(τ, index = tIdx), 'ι': ι, 'ι_': ι_, 'inGrid': inGrid,
-               'atBound': np.isclose(τ, l) | np.isclose(τ, u)}
+               'atBound': np.isclose(τ, l) | np.isclose(τ, u), 'multiplicity': multiplicitySummary(sols)}
         if strict and not inGrid.all():
             bad = np.flatnonzero(~inGrid)
             raise RuntimeError(f"approximatePEE: the state entering t={list(tIdx[bad])} lies outside "
@@ -743,23 +909,91 @@ class CRRA(LOG):
     #######################################################################
     ##########   The state broadcast (docs eq:PEEcrraTerms + dv20)     #####
     #######################################################################
-    def _zStateCRRA(self, zbar, d, ε, ιGrid, t, g):
+    def _zStateCRRA(self, zbar, d, ε, ιGrid, t, g, zι = None):
         """ Extend z_t from 𝒯×𝒮 to 𝒯×𝒮×𝒮_0 (step 3 of alg:CRRA:grid). zbar and the entries of d are flat
         over g = CartesianGrid(τ, s_); returns (M, M_s, M_ι), matching the C-order flattening of
-        CartesianGrid(τ, s_, ι_).
+        CartesianGrid(τ, s_, ι_). zι: _stateTermCRRA's array when the caller already holds it.
 
         LOG's counterpart (_zState) is a rank-one correction; this one is not, because the level factor
         (c_{2,t}^0)^{1-1/ρ} depends on the state as well as the log-derivative. It is still a pure
         broadcast: c_{2,t}^0 = outer(τ_t,s_{t-1})·(ι_{t-1}+A_tτ_t) and eq:dv20 both read off objects the
-        (τ,s_) pass already produced, so no cell of 𝒯×𝒮×𝒮_0 re-enters eq:stateApprox. The weight is FOC's
-        own γ_{t-1,0}·ω20, read off it rather than restated. """
+        (τ,s_) pass already produced, so no cell of 𝒯×𝒮×𝒮_0 re-enters eq:stateApprox. """
+        zι = self._stateTermCRRA(d, ε, ιGrid, t, g) if zι is None else zι
+        return g.reshape(zbar)[..., None] + zι
+
+    def _stateTermCRRA(self, d, ε, ιGrid, t, g):
+        """ The old informal generation's term of z_t on 𝒯×𝒮×𝒮_0, (M, M_s, M_ι): the (c_{2,t}^0)^{1-1/ρ}
+        factor times eq:dv20, weighted by FOC's own γ_{t-1,0}·ω20, read off it rather than restated. It
+        carries no formal savings shares, so the frozen objective reuses it. d['dlnh'] must be set. """
         BG = self.BG
         p = 1 - 1/BG.get('ρ', t)
         r = lambda y: g.reshape(y)[..., None]                # (M, M_s, 1)
         τ3, h3, s_3, dlnh3 = r(d['τ']), r(d['h']), r(d['s_']), r(d['dlnh'])
         ι3 = ιGrid[None, None, :]
         dv20 = BG.c20(h3, s_3, ε, τ3, ι3, t)**p * BG.dlnc20_dτ(dlnh3, τ3, ε, ι3, t)
-        return g.reshape(zbar)[..., None] + BG.get('γ0[t-1]', t)*BG.ω20(t)*dv20
+        return BG.get('γ0[t-1]', t)*BG.ω20(t)*dv20
+
+    def zbarAtShares(self, θ, t, si_s_, parts):
+        """ The three (τ_t, s_{t-1}) terms of z_t (eq:PEEcrraTerms; eq:terminalPEECRRA at T) with the formal
+        retirees' term rebuilt at the shares si_s_ -- (c_{2,t}^i)^{1-1/ρ} (Eq EE:ci) times the closed-form
+        dln(c_{2,t}^i)/dτ_t (base.dlnc2i_dτ, which holds the shares fixed) -- and the young's terms from
+        parts (zbarParts_T/zbarParts_t: 'τ', 'p', 'h', 's_', 'dlnh', 'dv1i', 'dv10', flat and aligned with
+        si_s_). The dv20 slot is zero: _zStateCRRA adds the informal retirees' term. """
+        BG, τ = self.BG, parts['τ']
+        c2i = BG.c2i(parts['h'], parts['s_'], τ, θ, si_s_, t)
+        dv2i = c2i**parts['p'] * BG.dlnc2i_dτ(parts['dlnh'], τ, θ, si_s_, t)
+        return BG.FOC(parts['dv1i'], parts['dv10'], dv2i, np.zeros_like(τ), t)
+
+    def objectiveFrozen(self, cand, g, d, parts, zι, z, θ, ιGrid, t, tLag):
+        """ W_t(τ; D) over 𝒯 at the formal shares frozen at each candidate tax, per state (s_{t-1},
+        ι_{t-1}), up to a column constant -- the callback of roots1d.selectMaxFrozenND along 'τ' of
+        CartesianGrid(τ, s_, ι_) (eq:objectiveProfile). g: CartesianGrid(τ, s_), over which d and parts
+        are flat; zι: _stateTermCRRA, (M, M_s, M_ι); z: the consistent z_t, (M, M_s, M_ι), whose NaN cells
+        (infeasible, _positiveLevels included) stay NaN; cand: (K, M_s·M_ι). Returns (K, M, M_s·M_ι).
+
+        It is z_t re-evaluated with the formal shares frozen (zbarAtShares, the shares now per (s_, ι_)
+        column, plus zι) and integrated in τ (roots1d.cumtrapzColumns), plus Σ_i w_i (c_{2,t}^i)^{1-1/ρ}/
+        (1-1/ρ) (ln c at ρ = 1, _retireeLevel) at the first feasible node and the frozen shares; the
+        young's and the informal retirees' levels there are common to the column and drop out.
+        Integrating the condition rather than reading utility levels keeps the smoothed numerical
+        derivatives z_t carries at t < T (finding #18). The frozen shares are Eq EE:si_s at vintage t-1
+        at the candidate's tax and the hours there, B_t(s_{t-1}, h_t) with h interpolated linearly along
+        τ (_interpAtCand). """
+        BG = self.BG
+        τGrid, sGrid = g.values('τ'), g.values('s_')
+        M, Ms, Mι = τGrid.size, sGrid.size, ιGrid.size
+        N = Ms*Mι
+        cand = np.asarray(cand, dtype = float)
+        K = cand.shape[0]
+        # parts over (τ, s_) broadcast along ι_ -> flat over (τ, s_, ι_) in C-order
+        rep = {k: (np.repeat(np.asarray(v), Mι, axis = 0) if np.ndim(v) else v) for k, v in parts.items()}
+        hN = rep['h'].reshape(M, N)
+        hc = _interpAtCand(τGrid, hN, cand)                                # (K, N)
+        cF, hcF = cand.reshape(-1), hc.reshape(-1)
+        scF = np.broadcast_to(np.repeat(sGrid, Mι)[None, :], (K, N)).reshape(-1)
+        ok = np.isfinite(cF) & np.isfinite(hcF)
+        D = np.full((K*N, self.ni), np.nan)
+        if ok.any():
+            with np.errstate(divide = 'ignore', invalid = 'ignore'):
+                Bc = BG.B(scF[ok], hcF[ok], tLag)
+                Γc = BG.Γs(Bc, cF[ok], θ, tLag)
+                D[ok] = BG.si_s(Bc, cF[ok], θ, Γc, tLag)
+        p = parts['p']
+        oldW = self._oldFormalWeights(t)
+        zιN, infeasible = zι.reshape(M, N), np.isnan(np.asarray(z).reshape(M, N))
+        n = np.arange(N)
+        W = np.full((K, M, N), np.nan)
+        with np.errstate(divide = 'ignore', invalid = 'ignore'):
+            for k in range(K):
+                Dk = np.broadcast_to(D[k*N:(k+1)*N][None, :, :], (M, N, self.ni)).reshape(-1, self.ni)
+                zk = self.zbarAtShares(θ, t, Dk, rep).reshape(M, N) + zιN
+                zk = np.where(infeasible, np.nan, zk)
+                c2k = BG.c2i(rep['h'], rep['s_'], rep['τ'], θ, Dk, t)
+                Lk = _retireeLevel(oldW, c2k, p).reshape(M, N)
+                fin = np.isfinite(zk)
+                first = np.where(fin.any(axis = 0), fin.argmax(axis = 0), 0)
+                W[k] = roots1d.cumtrapzColumns(τGrid, zk) + Lk[first, n][None, :]
+        return W
 
     #######################################################################
     ##########   Terminal period (docs alg:CRRA:grid)                  #####
@@ -785,21 +1019,27 @@ class CRRA(LOG):
                 'Bi': Bi, 'Γs_': Γs_, 'si_s_': si_s_,
                 'tc1i': BG.tildec1i(h, zB, τ, θ, zΓs, t), 'c2i': BG.c2i(h, s_, τ, θ, si_s_, t)}
 
-    def zbar_T(self, d, θ, t):
-        """ The three (τ_T, s_{T-1}) terms of z_T (docs eq:terminalPEECRRA): each is a consumption level to
-        the power 1-1/ρ times the log-derivative the LOG case already implements. dυ_{1,T}^0/dτ_T = 0
-        regardless of ρ. The dv20 slot is left at zero -- _zStateCRRA supplies it. """
+    def zbarParts_T(self, d, t):
+        """ The terms of z_T that do not involve the formal retirees' shares, flat over (τ_T, s_{T-1}):
+        {'τ', 'p', 'h', 's_', 'dlnh', 'dv1i', 'dv10'}. dυ_{1,T}^i is (c̃_{1,T}^i)^{1-1/ρ} times the LOG
+        log-derivative; dυ_{1,T}^0/dτ_T = 0 regardless of ρ. """
         BG, τ = self.BG, d['τ']
         p = 1 - 1/BG.get('ρ', t)
-        dv1i = d['tc1i']**p * BG.dv1iTerminal_dτ_LOG(τ, t)
-        dv2i = d['c2i']**p * BG.dlnc2i_dτ(d['dlnh'], τ, θ, d['si_s_'], t)
-        return BG.FOC(dv1i, np.zeros_like(τ), dv2i, np.zeros_like(τ), t)
+        return {'τ': τ, 'p': p, 'h': d['h'], 's_': d['s_'], 'dlnh': d['dlnh'],
+                'dv1i': d['tc1i']**p * BG.dv1iTerminal_dτ_LOG(τ, t), 'dv10': np.zeros_like(τ)}
+
+    def zbar_T(self, d, θ, t):
+        """ The three (τ_T, s_{T-1}) terms of z_T (docs eq:terminalPEECRRA): each is a consumption level to
+        the power 1-1/ρ times the log-derivative the LOG case already implements; zbarAtShares at the
+        consistent shares d['si_s_']. The dv20 slot is left at zero -- _zStateCRRA supplies it. """
+        return self.zbarAtShares(θ, t, d['si_s_'], self.zbarParts_T(d, t))
 
     def solveTerminal(self, θ, ε, t = None, tol = 0.0, ιGrid = None, sGrid = None):
         """ Terminal-period τ_T(s_{T-1}, ι_{T-1}) over the state grid 𝒮×𝒮_0, in one vectorized pass.
         Feasibility condition 3 (positive consumption levels) is the only one that can bite at T, and only
-        through c_{2,T}^i; infeasible cells are NaN and selectMax maximises each state over its own
-        surviving sub-grid. Returns report_T's dict plus z and selectMax's diagnostics.
+        through c_{2,T}^i; infeasible cells are NaN and the selection (LOG's rule, per state, with the
+        3-D objectiveFrozen) treats each state over its own surviving sub-grid. Returns report_T's dict
+        plus z and the per-state 'nMax'/'atBound'/'nCand'/'nEq'/'fallback' diagnostics.
 
         Deliberately NOT guarded by _requireCRRA. The terminal period never forms ĉ_1, so it stays
         well-defined at ρ=1, where every level factor collapses to c^0=1 and B_T^i to the primitive β_i --
@@ -814,12 +1054,16 @@ class CRRA(LOG):
         g = CartesianGrid(τ = τGrid, s_ = sGrid)
         with self.BG.cacheParams():
             d = self.stateGrid_T(g.flat['τ'], g.flat['s_'], θ, t, tLag)
-            zbar = np.where(self._positiveLevels(d), self.zbar_T(d, θ, t), np.nan)
-            z = self._zStateCRRA(zbar, d, ε, ιGrid, t, g)
+            parts = self.zbarParts_T(d, t)
+            zbar = np.where(self._positiveLevels(d), self.zbarAtShares(θ, t, d['si_s_'], parts), np.nan)
+            zι = self._stateTermCRRA(d, ε, ιGrid, t, g)
+            z = self._zStateCRRA(zbar, d, ε, ιGrid, t, g, zι = zι)
             g3 = CartesianGrid(τ = τGrid, s_ = sGrid, ι_ = ιGrid)
-            sel = roots1d.selectMaxND(g3, z.reshape(-1), 'τ', tol = tol)
+            frozen = lambda cand: self.objectiveFrozen(cand, g, d, parts, zι, z, θ, ιGrid, t, tLag)
+            sel = self._selectND(g3, z.reshape(-1), 'τ', frozen, tol = tol)
             report = self.report_T(sGrid, ιGrid, sel['x'], θ, t, tLag)
         report['z'], report['nMax'], report['atBound'] = z, sel['nMax'], sel['atBound']
+        report['nCand'], report['nEq'], report['fallback'] = sel['nCand'], sel['nEq'], sel['fallback']
         report['feasible'] = g.reshape(~np.isnan(zbar))
         return report
 
@@ -841,7 +1085,7 @@ class CRRA(LOG):
         SOLVED path, plus the two 2-D interpolants period T-1 calls. h_T, not Θ_{h,T}: with s_{T-1} a
         state the level is a function of the state, and B_T needs it as a level (docs §PEE).
 
-        τ arrives shaped (M_s, M_ι) from selectMaxND; stateGrid_T is called on the flattened pair, so the
+        τ arrives shaped (M_s, M_ι) from the selection; stateGrid_T is called on the flattened pair, so the
         state grids are meshed here rather than crossed by CartesianGrid. """
         s2, ι2 = np.meshgrid(sGrid, ιGrid, indexing = 'ij')
         d = self.stateGrid_T(τ.reshape(-1), s2.reshape(-1), θ, t, tLag)
@@ -968,32 +1212,37 @@ class CRRA(LOG):
         d['c2i'] = BG.c2i(d['h'], s_, τ, θ, d['si_s_'], t)
         return d
 
-    def zbar_t(self, d, g, θ, t, s = 0.0):
-        """ Step 3 of docs alg:CRRA:grid: the three (τ_t, s_{t-1}) terms of z_t. g: the CartesianGrid the
-        dict's flat arrays live on, with τ as its first axis -- the numerical derivatives run along τ
-        *within each s_{t-1}*, so flat vectors are viewed as (M, M_s, ...) before differentiating and
-        flattened back after.
-
-        Three derivatives are numerical (dln h_t, dln ĉ_{1,t}^i, dln ĉ_{1,t}^0), each composing two
-        interpolated surfaces; the two old-generation log-derivatives are closed form -- mandatorily for
-        dv2i (base.py's dlnc2i_dτ), by choice for dv20, which _zStateCRRA supplies. Infeasible cells stay
-        NaN throughout. """
+    def zbarParts_t(self, d, g, t, s = 0.0):
+        """ The terms of z_t that do not involve the formal retirees' shares, flat over g = CartesianGrid(τ,
+        s_): {'τ', 'p', 'h', 's_', 'dlnh', 'dv1i', 'dv10'}, including every numerical τ-derivative (the
+        splines dominate a period's cost), computed once and shared by zbar_t and objectiveFrozen. The
+        derivatives run along τ *within each s_{t-1}*, so flat vectors are viewed as (M, M_s, ...) before
+        differentiating and flattened back after. Three are numerical (dln h_t, dln ĉ_{1,t}^i,
+        dln ĉ_{1,t}^0), each composing two interpolated surfaces. Sets d['dlnh'], which _stateTermCRRA
+        reads. Infeasible cells stay NaN throughout. """
         BG, τGrid = self.BG, g.values('τ')
         p = 1 - 1/BG.get('ρ', t)
         grad = lambda y: self._gradProfile(τGrid, g.reshape(y), s).reshape(np.shape(y))
         dlnh = grad(np.log(d['h']))
-        d['dlnh'] = dlnh                                     # _zStateCRRA needs it too
+        d['dlnh'] = dlnh                                     # _stateTermCRRA needs it too
         dv1i = d['hatc1iPow'] * grad(d['lnhatc1i'])          # already a log; differentiate it directly
         dv10 = d['hatc10Pow'] * grad(d['lnhatc10'])
-        dv2i = d['c2i']**p * BG.dlnc2i_dτ(dlnh, d['τ'], θ, d['si_s_'], t)
-        return BG.FOC(dv1i, dv10, dv2i, np.zeros_like(d['τ']), t)
+        return {'τ': d['τ'], 'p': p, 'h': d['h'], 's_': d['s_'], 'dlnh': dlnh, 'dv1i': dv1i, 'dv10': dv10}
+
+    def zbar_t(self, d, g, θ, t, s = 0.0):
+        """ Step 3 of docs alg:CRRA:grid: the three (τ_t, s_{t-1}) terms of z_t, zbarAtShares at the
+        consistent shares d['si_s_']. g: the CartesianGrid the dict's flat arrays live on, with τ as its
+        first axis. The two old-generation log-derivatives are closed form -- mandatorily for dv2i
+        (base.py's dlnc2i_dτ), by choice for dv20, which _zStateCRRA supplies. """
+        return self.zbarAtShares(θ, t, d['si_s_'], self.zbarParts_t(d, g, t, s))
 
     def solveBackward_t(self, solp, t, tLag, θ, θ1, ε, ε1, sGrid, ιGrid, sCandGrid, ιCandGrid,
                         tol = 0.0, sGrad = 0.0, smooth = 1e-5, minFeasible = 2):
         """ One period of the backward recursion (steps 1-4 of docs alg:CRRA:grid), returning the same kind
         of dict as solveTerminal. The feasibility mask is 2-dimensional -- conditions 1-3 all live on
         𝒯×𝒮 and none depends on ι_{t-1} -- so the selection step is not repeated per ι-node with a
-        different feasible sub-grid each time. """
+        different feasible sub-grid each time. The selection is solveTerminal's, the frozen objective
+        built from the same zbarParts_t and informal retirees' term as z_t. """
         self._requireCRRA(t)
         τGrid = self.GS['PEE']['solGrids']['τ']
         g = CartesianGrid(τ = τGrid, s_ = sGrid)
@@ -1007,13 +1256,17 @@ class CRRA(LOG):
                 raise RuntimeError(f"t={t}: only {int(feasible.sum(axis = 0).min())} of {τGrid.size} nodes "
                                    f"of 𝒯 are feasible at some s_{{t-1}} (need {minFeasible}). Widen 𝒮'/𝒮_0' "
                                    "or narrow 𝒯 -- states leaving the grid are reported, never clipped.")
-            zbar = np.where(feasible.reshape(-1), self.zbar_t(d, g, θ, t, s = sGrad), np.nan)
-            z = self._zStateCRRA(zbar, d, ε, ιGrid, t, g)
+            parts = self.zbarParts_t(d, g, t, s = sGrad)
+            zbar = np.where(feasible.reshape(-1), self.zbarAtShares(θ, t, d['si_s_'], parts), np.nan)
+            zι = self._stateTermCRRA(d, ε, ιGrid, t, g)
+            z = self._zStateCRRA(zbar, d, ε, ιGrid, t, g, zι = zι)
             g3 = CartesianGrid(τ = τGrid, s_ = sGrid, ι_ = ιGrid)
-            sel = roots1d.selectMaxND(g3, z.reshape(-1), 'τ', tol = tol)
+            frozen = lambda cand: self.objectiveFrozen(cand, g, d, parts, zι, z, θ, ιGrid, t, tLag)
+            sel = self._selectND(g3, z.reshape(-1), 'τ', frozen, tol = tol)
             τ = self._smooth2D(sel['x'], sGrid, ιGrid, smooth)
             report = self.report_t(sGrid, ιGrid, τ, sCandGrid, ιCandGrid, t, tLag, θ, θ1, ε1, solp)
         report['z'], report['nMax'], report['atBound'] = z, sel['nMax'], sel['atBound']
+        report['nCand'], report['nEq'], report['fallback'] = sel['nCand'], sel['nEq'], sel['fallback']
         report['feasible'], report['nRootsS'], report['nRootsι'] = feasible, nRootsS, nRootsι
         report['sOfτ'], report['ιOfτ'] = sSol, ιSol
         return report
@@ -1086,7 +1339,8 @@ class CRRA(LOG):
                       tol = 0.0, sGrad = 0.0, smooth = 1e-5, minFeasible = 2):
         """ The full CRRA politico-economic equilibrium: the sequence of policy functions
         τ_t(s_{t-1}, ι_{t-1}), solved backwards from the terminal period (docs alg:CRRA:grid). Returns
-        {t: solution dict}, one entry per db['t'].
+        {t: solution dict}, one entry per db['t'], each carrying the per-state 'nCand'/'nEq'/'fallback';
+        their multiplicitySummary is left in self.lastMultiplicity.
 
         The four grids are resolved once here and pinned across periods (adjacent periods' interpolants
         must live on a common state grid): 𝒮/𝒮_0 default to the stateGrids slots else defaultSGrid/
@@ -1113,6 +1367,7 @@ class CRRA(LOG):
                                            ε[pos], ε[pos + 1], sGrid, ιGrid, sCandGrid, ιCandGrid,
                                            tol = tol, sGrad = sGrad, smooth = smooth,
                                            minFeasible = minFeasible)
+        self.lastMultiplicity = multiplicitySummary(sols)
         return sols
 
     #######################################################################
@@ -1148,8 +1403,9 @@ class CRRA(LOG):
         db['t'][0], normally model.py's initialStatePEE.
 
         Returns {'τ': pd.Series over db['t'], 'Γs','h','s','ι': (T-1,) over db['txE'], 's_','ι_': (T,)
-        entering states, 'inGrid'/'inReach'/'atBound': (T,) diagnostics}. Γs/h/s are model.py's warm start
-        for the exact CRRA equilibrium system, never a solution in themselves.
+        entering states, 'inGrid'/'inReach'/'atBound': (T,) diagnostics, 'multiplicity':
+        multiplicitySummary(sols)}. Γs/h/s are model.py's warm start for the exact CRRA equilibrium system,
+        never a solution in themselves.
 
         strict: raise rather than return a path that (i) leaves 𝒮×𝒮_0, where the 2-D interpolants
         extrapolate, (ii) leaves the previous period's reachable set, or (iii) goes non-finite. The last
@@ -1189,7 +1445,8 @@ class CRRA(LOG):
             lo_s, hi_s, lo_ι, hi_ι = self._reachBox(sols[tIdx[pos - 1]])
             inReach[pos] = (lo_s <= s_[pos] <= hi_s) and (lo_ι <= ι_[pos] <= hi_ι)
         out = {'τ': pd.Series(τ, index = tIdx), 'Γs': Γs, 'h': h, 's': s, 'ι': ι, 's_': s_, 'ι_': ι_,
-               'inGrid': inGrid, 'inReach': inReach, 'atBound': np.isclose(τ, l) | np.isclose(τ, u)}
+               'inGrid': inGrid, 'inReach': inReach, 'atBound': np.isclose(τ, l) | np.isclose(τ, u),
+               'multiplicity': multiplicitySummary(sols)}
         if strict and not (inGrid & inReach).all():
             bad = np.flatnonzero(~(inGrid & inReach))
             raise RuntimeError(f"approximatePEE: the state entering t={list(tIdx[bad])} is outside "

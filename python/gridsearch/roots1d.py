@@ -24,9 +24,22 @@ merely grazes zero without crossing, which for maximum-detection is a real error
 detail. Pass tol > 0 deliberately when near-zeros should count.
 
 Selecting among several crossings. Solving f = 0 is only a *necessary* condition for a maximum: with
-several downward crossings the first one located need not be the global one. objectiveProfile/selectMax
-resolve this without any additional evaluations of f -- see selectMax's docstring.
+several downward crossings the first one located need not be the global one, and a corner may beat
+them all. Two rules live here:
+
+  selectMaxFrozen   the rule (num_robustroot.tex, eq:candidates / eq:equilibriumTest). f is a first order
+                    condition evaluated with a predetermined state substituted consistently with each
+                    node, so f is not the derivative of any one objective. Candidates are every crossing
+                    of f plus the endpoints; each is tested and ranked on the objective evaluated at ITS
+                    OWN frozen state, which the caller supplies through a callback. Reports how many
+                    candidates there were and how many are equilibria, candidates within one cell of
+                    each other counting as one.
+  selectMax         the earlier criterion: downward crossings and endpoints ranked by the integral of f
+                    along the grid. Right when the state does not move along the grid; otherwise it
+                    compares candidates at different states. Kept as selectMaxFrozen's fallback where no
+                    candidate passes the test, and for callers not yet wired to the callback.
 """
+import warnings
 import numpy as np
 
 _KINDS = ('any', 'down', 'up')
@@ -260,7 +273,13 @@ def objectiveProfile(x, f):
 
 
 def selectMax(x, f, tol = 0.0):
-    """ The global maximiser of ∫f over [x[0], x[-1]], per column (eq:candidates).
+    """ The global maximiser of ∫f over [x[0], x[-1]], per column -- the EARLIER selection criterion.
+
+    Read the module header: when f substitutes a predetermined state consistently with each node, ∫f is
+    neither the objective at a frozen state nor the consistent one, so this rule compares candidates at
+    different states. It is exact when the state does not move along x, and it is what selectMaxFrozen
+    falls back on (flagged) where no candidate passes the equilibrium test. New callers should use
+    selectMaxFrozen.
 
     Rationale. Locating a root of f only imposes a necessary condition; when f has several downward
     crossings, "the first root found" is not in general the maximum, and it may not even beat the
@@ -357,5 +376,275 @@ def selectMaxND(grid, f, name, tol = 0.0):
     and `.stateShape`, and keeping the import out means roots1d stays a self-contained module about
     crossings on a grid, with no dependency on how the grid was built. """
     sel = selectMax(grid.values(name), grid.asColumns(f, name), tol = tol)
+    shape = grid.stateShape(name)
+    return {k: np.asarray(v).reshape(shape) for k, v in sel.items()}
+
+
+# ---------------------------------------------------------------------------------------------------
+# Selection at frozen predetermined states (num_robustroot.tex, "Selecting among several roots")
+# ---------------------------------------------------------------------------------------------------
+def interpAlong(x, Y, cand):
+    """ Linear interpolation of Y (M, N, ...) along its first axis, at cand (K, N) per column: (K, N, ...).
+    A NaN candidate gives NaN. Candidates outside [x[0], x[-1]] are extrapolated from the end cell. """
+    x = np.asarray(x, dtype = float)
+    Y = np.asarray(Y, dtype = float)
+    cand = np.asarray(cand, dtype = float)
+    K, N = cand.shape
+    c = np.where(np.isfinite(cand), cand, x[0])
+    k0 = np.clip(np.searchsorted(x, c, side = 'right') - 1, 0, x.size - 2)
+    w = (c - x[k0]) / (x[k0 + 1] - x[k0])
+    n = np.broadcast_to(np.arange(N), (K, N))
+    shape = (K, N) + (1,) * (Y.ndim - 2)
+    out = (1 - w.reshape(shape)) * Y[k0, n] + w.reshape(shape) * Y[k0 + 1, n]
+    out[~np.isfinite(cand)] = np.nan
+    return out
+
+
+def cumtrapzColumns(x, Z):
+    """ ∫_{x[0]}^{x} Z along the first axis, per column, by the trapezoid rule, normalised to 0 at the
+    first node: the objective up to a column constant when Z is its derivative along x. NaN nodes stay
+    NaN; a NaN gap inside a column contributes nothing, so values on the two sides of a gap are not
+    comparable (feasibility is a contiguous interval in every use here). """
+    x = np.asarray(x, dtype = float)
+    Z = np.asarray(Z, dtype = float)
+    cells = 0.5 * (Z[1:] + Z[:-1]) * np.diff(x)[:, None]
+    V = np.vstack([np.zeros((1, Z.shape[1])), np.nancumsum(cells, axis = 0)])
+    V[np.isnan(Z)] = np.nan
+    return V
+
+
+def _quadStencil(x, W, cand):
+    """ W (K, M, N) sampled on x (M >= 3); the quadratic through the three nodes nearest cand[k, n] (the
+    nearest node with a neighbour on each side), evaluated at cand[k, n]: (K, N). Non-finite where a
+    stencil node is non-finite; a NaN candidate is evaluated at x[0], so mask it at the call site. """
+    x = np.asarray(x, dtype = float)
+    M = x.size
+    K, N = cand.shape
+    c = np.where(np.isfinite(cand), cand, x[0])
+    k1 = np.clip(np.searchsorted(x, c, side = 'right') - 1, 0, M - 2)
+    k1 = np.where(c - x[k1] > x[k1 + 1] - c, k1 + 1, k1)       # the nearest node ...
+    k1 = np.clip(k1, 1, M - 2)                                   # ... with a neighbour on each side
+    n = np.broadcast_to(np.arange(N), (K, N))
+    kk = np.broadcast_to(np.arange(K)[:, None], (K, N))
+    x0, x1, x2 = x[k1 - 1], x[k1], x[k1 + 1]
+    y0, y1, y2 = W[kk, k1 - 1, n], W[kk, k1, n], W[kk, k1 + 1, n]
+    with np.errstate(invalid = 'ignore'):
+        return (y0 * (c - x1) * (c - x2) / ((x0 - x1) * (x0 - x2))
+                + y1 * (c - x0) * (c - x2) / ((x1 - x0) * (x1 - x2))
+                + y2 * (c - x0) * (c - x1) / ((x2 - x0) * (x2 - x1)))
+
+
+def _quadAt(x, W, cand):
+    """ W (K, M, N) sampled on x; the quadratic through the three nodes nearest cand[k, n], evaluated at
+    cand[k, n]. Falls back to linear interpolation where a stencil node is non-finite (a candidate next
+    to an infeasible cell) or the grid has fewer than three nodes; _stencilFallback says where. NaN
+    candidates give NaN. """
+    x = np.asarray(x, dtype = float)
+    K, N = cand.shape
+    lin = np.stack([interpAlong(x, W[k], cand[k][None, :])[0] for k in range(K)])
+    if x.size < 3:
+        return lin
+    q = _quadStencil(x, W, cand)
+    out = np.where(np.isfinite(q), q, lin)
+    out[~np.isfinite(cand)] = np.nan
+    return out
+
+
+def _stencilFallback(x, W, cand):
+    """ (K, N) bool, True where _quadAt(x, W, cand) is the linear interpolant rather than the quadratic:
+    a node of the three-node stencil is non-finite, or the grid has fewer than three nodes. False at NaN
+    candidates. """
+    cand = np.asarray(cand, dtype = float)
+    fin = np.isfinite(cand)
+    if np.asarray(x).size < 3:
+        return fin
+    return fin & ~np.isfinite(_quadStencil(x, W, cand))
+
+
+def _allRootsRagged(x, fm, tol):
+    """ allRoots(kind = 'any') per column, each column on its own feasible (non-NaN) sub-grid, grouped by
+    NaN pattern as selectMax does. Returns (K, N), NaN-padded; (0, N) when no column has a crossing. """
+    M, N = fm.shape
+    pats, inv = np.unique(np.isnan(fm), axis = 1, return_inverse = True)
+    found = [np.empty((0, 0))] * N
+    kmax = 0
+    for p in range(pats.shape[1]):
+        ok = ~pats[:, p]
+        cols = np.flatnonzero(np.asarray(inv).reshape(-1) == p)
+        if ok.sum() < 2:
+            continue
+        r = allRoots(x[ok], fm[np.ix_(ok, cols)], kind = 'any', tol = tol)
+        if r.ndim == 1:
+            r = r[:, None]
+        kmax = max(kmax, r.shape[0])
+        for j, col in enumerate(cols):
+            found[col] = r[:, j:j + 1]
+    out = np.full((kmax, N), np.nan)
+    for col in range(N):
+        r = found[col]
+        if r.size:
+            out[:r.shape[0], col] = r[:, 0]
+    return out
+
+
+def _clusterRepresentatives(cand, isEq, Wc, radius):
+    """ cand, isEq, Wc (K, N), rows 0 and 1 the endpoints, rows 2: the crossings. Per column, the passing
+    candidates (isEq) are grouped by |x_i - x_j| <= radius, transitively; returns (K, N) bool, True at
+    each group's representative: its crossing with the highest Wc, or, in a group of endpoints alone, the
+    endpoint with the higher Wc (ties to the lower row). """
+    K, N = cand.shape
+    xs = np.where(isEq, cand, np.inf)
+    order = np.argsort(xs, axis = 0, kind = 'stable')
+    srt = np.take_along_axis(xs, order, axis = 0)
+    with np.errstate(invalid = 'ignore'):
+        joined = np.diff(srt, axis = 0) <= radius                       # inf - inf is NaN: never joined
+    gid = np.empty((K, N), dtype = int)
+    np.put_along_axis(gid, order, np.vstack([np.zeros((1, N), dtype = int), np.cumsum(~joined, axis = 0)]),
+                      axis = 0)
+    rep = isEq.copy()
+    for i in range(K):
+        for j in range(K):
+            if i == j:
+                continue
+            if (j >= 2) != (i >= 2):
+                beats = j >= 2                                          # a crossing displaces an endpoint
+            else:
+                beats = (Wc[j] > Wc[i]) | ((Wc[j] == Wc[i]) & (j < i))
+            rep[i] &= ~(isEq[j] & (gid[j] == gid[i]) & beats)
+    return rep
+
+
+def selectMaxFrozen(x, f, frozen, tol = 0.0, rtol = 1e-9, select = 'objective'):
+    """ Equilibrium selection for a first order condition that substitutes a predetermined state
+    consistently with each node (eq:candidates, eq:equilibriumTest).
+
+    x: (M,) sorted grid. f: (M,) or (M, N), the consistent condition z(τ) = ∂W(τ; D)/∂τ at D = D(τ).
+    frozen: callable cand -> W, with cand (K, N) candidate locations (NaN-padded) and W (K, M, N) the
+        objective along x at the state frozen at cand[k, n] -- the SAME frozen state at every node of the
+        column. W may be defined up to a constant common to the column (it may not vary across k). NaN
+        where cand is NaN or the node is infeasible.
+
+    Per column: the candidates are the two endpoints of the feasible sub-grid and every crossing of f on
+    it, in either direction (an upward crossing of the consistent condition can be a maximum at its own
+    frozen state, and the test below is what decides). A candidate is an equilibrium if the objective at
+    its own frozen state is globally maximised there, in one of three forms:
+      value  its own value -- the node value at an endpoint, the quadratic through the three nearest
+             nodes at an interior crossing (_quadAt) -- is at least the maximum over the nodes, within
+             rtol·(|max| + range). Endpoints pass on this form alone: their value is a node value, read
+             exactly, so a higher node elsewhere is a better choice, not a reading error.
+      node   an interior crossing whose nearest node attains that maximum (within the same slack). The
+             crossing is located on f's interpolant and the discrete peak of its frozen objective on
+             that objective's node values; the two differ at second order, so a crossing a hair from a
+             node can fall short of the node's exact value without the node being a better choice.
+      cell   an interior crossing whose three-node stencil contains a non-finite node (_stencilFallback:
+             next to an infeasible node, where _quadAt can only interpolate linearly and understates a
+             maximum's value), and whose maximising node lies within one cell of it.
+    A crossing with a full stencil whose objective peaks at a node farther than its nearest one fails.
+    Passing candidates closer than one cell are one equilibrium at the grid's resolution: per column they
+    are grouped by |x_i - x_j| <= 1.001·cell (transitively), and a group is represented by its crossing
+    with the highest own objective, or by its endpoint when it holds endpoints alone
+    (_clusterRepresentatives). A crossing is located at sub-grid precision and moves continuously with
+    the data, whereas which of an endpoint and a crossing a cell apart ranks higher at their different
+    frozen states flips with the grid (finding #5). nEq counts the groups. Among them `select` picks
+    'objective' (the highest own objective: payoff dominance in the political objective, the rule the
+    documentation states), 'lowest' or 'highest' (the smallest or largest x). Where no candidate passes,
+    selectMax's choice is returned and `fallback` is set, so that a recursion is not stopped by one state.
+
+    Accuracy. The crossings are located from the interpolant of f, O(h²); an interior candidate's own
+    value moves with that location at first order (its frozen state moves with it), so the values rank
+    well-separated candidates correctly and no more -- the same standard the integral criterion met. The
+    equilibrium test compares a candidate with the grid NODES of its own objective, which understate a
+    competing interior maximum by O(h²); a near-tie can go either way, a clear one cannot. The callback
+    must give an objective CONSISTENT with f: where f carries smoothed numerical derivatives, W is the
+    integral of f re-evaluated at the frozen state (cumtrapzColumns), not the raw levels, or the raw
+    kinks the smoothing removed reappear as spurious failures of the test.
+
+    Returns {'x', 'atBound', 'nMax' (downward crossings of f, selectMax's count), 'nCand' (candidates
+    tested), 'nEq' (equilibria: groups of passing candidates), 'nEqRaw' (passing candidates before
+    grouping), 'nMerged' (= nEqRaw - nEq, candidates absorbed into a group), 'fallback', 'W' (the
+    selected equilibrium's own objective value, NaN on fallback)}; (N,) arrays, scalars when f was 1d.
+    Columns with fewer than two feasible nodes give x = NaN, nCand = nEq = 0 and fallback = False:
+    nothing to choose. """
+    if select not in ('objective', 'lowest', 'highest'):
+        raise ValueError(f"select must be 'objective', 'lowest' or 'highest', got {select!r}.")
+    xg, fm, wasFlat = _checkInputs(x, f)
+    M, N = fm.shape
+    legacy = selectMax(xg, fm, tol = tol)
+    if wasFlat:
+        legacy = {k: np.atleast_1d(v) for k, v in legacy.items()}
+
+    finite = np.isfinite(fm)
+    nFeas = finite.sum(axis = 0)
+    usable = nFeas >= 2
+    first = np.where(usable, finite.argmax(axis = 0), 0)
+    last = np.where(usable, M - 1 - finite[::-1, :].argmax(axis = 0), 0)
+    roots = _allRootsRagged(xg, fm, tol)
+    cand = np.vstack([xg[first][None, :], xg[last][None, :], roots])
+    cand[:, ~usable] = np.nan
+    # a crossing located on an endpoint duplicates the corner candidate: keep the corner
+    span = xg[-1] - xg[0]
+    dup = (np.abs(cand[2:] - cand[0][None, :]) <= 1e-12 * span) | (np.abs(cand[2:] - cand[1][None, :]) <= 1e-12 * span)
+    cand[2:][dup] = np.nan
+    K = cand.shape[0]
+
+    W = np.asarray(frozen(cand), dtype = float)
+    if W.shape != (K, M, N):
+        raise ValueError(f"frozen(cand) must return shape {(K, M, N)}, got {W.shape}.")
+
+    n = np.arange(N)
+    Wc = np.full((K, N), np.nan)
+    Wc[0] = W[0, first, n]
+    Wc[1] = W[1, last, n]
+    linear = np.zeros((K, N), dtype = bool)                         # read off the linear interpolant
+    if K > 2:
+        Wc[2:] = _quadAt(xg, W[2:], cand[2:])
+        linear[2:] = _stencilFallback(xg, W[2:], cand[2:])
+    with np.errstate(invalid = 'ignore'), warnings.catch_warnings():
+        warnings.simplefilter('ignore', RuntimeWarning)            # all-NaN slices are legitimate here
+        Wmax = np.nanmax(W, axis = 1)                              # (K, N)
+        Wmin = np.nanmin(W, axis = 1)
+    slack = rtol * (np.abs(Wmax) + (Wmax - Wmin))
+    anyFinite = np.isfinite(W).any(axis = 1)                           # (K, N)
+    jmax = np.where(anyFinite, np.argmax(np.where(np.isfinite(W), W, -np.inf), axis = 1), 0)
+    cell = float(np.max(np.diff(xg)))
+    near = linear & anyFinite & (np.abs(xg[jmax] - np.where(np.isfinite(cand), cand, np.inf)) <= 1.001 * cell)
+    c = np.where(np.isfinite(cand), cand, xg[0])
+    k0 = np.clip(np.searchsorted(xg, c, side = 'right') - 1, 0, M - 2)
+    jn = np.where(c - xg[k0] > xg[k0 + 1] - c, k0 + 1, k0)            # each candidate's nearest node
+    with np.errstate(invalid = 'ignore'):
+        atNode = W[np.arange(K)[:, None], jn, n] >= Wmax - slack
+    atNode[:2] = False                                               # crossings only
+    isEq = np.isfinite(cand) & np.isfinite(Wc) & np.isfinite(Wmax) & ((Wc >= Wmax - slack) | atNode | near)
+    rep = _clusterRepresentatives(cand, isEq, Wc, 1.001 * cell)
+    nEqRaw = isEq.sum(axis = 0)
+    nEq = rep.sum(axis = 0)
+    nCand = np.isfinite(cand).sum(axis = 0)
+
+    if select == 'objective':
+        score = Wc
+    elif select == 'lowest':
+        score = -cand
+    else:
+        score = cand
+    score = np.where(rep, score, -np.inf)
+    best = np.argmax(score, axis = 0)
+    xSel = cand[best, n].copy()
+    WSel = Wc[best, n].copy()
+    atBound = best < 2
+    fallback = usable & (nEq == 0)
+    xSel[nEq == 0] = legacy['x'][nEq == 0]
+    WSel[nEq == 0] = np.nan
+    atBound = np.where(nEq == 0, legacy['atBound'], atBound)
+    out = {'x': xSel, 'atBound': atBound, 'nMax': legacy['nMax'], 'nCand': nCand, 'nEq': nEq,
+           'nEqRaw': nEqRaw, 'nMerged': nEqRaw - nEq, 'fallback': fallback, 'W': WSel}
+    return {k: v[0] for k, v in out.items()} if wasFlat else out
+
+
+def selectMaxFrozenND(grid, f, name, frozen, **kwargs):
+    """ selectMaxFrozen over a Cartesian grid: search along `name`, one solution per state combination,
+    as selectMaxND. `frozen` receives cand (K, N) with the columns in grid.asColumns order (C-order over
+    the other axes) and must return (K, M, N) in the same order; when `name` is the grid's first axis a
+    flat array over the grid reshapes to (M, N) directly. Every entry comes back in grid.stateShape(name). """
+    sel = selectMaxFrozen(grid.values(name), grid.asColumns(f, name), frozen, **kwargs)
     shape = grid.stateShape(name)
     return {k: np.asarray(v).reshape(shape) for k, v in sel.items()}

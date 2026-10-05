@@ -197,6 +197,10 @@ US = {
         # θ at the frVoting choice, rho = 2), so this grid sets the resolution of the printed design: 13
         # nodes gave 0.285, 21 gave 0.273 (2026-09-11).
         'nCand2D':   41,
+        # The design layer of the exact recursion (runESCcrra.py --designRule/--Ma): algorithm esc:crra2D of
+        # writing/US/num_esc.tex, the root in a, adopted on the pilot (python/US/RESEARCH_LOG.md, 2026-10-02).
+        'designRule': 'root',
+        'Ma':         5,
         # The pre-publication timing checks (TODO R3): the permanent choice traced in rho under CRRA.
         'ρPermanentCRRA': [1.1, 1.2, 1.3, 1.4, 1.5, 2.0],
         # The UK as host of the French characteristics under the chosen design (appendix app:UKUS), at the

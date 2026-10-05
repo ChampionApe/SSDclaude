@@ -15,8 +15,19 @@ or `(M,N)` on one sorted grid.
   `f` is the derivative of an objective. `allRoots` returns `(Kmax, N)` NaN-padded.
 - Exact zeros are handled at any `tol` via a sign-run rule; a `robustRoot` corner is an identically zero
   outer node. `tol` defaults to 0.
-- `objectiveProfile` is the cumulative trapezoid of the same interpolant; `selectMax` maximises over
-  endpoints and downward crossings and returns `nMax`, `atBound`. **Pass the interior grid only.**
+- `selectMaxFrozen`/`selectMaxFrozenND` is the selection rule (`num_robustroot.tex`, `eq:candidates`,
+  `eq:equilibriumTest`): candidates are the feasible endpoints and every crossing of the consistent FOC;
+  the caller's callback returns the objective along the grid at each candidate's frozen predetermined
+  state (in the US solvers the FOC re-evaluated at frozen shares, integrated by `cumtrapzColumns`, plus
+  the retirees' level at the anchor node); a candidate is an equilibrium if it maximises its own
+  objective (value within `rtol`; a crossing also when its nearest node attains the maximum, or, if its
+  quadratic stencil touches an infeasible node, the maximising node is within one cell; an endpoint on
+  value alone); passing candidates within one cell of each other are one equilibrium, represented by the
+  crossing; among equilibria the highest own objective wins. Returns `x`, `atBound`, `nMax`, `nCand`,
+  `nEq`, `nEqRaw`, `nMerged`, `fallback`, `W`. `selectMax` is the
+  earlier integral criterion (`objectiveProfile`), kept as the fallback where no candidate passes and
+  for callers not yet wired (the informal models). `interpAlong` and `_quadAt` are its helpers. **Pass
+  the interior grid only.**
 - Vectorised across columns (`np.maximum.accumulate`); `_columnCrossings` is the readable rule and the
   test oracle. Ragged columns are grouped by NaN pattern (`np.unique(..., axis=1)`), 1–2 patterns per 900
   columns in practice.
@@ -59,7 +70,9 @@ encoding), `test_interp.py` (all of `interp`, centred on the NaN semantics), `te
 ## Status
 
 All five modules implemented, tested, and consumed end to end by all three model variants and the
-`calibrateGrid` marches. `griddedInterp2D` was the only addition the two-state case needed.
+`calibrateGrid` marches. `griddedInterp2D` was the only addition the two-state case needed. All three models' solvers run `selectMaxFrozen` (the US on 2026-10-02, the informal models the same evening); the
+one-cell form is restricted to candidates next to an infeasible cell and passing candidates within a cell merge
+(`RESEARCH_LOG.md`, 2026-10-02 evening).
 
 **Deliberately not built**: a `SolveGrid`-style class with traversal order, per-state warm starts, window
 refinement and index maps (the prior implementation, at `c958031^:python/InformalSavings/inspiration/`).
