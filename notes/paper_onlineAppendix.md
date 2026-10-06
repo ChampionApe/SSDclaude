@@ -216,6 +216,19 @@ is RKB's call. A session that drafts the main sections should know:
   `table:US:Calib`'s lower panel of shared parameters; `fig:US:overview` with one design row in two tones, one
   ageing row (mild as a line), French leisure; every figure centred (style guide §5). The site shows the old
   overview and table until `build.py --site` and `quarto render`.
+- **Done 2026-10-06 (evening)**, with RKB, sections 5 and 6: the split moved further toward option S. Online only now:
+  `ARG_LOG_FourInOne` (section 5's ε–θ figure, OA.2.4), `US_PensChars` and `US_Ageing` (section 6's results part leads
+  with `fig:US:overview` and points to OA.3.4–3.5 up front), appendix F.1–F.2 and appendix G whole (`Appendix/UKvsUS.tex`
+  deleted; its mechanism prose, without numbers, is in `oecd.qmd` OA.3.5 and `esc.qmd` OA.4.3). The paper inputs 15 of
+  the 81 exhibits; appendix F holds `US_ESC_Ageing` only and the robustness map is appendix G. Section 7's references
+  into G are `\oa` pointers (`esc-us`, `esc-uk`); its prose waits for the next session. Section 6 now states the ranking
+  for ρ ≤ 1 and names ρ = 2 as the exception (W8(b) there); the abstract, introduction and conclusion still carry the
+  unqualified claims. **Open, RKB's, from the section 5 read**: the pre-reform ε (0.21 by appendix D's formula with the
+  first quartile against the code's 0.29 with the second); γ₀ = 0.32 counted per formal household (24% of households)
+  against "the share of retirees"; "2.7 million beneficiaries" against the figure's rise of about 2.0; the 2006 sample
+  dated before the amnesties while section 5 dates them from 2005; appendix D's "chosen such that 2η¹h¹ = η²h² = h"
+  where the workbook matches quartiles 1 and 3 (relative incomes 0.47 and 1.00); section 5's opening sentence and its
+  hand-off, cut in RKB's online edit; an "All three" row in `fig:US:overview`.
 - **Left for sections 6–8**: TODO W8(a)/(b); the conclusion's "a higher IES changes only the size of the
   earnings-link effect" against section 6, where French voting's effect grows from 0.3 to 1.7 p.p.; section 7 at
   3,708 words against ≈ 2,800 and the conclusion at 504 against ≈ 450. Smaller: section 5 never states the equal
@@ -232,6 +245,8 @@ Fill in below; a blank line means "as recommended".
 - **O1 The split.** Option K (recommended) or option S. The target journal decides: does it print appendices
   with the article?
   RKB, 2026-10-06: the target is REStud, JPE or AEJ: Economic Policy; option K.
+  RKB, 2026-10-06 (evening): further toward option S for sections 5–6: their result tables and appendices F.1–F.2
+  and G go online, the sections lead with their figures and point to the online appendix up front (§7).
 - **O2 The UK as host.** Wholly online, with the two sentences in sections 6 and 7 citing the map (recommended),
   or `UK_OtherShocks` kept in the paper.
   RKB, 2026-10-06: some UK results stay in the paper's appendix. Implemented as `UK_OtherShocks` and the two

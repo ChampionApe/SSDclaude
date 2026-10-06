@@ -79,9 +79,11 @@ which tex file inputs each output into `REPLICATION.md`. Every US and Argentina 
 (headline and `_vectorX`), the ESC outputs headline only. Every table row ends in a `% row: <key>` comment
 (`tables.rowKey`) and every figure also writes `.svg` and `.marks.json` (`figures._save`, `figures.mark`): the
 online appendix's handles from a mark to the table row that prints it. The 25 `ONLINE_ONLY` outputs are built
-into `results/paper` and never copied into `writing/Paper`. Since 2026-10-06 the paper inputs the headline
-tables its sections and appendices A–H cite (`RobustnessMap` in appendix H); the twins, the UK's CRRA and
-endogenous-design tables and the scale-wedge comparison are the online appendix's (`notes/paper_onlineAppendix.md`).
+into `results/paper` and never copied into `writing/Paper`. Since 2026-10-06 (evening) the paper inputs 15 outputs:
+the calibration and household tables, `ArgentinaUniversal`, `ARG_CRRA_LOG`, `US_overview`, section 7's `US_ESC_Calibration`
+and `US_ESC_Country`, `US_ESC_Ageing` (appendix F), `US_ESC_overview`, `OECDdata` and `RobustnessMap` (appendix G). Every
+other table and figure, the U.S. counterfactual tables of section 6 and the UK's included, is the online appendix's
+(`notes/paper_onlineAppendix.md` §7); `--site` reports the count.
 Every US counterfactual is a new equilibrium path read at 2020 (`python/US/shocks.py`, `writing/US/num_esc.tex`).
 
 ## Traps

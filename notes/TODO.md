@@ -54,7 +54,9 @@ with a cross-reference to `table:Arg:Calib`, which carries no relative-hours ent
 that do not rise; the conclusion's wording is right. (e) `US_ESC_ScaleWedge`'s caption and note and
 `Appendix/US.tex` say "the previous draft"/"an earlier draft" (revision history in referee-facing text; the
 generator in `python/paper`), and the appendix's "the UK chose θ = 1" is in no table. (e) closed 2026-10-06: the
-table now sets the two cost specifications side by side, online (OA.4.6), and the appendix paragraph is one pointer.
+table now sets the two cost specifications side by side, online (OA.4.6), and the appendix paragraph is one pointer. Section 6 settled 2026-10-06 (evening): its results part states the ranking
+for ρ ≤ 1 and names ρ = 2 as the exception, where French voting overtakes the earnings link; (a) and (b) stay open
+for the abstract, the introduction and the conclusion.
 
 **W7. After the appendix split** (2026-09-29, root log) -- two calls for RKB. (a) France's LIS survey year
 is not stated anywhere in the draft; `sec:oecd` implies 2019. (b) `sec:esc` and the conclusion say the

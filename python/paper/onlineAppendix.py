@@ -73,7 +73,11 @@ GROUPS = [
     ('arg-rho', 'argentina', [
         F('ARG_CRRA_LOG', twin = True), T('ArgentinaReformByRho', 'Every IES', twin = True),
         T('Argentina_funcOfRho', 'Three IES', twin = True)]),
-    ('arg-designs', 'argentina', [F('ARG_LOG_FourInOne', twin = True)]),
+    ('arg-designs', 'argentina', [
+        F('ARG_LOG_FourInOne', twin = True,
+          caption = r'The equilibrium in 2010 over pension designs $(\epsilon, \theta)$, Argentina',
+          note = r'The line is the calibrated $\theta$, the markers the pre-reform $\epsilon$ and the universal '
+                 r'level of the reform. The savings rate is savings relative to GDP.')]),
     ('arg-rhogrid', 'argentina', [
         F('ARG_RhoGrid', twin = True, caption = r'The Argentine calibration across the intertemporal elasticity'),
         T('ARG_RhoGridTable', 'Calibration by IES', twin = True)]),
@@ -93,7 +97,12 @@ GROUPS = [
         T('US_CRRA_PensChars', 'Design by IES', twin = True), T('US_CRRA_Ageing', 'Ageing by IES', twin = True),
         T('US_CRRA_OtherShocks', 'French by IES', twin = True)]),
     ('oecd-uk', 'oecd', [
-        F('UKUS_French', twin = True), T('UK_OtherShocks', 'French characteristics', twin = True),
+        F('UKUS_French', twin = True, caption = r'French characteristics in the U.S.\ and the UK',
+          note = r'Every panel is the deviation from the host\textquotesingle s own baseline at the same $\rho$, '
+                 r'whose levels are the baseline rows of the tables beside it. France\textquotesingle s income '
+                 r'groups are cut at the host\textquotesingle s income percentiles. The savings rate is savings '
+                 r'relative to GDP.'),
+        T('UK_OtherShocks', 'French characteristics', twin = True),
         T('UK_CRRA_OtherShocks', 'French by IES', twin = True), T('UK_CRRA_PensChars', 'Design by IES', twin = True),
         T('UK_CRRA_Ageing', 'Ageing by IES', twin = True)]),
     ('esc-calibration', 'esc', [
@@ -102,7 +111,15 @@ GROUPS = [
         F('US_ESC_overview'), T('US_ESC_Ageing', 'Ageing'), T('US_ESC_IncomeDistr', 'Income distribution'),
         T('US_ESC_Voting', 'Voting patterns'), T('US_ESC_FrenchAll', 'All French characteristics')]),
     ('esc-uk', 'esc', [
-        F('UKUS_ESC_French'), T('UK_ESC_IncomeDistr', 'Income distribution'),
+        F('UKUS_ESC_French',
+          caption = r'Endogenous pension design under French characteristics in the U.S.\ and the UK',
+          note = r'Each host at its own cost parameter. The first column is the design in force in 2020 as a level, '
+                 r'the reference line at the host\textquotesingle s observed design and the muted lines at the '
+                 r'corners; the second is the tax rate as a deviation from the host\textquotesingle s '
+                 r'endogenous-$\theta$ baseline, whose levels are the baseline rows of the tables beside it. An '
+                 r'open marker is the reading with the design pinned at the host\textquotesingle s value, a filled '
+                 r'one the reading with the design chosen.'),
+        T('UK_ESC_IncomeDistr', 'Income distribution'),
         T('UK_ESC_Voting', 'Voting patterns'), T('UK_ESC_FrenchAll', 'All French characteristics')]),
     ('esc-path', 'esc', [
         F('ESC_Path', caption = r'The design and the tax along the baseline path, U.S.'),

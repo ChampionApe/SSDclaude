@@ -4,6 +4,19 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-06 (evening) — sections 5 and 6 with RKB: section 6's results lead with its figure; tables 4–5, F.1–F.2 and G online
+
+Section 5: the ε–θ figure and its paragraph leave for Online Appendix OA.2.4 (`arg-designs`, caption and note now in the
+registry); its hand-to-mouth footnote sits on the reform paragraph, one pointer sends the reader to OA.2, the online edit's
+garbles and number slips are fixed (hours at one decimal, the informal-savings sentence restated as the ratio the figure
+plots), equal propensities to vote stated. Section 6: the results part opens with `fig:US:overview` and one up-front pointer
+to OA.3.4–3.5; `US_PensChars`, `US_Ageing`, appendix F.1–F.2 and the whole of G (`UKvsUS.tex` deleted, its mechanism
+prose in `oecd.qmd`/`esc.qmd` without numbers) are online only, so the paper inputs 15 of 81 exhibits; the French-characteristics
+and IES paragraphs cut to their main results, the demography sentence corrected (France's design and ω narrow the gap) and
+the ρ = 2 exception named, which settles TODO W8(b) in section 6 alone. Section 7's pointers into G retargeted to `\oa`
+keys, prose untouched; appendix F is `US_ESC_Ageing` alone (`app:US:escTables` on the section), H is now G; `argCrraLog`
+draws no title inside the image. Site rebuilt and rendered, `--map` rerun. Open for RKB: `notes/paper_onlineAppendix.md` §7.
+
 ## 2026-10-06 (afternoon) — section 6's calibration as Argentina's with exceptions; fig:US:overview redrawn
 
 With RKB, alongside the online-appendix session until its commit `4a7ec72` (memory `parallel-sessions-share-checkout`).

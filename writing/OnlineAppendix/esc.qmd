@@ -23,7 +23,13 @@ marker is the pinned reading and a filled one the chosen; click either for its r
 ## OA.4.3 The UK as host {#esc-uk}
 
 The same counterfactuals with the UK as host, at the UK's own cost parameter, the one at which its electorate
-re-elects the UK's observed design. The figure sets the two hosts side by side; the tables print the UK's numbers.
+re-elects the UK's observed design; it lies below the U.S. parameter at an IES of one or below and above it at two.
+The figure sets the two hosts side by side; the tables print the UK's numbers. On both hosts France's voting
+profile moves the design most, toward flat benefits, and by less on the UK, whose own voting profile is already
+flatter than the U.S. one. France's income distribution moves the two hosts' designs in opposite directions, since
+on the U.S. it compresses relative incomes and on the UK it spreads them. The design response leaves the UK's tax
+rate, savings rate and workweek essentially at the reading with the design pinned, so on the UK the response is
+confined to the design itself.
 
 {{< include _generated/groups/esc-uk.qmd >}}
 

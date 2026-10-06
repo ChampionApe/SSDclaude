@@ -282,6 +282,4 @@ def argCrraLog(longRun = 1, commonX = None):
                           solid_capstyle = 'round') for colour in SERIES]
     fig.legend(handles, labels, loc = 'outside lower center', ncol = 2, frameon = False,
                fontsize = 9, labelcolor = INK['secondary'])
-    fig.suptitle('Short- and long-run effects of pension system reform, as a function of $\\rho$',
-                 color = INK['primary'], fontsize = 11, x = 0.01, ha = 'left')
     return _save(fig, name, marks)

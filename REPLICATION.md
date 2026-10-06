@@ -90,7 +90,7 @@ endogenous-design scripts (`python/US/runESC*.py`), and `data/oecdFigure1.csv` b
 | `Argentina_funcOfRho_vectorX` | table | `Tables/Argentina_funcOfRho_vectorX.tex` | `results/calibration/informalSavings_rhoGrid.csv`, `results/paper/calibrationSummary.csv`, `results/shocks/eeOnly_match_rho*.csv` (16 files), `results/shocks/universal_match_rho*.csv` (16 files) | online appendix |
 | `ArgentinaReformByRho` | table | online appendix only | `results/calibration/informalSavings_rhoGridCommonX.csv`, `results/paper/calibrationSummary.csv`, `results/shocks/eeOnly_match_rho*_commonX.csv` (16 files), `results/shocks/universal_match_rho*_commonX.csv` (16 files) | -- |
 | `ArgentinaReformByRho_vectorX` | table | online appendix only | `results/calibration/informalSavings_rhoGrid.csv`, `results/paper/calibrationSummary.csv`, `results/shocks/eeOnly_match_rho*.csv` (16 files), `results/shocks/universal_match_rho*.csv` (16 files) | -- |
-| `ARG_LOG_FourInOne` | figure | `Figs/ARG_LOG_FourInOne.pdf` | `results/paper/calibrationSummary.csv`, `results/sweeps/epsThetaGrid_rho*_commonX.csv` | `Sections/Argentina.tex` |
+| `ARG_LOG_FourInOne` | figure | `Figs/ARG_LOG_FourInOne.pdf` | `results/paper/calibrationSummary.csv`, `results/sweeps/epsThetaGrid_rho*_commonX.csv` | online appendix |
 | `ARG_LOG_FourInOne_vectorX` | figure | `Figs/ARG_LOG_FourInOne_vectorX.pdf` | `results/paper/calibrationSummary.csv`, `results/sweeps/epsThetaGrid_rho*.csv` | online appendix |
 | `ARG_CRRA_LOG` | figure | `Figs/ARG_CRRA_LOG.pdf` | `results/calibration/informalSavings_rhoGridCommonX.csv`, `results/paper/calibrationSummary.csv`, `results/shocks/eeOnly_match_rho*_commonX.csv` (16 files), `results/shocks/universal_match_rho*_commonX.csv` (16 files) | `Sections/Argentina.tex` |
 | `ARG_CRRA_LOG_vectorX` | figure | `Figs/ARG_CRRA_LOG_vectorX.pdf` | `results/calibration/informalSavings_rhoGrid.csv`, `results/paper/calibrationSummary.csv`, `results/shocks/eeOnly_match_rho*.csv` (16 files), `results/shocks/universal_match_rho*.csv` (16 files) | online appendix |
@@ -102,23 +102,23 @@ endogenous-design scripts (`python/US/runESC*.py`), and `data/oecdFigure1.csv` b
 | `FR_householdheterogeneity_vectorX` | table | `Tables/FR_householdheterogeneity_vectorX.tex` | `results/paper/usCalibrationSummary.csv` | online appendix |
 | `UK_householdheterogeneity` | table | `Tables/UK_householdheterogeneity.tex` | `results/paper/usCalibrationSummary.csv` | `Appendix/CalibrationOECD.tex` |
 | `UK_householdheterogeneity_vectorX` | table | `Tables/UK_householdheterogeneity_vectorX.tex` | `results/paper/usCalibrationSummary.csv` | online appendix |
-| `US_PensChars` | table | `Tables/US_PensChars.tex` | `results/paper/usCalibrationSummary.csv`, `results/shocks/US_shocksCommonX.csv` | `Sections/OECD.tex` |
+| `US_PensChars` | table | `Tables/US_PensChars.tex` | `results/paper/usCalibrationSummary.csv`, `results/shocks/US_shocksCommonX.csv` | online appendix |
 | `US_PensChars_vectorX` | table | `Tables/US_PensChars_vectorX.tex` | `results/paper/usCalibrationSummary.csv`, `results/shocks/US_shocks.csv` | online appendix |
-| `US_Ageing` | table | `Tables/US_Ageing.tex` | `results/shocks/US_shocksCommonX.csv` | `Sections/OECD.tex` |
+| `US_Ageing` | table | `Tables/US_Ageing.tex` | `results/shocks/US_shocksCommonX.csv` | online appendix |
 | `US_Ageing_vectorX` | table | `Tables/US_Ageing_vectorX.tex` | `results/shocks/US_shocks.csv` | online appendix |
-| `US_OtherShocks` | table | `Tables/US_OtherShocks.tex` | `results/shocks/US_shocksCommonX.csv` | `Appendix/UKvsUS.tex` |
+| `US_OtherShocks` | table | `Tables/US_OtherShocks.tex` | `results/shocks/US_shocksCommonX.csv` | online appendix |
 | `US_OtherShocks_vectorX` | table | `Tables/US_OtherShocks_vectorX.tex` | `results/shocks/US_shocks.csv` | online appendix |
-| `US_CRRA_PensChars` | table | `Tables/US_CRRA_PensChars.tex` | `results/shocks/US_shocksCommonX.csv` | `Appendix/US.tex` |
+| `US_CRRA_PensChars` | table | `Tables/US_CRRA_PensChars.tex` | `results/shocks/US_shocksCommonX.csv` | online appendix |
 | `US_CRRA_PensChars_vectorX` | table | `Tables/US_CRRA_PensChars_vectorX.tex` | `results/shocks/US_shocks.csv` | online appendix |
-| `US_CRRA_Ageing` | table | `Tables/US_CRRA_Ageing.tex` | `results/shocks/US_shocksCommonX.csv` | `Appendix/US.tex` |
+| `US_CRRA_Ageing` | table | `Tables/US_CRRA_Ageing.tex` | `results/shocks/US_shocksCommonX.csv` | online appendix |
 | `US_CRRA_Ageing_vectorX` | table | `Tables/US_CRRA_Ageing_vectorX.tex` | `results/shocks/US_shocks.csv` | online appendix |
-| `US_CRRA_OtherShocks` | table | `Tables/US_CRRA_OtherShocks.tex` | `results/shocks/US_shocksCommonX.csv` | `Appendix/UKvsUS.tex` |
+| `US_CRRA_OtherShocks` | table | `Tables/US_CRRA_OtherShocks.tex` | `results/shocks/US_shocksCommonX.csv` | online appendix |
 | `US_CRRA_OtherShocks_vectorX` | table | `Tables/US_CRRA_OtherShocks_vectorX.tex` | `results/shocks/US_shocks.csv` | online appendix |
 | `US_overview` | figure | `Figs/US_overview.pdf` | `results/shocks/US_shocksCommonX.csv` | `Sections/OECD.tex` |
 | `US_overview_vectorX` | figure | `Figs/US_overview_vectorX.pdf` | `results/shocks/US_shocks.csv` | online appendix |
 | `FRUK_householdheterogeneity` | table | `Tables/FRUK_householdheterogeneity.tex` | `results/paper/usCalibrationSummary.csv` | `Appendix/CalibrationOECD.tex` |
 | `FRUK_householdheterogeneity_vectorX` | table | `Tables/FRUK_householdheterogeneity_vectorX.tex` | `results/paper/usCalibrationSummary.csv` | online appendix |
-| `UK_OtherShocks` | table | `Tables/UK_OtherShocks.tex` | `results/shocks/UK_shocksCommonX.csv` | `Appendix/UKvsUS.tex` |
+| `UK_OtherShocks` | table | `Tables/UK_OtherShocks.tex` | `results/shocks/UK_shocksCommonX.csv` | online appendix |
 | `UK_OtherShocks_vectorX` | table | `Tables/UK_OtherShocks_vectorX.tex` | `results/shocks/UK_shocks.csv` | online appendix |
 | `UK_CRRA_OtherShocks` | table | `Tables/UK_CRRA_OtherShocks.tex` | `data/UKMain.xlsx`, `results/shocks/UK_shocksCommonX.csv` | online appendix |
 | `UK_CRRA_OtherShocks_vectorX` | table | `Tables/UK_CRRA_OtherShocks_vectorX.tex` | `results/shocks/UK_shocks.csv` | online appendix |
@@ -128,20 +128,20 @@ endogenous-design scripts (`python/US/runESC*.py`), and `data/oecdFigure1.csv` b
 | `UK_CRRA_Ageing_vectorX` | table | online appendix only | `results/shocks/UK_shocks.csv` | -- |
 | `UKUS_householdheterogeneity` | table | `Tables/UKUS_householdheterogeneity.tex` | `results/paper/usCalibrationSummary.csv` | online appendix |
 | `UKUS_householdheterogeneity_vectorX` | table | `Tables/UKUS_householdheterogeneity_vectorX.tex` | `results/paper/usCalibrationSummary.csv` | online appendix |
-| `UKUS_French` | figure | `Figs/UKUS_French.pdf` | `results/shocks/UK_shocksCommonX.csv`, `results/shocks/US_shocksCommonX.csv` | `Appendix/UKvsUS.tex` |
+| `UKUS_French` | figure | `Figs/UKUS_French.pdf` | `results/shocks/UK_shocksCommonX.csv`, `results/shocks/US_shocksCommonX.csv` | online appendix |
 | `UKUS_French_vectorX` | figure | `Figs/UKUS_French_vectorX.pdf` | `results/shocks/UK_shocks.csv`, `results/shocks/US_shocks.csv` | online appendix |
 | `US_ESC_overview` | figure | `Figs/US_ESC_overview.pdf` | `results/esc/escExperiments.csv`, `results/paper/usCalibrationSummary.csv` | `Sections/EndogenousTheta.tex` |
 | `US_ESC_Calibration` | table | `Tables/US_ESC_Calibration.tex` | `results/esc/escCalibration.csv`, `results/esc/escCalibrationCRRA.csv` | `Sections/EndogenousTheta.tex` |
 | `US_ESC_Ageing` | table | `Tables/US_ESC_Ageing.tex` | `data/USMain_test.xlsx`, `results/esc/escExperiments.csv`, `results/paper/usCalibrationSummary.csv` | `Appendix/US.tex` |
-| `US_ESC_IncomeDistr` | table | `Tables/US_ESC_IncomeDistr.tex` | `results/esc/escExperiments.csv`, `results/paper/usCalibrationSummary.csv` | `Appendix/UKvsUS.tex` |
-| `US_ESC_Voting` | table | `Tables/US_ESC_Voting.tex` | `results/esc/escExperiments.csv`, `results/paper/usCalibrationSummary.csv` | `Appendix/UKvsUS.tex` |
-| `US_ESC_FrenchAll` | table | `Tables/US_ESC_FrenchAll.tex` | `results/esc/escExperiments.csv`, `results/paper/usCalibrationSummary.csv` | `Appendix/UKvsUS.tex` |
+| `US_ESC_IncomeDistr` | table | `Tables/US_ESC_IncomeDistr.tex` | `results/esc/escExperiments.csv`, `results/paper/usCalibrationSummary.csv` | online appendix |
+| `US_ESC_Voting` | table | `Tables/US_ESC_Voting.tex` | `results/esc/escExperiments.csv`, `results/paper/usCalibrationSummary.csv` | online appendix |
+| `US_ESC_FrenchAll` | table | `Tables/US_ESC_FrenchAll.tex` | `results/esc/escExperiments.csv`, `results/paper/usCalibrationSummary.csv` | online appendix |
 | `US_ESC_Country` | table | `Tables/US_ESC_Country.tex` | `results/esc/escCountry.csv` | `Sections/EndogenousTheta.tex` |
 | `US_ESC_ScaleWedge` | table | `Tables/US_ESC_ScaleWedge.tex` | `results/esc/escCalibration.csv`, `results/esc/escCalibrationCRRA.csv`, `results/esc/escExperiments.csv` | online appendix |
 | `UK_ESC_IncomeDistr` | table | `Tables/UK_ESC_IncomeDistr.tex` | `results/esc/escCalibrationCRRAUK.csv`, `results/esc/escCountry.csv`, `results/esc/escExperimentsUK.csv`, `results/paper/usCalibrationSummary.csv` | online appendix |
 | `UK_ESC_Voting` | table | `Tables/UK_ESC_Voting.tex` | `results/esc/escExperimentsUK.csv`, `results/paper/usCalibrationSummary.csv` | online appendix |
 | `UK_ESC_FrenchAll` | table | `Tables/UK_ESC_FrenchAll.tex` | `results/esc/escExperimentsUK.csv`, `results/paper/usCalibrationSummary.csv` | online appendix |
-| `UKUS_ESC_French` | figure | `Figs/UKUS_ESC_French.pdf` | `results/esc/escExperiments.csv`, `results/esc/escExperimentsUK.csv` | `Appendix/UKvsUS.tex` |
+| `UKUS_ESC_French` | figure | `Figs/UKUS_ESC_French.pdf` | `results/esc/escExperiments.csv`, `results/esc/escExperimentsUK.csv` | online appendix |
 | `OECDdata` | figure | `Figs/OECDdata.pdf` | `data/oecdFigure1.csv` | `Sections/Introduction.tex` |
 | `RobustnessMap` | figure | `Figs/RobustnessMap.pdf` | `results/esc/escExperiments.csv`, `results/esc/escExperimentsUK.csv`, `results/esc/escXiRobustness.csv`, `results/shocks/UK_shocks.csv`, `results/shocks/UK_shocksCommonX.csv`, `results/shocks/US_shocks.csv`, `results/shocks/US_shocksCommonX.csv` | `Appendix/Robustness.tex` |
 | `OECD_Countries` | table | online appendix only | `data/oecdFigure1.csv` | -- |

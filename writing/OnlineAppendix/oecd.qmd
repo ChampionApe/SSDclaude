@@ -1,11 +1,10 @@
 # OA.3 The rich economies with the design given {#oecd}
 
 Section 6 of the paper calibrates the model without informal households to the U.S., France and the UK, and
-imposes on the U.S. the characteristics that set France apart; appendices E to G give the data and the household
-heterogeneity behind the calibration, the results under CRRA preferences, and the same counterfactuals with the UK
-as host. This chapter
-holds all of them, each under both calibrations of the taste for leisure, and the calibrations at every IES of the
-model's grid.
+imposes on the U.S. the characteristics that set France apart; appendix E gives the data and the household
+heterogeneity behind the calibration. This chapter holds every table behind section 6's figure, the counterfactuals
+under CRRA preferences and the same counterfactuals with the UK as host, each under both calibrations of the taste
+for leisure, and the calibrations at every IES of the model's grid.
 
 ## OA.3.1 Calibration {#oecd-calibration}
 
@@ -42,8 +41,10 @@ explanation.
 ## OA.3.4 Counterfactuals on the U.S. {#oecd-us}
 
 The paper's overview figure of section 6 collects the effect of each counterfactual on the tax rate, the savings
-rate and the workweek at three values of the IES. The tables print them: at the paper's benchmark, with the
-economic-equilibrium effect beside the full one, and at each IES. Click a bar for its row.
+rate and the workweek at three values of the IES. The tables print them: the pension design and ageing at the
+paper's benchmark, with the economic-equilibrium effect, in which the tax rate is held at its baseline path, beside
+the full one; France's income distribution, leisure preferences and voting patterns one at a time and all at once,
+next to France's own calibrated path; and each of them at every IES. Click a bar for its row.
 
 {{< include _generated/groups/oecd-us.qmd >}}
 
@@ -51,6 +52,14 @@ economic-equilibrium effect beside the full one, and at each IES. Click a bar fo
 
 The counterfactuals of section 6 on the UK's own calibration: France's characteristics, with France's households
 regrouped at the UK's income percentiles, and the pension design and ageing at each IES. The figure sets the two
-hosts side by side for France's characteristics; the tables print the UK's numbers.
+hosts side by side for France's characteristics; the tables print the UK's numbers. Two differences from the U.S.
+stand out. France's income distribution raises the UK's tax rate where it lowers the U.S. one, because at the UK's
+income cuts France is the more unequal of the two countries ([OA.3.1](oecd.qmd#oecd-calibration)) and equilibrium
+taxes rise with inequality; and France's taste for leisure lengthens the UK's workweek where it shortens the U.S.
+one, since France's average taste for leisure lies between the two hosts'. France's voting profile raises the tax
+rate on both hosts, by more at a higher IES. The income-distribution row is also the one that depends on the
+calibration of the taste for leisure: under the vector-$X_i$ calibration it lowers the UK's tax rate, because that
+calibration reads part of the observed income dispersion off relative hours, which are much flatter in the UK than
+in France.
 
 {{< include _generated/groups/oecd-uk.qmd >}}

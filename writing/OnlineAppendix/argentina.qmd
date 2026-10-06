@@ -33,9 +33,13 @@ quotes. Click a point of the figure for its row.
 
 ## OA.2.4 The equilibrium over pension designs {#arg-designs}
 
-The paper's figure of the equilibrium in 2010 over a grid of designs $(\epsilon, \theta)$, each point an economy
-that has always had that design, beside the same figure under the alternative calibration. The grid itself can be
-downloaded from the figure's source.
+The equilibrium in 2010 over a grid of designs $(\epsilon, \theta)$, each point an economy that has always had that
+design, with the pre-reform calibration and the universal system at the calibrated $\theta$ marked. The tax rate
+rises with $\epsilon$ and falls with $\theta$, the savings rate and the workweek fall with $\epsilon$ and rise with
+$\theta$, and the savings of informal relative to formal households fall with $\epsilon$. Between the two markers
+the tax rate rises by more than it does on impact in section 5 of the paper, because the savings of informal
+households have adjusted to the universal system; the difference is close to the long-run effect of the reform.
+The grid itself can be downloaded from the figure's source.
 
 {{< include _generated/groups/arg-designs.qmd >}}
 
