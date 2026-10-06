@@ -447,6 +447,9 @@ Push to Overleaf for MGE (pull first); his edits come back through `pull` and ar
 
 ### Session 4: appendices and the online split
 
+*2026-10-06: `notes/paper_onlineAppendix.md` makes the split concrete and replaces D1's LaTeX root by a site with
+a print edition; its DECISIONS block governs this session.*
+
 D3's split is decided at this gate. Two `paper-writer` agents:
 
 | Agent | Brief |
