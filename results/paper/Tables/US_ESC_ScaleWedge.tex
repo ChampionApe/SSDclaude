@@ -4,23 +4,27 @@
 \begin{table}[!htb]
 \centering
 \begin{threeparttable}
-\caption{The previous cost specification: calibration and the French income distribution}
+\caption{Two specifications of the deadweight cost: calibration and the chosen design}
 \label{table:US_ESC:scaleWedge}
 \renewcommand{\arraystretch}{1.25}
-\begin{tabularx}{\textwidth}{YYYYYYY}
+\begin{tabularx}{\textwidth}{lcYYYYYYY}
 \toprule
- & \multicolumn{4}{c}{\textbf{Calibration}} & \multicolumn{2}{c}{\textbf{French income distribution}} \\
-\cmidrule(lr){2-5}\cmidrule(lr){6-7}
-\textbf{CRRA} ($\rho$) & $p$ & $\theta^{\ast}$ & $f(\theta^{\ast})$ & $f(0)$ & $\theta$ \textbf{pinned} & $\theta$ \textbf{chosen} \\
+ & & \multicolumn{4}{c}{\textbf{Calibration}} & \multicolumn{3}{c}{$\theta$ \textbf{chosen (2020)}} \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-9}
+\textbf{Cost on} & \textbf{CRRA} ($\rho$) & $\lambda$, $p$ & $\theta^{\ast}$ & $f(\theta^{\ast})$ & $f(0)$ & \textbf{Acute ageing} & \textbf{French income distribution} & \textbf{French voting patterns} \\
 \midrule 
-0.5 & 0.935 & 0.738 & 0.876 & 0.500 & 0.738 & 1.000 \\
-1.0 & 0.408 & 0.738 & 0.942 & 0.500 & 0.738 & 1.000 \\
-2.0 & 0.085 & 0.738 & 0.987 & 0.500 & 0.738 & 1.000 \\
+ & 0.5 & 18.267 & 0.738 & 0.961 & 0.563 & 0.816 & 0.707 & 0.687 \\ % row: size@0.5
+redistribution & 1.0 & 8.643 & 0.738 & 0.982 & 0.762 & 0.825 & 0.772 & 0.653 \\ % row: size@1.0
+ & 2.0 & 1.724 & 0.738 & 0.996 & 0.947 & 0.826 & 0.918 & 0.335 \\ % row: size@2.0
+\midrule
+ & 0.5 & 0.935 & 0.738 & 0.876 & 0.500 & 0.756 & 1.000 & 0.654 \\ % row: scale@0.5
+the design & 1.0 & 0.408 & 0.738 & 0.942 & 0.500 & 0.778 & 1.000 & 0.533 \\ % row: scale@1.0
+ & 2.0 & 0.085 & 0.738 & 0.987 & 0.500 & 0.821 & 1.000 & 0.259 \\ % row: scale@2.0
 \bottomrule
 \end{tabularx}
 \begin{tablenotes}[flushleft]
 \footnotesize
-\item[] \textit{Note:} The cost specification of the previous draft, $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = 0.5$ imposed and $p$ calibrated per $\rho$ as in table \ref{table:US_ESC:calibration}. The cost is attached to the design rather than to the transfer: a flat benefit forfeits $1 - \phi$ of revenue whatever it redistributes, so a compressed income distribution removes the redistributive stakes and leaves the cost in place. The last two columns are the design in force in 2020 under the French income distribution with $\theta$ pinned at the US design and chosen by the electorate, as in table \ref{table:US_ESC:incomeDistr}.
+\item[] \textit{Note:} Two specifications of the deadweight cost $f$ of \eqref{eq:esc:budget}, each with one parameter calibrated per $\rho$ so that the design in force in 2020 is the observed $\theta^{\ast}$, with $(\beta, \omega)$ recalibrated at each trial value. The cost on redistribution is that of table \ref{table:US_ESC:calibration}, $f(\theta, \tau) = \exp\{-\tfrac12 \lambda \tau \tilde V (1-\theta)^2\}$: quadratic in the implicit tax the flat component levies and scaled by the size of the system, so nothing is lost when nothing is redistributed. The cost on the design is $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = 0.5$ imposed: a flat benefit forfeits a share $1 - \phi$ of revenue whatever it redistributes. $f(\theta^{\ast})$ and $f(0)$ are the shares of revenue that reach households at the observed design and at a flat benefit; the cost on redistribution is read at the 2020 tax rate. The last three columns are the design in force in 2020 when the electorate chooses it; under the cost on redistribution they are the endogenous-$\theta$ rows of tables \ref{table:US_ESC:ageing}, \ref{table:US_ESC:incomeDistr} and \ref{table:US_ESC:voting}.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

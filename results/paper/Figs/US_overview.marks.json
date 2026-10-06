@@ -1,0 +1,545 @@
+{
+ "figure": "US_overview",
+ "marks": [
+  {
+   "id": "US_overview--theta0--rho0.5--tau",
+   "label": "θ = 0",
+   "series": "ρ = 0.5",
+   "panel": "Equilibrium tax rate",
+   "value": 5.799969271310412,
+   "text": "+5.8 p.p.",
+   "table": "US_CRRA_PensChars",
+   "row": "theta0@0.5"
+  },
+  {
+   "id": "US_overview--theta1--rho0.5--tau",
+   "label": "θ = 1",
+   "series": "ρ = 0.5",
+   "panel": "Equilibrium tax rate",
+   "value": -3.2205539201738893,
+   "text": "−3.2 p.p.",
+   "table": "US_CRRA_PensChars",
+   "row": "theta1@0.5"
+  },
+  {
+   "id": "US_overview--acute--rho0.5--tau",
+   "label": "Acute ageing",
+   "series": "ρ = 0.5",
+   "panel": "Equilibrium tax rate",
+   "value": 9.320168894342839,
+   "text": "+9.3 p.p.",
+   "table": "US_CRRA_Ageing",
+   "row": "acute@0.5"
+  },
+  {
+   "id": "US_overview--mild--rho0.5--tau",
+   "label": "Mild ageing",
+   "series": "ρ = 0.5",
+   "panel": "Equilibrium tax rate",
+   "value": 4.328864553906592,
+   "text": "+4.3 p.p.",
+   "table": "US_CRRA_Ageing",
+   "row": "mild@0.5"
+  },
+  {
+   "id": "US_overview--voting--rho0.5--tau",
+   "label": "French voting",
+   "series": "ρ = 0.5",
+   "panel": "Equilibrium tax rate",
+   "value": 0.32632628387781193,
+   "text": "+0.3 p.p.",
+   "table": "US_CRRA_OtherShocks",
+   "row": "voting@0.5"
+  },
+  {
+   "id": "US_overview--income--rho0.5--tau",
+   "label": "French income distr.",
+   "series": "ρ = 0.5",
+   "panel": "Equilibrium tax rate",
+   "value": -1.545494759988758,
+   "text": "−1.5 p.p.",
+   "table": "US_CRRA_OtherShocks",
+   "row": "income@0.5"
+  },
+  {
+   "id": "US_overview--theta0--rho1.0--tau",
+   "label": "θ = 0",
+   "series": "ρ = 1.0",
+   "panel": "Equilibrium tax rate",
+   "value": 4.08722075501918,
+   "text": "+4.1 p.p.",
+   "table": "US_CRRA_PensChars",
+   "row": "theta0@1.0"
+  },
+  {
+   "id": "US_overview--theta1--rho1.0--tau",
+   "label": "θ = 1",
+   "series": "ρ = 1.0",
+   "panel": "Equilibrium tax rate",
+   "value": -2.14883776370426,
+   "text": "−2.1 p.p.",
+   "table": "US_CRRA_PensChars",
+   "row": "theta1@1.0"
+  },
+  {
+   "id": "US_overview--acute--rho1.0--tau",
+   "label": "Acute ageing",
+   "series": "ρ = 1.0",
+   "panel": "Equilibrium tax rate",
+   "value": 8.677247609958,
+   "text": "+8.7 p.p.",
+   "table": "US_CRRA_Ageing",
+   "row": "acute@1.0"
+  },
+  {
+   "id": "US_overview--mild--rho1.0--tau",
+   "label": "Mild ageing",
+   "series": "ρ = 1.0",
+   "panel": "Equilibrium tax rate",
+   "value": 4.023750213056801,
+   "text": "+4.0 p.p.",
+   "table": "US_CRRA_Ageing",
+   "row": "mild@1.0"
+  },
+  {
+   "id": "US_overview--voting--rho1.0--tau",
+   "label": "French voting",
+   "series": "ρ = 1.0",
+   "panel": "Equilibrium tax rate",
+   "value": 0.8946025559203902,
+   "text": "+0.9 p.p.",
+   "table": "US_CRRA_OtherShocks",
+   "row": "voting@1.0"
+  },
+  {
+   "id": "US_overview--income--rho1.0--tau",
+   "label": "French income distr.",
+   "series": "ρ = 1.0",
+   "panel": "Equilibrium tax rate",
+   "value": -1.2213658425352687,
+   "text": "−1.2 p.p.",
+   "table": "US_CRRA_OtherShocks",
+   "row": "income@1.0"
+  },
+  {
+   "id": "US_overview--theta0--rho2.0--tau",
+   "label": "θ = 0",
+   "series": "ρ = 2.0",
+   "panel": "Equilibrium tax rate",
+   "value": 0.7769535411458001,
+   "text": "+0.8 p.p.",
+   "table": "US_CRRA_PensChars",
+   "row": "theta0@2.0"
+  },
+  {
+   "id": "US_overview--theta1--rho2.0--tau",
+   "label": "θ = 1",
+   "series": "ρ = 2.0",
+   "panel": "Equilibrium tax rate",
+   "value": -0.7041214582971106,
+   "text": "−0.7 p.p.",
+   "table": "US_CRRA_PensChars",
+   "row": "theta1@2.0"
+  },
+  {
+   "id": "US_overview--acute--rho2.0--tau",
+   "label": "Acute ageing",
+   "series": "ρ = 2.0",
+   "panel": "Equilibrium tax rate",
+   "value": 7.557431616015739,
+   "text": "+7.6 p.p.",
+   "table": "US_CRRA_Ageing",
+   "row": "acute@2.0"
+  },
+  {
+   "id": "US_overview--mild--rho2.0--tau",
+   "label": "Mild ageing",
+   "series": "ρ = 2.0",
+   "panel": "Equilibrium tax rate",
+   "value": 3.582352830269059,
+   "text": "+3.6 p.p.",
+   "table": "US_CRRA_Ageing",
+   "row": "mild@2.0"
+  },
+  {
+   "id": "US_overview--voting--rho2.0--tau",
+   "label": "French voting",
+   "series": "ρ = 2.0",
+   "panel": "Equilibrium tax rate",
+   "value": 1.6903741234254284,
+   "text": "+1.7 p.p.",
+   "table": "US_CRRA_OtherShocks",
+   "row": "voting@2.0"
+  },
+  {
+   "id": "US_overview--income--rho2.0--tau",
+   "label": "French income distr.",
+   "series": "ρ = 2.0",
+   "panel": "Equilibrium tax rate",
+   "value": -0.7815930411672917,
+   "text": "−0.8 p.p.",
+   "table": "US_CRRA_OtherShocks",
+   "row": "income@2.0"
+  },
+  {
+   "id": "US_overview--theta0--rho0.5--sr",
+   "label": "θ = 0",
+   "series": "ρ = 0.5",
+   "panel": "Savings over GDP",
+   "value": -2.180660076574359,
+   "text": "−2.2 p.p. of GDP",
+   "table": "US_CRRA_PensChars",
+   "row": "theta0@0.5"
+  },
+  {
+   "id": "US_overview--theta1--rho0.5--sr",
+   "label": "θ = 1",
+   "series": "ρ = 0.5",
+   "panel": "Savings over GDP",
+   "value": 1.5402261191507698,
+   "text": "+1.5 p.p. of GDP",
+   "table": "US_CRRA_PensChars",
+   "row": "theta1@0.5"
+  },
+  {
+   "id": "US_overview--acute--rho0.5--sr",
+   "label": "Acute ageing",
+   "series": "ρ = 0.5",
+   "panel": "Savings over GDP",
+   "value": -2.32475226909194,
+   "text": "−2.3 p.p. of GDP",
+   "table": "US_CRRA_Ageing",
+   "row": "acute@0.5"
+  },
+  {
+   "id": "US_overview--mild--rho0.5--sr",
+   "label": "Mild ageing",
+   "series": "ρ = 0.5",
+   "panel": "Savings over GDP",
+   "value": -1.1027219691866708,
+   "text": "−1.1 p.p. of GDP",
+   "table": "US_CRRA_Ageing",
+   "row": "mild@0.5"
+  },
+  {
+   "id": "US_overview--voting--rho0.5--sr",
+   "label": "French voting",
+   "series": "ρ = 0.5",
+   "panel": "Savings over GDP",
+   "value": -0.17210765550728924,
+   "text": "−0.2 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks",
+   "row": "voting@0.5"
+  },
+  {
+   "id": "US_overview--income--rho0.5--sr",
+   "label": "French income distr.",
+   "series": "ρ = 0.5",
+   "panel": "Savings over GDP",
+   "value": 0.8267087943216289,
+   "text": "+0.8 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks",
+   "row": "income@0.5"
+  },
+  {
+   "id": "US_overview--theta0--rho1.0--sr",
+   "label": "θ = 0",
+   "series": "ρ = 1.0",
+   "panel": "Savings over GDP",
+   "value": -0.9250101268101607,
+   "text": "−0.9 p.p. of GDP",
+   "table": "US_CRRA_PensChars",
+   "row": "theta0@1.0"
+  },
+  {
+   "id": "US_overview--theta1--rho1.0--sr",
+   "label": "θ = 1",
+   "series": "ρ = 1.0",
+   "panel": "Savings over GDP",
+   "value": 0.6451488278993806,
+   "text": "+0.6 p.p. of GDP",
+   "table": "US_CRRA_PensChars",
+   "row": "theta1@1.0"
+  },
+  {
+   "id": "US_overview--acute--rho1.0--sr",
+   "label": "Acute ageing",
+   "series": "ρ = 1.0",
+   "panel": "Savings over GDP",
+   "value": -2.0833154374919394,
+   "text": "−2.1 p.p. of GDP",
+   "table": "US_CRRA_Ageing",
+   "row": "acute@1.0"
+  },
+  {
+   "id": "US_overview--mild--rho1.0--sr",
+   "label": "Mild ageing",
+   "series": "ρ = 1.0",
+   "panel": "Savings over GDP",
+   "value": -0.9987338044775002,
+   "text": "−1.0 p.p. of GDP",
+   "table": "US_CRRA_Ageing",
+   "row": "mild@1.0"
+  },
+  {
+   "id": "US_overview--voting--rho1.0--sr",
+   "label": "French voting",
+   "series": "ρ = 1.0",
+   "panel": "Savings over GDP",
+   "value": -0.31585197758698114,
+   "text": "−0.3 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks",
+   "row": "voting@1.0"
+  },
+  {
+   "id": "US_overview--income--rho1.0--sr",
+   "label": "French income distr.",
+   "series": "ρ = 1.0",
+   "panel": "Savings over GDP",
+   "value": 0.4392888674035089,
+   "text": "+0.4 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks",
+   "row": "income@1.0"
+  },
+  {
+   "id": "US_overview--theta0--rho2.0--sr",
+   "label": "θ = 0",
+   "series": "ρ = 2.0",
+   "panel": "Savings over GDP",
+   "value": 0.09797547689621156,
+   "text": "+0.1 p.p. of GDP",
+   "table": "US_CRRA_PensChars",
+   "row": "theta0@2.0"
+  },
+  {
+   "id": "US_overview--theta1--rho2.0--sr",
+   "label": "θ = 1",
+   "series": "ρ = 2.0",
+   "panel": "Savings over GDP",
+   "value": 0.0643981368107116,
+   "text": "+0.1 p.p. of GDP",
+   "table": "US_CRRA_PensChars",
+   "row": "theta1@2.0"
+  },
+  {
+   "id": "US_overview--acute--rho2.0--sr",
+   "label": "Acute ageing",
+   "series": "ρ = 2.0",
+   "panel": "Savings over GDP",
+   "value": -1.7902755420053595,
+   "text": "−1.8 p.p. of GDP",
+   "table": "US_CRRA_Ageing",
+   "row": "acute@2.0"
+  },
+  {
+   "id": "US_overview--mild--rho2.0--sr",
+   "label": "Mild ageing",
+   "series": "ρ = 2.0",
+   "panel": "Savings over GDP",
+   "value": -0.8785828758298975,
+   "text": "−0.9 p.p. of GDP",
+   "table": "US_CRRA_Ageing",
+   "row": "mild@2.0"
+  },
+  {
+   "id": "US_overview--voting--rho2.0--sr",
+   "label": "French voting",
+   "series": "ρ = 2.0",
+   "panel": "Savings over GDP",
+   "value": -0.3432136679409781,
+   "text": "−0.3 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks",
+   "row": "voting@2.0"
+  },
+  {
+   "id": "US_overview--income--rho2.0--sr",
+   "label": "French income distr.",
+   "series": "ρ = 2.0",
+   "panel": "Savings over GDP",
+   "value": 0.15998222650826233,
+   "text": "+0.2 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks",
+   "row": "income@2.0"
+  },
+  {
+   "id": "US_overview--theta0--rho0.5--ww",
+   "label": "θ = 0",
+   "series": "ρ = 0.5",
+   "panel": "Average workweek",
+   "value": -2.591057350370292,
+   "text": "−2.6 hours",
+   "table": "US_CRRA_PensChars",
+   "row": "theta0@0.5"
+  },
+  {
+   "id": "US_overview--theta1--rho0.5--ww",
+   "label": "θ = 1",
+   "series": "ρ = 0.5",
+   "panel": "Average workweek",
+   "value": 1.1614642021755017,
+   "text": "+1.2 hours",
+   "table": "US_CRRA_PensChars",
+   "row": "theta1@0.5"
+  },
+  {
+   "id": "US_overview--acute--rho0.5--ww",
+   "label": "Acute ageing",
+   "series": "ρ = 0.5",
+   "panel": "Average workweek",
+   "value": -0.7092386286924963,
+   "text": "−0.7 hours",
+   "table": "US_CRRA_Ageing",
+   "row": "acute@0.5"
+  },
+  {
+   "id": "US_overview--mild--rho0.5--ww",
+   "label": "Mild ageing",
+   "series": "ρ = 0.5",
+   "panel": "Average workweek",
+   "value": -0.3096838752899771,
+   "text": "−0.3 hours",
+   "table": "US_CRRA_Ageing",
+   "row": "mild@0.5"
+  },
+  {
+   "id": "US_overview--voting--rho0.5--ww",
+   "label": "French voting",
+   "series": "ρ = 0.5",
+   "panel": "Average workweek",
+   "value": -0.09333820569615625,
+   "text": "−0.1 hours",
+   "table": "US_CRRA_OtherShocks",
+   "row": "voting@0.5"
+  },
+  {
+   "id": "US_overview--income--rho0.5--ww",
+   "label": "French income distr.",
+   "series": "ρ = 0.5",
+   "panel": "Average workweek",
+   "value": 1.135884797584147,
+   "text": "+1.1 hours",
+   "table": "US_CRRA_OtherShocks",
+   "row": "income@0.5"
+  },
+  {
+   "id": "US_overview--theta0--rho1.0--ww",
+   "label": "θ = 0",
+   "series": "ρ = 1.0",
+   "panel": "Average workweek",
+   "value": -1.874235996293919,
+   "text": "−1.9 hours",
+   "table": "US_CRRA_PensChars",
+   "row": "theta0@1.0"
+  },
+  {
+   "id": "US_overview--theta1--rho1.0--ww",
+   "label": "θ = 1",
+   "series": "ρ = 1.0",
+   "panel": "Average workweek",
+   "value": 0.7369750559930353,
+   "text": "+0.7 hours",
+   "table": "US_CRRA_PensChars",
+   "row": "theta1@1.0"
+  },
+  {
+   "id": "US_overview--acute--rho1.0--ww",
+   "label": "Acute ageing",
+   "series": "ρ = 1.0",
+   "panel": "Average workweek",
+   "value": -0.734925093476285,
+   "text": "−0.7 hours",
+   "table": "US_CRRA_Ageing",
+   "row": "acute@1.0"
+  },
+  {
+   "id": "US_overview--mild--rho1.0--ww",
+   "label": "Mild ageing",
+   "series": "ρ = 1.0",
+   "panel": "Average workweek",
+   "value": -0.31651048549792904,
+   "text": "−0.3 hours",
+   "table": "US_CRRA_Ageing",
+   "row": "mild@1.0"
+  },
+  {
+   "id": "US_overview--voting--rho1.0--ww",
+   "label": "French voting",
+   "series": "ρ = 1.0",
+   "panel": "Average workweek",
+   "value": -0.19852492720952597,
+   "text": "−0.2 hours",
+   "table": "US_CRRA_OtherShocks",
+   "row": "voting@1.0"
+  },
+  {
+   "id": "US_overview--income--rho1.0--ww",
+   "label": "French income distr.",
+   "series": "ρ = 1.0",
+   "panel": "Average workweek",
+   "value": 0.96491853354771,
+   "text": "+1.0 hours",
+   "table": "US_CRRA_OtherShocks",
+   "row": "income@1.0"
+  },
+  {
+   "id": "US_overview--theta0--rho2.0--ww",
+   "label": "θ = 0",
+   "series": "ρ = 2.0",
+   "panel": "Average workweek",
+   "value": -1.0121327640207838,
+   "text": "−1.0 hours",
+   "table": "US_CRRA_PensChars",
+   "row": "theta0@2.0"
+  },
+  {
+   "id": "US_overview--theta1--rho2.0--ww",
+   "label": "θ = 1",
+   "series": "ρ = 2.0",
+   "panel": "Average workweek",
+   "value": 0.39709551457653447,
+   "text": "+0.4 hours",
+   "table": "US_CRRA_PensChars",
+   "row": "theta1@2.0"
+  },
+  {
+   "id": "US_overview--acute--rho2.0--ww",
+   "label": "Acute ageing",
+   "series": "ρ = 2.0",
+   "panel": "Average workweek",
+   "value": -0.6754825812721776,
+   "text": "−0.7 hours",
+   "table": "US_CRRA_Ageing",
+   "row": "acute@2.0"
+  },
+  {
+   "id": "US_overview--mild--rho2.0--ww",
+   "label": "Mild ageing",
+   "series": "ρ = 2.0",
+   "panel": "Average workweek",
+   "value": -0.3119398829285842,
+   "text": "−0.3 hours",
+   "table": "US_CRRA_Ageing",
+   "row": "mild@2.0"
+  },
+  {
+   "id": "US_overview--voting--rho2.0--ww",
+   "label": "French voting",
+   "series": "ρ = 2.0",
+   "panel": "Average workweek",
+   "value": -0.28758661704702604,
+   "text": "−0.3 hours",
+   "table": "US_CRRA_OtherShocks",
+   "row": "voting@2.0"
+  },
+  {
+   "id": "US_overview--income--rho2.0--ww",
+   "label": "French income distr.",
+   "series": "ρ = 2.0",
+   "panel": "Average workweek",
+   "value": 0.8248867229767853,
+   "text": "+0.8 hours",
+   "table": "US_CRRA_OtherShocks",
+   "row": "income@2.0"
+  }
+ ]
+}

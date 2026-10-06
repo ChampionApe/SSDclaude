@@ -469,3 +469,195 @@ def escRow(df, ρ, spec, scenario, pinned, commonX = None):
         raise MissingInput('{} (ρ={}, {}, pinned={}, commonX={}, method={}) in results/esc/escExperiments{{,UK}}.csv'
                            .format(scenario, ρ, spec, pinned, commonX, escMethod()))
     return hit.iloc[-1]
+
+
+# ---------------------------------------------------------------------------------------------------
+# The online appendix's exhibits (tablesOA.py, figuresOA.py): figure 1's data, the calibrations across
+# rho, the endogenous design's baseline path, xi and timing checks, and the numerical checks.
+# ---------------------------------------------------------------------------------------------------
+OECDFIG1        = os.path.join(C.DATA, 'oecdFigure1.csv')           # stage (0): oecdFigure1.main
+OECDFIG1SOURCES = os.path.join(C.DATA, 'oecdFigure1_sources.csv')
+OECDCORR        = os.path.join(C.PAPERDIR, 'oecdCorrelations.csv')  # written by the OECDdata build
+
+
+def oecdFigure1Data():
+    """ Figure 1's cross-section, one row per country indexed on ISO3, in the footnote's order: every
+    concept oecdFigure1 fetches, each with `<column>_year` where the year it is read at varies by
+    country. """
+    return pd.read_csv(_need(OECDFIG1), index_col = 'iso3')
+
+
+def oecdFigure1Sources():
+    """ One row per data column (or group of columns sharing a source) of oecdFigure1.csv. Every column is
+    text, and a blank cell comes back as '' rather than NaN. """
+    return pd.read_csv(_need(OECDFIG1SOURCES), dtype = str, keep_default_na = False)
+
+
+def oecdCorrelations():
+    """ Pairwise Pearson and Spearman correlations of figure 1's four variables per concept set (`variant`
+    'named' | 'asEPS' | 'epsReadings'), pairwise complete, as the OECDdata build writes them. """
+    return pd.read_csv(_need(OECDCORR))
+
+
+def _escSelect(df, spec, commonX, method = False):
+    """ The rows of an ESC csv at the calibration variant (_escVariant), `spec` and config phi, and at the
+    published CRRA method when `method`. A column the csv does not carry does not filter. """
+    keep = []
+    for i, rec in enumerate(df.to_dict('records')):
+        if not _escVariant(rec, commonX):
+            continue
+        if spec is not None and 'spec' in rec and rec['spec'] != spec:
+            continue
+        if 'phi' in rec and not (rec['phi'] == rec['phi'] and np.isclose(float(rec['phi']), C.US['esc']['phi'])):
+            continue
+        if method and not _escMethodOK(rec):
+            continue
+        keep.append(i)
+    return df.iloc[keep].copy()
+
+
+def _noDuplicates(df, key, path):
+    """ A duplicate key is an error, never resolved by first/last-wins (crossCuttingFindings #8). """
+    if df.duplicated(key).any():
+        raise ValueError('{}: duplicate rows on {}'.format(os.path.relpath(path, C.REPO), key))
+    return df
+
+
+def escPath(ρ, commonX = None, spec = None):
+    """ The baseline path of the leaded design choice at `rho`, one row per date from the first period to
+    the last before the terminal one, sorted on `pos`: the design in force `θ`, the tax `τ`, `sr` (s/(w h);
+    escSavingsOverY converts) and `workweek` on the path where the choice binds from the first period, and
+    `τExo`, `srExo` on the same model with the design held at θ* throughout. rho = 1 (log preferences)
+    from escPath.csv, any other rho from escPathCRRA.csv at the published method (escMethod). Headline
+    variant and the paper's spec by default. """
+    commonX = C.US['commonX'] if commonX is None else commonX
+    spec = C.US['esc']['spec'] if spec is None else spec
+    if np.isclose(ρ, 1.0):
+        path = os.path.join(C.ESCDIR, 'escPath.csv')
+        df = _escSelect(pd.read_csv(_need(path)), spec, commonX)
+    else:
+        path = os.path.join(C.ESCDIR, 'escPathCRRA.csv')
+        df = pd.read_csv(_need(path))
+        df = _escSelect(df[np.isclose(df['ρ'], ρ)], spec, commonX, method = True)
+    if df.empty:
+        raise MissingInput('{} (ρ={}, {}, commonX={}, method={})'.format(path, ρ, spec, commonX, escMethod()))
+    return _noDuplicates(df, ['pos'], path).sort_values('pos').reset_index(drop = True)
+
+
+def escXi(commonX = None, spec = None):
+    """ python/US/runESCxi.py's csv at the variant and spec, log preferences: per Frisch elasticity `xi`
+    one 'calibration' row (p = lambda, θStar, β, ω, X, converged), one 'path' row per date (the columns of
+    escPath) and the rows 'acute pinned' and 'acute chosen' (ν_t = 1 throughout, a new equilibrium path
+    read at 2020: θ, τ, sr = s/(w h), workweek). """
+    commonX = C.US['commonX'] if commonX is None else commonX
+    spec = C.US['esc']['spec'] if spec is None else spec
+    path = os.path.join(C.ESCDIR, 'escXiRobustness.csv')
+    df = _escSelect(pd.read_csv(_need(path)), spec, commonX)
+    if df.empty:
+        raise MissingInput('{} ({}, commonX={})'.format(path, spec, commonX))
+    return _noDuplicates(df, ['xi', 'kind', 'pos'], path)
+
+
+def _variantRows(path, commonX, key):
+    commonX = C.US['commonX'] if commonX is None else commonX
+    df = pd.read_csv(_need(path))
+    df = df.iloc[[i for i, rec in enumerate(df.to_dict('records')) if _escVariant(rec, commonX)]]
+    if df.empty:
+        raise MissingInput('{} (commonX={})'.format(path, commonX))
+    return _noDuplicates(df, key, path).reset_index(drop = True)
+
+
+def escPermanent(commonX = None):
+    """ python/US/runESC.stagePermanent's csv (log preferences, rho = 1) at the variant. The costless row
+    has spec 'none': θPerm the design chosen once and for all (the anticipated vote's fixed point),
+    θPermIncumbent the same with the savings ratio pinned at the incumbent design, θLeaded the leaded
+    design in force at t0, τAtChoice the tax at θPerm. The other rows are the previous cost forms
+    ('scale', 'flat') at the permanent timing's own calibrated p. """
+    return _variantRows(os.path.join(C.ESCDIR, 'escPermanent.csv'), commonX, ['spec', 'phi'])
+
+
+def escPermanentCRRA(commonX = None):
+    """ python/US/runESCcrra.stagePermanentCRRA's csv at the variant: the permanent choice under CRRA traced
+    in rho, `wedge` 'none' without the cost; θPerm, θPermIncumbent and τAtChoice as escPermanent. """
+    return _variantRows(os.path.join(C.ESCDIR, 'escPermanentCRRA.csv'), commonX, ['ρ', 'spec', 'phi', 'wedge'])
+
+
+def escSequentialCRRA(commonX = None):
+    """ python/US/runESCcrra.stageSequential's csv at the variant: the costless first order condition of
+    the design chosen with the tax (eq esc:seqFOC) on the solved baseline path, per (rho, dated period):
+    its largest value over a grid of θ in [0, 1] (`focMax`, at `θAtMax`), its smallest (`focMin`), whether
+    it is negative at every node (`negative`), and the baseline tax `τ` at that date. """
+    return _variantRows(os.path.join(C.ESCDIR, 'escSequentialCRRA.csv'), commonX, ['ρ', 'pos'])
+
+
+def stationaryApprox(which):
+    """ The stationary-against-date-specific check of `which`: 'US' (the tax with the design given, CRRA),
+    'US_ESC' (the design and the tax with the design chosen; `method` LOG or CRRA2D) or 'ARG' (Argentina's
+    tax). One row per (rho, t) with its `date`; `gap_pp` / `gapτ_pp` is the tax on the path walked by the
+    stationary policy functions minus the date-specific one, in p.p., `gapθ` the same for the design. Run
+    on the headline variant only (python/paper/runShocksUS.py and runShocks.py, entry 'stationary'). """
+    name = {'US': 'US_stationaryApprox.csv', 'US_ESC': 'US_ESC_stationaryApprox.csv',
+            'ARG': 'ARG_stationaryApprox' + C.argVariantTag(C.ARG['commonX']) + '.csv'}[which]
+    path = os.path.join(C.NUMDIR, name)
+    return _noDuplicates(pd.read_csv(_need(path)), ['ρ', 't'], path).sort_values(['ρ', 't']).reset_index(drop = True)
+
+
+def selectionCsvs():
+    """ The results csvs the registered outputs read that a politico-economic solve wrote, for the
+    equilibrium counts (NUM_Selection): [(arm, label, [paths])], one entry per file or per rho-grid family.
+    The endogenous-design experiments appear through the csvs escExperiments{,UK}.csv merges, since the
+    merge drops the counts (python/US/collectESCexperiments.py). """
+    arg, us = [], []
+    for cx in (C.ARG['commonX'], not C.ARG['commonX']):
+        arg.append(('ARG', os.path.basename(C.argSweepCsv(cx)), [C.argSweepCsv(cx)]))
+        for scen in ('reform', 'ee'):
+            tmpl = C.argShockTemplate(scen, commonX = cx)
+            arg.append(('ARG', tmpl.replace('{ρ:.4f}', '*'),
+                        [os.path.join(C.SHOCKDIR, tmpl.format(ρ = ρ)) for ρ in C.ARG['ρGrid']]))
+        arg.append(('ARG', os.path.basename(C.argEpsThetaCsv(C.ARG['ρBaseline'], cx)),
+                    [C.argEpsThetaCsv(C.ARG['ρBaseline'], cx)]))
+    arg.append(('ARG', 'ARG_stationaryApprox' + C.argVariantTag(C.ARG['commonX']) + '.csv',
+                [os.path.join(C.NUMDIR, 'ARG_stationaryApprox' + C.argVariantTag(C.ARG['commonX']) + '.csv')]))
+    for cx in (C.US['commonX'], not C.US['commonX']):
+        for country in ('US', 'UK', 'FR'):
+            us.append(('US', os.path.basename(C.usSweepCsv(country, cx)), [C.usSweepCsv(country, cx)]))
+        for host in ('US', C.US['ukHost']):
+            us.append(('US', os.path.basename(C.usShockCsv(host, cx)), [C.usShockCsv(host, cx)]))
+    uk = C.US['ukHost']
+    for f in ('escCalibration.csv', 'escCalibrationCRRA.csv', 'escCalibrationCRRA' + uk + '.csv', 'escCountry.csv',
+              'escShocks.csv', 'escShocksCRRA.csv', 'escShocks' + uk + '.csv', 'escShocksCRRA' + uk + '.csv',
+              'escPath.csv', 'escPathCRRA.csv', 'escXiRobustness.csv', 'escPermanent.csv',
+              'escPermanentCRRA.csv', 'escSequentialCRRA.csv'):
+        us.append(('US', f, [os.path.join(C.ESCDIR, f)]))
+    for f in ('US_stationaryApprox.csv', 'US_ESC_stationaryApprox.csv'):
+        us.append(('US', f, [os.path.join(C.NUMDIR, f)]))
+    return arg + us
+
+
+COUNTCOLUMNS = {'tax':    ('nEqMax', 'nCandMax', 'nFallback'),
+                'design': ('nEqθMax', 'nBrθMax', 'nFallbackθ')}
+
+
+def countSummary(paths, layer = 'tax'):
+    """ The equilibrium counts over the csvs `paths`: {'files', 'rows', 'counted', 'eqMax', 'candMax',
+    'fallbacks'} for the tax rule (layer 'tax': nEqMax, nCandMax, nFallback, writing/US/num_robustroot.tex)
+    or the design layer of the exact CRRA recursion (layer 'design': nEqθMax, nBrθMax, nFallbackθ,
+    writing/US/num_esc.tex). A row is counted where its three columns are present and non-negative: -1 is
+    what a solve that counted nothing writes (python/US/policy.multiplicityColumns), blank a row written
+    before the columns existed. With nothing counted the three statistics are None, not zero. """
+    lack = [p for p in paths if not os.path.exists(p)]
+    if lack:
+        raise MissingInput(lack)
+    cols, rows, parts = COUNTCOLUMNS[layer], 0, []
+    for p in paths:
+        d = pd.read_csv(p)
+        rows += len(d)
+        if all(c in d.columns for c in cols):
+            sub = d[list(cols)].apply(pd.to_numeric, errors = 'coerce')
+            parts.append(sub[sub.notna().all(axis = 1) & (sub >= 0).all(axis = 1)])
+    sub = pd.concat(parts) if parts else pd.DataFrame(columns = list(cols))
+    none = sub.empty
+    return {'files': len(paths), 'rows': rows, 'counted': len(sub),
+            'eqMax': None if none else int(sub[cols[0]].max()),
+            'candMax': None if none else int(sub[cols[1]].max()),
+            'fallbacks': None if none else int(sub[cols[2]].sum())}

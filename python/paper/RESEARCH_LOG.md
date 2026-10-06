@@ -4,6 +4,28 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_paper.md`, in
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-06 — the online appendix's own exhibits (package B): `tablesOA.py`, `figuresOA.py`, 19 outputs
+
+Brief §2.3, rows marked B. Tables `OECD_{Countries,Sources,Correlations}`, `ArgentinaReformPath`±,
+`ARG_RhoGridTable`±, `OECD_RhoGridTable`±, `ESC_PathTable`, `ESC_Xi`, `ESC_Timing`, `NUM_Stationary`,
+`NUM_Selection`; figures `ARG_RhoGrid`±, `OECD_RhoGrid`±, `ESC_Path`, every point a tagged mark linked to its
+table row (656 marks). Accessors appended to `datasets.py` (`escPath`, `escXi`, `escPermanent*`,
+`escSequentialCRRA`, `stationaryApprox`, `selectionCsvs`, `countSummary`, figure 1's csvs). Not yet in
+`build.OUTPUTS`. Guards: the workbook-ξ rows of `escXiRobustness.csv` must reproduce `escPath.csv` and
+`US_ESC_Ageing` at ρ = 1 (#13). Left unprinted, being undefined in `writing/US/num*.tex`: `W0gap`/`W1gap`,
+`nTurning` and the stationary csvs' state, steady-state and long-run gaps.
+
+## 2026-10-06 — row keys, tagged marks, the robustness map (online appendix, package A); 62 outputs
+
+Brief `notes/brief_onlineAppendix_2026-10-06.md` §2–3. Every body row of every table ends ` % row: <key>`
+(`tables.rowKey`/`keyed`; `tablesUS.ROWKEY` maps shock scenarios to blocks); stripped, all 46 earlier tables
+are byte-identical. Every existing figure tags its data marks (`figures.mark`, `signed`, `plain`) and writes
+`marks.json`; points drawn as one artist per mark, PNGs and 100-dpi PDF renders pixel-identical (check script
+in the session scratchpad). New: `RobustnessMap` (`figuresUS.robustnessMap`, copied to `writing/Paper/Figs`),
+`ArgentinaReformByRho`± (`printAll`) and `UK_CRRA_{PensChars,Ageing}`± (the map's UK rows), all `build.ONLINE_ONLY`; `build.py --site`.
+`US_ESC_ScaleWedge` rewritten as the two cost specifications side by side, with the chosen design under
+acute ageing, French income and voting (W8(e)); keys `size@ρ`, `scale@ρ`.
+
 ## 2026-09-30 — figure 1 rebuilt from its sources (paper rewrite, agent A4); 55 outputs
 
 `oecdFigure1.py`: stage (0) fetch into `data/oecdFigure1.csv` + `_sources.csv` (every column sourced), and

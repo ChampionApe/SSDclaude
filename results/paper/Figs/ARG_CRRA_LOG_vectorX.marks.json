@@ -1,0 +1,1285 @@
+{
+ "figure": "ARG_CRRA_LOG_vectorX",
+ "marks": [
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 0.189625980432169,
+   "text": "+0.2 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.5"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 0.5826620046379988,
+   "text": "+0.6 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.6"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 0.8651071823353201,
+   "text": "+0.9 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.7"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 1.0515099009257596,
+   "text": "+1.1 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.8"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 1.172434672838131,
+   "text": "+1.2 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.9"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 1.2476659591061394,
+   "text": "+1.2 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.0"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 1.2920957912812892,
+   "text": "+1.3 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.1"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 1.3156337009739492,
+   "text": "+1.3 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.2"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 1.3255495893690392,
+   "text": "+1.3 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.3"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 1.3256425911588696,
+   "text": "+1.3 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.4"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 1.3177698820986004,
+   "text": "+1.3 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.5"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 1.3044824120081704,
+   "text": "+1.3 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.6"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 1.2894986719552401,
+   "text": "+1.3 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.7"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 1.2724701935620808,
+   "text": "+1.3 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.8"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 1.24419716703775,
+   "text": "+1.2 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.9"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--short--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "short run (year 2010)",
+   "panel": "Tax rate τ",
+   "value": 1.22073326496549,
+   "text": "+1.2 p.p.",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@2.0"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 1.2163451019601201,
+   "text": "+1.2 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 1.5839732627572682,
+   "text": "+1.6 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 1.8117796883400787,
+   "text": "+1.8 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 1.9523868576384884,
+   "text": "+2.0 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 2.0355409569188105,
+   "text": "+2.0 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 2.0866097219983395,
+   "text": "+2.1 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 2.1052633537529704,
+   "text": "+2.1 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 2.11230450292072,
+   "text": "+2.1 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 2.105313850704338,
+   "text": "+2.1 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 2.0940165496907386,
+   "text": "+2.1 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 2.07750087902282,
+   "text": "+2.1 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 2.0564764686312103,
+   "text": "+2.1 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 2.0345138591196603,
+   "text": "+2.0 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 2.009244278439959,
+   "text": "+2.0 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 1.9852419056944404,
+   "text": "+2.0 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--tau--long--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "long run (year 2040)",
+   "panel": "Tax rate τ",
+   "value": 1.959659727701732,
+   "text": "+2.0 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.04330460789910284,
+   "text": "−0.04 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.5"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.1566566095586558,
+   "text": "−0.2 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.6"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.22549204804069856,
+   "text": "−0.2 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.7"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.2619640525641814,
+   "text": "−0.3 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.8"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.27911465802851476,
+   "text": "−0.3 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.9"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.28475016335073045,
+   "text": "−0.3 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.0"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.28215768573644495,
+   "text": "−0.3 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.1"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.2759533987518936,
+   "text": "−0.3 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.2"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.26709369045440634,
+   "text": "−0.3 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.3"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.2573700628517084,
+   "text": "−0.3 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.4"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.2469535080757812,
+   "text": "−0.2 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.5"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.23622155674626333,
+   "text": "−0.2 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.6"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.2260043989947974,
+   "text": "−0.2 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.7"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.21589788423380385,
+   "text": "−0.2 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.8"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.20539387057868508,
+   "text": "−0.2 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.9"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--short--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "short run (year 2010)",
+   "panel": "Savings rate",
+   "value": -0.19598418793574934,
+   "text": "−0.2 p.p. of GDP",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@2.0"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.16363766104259825,
+   "text": "−0.2 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.25562754971941437,
+   "text": "−0.3 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.2991026261805557,
+   "text": "−0.3 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.31436844971652056,
+   "text": "−0.3 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.3138017260711168,
+   "text": "−0.3 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.30602496042800575,
+   "text": "−0.3 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.2921555333115597,
+   "text": "−0.3 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.27735723756919656,
+   "text": "−0.3 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.26150827573230145,
+   "text": "−0.3 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.24621850099145332,
+   "text": "−0.2 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.23157214128329134,
+   "text": "−0.2 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.21743735326673896,
+   "text": "−0.2 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.2045293459677064,
+   "text": "−0.2 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.1917968617359489,
+   "text": "−0.2 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.1808678281071202,
+   "text": "−0.2 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--sr--long--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "long run (year 2040)",
+   "panel": "Savings rate",
+   "value": -0.16999603223886717,
+   "text": "−0.2 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.02044692161453307,
+   "text": "−0.02 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.5"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.06519217107581003,
+   "text": "−0.1 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.6"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.09801515596797238,
+   "text": "−0.1 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.7"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.11995800041659786,
+   "text": "−0.1 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.8"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.13435214389550365,
+   "text": "−0.1 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@0.9"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.14330918807595677,
+   "text": "−0.1 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.0"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.14892789668705178,
+   "text": "−0.1 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.1"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.1519816348080022,
+   "text": "−0.2 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.2"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.15355712557218001,
+   "text": "−0.2 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.3"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.15390166632428354,
+   "text": "−0.2 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.4"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.15330995844721193,
+   "text": "−0.2 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.5"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.1521159160530746,
+   "text": "−0.2 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.6"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.1507076051741786,
+   "text": "−0.2 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.7"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.14911983133972692,
+   "text": "−0.1 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.8"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.1460473760288441,
+   "text": "−0.1 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@1.9"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--short--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "short run (year 2010)",
+   "panel": "Average workweek",
+   "value": -0.1435969043113746,
+   "text": "−0.1 hours",
+   "table": "ArgentinaReformByRho_vectorX",
+   "row": "rho@2.0"
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.20734375238251468,
+   "text": "−0.2 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.2883572565412547,
+   "text": "−0.3 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.3379643479570983,
+   "text": "−0.3 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.3665474008414747,
+   "text": "−0.4 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.3818810683037481,
+   "text": "−0.4 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.389485329900053,
+   "text": "−0.4 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.3904781652004327,
+   "text": "−0.4 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.3888503236247444,
+   "text": "−0.4 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.3846267881510253,
+   "text": "−0.4 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.3796385097300135,
+   "text": "−0.4 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.3737680549547757,
+   "text": "−0.4 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.3672777540082985,
+   "text": "−0.4 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.3608161337442128,
+   "text": "−0.4 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.35411797709724063,
+   "text": "−0.4 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.3473058132280176,
+   "text": "−0.3 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--ww--long--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "long run (year 2040)",
+   "panel": "Average workweek",
+   "value": -0.34077821415461074,
+   "text": "−0.3 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -3.6616810377874898,
+   "text": "−3.7 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -3.979733837684918,
+   "text": "−4.0 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.170524032600881,
+   "text": "−4.2 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.320264485274972,
+   "text": "−4.3 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.431135993735452,
+   "text": "−4.4 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.521825390278295,
+   "text": "−4.5 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.595321202015618,
+   "text": "−4.6 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.656932086377491,
+   "text": "−4.7 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.708121492007883,
+   "text": "−4.7 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.751760649354958,
+   "text": "−4.8 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.789054302905327,
+   "text": "−4.8 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.821218844793412,
+   "text": "−4.8 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.848043975371441,
+   "text": "−4.8 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.87096855230662,
+   "text": "−4.9 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.896124112358724,
+   "text": "−4.9 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--short--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "short run (year 2010)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.911772140249382,
+   "text": "−4.9 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -3.783131265177481,
+   "text": "−3.8 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.198949547782599,
+   "text": "−4.2 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.481844308276789,
+   "text": "−4.5 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.708828422595529,
+   "text": "−4.7 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -4.883501061357581,
+   "text": "−4.9 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -5.024361270014177,
+   "text": "−5.0 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -5.1435165239643865,
+   "text": "−5.1 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -5.241039212654291,
+   "text": "−5.2 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -5.324989330586083,
+   "text": "−5.3 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -5.39458535718747,
+   "text": "−5.4 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -5.453720245984661,
+   "text": "−5.5 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -5.5052302170438105,
+   "text": "−5.5 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -5.54883352846745,
+   "text": "−5.5 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -5.587972440506739,
+   "text": "−5.6 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -5.61997870234518,
+   "text": "−5.6 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_CRRA_LOG_vectorX--iota--long--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "long run (year 2040)",
+   "panel": "Informal savings ratio ι",
+   "value": -5.6463158295621705,
+   "text": "−5.6 p.p.",
+   "table": null,
+   "row": null
+  }
+ ]
+}

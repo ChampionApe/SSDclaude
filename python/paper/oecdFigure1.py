@@ -18,7 +18,7 @@ import numpy as np, pandas as pd
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import config as C
 import datasets as D
-from figures import plt, pe, SERIES, INK, _panel, _save
+from figures import plt, pe, SERIES, INK, _panel, _save, markId, mark
 
 OUT     = os.path.join(C.DATA, 'oecdFigure1.csv')
 SOURCES = os.path.join(C.DATA, 'oecdFigure1_sources.csv')
@@ -67,6 +67,9 @@ LABEL = {'pensionSpending': 'Pension spending, % of GDP',
          'gini': 'Gini, disposable income', 'gini_widPretax': 'Gini, pre-tax income',
          'gini_wiidMarket': 'Gini, market income'}
 HIGHLIGHT = {'USA': 'US', 'GBR': 'UK', 'FRA': 'FR'}   # the economies sections 6-7 calibrate
+# A mark's name for each variable and how its text prints the value.
+MARKFMT = {'spending': ('pension spending', '{:.1f}% of GDP'), 'growth': ('population 2020/1990', '{:.2f}'),
+           'index': ('Bismarckian index', '{:.3f}'), 'gini': ('Gini', '{:.3f}')}
 
 
 # --- fetching (network) ----------------------------------------------------------------------------------
@@ -410,7 +413,8 @@ def figure(plot = None):
     r""" Figure \ref{fig:US:OECDdata}, 2x3: rows are spending and the Bismarckian index, columns population
     growth and the Gini; the third column holds spending against the index (the size-design relation of
     sec:esc) above the legend. Equal panels keep one aspect ratio, so slopes compare across panels.
-    Also writes results/paper/oecdCorrelations.csv. """
+    Also writes results/paper/oecdCorrelations.csv. Every dot is a mark linked to its country's row
+    (lowercase ISO3) of OECD_Countries. """
     plot = PLOT if plot is None else plot
     df = pd.read_csv(D._need(OUT), index_col = 'iso3')
     os.makedirs(C.PAPERDIR, exist_ok = True)
@@ -420,7 +424,7 @@ def figure(plot = None):
     cells = [(0, 0, 'growth', 'spending'), (0, 1, 'gini', 'spending'), (0, 2, 'index', 'spending'),
              (1, 0, 'growth', 'index'), (1, 1, 'gini', 'index')]
     hi = df.index.isin(list(HIGHLIGHT))
-    ns, points = set(), []
+    ns, points, marks = set(), [], []
     for r, c, xv, yv in cells:
         ax = axes[r, c]
         _panel(ax, '', '', titlesize = 8, labelsize = 7)
@@ -428,9 +432,18 @@ def figure(plot = None):
         ok = x.notna() & y.notna()
         ns.add(int(ok.sum()))
         points.append((ax, x[ok], y[ok]))
+        (xn, xf), (yn, yf) = MARKFMT[xv], MARKFMT[yv]
         for mask, colour, z in ((ok & ~hi, SERIES[0], 3), (ok & hi, SERIES[1], 4)):
-            ax.plot(x[mask], y[mask], linestyle = 'none', marker = 'o', markersize = 4.2, color = colour,
-                    markeredgecolor = '#fcfcfb', markeredgewidth = 0.6, zorder = z)
+            # One artist per dot, in the order one line of markers would draw them, so each carries its
+            # gid and not a pixel moves.
+            for iso in x.index[mask]:
+                pt, = ax.plot(x[iso], y[iso], linestyle = 'none', marker = 'o', markersize = 4.2,
+                              color = colour, markeredgecolor = '#fcfcfb', markeredgewidth = 0.6, zorder = z)
+                pt.set_gid(markId('OECDdata', yv + '_' + xv, iso.lower()))
+                marks.append(mark(pt.get_gid(), df.at[iso, 'country'], y[iso],
+                                  '{}: {}; {}: {}'.format(xn, xf.format(x[iso]), yn, yf.format(y[iso])),
+                                  panel = '{} against {}'.format(LABEL[plot[yv]], LABEL[plot[xv]]),
+                                  table = 'OECD_Countries', row = iso.lower()))
         if c == 0:
             ax.set_ylabel(LABEL[plot[yv]], color = INK['secondary'], fontsize = 7.5)
         if r == 1 or c == 2:
@@ -454,7 +467,7 @@ def figure(plot = None):
                             title = ('{} countries in every panel'.format(ns.pop()) if len(ns) == 1
                                      else 'countries per panel: see the footnote'), title_fontsize = 7)
     leg.get_title().set_color(INK['secondary'])
-    return _save(fig, 'OECDdata') + [CORR]
+    return _save(fig, 'OECDdata', marks) + [CORR]
 
 
 def main():

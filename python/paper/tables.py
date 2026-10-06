@@ -4,6 +4,9 @@ The generated tex reproduces the STRUCTURE of the hand-written table it replaces
 booktabs rules, the same caption, label and notes), so the paper's \ref{}s keep resolving and a diff
 against the previous version shows moved numbers rather than a re-layout. Only the numbers come from
 results/.
+
+Every body row ends with ` % row: <key>` (rowKey, keyed): the online appendix reads it to light the row a
+figure's mark links to. Deleting those comments gives back the table as LaTeX sees it.
 """
 import numpy as np, pandas as pd
 
@@ -22,6 +25,21 @@ SRNOTE = (r' The savings rate is savings relative to GDP; the baseline row repor
           r'other row the change against that baseline in percentage points.')
 
 
+def rowKey(block, rho = None, effect = None):
+    """ The `% row:` key of one body row, `<block>[@<rho>][@<effect>]`: `block` lowercase ASCII (or a
+    parameter name), rho to one decimal, effect 'full' or 'ee'. A figure's mark names its table row with
+    the same call, so the two cannot drift apart. """
+    return (block + ('' if rho is None else '@{:.1f}'.format(float(rho)))
+            + ('' if effect is None else '@' + effect))
+
+
+def keyed(line, key):
+    r""" `line` with ` % row: <key>` appended. It must be the LAST thing on the line: any row spacing
+    (`[1.25ex]`, `\hline`, `[.5em]\hline\\[-.75em]`) goes on before it, or it ends up inside the comment.
+    `key` None leaves the line alone (header rows, block titles, rules, commented-out rows). """
+    return line if key is None else line + ' % row: ' + key
+
+
 def notesBlock(note):
     r""" The tablenotes block.
 
@@ -38,9 +56,10 @@ def notesBlock(note):
     return '\\begin{tablenotes}[flushleft]\n\\footnotesize\n\\item[] ' + note + '\n\\end{tablenotes}\n'
 
 
-def _wrap(name, src, caption, label, colspec, header, rows, note):
-    """ One threeparttable. `rows` is a list of already-formatted cell lists. """
-    body = '\n'.join(' & '.join(r) + r' \\[1ex]' for r in rows)
+def _wrap(name, src, caption, label, colspec, header, rows, note, keys):
+    """ One threeparttable. `rows` is a list of already-formatted cell lists, `keys` their row keys
+    (None for a commented-out row). """
+    body = '\n'.join(keyed(' & '.join(r) + r' \\[1ex]', k) for r, k in zip(rows, keys, strict = True))
     return (BANNER.format(name = name, src = src)
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
             + '\\caption{' + caption + '}\n\\label{' + label + '}\n'
@@ -83,9 +102,10 @@ def argentinaCalibration(commonX = None):
     # Sections/Argentina.tex since 2026-09-18, not in this note; keep the two in step if it moves.
     note = r'\textit{Note:} Our default specification relies on $\rho=' + C.num(c['ρ'], 0) + r'$.'
     note += C.variantNote(commonX, full = True, arm = 'ARG')
+    keys = ['epsilon', 'theta', 'alpha', 'nu', 'xi', 'beta', 'X', 'eta', 'gamma0', 'omega', 'eta0', 'X0']
     return _wrap('ArgentinaCalibration' + sfx, 'results/paper/calibrationSummary.csv',
                  'Calibration, Argentina' + C.variantCaption(commonX, 'ARG'), 'table:Arg:Calib' + sfx, 'lll',
-                 [r'\textbf{Parameter}', r'\textbf{Value}', r'\textbf{Target}'], rows, note)
+                 [r'\textbf{Parameter}', r'\textbf{Value}', r'\textbf{Target}'], rows, note, keys)
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -123,7 +143,8 @@ def argentinaUniversal(commonX = None):
                  'Pension system reform, year %d.' % year + C.variantCaption(commonX, 'ARG'),
                  'table:Argentina:Universal' + sfx, 'lccc',
                  [r'\textbf{Scenario}', r'\textbf{Tax rate}', r'\textbf{Savings rate}',
-                  r'\textbf{Avg. workweek (hours)}'], rows, note)
+                  r'\textbf{Avg. workweek (hours)}'], rows, note,
+                 ['baseline', rowKey('reform', effect = 'ee'), rowKey('reform', effect = 'full')])
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -143,9 +164,13 @@ def argentinaFuncOfRho(printAll = False, commonX = None):
 
     Rows outside config.ARG['rhoTable'] are emitted COMMENTED rather than dropped, which is how the
     hand-written table carried them: the whole solved grid stays visible to whoever edits the paper
-    without lengthening the printed table. printAll prints every row instead. """
+    without lengthening the printed table. printAll prints every row instead, and is then the online
+    output ArgentinaReformByRho (its own name and \label, table:Argentina:reformByRho). Row keys: `pre`,
+    `rho@<rho>`; a commented row carries none. """
     commonX = C.ARG['commonX'] if commonX is None else commonX
     sfx = C.variantSuffix(commonX, 'ARG')
+    name, label = (('ArgentinaReformByRho', 'table:Argentina:reformByRho') if printAll
+                   else ('Argentina_funcOfRho', 'table:Argentina:funcOfRho'))
     df = D.shockAtPeriod(0, 'reform', commonX = commonX)
     year = C.calendar()['year0']
     ww = C.calendar()['workweek']
@@ -156,7 +181,7 @@ def argentinaFuncOfRho(printAll = False, commonX = None):
     if np.ptp(τBase) > 1e-6:
         raise ValueError('pre-reform tau differs across rho (spread %.2e); it is a calibration target' % np.ptp(τBase))
     # The pre-reform workweek is the reference point itself, so it is the observed average exactly.
-    rows = [['Pre-reform', C.pct(τBase[0]), '--', C.num(ww)]]
+    rows, keys = [['Pre-reform', C.pct(τBase[0]), '--', C.num(ww)]], ['pre']
     for _, r in df.iterrows():
         ρ = r['ρ']
         srBase = D.savingsRatePath(ρ, 'base', commonX = commonX).iloc[0]
@@ -165,14 +190,21 @@ def argentinaFuncOfRho(printAll = False, commonX = None):
                 C.num(C.workweekHours(r['h_reform'], D.baselineHours(ρ, commonX = commonX)))]
         show = printAll or any(np.isclose(ρ, v) for v in C.ARG['ρTable'])
         rows.append(post if show else ['% ' + post[0]] + post[1:])
+        keys.append(rowKey('rho', ρ) if show else None)
     note = (r'\textit{Note:} The reform permanently shifts $\epsilon = 1-\theta + \theta \eta_1 h_1/h$. '
             r'Each $\rho$ is separately recalibrated to the same pre-reform targets, so the pre-reform '
             r'tax rate and workweek are common to every $\rho$. The savings rate is savings relative to '
             r'GDP; its pre-reform level is not targeted (the capital--output ratio is) and varies with '
             r'$\rho$, so each post-reform row reports the change against its own $\rho$' + "'" + r's '
             r'pre-reform level in percentage points.' + C.variantNote(commonX, arm = 'ARG'))
-    return _wrap('Argentina_funcOfRho' + sfx, 'results/shocks/universal_match_rho*%s.csv' % C.argVariantTag(commonX),
+    return _wrap(name + sfx, 'results/shocks/universal_match_rho*%s.csv' % C.argVariantTag(commonX),
                  r'Pension system reform, year %d, function of $\rho$' % year + C.variantCaption(commonX, 'ARG'),
-                 'table:Argentina:funcOfRho' + sfx, 'lccc',
+                 label + sfx, 'lccc',
                  [r'\textbf{Scenario}', r'\textbf{Tax rate}', r'\textbf{Change in savings rate}',
-                  r'\textbf{Avg. workweek (hours)}'], rows, note)
+                  r'\textbf{Avg. workweek (hours)}'], rows, note, keys)
+
+
+def argentinaReformByRho(commonX = None):
+    r""" Table \ref{table:Argentina:reformByRho} (online appendix): argentinaFuncOfRho with every rho of
+    config.ARG['rhoGrid'] printed. """
+    return argentinaFuncOfRho(printAll = True, commonX = commonX)

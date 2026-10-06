@@ -1,0 +1,965 @@
+{
+ "figure": "ESC_Path",
+ "marks": [
+  {
+   "id": "ESC_Path--theta--rho0.5--1960",
+   "label": "1960",
+   "series": "ρ = 0.5",
+   "panel": "Design in force θ_t",
+   "value": 0.7382263650417816,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y1960@0.5"
+  },
+  {
+   "id": "ESC_Path--theta--rho0.5--1990",
+   "label": "1990",
+   "series": "ρ = 0.5",
+   "panel": "Design in force θ_t",
+   "value": 0.6936666774211699,
+   "text": "0.694",
+   "table": "ESC_PathTable",
+   "row": "y1990@0.5"
+  },
+  {
+   "id": "ESC_Path--theta--rho0.5--2020",
+   "label": "2020",
+   "series": "ρ = 0.5",
+   "panel": "Design in force θ_t",
+   "value": 0.73822635325699,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y2020@0.5"
+  },
+  {
+   "id": "ESC_Path--theta--rho0.5--2050",
+   "label": "2050",
+   "series": "ρ = 0.5",
+   "panel": "Design in force θ_t",
+   "value": 0.7620057884125006,
+   "text": "0.762",
+   "table": "ESC_PathTable",
+   "row": "y2050@0.5"
+  },
+  {
+   "id": "ESC_Path--theta--rho0.5--2080",
+   "label": "2080",
+   "series": "ρ = 0.5",
+   "panel": "Design in force θ_t",
+   "value": 0.7939815803766772,
+   "text": "0.794",
+   "table": "ESC_PathTable",
+   "row": "y2080@0.5"
+  },
+  {
+   "id": "ESC_Path--theta--rho0.5--2110",
+   "label": "2110",
+   "series": "ρ = 0.5",
+   "panel": "Design in force θ_t",
+   "value": 0.7974788234243566,
+   "text": "0.797",
+   "table": "ESC_PathTable",
+   "row": "y2110@0.5"
+  },
+  {
+   "id": "ESC_Path--theta--rho0.5--2140",
+   "label": "2140",
+   "series": "ρ = 0.5",
+   "panel": "Design in force θ_t",
+   "value": 0.7979293375040458,
+   "text": "0.798",
+   "table": "ESC_PathTable",
+   "row": "y2140@0.5"
+  },
+  {
+   "id": "ESC_Path--theta--rho0.5--2170",
+   "label": "2170",
+   "series": "ρ = 0.5",
+   "panel": "Design in force θ_t",
+   "value": 0.7995133492992252,
+   "text": "0.800",
+   "table": "ESC_PathTable",
+   "row": "y2170@0.5"
+  },
+  {
+   "id": "ESC_Path--theta--rho1.0--1960",
+   "label": "1960",
+   "series": "ρ = 1.0",
+   "panel": "Design in force θ_t",
+   "value": 0.7382263650417814,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y1960@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho1.0--1990",
+   "label": "1990",
+   "series": "ρ = 1.0",
+   "panel": "Design in force θ_t",
+   "value": 0.7216537105060501,
+   "text": "0.722",
+   "table": "ESC_PathTable",
+   "row": "y1990@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho1.0--2020",
+   "label": "2020",
+   "series": "ρ = 1.0",
+   "panel": "Design in force θ_t",
+   "value": 0.738226379401147,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y2020@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho1.0--2050",
+   "label": "2050",
+   "series": "ρ = 1.0",
+   "panel": "Design in force θ_t",
+   "value": 0.797328434018981,
+   "text": "0.797",
+   "table": "ESC_PathTable",
+   "row": "y2050@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho1.0--2080",
+   "label": "2080",
+   "series": "ρ = 1.0",
+   "panel": "Design in force θ_t",
+   "value": 0.8040217663614139,
+   "text": "0.804",
+   "table": "ESC_PathTable",
+   "row": "y2080@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho1.0--2110",
+   "label": "2110",
+   "series": "ρ = 1.0",
+   "panel": "Design in force θ_t",
+   "value": 0.8086228529539058,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2110@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho1.0--2140",
+   "label": "2140",
+   "series": "ρ = 1.0",
+   "panel": "Design in force θ_t",
+   "value": 0.8086228529530396,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2140@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho1.0--2170",
+   "label": "2170",
+   "series": "ρ = 1.0",
+   "panel": "Design in force θ_t",
+   "value": 0.8086228529535724,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2170@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho2.0--1960",
+   "label": "1960",
+   "series": "ρ = 2.0",
+   "panel": "Design in force θ_t",
+   "value": 0.7382263650417816,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y1960@2.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho2.0--1990",
+   "label": "1990",
+   "series": "ρ = 2.0",
+   "panel": "Design in force θ_t",
+   "value": 0.6797314241086321,
+   "text": "0.680",
+   "table": "ESC_PathTable",
+   "row": "y1990@2.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho2.0--2020",
+   "label": "2020",
+   "series": "ρ = 2.0",
+   "panel": "Design in force θ_t",
+   "value": 0.7382263690259991,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y2020@2.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho2.0--2050",
+   "label": "2050",
+   "series": "ρ = 2.0",
+   "panel": "Design in force θ_t",
+   "value": 0.7584996617453056,
+   "text": "0.758",
+   "table": "ESC_PathTable",
+   "row": "y2050@2.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho2.0--2080",
+   "label": "2080",
+   "series": "ρ = 2.0",
+   "panel": "Design in force θ_t",
+   "value": 0.8145287290255117,
+   "text": "0.815",
+   "table": "ESC_PathTable",
+   "row": "y2080@2.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho2.0--2110",
+   "label": "2110",
+   "series": "ρ = 2.0",
+   "panel": "Design in force θ_t",
+   "value": 0.8165645962716457,
+   "text": "0.817",
+   "table": "ESC_PathTable",
+   "row": "y2110@2.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho2.0--2140",
+   "label": "2140",
+   "series": "ρ = 2.0",
+   "panel": "Design in force θ_t",
+   "value": 0.8165766682193797,
+   "text": "0.817",
+   "table": "ESC_PathTable",
+   "row": "y2140@2.0"
+  },
+  {
+   "id": "ESC_Path--theta--rho2.0--2170",
+   "label": "2170",
+   "series": "ρ = 2.0",
+   "panel": "Design in force θ_t",
+   "value": 0.8168829622896069,
+   "text": "0.817",
+   "table": "ESC_PathTable",
+   "row": "y2170@2.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho0.5--1960",
+   "label": "1960",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": -0.016829588968528264,
+   "text": "-0.02 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y1960@0.5"
+  },
+  {
+   "id": "ESC_Path--dtau--rho0.5--1990",
+   "label": "1990",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": -0.08425942936265973,
+   "text": "-0.08 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y1990@0.5"
+  },
+  {
+   "id": "ESC_Path--dtau--rho0.5--2020",
+   "label": "2020",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": -0.020191072017899936,
+   "text": "-0.02 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2020@0.5"
+  },
+  {
+   "id": "ESC_Path--dtau--rho0.5--2050",
+   "label": "2050",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.05416691530385209,
+   "text": "+0.05 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2050@0.5"
+  },
+  {
+   "id": "ESC_Path--dtau--rho0.5--2080",
+   "label": "2080",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.15615724867195924,
+   "text": "+0.16 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2080@0.5"
+  },
+  {
+   "id": "ESC_Path--dtau--rho0.5--2110",
+   "label": "2110",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.1756359103906202,
+   "text": "+0.18 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2110@0.5"
+  },
+  {
+   "id": "ESC_Path--dtau--rho0.5--2140",
+   "label": "2140",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.18551580843032267,
+   "text": "+0.19 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2140@0.5"
+  },
+  {
+   "id": "ESC_Path--dtau--rho0.5--2170",
+   "label": "2170",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.15668814657250063,
+   "text": "+0.16 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2170@0.5"
+  },
+  {
+   "id": "ESC_Path--dtau--rho1.0--1960",
+   "label": "1960",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 1.479372180313021e-12,
+   "text": "0.00 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y1960@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho1.0--1990",
+   "label": "1990",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": -0.0068966731766012535,
+   "text": "-0.01 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y1990@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho1.0--2020",
+   "label": "2020",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 1.32306499089907e-08,
+   "text": "0.00 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2020@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho1.0--2050",
+   "label": "2050",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.1450696663342299,
+   "text": "+0.15 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2050@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho1.0--2080",
+   "label": "2080",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.1966130506629804,
+   "text": "+0.20 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2080@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho1.0--2110",
+   "label": "2110",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.20257127512743056,
+   "text": "+0.20 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2110@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho1.0--2140",
+   "label": "2140",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.2025712751264397,
+   "text": "+0.20 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2140@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho1.0--2170",
+   "label": "2170",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.2025712751270503,
+   "text": "+0.20 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2170@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho2.0--1960",
+   "label": "1960",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": -0.05016024403977082,
+   "text": "-0.05 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y1960@2.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho2.0--1990",
+   "label": "1990",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.0026788370990599164,
+   "text": "0.00 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y1990@2.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho2.0--2020",
+   "label": "2020",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.010699352068138657,
+   "text": "+0.01 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2020@2.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho2.0--2050",
+   "label": "2050",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.07808468532133073,
+   "text": "+0.08 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2050@2.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho2.0--2080",
+   "label": "2080",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.08949722633159185,
+   "text": "+0.09 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2080@2.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho2.0--2110",
+   "label": "2110",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.08950760956429882,
+   "text": "+0.09 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2110@2.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho2.0--2140",
+   "label": "2140",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.08982760217355057,
+   "text": "+0.09 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2140@2.0"
+  },
+  {
+   "id": "ESC_Path--dtau--rho2.0--2170",
+   "label": "2170",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.11467372079256022,
+   "text": "+0.11 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2170@2.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.2--1960",
+   "label": "1960",
+   "series": "ξ = 0.2",
+   "panel": "Design in force θ_t",
+   "value": 0.7382263650417817,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y1960xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.2--1990",
+   "label": "1990",
+   "series": "ξ = 0.2",
+   "panel": "Design in force θ_t",
+   "value": 0.7212232045953139,
+   "text": "0.721",
+   "table": "ESC_PathTable",
+   "row": "y1990xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.2--2020",
+   "label": "2020",
+   "series": "ξ = 0.2",
+   "panel": "Design in force θ_t",
+   "value": 0.7382263662466154,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y2020xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.2--2050",
+   "label": "2050",
+   "series": "ξ = 0.2",
+   "panel": "Design in force θ_t",
+   "value": 0.7982461067469289,
+   "text": "0.798",
+   "table": "ESC_PathTable",
+   "row": "y2050xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.2--2080",
+   "label": "2080",
+   "series": "ξ = 0.2",
+   "panel": "Design in force θ_t",
+   "value": 0.8053706913120439,
+   "text": "0.805",
+   "table": "ESC_PathTable",
+   "row": "y2080xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.2--2110",
+   "label": "2110",
+   "series": "ξ = 0.2",
+   "panel": "Design in force θ_t",
+   "value": 0.8091815657599751,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2110xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.2--2140",
+   "label": "2140",
+   "series": "ξ = 0.2",
+   "panel": "Design in force θ_t",
+   "value": 0.8091815657596027,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2140xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.2--2170",
+   "label": "2170",
+   "series": "ξ = 0.2",
+   "panel": "Design in force θ_t",
+   "value": 0.8091815657602751,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2170xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.3--1960",
+   "label": "1960",
+   "series": "ξ = 0.3",
+   "panel": "Design in force θ_t",
+   "value": 0.7382263650417814,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y1960@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.3--1990",
+   "label": "1990",
+   "series": "ξ = 0.3",
+   "panel": "Design in force θ_t",
+   "value": 0.7216537105060501,
+   "text": "0.722",
+   "table": "ESC_PathTable",
+   "row": "y1990@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.3--2020",
+   "label": "2020",
+   "series": "ξ = 0.3",
+   "panel": "Design in force θ_t",
+   "value": 0.738226379401147,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y2020@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.3--2050",
+   "label": "2050",
+   "series": "ξ = 0.3",
+   "panel": "Design in force θ_t",
+   "value": 0.797328434018981,
+   "text": "0.797",
+   "table": "ESC_PathTable",
+   "row": "y2050@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.3--2080",
+   "label": "2080",
+   "series": "ξ = 0.3",
+   "panel": "Design in force θ_t",
+   "value": 0.8040217663614139,
+   "text": "0.804",
+   "table": "ESC_PathTable",
+   "row": "y2080@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.3--2110",
+   "label": "2110",
+   "series": "ξ = 0.3",
+   "panel": "Design in force θ_t",
+   "value": 0.8086228529539058,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2110@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.3--2140",
+   "label": "2140",
+   "series": "ξ = 0.3",
+   "panel": "Design in force θ_t",
+   "value": 0.8086228529530396,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2140@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.3--2170",
+   "label": "2170",
+   "series": "ξ = 0.3",
+   "panel": "Design in force θ_t",
+   "value": 0.8086228529535724,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2170@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.4--1960",
+   "label": "1960",
+   "series": "ξ = 0.4",
+   "panel": "Design in force θ_t",
+   "value": 0.7382263650417814,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y1960xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.4--1990",
+   "label": "1990",
+   "series": "ξ = 0.4",
+   "panel": "Design in force θ_t",
+   "value": 0.7220672495580215,
+   "text": "0.722",
+   "table": "ESC_PathTable",
+   "row": "y1990xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.4--2020",
+   "label": "2020",
+   "series": "ξ = 0.4",
+   "panel": "Design in force θ_t",
+   "value": 0.7382263753714124,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y2020xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.4--2050",
+   "label": "2050",
+   "series": "ξ = 0.4",
+   "panel": "Design in force θ_t",
+   "value": 0.7964418189392964,
+   "text": "0.796",
+   "table": "ESC_PathTable",
+   "row": "y2050xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.4--2080",
+   "label": "2080",
+   "series": "ξ = 0.4",
+   "panel": "Design in force θ_t",
+   "value": 0.8037947465343732,
+   "text": "0.804",
+   "table": "ESC_PathTable",
+   "row": "y2080xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.4--2110",
+   "label": "2110",
+   "series": "ξ = 0.4",
+   "panel": "Design in force θ_t",
+   "value": 0.8086484922853963,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2110xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.4--2140",
+   "label": "2140",
+   "series": "ξ = 0.4",
+   "panel": "Design in force θ_t",
+   "value": 0.8086484922857523,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2140xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--theta--xi0.4--2170",
+   "label": "2170",
+   "series": "ξ = 0.4",
+   "panel": "Design in force θ_t",
+   "value": 0.8086484922862375,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2170xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.2--1960",
+   "label": "1960",
+   "series": "ξ = 0.2",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 1.5015766408055242e-12,
+   "text": "0.00 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y1960xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.2--1990",
+   "label": "1990",
+   "series": "ξ = 0.2",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": -0.006130774454579657,
+   "text": "-0.01 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y1990xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.2--2020",
+   "label": "2020",
+   "series": "ξ = 0.2",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 1.076241873398942e-09,
+   "text": "0.00 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2020xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.2--2050",
+   "label": "2050",
+   "series": "ξ = 0.2",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.1515125114615795,
+   "text": "+0.15 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2050xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.2--2080",
+   "label": "2080",
+   "series": "ξ = 0.2",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.20688926324429757,
+   "text": "+0.21 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2080xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.2--2110",
+   "label": "2110",
+   "series": "ξ = 0.2",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.2119847569136274,
+   "text": "+0.21 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2110xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.2--2140",
+   "label": "2140",
+   "series": "ξ = 0.2",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.21198475691316943,
+   "text": "+0.21 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2140xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.2--2170",
+   "label": "2170",
+   "series": "ξ = 0.2",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.21198475691400764,
+   "text": "+0.21 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2170xi0.2@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.3--1960",
+   "label": "1960",
+   "series": "ξ = 0.3",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 1.479372180313021e-12,
+   "text": "0.00 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y1960@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.3--1990",
+   "label": "1990",
+   "series": "ξ = 0.3",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": -0.0068966731766012535,
+   "text": "-0.01 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y1990@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.3--2020",
+   "label": "2020",
+   "series": "ξ = 0.3",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 1.32306499089907e-08,
+   "text": "0.00 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2020@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.3--2050",
+   "label": "2050",
+   "series": "ξ = 0.3",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.1450696663342299,
+   "text": "+0.15 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2050@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.3--2080",
+   "label": "2080",
+   "series": "ξ = 0.3",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.1966130506629804,
+   "text": "+0.20 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2080@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.3--2110",
+   "label": "2110",
+   "series": "ξ = 0.3",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.20257127512743056,
+   "text": "+0.20 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2110@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.3--2140",
+   "label": "2140",
+   "series": "ξ = 0.3",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.2025712751264397,
+   "text": "+0.20 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2140@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.3--2170",
+   "label": "2170",
+   "series": "ξ = 0.3",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.2025712751270503,
+   "text": "+0.20 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2170@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.4--1960",
+   "label": "1960",
+   "series": "ξ = 0.4",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 1.5099033134902129e-12,
+   "text": "0.00 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y1960xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.4--1990",
+   "label": "1990",
+   "series": "ξ = 0.4",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": -0.007530535845548525,
+   "text": "-0.01 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y1990xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.4--2020",
+   "label": "2020",
+   "series": "ξ = 0.4",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 9.772768705396118e-09,
+   "text": "0.00 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2020xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.4--2050",
+   "label": "2050",
+   "series": "ξ = 0.4",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.1388799543971614,
+   "text": "+0.14 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2050xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.4--2080",
+   "label": "2080",
+   "series": "ξ = 0.4",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.18831632360193917,
+   "text": "+0.19 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2080xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.4--2110",
+   "label": "2110",
+   "series": "ξ = 0.4",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.19420228548849838,
+   "text": "+0.19 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2110xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.4--2140",
+   "label": "2140",
+   "series": "ξ = 0.4",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.19420228548888974,
+   "text": "+0.19 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2140xi0.4@1.0"
+  },
+  {
+   "id": "ESC_Path--dtau--xi0.4--2170",
+   "label": "2170",
+   "series": "ξ = 0.4",
+   "panel": "Tax rate, chosen minus pinned",
+   "value": 0.19420228548940877,
+   "text": "+0.19 p.p.",
+   "table": "ESC_PathTable",
+   "row": "y2170xi0.4@1.0"
+  }
+ ]
+}

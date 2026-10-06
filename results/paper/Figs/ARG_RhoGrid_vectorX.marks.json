@@ -1,0 +1,965 @@
+{
+ "figure": "ARG_RhoGrid_vectorX",
+ "marks": [
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 1.3885820033616671,
+   "text": "1.389",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.5"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 1.0761864633502911,
+   "text": "1.076",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.6"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.9012389658848016,
+   "text": "0.901",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.7"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.7860968261678989,
+   "text": "0.786",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.8"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.7077826906316332,
+   "text": "0.708",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.9"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.6505784094921762,
+   "text": "0.651",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.0"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.6073183859910181,
+   "text": "0.607",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.1"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.5735161496254928,
+   "text": "0.574",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.2"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.5464415217577566,
+   "text": "0.546",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.3"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.5242817842855123,
+   "text": "0.524",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.4"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.5058593436054412,
+   "text": "0.506",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.5"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.4902678994261274,
+   "text": "0.490",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.6"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.4769720693541269,
+   "text": "0.477",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.7"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.4653723223342905,
+   "text": "0.465",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.8"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.4554100411422161,
+   "text": "0.455",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.9"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--beta--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "",
+   "panel": "Discount factor β",
+   "value": 0.4464047260221249,
+   "text": "0.446",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@2.0"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 2.0931539483127213,
+   "text": "2.093",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.5"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.8811395573441312,
+   "text": "1.881",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.6"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.739645398608281,
+   "text": "1.740",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.7"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.6341310296325364,
+   "text": "1.634",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.8"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.554315645960223,
+   "text": "1.554",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.9"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.491528881161546,
+   "text": "1.492",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.0"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.440998538632102,
+   "text": "1.441",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.1"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.3996878144673426,
+   "text": "1.400",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.2"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.3654232035832348,
+   "text": "1.365",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.3"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.3365713230472132,
+   "text": "1.337",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.4"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.3120267370392598,
+   "text": "1.312",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.5"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.2908910150238382,
+   "text": "1.291",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.6"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.272611058308303,
+   "text": "1.273",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.7"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.2564993156786235,
+   "text": "1.256",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.8"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.2425300191258632,
+   "text": "1.243",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.9"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--omega--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "",
+   "panel": "Political weight of the old ω",
+   "value": 1.2297147030067483,
+   "text": "1.230",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@2.0"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 15.06284000106683,
+   "text": "15.06%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.5"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 14.87303791403811,
+   "text": "14.87%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.6"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 14.74780630354973,
+   "text": "14.75%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.7"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 14.610026708215628,
+   "text": "14.61%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.8"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 14.500801123249241,
+   "text": "14.50%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.9"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 14.400547802085839,
+   "text": "14.40%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.0"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 14.310933470675948,
+   "text": "14.31%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.1"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 14.230316849346119,
+   "text": "14.23%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.2"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 14.15722144406478,
+   "text": "14.16%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.3"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 14.09056496952511,
+   "text": "14.09%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.4"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 14.030167045468781,
+   "text": "14.03%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.5"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 13.973945786130521,
+   "text": "13.97%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.6"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 13.92306245867834,
+   "text": "13.92%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.7"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 13.873346058735208,
+   "text": "13.87%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.8"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 13.83109775579266,
+   "text": "13.83%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.9"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--sr--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "",
+   "panel": "Savings rate 2010, % of GDP",
+   "value": 13.78711750898193,
+   "text": "13.79%",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@2.0"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.300648263254813,
+   "text": "0.301",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.5"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.3045104553431804,
+   "text": "0.305",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.6"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.3070944499568119,
+   "text": "0.307",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.7"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.3089930542311458,
+   "text": "0.309",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.8"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.3104004614593082,
+   "text": "0.310",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.9"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.311487698423051,
+   "text": "0.311",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.0"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.3123457645989719,
+   "text": "0.312",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.1"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.3130337355060685,
+   "text": "0.313",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.2"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.3135951304286099,
+   "text": "0.314",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.3"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.3140577433782944,
+   "text": "0.314",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.4"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.3144423334034115,
+   "text": "0.314",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.5"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.3147659545645235,
+   "text": "0.315",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.6"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.3150392901259052,
+   "text": "0.315",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.7"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.315273025696049,
+   "text": "0.315",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.8"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.3154739282643447,
+   "text": "0.315",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.9"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--iota--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "",
+   "panel": "Informal savings ratio ι",
+   "value": 0.3156360211560632,
+   "text": "0.316",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@2.0"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2882131465550045,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.5"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2882224403904257,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.6"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2882320733674585,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.7"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2882475431316909,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.8"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2882627975610846,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.9"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.288279073527211,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.0"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2882949280034792,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.1"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2883106194416185,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.2"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2883256837880719,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.3"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.288340331677981,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.4"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2883544059870414,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.5"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2883680218651003,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.6"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2883809361013562,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.7"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2883937738620383,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.8"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2884051117462299,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.9"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--eta0--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "",
+   "panel": "Informal productivity η0",
+   "value": 0.2884183791475129,
+   "text": "0.288",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@2.0"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3742968702564517,
+   "text": "0.374",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.5"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3744239092529185,
+   "text": "0.374",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.6"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3745556252143052,
+   "text": "0.375",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.7"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3747672378957571,
+   "text": "0.375",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.8"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3749760109263476,
+   "text": "0.375",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@0.9"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3751988808253563,
+   "text": "0.375",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.0"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3754160944360747,
+   "text": "0.375",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.1"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3756311863971474,
+   "text": "0.376",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.2"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3758377873579512,
+   "text": "0.376",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.3"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3760387754026953,
+   "text": "0.376",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.4"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3762319848002037,
+   "text": "0.376",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.5"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3764189864375131,
+   "text": "0.376",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.6"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3765964293866039,
+   "text": "0.377",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.7"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3767728965767871,
+   "text": "0.377",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.8"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3769288087678453,
+   "text": "0.377",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@1.9"
+  },
+  {
+   "id": "ARG_RhoGrid_vectorX--X0--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "",
+   "panel": "Informal taste for leisure X0",
+   "value": 0.3771113287262719,
+   "text": "0.377",
+   "table": "ARG_RhoGridTable_vectorX",
+   "row": "rho@2.0"
+  }
+ ]
+}

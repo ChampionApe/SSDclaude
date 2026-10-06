@@ -29,7 +29,7 @@ It is straightforward to verify that all young households' indirect utility is d
 In an interior equilibrium it must be the case that retirees prefer positive taxes, as the young unambiguously always support zero taxes. Then, increasing $\omega$ or decreasing $\nu_t$ naturally leads to higher equilibrium tax rates. In the corner with $\tau_t=0$, there will be no effect from marginal changes in $\omega, \nu_t$. Thus $\partial \tau_t / \partial \omega \geq0$ and $\partial \tau_t/\partial \nu_t\leq 0$. The sign in $\nu_t$ needs one more step, since $\nu_t$ also scales the universal pension relative to the endowment of informal retirees and so raises their support: with $\sigma_t^0 \equiv b_t^0/\tilde{c}_{2,t}^0$ the pension's share of their consumption, $\partial \mathcal{E}_{2,t}^0/\partial \nu_t = \mathcal{E}_{2,t}^0\,(1-\sigma_t^0)/\nu_t$. Writing $z_t$ for the left-hand side of the first order condition and using the condition itself to substitute for the young's terms, $\partial z_t/\partial\nu_t = -\frac{\omega}{\nu_t}\big[\gamma_0\mathcal{E}_{2,t}^0\,\sigma_t^0 + \sum_{i>0}\gamma_i\mathcal{E}_{2,t}^i\big]$, which is negative whenever the aggregate marginal support of formal retirees, $\sum_{i>0}\gamma_i\mathcal{E}_{2,t}^i$, is positive at the optimum, that is, unless the tax is sustained by informal retirees against formal ones.
 
 
-To analyze the effect of income inequality on equilibrium taxes, without loss of generality we consider two types, $H$ and $L$, with productivities above and below the average respectively. We increase the productivity for type $H$ and that of type type $L$ such that
+To analyze the effect of income inequality on equilibrium taxes, without loss of generality we consider two types, $H$ and $L$, with productivities above and below the average respectively. We increase the productivity for type $H$ and that of type $L$ such that
 \begin{align*}
     \frac{\partial \eta_L}{\partial \eta_H} = - \frac{\gamma_H \left(\frac{\eta_H}{X_H}\right)^{\xi}}{\gamma_L \left(\frac{\eta_L}{X_L}\right)^{\xi}},
 \end{align*}
@@ -93,7 +93,7 @@ where we use the shorthand $d\tau_{t+1}/d\tau_t = \frac{d \tau^{t+1}}{d (s_t^0/s
 For the informal, working households, a similar Euler condition applies such that we can write indirect utility as $\ln\left(\tilde{c}_{1,t}^0\right)\left(1+\beta\right)+\beta \ln\left(\beta R_{t+1}^0\right)$
 The marginal effect on indirect utility is then characterized by
 \begin{align*}
-    \mathcal{E}_{1,t}^0 =& (1+\beta_{t,0})\dfrac{d\ln\left(\tilde{c}_{1,t}^0\right)}{d\tau_t} + \beta\dfrac{d \ln\left(R_{t+1}^0\right)}{d\tau_t} \\
+    \mathcal{E}_{1,t}^0 =& (1+\beta)\dfrac{d\ln\left(\tilde{c}_{1,t}^0\right)}{d\tau_t} + \beta\dfrac{d \ln\left(R_{t+1}^0\right)}{d\tau_t} \\
     \frac{d\ln\left(\tilde{c}_{1,t}^0\right)}{d\tau_t} =& \frac{\frac{1-\alpha}{r_0\alpha}\frac{\epsilon}{1+\gamma_0\epsilon}\Theta_{s,t}\left(\frac{d\tau_{t+1}}{d\tau_t}+\tau_{t+1}\frac{d\ln\left(s_t\right)}{d\tau_t}\right)}{\frac{\eta_{0}^{1+\xi}}{X_{0}^{\xi}}\frac{1}{1+\xi}\left(\frac{1-\alpha}{\Gamma_{h}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}+\frac{1-\alpha}{r_0\alpha}\frac{\epsilon\tau_{t+1}}{1+\gamma_0\epsilon}\Theta_{s,t}} \\
     \frac{d\ln\left(R_{t+1}^0\right)}{d\tau_t} =& (1-\alpha)\left(\frac{d\ln\left(h_{t+1}\right)}{d\ln\left(s_t\right)}-1\right)\frac{d\ln\left(s_t\right)}{d\tau_t}
 \end{align*}
@@ -135,12 +135,12 @@ For the young informal households, we can employ the Euler equation in a similar
 \begin{align*}
     v_{1,t}^0 =& \frac{\Big(\tilde{c}_{1,t}^0(1+B_{t+1}^0)^{\frac{\rho}{\rho-1}}\Big)^{1-1/\rho}}{1-1/\rho} = \frac{\left(\hat{c}_{1,t}^0\right)^{1-1/\rho}}{1-1/\rho} \\
     \hat{c}_{1,t}^0 =& \left(\frac{s_{t-1}}{\nu_t}\right)^{\sigma_s}(1+B_{t+1}^0)^{\frac{1}{\rho-1}}\mathcal{C}_{1,t}^0 \\ 
-    \mathcal{C}_{1,t}^0 =& \frac{\eta_{0}^{1+\xi}}{X_{0}^{\xi}}\frac{1}{1+\xi}\left(\frac{1-\alpha}{\Gamma_{h}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}+\Theta_{s,t}\frac{1-\alpha}{\mu_0\alpha}\frac{\tau_{t+1}\epsilon}{1+\gamma_0\epsilon}
+    \mathcal{C}_{1,t}^0 =& \frac{\eta_{0}^{1+\xi}}{X_{0}^{\xi}}\frac{1}{1+\xi}\left(\frac{1-\alpha}{\Gamma_{h}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}+\Theta_{s,t}\frac{1-\alpha}{r_0\alpha}\frac{\tau_{t+1}\epsilon}{1+\gamma_0\epsilon}
 \end{align*}
 We then have that:
 \begin{align}
     \frac{dv_{1,t}^0}{d\tau_t}=& \left(\hat{c}_{1,t}^0\right)^{1-1/\rho} \frac{d\ln\left(\hat{c}_{1,t}^0\right)}{d\tau_t} \\
-    \frac{d\ln\left(\hat{c}_{1,t}^0\right)}{d\tau_t} =& \frac{B_{t+1}^0}{1+B_{t+1}^0}(1-\alpha)\left(\frac{d\ln\left(h_{t+1}\right)}{d\ln\left(s_t\right)}-1\right)\frac{d\ln\left(s_t\right)}{d\tau_t}+\frac{\Theta_{s,t}\frac{1-\alpha}{\mu_0\alpha}\frac{\epsilon}{1+\gamma_0\epsilon}\left(\frac{d\tau_{t+1}}{d\tau_t}+\tau_{t+1}\frac{d\ln\left(\Theta_{s,t}\right)}{d\tau_t}\right)}{\frac{\eta_{0}^{1+\xi}}{X_{0}^{\xi}}\frac{1}{1+\xi}\left(\frac{1-\alpha}{\Gamma_{h}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}+\Theta_{s,t}\frac{1-\alpha}{\mu_0\alpha}\frac{\tau_{t+1}\epsilon}{1+\gamma_0\epsilon}} 
+    \frac{d\ln\left(\hat{c}_{1,t}^0\right)}{d\tau_t} =& \frac{B_{t+1}^0}{1+B_{t+1}^0}(1-\alpha)\left(\frac{d\ln\left(h_{t+1}\right)}{d\ln\left(s_t\right)}-1\right)\frac{d\ln\left(s_t\right)}{d\tau_t}+\frac{\Theta_{s,t}\frac{1-\alpha}{r_0\alpha}\frac{\epsilon}{1+\gamma_0\epsilon}\left(\frac{d\tau_{t+1}}{d\tau_t}+\tau_{t+1}\frac{d\ln\left(\Theta_{s,t}\right)}{d\tau_t}\right)}{\frac{\eta_{0}^{1+\xi}}{X_{0}^{\xi}}\frac{1}{1+\xi}\left(\frac{1-\alpha}{\Gamma_{h}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}+\Theta_{s,t}\frac{1-\alpha}{r_0\alpha}\frac{\tau_{t+1}\epsilon}{1+\gamma_0\epsilon}} 
 \end{align}
 
 

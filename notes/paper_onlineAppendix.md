@@ -198,10 +198,11 @@ Fill in below; a blank line means "as recommended".
 
 - **O1 The split.** Option K (recommended) or option S. The target journal decides: does it print appendices
   with the article?
-  RKB:
+  RKB, 2026-10-06: the target is REStud, JPE or AEJ: Economic Policy; option K.
 - **O2 The UK as host.** Wholly online, with the two sentences in sections 6 and 7 citing the map (recommended),
   or `UK_OtherShocks` kept in the paper.
-  RKB:
+  RKB, 2026-10-06: some UK results stay in the paper's appendix. Implemented as `UK_OtherShocks` and the two
+  host figures `UKUS_French`, `UKUS_ESC_French` kept; the UK's CRRA and endogenous-design tables online.
 - **O3 The robustness map** as the paper's last appendix item and the online front page (recommended).
   RKB:
 - **O4 Online-only exhibits from existing results** (§4c; recommended: all).
@@ -210,7 +211,8 @@ Fill in below; a blank line means "as recommended".
   RKB:
 - **O6 The form.** A Quarto site on GitHub Pages with a print edition from the same source (recommended); a site
   only; a PDF only.
-  RKB:
+  RKB, 2026-10-06: as recommended; build all of it (O8: no prototype gate). The build contract is
+  `notes/brief_onlineAppendix_2026-10-06.md`.
 - **O7 Where the online appendix's prose lives.** In the repo as Markdown, edited here, with MGE commenting on
   the rendered site or PDF (recommended); or LaTeX on Overleaf, converted at build.
   RKB:

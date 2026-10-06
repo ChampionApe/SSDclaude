@@ -1,0 +1,1605 @@
+{
+ "figure": "OECD_RhoGrid_vectorX",
+ "marks": [
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 1.4353620390543371,
+   "text": "1.435",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 1.161173696055844,
+   "text": "1.161",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.9973561779560508,
+   "text": "0.997",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.8902838883438735,
+   "text": "0.890",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.8152039468106631,
+   "text": "0.815",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.7606187875474917,
+   "text": "0.761",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.7177450490229625,
+   "text": "0.718",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.1"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.6844206255047698,
+   "text": "0.684",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.2"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.6575018033009343,
+   "text": "0.658",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.3"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.6353015285384522,
+   "text": "0.635",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.4"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.6167825598208317,
+   "text": "0.617",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.6009953775826254,
+   "text": "0.601",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.5874857094242014,
+   "text": "0.587",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.5757320616470755,
+   "text": "0.576",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.5654344670368524,
+   "text": "0.565",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--beta--usa--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "US",
+   "panel": "Discount factor β",
+   "value": 0.5563256288283547,
+   "text": "0.556",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@2.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 2.3156330145668926,
+   "text": "2.316",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.9585620229716452,
+   "text": "1.959",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.74651483606693,
+   "text": "1.747",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.6085298495466709,
+   "text": "1.609",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.512726022248607,
+   "text": "1.513",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.4536273947549907,
+   "text": "1.454",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.3898421231394047,
+   "text": "1.390",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.1"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.3483564781985224,
+   "text": "1.348",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.2"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.315086067029262,
+   "text": "1.315",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.3"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.2877242918886251,
+   "text": "1.288",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.4"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.2652123860347029,
+   "text": "1.265",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.2461807293412492,
+   "text": "1.246",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.2300083595131586,
+   "text": "1.230",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.2160687529777403,
+   "text": "1.216",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.2040058418746522,
+   "text": "1.204",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--usa--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "US",
+   "panel": "Political weight of the old ω",
+   "value": 1.1933935797140762,
+   "text": "1.193",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@2.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.62536614564087,
+   "text": "1.625",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.4315279504800995,
+   "text": "1.432",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.3176302389563563,
+   "text": "1.318",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.243215050288235,
+   "text": "1.243",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.1931053140526873,
+   "text": "1.193",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.1636793615192418,
+   "text": "1.164",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.1310434383381696,
+   "text": "1.131",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.1"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.1111256250692143,
+   "text": "1.111",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.2"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.095625508216255,
+   "text": "1.096",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.3"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.0833136947838584,
+   "text": "1.083",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.4"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.0736237718813626,
+   "text": "1.074",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.0656446082774833,
+   "text": "1.066",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.059116179270261,
+   "text": "1.059",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.0537404014075178,
+   "text": "1.054",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.0492352390402753,
+   "text": "1.049",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--gbr--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "UK",
+   "panel": "Political weight of the old ω",
+   "value": 1.045507630787721,
+   "text": "1.046",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@2.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 2.2721449034386105,
+   "text": "2.272",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.9220310926544188,
+   "text": "1.922",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.711627816878683,
+   "text": "1.712",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.5736702204407784,
+   "text": "1.574",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.4788242094469422,
+   "text": "1.479",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.4180571029150613,
+   "text": "1.418",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.35769859375533,
+   "text": "1.358",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.1"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.3167935227415324,
+   "text": "1.317",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.2"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.284724995148392,
+   "text": "1.285",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.3"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.2580804773329894,
+   "text": "1.258",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.4"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.2362957389840026,
+   "text": "1.236",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.2182120101170806,
+   "text": "1.218",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.2027311775320928,
+   "text": "1.203",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.1894236719696372,
+   "text": "1.189",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.1779778594010264,
+   "text": "1.178",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--omega--fra--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "France",
+   "panel": "Political weight of the old ω",
+   "value": 1.167957740180421,
+   "text": "1.168",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@2.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.4429999999999805,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.4429999999925407,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.4430000000017955,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.4430000000001515,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.4430000000025083,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.4430000000003025,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.442999999999815,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.1"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.443000000000058,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.2"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.443000000000122,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.3"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.442999999999897,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.4"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.442999999999994,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.442999999988809,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.442999999993325,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.4429999999907213,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.442999999983812,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--usa--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "US",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.4429999999929826,
+   "text": "2.443",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@2.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 1.8699050247361952,
+   "text": "1.870",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 1.913372181996116,
+   "text": "1.913",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 1.9527418005248844,
+   "text": "1.953",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 1.9868656245501624,
+   "text": "1.987",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.016885992547192,
+   "text": "2.017",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.040363488804508,
+   "text": "2.040",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.066819048354583,
+   "text": "2.067",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.1"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.0878509454719847,
+   "text": "2.088",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.2"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.1065728005413225,
+   "text": "2.107",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.3"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.1234984257648266,
+   "text": "2.123",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.4"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.13881011979227,
+   "text": "2.139",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.152687997145144,
+   "text": "2.153",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.16523399897311,
+   "text": "2.165",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.17680995085893,
+   "text": "2.177",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.187405255283366,
+   "text": "2.187",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--gbr--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "UK",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.197288864706228,
+   "text": "2.197",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@2.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 1.9426194245029007,
+   "text": "1.943",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 1.9802279195823764,
+   "text": "1.980",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.012126089264196,
+   "text": "2.012",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.040233240887884,
+   "text": "2.040",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.066495396974439,
+   "text": "2.066",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.0865364110014597,
+   "text": "2.087",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.109112105760451,
+   "text": "2.109",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.1"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.127206137722693,
+   "text": "2.127",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.2"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.1435198991020945,
+   "text": "2.144",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.3"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.1581854535474942,
+   "text": "2.158",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.4"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.1715289402237667,
+   "text": "2.172",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.183846413208225,
+   "text": "2.184",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.194863098178006,
+   "text": "2.195",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.20505842708971,
+   "text": "2.205",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.214477026239826,
+   "text": "2.214",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--R--fra--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "France",
+   "panel": "Interest factor R, 30 years",
+   "value": 2.2232010190778126,
+   "text": "2.223",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@2.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.911716082049828,
+   "text": "15.91%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.78138062241757,
+   "text": "15.78%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.65711404149882,
+   "text": "15.66%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.54872416359054,
+   "text": "15.55%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.45251641146201,
+   "text": "15.45%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@0.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.373694895582629,
+   "text": "15.37%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.2932340635234,
+   "text": "15.29%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.1"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.22476689519311,
+   "text": "15.22%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.2"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.16281093921637,
+   "text": "15.16%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.3"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.105710898193339,
+   "text": "15.11%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.4"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.05511295068832,
+   "text": "15.06%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.007775820304781,
+   "text": "15.01%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 14.96477431828985,
+   "text": "14.96%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 14.9247173803894,
+   "text": "14.92%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 14.887459343422641,
+   "text": "14.89%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@1.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--usa--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "US",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 14.852586997260689,
+   "text": "14.85%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "usa@2.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 18.92310024390277,
+   "text": "18.92%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 18.46440245264343,
+   "text": "18.46%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 18.05331067168733,
+   "text": "18.05%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 17.72338299056496,
+   "text": "17.72%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 17.431761855032498,
+   "text": "17.43%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@0.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 17.1972105691002,
+   "text": "17.20%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 16.96161705965427,
+   "text": "16.96%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.1"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 16.76847087860055,
+   "text": "16.77%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.2"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 16.59774505716564,
+   "text": "16.60%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.3"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 16.44562682929988,
+   "text": "16.45%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.4"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 16.31007869117522,
+   "text": "16.31%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 16.18695776821162,
+   "text": "16.19%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 16.07692907182958,
+   "text": "16.08%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.97620512085585,
+   "text": "15.98%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.88424894259759,
+   "text": "15.88%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@1.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--gbr--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "UK",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 15.79970747277632,
+   "text": "15.80%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "gbr@2.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho0.5",
+   "label": "ρ = 0.5",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 14.66361170443379,
+   "text": "14.66%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho0.6",
+   "label": "ρ = 0.6",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 14.32667412105916,
+   "text": "14.33%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho0.7",
+   "label": "ρ = 0.7",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 14.0508132801239,
+   "text": "14.05%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho0.8",
+   "label": "ρ = 0.8",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 13.818556305305671,
+   "text": "13.82%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho0.9",
+   "label": "ρ = 0.9",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 13.61084894481065,
+   "text": "13.61%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@0.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho1.0",
+   "label": "ρ = 1.0",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 13.435521470217578,
+   "text": "13.44%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.0"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho1.1",
+   "label": "ρ = 1.1",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 13.28363856665478,
+   "text": "13.28%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.1"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho1.2",
+   "label": "ρ = 1.2",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 13.14917728323195,
+   "text": "13.15%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.2"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho1.3",
+   "label": "ρ = 1.3",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 13.030330926576811,
+   "text": "13.03%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.3"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho1.4",
+   "label": "ρ = 1.4",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 12.924323560412459,
+   "text": "12.92%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.4"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho1.5",
+   "label": "ρ = 1.5",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 12.82980960800059,
+   "text": "12.83%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.5"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho1.6",
+   "label": "ρ = 1.6",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 12.744006458797871,
+   "text": "12.74%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.6"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho1.7",
+   "label": "ρ = 1.7",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 12.66746593112941,
+   "text": "12.67%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.7"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho1.8",
+   "label": "ρ = 1.8",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 12.59745333725761,
+   "text": "12.60%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.8"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho1.9",
+   "label": "ρ = 1.9",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 12.53367788845815,
+   "text": "12.53%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@1.9"
+  },
+  {
+   "id": "OECD_RhoGrid_vectorX--sr--fra--rho2.0",
+   "label": "ρ = 2.0",
+   "series": "France",
+   "panel": "Savings rate 2020, % of GDP",
+   "value": 12.47487651850687,
+   "text": "12.47%",
+   "table": "OECD_RhoGridTable_vectorX",
+   "row": "fra@2.0"
+  }
+ ]
+}

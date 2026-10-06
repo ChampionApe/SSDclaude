@@ -1,0 +1,85 @@
+{
+ "figure": "ARG_LOG_FourInOne_vectorX",
+ "marks": [
+  {
+   "id": "ARG_LOG_FourInOne_vectorX--tau--pre",
+   "label": "pre-reform ε = 0.29",
+   "series": "θ = 0.84",
+   "panel": "Tax rate τ",
+   "value": 10.923076923076271,
+   "text": "10.9%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_LOG_FourInOne_vectorX--tau--post",
+   "label": "post-reform εᵁ = 0.55",
+   "series": "θ = 0.84",
+   "panel": "Tax rate τ",
+   "value": 12.95080666302387,
+   "text": "13.0%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_LOG_FourInOne_vectorX--sr--pre",
+   "label": "pre-reform ε = 0.29",
+   "series": "θ = 0.84",
+   "panel": "Savings rate",
+   "value": 14.400547802085839,
+   "text": "14.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_LOG_FourInOne_vectorX--sr--post",
+   "label": "post-reform εᵁ = 0.55",
+   "series": "θ = 0.84",
+   "panel": "Savings rate",
+   "value": 14.00525257301079,
+   "text": "14.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_LOG_FourInOne_vectorX--ww--pre",
+   "label": "pre-reform ε = 0.29",
+   "series": "θ = 0.84",
+   "panel": "Average workweek",
+   "value": 42.5375,
+   "text": "42.5 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_LOG_FourInOne_vectorX--ww--post",
+   "label": "post-reform εᵁ = 0.55",
+   "series": "θ = 0.84",
+   "panel": "Average workweek",
+   "value": 42.051035257717146,
+   "text": "42.1 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_LOG_FourInOne_vectorX--iota--pre",
+   "label": "pre-reform ε = 0.29",
+   "series": "θ = 0.84",
+   "panel": "Informal savings ratio ι = s^0/s",
+   "value": 0.311487698423051,
+   "text": "0.311",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "ARG_LOG_FourInOne_vectorX--iota--post",
+   "label": "post-reform εᵁ = 0.55",
+   "series": "θ = 0.84",
+   "panel": "Informal savings ratio ι = s^0/s",
+   "value": 0.2704850618184318,
+   "text": "0.270",
+   "table": null,
+   "row": null
+  }
+ ]
+}

@@ -1,9 +1,9 @@
 \FloatBarrier
-\section{U.S.}\label{app:USrob}\setcounter{equation}{0}
-This appendix collects three sets of results for the U.S.\ model that complement sections \ref{sec:oecd} and \ref{sec:esc}: the counterfactuals under general CRRA preferences, the whole of section \ref{sec:oecd} under the vector-$X_i$ calibration, and the endogenous design's ageing counterfactual and its alternative cost specification. The counterfactuals that impose France's characteristics are in appendix \ref{app:UKUS}, next to the same exercise on the UK.
+\section{Further results for the U.S.}\label{app:USrob}\setcounter{equation}{0}
+This appendix complements sections \ref{sec:oecd} and \ref{sec:esc} for the U.S.\ model with the counterfactuals under general CRRA preferences, the alternative calibration of the taste for leisure, and the endogenous design under ageing. The counterfactuals that impose France's characteristics are in appendix \ref{app:UKUS}, next to the same exercise on the UK.
 
 \subsection{CRRA preferences}\label{app:US:CRRA}
-Table \ref{table:US:CRRA:pensChars} repeats the pension-design counterfactual of table \ref{table:US:pensChars} at $\rho = 0.5$ and $2$, each $\rho$ separately calibrated. The effect of the design on the tax rate falls with the intertemporal elasticity: moving from $\theta = 1$ to $\theta = 0$ raises the tax rate by $9.0$ p.p.\ at $\rho = 0.5$, $6.2$ p.p.\ at $\rho = 1$ and $1.5$ p.p.\ at $\rho = 2$. The reason for this is the one section \ref{sec:oecd} gives: a higher elasticity lowers the young's resistance to taxation, so the calibration needs a lower political weight of the old to match the observed tax rate, and the difference in benefits between rich and poor retirees counts for less. The savings rate and the workweek follow the tax rate, and at $\rho = 2$ the savings rate barely moves in either direction.
+Table \ref{table:US:CRRA:pensChars} repeats the pension-design counterfactual of table \ref{table:US:pensChars} at $\rho = 0.5$ and $2$, each $\rho$ separately calibrated. The effect of the design on the tax rate falls with the intertemporal elasticity, for the reason section \ref{sec:oecd} gives: moving from $\theta = 1$ to $\theta = 0$ raises the tax rate by $9.0$ p.p.\ at $\rho = 0.5$, $6.2$ p.p.\ at $\rho = 1$ and $1.5$ p.p.\ at $\rho = 2$. The savings rate and the workweek follow the tax rate, and at $\rho = 2$ the savings rate barely moves in either direction.
 
 \input{Tables/US_CRRA_PensChars}
 
@@ -13,76 +13,7 @@ Table \ref{table:US:CRRA:ageing} does the same for ageing, whose effect varies l
 
 \FloatBarrier
 \subsection{The vector-\texorpdfstring{$X_i$}{Xi} calibration}\label{app:US:vectorX}
-
-Section \ref{sec:oecd} identifies $\eta_i$ and $X_i$ by taking the taste for leisure common across income
-groups, $X_i = X$, and using the observed average workweek to fix its level. Relative hours are then a
-prediction. The alternative is to treat relative hours as data as well: with both $z_i^{\eta}$ and
-$h_i/h$ observed, \eqref{eq:calibration_eta} identifies a full vector $X_i$ and no separate hours target
-is needed. No observed workweek is then imposed, so $\bar h$ is reported against a reference point
-rather than read as a level. Which of the two is preferable is not obvious, and neither is innocuous, so we repeat the whole of section
-\ref{sec:oecd} under the second.
-
-Tables \ref{table:US:Calib_vectorX} to \ref{table:a_US:CalibUKUS_vectorX} report the calibration under this variant. The country-level parameters are those of table \ref{table:US:Calib} except the level of $X$ and the productivity ratios. Observed hours rise less with income than a common $X_i$ predicts, so the taste for leisure rises with income in every country and more of the observed income dispersion is attributed to productivity: the ratio of high to low productivity is $3.73$ in the U.S., $3.87$ in the UK and $2.41$ in France, against $3.08$, $3.06$ and $2.29$ under the common-$X$ calibration.
-
-\input{Tables/USUKFRCalibration_vectorX}
-
-\input{Tables/US_householdheterogeneity_vectorX}
-
-\input{Tables/FR_householdheterogeneity_vectorX}
-
-\input{Tables/UK_householdheterogeneity_vectorX}
-
-\input{Tables/FRUK_householdheterogeneity_vectorX}
-
-\input{Tables/UKUS_householdheterogeneity_vectorX}
-
-What carries over exactly is worth stating first: $\beta$, $\omega$, the
-equilibrium tax rate, the savings rate and aggregate hours are \emph{identical} across the two variants,
-because the calibration is block recursive; the productivity distribution enters every aggregate only
-through $\sum_i\gamma_i\eta_i^{1+\xi}/X_i^{\xi}$, which the normalization holds at one. Everything that
-depends on the design or on the demography therefore reproduces to numerical precision: tables
-\ref{table:US:pensChars_vectorX} and \ref{table:US:ageing_vectorX} are the main text's tables to every
-printed digit.
-
-\input{Tables/US_PensChars_vectorX}
-
-\input{Tables/US_Ageing_vectorX}
-
-What differs is anything defined \emph{through} $\eta$ or $X$ separately, which is to say the
-counterfactual that borrows France's income distribution (table \ref{table:US:otherShocks_vectorX}). The
-vector-$X_i$ calibration attributes more of the observed income dispersion to productivity and less to
-hours, so replacing the U.S.\ productivity distribution with France's is a larger change under it: the
-tax rate falls by 1.6 p.p.\ rather than 1.2 p.p. On the UK (table \ref{table:UK:otherShocks_vectorX}) the
-same row changes sign, from a rise of 0.3 p.p.\ to a fall of 0.5 p.p., for the reason appendix
-\ref{app:US:french} gives. The change does not disturb the paper's ranking, in which ageing and pension
-design dominate taxes while the French characteristics are minor, which is the claim the exercise is meant
-to test.
-
-\input{Tables/US_OtherShocks_vectorX}
-
-\input{Tables/UK_OtherShocks_vectorX}
-
-The same holds under CRRA preferences (tables \ref{table:US:CRRA:pensChars_vectorX} to \ref{table:UK:CRRA:otherShocks_vectorX}): the pension-design, ageing and voting rows reproduce the common-$X$ tables at every $\rho$, to $0.01$ p.p.\ on the UK, and only the income-distribution rows move. Under the vector-$X_i$ calibration France's income distribution lowers the U.S.\ tax rate by between $1.0$ and $2.1$ p.p.\ across $\rho$ and the UK's by between $0.3$ and $0.8$ p.p. Figure \ref{fig:US:overview_vectorX} is figure \ref{fig:US:overview} under this variant.
-
-\input{Tables/US_CRRA_PensChars_vectorX}
-
-\input{Tables/US_CRRA_Ageing_vectorX}
-
-\input{Tables/US_CRRA_OtherShocks_vectorX}
-
-\input{Tables/UK_CRRA_OtherShocks_vectorX}
-
-\begin{figure}[!htb]
-    \centering
-    \caption{The effect of various counterfactuals in the U.S., vector-$X_i$ calibration}
-    \label{fig:US:overview_vectorX}
-\begin{threeparttable}
-    \includegraphics[width=\linewidth]{Figs/US_overview_vectorX.pdf}
-\begin{tablenotes}[flushleft]\footnotesize
-    \item[] \textit{Note:} As figure \ref{fig:US:overview}, under the vector-$X_i$ calibration; the baseline levels are the baseline row of table \ref{table:US:pensChars_vectorX}.
-\end{tablenotes}
-\end{threeparttable}
-\end{figure}
+Section \ref{sec:oecd} takes the taste for leisure to be common across income groups and fixes its level by the average workweek, so that relative hours are a prediction. The alternative treats relative hours as data: with both $z_i^{\eta}$ and $h_i/h$ observed, \eqref{eq:calibration_eta} identifies one $X_i$ per group, and the level of hours is then not identified. Since the productivity distribution enters every aggregate only through $\sum_i\gamma_i\eta_i^{1+\xi}/X_i^{\xi}$, which both calibrations normalize to one, $\beta$, $\omega$, the tax and savings rates and the pension-design, ageing and voting counterfactuals are the same under the two, to every printed digit for the U.S.\ and to $0.01$ p.p.\ for the UK. Only the counterfactuals defined through $\eta_i$ or $X_i$ separately read differently: France's taste for leisure moves hours alone under either calibration, and France's income distribution, alone or in the composite, is the one whose effect on the tax rate changes. Under the alternative it lowers the U.S.\ tax rate by $1.6$ p.p.\ rather than $1.2$ p.p.\ at $\rho = 1$, and it lowers the UK's tax rate where under a common $X$ it raises it (figure \ref{fig:robustness}). Online Appendix \oa{oecd-vectorx} describes the alternative, and Online Appendix \oa{oecd} shows every table and figure of section \ref{sec:oecd} under both calibrations.
 
 \FloatBarrier
 \subsection{Endogenous pension design}\label{app:US:escTables}
@@ -91,6 +22,4 @@ Table \ref{table:US_ESC:ageing} reports the acute-ageing counterfactual of secti
 
 \input{Tables/US_ESC_Ageing}
 
-Table \ref{table:US_ESC:scaleWedge} reports, as a robustness check, the cost specification of an earlier draft, $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = 0.5$ imposed and $p$ calibrated per $\rho$ as $\lambda$ is in section \ref{sec:esc}. That cost is attached to the design rather than to the transfer the design performs: a flat benefit forfeits a share $1-\phi$ of revenue whatever it redistributes, and would do so even if all incomes were equal and the two designs paid identical benefits. A compressed income distribution then removes the redistributive stakes and leaves the cost in place, which is why that specification sends the U.S.\ to the Bismarckian corner under France's income distribution at every $\rho$, and why the UK, under the U.S.\ parameter, chose $\theta = 1$ against its observed $0.560$. Under the cost of section \ref{sec:esc} the same two rows are interior (table \ref{table:US_ESC:incomeDistr}) and $0.625$ (table \ref{table:US_ESC:country}).
-
-\input{Tables/US_ESC_ScaleWedge}
+A cost attached to the design itself rather than to the transfer it performs, $f(\theta) = \phi + (1-\phi)\theta^{p}$, is the alternative specification of Online Appendix \oa{esc-scale}; figure \ref{fig:robustness} sets the designs chosen under it beside those of the cost of section \ref{sec:esc:cost}.

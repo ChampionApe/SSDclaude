@@ -32,7 +32,13 @@ import numpy as np
 
 import config as C
 import datasets as D
-from tables import BANNER, LQ, RQ, SRNOTE, notesBlock
+from tables import BANNER, LQ, RQ, SRNOTE, notesBlock, rowKey, keyed
+
+# The row-key block of each shock-csv scenario (tables.rowKey); figuresUS names its marks' rows with it.
+ROWKEY = {'Baseline': 'baseline', r'$\theta = 0$': 'theta0', r'$\theta = 1$': 'theta1',
+          'Mild ageing': 'mild', 'Acute ageing': 'acute', 'Income distribution': 'income',
+          'Leisure preferences': 'leisure', 'Voting': 'voting', 'All French characteristics': 'frall',
+          'France (own calibration)': 'france'}
 
 
 def _xwrap(name, src, caption, label, colspec, header, body, note = None, width = r'.9\textwidth'):
@@ -65,12 +71,13 @@ def _shockRows(df, ρ, scenarios, baselineLabel):
     """ The 'Full effect' / 'Economic equilibrium effect' block shared by US_PensChars and US_Ageing. """
     b = D.usBaseline(df, ρ)
     line = lambda lab, r, base = None: ' & '.join([lab] + _cells(r, base)) + r' \\'
-    out = [line(baselineLabel, b) + '[1.25ex]']
+    out = [keyed(line(baselineLabel, b) + '[1.25ex]', 'baseline')]
     for effect, head in (('full', 'Full effect:'), ('ee', 'Economic equilibrium effect:')):
         out.append(r'\multicolumn{4}{l}{\textit{' + head + r'}} \\\hline')
-        for lab, scen in scenarios:
-            out.append(line(lab, D.usShockRow(df, ρ, scen, effect), b))
-        out[-1] += '[1.25ex]'
+        block = [[line(lab, D.usShockRow(df, ρ, scen, effect), b), rowKey(ROWKEY[scen], effect = effect)]
+                 for lab, scen in scenarios]
+        block[-1][0] += '[1.25ex]'
+        out += [keyed(l, k) for l, k in block]
     return '\n'.join(out)
 
 
@@ -145,14 +152,16 @@ def _otherShocks(commonX = None, host = 'US'):
     b = D.usBaseline(df, ρ)
     name = HOSTNAME[host]
     theName = name if name.startswith('the ') else 'the ' + name      # 'the US', 'the UK'
-    rows = [' & '.join(['Baseline'] + _cells(b)) + r' \\']
+    rows = [keyed(' & '.join(['Baseline'] + _cells(b)) + r' \\', 'baseline')]
     for lab in ('Income distribution', 'Leisure preferences', 'Voting'):
-        rows.append(' & '.join([lab] + _cells(D.usShockRow(df, ρ, lab, 'full'), b)) + r' \\')
-    rows.append(' & '.join(['All French characteristics']
-                           + _cells(D.usShockRow(df, ρ, 'All French characteristics', 'full'), b))
-                + r' \\[.5em]\hline\\[-.75em]')
-    rows.append(' & '.join(['France (own calibration)']
-                           + _cells(D.usShockRow(df, ρ, 'France (own calibration)', 'full'), b)) + r' \\')
+        rows.append(keyed(' & '.join([lab] + _cells(D.usShockRow(df, ρ, lab, 'full'), b)) + r' \\',
+                          ROWKEY[lab]))
+    rows.append(keyed(' & '.join(['All French characteristics']
+                                 + _cells(D.usShockRow(df, ρ, 'All French characteristics', 'full'), b))
+                      + r' \\[.5em]\hline\\[-.75em]', ROWKEY['All French characteristics']))
+    rows.append(keyed(' & '.join(['France (own calibration)']
+                                 + _cells(D.usShockRow(df, ρ, 'France (own calibration)', 'full'), b)) + r' \\',
+                      ROWKEY['France (own calibration)']))
     design = (r' pension design is the separate counterfactual of Table~\ref{table:US:pensChars}.'
               if host == 'US' else '.')
     note = (r'\item \textit{Note:} $\rho = ' + C.num(ρ, 1) + r'$, full effect. Each row is a separate equilibrium path: '
@@ -210,8 +219,9 @@ def _crraTable(name, caption, label, scenarios, commonX = None, host = 'US'):
         for k, ρ in enumerate(ρs):
             b = D.usBaseline(df, ρ)
             cells = _cells(b) if scen is None else _cells(D.usShockRow(df, ρ, scen, 'full'), b)
-            out.append(' & '.join([lab if k == mid else '', C.num(ρ, 1)] + cells)
-                       + r' \\' + (r'[.5em]\hline\\[-.75em]' if k == len(ρs)-1 else ''))
+            out.append(keyed(' & '.join([lab if k == mid else '', C.num(ρ, 1)] + cells)
+                             + r' \\' + (r'[.5em]\hline\\[-.75em]' if k == len(ρs)-1 else ''),
+                             rowKey('baseline' if scen is None else ROWKEY[scen], ρ)))
     note = (r'\item \textit{Note:} Every $\rho$ is separately calibrated. Every scenario row reports the '
             r'change in the savings rate against the baseline at the same $\rho$, in percentage points.'
             + C.variantNote(commonX))
@@ -248,6 +258,24 @@ def usCrraOtherShocks(commonX = None):
                       commonX = commonX)
 
 
+def ukCrraPensChars(commonX = None):
+    r""" Table \ref{table:UK:CRRA:pensChars} (online appendix): theta = 0 and theta = 1 on the UK host. """
+    return _crraTable('UK_CRRA_PensChars',
+                      r'Does CRRA matter for the effect of pension design ($\theta$) in the UK -- {}'
+                      .format(C.usCalendar('UK')['year0']), 'table:UK:CRRA:pensChars',
+                      [(r'$\theta = 0$', r'$\theta = 0$'), (r'$\theta = 1$', r'$\theta = 1$')],
+                      commonX = commonX, host = C.US['ukHost'])
+
+
+def ukCrraAgeing(commonX = None):
+    r""" Table \ref{table:UK:CRRA:ageing} (online appendix): mild and acute ageing on the UK host. """
+    return _crraTable('UK_CRRA_Ageing',
+                      'Does CRRA matter for the effect of ageing in the UK -- {}'
+                      .format(C.usCalendar('UK')['year0']), 'table:UK:CRRA:ageing',
+                      [('Mild ageing', 'Mild ageing'), ('Acute ageing', 'Acute ageing')],
+                      commonX = commonX, host = C.US['ukHost'])
+
+
 def ukCrraOtherShocks(commonX = None):
     r""" Table \ref{table:UK:CRRA:otherShocks}: the UK-host counterpart. """
     return _crraTable('UK_CRRA_OtherShocks',
@@ -277,21 +305,22 @@ def usukfrCalibration(commonX = None):
     # Parameter, the three values, then what identifies them. The values are the table's content and sit
     # in the middle under one spanner rule, which is what separates them from the prose column; the
     # identifying phrase is a gloss and closes the row.
-    def row(label, target, fn):
-        return ' & '.join([label] + [fn(c[k]) for k in cols] + [target]) + r' \\'
+    def row(key, label, target, fn):
+        return keyed(' & '.join([label] + [fn(c[k]) for k in cols] + [target]) + r' \\', key)
 
     rows = [
-        row(r'$\theta$', 'Replacement rate dispersion', lambda r: C.num(r['θ'])),
-        row(r'$\omega$', ', '.join(r'$\tau^{' + k + '} = ' + C.pct(c[k]['τ0'], 1) + '$' for k in cols),
+        row('theta', r'$\theta$', 'Replacement rate dispersion', lambda r: C.num(r['θ'])),
+        row('omega', r'$\omega$',
+            ', '.join(r'$\tau^{' + k + '} = ' + C.pct(c[k]['τ0'], 1) + '$' for k in cols),
             lambda r: C.num(r['ω'])),
         # Not "imposed on the other two" as well: the note says so, and the cell then fits one line.
-        row(r'$\beta$', '30-year interest rate (US)', lambda r: C.num(r['β'])),
+        row('beta', r'$\beta$', '30-year interest rate (US)', lambda r: C.num(r['β'])),
         # Two decimals: with the hours unit normalised to μ = 1 (model.addEigenVectors), the vector-X
         # X_i and their mean sit on an O(1) scale where one decimal is two significant figures.
-        row('$X$', 'Average workweek', lambda r: C.num(r['Xbar'], 2)),
-        row(r'$\nu_{%d}$' % year0, '30-year gross population growth',
+        row('X', '$X$', 'Average workweek', lambda r: C.num(r['Xbar'], 2)),
+        row('nu', r'$\nu_{%d}$' % year0, '30-year gross population growth',
             lambda r: C.num(r['ν2020'])),
-        row(r'$\eta_{H}/\eta_L$', 'Relative productivity, high to low income',
+        row('etaratio', r'$\eta_{H}/\eta_L$', 'Relative productivity, high to low income',
             lambda r: C.num(r['ηHηL'])),
     ]
     header = ([r'\textbf{Parameter}'] + [r'\textbf{' + COUNTRYNAME[k] + '}' for k in cols]
@@ -330,12 +359,12 @@ def _householdHeterogeneity(country, name, label, commonX = None):
     if country not in summary:
         raise D.MissingInput(os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv') + ' (no {} row)'.format(country))
     c = summary[country]
-    spec = [(r'$\gamma_i$', 'γi', 2, 'Income percentiles.'),
-            ('$X_i$',       'Xi', 2, 'Average hours worked.' if commonX else 'Hours worked.'),
-            (r'$\eta_i$',   'ηi', 2, 'Income distribution.'),
-            (r'$\mu_i$',    'μi', 2, 'Voting propensity.')]
-    rows = [' & '.join([lab] + [C.num(v, d) for v in c[key]] + [target]) + r' \\'
-            for lab, key, d, target in spec]
+    spec = [(r'$\gamma_i$', 'γi', 2, 'Income percentiles.', 'gamma'),
+            ('$X_i$',       'Xi', 2, 'Average hours worked.' if commonX else 'Hours worked.', 'X'),
+            (r'$\eta_i$',   'ηi', 2, 'Income distribution.', 'eta'),
+            (r'$\mu_i$',    'μi', 2, 'Voting propensity.', 'mu')]
+    rows = [keyed(' & '.join([lab] + [C.num(v, d) for v in c[key]] + [target]) + r' \\', rk)
+            for lab, key, d, target, rk in spec]
     return (BANNER.format(name = name + C.variantSuffix(commonX),
                           src = 'results/paper/usCalibrationSummary.csv')
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
@@ -424,24 +453,26 @@ def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False,
     row is against the printed baseline of the same rho -- the endogenous-theta reading, which is also
     what figuresUS.escOverview differences against. host 'UK': the UK-host runs at the UK's own cost
     parameter (escExperimentsUK.csv); `anchor` then means the UK anchor, UKANCHOR, which prints the UK's
-    lambda per rho. """
+    lambda per rho. Row keys `baseline|pinned|chosen|france@<rho>`. """
     df = D.escExperiments(host)
     spec, ρs = C.US['esc']['spec'], C.US['esc']['ρTable']
     # The ESC leg runs under the headline calibration variant only -- there is no twin to select here,
     # and escRow filters on it so a stale vector-X row cannot be read in its place.
     mid = len(ρs)//2
-    readings = [('Baseline', 'baseline', False),
-                (r'Exogenous $\theta$', scenarioKey, True),
-                (r'Endogenous $\theta$', scenarioKey, False)]
+    # (label, scenario, pinned, row-key block)
+    readings = [('Baseline', 'baseline', False, 'baseline'),
+                (r'Exogenous $\theta$', scenarioKey, True, 'pinned'),
+                (r'Endogenous $\theta$', scenarioKey, False, 'chosen')]
     if france:
-        readings.append(('France', 'France', True))
+        readings.append(('France', 'France', True, 'france'))
     out = []
-    for lab, scen, pinned in readings:
+    for lab, scen, pinned, block in readings:
         for k, ρ in enumerate(ρs):
             r = D.escRow(df, ρ, spec, scen, pinned)
             base = None if scen == 'baseline' else D.escRow(df, ρ, spec, 'baseline', False)
-            out.append(' & '.join([lab if k == mid else '', C.num(ρ, 1)] + _escCells(r, base))
-                       + r' \\' + ('[.5em]\\hline\\\\[-.75em]' if k == len(ρs)-1 else ''))
+            out.append(keyed(' & '.join([lab if k == mid else '', C.num(ρ, 1)] + _escCells(r, base))
+                             + r' \\' + ('[.5em]\\hline\\\\[-.75em]' if k == len(ρs)-1 else ''),
+                             rowKey(block, ρ)))
     # Section sec:esc already states what every one of these tables is -- separate equilibrium paths,
     # read at 2020, pinned against chosen design -- so the note carries only what the text does not: the
     # cost specification and the units. ESCANCHOR spells those out once; the other three point at it.
@@ -558,9 +589,10 @@ def escCalibrationTable(spec = None):
             raise D.MissingInput('escCalibration ({}, {})'.format(ρ, spec))
         r = cal[(ρ, spec)]
         w = D.escWedge(r, spec)
-        rows.append(' & '.join([C.num(ρ, 1), C.num(float(r['p']), 3), C.num(float(r['θStar']), 3),
-                                C.num(w['fStar'], 3), C.num(w['f0'], 3),
-                                '--' if w['Vtilde'] is None else C.num(w['Vtilde'], 3)]) + r' \\')
+        rows.append(keyed(' & '.join([C.num(ρ, 1), C.num(float(r['p']), 3), C.num(float(r['θStar']), 3),
+                                      C.num(w['fStar'], 3), C.num(w['f0'], 3),
+                                      '--' if w['Vtilde'] is None else C.num(w['Vtilde'], 3)]) + r' \\',
+                          rowKey('rho', ρ)))
     header = ' & '.join([r'\textbf{CRRA} ($\rho$)', '$' + sym + '$', r'$\theta^{\ast}$',
                          r'$f(\theta^{\ast})$', '$f(0)$', r'$\tilde V$'])
     if spec == 'size':
@@ -581,8 +613,8 @@ def escCalibrationTable(spec = None):
                   'table:US_ESC:calibration', 'YYYYYY', header, '\n'.join(rows), note)
 
 
-# escCountry.csv's economy keys, in the order the table prints them, and their labels.
-COUNTRYROWS = (('UK', 'UK'), ('FR', 'France'), ('UKUS', 'UK at US income groups'))
+# escCountry.csv's economy keys, in the order the table prints them, their labels and row keys.
+COUNTRYROWS = (('UK', 'UK', 'gbr'), ('FR', 'France', 'fra'), ('UKUS', 'UK at US income groups', 'ukus'))
 
 
 def escCountryTable(spec = None):
@@ -598,7 +630,7 @@ def escCountryTable(spec = None):
     us = df[df['wedgeFrom'] == 'US']
     hasV = 'Vtilde' in df.columns and bool(us['Vtilde'].notna().any())
     rows = []
-    for key, name in COUNTRYROWS:
+    for key, name, rk in COUNTRYROWS:
         u = us[us['country'] == key]
         if u.empty:
             raise D.MissingInput('escCountry ({}, US {}, {}, phi={})'
@@ -609,7 +641,7 @@ def escCountryTable(spec = None):
                  '--' if own.empty else C.num(float(own.iloc[-1]['p']), 3)]
         if hasV:
             cells.append('--' if u['Vtilde'] != u['Vtilde'] else C.num(float(u['Vtilde']), 3))
-        rows.append(' & '.join(cells) + r' \\')
+        rows.append(keyed(' & '.join(cells) + r' \\', rk))
     pUS = float(us.iloc[-1]['p'])
     header = [r'\textbf{Economy}', r'$\theta^{\ast}$ \textbf{observed}', r'\textbf{Tax rate}',
               r'$\theta$ \textbf{chosen, US} $' + sym + '$', r'\textbf{Own} $' + sym + '$'] \
@@ -633,47 +665,66 @@ def escCountryTable(spec = None):
                   width = r'\textwidth')
 
 
-def escScaleWedge():
-    r""" Table \ref{table:US_ESC:scaleWedge}: the previous cost specification ('scale',
-    config.US['esc']['comparisonSpec']) as one appendix robustness table -- its calibration per rho, and
-    the design the French income distribution then produces with theta pinned and chosen.
+# The chosen-design columns of US_ESC_ScaleWedge: (escExperiments scenario, header).
+SPECCOLUMNS = [('acute', 'Acute ageing'), ('frIncome', 'French income distribution'),
+               ('frVoting', 'French voting patterns')]
+SPECROWS = {'size': 'redistribution', 'scale': 'the design'}    # how the table names each cost spec
 
-    Rows: every rho of config.US['esc']['ρTable'] whose 'scale' calibration and both income-distribution
-    readings are on file at the published method; rho = 1 (LOG) is required, the CRRA rows are printed
-    when present. """
-    spec = C.US['esc']['comparisonSpec']
+
+def escScaleWedge():
+    r""" Table \ref{table:US_ESC:scaleWedge}: the paper's cost specification (config.US['esc']['spec'],
+    'size') against the comparison spec ('scale', comparisonSpec), one block of rows per spec: the
+    calibrated parameter per rho, the design it re-elects, the share of revenue reaching households at that
+    design and at theta = 0 (datasets.escWedge), and the design chosen in 2020 under acute ageing and
+    France's income distribution and voting patterns (SPECCOLUMNS).
+
+    Rows: every rho of config.US['esc']['ρTable'] whose calibration and three chosen readings are on file at
+    the published method; rho = 1 (LOG) is required for both specs, the CRRA rows are printed when present.
+    Row keys `size@<rho>`, `scale@<rho>`. """
+    specs = [C.US['esc']['spec'], C.US['esc']['comparisonSpec']]
     cal = D.escCalibration()
     df = D.escExperiments()
-    rows = []
-    for ρ in C.US['esc']['ρTable']:
-        try:
-            r = cal[(ρ, spec)]
-            pin = D.escRow(df, ρ, spec, 'frIncome', True)
-            cho = D.escRow(df, ρ, spec, 'frIncome', False)
-        except (KeyError, D.MissingInput):
-            if ρ == C.US['ρAnchor']:
-                raise D.MissingInput('escCalibration and escExperiments (ρ={}, {}, frIncome)'.format(ρ, spec))
-            continue
-        w = D.escWedge(r, spec)
-        rows.append(' & '.join([C.num(ρ, 1), C.num(float(r['p']), 3), C.num(float(r['θStar']), 3),
-                                C.num(w['fStar'], 3), C.num(w['f0'], 3),
-                                C.num(float(pin['θ_t0']), 3), C.num(float(cho['θ_t0']), 3)]) + r' \\')
-    header = (r' & \multicolumn{4}{c}{\textbf{Calibration}} & '
-              r'\multicolumn{2}{c}{\textbf{French income distribution}} \\' + '\n'
-              r'\cmidrule(lr){2-5}\cmidrule(lr){6-7}' + '\n'
-              r'\textbf{CRRA} ($\rho$) & $p$ & $\theta^{\ast}$ & $f(\theta^{\ast})$ & $f(0)$ & '
-              r'$\theta$ \textbf{pinned} & $\theta$ \textbf{chosen}')
-    note = (r'\textit{Note:} The cost specification of the previous draft, $f(\theta) = \phi + '
-            r'(1-\phi)\theta^{p}$ with $\phi = ' + C.num(C.US['esc']['phi'], 1) + r'$ imposed and $p$ '
-            r'calibrated per $\rho$ as in table \ref{table:US_ESC:calibration}. The cost is attached to '
-            r'the design rather than to the transfer: a flat benefit forfeits $1 - \phi$ of revenue '
-            r'whatever it redistributes, so a compressed income distribution removes the redistributive '
-            r'stakes and leaves the cost in place. The last two columns are the design in force in 2020 '
-            r'under the French income distribution with $\theta$ pinned at the US design and chosen by '
-            r'the electorate, as in table \ref{table:US_ESC:incomeDistr}.' + C.variantNote(C.US['commonX']))
+    ρs = C.US['esc']['ρTable']
+    blocks = []
+    for spec in specs:
+        rows = []
+        for ρ in ρs:
+            try:
+                r = cal[(ρ, spec)]
+                chosen = [float(D.escRow(df, ρ, spec, s, False)['θ_t0']) for s, _ in SPECCOLUMNS]
+            except (KeyError, D.MissingInput):
+                if ρ == C.US['ρAnchor']:
+                    raise D.MissingInput('escCalibration and escExperiments (ρ={}, {}, {})'
+                                         .format(ρ, spec, ', '.join(s for s, _ in SPECCOLUMNS)))
+                continue
+            w = D.escWedge(r, spec)
+            rows.append([ρ, [C.num(ρ, 1), C.num(float(r['p']), 3), C.num(float(r['θStar']), 3),
+                             C.num(w['fStar'], 3), C.num(w['f0'], 3)] + [C.num(θ, 3) for θ in chosen]])
+        mid = len(rows)//2
+        blocks.append('\n'.join(keyed(' & '.join([SPECROWS[spec] if k == mid else ''] + cells) + r' \\',
+                                      rowKey(spec, ρ)) for k, (ρ, cells) in enumerate(rows)))
+    header = (r' & & \multicolumn{4}{c}{\textbf{Calibration}} & '
+              r'\multicolumn{3}{c}{$\theta$ \textbf{chosen (2020)}} \\' + '\n'
+              r'\cmidrule(lr){3-6}\cmidrule(lr){7-9}' + '\n'
+              r'\textbf{Cost on} & \textbf{CRRA} ($\rho$) & $\lambda$, $p$ & $\theta^{\ast}$ & '
+              r'$f(\theta^{\ast})$ & $f(0)$ & ' + ' & '.join(r'\textbf{' + h + '}' for _, h in SPECCOLUMNS))
+    note = (r'\textit{Note:} Two specifications of the deadweight cost $f$ of \eqref{eq:esc:budget}, each '
+            r'with one parameter calibrated per $\rho$ so that the design in force in 2020 is the observed '
+            r'$\theta^{\ast}$, with $(\beta, \omega)$ recalibrated at each trial value. The cost on '
+            r'redistribution is that of table \ref{table:US_ESC:calibration}, $f(\theta, \tau) = '
+            r'\exp\{-\tfrac12 \lambda \tau \tilde V (1-\theta)^2\}$: quadratic in the implicit tax the flat '
+            r'component levies and scaled by the size of the system, so nothing is lost when nothing is '
+            r'redistributed. The cost on the design is $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = '
+            + C.num(C.US['esc']['phi'], 1) + r'$ imposed: a flat benefit forfeits a share $1 - \phi$ of '
+            r'revenue whatever it redistributes. $f(\theta^{\ast})$ and $f(0)$ are the shares of revenue '
+            r'that reach households at the observed design and at a flat benefit; the cost on '
+            r'redistribution is read at the 2020 tax rate. The last three columns are the design in force in 2020 '
+            r'when the electorate chooses it; under the cost on redistribution they are the '
+            r'endogenous-$\theta$ rows of tables \ref{table:US_ESC:ageing}, \ref{table:US_ESC:incomeDistr} '
+            r'and \ref{table:US_ESC:voting}.' + C.variantNote(C.US['commonX']))
     return _xwrap('US_ESC_ScaleWedge', 'results/esc/escCalibration{,CRRA}.csv, escExperiments.csv',
-                  'The previous cost specification: calibration and the French income distribution',
-                  'table:US_ESC:scaleWedge', 'YYYYYYY', header, '\n'.join(rows), note,
+                  'Two specifications of the deadweight cost: calibration and the chosen design',
+                  'table:US_ESC:scaleWedge', 'lcYYYYYYY', header, '\n\\midrule\n'.join(blocks), note,
                   width = r'\textwidth')
 
 
@@ -698,8 +749,8 @@ def ukEscCalibrationTable(spec = None):
     rows = []
     for r in own.to_dict('records'):
         p, θ = float(r['p']), float(r['θStar'])
-        rows.append(' & '.join([C.num(float(r['ρ']), 1), C.num(p, 3), C.num(θ, 3),
-                                C.num(φ + (1-φ)*θ**p, 3)]) + r' \\')
+        rows.append(keyed(' & '.join([C.num(float(r['ρ']), 1), C.num(p, 3), C.num(θ, 3),
+                                      C.num(φ + (1-φ)*θ**p, 3)]) + r' \\', rowKey('rho', float(r['ρ']))))
     header = ' & '.join([r'\textbf{CRRA} ($\rho$)', '$p$', r'$\theta^{\ast}$', r'$f(\theta^{\ast})$'])
     usNote = ''
     if not us.empty:

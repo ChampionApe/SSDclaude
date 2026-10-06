@@ -1,0 +1,725 @@
+{
+ "figure": "UKUS_French_vectorX",
+ "marks": [
+  {
+   "id": "UKUS_French_vectorX--US--income--rho0.5--tau",
+   "label": "French income distr.",
+   "series": "ρ = 0.5",
+   "panel": "US: Equilibrium tax rate",
+   "value": -2.06934341213368,
+   "text": "−2.1 p.p.",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@0.5"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--voting--rho0.5--tau",
+   "label": "French voting",
+   "series": "ρ = 0.5",
+   "panel": "US: Equilibrium tax rate",
+   "value": 0.3263262838778508,
+   "text": "+0.3 p.p.",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "voting@0.5"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--leisure--rho0.5--tau",
+   "label": "French leisure (no table at this ρ)",
+   "series": "ρ = 0.5",
+   "panel": "US: Equilibrium tax rate",
+   "value": -0.01733868069422051,
+   "text": "−0.02 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--US--frall--rho0.5--tau",
+   "label": "All three (no table at this ρ)",
+   "series": "ρ = 0.5",
+   "panel": "US: Equilibrium tax rate",
+   "value": -1.8151622418757092,
+   "text": "−1.8 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--US--income--rho1.0--tau",
+   "label": "French income distr.",
+   "series": "ρ = 1.0",
+   "panel": "US: Equilibrium tax rate",
+   "value": -1.6238945924601789,
+   "text": "−1.6 p.p.",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@1.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--voting--rho1.0--tau",
+   "label": "French voting",
+   "series": "ρ = 1.0",
+   "panel": "US: Equilibrium tax rate",
+   "value": 0.8946025559203818,
+   "text": "+0.9 p.p.",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "voting@1.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--leisure--rho1.0--tau",
+   "label": "French leisure",
+   "series": "ρ = 1.0",
+   "panel": "US: Equilibrium tax rate",
+   "value": 0.0,
+   "text": "0.000 p.p.",
+   "table": "US_OtherShocks_vectorX",
+   "row": "leisure"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--frall--rho1.0--tau",
+   "label": "All three",
+   "series": "ρ = 1.0",
+   "panel": "US: Equilibrium tax rate",
+   "value": -1.0866885503465178,
+   "text": "−1.1 p.p.",
+   "table": "US_OtherShocks_vectorX",
+   "row": "frall"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--income--rho2.0--tau",
+   "label": "French income distr.",
+   "series": "ρ = 2.0",
+   "panel": "US: Equilibrium tax rate",
+   "value": -1.022268368906862,
+   "text": "−1.0 p.p.",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@2.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--voting--rho2.0--tau",
+   "label": "French voting",
+   "series": "ρ = 2.0",
+   "panel": "US: Equilibrium tax rate",
+   "value": 1.6903741234256504,
+   "text": "+1.7 p.p.",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "voting@2.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--leisure--rho2.0--tau",
+   "label": "French leisure (no table at this ρ)",
+   "series": "ρ = 2.0",
+   "panel": "US: Equilibrium tax rate",
+   "value": 0.0002705007105502366,
+   "text": "0.000 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--US--frall--rho2.0--tau",
+   "label": "All three (no table at this ρ)",
+   "series": "ρ = 2.0",
+   "panel": "US: Equilibrium tax rate",
+   "value": -0.015126444491941893,
+   "text": "−0.02 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--US--income--rho0.5--sr",
+   "label": "French income distr.",
+   "series": "ρ = 0.5",
+   "panel": "US: Savings over GDP",
+   "value": 1.1136245621567316,
+   "text": "+1.1 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@0.5"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--voting--rho0.5--sr",
+   "label": "French voting",
+   "series": "ρ = 0.5",
+   "panel": "US: Savings over GDP",
+   "value": -0.17210765550727813,
+   "text": "−0.2 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "voting@0.5"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--leisure--rho0.5--sr",
+   "label": "French leisure (no table at this ρ)",
+   "series": "ρ = 0.5",
+   "panel": "US: Savings over GDP",
+   "value": 0.004807753144170368,
+   "text": "+0.005 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--US--frall--rho0.5--sr",
+   "label": "All three (no table at this ρ)",
+   "series": "ρ = 0.5",
+   "panel": "US: Savings over GDP",
+   "value": 0.9680798795012324,
+   "text": "+1.0 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--US--income--rho1.0--sr",
+   "label": "French income distr.",
+   "series": "ρ = 1.0",
+   "panel": "US: Savings over GDP",
+   "value": 0.5869287798922901,
+   "text": "+0.6 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@1.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--voting--rho1.0--sr",
+   "label": "French voting",
+   "series": "ρ = 1.0",
+   "panel": "US: Savings over GDP",
+   "value": -0.31585197758698114,
+   "text": "−0.3 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "voting@1.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--leisure--rho1.0--sr",
+   "label": "French leisure",
+   "series": "ρ = 1.0",
+   "panel": "US: Savings over GDP",
+   "value": 0.0,
+   "text": "0.000 p.p. of GDP",
+   "table": "US_OtherShocks_vectorX",
+   "row": "leisure"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--frall--rho1.0--sr",
+   "label": "All three",
+   "series": "ρ = 1.0",
+   "panel": "US: Savings over GDP",
+   "value": 0.3891485035381198,
+   "text": "+0.4 p.p. of GDP",
+   "table": "US_OtherShocks_vectorX",
+   "row": "frall"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--income--rho2.0--sr",
+   "label": "French income distr.",
+   "series": "ρ = 2.0",
+   "panel": "US: Savings over GDP",
+   "value": 0.20945492600910887,
+   "text": "+0.2 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@2.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--voting--rho2.0--sr",
+   "label": "French voting",
+   "series": "ρ = 2.0",
+   "panel": "US: Savings over GDP",
+   "value": -0.3432136679410419,
+   "text": "−0.3 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "voting@2.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--leisure--rho2.0--sr",
+   "label": "French leisure (no table at this ρ)",
+   "series": "ρ = 2.0",
+   "panel": "US: Savings over GDP",
+   "value": -8.62253798722401e-05,
+   "text": "0.000 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--US--frall--rho2.0--sr",
+   "label": "All three (no table at this ρ)",
+   "series": "ρ = 2.0",
+   "panel": "US: Savings over GDP",
+   "value": 0.0015599643802488572,
+   "text": "+0.002 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--US--income--rho0.5--ww",
+   "label": "French income distr.",
+   "series": "ρ = 0.5",
+   "panel": "US: Average workweek",
+   "value": 1.7313341004129654,
+   "text": "+1.7 hours",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@0.5"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--voting--rho0.5--ww",
+   "label": "French voting",
+   "series": "ρ = 0.5",
+   "panel": "US: Average workweek",
+   "value": -0.09333820569616336,
+   "text": "−0.1 hours",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "voting@0.5"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--leisure--rho0.5--ww",
+   "label": "French leisure (no table at this ρ)",
+   "series": "ρ = 0.5",
+   "panel": "US: Average workweek",
+   "value": -5.255530321481395,
+   "text": "−5.3 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--US--frall--rho0.5--ww",
+   "label": "All three (no table at this ρ)",
+   "series": "ρ = 0.5",
+   "panel": "US: Average workweek",
+   "value": -3.818883204998855,
+   "text": "−3.8 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--US--income--rho1.0--ww",
+   "label": "French income distr.",
+   "series": "ρ = 1.0",
+   "panel": "US: Average workweek",
+   "value": 1.4975233812768565,
+   "text": "+1.5 hours",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@1.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--voting--rho1.0--ww",
+   "label": "French voting",
+   "series": "ρ = 1.0",
+   "panel": "US: Average workweek",
+   "value": -0.19852492720951886,
+   "text": "−0.2 hours",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "voting@1.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--leisure--rho1.0--ww",
+   "label": "French leisure",
+   "series": "ρ = 1.0",
+   "panel": "US: Average workweek",
+   "value": -4.873884644932538,
+   "text": "−4.9 hours",
+   "table": "US_OtherShocks_vectorX",
+   "row": "leisure"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--frall--rho1.0--ww",
+   "label": "All three",
+   "series": "ρ = 1.0",
+   "panel": "US: Average workweek",
+   "value": -3.6679939732482225,
+   "text": "−3.7 hours",
+   "table": "US_OtherShocks_vectorX",
+   "row": "frall"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--income--rho2.0--ww",
+   "label": "French income distr.",
+   "series": "ρ = 2.0",
+   "panel": "US: Average workweek",
+   "value": 1.3067516850846275,
+   "text": "+1.3 hours",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@2.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--voting--rho2.0--ww",
+   "label": "French voting",
+   "series": "ρ = 2.0",
+   "panel": "US: Average workweek",
+   "value": -0.28758661704704735,
+   "text": "−0.3 hours",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "voting@2.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--US--leisure--rho2.0--ww",
+   "label": "French leisure (no table at this ρ)",
+   "series": "ρ = 2.0",
+   "panel": "US: Average workweek",
+   "value": -4.541539468883272,
+   "text": "−4.5 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--US--frall--rho2.0--ww",
+   "label": "All three (no table at this ρ)",
+   "series": "ρ = 2.0",
+   "panel": "US: Average workweek",
+   "value": -3.5404394008846793,
+   "text": "−3.5 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--income--rho0.5--tau",
+   "label": "French income distr.",
+   "series": "ρ = 0.5",
+   "panel": "UK: Equilibrium tax rate",
+   "value": -0.7975144291337694,
+   "text": "−0.8 p.p.",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "income@0.5"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--voting--rho0.5--tau",
+   "label": "French voting",
+   "series": "ρ = 0.5",
+   "panel": "UK: Equilibrium tax rate",
+   "value": 0.22841100327670033,
+   "text": "+0.2 p.p.",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "voting@0.5"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--leisure--rho0.5--tau",
+   "label": "French leisure (no table at this ρ)",
+   "series": "ρ = 0.5",
+   "panel": "UK: Equilibrium tax rate",
+   "value": -0.0007176573765504957,
+   "text": "−0.001 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--frall--rho0.5--tau",
+   "label": "All three (no table at this ρ)",
+   "series": "ρ = 0.5",
+   "panel": "UK: Equilibrium tax rate",
+   "value": -0.6175633852813598,
+   "text": "−0.6 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--income--rho1.0--tau",
+   "label": "French income distr.",
+   "series": "ρ = 1.0",
+   "panel": "UK: Equilibrium tax rate",
+   "value": -0.45636466975886025,
+   "text": "−0.5 p.p.",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "income@1.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--voting--rho1.0--tau",
+   "label": "French voting",
+   "series": "ρ = 1.0",
+   "panel": "UK: Equilibrium tax rate",
+   "value": 0.3283801478512302,
+   "text": "+0.3 p.p.",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "voting@1.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--leisure--rho1.0--tau",
+   "label": "French leisure",
+   "series": "ρ = 1.0",
+   "panel": "UK: Equilibrium tax rate",
+   "value": -9.71445146547012e-15,
+   "text": "0.000 p.p.",
+   "table": "UK_OtherShocks_vectorX",
+   "row": "leisure"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--frall--rho1.0--tau",
+   "label": "All three",
+   "series": "ρ = 1.0",
+   "panel": "UK: Equilibrium tax rate",
+   "value": -0.19241994297256038,
+   "text": "−0.2 p.p.",
+   "table": "UK_OtherShocks_vectorX",
+   "row": "frall"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--income--rho2.0--tau",
+   "label": "French income distr.",
+   "series": "ρ = 2.0",
+   "panel": "UK: Equilibrium tax rate",
+   "value": -0.2982178517970696,
+   "text": "−0.3 p.p.",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "income@2.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--voting--rho2.0--tau",
+   "label": "French voting",
+   "series": "ρ = 2.0",
+   "panel": "UK: Equilibrium tax rate",
+   "value": 0.5334531603244902,
+   "text": "+0.5 p.p.",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "voting@2.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--leisure--rho2.0--tau",
+   "label": "French leisure (no table at this ρ)",
+   "series": "ρ = 2.0",
+   "panel": "UK: Equilibrium tax rate",
+   "value": 7.672704561978438e-05,
+   "text": "0.000 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--frall--rho2.0--tau",
+   "label": "All three (no table at this ρ)",
+   "series": "ρ = 2.0",
+   "panel": "UK: Equilibrium tax rate",
+   "value": 0.15470344065039998,
+   "text": "+0.2 p.p.",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--income--rho0.5--sr",
+   "label": "French income distr.",
+   "series": "ρ = 0.5",
+   "panel": "UK: Savings over GDP",
+   "value": 0.4904030986276009,
+   "text": "+0.5 p.p. of GDP",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "income@0.5"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--voting--rho0.5--sr",
+   "label": "French voting",
+   "series": "ρ = 0.5",
+   "panel": "UK: Savings over GDP",
+   "value": -0.14012914755529016,
+   "text": "−0.1 p.p. of GDP",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "voting@0.5"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--leisure--rho0.5--sr",
+   "label": "French leisure (no table at this ρ)",
+   "series": "ρ = 0.5",
+   "panel": "UK: Savings over GDP",
+   "value": 0.0004556935358696057,
+   "text": "0.000 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--frall--rho0.5--sr",
+   "label": "All three (no table at this ρ)",
+   "series": "ρ = 0.5",
+   "panel": "UK: Savings over GDP",
+   "value": 0.37803716961168077,
+   "text": "+0.4 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--income--rho1.0--sr",
+   "label": "French income distr.",
+   "series": "ρ = 1.0",
+   "panel": "UK: Savings over GDP",
+   "value": 0.18513567206371873,
+   "text": "+0.2 p.p. of GDP",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "income@1.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--voting--rho1.0--sr",
+   "label": "French voting",
+   "series": "ρ = 1.0",
+   "panel": "UK: Savings over GDP",
+   "value": -0.13243679279199005,
+   "text": "−0.1 p.p. of GDP",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "voting@1.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--leisure--rho1.0--sr",
+   "label": "French leisure",
+   "series": "ρ = 1.0",
+   "panel": "UK: Savings over GDP",
+   "value": -1.1102230246251565e-14,
+   "text": "0.000 p.p. of GDP",
+   "table": "UK_OtherShocks_vectorX",
+   "row": "leisure"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--frall--rho1.0--sr",
+   "label": "All three",
+   "series": "ρ = 1.0",
+   "panel": "UK: Savings over GDP",
+   "value": 0.07739354286503963,
+   "text": "+0.1 p.p. of GDP",
+   "table": "UK_OtherShocks_vectorX",
+   "row": "frall"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--income--rho2.0--sr",
+   "label": "French income distr.",
+   "series": "ρ = 2.0",
+   "panel": "UK: Savings over GDP",
+   "value": 0.06815023106009899,
+   "text": "+0.1 p.p. of GDP",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "income@2.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--voting--rho2.0--sr",
+   "label": "French voting",
+   "series": "ρ = 2.0",
+   "panel": "UK: Savings over GDP",
+   "value": -0.1215498789119196,
+   "text": "−0.1 p.p. of GDP",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "voting@2.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--leisure--rho2.0--sr",
+   "label": "French leisure (no table at this ρ)",
+   "series": "ρ = 2.0",
+   "panel": "UK: Savings over GDP",
+   "value": -5.448737319668773e-06,
+   "text": "0.000 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--frall--rho2.0--sr",
+   "label": "All three (no table at this ρ)",
+   "series": "ρ = 2.0",
+   "panel": "UK: Savings over GDP",
+   "value": -0.03552877713247915,
+   "text": "−0.04 p.p. of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--income--rho0.5--ww",
+   "label": "French income distr.",
+   "series": "ρ = 0.5",
+   "panel": "UK: Average workweek",
+   "value": 0.3048986407309968,
+   "text": "+0.3 hours",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "income@0.5"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--voting--rho0.5--ww",
+   "label": "French voting",
+   "series": "ρ = 0.5",
+   "panel": "UK: Average workweek",
+   "value": -0.05388797181274185,
+   "text": "−0.1 hours",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "voting@0.5"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--leisure--rho0.5--ww",
+   "label": "French leisure (no table at this ρ)",
+   "series": "ρ = 0.5",
+   "panel": "UK: Average workweek",
+   "value": 1.2651669800591137,
+   "text": "+1.3 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--frall--rho0.5--ww",
+   "label": "All three (no table at this ρ)",
+   "series": "ρ = 0.5",
+   "panel": "UK: Average workweek",
+   "value": 1.537294596978981,
+   "text": "+1.5 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--income--rho1.0--ww",
+   "label": "French income distr.",
+   "series": "ρ = 1.0",
+   "panel": "UK: Average workweek",
+   "value": 0.207371317605201,
+   "text": "+0.2 hours",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "income@1.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--voting--rho1.0--ww",
+   "label": "French voting",
+   "series": "ρ = 1.0",
+   "panel": "UK: Average workweek",
+   "value": -0.0640201204292623,
+   "text": "−0.1 hours",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "voting@1.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--leisure--rho1.0--ww",
+   "label": "French leisure",
+   "series": "ρ = 1.0",
+   "panel": "UK: Average workweek",
+   "value": 1.2585338116072933,
+   "text": "+1.3 hours",
+   "table": "UK_OtherShocks_vectorX",
+   "row": "leisure"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--frall--rho1.0--ww",
+   "label": "All three",
+   "series": "ρ = 1.0",
+   "panel": "UK: Average workweek",
+   "value": 1.4200401306461217,
+   "text": "+1.4 hours",
+   "table": "UK_OtherShocks_vectorX",
+   "row": "frall"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--income--rho2.0--ww",
+   "label": "French income distr.",
+   "series": "ρ = 2.0",
+   "panel": "UK: Average workweek",
+   "value": 0.16377231799122427,
+   "text": "+0.2 hours",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "income@2.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--voting--rho2.0--ww",
+   "label": "French voting",
+   "series": "ρ = 2.0",
+   "panel": "UK: Average workweek",
+   "value": -0.08084759953144527,
+   "text": "−0.1 hours",
+   "table": "UK_CRRA_OtherShocks_vectorX",
+   "row": "voting@2.0"
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--leisure--rho2.0--ww",
+   "label": "French leisure (no table at this ρ)",
+   "series": "ρ = 2.0",
+   "panel": "UK: Average workweek",
+   "value": 1.2730420163265137,
+   "text": "+1.3 hours",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "UKUS_French_vectorX--UK--frall--rho2.0--ww",
+   "label": "All three (no table at this ρ)",
+   "series": "ρ = 2.0",
+   "panel": "UK: Average workweek",
+   "value": 1.371536071672459,
+   "text": "+1.4 hours",
+   "table": null,
+   "row": null
+  }
+ ]
+}
