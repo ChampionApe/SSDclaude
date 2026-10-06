@@ -192,6 +192,28 @@ explorable-deck is for talks; it is Quarto too, and would read the site's data l
   edition, the `\oa` macros, an online-appendix column in `REPLICATION.md`, the first publish.
 - **E. Optional**: the runs of §4d, the mechanism explorable, a seminar deck on the same data.
 
+## 7. State on 2026-10-06 and hand-off to the drafting of sections 6–8
+
+Built and merged: the appendix split (commit `a7bfcd4`), the site and print edition (`7a4c45c`, build with
+`build.py --site` then `quarto render writing/OnlineAppendix`), RKB's section 6 edit merged on top (`4308629`) and
+pushed to Overleaf. A session that drafts the main sections should know:
+- **`\oa{key}`** cites the online appendix ("Online Appendix \oa{esc-uk}" prints OA.4.3, linked); the keys and
+  sections are in `writing/Paper/onlineAppendix.tex` and `notes/brief_onlineAppendix_2026-10-06.md` §2.4. Never in
+  a caption or heading (it is a link). `checkPaper.py` fails on an unknown key.
+- **Two main-text sentences are now stale** (the appendix no longer holds what they promise): section 6's
+  footnote "appendix \ref{app:US:vectorX} repeats the section under it" (it is a stub now; the repetition is
+  Online Appendix \oa{oecd}), and section 7's "appendix \ref{app:US:escTables} reports it as a robustness check"
+  (the cost on the design is Online Appendix \oa{esc-scale}). Optional new pointers: section 5's vector-X footnote
+  → \oa{arg-calibration}; 7.4's ξ footnote and drift sentence → \oa{esc-path}; section 4's accuracy footnote →
+  \oa{num-stationary}, its selection sentence → \oa{num-selection}; figure 1's note → \oa{data}.
+- **Open, RKB's**: C1's point c (propensities to vote in proposition 2); appendix D's pre-reform ε formula (0.21
+  with the first quartile, 0.29 with the second); appendix D's claim that the 2006 sample precedes the
+  amnesties' coverage increase, while section 5 dates them from 2005.
+- **Moving calibration detail from section 6 to appendix E** also touches the online appendix's OA.3.1 prose
+  (`writing/OnlineAppendix/oecd.qmd`), which describes appendix E; re-read it after the move.
+- **One Overleaf channel**: only one session pulls and pushes. A pull overwrites every local text file that
+  differs from Overleaf, so commit before every pull (memory `overleaf-pull-overwrites-local`).
+
 ## DECISIONS (RKB)
 
 Fill in below; a blank line means "as recommended".
