@@ -4,6 +4,17 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-06 (night) — C8 decided: ε from the first quartile, γ₀ = 32% of all households; the Argentine arm re-solving
+
+RKB: the pre-reform ε is 70% of the minimum pension, the least productive formal type's benefit, and γ₀ is to count
+32% of all households. `getEps` in both Argentine modules reads the type by label (it read the second quartile by
+position), `data/ArgentinaTest.xlsx` carries γ₀ = 0.32/0.68 (through Excel; `data/README.md`), and the arm re-solves as
+`logs/finalRunC8/runArg.cmd` (launched 20:24, both variants, both stages, forced; the marker is `ARG_STATUS.txt`).
+Until it is read, every Argentine number in `results/` and the paper is at the old inputs; `notes/TODO.md` C8 lists
+what the reading session changes (section 5, abstract, introduction, conclusion, the online appendix). Per-module
+detail in the InformalSavings and informalAnalytical logs of the date. The online appendix is served locally for RKB's
+review (`writing/OnlineAppendix/_book`).
+
 ## 2026-10-06 (late evening) — section 5's sources and calibration items; the online appendix read and revised
 
 Autonomous, on RKB's instruction. Section 5: the five items settled by two agents and the text (paper-data: the 2.7

@@ -90,6 +90,9 @@ FOCs/budgets, EE solve, steady state, initial state, `LOG` (all three entry poin
 and `t<T`), end-to-end PEE, model copies. `steadyState_CRRA_bounds` derives the bracket from `Base.ΓsCap`
 (finding #7).
 
+`getEps` reads the first formal quartile by label since 2026-10-06 (TODO C8; it read the second by position), and the
+shared workbook's γ₀ is 0.4706, as in `InformalSavings`; nothing of this module's committed output depends on it.
+
 **Nested-fixed-point calibration (§8)** works for LOG and near-LOG CRRA (`ρ` within ~0.02 of 1) and is
 untested far from 1; its outer search has no globalisation.
 

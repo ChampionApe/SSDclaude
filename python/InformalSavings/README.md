@@ -101,6 +101,12 @@ experiment across the ρ grid (`match`; `flat` at ρ=1 only), and the `(ε, θ)`
 `archive/notes/informalSavings_results.md`. Departures from the `num_*.tex` specs:
 `notes/informalSavings_numericalDeviations.md`, read before editing those specs.
 
+**Calibration inputs changed 2026-10-06 (TODO C8).** `getEps` reads the first formal quartile by label, the minimum
+pension's type (it read the second by position), and the workbook's γ₀ is 0.4706, informal households per formal
+household, 32% of all. `results/` is being re-solved (`logs/finalRunC8/`); until that run lands and is read, the
+committed results, `results/paper/calibrationSummary.csv` and the paper's Argentine numbers are at the previous inputs
+(ε = 0.29, γ₀ = 0.32).
+
 ## Open items
 
 - `EE_report` backs its first period's lagged objects out of `initialState_solve`, which is wrong on a

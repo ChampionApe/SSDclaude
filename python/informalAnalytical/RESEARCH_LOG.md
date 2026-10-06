@@ -4,6 +4,12 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_informalAnaly
 `archive/INDEX.md`. Format: one entry per session, at most ~10 lines: what changed, why, where to look. A
 lesson that would recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-06 (night) — `getEps` reads the first quartile by label (TODO C8)
+
+The same positional `[1]` as in `InformalSavings.model.getEps` read the second quartile; now the type is looked up by
+label (`refType = 1`), the minimum pension's type, with the formula's docstring. The shared workbook's γ₀ is 0.4706
+(32% of all households). No output of this module is in the paper's pipeline; `InformalSavings`'s log has the detail.
+
 ## 2026-10-02 — tax candidates tested and ranked at frozen savings shares (finding #18)
 
 `notes/brief_informalFrozenSelection_2026-10-02.md`, on the US pattern: `roots1d.selectMax(ND)` → `selectMaxFrozen(ND)` via

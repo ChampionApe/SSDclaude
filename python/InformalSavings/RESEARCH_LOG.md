@@ -4,6 +4,18 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_InformalSavin
 `archive/INDEX.md`. Format: one entry per session, at most ~10 lines: what changed, why, where to look. A
 lesson that would recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-06 (night) — the pre-reform ε read from the first quartile, γ₀ = 32% of all households (TODO C8)
+
+`model.getEps` indexed `auxProd(t0)`, a positional array, with `[1]`, the second quartile, while the types are labelled
+1..4 and `getθ` and `shockUniversal.relBenefit` read them by label; the paper's appendix D and the reform's own ε^U use
+the first. RKB: ε is 70% of the minimum pension, so the first quartile; the fix reads the type by label (`refType = 1`,
+ε = 0.209 at the published β against 0.290), `shockUniversal.py`'s docstring no longer speaks of type j=2. γ₀ counts
+informal households per formal household (the budget divides by 1+γ₀ε), so the workbook's 0.32 made them 24% of all;
+RKB: 32% of all, the share of the elderly without a pension in 2004, so heterogeneity!B2 = 0.32/0.68 through Excel.
+Preview at ρ = 1 before the fix (session scratchpad, by a paper-compute agent, self-check bitwise): both together take
+the 2010 tax response from +1.25 to +2.08 p.p. Re-solve launched as `logs/finalRunC8/runArg.cmd` at 20:24; the
+reading, the rebuild and the paper's numbers are the next session's (`notes/TODO.md` C8).
+
 ## 2026-10-02 — tax candidates tested and ranked at frozen savings shares (finding #18)
 
 As informalAnalytical (its log, same date): `LOG/CRRA.objectiveFrozen` through `zbarParts_T/_t` + `zbarAtShares` (shares

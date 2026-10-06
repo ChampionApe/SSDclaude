@@ -56,8 +56,20 @@ rate −0.28 p.p. of GDP, Δworkweek −0.14 h, "almost half" of the amnesties' 
 Δτ +2.08 p.p. (1.35% of GDP, about three quarters), Δsavings −0.43 p.p., Δworkweek −0.25 h; 2040 under (c): +3.53 p.p.
 Every variant converges. A production fix is `getEps`'s index (by label, as `getθ` does) and the workbook's γ₀ through
 Excel, then the Argentine stage (i) and (ii) with `--force`, about 4.5 h per variant on the 16-point grid, then the
-paper's section 5, abstract, introduction and conclusion ("almost half") and the online appendix. Interim, the text
-describes the datum behind γ₀ correctly and keeps "least productive" for ε, which the code does not do.
+paper's section 5, abstract, introduction and conclusion ("almost half") and the online appendix.
+**In progress 2026-10-06 (night), RKB's decision: ε is 70% of the minimum pension, the first quartile's benefit, and
+γ₀ is 32% of all households.** Done: `InformalSavings/model.py` and `informalAnalytical/model.py` `getEps` read the
+type by label (`refType = 1`), `shockUniversal.py`'s docstring aligned; `data/ArgentinaTest.xlsx` heterogeneity!B2 =
+0.32/0.68 = 0.4706 through Excel (formulas intact, `data/README.md` says so). The Argentine arm re-solves as a detached
+chain, `logs/finalRunC8/runArg.cmd` launched 20:24 (stage (i) both variants, then stage (ii) `--all`; the marker is
+`logs/finalRunC8/ARG_STATUS.txt`, START / STAGE1_DONE / DONE or FAILED; about 4.5 h). The anchor point already reads
+β = 0.6495, ω = 1.4501, the preview's variant (c). **Left for the session that reads the run**: `build.py` (Argentine
+tables and figures, `US`-arm untouched), `--map`, `--site` and `quarto render`; section 5's numbers (1.2 p.p., 0.8% of
+GDP, "almost half", 0.3 p.p., 0.1 hours, 2.1 p.p. by 2040, the CRRA paragraph's ranges), the calibration table's reading
+("γ₀ = 0.47 ... puts informal households at 32% of all households"), the abstract, the introduction and the conclusion
+("almost half"); appendix D's ε formula is already the first quartile's; the technical note has no number to change;
+`results/numerical/ARG_stationaryApprox_commonX.csv` if `--all` does not refresh it (section 4's footnote, 0.3 p.p.);
+the preview scripts in the session scratchpad are not needed again.
 
 **W8. The reviewer's reading of the rebuilt draft** (2026-10-03, paper-reviewer, numbers against the tables
 regenerated after the final run; the stale numbers it listed were fixed the same day). Five findings that are

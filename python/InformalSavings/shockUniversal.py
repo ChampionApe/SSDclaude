@@ -25,11 +25,12 @@ cancel -- which is what makes either reform a pure parameter change with no equi
 
 theta is NOT touched under either: universality is about who is covered (eps), not about how contributive
 the formal benefit is (theta). The two readings BRACKET the reform rather than differing in degree, and
-on the Argentina calibration they fall on opposite sides of the status quo (eps = 0.337): 'match' raises
-it to 0.546 (+62%), 'flat' cuts it to 0.161 (-52%), and every response flips sign accordingly. The
-calibrated eps is 0.7 (a coverage rate) times the relative benefit of type j=2 times an early-retirement
-discount (see model.getEps), which is why 'match' against j=1 is a rise despite equalising to the LOWEST
-formal type. --refType and --scale run the intermediate readings; neither changes the mechanism.
+on the Argentina calibration they fall on opposite sides of the status quo: 'match' raises eps to the full
+benefit of the lowest formal type, 'flat' cuts it to the flat component alone, and every response flips
+sign accordingly. The calibrated eps is 0.7 (the basic pension was 70% of the minimum pension) times the
+relative benefit of the SAME type j=1 times an early-retirement discount (see model.getEps), so 'match'
+against j=1 undoes the 70% and the discount. --refType and --scale run the intermediate readings; neither
+changes the mechanism. Values: results/paper/calibrationSummary.csv (eps) and the shock csvs.
 
 TWO THINGS THE COPY NEEDS BEYOND A NEW eps ARRAY, both from README "Known limitations":
   - eps must be written into db, not only passed to solvePEE_*. kappa_t(eps_{t+1}) is consumed everywhere
