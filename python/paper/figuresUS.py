@@ -24,6 +24,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from matplotlib.lines import Line2D
 from matplotlib.ticker import MaxNLocator
 
@@ -34,19 +35,35 @@ from tables import rowKey
 from tablesUS import ROWKEY
 
 
-# The order the paper's discussion moves in: pension design first, then ageing (the two it identifies as
-# the main determinants), then the three French characteristics. Reading the finished figure
-# top-to-bottom should reproduce that ranking, so the order is fixed here rather than sorted by effect
-# size: a figure whose ordering changes with the data cannot be referred to in prose. The composite
-# rows (all three French characteristics, France's own path) are the tables' business, not this figure's.
-SCENARIOS = [(r'$\theta = 0$',        r'$\theta = 0$',        'design'),
-             (r'$\theta = 1$',        r'$\theta = 1$',        'design'),
-             ('Acute ageing',         'Acute ageing',         'ageing'),
-             ('Mild ageing',          'Mild ageing',          'ageing'),
-             ('French voting',        'Voting',               'french'),
-             ('French income distr.', 'Income distribution',  'french')]
-# 'Leisure preferences' -- a pure rescaling of X_i that moves hours alone -- is run and in the csv and
-# printed in US_OtherShocks again since 2026-09-22, but not drawn here: it moves the workweek panel alone.
+# The rows of the overview, in the order the paper's discussion moves in: pension design, then ageing (the
+# two it identifies as the main determinants), then France's characteristics in UKUS_French's order.
+# Reading the finished figure top-to-bottom should reproduce that ranking, so the order is fixed here
+# rather than sorted by effect size: a figure whose ordering changes with the data cannot be referred to
+# in prose. Each row is (row label, [(csv scenario, mark label), ...], shock family, how a second scenario
+# is drawn). A row with two scenarios is one bar per rho (_barPanel): 'tone' draws both from the baseline,
+# the FIRST in the series colour and the second in its light tone (theta = 0 and theta = 1, on either side
+# of the US design); 'line' draws the first as the bar and marks the second by a line across it (mild
+# ageing inside acute ageing). The figure carries no key for either: the paper's note explains them. The
+# composite rows (all three French characteristics, France's own path) are the tables' business.
+OVERVIEW = [('Pension design',       [(r'$\theta = 0$', r'$\theta = 0$'), (r'$\theta = 1$', r'$\theta = 1$')],
+             'design', 'tone'),
+            ('Ageing',               [('Acute ageing', 'Acute ageing'), ('Mild ageing', 'Mild ageing')], 'ageing',
+             'line'),
+            ('French income distr.', [('Income distribution', 'French income distr.')], 'french', None),
+            ('French voting',        [('Voting', 'French voting')], 'french', None),
+            ('French leisure',       [('Leisure preferences', 'French leisure')], 'french', None)]
+
+# The light tone of a 'tone' bar: the series colour at this share over the surface, which keeps the
+# lightest of the three (orange) at about 2:1 against the surface, the floor at which it still reads as a
+# mark in print. Opaque rather than an alpha, so the shorter tone drawn over the longer keeps its colour.
+TINT, SURFACE = 0.6, '#ffffff'
+# The width of a 'line' mark, in points. It is drawn in the surface colour where it falls inside its bar,
+# and in the series colour where it does not, so it never vanishes against the surface.
+MARKLW = 2.0
+# A row every one of whose bars rounds to zero at the paper's precision (one decimal, style guide §3) says
+# so in words: an empty bar group reads as a missing run. Only the leisure rows of the tax and savings
+# panels qualify.
+ZEROROW = 0.05
 
 # The three reported quantities, as (csv column, panel title, axis label, how to scale a deviation).
 # tau and srOverY are fractions on the csv and are read in percentage points; the workweek is already
@@ -66,8 +83,10 @@ RHOCOLOURS = [SERIES[0], SERIES[1], INK['secondary']]
 MARKUNIT = {'τ': ('tau', 'p.p.'), 'srOverY': ('sr', 'p.p. of GDP'), 'workweek': ('ww', 'hours'),
             'θ_t0': ('theta', None), 'τ_t0': ('tau', 'p.p.'), 'sr_t0': ('sr', 'p.p. of GDP'),
             'ww_t0': ('ww', 'hours')}
-# The CRRA table printing each shock family of SCENARIOS, at every rho of config.US['ρTable'].
-CRRATABLE = {'design': 'US_CRRA_PensChars', 'ageing': 'US_CRRA_Ageing', 'french': 'US_CRRA_OtherShocks'}
+# The CRRA table printing each shock family of OVERVIEW at every rho of config.US['ρTable'], after the
+# host's name (_shockTable).
+CRRATABLE = {'design': '_CRRA_PensChars', 'ageing': '_CRRA_Ageing', 'french': '_CRRA_OtherShocks'}
+NOTABLERHO = ' (no table at this ρ)'
 
 
 def _rhoPart(ρ):
@@ -78,20 +97,72 @@ def _markText(v, unit):
     return '{:.3f}'.format(v) if unit is None else signed(v, unit = unit)
 
 
-def _barPanel(ax, title, xlabel, labels, series, colours, gids = None):
+def _shockTable(host, fam, scenario, ρ, sfx):
+    r""" (table, row key) of the table printing `scenario` of family `fam` on `host` at `ρ`, or (None,
+    None). The CRRA tables print every family at every rho except two French rows: leisure and all three
+    characteristics are in the host's LOG table only, at rho = 1. """
+    key = ROWKEY[scenario]
+    if fam != 'french' or key in ('income', 'voting'):
+        return host + CRRATABLE[fam] + sfx, rowKey(key, ρ)
+    if np.isclose(ρ, C.US['ρBaseline']):
+        return host + '_OtherShocks' + sfx, key
+    return None, None
+
+
+def _tint(colour):
+    """ The light tone of `colour`: TINT of it over the surface, as an opaque rgb. """
+    return tuple(TINT*np.array(mcolors.to_rgb(colour)) + (1 - TINT)*np.array(mcolors.to_rgb(SURFACE)))
+
+
+def _barPanel(ax, title, xlabel, labels, series, colours, gids = None, kinds = None):
     r""" One horizontal grouped-bar panel: `series` is a list of (label, values) over `labels`, drawn as
-    one bar per series within each scenario group. `gids[k][j]` tags series k's bar for label j. """
+    one bar per series within each scenario group. `gids[k][j]` tags series k's bar for label j.
+
+    `kinds[j]` (OVERVIEW's last field) makes row j's values pairs, with `gids[k][j]` a pair too. 'tone':
+    two scenarios in one bar, both measured from the baseline, the first in the series colour and the
+    second in its light tone (_tint); the longer is drawn first, so where the two lie on the same side of
+    zero the shorter stays visible over it, parted by a surface gap where it ends, and on opposite sides
+    the zero line parts them. 'line': the first is the bar and the second a line across it (MARKLW). A row
+    whose bars all round to zero (ZEROROW) is labelled 'unchanged'. """
     y = np.arange(len(labels))
     height = 0.8/len(series)
+    kinds = kinds or [None]*len(labels)
     # _panel FIRST: it sets tick_params, which would otherwise recolour the scenario labels to the muted
     # ink meant for numeric ticks. These are the figure's row headings and belong in primary ink.
     _panel(ax, title, '', titlesize = 12, labelsize = 10)
     for k, (lab, vals) in enumerate(series):
-        off = (k - (len(series)-1)/2)*height
-        bars = ax.barh(y + off, vals, height = height, color = colours[k], label = lab,
-                       edgecolor = 'none', zorder = 3)
-        for patch, g in zip(bars.patches, gids[k] if gids else ()):
-            patch.set_gid(g)
+        yk = y + (k - (len(series)-1)/2)*height
+        for j, (v, kind) in enumerate(zip(vals, kinds)):
+            g = gids[k][j] if gids else None
+            if kind == 'tone':
+                tones = list(zip(v, (colours[k], _tint(colours[k])), g or (None, None)))
+            elif kind == 'line':
+                tones = [(v[0], colours[k], g[0] if g else None)]
+            else:
+                tones = [(v, colours[k], g)]
+            for x, c, gid in sorted(tones, key = lambda t: -abs(t[0])):
+                # One legend entry per series, from its first row's full tone.
+                key = lab if j == 0 and c is colours[k] else '_nolegend_'
+                patch = ax.barh(yk[j], x, height = height, color = c, edgecolor = 'none', zorder = 3,
+                                label = key).patches[0]
+                if gid:
+                    patch.set_gid(gid)
+            if kind == 'tone' and v[0]*v[1] > 0:
+                inner = np.sign(v[0])*min(abs(v[0]), abs(v[1]))
+                ax.vlines(inner, yk[j] - height/2, yk[j] + height/2, colors = SURFACE, linewidth = 1.2,
+                          zorder = 3.5)
+            elif kind == 'line':
+                inside = v[0]*v[1] > 0 and abs(v[1]) < abs(v[0])
+                line, = ax.plot([v[1], v[1]], [yk[j] - height/2, yk[j] + height/2], linewidth = MARKLW,
+                                color = SURFACE if inside else colours[k], solid_capstyle = 'butt',
+                                zorder = 3.6)
+                if g:
+                    line.set_gid(g[1])
+    for j in range(len(labels)):
+        row = [x for _, vals in series for x in (vals[j] if isinstance(vals[j], tuple) else (vals[j],))]
+        if all(abs(x) < ZEROROW for x in row):
+            ax.annotate('unchanged', xy = (0, y[j]), xytext = (5, 0), textcoords = 'offset points',
+                        ha = 'left', va = 'center', fontsize = 10, style = 'italic', color = INK['muted'])
     ax.axvline(0, color = INK['primary'], linewidth = 1.0, zorder = 4)
     ax.set_yticks(y)
     ax.set_yticklabels(labels, fontsize = 11, color = INK['primary'])
@@ -123,15 +194,18 @@ def _figLegend(fig, handles, labels, bottom = 0.075, ncol = None):
                fontsize = 11, bbox_to_anchor = (0.5, 0.01))
 
 
-def _rowsPresent(df, ρs, scenarios, effect = 'full'):
-    r""" The subset of `scenarios` for which every rho has a row: a scenario the run did not produce
-    should drop out of the figure rather than take the whole build down with it, and a scenario missing
-    at SOME rho is dropped too -- a bar group with a hole in it reads as a zero. """
+def _rowsPresent(df, ρs, rows, effect = 'full'):
+    r""" The subset of `rows` for which every rho has each of the row's scenarios (entry[1]: one csv
+    scenario, or OVERVIEW's list of (scenario, label)): a scenario the run did not produce should drop out
+    of the figure rather than take the whole build down with it, and a scenario missing at SOME rho is
+    dropped too -- a bar group with a hole in it reads as a zero. """
     out = []
-    for entry in scenarios:
+    for entry in rows:
+        names = [entry[1]] if isinstance(entry[1], str) else [s for s, _ in entry[1]]
         try:
             for ρ in ρs:
-                D.usShockRow(df, ρ, entry[1], effect)
+                for s in names:
+                    D.usShockRow(df, ρ, s, effect)
         except D.MissingInput:
             continue
         out.append(entry)
@@ -145,16 +219,22 @@ def usOverview(commonX = None):
 
     Read as: which characteristics move each outcome, and does that ranking survive the IES. Ageing and
     pension design should dominate the tax panel and the French characteristics should be visibly minor
-    there, while none of them moves the workweek by much. Putting the three panels side by side on a
-    SHARED scenario axis is what makes the two rankings comparable.
+    there, while leisure preferences move the workweek alone. Putting the three panels side by side on a
+    SHARED scenario axis is what makes the rankings comparable.
+
+    The design and ageing rows are two scenarios each, one bar per rho (OVERVIEW, _barPanel): theta = 0
+    and theta = 1 in two tones on either side of the baseline, so the bar's length is the whole effect of
+    the design, and acute ageing as the bar with mild ageing a line across it. The legend keys rho only;
+    the paper's figure note explains the two rows.
     """
     commonX = C.US['commonX'] if commonX is None else commonX
     sfx = C.variantSuffix(commonX)
     name, marks = 'US_overview' + sfx, []
     df = D.usShocks(commonX = commonX)
     ρs = C.US['ρTable']
-    scen = _rowsPresent(df, ρs, SCENARIOS)
-    labels = [lab for lab, _, _ in scen]
+    rows = _rowsPresent(df, ρs, OVERVIEW)
+    labels = [lab for lab, _, _, _ in rows]
+    kinds = [kind for _, _, _, kind in rows]
     colours = RHOCOLOURS[:len(ρs)]
 
     fig, axes = plt.subplots(1, len(PANELS), figsize = (8.4, 0.46*len(labels) + 2.2), sharey = True)
@@ -163,13 +243,19 @@ def usOverview(commonX = None):
         series, gids = [], []
         for ρ in ρs:
             base = D.usBaseline(df, ρ)[col]
-            vals = [scale*(D.usShockRow(df, ρ, s, 'full')[col] - base) for _, s, _ in scen]
+            vals, ids = [], []
+            for _, scen, fam, _ in rows:
+                vs = [scale*(D.usShockRow(df, ρ, s, 'full')[col] - base) for s, _ in scen]
+                gs = [markId(name, ROWKEY[s], _rhoPart(ρ), part) for s, _ in scen]
+                for (s, lab), v, g in zip(scen, vs, gs):
+                    tab, rk = _shockTable('US', fam, s, ρ, sfx)
+                    marks.append(mark(g, plain(lab) + ('' if tab else NOTABLERHO), v, _markText(v, unit),
+                                      series = 'ρ = ' + C.num(ρ, 1), panel = title, table = tab, row = rk))
+                vals.append(tuple(vs) if len(vs) > 1 else vs[0])
+                ids.append(tuple(gs) if len(gs) > 1 else gs[0])
             series.append((r'$\rho = ' + C.num(ρ, 1) + '$', vals))
-            gids.append([markId(name, ROWKEY[s], _rhoPart(ρ), part) for _, s, _ in scen])
-            marks += [mark(g, plain(lab), v, _markText(v, unit), series = 'ρ = ' + C.num(ρ, 1),
-                           panel = title, table = CRRATABLE[fam] + sfx, row = rowKey(ROWKEY[s], ρ))
-                      for (lab, s, fam), v, g in zip(scen, vals, gids[-1])]
-        _barPanel(ax, title, xlabel, labels, series, colours, gids)
+            gids.append(ids)
+        _barPanel(ax, title, xlabel, labels, series, colours, gids, kinds)
     _topDown(axes)
     handles, labs = axes[0].get_legend_handles_labels()
     _figLegend(fig, handles, labs)
@@ -401,15 +487,8 @@ def ukusFrench(commonX = None):
                 series.append((r'$\rho = ' + C.num(ρ, 1) + '$', vals))
                 gids.append([markId(name, h, ROWKEY[s], _rhoPart(ρ), part) for _, s in scen])
                 for (lab, s), v, g in zip(scen, vals, gids[-1]):
-                    # The CRRA tables print income and voting at every rho; leisure and all three are in
-                    # the host's LOG table only, at rho = 1.
-                    if ROWKEY[s] in ('income', 'voting'):
-                        tab, rk = h + '_CRRA_OtherShocks' + sfx, rowKey(ROWKEY[s], ρ)
-                    elif np.isclose(ρ, C.US['ρBaseline']):
-                        tab, rk = h + '_OtherShocks' + sfx, ROWKEY[s]
-                    else:
-                        tab = rk = None
-                    marks.append(mark(g, plain(lab) + ('' if tab else ' (no table at this ρ)'), v,
+                    tab, rk = _shockTable(h, 'french', s, ρ, sfx)
+                    marks.append(mark(g, plain(lab) + ('' if tab else NOTABLERHO), v,
                                       _markText(v, unit), series = 'ρ = ' + C.num(ρ, 1),
                                       panel = hostLabel + ': ' + title, table = tab, row = rk))
             _barPanel(ax, title, xlabel if i == len(HOSTS) - 1 else '', labels, series, colours, gids)

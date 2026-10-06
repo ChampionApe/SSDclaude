@@ -42,6 +42,16 @@
    "row": "mild@0.5"
   },
   {
+   "id": "US_overview_vectorX--income--rho0.5--tau",
+   "label": "French income distr.",
+   "series": "ρ = 0.5",
+   "panel": "Equilibrium tax rate",
+   "value": -2.06934341213368,
+   "text": "−2.1 p.p.",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@0.5"
+  },
+  {
    "id": "US_overview_vectorX--voting--rho0.5--tau",
    "label": "French voting",
    "series": "ρ = 0.5",
@@ -52,14 +62,14 @@
    "row": "voting@0.5"
   },
   {
-   "id": "US_overview_vectorX--income--rho0.5--tau",
-   "label": "French income distr.",
+   "id": "US_overview_vectorX--leisure--rho0.5--tau",
+   "label": "French leisure (no table at this ρ)",
    "series": "ρ = 0.5",
    "panel": "Equilibrium tax rate",
-   "value": -2.06934341213368,
-   "text": "−2.1 p.p.",
-   "table": "US_CRRA_OtherShocks_vectorX",
-   "row": "income@0.5"
+   "value": -0.01733868069422051,
+   "text": "−0.02 p.p.",
+   "table": null,
+   "row": null
   },
   {
    "id": "US_overview_vectorX--theta0--rho1.0--tau",
@@ -102,6 +112,16 @@
    "row": "mild@1.0"
   },
   {
+   "id": "US_overview_vectorX--income--rho1.0--tau",
+   "label": "French income distr.",
+   "series": "ρ = 1.0",
+   "panel": "Equilibrium tax rate",
+   "value": -1.6238945924601789,
+   "text": "−1.6 p.p.",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@1.0"
+  },
+  {
    "id": "US_overview_vectorX--voting--rho1.0--tau",
    "label": "French voting",
    "series": "ρ = 1.0",
@@ -112,14 +132,14 @@
    "row": "voting@1.0"
   },
   {
-   "id": "US_overview_vectorX--income--rho1.0--tau",
-   "label": "French income distr.",
+   "id": "US_overview_vectorX--leisure--rho1.0--tau",
+   "label": "French leisure",
    "series": "ρ = 1.0",
    "panel": "Equilibrium tax rate",
-   "value": -1.6238945924601789,
-   "text": "−1.6 p.p.",
-   "table": "US_CRRA_OtherShocks_vectorX",
-   "row": "income@1.0"
+   "value": 0.0,
+   "text": "0.000 p.p.",
+   "table": "US_OtherShocks_vectorX",
+   "row": "leisure"
   },
   {
    "id": "US_overview_vectorX--theta0--rho2.0--tau",
@@ -162,6 +182,16 @@
    "row": "mild@2.0"
   },
   {
+   "id": "US_overview_vectorX--income--rho2.0--tau",
+   "label": "French income distr.",
+   "series": "ρ = 2.0",
+   "panel": "Equilibrium tax rate",
+   "value": -1.022268368906862,
+   "text": "−1.0 p.p.",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@2.0"
+  },
+  {
    "id": "US_overview_vectorX--voting--rho2.0--tau",
    "label": "French voting",
    "series": "ρ = 2.0",
@@ -172,14 +202,14 @@
    "row": "voting@2.0"
   },
   {
-   "id": "US_overview_vectorX--income--rho2.0--tau",
-   "label": "French income distr.",
+   "id": "US_overview_vectorX--leisure--rho2.0--tau",
+   "label": "French leisure (no table at this ρ)",
    "series": "ρ = 2.0",
    "panel": "Equilibrium tax rate",
-   "value": -1.022268368906862,
-   "text": "−1.0 p.p.",
-   "table": "US_CRRA_OtherShocks_vectorX",
-   "row": "income@2.0"
+   "value": 0.0002705007105502366,
+   "text": "0.000 p.p.",
+   "table": null,
+   "row": null
   },
   {
    "id": "US_overview_vectorX--theta0--rho0.5--sr",
@@ -222,6 +252,16 @@
    "row": "mild@0.5"
   },
   {
+   "id": "US_overview_vectorX--income--rho0.5--sr",
+   "label": "French income distr.",
+   "series": "ρ = 0.5",
+   "panel": "Savings over GDP",
+   "value": 1.1136245621567316,
+   "text": "+1.1 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@0.5"
+  },
+  {
    "id": "US_overview_vectorX--voting--rho0.5--sr",
    "label": "French voting",
    "series": "ρ = 0.5",
@@ -232,14 +272,14 @@
    "row": "voting@0.5"
   },
   {
-   "id": "US_overview_vectorX--income--rho0.5--sr",
-   "label": "French income distr.",
+   "id": "US_overview_vectorX--leisure--rho0.5--sr",
+   "label": "French leisure (no table at this ρ)",
    "series": "ρ = 0.5",
    "panel": "Savings over GDP",
-   "value": 1.1136245621567316,
-   "text": "+1.1 p.p. of GDP",
-   "table": "US_CRRA_OtherShocks_vectorX",
-   "row": "income@0.5"
+   "value": 0.004807753144170368,
+   "text": "+0.005 p.p. of GDP",
+   "table": null,
+   "row": null
   },
   {
    "id": "US_overview_vectorX--theta0--rho1.0--sr",
@@ -282,6 +322,16 @@
    "row": "mild@1.0"
   },
   {
+   "id": "US_overview_vectorX--income--rho1.0--sr",
+   "label": "French income distr.",
+   "series": "ρ = 1.0",
+   "panel": "Savings over GDP",
+   "value": 0.5869287798922901,
+   "text": "+0.6 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@1.0"
+  },
+  {
    "id": "US_overview_vectorX--voting--rho1.0--sr",
    "label": "French voting",
    "series": "ρ = 1.0",
@@ -292,14 +342,14 @@
    "row": "voting@1.0"
   },
   {
-   "id": "US_overview_vectorX--income--rho1.0--sr",
-   "label": "French income distr.",
+   "id": "US_overview_vectorX--leisure--rho1.0--sr",
+   "label": "French leisure",
    "series": "ρ = 1.0",
    "panel": "Savings over GDP",
-   "value": 0.5869287798922901,
-   "text": "+0.6 p.p. of GDP",
-   "table": "US_CRRA_OtherShocks_vectorX",
-   "row": "income@1.0"
+   "value": 0.0,
+   "text": "0.000 p.p. of GDP",
+   "table": "US_OtherShocks_vectorX",
+   "row": "leisure"
   },
   {
    "id": "US_overview_vectorX--theta0--rho2.0--sr",
@@ -342,6 +392,16 @@
    "row": "mild@2.0"
   },
   {
+   "id": "US_overview_vectorX--income--rho2.0--sr",
+   "label": "French income distr.",
+   "series": "ρ = 2.0",
+   "panel": "Savings over GDP",
+   "value": 0.20945492600910887,
+   "text": "+0.2 p.p. of GDP",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@2.0"
+  },
+  {
    "id": "US_overview_vectorX--voting--rho2.0--sr",
    "label": "French voting",
    "series": "ρ = 2.0",
@@ -352,14 +412,14 @@
    "row": "voting@2.0"
   },
   {
-   "id": "US_overview_vectorX--income--rho2.0--sr",
-   "label": "French income distr.",
+   "id": "US_overview_vectorX--leisure--rho2.0--sr",
+   "label": "French leisure (no table at this ρ)",
    "series": "ρ = 2.0",
    "panel": "Savings over GDP",
-   "value": 0.20945492600910887,
-   "text": "+0.2 p.p. of GDP",
-   "table": "US_CRRA_OtherShocks_vectorX",
-   "row": "income@2.0"
+   "value": -8.62253798722401e-05,
+   "text": "0.000 p.p. of GDP",
+   "table": null,
+   "row": null
   },
   {
    "id": "US_overview_vectorX--theta0--rho0.5--ww",
@@ -402,6 +462,16 @@
    "row": "mild@0.5"
   },
   {
+   "id": "US_overview_vectorX--income--rho0.5--ww",
+   "label": "French income distr.",
+   "series": "ρ = 0.5",
+   "panel": "Average workweek",
+   "value": 1.7313341004129654,
+   "text": "+1.7 hours",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@0.5"
+  },
+  {
    "id": "US_overview_vectorX--voting--rho0.5--ww",
    "label": "French voting",
    "series": "ρ = 0.5",
@@ -412,14 +482,14 @@
    "row": "voting@0.5"
   },
   {
-   "id": "US_overview_vectorX--income--rho0.5--ww",
-   "label": "French income distr.",
+   "id": "US_overview_vectorX--leisure--rho0.5--ww",
+   "label": "French leisure (no table at this ρ)",
    "series": "ρ = 0.5",
    "panel": "Average workweek",
-   "value": 1.7313341004129654,
-   "text": "+1.7 hours",
-   "table": "US_CRRA_OtherShocks_vectorX",
-   "row": "income@0.5"
+   "value": -5.255530321481395,
+   "text": "−5.3 hours",
+   "table": null,
+   "row": null
   },
   {
    "id": "US_overview_vectorX--theta0--rho1.0--ww",
@@ -462,6 +532,16 @@
    "row": "mild@1.0"
   },
   {
+   "id": "US_overview_vectorX--income--rho1.0--ww",
+   "label": "French income distr.",
+   "series": "ρ = 1.0",
+   "panel": "Average workweek",
+   "value": 1.4975233812768565,
+   "text": "+1.5 hours",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@1.0"
+  },
+  {
    "id": "US_overview_vectorX--voting--rho1.0--ww",
    "label": "French voting",
    "series": "ρ = 1.0",
@@ -472,14 +552,14 @@
    "row": "voting@1.0"
   },
   {
-   "id": "US_overview_vectorX--income--rho1.0--ww",
-   "label": "French income distr.",
+   "id": "US_overview_vectorX--leisure--rho1.0--ww",
+   "label": "French leisure",
    "series": "ρ = 1.0",
    "panel": "Average workweek",
-   "value": 1.4975233812768565,
-   "text": "+1.5 hours",
-   "table": "US_CRRA_OtherShocks_vectorX",
-   "row": "income@1.0"
+   "value": -4.873884644932538,
+   "text": "−4.9 hours",
+   "table": "US_OtherShocks_vectorX",
+   "row": "leisure"
   },
   {
    "id": "US_overview_vectorX--theta0--rho2.0--ww",
@@ -522,6 +602,16 @@
    "row": "mild@2.0"
   },
   {
+   "id": "US_overview_vectorX--income--rho2.0--ww",
+   "label": "French income distr.",
+   "series": "ρ = 2.0",
+   "panel": "Average workweek",
+   "value": 1.3067516850846275,
+   "text": "+1.3 hours",
+   "table": "US_CRRA_OtherShocks_vectorX",
+   "row": "income@2.0"
+  },
+  {
    "id": "US_overview_vectorX--voting--rho2.0--ww",
    "label": "French voting",
    "series": "ρ = 2.0",
@@ -532,14 +622,14 @@
    "row": "voting@2.0"
   },
   {
-   "id": "US_overview_vectorX--income--rho2.0--ww",
-   "label": "French income distr.",
+   "id": "US_overview_vectorX--leisure--rho2.0--ww",
+   "label": "French leisure (no table at this ρ)",
    "series": "ρ = 2.0",
    "panel": "Average workweek",
-   "value": 1.3067516850846275,
-   "text": "+1.3 hours",
-   "table": "US_CRRA_OtherShocks_vectorX",
-   "row": "income@2.0"
+   "value": -4.541539468883272,
+   "text": "−4.5 hours",
+   "table": null,
+   "row": null
   }
  ]
 }
