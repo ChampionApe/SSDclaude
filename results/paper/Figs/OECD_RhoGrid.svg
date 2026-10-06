@@ -3483,7 +3483,7 @@ L 335.893406 198.518516
      </g>
     </g>
     <g id="text_47">
-     <!-- US -->
+     <!-- U.S. -->
      <g style="fill: #52514e" transform="translate(341.493406 200.968516) scale(0.07 -0.07)">
       <defs>
        <path id="DejaVuSans-38" d="M 556 4666 
@@ -3505,7 +3505,9 @@ z
 " transform="scale(0.015625)"/>
       </defs>
       <use xlink:href="#DejaVuSans-38"/>
-      <use xlink:href="#DejaVuSans-36" transform="translate(73.1875 0)"/>
+      <use xlink:href="#DejaVuSans-11" transform="translate(73.1875 0)"/>
+      <use xlink:href="#DejaVuSans-36" transform="translate(104.96875 0)"/>
+      <use xlink:href="#DejaVuSans-11" transform="translate(168.453125 0)"/>
      </g>
     </g>
     <g id="line2d_107">

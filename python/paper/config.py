@@ -335,7 +335,7 @@ def variantNote(commonX, full = False, arm = 'US'):
     calib = r'table:US:Calib' if arm == 'US' else r'table:Arg:Calib'
     if not full:
         return (r' Vector-$X_i$ calibration: see the note to '
-                r'Table~\ref{' + calib + variantSuffix(commonX, arm) + '}.')
+                r'table~\ref{' + calib + variantSuffix(commonX, arm) + '}.')
     return (r' Vector-$X_i$ calibration: $X_i$ is identified from relative hours, which are data here, '
             r'and the level of $\bar h$ is then not identified --- only its ratio to the baseline is. '
             r'$\beta$, $\omega$, the tax rate and the savings rate are common to the two variants; what '

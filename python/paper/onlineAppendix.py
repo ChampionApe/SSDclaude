@@ -55,8 +55,8 @@ def T(name, tab, **k):
     return Ex('table', name, tab, **k)
 
 
-TWINNOTE = (r'The figure of the paper under the vector-$X_i$ calibration (the online appendix\textquotesingle s '
-            r'section on that calibration); its baseline levels are the baseline rows of the tables beside it.')
+TWINNOTE = (r'The paper\textquotesingle s figure under the vector-$X_i$ calibration (Online Appendix \oa{oecd-vectorx}); '
+            r'its baseline levels are the baseline rows of the tables of this section.')
 
 # (anchor, chapter file stem, exhibits). The anchors are the book's headings and the paper's \oa keys.
 GROUPS = [
@@ -71,15 +71,17 @@ GROUPS = [
         T('ArgentinaUniversal', 'The reform in 2010', twin = True),
         T('ArgentinaReformPath', 'Its path', twin = True)]),
     ('arg-rho', 'argentina', [
-        F('ARG_CRRA_LOG', twin = True), T('ArgentinaReformByRho', 'Every IES', twin = True),
-        T('Argentina_funcOfRho', 'Three IES', twin = True)]),
+        F('ARG_CRRA_LOG', twin = True), T('ArgentinaReformByRho', 'Every IES', twin = True)]),
     ('arg-designs', 'argentina', [
         F('ARG_LOG_FourInOne', twin = True,
           caption = r'The equilibrium in 2010 over pension designs $(\epsilon, \theta)$, Argentina',
           note = r'The line is the calibrated $\theta$, the markers the pre-reform $\epsilon$ and the universal '
                  r'level of the reform. The savings rate is savings relative to GDP.')]),
     ('arg-rhogrid', 'argentina', [
-        F('ARG_RhoGrid', twin = True, caption = r'The Argentine calibration across the intertemporal elasticity'),
+        F('ARG_RhoGrid', twin = True, caption = r'The Argentine calibration across the intertemporal elasticity',
+          note = r'The parameters solved jointly with the equilibrium path at each IES of the grid, against the same '
+                 r'targets; the table of this section prints their values, and $\rho = 1$ is the paper\textquotesingle s '
+                 r'calibration.'),
         T('ARG_RhoGridTable', 'Calibration by IES', twin = True)]),
     ('oecd-calibration', 'oecd', [
         T('USUKFRCalibration', 'Countries', twin = True), T('US_householdheterogeneity', 'U.S.', twin = True),
@@ -89,7 +91,10 @@ GROUPS = [
     ('oecd-vectorx', 'oecd', []),
     ('oecd-rhogrid', 'oecd', [
         F('OECD_RhoGrid', twin = True,
-          caption = r'The calibrations of the U.S., the UK and France across the intertemporal elasticity'),
+          caption = r'The calibrations of the U.S., the UK and France across the intertemporal elasticity',
+          note = r'The parameters solved jointly with the equilibrium path at each IES of the grid, against the same '
+                 r'targets, with $\beta$ calibrated for the U.S. and imposed on the UK and France; the table of this '
+                 r'section prints their values, and $\rho = 1$ is the paper\textquotesingle s calibration.'),
         T('OECD_RhoGridTable', 'Calibration by IES', twin = True)]),
     ('oecd-us', 'oecd', [
         F('US_overview', twin = True), T('US_PensChars', 'Pension design', twin = True),
@@ -99,7 +104,7 @@ GROUPS = [
     ('oecd-uk', 'oecd', [
         F('UKUS_French', twin = True, caption = r'French characteristics in the U.S.\ and the UK',
           note = r'Every panel is the deviation from the host\textquotesingle s own baseline at the same $\rho$, '
-                 r'whose levels are the baseline rows of the tables beside it. France\textquotesingle s income '
+                 r'whose levels are the baseline rows of the tables of this section. France\textquotesingle s income '
                  r'groups are cut at the host\textquotesingle s income percentiles. The savings rate is savings '
                  r'relative to GDP.'),
         T('UK_OtherShocks', 'French characteristics', twin = True),
@@ -116,13 +121,16 @@ GROUPS = [
           note = r'Each host at its own cost parameter. The first column is the design in force in 2020 as a level, '
                  r'the reference line at the host\textquotesingle s observed design and the muted lines at the '
                  r'corners; the second is the tax rate as a deviation from the host\textquotesingle s '
-                 r'endogenous-$\theta$ baseline, whose levels are the baseline rows of the tables beside it. An '
+                 r'endogenous-$\theta$ baseline, whose levels are the baseline rows of the tables of this section. An '
                  r'open marker is the reading with the design pinned at the host\textquotesingle s value, a filled '
                  r'one the reading with the design chosen.'),
         T('UK_ESC_IncomeDistr', 'Income distribution'),
         T('UK_ESC_Voting', 'Voting patterns'), T('UK_ESC_FrenchAll', 'All French characteristics')]),
     ('esc-path', 'esc', [
-        F('ESC_Path', caption = r'The design and the tax along the baseline path, U.S.'),
+        F('ESC_Path', caption = r'The design and the tax along the baseline path, U.S.',
+          note = r'The design chosen one period in advance from the first period on, and the tax rate with the design '
+                 r'chosen and with it pinned at $\theta^{\ast}$, along the baseline path at each IES and, at $\rho = 1$, '
+                 r'at the Frisch elasticities $\xi = 0.2$ and $0.4$; the tables of this section print the values.'),
         T('ESC_PathTable', 'The path'), T('ESC_Xi', 'The Frisch elasticity')]),
     ('esc-timing', 'esc', [T('ESC_Timing', 'Timing of the choice')]),
     ('esc-scale', 'esc', [T('US_ESC_ScaleWedge', 'The alternative cost')]),
@@ -607,7 +615,7 @@ def provenance(a, prov):
     builder = prov.builder.get(a.name, '')
     cmd = r'.venv\Scripts\python.exe python\paper\build.py --only ' + a.name
     return ('<details class="oa-prov"><summary>Source</summary><ul>{}</ul><p>Built by <code>{}</code> from commit '
-            '<code>{}</code>{}. Rebuild: <code>{}</code></p></details>').format(
+            '<code>{}</code>{}. Rebuild: <code>{}</code>; on another system substitute <code>.venv/bin/python</code></p></details>').format(
         ''.join(rows) or '<li>No traced inputs yet: run <code>build.py --map</code>.</li>',
         html.escape(builder) or 'python/paper', prov.commit,
         ' with uncommitted changes' if prov.dirty else '', html.escape(cmd))
@@ -640,6 +648,8 @@ def figureHtml(a, paper, refs, prov, here):
     if a.variant == 'vectorX' and a.ex.caption and a.base not in paper.figures:
         cap = a.ex.caption + r', vector-$X_i$ calibration'
     a.captionTex, a.noteTex = cap, note
+    if note and not note.lstrip().startswith(r'\textit{Note:}'):   # the paper's notes carry the label already
+        note = r'\textit{Note:} ' + note                            # the print edition adds its own (groupLatex)
     if a.svg:
         body = '<div class="oa-svg">{}</div>'.format(cleanSvg(read(a.svg), a.name, [m['id'] for m in a.marks]))
     else:
@@ -737,7 +747,10 @@ def groupHtml(anchor, chapter, members, paper, refs, prov, byName, heads, report
         out.append('<script type="application/json" class="oa-marks">{}</script>'.format(
             json.dumps(marks, ensure_ascii = False).replace('</', '<\\/')))
     out.append('</section>')
-    return '\n'.join(out)
+    html_ = '\n'.join(out)
+    # A note that points at the section it is shown in ("whose levels are printed in Online Appendix OA.3.4", inside
+    # OA.3.4) reads "this section" here; the paper, which the note is written for, keeps the pointer.
+    return re.sub(r'Online Appendix <a href="#{}">[^<]*</a>'.format(re.escape(anchor)), 'this section', html_)
 
 
 def groupLatex(anchor, members, paper, refs):
@@ -760,6 +773,9 @@ def groupLatex(anchor, members, paper, refs):
             cap = getattr(a, 'captionTex', a.ex.caption or a.name)
             note = getattr(a, 'noteTex', a.ex.note or '')
             note, cap = refs.printTex(note), refs.printTex(cap)
+            own = refs.heads.get(anchor, {}).get('number')
+            if own:
+                note = note.replace('Online Appendix ' + own, 'this section')
             out += [r'\begin{figure}[!htbp]', r'\centering',
                     r'\setcounter{figure}{' + str(int(a.number.split('.')[1]) - 1) + '}',
                     r'\caption{' + cap + '}',
@@ -771,10 +787,22 @@ def groupLatex(anchor, members, paper, refs):
         names = []
         for a in shown:
             if a.kind == 'table' and a.table:
-                names.append("table ``" + (a.table.caption or a.name) + "''")
+                num = paper.numbers.get(a.table.label) if a.table.label else None
+                name = 'table ' + num if num else "table ``" + (a.table.caption or a.name).rstrip('.') + "''"
             elif a.kind == 'figure':
-                names.append("figure ``" + paper.figures.get(a.base, {}).get('caption', a.name) + "''")
-        out.insert(0, r'\noindent\textit{The site also shows here the paper' + "'" + r's ' + '; '.join(names) + r'.}\par\medskip')
+                fig = paper.figures.get(a.base, {})
+                num = paper.numbers.get(fig.get('label')) if fig.get('label') else None
+                name = 'figure ' + num if num else "figure ``" + fig.get('caption', a.name).rstrip('.') + "''"
+            else:
+                continue
+            try:
+                where = paper.where(a.name)
+            except Exception:
+                where = ''
+            names.append(name + (' (' + where + ')' if where else ''))
+        lead = 'Beside these, the site shows the paper' if out else 'The site shows here the paper'
+        out.insert(0, r'\noindent\textit{' + lead + "'" + r's ' + '; '.join(names)
+                   + r', which this edition does not reprint.}\par\medskip')
     out.append(r'\FloatBarrier')
     return '\n'.join(out)
 

@@ -63,23 +63,23 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho0.5--theta--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Pension design in 2020",
    "value": 0.7382263650417816,
    "text": "0.738",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@0.5"
   },
   {
    "id": "US_ESC_overview--frBoth--rho0.5--theta--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Pension design in 2020",
    "value": 0.6667328899444145,
    "text": "0.667",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@0.5"
   },
   {
    "id": "US_ESC_overview--acute--rho1.0--theta--pinned",
@@ -143,23 +143,23 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho1.0--theta--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Pension design in 2020",
    "value": 0.7382263650417814,
    "text": "0.738",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@1.0"
   },
   {
    "id": "US_ESC_overview--frBoth--rho1.0--theta--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Pension design in 2020",
    "value": 0.6272223698930828,
    "text": "0.627",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@1.0"
   },
   {
    "id": "US_ESC_overview--acute--rho2.0--theta--pinned",
@@ -223,23 +223,23 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho2.0--theta--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Pension design in 2020",
    "value": 0.7382263650417816,
    "text": "0.738",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@2.0"
   },
   {
    "id": "US_ESC_overview--frBoth--rho2.0--theta--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Pension design in 2020",
    "value": 0.2618621735207383,
    "text": "0.262",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@2.0"
   },
   {
    "id": "US_ESC_overview--acute--rho0.5--tau--pinned",
@@ -303,23 +303,23 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho0.5--tau--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Equilibrium tax rate",
    "value": -0.42877275794561964,
    "text": "−0.4 p.p.",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@0.5"
   },
   {
    "id": "US_ESC_overview--frBoth--rho0.5--tau--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Equilibrium tax rate",
    "value": -0.4497021344020996,
    "text": "−0.4 p.p.",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@0.5"
   },
   {
    "id": "US_ESC_overview--acute--rho1.0--tau--pinned",
@@ -383,23 +383,23 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho1.0--tau--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Equilibrium tax rate",
    "value": -0.02973656927155177,
    "text": "−0.03 p.p.",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@1.0"
   },
   {
    "id": "US_ESC_overview--frBoth--rho1.0--tau--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Equilibrium tax rate",
    "value": 0.006696997345018163,
    "text": "+0.01 p.p.",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@1.0"
   },
   {
    "id": "US_ESC_overview--acute--rho2.0--tau--pinned",
@@ -463,23 +463,23 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho2.0--tau--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Equilibrium tax rate",
    "value": 0.6050139892425227,
    "text": "+0.6 p.p.",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@2.0"
   },
   {
    "id": "US_ESC_overview--frBoth--rho2.0--tau--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Equilibrium tax rate",
    "value": 1.0083911586104222,
    "text": "+1.0 p.p.",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@2.0"
   },
   {
    "id": "US_ESC_overview--acute--rho0.5--sr--pinned",
@@ -543,23 +543,23 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho0.5--sr--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Savings over GDP",
    "value": 0.12675378719201963,
    "text": "+0.1 p.p. of GDP",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@0.5"
   },
   {
    "id": "US_ESC_overview--frBoth--rho0.5--sr--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Savings over GDP",
    "value": 0.13054067686779025,
    "text": "+0.1 p.p. of GDP",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@0.5"
   },
   {
    "id": "US_ESC_overview--acute--rho1.0--sr--pinned",
@@ -623,23 +623,23 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho1.0--sr--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Savings over GDP",
    "value": 0.02530259458187384,
    "text": "+0.03 p.p. of GDP",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@1.0"
   },
   {
    "id": "US_ESC_overview--frBoth--rho1.0--sr--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Savings over GDP",
    "value": 0.052346858842774735,
    "text": "+0.1 p.p. of GDP",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@1.0"
   },
   {
    "id": "US_ESC_overview--acute--rho2.0--sr--pinned",
@@ -703,23 +703,23 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho2.0--sr--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Savings over GDP",
    "value": -0.12821635642865564,
    "text": "−0.1 p.p. of GDP",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@2.0"
   },
   {
    "id": "US_ESC_overview--frBoth--rho2.0--sr--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Savings over GDP",
    "value": -0.057816842769503884,
    "text": "−0.1 p.p. of GDP",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@2.0"
   },
   {
    "id": "US_ESC_overview--acute--rho0.5--ww--pinned",
@@ -783,7 +783,7 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho0.5--ww--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics (no table prints this workweek: the all-French rows also impose France's level of X)",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Average workweek",
    "value": 0.7774897571842558,
@@ -793,7 +793,7 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho0.5--ww--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics (no table prints this workweek: the all-French rows also impose France's level of X)",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Average workweek",
    "value": 0.8088596335294653,
@@ -863,7 +863,7 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho1.0--ww--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics (no table prints this workweek: the all-French rows also impose France's level of X)",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Average workweek",
    "value": 0.6302697177654935,
@@ -873,7 +873,7 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho1.0--ww--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics (no table prints this workweek: the all-French rows also impose France's level of X)",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Average workweek",
    "value": 0.5903926466538536,
@@ -943,7 +943,7 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho2.0--ww--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics (no table prints this workweek: the all-French rows also impose France's level of X)",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Average workweek",
    "value": 0.5620673507616303,
@@ -953,7 +953,7 @@
   },
   {
    "id": "US_ESC_overview--frBoth--rho2.0--ww--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics (no table prints this workweek: the all-French rows also impose France's level of X)",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Average workweek",
    "value": 0.12698780939140164,

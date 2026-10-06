@@ -4,12 +4,12 @@
 \begin{table}[!htb]
 \centering
 \begin{threeparttable}
-\caption{Does CRRA matter for French characteristics imposed on the US -- 2020 (vector $X_i$ calibration)}
+\caption{French characteristics imposed on the U.S.\ across the IES, 2020 (vector $X_i$ calibration)}
 \label{table:US:CRRA:otherShocks_vectorX}
 \renewcommand{\arraystretch}{1.25}
 \begin{tabularx}{.9\textwidth}{YYYYY}
 \toprule
-\textbf{Scenario} & \textbf{CRRA} ($\rho$) & \textbf{Tax rate} & \textbf{Savings rate} & \textbf{Avg. workweek} \\
+\textbf{Scenario} & \textbf{CRRA} ($\rho$) & \textbf{Tax rate} & \textbf{Savings rate} & \textbf{Avg. workweek (hours)} \\
 \midrule 
  & 0.5 & 14.43\% & 15.91\% & 39.39 \\ % row: baseline@0.5
 Baseline & 1.0 & 14.43\% & 15.37\% & 39.39 \\ % row: baseline@1.0
@@ -17,14 +17,20 @@ Baseline & 1.0 & 14.43\% & 15.37\% & 39.39 \\ % row: baseline@1.0
  & 0.5 & 12.36\% & $+1.11$ p.p. & 41.12 \\ % row: income@0.5
 Income distribution & 1.0 & 12.80\% & $+0.59$ p.p. & 40.89 \\ % row: income@1.0
  & 2.0 & 13.41\% & $+0.21$ p.p. & 40.70 \\[.5em]\hline\\[-.75em] % row: income@2.0
+ & 0.5 & 14.41\% & 0.00 p.p. & 34.14 \\ % row: leisure@0.5
+Leisure preferences & 1.0 & 14.43\% & 0.00 p.p. & 34.52 \\ % row: leisure@1.0
+ & 2.0 & 14.43\% & 0.00 p.p. & 34.85 \\[.5em]\hline\\[-.75em] % row: leisure@2.0
  & 0.5 & 14.75\% & $-0.17$ p.p. & 39.30 \\ % row: voting@0.5
-Voting & 1.0 & 15.32\% & $-0.32$ p.p. & 39.19 \\ % row: voting@1.0
+Voting patterns & 1.0 & 15.32\% & $-0.32$ p.p. & 39.19 \\ % row: voting@1.0
  & 2.0 & 16.12\% & $-0.34$ p.p. & 39.11 \\[.5em]\hline\\[-.75em] % row: voting@2.0
+ & 0.5 & 12.61\% & $+0.97$ p.p. & 35.57 \\ % row: frall@0.5
+All French characteristics & 1.0 & 13.34\% & $+0.39$ p.p. & 35.72 \\ % row: frall@1.0
+ & 2.0 & 14.41\% & 0.00 p.p. & 35.85 \\[.5em]\hline\\[-.75em] % row: frall@2.0
 \bottomrule
 \end{tabularx}
 \begin{tablenotes}[flushleft]
 \footnotesize
-\item[] \textit{Note:} Every $\rho$ is separately calibrated. Every scenario row reports the change in the savings rate against the baseline at the same $\rho$, in percentage points. Vector-$X_i$ calibration: see the note to Table~\ref{table:US:Calib_vectorX}.
+\item[] \textit{Note:} Every $\rho$ is separately calibrated. Each counterfactual is a separate equilibrium path on which the changed characteristic holds throughout, every other parameter at its value in the U.S.\ calibration. The tax rate and the workweek are levels. The savings rate is savings relative to GDP: the baseline rows report its level and every other row the change against the baseline at the same $\rho$, in percentage points. Vector-$X_i$ calibration: see the note to table~\ref{table:US:Calib_vectorX}.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

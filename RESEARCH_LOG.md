@@ -4,6 +4,21 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-06 (late evening) — section 5's sources and calibration items; the online appendix read and revised
+
+Autonomous, on RKB's instruction. Section 5: the five items settled by two agents and the text (paper-data: the 2.7
+million is Rofman and Apella 2015's gross count to 2011, the figure is Cetrángolo and Grushka 2020 table 6, year
+corrected, coverage "over 90%", the 32% is the share of the elderly without a pension, the 7.1% the all-scheme total;
+paper-compute: the pre-reform ε uses the second quartile by a positional index and γ₀ = 0.32 is per formal household,
+both confirmed on the published instance, preview at ρ = 1 in `notes/TODO.md` C8: both fixes together take the 2010
+tax response from 1.25 to 2.08 p.p., a 4.5 h rerun per variant, RKB's call). The online appendix: a paper-reviewer read
+(ten items and a page of wording) applied by the main session (prose, registry, print edition, converter) and a
+paper-compute agent (captions and notes say "the U.S.", equation references as "equation (n) of the paper", the
+composite French row linked to its table rows under one name, leisure and all-French rows at every ρ in the CRRA
+French tables, OA.1 without the superseded figure's narration); site conventions in `writing/OnlineAppendix/README.md`.
+The paper's section 4 footnote now claims uniqueness only for the solves that record the count, the introduction's
+roadmap names the online appendix and its address. Open: C8; the composite's workweek marks link to no table.
+
 ## 2026-10-06 (evening) — sections 5 and 6 with RKB: section 6's results lead with its figure; tables 4–5, F.1–F.2 and G online
 
 Section 5: the ε–θ figure and its paragraph leave for Online Appendix OA.2.4 (`arg-designs`, caption and note now in the

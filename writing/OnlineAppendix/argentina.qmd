@@ -17,17 +17,17 @@ every result of section 5, are the same under both.
 
 ## OA.2.2 The reform {#arg-reform}
 
-The effect in 2010 of raising $\epsilon$ to the universal level, with the tax rate held at its pre-reform path and
-chosen politically, as in section 5, and the paths of the tax rate, the savings rate and the workweek before and
-after the reform.
+The first table is the paper's: the effect in 2010 of raising $\epsilon$ to the universal level, with the tax rate
+held at its pre-reform path and chosen politically. The second prints the paths of the tax rate, the savings rate
+and the workweek before and after the reform.
 
 {{< include _generated/groups/arg-reform.qmd >}}
 
 ## OA.2.3 The reform across the intertemporal elasticity {#arg-rho}
 
-Section 5 reads the reform at three values of the IES $\rho$; the model is solved on a grid of values between them.
-The figure is the paper's; the tables print the reform at every point of the grid and at the three the paper
-quotes. Click a point of the figure for its row.
+Section 5 reads the reform across the intertemporal elasticity of substitution (IES) $\rho$ from the figure, which
+is the paper's; the model is solved on a grid of sixteen values. The table prints the reform at every point of the
+grid. [Click a point of the figure for its row.]{.content-visible when-format="html"}
 
 {{< include _generated/groups/arg-rho.qmd >}}
 
@@ -38,14 +38,15 @@ design, with the pre-reform calibration and the universal system at the calibrat
 rises with $\epsilon$ and falls with $\theta$, the savings rate and the workweek fall with $\epsilon$ and rise with
 $\theta$, and the savings of informal relative to formal households fall with $\epsilon$. Between the two markers
 the tax rate rises by more than it does on impact in section 5 of the paper, because the savings of informal
-households have adjusted to the universal system; the difference is close to the long-run effect of the reform.
-The grid itself can be downloaded from the figure's source.
+households have adjusted to the universal system; the difference is close to the reform's effect by 2040 (OA.2.2).
+[The grid itself can be downloaded from the figure's source.]{.content-visible when-format="html"}
 
 {{< include _generated/groups/arg-designs.qmd >}}
 
 ## OA.2.5 The calibration across the intertemporal elasticity {#arg-rhogrid}
 
-The parameters solved jointly with the equilibrium path at every IES of the grid, which show how the calibration
-absorbs a change in $\rho$.
+The table and the figure print the parameters solved jointly with the equilibrium path at every IES of the grid,
+which show how the calibration absorbs a change in $\rho$: matching the targets at an IES of 0.6 or below takes a
+thirty-year discount factor above one.
 
 {{< include _generated/groups/arg-rhogrid.qmd >}}

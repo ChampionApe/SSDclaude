@@ -109,7 +109,7 @@ TEXTMAC = {'textbf': ('<strong>', '</strong>'), 'textit': ('<em>', '</em>'), 'em
            'textnormal': ('', ''), 'mbox': ('', ''), 'text': ('', ''), 'textsc': ('<span class="oa-sc">', '</span>'),
            'textsuperscript': ('<sup>', '</sup>'), 'textsubscript': ('<sub>', '</sub>'),
            'tnote': ('<sup class="oa-tnote">', '</sup>'), 'underline': ('<u>', '</u>')}
-SYMBOLS = {'textquotesingle': "'", 'ldots': '…', 'dots': '…', 'textendash': '–', 'textemdash': '—',
+SYMBOLS = {'textquotesingle': '\u2019', 'ldots': '…', 'dots': '…', 'textendash': '–', 'textemdash': '—',
            'S': '§', 'textasciitilde': '~', 'textbackslash': '\\', 'centering': '', 'raggedright': '',
            'raggedleft': '', 'footnotesize': '', 'small': '', 'normalsize': '', 'scriptsize': '', 'noindent': '',
            'arraybackslash': '', 'hfill': ' ', 'quad': ' ', 'qquad': ' ', 'newline': '<br>', 'par': ' ',

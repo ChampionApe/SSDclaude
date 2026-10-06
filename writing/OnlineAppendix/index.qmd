@@ -1,11 +1,12 @@
 # About this appendix {.unnumbered}
 
 This online appendix accompanies *Social Security Design and Its Political Support* by Rasmus K. S. Berg and
-Martín Gonzalez-Eiras. It holds the tables and figures of the paper's quantitative sections, the robustness checks
-the paper summarizes in a sentence, and the numerical checks behind its results, with each figure set beside the
+Martín Gonzalez-Eiras. It holds the tables and figures behind the paper's quantitative sections, the robustness checks
+that the paper's appendix G summarizes in one figure, and the numerical checks behind its results, with each figure set beside the
 tables that print its numbers. Every exhibit is built by the paper's own pipeline from the model's results, so the
 numbers are the paper's to the last printed digit; [replication](replication.qmd) lists where each one comes from.
 
+::: {.content-visible when-format="html"}
 **Reading an exhibit.** Point at a marker of a figure to read its value; click it to bring up the table that prints
 it, with its row highlighted. Point at a table row to find its markers in the figure. Where an exhibit exists under
 both calibrations of the households' taste for leisure, a switch moves between the paper's calibration, common
@@ -17,16 +18,28 @@ Table or Figure OA.*k*.
 
 The print edition, a PDF under the download link of the sidebar, holds every table and figure that is not in the
 paper, with the same numbers.
+:::
+
+::: {.content-visible when-format="pdf"}
+**Reading this edition.** This is the print edition of the online appendix. It holds every table and figure that is
+not in the paper, numbered Table or Figure OA.*k*; where the site shows one of the paper's own exhibits beside them,
+a line names it and the section of the paper that carries it. Where an exhibit exists under both calibrations of
+the households' taste for leisure, the paper's calibration, common $X$, comes first and the alternative, vector
+$X_i$ (OA.3.2), follows it. The site adds, for every exhibit, the value under the pointer, the link from a marker
+of a figure to the table row that prints it, the switch between the two calibrations with the cells they differ
+in marked, and the download of the files each exhibit reads.
+:::
 
 ## Robustness at a glance {#robustness}
 
-The paper's quantitative results under every specification the paper reports. Each panel is one result: how the
-tax rate responds to the earnings link $\theta$, to acute ageing and to France's income distribution and voting
+Figure G.1 of the paper, repeated here, sets its quantitative results against every specification the paper reports.
+Each panel is one result: how the tax rate responds to the Bismarckian index $\theta$, to acute ageing and to France's income distribution and voting
 patterns with the design given, and how the chosen design responds to the last three. Each marker is the same
 result under one specification: the intertemporal elasticity of substitution (IES) $\rho$, the calibration of the
 taste for leisure, the host economy, and for the chosen design the cost specification and the Frisch elasticity
-$\xi$. Results are changes against the host's own baseline at the same IES. Click a marker for the table that
-prints it.
+$\xi$. Results are changes against the host's own baseline at the same IES, and the paper's own reading, the U.S.
+under a common $X$ at an IES of one with the cost of section 7, is the highlighted marker. [Click a marker for the table that
+prints it.]{.content-visible when-format="html"}
 
 {{< include _generated/groups/robustness.qmd >}}
 

@@ -1,15 +1,17 @@
 # OA.3 The rich economies with the design given {#oecd}
 
 Section 6 of the paper calibrates the model without informal households to the U.S., France and the UK, and
-imposes on the U.S. the characteristics that set France apart; appendix E gives the data and the household
+changes the U.S. calibration one characteristic at a time, its pension design, its demography and the
+characteristics that set France apart; appendix E gives the data and the household
 heterogeneity behind the calibration. This chapter holds every table behind section 6's figure, the counterfactuals
 under CRRA preferences and the same counterfactuals with the UK as host, each under both calibrations of the taste
-for leisure, and the calibrations at every IES of the model's grid.
+for leisure, and the calibrations at every intertemporal elasticity of substitution (IES) of the model's grid.
 
 ## OA.3.1 Calibration {#oecd-calibration}
 
-The country parameters, with those the three countries share in a lower panel, and, by income group, the population shares, the taste for leisure, the productivities and
-the propensities to vote. France is grouped at the U.S. income percentiles and, for the UK as host, at the UK's.
+The first table prints the country parameters, with those the three countries share in a lower panel; the others
+print, by income group, the population shares, the taste for leisure, the productivities and the propensities to
+vote. France is grouped at the U.S. income percentiles and, for the UK as host, at the UK's.
 The UK is also regrouped at the U.S. percentiles for one row of the paper's cross-country test in section 7; that
 regrouping is a linear fit of the UK's own group means against their cumulative population shares, not a recount
 of the survey.
@@ -23,35 +25,41 @@ across groups and fixing its level by the average workweek, so that relative hou
 alternative takes the observed relative hours as data as well, which identifies one $X_i$ per group and leaves the
 level of hours unidentified. The productivity distribution reaches every aggregate only through
 $\sum_i \gamma_i \eta_i^{1+\xi}/X_i^{\xi}$, which both calibrations normalize to one, so the calibration is block
-recursive: what depends on the design or on the demography is the same under both, and only what is defined
+recursive: what depends on the design or on the demography is the same under both, exactly in the log case and,
+in the CRRA solves for the UK and France, to within one unit of the last printed digit, and only what is defined
 through $\eta_i$ or $X_i$ separately can move. The table compares every exhibit that exists under both
-calibrations, cell by cell; on each exhibit, the calibration switch and *mark the cells that differ* show the same
-comparison in place.
+calibrations, cell by cell, the Argentine exhibits of OA.2 included[; on each exhibit, the calibration switch and
+*mark the cells that differ* show the same comparison in place]{.content-visible when-format="html"}.
 
 {{< include _generated/groups/oecd-vectorx.qmd >}}
 
 ## OA.3.3 The calibration across the intertemporal elasticity {#oecd-rhogrid}
 
-The parameters solved jointly with the equilibrium path at every IES of the grid, for each country. Sections 6 and
-7 explain the CRRA results by how the calibration absorbs a higher IES; these are the numbers behind that
-explanation.
+The figure and the table print the parameters solved jointly with the equilibrium path at every IES of the grid,
+for each country. Sections 6 and 7 explain the CRRA results by how the calibration absorbs a higher IES; these are
+the numbers behind that explanation. Matching the U.S. targets at an IES of 0.6 or below takes a thirty-year
+discount factor above one, which the UK and France inherit.
 
 {{< include _generated/groups/oecd-rhogrid.qmd >}}
 
 ## OA.3.4 Counterfactuals on the U.S. {#oecd-us}
 
 The paper's overview figure of section 6 collects the effect of each counterfactual on the tax rate, the savings
-rate and the workweek at three values of the IES. The tables print them: the pension design and ageing at the
-paper's benchmark, with the economic-equilibrium effect, in which the tax rate is held at its baseline path, beside
+rate and the workweek at three values of the IES. Each counterfactual is a separate equilibrium path read in
+2020: one characteristic of the U.S. calibration is changed over the whole horizon and every other parameter, the
+political weight of the old included, stays at its U.S. value, so a row describes an economy that has always had
+that characteristic. The tables print the effects: the pension design and ageing at the paper's benchmark, with the economic-equilibrium effect, in which the tax rate is held at its baseline path, beside
 the full one; France's income distribution, leisure preferences and voting patterns one at a time and all at once,
-next to France's own calibrated path; and each of them at every IES. Click a bar for its row.
+next to France's own calibrated path; and the same counterfactuals at each IES. [Click a bar for its row.]{.content-visible when-format="html"}
 
 {{< include _generated/groups/oecd-us.qmd >}}
 
 ## OA.3.5 The UK as host {#oecd-uk}
 
-The counterfactuals of section 6 on the UK's own calibration: France's characteristics, with France's households
-regrouped at the UK's income percentiles, and the pension design and ageing at each IES. The figure sets the two
+The counterfactuals of section 6 on the UK's own calibration, each a separate equilibrium path with one
+characteristic changed over the whole horizon and every other parameter at the UK's value: France's
+characteristics, with France's households regrouped at the UK's income percentiles, and the pension design and
+ageing at each IES. The figure sets the two
 hosts side by side for France's characteristics; the tables print the UK's numbers. Two differences from the U.S.
 stand out. France's income distribution raises the UK's tax rate where it lowers the U.S. one, because at the UK's
 income cuts France is the more unequal of the two countries ([OA.3.1](oecd.qmd#oecd-calibration)) and equilibrium

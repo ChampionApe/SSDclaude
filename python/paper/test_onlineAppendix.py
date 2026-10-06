@@ -44,7 +44,7 @@ def test_print_copy_resolves_every_reference():
 def test_converter_vocabulary():
     ctx = TT.Context(strict = True)
     assert TT.inline(r'$-0.09$ p.p.', ctx) == '\u22120.09 p.p.'
-    assert TT.inline(r'France\textquotesingle s', ctx) == "France's"
+    assert TT.inline(r'France\textquotesingle s', ctx) == 'France\u2019s'
     assert '\\(\\boldsymbol{\\theta}\\)' in TT.inline(r'$\bm{\theta}$', ctx)
     assert TT.inline(r'1960--2020', ctx) == '1960\u20132020'
     refs = TT.Context(ref = lambda label, eq = False: '[{}|{}]'.format(label, eq))

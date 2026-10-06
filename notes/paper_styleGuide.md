@@ -99,7 +99,7 @@ three distinct parts, but do not add further subsections elsewhere.
   (no periods), "France". "Argentina", "Argentine" as adjective for the survey.
 - **Named scenarios** are italicised on first use, `{\it mild ageing}`, `{\it acute ageing}`, then
   bare. The draft mixes `{\it }` and `\emph{}`; either is fine, do not convert existing ones.
-- **Counterfactual labels** used in tables and text alike: pension characteristics (θ), ageing, income
+- **Counterfactual labels** used in tables and text alike: pension design (θ), ageing, income
   distribution, leisure preferences, voting patterns, "French characteristics" for the composite.
 - **"Exogenous θ" / "endogenous θ"**, or "θ pinned" / "θ chosen", for the two readings in the
   endogenous-design section.

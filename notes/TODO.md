@@ -39,6 +39,26 @@ rule never bound and every published number is bitwise or within cross-process n
 except the CRRA design rows of C6. **Open: RKB to confirm the restatement of the equilibrium test in the
 three `num_robustroot.tex` and the section 4 sentences of the paper.**
 
+**C8. Argentina's pre-reform ε and γ₀ do not match the text** -- found 2026-10-06 (evening), RKB's call. Two
+mismatches, both confirmed on the published ρ = 1 instance (the preview scripts and logs are in the session scratchpad
+`argPreview/`; the self-check reproduced the published calibration and reform bitwise):
+- *ε_pre.* `InformalSavings/model.py` `getEps` reads `auxProd(t0)[1]`, a positional index: the SECOND formal quartile
+  (relative income 0.71), giving 0.29. Appendix D's formula and "the least productive formal workers", and the
+  reform's own ε^U in `shockUniversal.py` (`refType = 1`, the first quartile, 0.46), say the FIRST, which gives 0.21.
+  `shockUniversal.py`'s docstring speaks of "type j=2", so the second quartile may once have been deliberate.
+- *γ₀.* The model counts informal households per formal household (formal shares sum to one; the budget divides by
+  1+γ₀ε), so the workbook's 0.32 makes informal households 24% of all. The datum, 32%, is the share of the population
+  over 65 without a pension in 2004 (Rofman and Oliveri 2012, table A1.1; not Cetrángolo and Grushka, who have no such
+  figure); as a share of all households it means γ₀ = 0.32/0.68 = 0.47.
+Preview at ρ = 1, log, common X (2010 reform, change against the pre-reform path; published: Δτ +1.25 p.p., Δsavings
+rate −0.28 p.p. of GDP, Δworkweek −0.14 h, "almost half" of the amnesties' 1.8% of GDP): (a) first-quartile ε alone:
+ε = 0.21, Δτ +1.77 p.p. (1.15% of GDP, about two thirds); (b) γ₀ = 0.47 alone: Δτ +1.45 p.p.; (c) both: ε = 0.21,
+Δτ +2.08 p.p. (1.35% of GDP, about three quarters), Δsavings −0.43 p.p., Δworkweek −0.25 h; 2040 under (c): +3.53 p.p.
+Every variant converges. A production fix is `getEps`'s index (by label, as `getθ` does) and the workbook's γ₀ through
+Excel, then the Argentine stage (i) and (ii) with `--force`, about 4.5 h per variant on the 16-point grid, then the
+paper's section 5, abstract, introduction and conclusion ("almost half") and the online appendix. Interim, the text
+describes the datum behind γ₀ correctly and keeps "least productive" for ε, which the code does not do.
+
 **W8. The reviewer's reading of the rebuilt draft** (2026-10-03, paper-reviewer, numbers against the tables
 regenerated after the final run; the stale numbers it listed were fixed the same day). Five findings that are
 RKB's calls, not number fixes: (a) "inequality moves the design little" (abstract, introduction, `sec:esc`

@@ -4,12 +4,12 @@
 \begin{table}[!htb]
 \centering
 \begin{threeparttable}
-\caption{Does CRRA matter for French characteristics imposed on the UK -- 2020}
+\caption{French characteristics imposed on the UK across the IES, 2020}
 \label{table:UK:CRRA:otherShocks}
 \renewcommand{\arraystretch}{1.25}
 \begin{tabularx}{.9\textwidth}{YYYYY}
 \toprule
-\textbf{Scenario} & \textbf{CRRA} ($\rho$) & \textbf{Tax rate} & \textbf{Savings rate} & \textbf{Avg. workweek} \\
+\textbf{Scenario} & \textbf{CRRA} ($\rho$) & \textbf{Tax rate} & \textbf{Savings rate} & \textbf{Avg. workweek (hours)} \\
 \midrule 
  & 0.5 & 11.86\% & 18.93\% & 34.73 \\ % row: baseline@0.5
 Baseline & 1.0 & 11.86\% & 17.20\% & 34.73 \\ % row: baseline@1.0
@@ -17,14 +17,20 @@ Baseline & 1.0 & 11.86\% & 17.20\% & 34.73 \\ % row: baseline@1.0
  & 0.5 & 11.94\% & $-0.05$ p.p. & 34.59 \\ % row: income@0.5
 Income distribution & 1.0 & 12.15\% & $-0.12$ p.p. & 34.55 \\ % row: income@1.0
  & 2.0 & 12.23\% & $-0.09$ p.p. & 34.55 \\[.5em]\hline\\[-.75em] % row: income@2.0
+ & 0.5 & 11.86\% & 0.00 p.p. & 35.86 \\ % row: leisure@0.5
+Leisure preferences & 1.0 & 11.86\% & 0.00 p.p. & 35.85 \\ % row: leisure@1.0
+ & 2.0 & 11.86\% & 0.00 p.p. & 35.87 \\[.5em]\hline\\[-.75em] % row: leisure@2.0
  & 0.5 & 12.08\% & $-0.14$ p.p. & 34.67 \\ % row: voting@0.5
-Voting & 1.0 & 12.19\% & $-0.13$ p.p. & 34.66 \\ % row: voting@1.0
+Voting patterns & 1.0 & 12.19\% & $-0.13$ p.p. & 34.66 \\ % row: voting@1.0
  & 2.0 & 12.39\% & $-0.12$ p.p. & 34.65 \\[.5em]\hline\\[-.75em] % row: voting@2.0
+ & 0.5 & 12.14\% & $-0.18$ p.p. & 35.66 \\ % row: frall@0.5
+All French characteristics & 1.0 & 12.46\% & $-0.24$ p.p. & 35.61 \\ % row: frall@1.0
+ & 2.0 & 12.76\% & $-0.20$ p.p. & 35.60 \\[.5em]\hline\\[-.75em] % row: frall@2.0
 \bottomrule
 \end{tabularx}
 \begin{tablenotes}[flushleft]
 \footnotesize
-\item[] \textit{Note:} Every $\rho$ is separately calibrated. Every scenario row reports the change in the savings rate against the baseline at the same $\rho$, in percentage points.
+\item[] \textit{Note:} Every $\rho$ is separately calibrated. Each counterfactual is a separate equilibrium path on which the changed characteristic holds throughout, every other parameter at its value in the UK calibration. The tax rate and the workweek are levels. The savings rate is savings relative to GDP: the baseline rows report its level and every other row the change against the baseline at the same $\rho$, in percentage points.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

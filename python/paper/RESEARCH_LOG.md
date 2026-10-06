@@ -4,6 +4,20 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_paper.md`, in
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-06 (late evening) — the online appendix after a reader's review; captions say "the U.S."
+
+`onlineAppendix.py`: a note that points at its own section renders "this section" (site and print); registry notes get
+the "Note:" label on the site; the print edition's stand-in line names the paper's table or figure number and place
+from `main.aux`; `Argentina_funcOfRho` left the registry (three rows of `ArgentinaReformByRho`); notes for the ρ-grid
+and path figures. `texTable.py`: `\textquotesingle` renders as a curly apostrophe (test updated). `tablesUS.py`,
+`tablesOA.py`, `figuresUS.py`, `figuresOA.py`, `tables.py`, `config.py` (paper-compute agent): country naming per the
+style guide in every caption, note, header and label; CRRA captions as statements; `US_CRRA_OtherShocks` and the UK
+twin gain `leisure@ρ` and `frall@ρ` rows, so every mark of `US_overview` links to a table; the composite row of the
+two ESC figures and `UKUS_French` is "French characteristics" and links to the `frall` rows (its workweek marks stay
+unlinked, since the table's composite also imposes France's X); `OECD_Sources` and `OECD_Correlations` drop the EPS
+comparison (kept in `data/README.md`); "Avg. workweek (hours)", "Voting patterns", lowercase `table~\ref`. Numbers
+unchanged in every common cell; `results/paper/Tables/ArgentinaUniversal_commonX.tex`, a stale unregistered file, deleted.
+
 ## 2026-10-06 (afternoon) — the calibration table's shared panel; the overview figure's merged rows
 
 `tablesUS.usukfrCalibration`: β leaves the country rows for a lower panel with ρ, ξ and α, one `\multicolumn` cell

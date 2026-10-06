@@ -19,9 +19,8 @@ THREE CONVENTIONS, each of which a builder could silently get wrong:
   * A counterfactual's savings rate is reported as the CHANGE against that rho's own baseline, in
     percentage points (config.pp); only baseline rows carry a level. The baseline savings rate is a
     prediction that moves with rho (beta is identified by R), so a scenario at rho differenced against
-    the rho = 1 baseline is not an effect. (The leisure row, a pure scale that cannot move savings, was
-    the check -- 0.00 at every rho -- while it was printed; it is still in the csv.) Tax rates and
-    workweeks stay as levels.
+    the rho = 1 baseline is not an effect. (The leisure row, a pure scale that cannot move savings, is
+    the check: 0.00 at every rho.) Tax rates and workweeks stay as levels.
   * `Avg. workweek` is normalised against each rho's OWN baseline, inside the experiment script. Under
     vector X the level of hbar is not identified, so there is no expression that converts it to hours;
     the observed workweek is a reference point, not a unit. Stage (iii) therefore reads `workweek`
@@ -82,7 +81,10 @@ def _shockRows(df, ρ, scenarios, baselineLabel):
 
 
 SHOCKHEAD = [r'\textbf{Scenario}', r'\textbf{Tax rate}', r'\textbf{Savings rate}',
-             r'\textbf{Avg. workweek}']
+             r'\textbf{Avg. workweek (hours)}']
+# France's characteristics as the OtherShocks tables print them: (row label, shock-csv scenario).
+FRENCHROWS = [('Income distribution', 'Income distribution'), ('Leisure preferences', 'Leisure preferences'),
+              ('Voting patterns', 'Voting'), ('All French characteristics', 'All French characteristics')]
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -99,7 +101,7 @@ def usPensChars(commonX = None):
             r'baseline path, so they isolate the response of savings and hours to $\theta$ alone; the '
             r'full rows re-optimise $\tau$ politically.' + SRNOTE + C.variantNote(commonX))
     return _xwrap('US_PensChars' + C.variantSuffix(commonX), df.attrs['source'],
-                  r'The effect of pension design ($\theta$) in US -- {}{}'.format(
+                  r'The effect of pension design ($\theta$) in the U.S. -- {}{}'.format(
                       C.usCalendar()['year0'], C.variantCaption(commonX)),
                   'table:US:pensChars' + C.variantSuffix(commonX), 'p{3cm}YYY', SHOCKHEAD, body, note)
 
@@ -122,11 +124,17 @@ def usAgeing(commonX = None):
             r'\item[b] The ' + LQ + 'acute ageing' + RQ + r' scenario refers to $\nu_t = 1$ throughout.'
             + C.variantNote(commonX))
     return _xwrap('US_Ageing' + C.variantSuffix(commonX), df.attrs['source'],
-                  'The effect of ageing in US -- {}{}'.format(year0, C.variantCaption(commonX)),
+                  'The effect of ageing in the U.S. -- {}{}'.format(year0, C.variantCaption(commonX)),
                   'table:US:ageing' + C.variantSuffix(commonX), 'p{3cm}YYY', SHOCKHEAD, body, note)
 
 
-HOSTNAME = {'US': 'US', 'UK': 'the UK'}    # as the captions and notes name the host economy
+HOSTNAME = {'US': 'the U.S.', 'UK': 'the UK'}    # as the captions and notes name the host economy
+
+
+def _sp(name):
+    r""" `name` and the space before the next word: LaTeX's control space after an abbreviation's
+    period, "the U.S.\ design" (notes/paper_styleGuide.md, Country names). """
+    return name + (r'\ ' if name.endswith('.') else ' ')
 
 
 def _otherShocks(commonX = None, host = 'US'):
@@ -151,32 +159,32 @@ def _otherShocks(commonX = None, host = 'US'):
     df = D.usShocks(commonX = commonX, host = host)
     b = D.usBaseline(df, ρ)
     name = HOSTNAME[host]
-    theName = name if name.startswith('the ') else 'the ' + name      # 'the US', 'the UK'
     rows = [keyed(' & '.join(['Baseline'] + _cells(b)) + r' \\', 'baseline')]
-    for lab in ('Income distribution', 'Leisure preferences', 'Voting'):
-        rows.append(keyed(' & '.join([lab] + _cells(D.usShockRow(df, ρ, lab, 'full'), b)) + r' \\',
-                          ROWKEY[lab]))
+    for lab, scen in FRENCHROWS[:-1]:
+        rows.append(keyed(' & '.join([lab] + _cells(D.usShockRow(df, ρ, scen, 'full'), b)) + r' \\',
+                          ROWKEY[scen]))
     rows.append(keyed(' & '.join(['All French characteristics']
                                  + _cells(D.usShockRow(df, ρ, 'All French characteristics', 'full'), b))
                       + r' \\[.5em]\hline\\[-.75em]', ROWKEY['All French characteristics']))
     rows.append(keyed(' & '.join(['France (own calibration)']
                                  + _cells(D.usShockRow(df, ρ, 'France (own calibration)', 'full'), b)) + r' \\',
                       ROWKEY['France (own calibration)']))
-    design = (r' pension design is the separate counterfactual of Table~\ref{table:US:pensChars}.'
+    design = (r' pension design is the separate counterfactual of table~\ref{table:US:pensChars}.'
               if host == 'US' else '.')
     note = (r'\item \textit{Note:} $\rho = ' + C.num(ρ, 1) + r'$, full effect. Each row is a separate equilibrium path: '
             r'the borrowed characteristics hold throughout and the economy starts from its own steady '
-            r'state, so the row describes a country that has always had this mix rather than ' + name
-            + r' hit by a surprise in 2020. Income '
-            r'distribution replaces $\eta_i$ with France\textquotesingle s while holding $X_i$ \emph{and} '
-            r'holding $\theta$ at ' + theName + r' design, so it is a change in inequality alone'
+            r'state, so the row describes a country that has always had this mix rather than ' + _sp(name)
+            + r'hit by a surprise in 2020. Income '
+            r'distribution replaces $\eta_i$ with France\textquotesingle s while holding $X_i$ and $\theta$ at '
+            r'their ' + _sp(COUNTRYNAME[host]) + r'values, so it is a change in inequality alone'
             + (';' if host == 'US' else '') + design
-            + r' Leisure preferences rescales every $X_i$ to France\textquotesingle s population-weighted '
-            r'mean $X$ at the productivity level of the income row; it is a pure rescaling of the hours '
+            + r' Leisure preferences keeps ' + _sp(name) + r'$\eta_i$ and rescales every $X_i$ to '
+            r'France\textquotesingle s population-weighted mean $X$, scaled as France\textquotesingle s $\eta_i$ '
+            r'are in the income row; it is a pure rescaling of the hours '
             r'unit and moves hours and nothing else. All French characteristics '
             r'imposes France\textquotesingle s $\eta_i$, level of $X_i$ and voting weights $\mu_i$ at once. '
             r'The last row is France\textquotesingle s own calibrated path, its savings rate reported as '
-            r'the distance from ' + theName + r' baseline.'
+            r'the distance from ' + _sp(name) + r'baseline.'
             + (r' France\textquotesingle s income groups are cut at the UK\textquotesingle s own income '
                r'percentiles here (table \ref{table:a_US:CalibFRUK}).' if host == 'UK' else '')
             + C.variantNote(commonX))
@@ -222,19 +230,22 @@ def _crraTable(name, caption, label, scenarios, commonX = None, host = 'US'):
             out.append(keyed(' & '.join([lab if k == mid else '', C.num(ρ, 1)] + cells)
                              + r' \\' + (r'[.5em]\hline\\[-.75em]' if k == len(ρs)-1 else ''),
                              rowKey('baseline' if scen is None else ROWKEY[scen], ρ)))
-    note = (r'\item \textit{Note:} Every $\rho$ is separately calibrated. Every scenario row reports the '
-            r'change in the savings rate against the baseline at the same $\rho$, in percentage points.'
+    note = (r'\item \textit{Note:} Every $\rho$ is separately calibrated. Each counterfactual is a separate '
+            r'equilibrium path on which the changed characteristic holds throughout, every other parameter at '
+            r'its value in ' + _sp(HOSTNAME[host]) + r'calibration. The tax rate and the workweek are levels. '
+            r'The savings rate is savings relative to GDP: the baseline rows report its level and every other '
+            r'row the change against the baseline at the same $\rho$, in percentage points.'
             + C.variantNote(commonX))
     return _xwrap(name + C.variantSuffix(commonX), df.attrs['source'],
                   caption + C.variantCaption(commonX), label + C.variantSuffix(commonX), 'YYYYY',
                   [r'\textbf{Scenario}', r'\textbf{CRRA} ($\rho$)', r'\textbf{Tax rate}',
-                   r'\textbf{Savings rate}', r'\textbf{Avg. workweek}'], '\n'.join(out), note)
+                   r'\textbf{Savings rate}', r'\textbf{Avg. workweek (hours)}'], '\n'.join(out), note)
 
 
 def usCrraPensChars(commonX = None):
     r""" Table \ref{table:US:CRRA:pensChars}. """
     return _crraTable('US_CRRA_PensChars',
-                      r'Does CRRA matter for the effect of pension design ($\theta$) in US -- {}'
+                      r'The effect of pension design ($\theta$) across the IES, the U.S., {}'
                       .format(C.usCalendar()['year0']), 'table:US:CRRA:pensChars',
                       [(r'$\theta = 0$', r'$\theta = 0$'), (r'$\theta = 1$', r'$\theta = 1$')],
                       commonX = commonX)
@@ -243,7 +254,7 @@ def usCrraPensChars(commonX = None):
 def usCrraAgeing(commonX = None):
     r""" Table \ref{table:US:CRRA:ageing}. """
     return _crraTable('US_CRRA_Ageing',
-                      'Does CRRA matter for the effect of ageing in US -- {}'
+                      'The effect of ageing across the IES, the U.S., {}'
                       .format(C.usCalendar()['year0']), 'table:US:CRRA:ageing',
                       [('Mild ageing', 'Mild ageing'), ('Acute ageing', 'Acute ageing')],
                       commonX = commonX)
@@ -252,16 +263,15 @@ def usCrraAgeing(commonX = None):
 def usCrraOtherShocks(commonX = None):
     r""" Table \ref{table:US:CRRA:otherShocks}. """
     return _crraTable('US_CRRA_OtherShocks',
-                      'Does CRRA matter for French characteristics imposed on the US -- {}'
-                      .format(C.usCalendar()['year0']), 'table:US:CRRA:otherShocks',
-                      [('Income distribution', 'Income distribution'), ('Voting', 'Voting')],
+                      r'French characteristics imposed on the U.S.\ across the IES, {}'
+                      .format(C.usCalendar()['year0']), 'table:US:CRRA:otherShocks', FRENCHROWS,
                       commonX = commonX)
 
 
 def ukCrraPensChars(commonX = None):
     r""" Table \ref{table:UK:CRRA:pensChars} (online appendix): theta = 0 and theta = 1 on the UK host. """
     return _crraTable('UK_CRRA_PensChars',
-                      r'Does CRRA matter for the effect of pension design ($\theta$) in the UK -- {}'
+                      r'The effect of pension design ($\theta$) across the IES, the UK, {}'
                       .format(C.usCalendar('UK')['year0']), 'table:UK:CRRA:pensChars',
                       [(r'$\theta = 0$', r'$\theta = 0$'), (r'$\theta = 1$', r'$\theta = 1$')],
                       commonX = commonX, host = C.US['ukHost'])
@@ -270,7 +280,7 @@ def ukCrraPensChars(commonX = None):
 def ukCrraAgeing(commonX = None):
     r""" Table \ref{table:UK:CRRA:ageing} (online appendix): mild and acute ageing on the UK host. """
     return _crraTable('UK_CRRA_Ageing',
-                      'Does CRRA matter for the effect of ageing in the UK -- {}'
+                      'The effect of ageing across the IES, the UK, {}'
                       .format(C.usCalendar('UK')['year0']), 'table:UK:CRRA:ageing',
                       [('Mild ageing', 'Mild ageing'), ('Acute ageing', 'Acute ageing')],
                       commonX = commonX, host = C.US['ukHost'])
@@ -279,15 +289,16 @@ def ukCrraAgeing(commonX = None):
 def ukCrraOtherShocks(commonX = None):
     r""" Table \ref{table:UK:CRRA:otherShocks}: the UK-host counterpart. """
     return _crraTable('UK_CRRA_OtherShocks',
-                      'Does CRRA matter for French characteristics imposed on the UK -- {}'
-                      .format(C.usCalendar('UK')['year0']), 'table:UK:CRRA:otherShocks',
-                      [('Income distribution', 'Income distribution'), ('Voting', 'Voting')],
+                      'French characteristics imposed on the UK across the IES, {}'
+                      .format(C.usCalendar('UK')['year0']), 'table:UK:CRRA:otherShocks', FRENCHROWS,
                       commonX = commonX, host = C.US['ukHost'])
 
 
 # ---------------------------------------------------------------------------------------------------
-COUNTRYNAME = {'US': 'US', 'UK': 'UK', 'FR': 'France', 'FRUK': 'France, UK income groups',
-               'UKUS': 'UK, US income groups'}
+# LaTeX: column headers, captions, block titles. figuresOA draws the US, UK and FR entries as plain text.
+COUNTRYNAME = {'US': 'U.S.', 'UK': 'UK', 'FR': 'France', 'FRUK': 'France, UK income groups',
+               'UKUS': r'UK, U.S.\ income groups'}
+CAPTIONNAME = dict(COUNTRYNAME, US = 'the U.S.')    # "Household heterogeneity -- the U.S."
 
 
 def usukfrCalibration(commonX = None):
@@ -336,7 +347,7 @@ def usukfrCalibration(commonX = None):
             lambda r: C.num(r['ηHηL'])),
         r'\midrule',
         # Not "imposed on the other two" as well: the note says so, and the cell then fits one line.
-        shared('beta', r'$\beta$', '30-year interest rate (US)', 'β'),
+        shared('beta', r'$\beta$', '30-year interest rate (U.S.)', 'β'),
         shared('rho', r'$\rho$', 'Log-GHH preferences', 'ρ', fmt = '{:g}'.format),
         shared('xi', r'$\xi$', 'Frisch elasticity of labor supply', 'ξ'),
         shared('alpha', r'$\alpha$', 'Capital income share', 'α'),
@@ -346,13 +357,13 @@ def usukfrCalibration(commonX = None):
     # The one note that spells the variant out; every other US table points here (config.variantNote).
     note = (r'\item \textit{Note:} $X$ is the '
             r'population-weighted mean of $X_i$; its level is the hours unit, pinned for France and the '
-            r'UK by targeting average hours relative to the US rather than in levels. The lower panel is '
-            r'common to the three countries; $\beta$ is calibrated for the US and imposed on the other two.'
+            r'UK by targeting average hours relative to the U.S.\ rather than in levels. The lower panel is '
+            r'common to the three countries; $\beta$ is calibrated for the U.S.\ and imposed on the other two.'
             + C.variantNote(commonX, full = True))
     return (BANNER.format(name = 'USUKFRCalibration' + C.variantSuffix(commonX),
                           src = 'results/paper/usCalibrationSummary.csv')
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
-            + '\\caption{Calibration, US, UK, and France' + C.variantCaption(commonX) + '}\n'
+            + '\\caption{Calibration, the U.S., the UK and France' + C.variantCaption(commonX) + '}\n'
             + '\\label{table:US:Calib' + C.variantSuffix(commonX) + '}\n'
             + '\\renewcommand{\\arraystretch}{1.3}\n'
             + '\\begin{tabularx}{\\textwidth}{l' + rule + 'C{1.4cm}'*len(cols) + rule
@@ -382,7 +393,7 @@ def _householdHeterogeneity(country, name, label, commonX = None):
     return (BANNER.format(name = name + C.variantSuffix(commonX),
                           src = 'results/paper/usCalibrationSummary.csv')
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
-            + '\\caption{Household heterogeneity -- ' + COUNTRYNAME[country]
+            + '\\caption{Household heterogeneity -- ' + CAPTIONNAME[country]
             + C.variantCaption(commonX) + '}\n'
             + '\\label{' + label + C.variantSuffix(commonX) + '}\n'
             + '\\renewcommand{\\arraystretch}{1.5}\n'
@@ -426,7 +437,7 @@ def ukusHouseholdHeterogeneity(commonX = None):
 # is itself an outcome (python/US/runESC.py's shocks stage).
 # ---------------------------------------------------------------------------------------------------
 ESCHEAD = [r'\textbf{Scenario}', r'\textbf{CRRA} ($\rho$)', r'$\bm{\theta}$ \textbf{(2020)}',
-           r'\textbf{Tax rate}', r'\textbf{Savings rate}', r'\textbf{Avg. workweek}']
+           r'\textbf{Tax rate}', r'\textbf{Savings rate}', r'\textbf{Avg. workweek (hours)}']
 
 
 def _escCells(r, base = None):
@@ -453,12 +464,12 @@ def _costSentence(spec = None):
     calibration table for the parameter. """
     spec = C.US['esc']['spec'] if spec is None else spec
     if spec == 'size':
-        return (r'The deadweight cost $f(\theta_t, \tau_t)$ of \eqref{eq:esc:budget} is quadratic in the '
+        return (r'The deadweight cost $f(\theta_t, \tau_t)$ of equation \eqref{eq:esc:budget} is quadratic in the '
                 r'implicit tax the flat component levies and scaled by the size of the system, '
                 r'$f = \exp\{-\tfrac12 \lambda \tau_t \tilde V (1-\theta_t)^2\}$, with $\lambda$ '
                 r'calibrated per $\rho$ (table \ref{table:US_ESC:calibration}).')
     return (r'The proportional deadweight cost $f(\theta) = \phi + (1-\phi)\theta^{p}$ of '
-            r'\eqref{eq:esc:budget}, with $\phi = ' + C.num(C.US['esc']['phi'], 1) + r'$ imposed and $p$ '
+            r'equation \eqref{eq:esc:budget}, with $\phi = ' + C.num(C.US['esc']['phi'], 1) + r'$ imposed and $p$ '
             r'calibrated per $\rho$ (table \ref{table:US_ESC:calibration}).')
 
 
@@ -507,7 +518,7 @@ def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False,
                 r'electorate re-elects its observed design $\theta^{\ast} = '
                 + C.num(float(cal[C.US['ρBaseline']]['θStar']), 3) + r'$: $' + sym + ' = '
                 + ', '.join(C.num(float(cal[ρ]['p']), 3) for ρ in ρs) + r'$ at $\rho = '
-                + ', '.join(C.num(ρ, 1) for ρ in ρs) + r'$, with $\beta$ imposed from the US and $\omega$ '
+                + ', '.join(C.num(ρ, 1) for ρ in ρs) + r'$, with $\beta$ imposed from the U.S.\ and $\omega$ '
                 r'recalibrated at each trial value. France\textquotesingle s income groups are cut at the '
                 r'UK\textquotesingle s own income percentiles (table \ref{table:a_US:CalibFRUK}).')
     else:
@@ -516,9 +527,8 @@ def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False,
                 + r'}.')
     note += extraNote + C.variantNote(C.US['commonX'])
     if france:
-        hostName = HOSTNAME[host] if HOSTNAME[host].startswith('the ') else 'the ' + HOSTNAME[host]
         note += (r" The France row is France's own calibrated path rather than a counterfactual on "
-                 + hostName + r' model: it carries France\textquotesingle s own $\omega$ as well as its '
+                 + _sp(HOSTNAME[host]) + r'model: it carries France\textquotesingle s own $\omega$ as well as its '
                  r'characteristics, and its workweek is a calibration target rather than a prediction.')
     return _xwrap(name, df.attrs['source'], caption, label, 'p{2.6cm}YYYYY',
                   ESCHEAD, '\n'.join(out), note, width = r'\textwidth')
@@ -527,7 +537,7 @@ def _escTable(name, scenarioKey, caption, label, extraNote = '', france = False,
 def escAgeing():
     r""" Table \ref{table:US_ESC:ageing}. """
     return _escTable('US_ESC_Ageing', 'acute',
-                     'Endogenous design and ' + LQ + 'acute ageing' + RQ + ' in US',
+                     'Endogenous design and ' + LQ + 'acute ageing' + RQ + ' in the U.S.',
                      'table:US_ESC:ageing',
                      r' The ' + LQ + 'acute ageing' + RQ + r' scenario sets $\nu_t = 1$ throughout.',
                      anchor = True)
@@ -536,14 +546,14 @@ def escAgeing():
 def escIncomeDistr():
     r""" Table \ref{table:US_ESC:incomeDistr}. """
     return _escTable('US_ESC_IncomeDistr', 'frIncome',
-                     'Endogenous design and the French income distribution in US',
+                     'Endogenous design and the French income distribution in the U.S.',
                      'table:US_ESC:incomeDistr', france = True)
 
 
 def escVoting():
     r""" Table \ref{table:US_ESC:voting}. """
     return _escTable('US_ESC_Voting', 'frVoting',
-                     'Endogenous design and French voting patterns in US',
+                     'Endogenous design and French voting patterns in the U.S.',
                      'table:US_ESC:voting', france = True)
 
 
@@ -554,9 +564,9 @@ def escFrenchAll():
     feature does; this one asks how far the observable characteristics take the US towards France, and
     the France row says how much is left over for the political weight and the design. """
     return _escTable('US_ESC_FrenchAll', 'frAll',
-                     'Endogenous design and all French characteristics in US',
+                     'Endogenous design and all French characteristics in the U.S.',
                      'table:US_ESC:frenchAll',
-                     r' The scenario replaces the US $\eta_i$, the level of $X_i$ and the voting weights '
+                     r' The scenario replaces the U.S.\ $\eta_i$, the level of $X_i$ and the voting weights '
                      r'$\mu_i$ with France\textquotesingle s simultaneously.', france = True)
 
 
@@ -611,7 +621,7 @@ def escCalibrationTable(spec = None):
                          r'$f(\theta^{\ast})$', '$f(0)$', r'$\tilde V$'])
     if spec == 'size':
         form = (r'$f(\theta, \tau) = \exp\{-\tfrac12 \lambda \tau \tilde V (1-\theta)^2\}$ with '
-                r'$\tilde V = \sum_i \gamma_i (y_i - 1)^2 / y_i$ the dispersion of relative labour '
+                r'$\tilde V = \sum_i \gamma_i (y_i - 1)^2 / y_i$ the dispersion of relative labor '
                 r'incomes; $f(\theta^{\ast})$ and $f(0)$ are read at the 2020 tax rate, so $1 - f$ is the '
                 r'share of revenue lost at the observed design and at a flat benefit')
     else:
@@ -623,12 +633,12 @@ def escCalibrationTable(spec = None):
             r'data\textquotesingle s own. Without the cost the choice would be in the corner $\theta = 0$ '
             r'for every $\rho$.' + C.variantNote(C.US['commonX']))
     return _xwrap('US_ESC_Calibration', 'results/esc/escCalibration{,CRRA}.csv',
-                  'The calibrated cost of redistributive funds',
+                  'The calibrated cost of redistribution',
                   'table:US_ESC:calibration', 'YYYYYY', header, '\n'.join(rows), note)
 
 
 # escCountry.csv's economy keys, in the order the table prints them, their labels and row keys.
-COUNTRYROWS = (('UK', 'UK', 'gbr'), ('FR', 'France', 'fra'), ('UKUS', 'UK at US income groups', 'ukus'))
+COUNTRYROWS = (('UK', 'UK', 'gbr'), ('FR', 'France', 'fra'), ('UKUS', r'UK at U.S.\ income groups', 'ukus'))
 
 
 def escCountryTable(spec = None):
@@ -658,7 +668,7 @@ def escCountryTable(spec = None):
         rows.append(keyed(' & '.join(cells) + r' \\', rk))
     pUS = float(us.iloc[-1]['p'])
     header = [r'\textbf{Economy}', r'$\theta^{\ast}$ \textbf{observed}', r'\textbf{Tax rate}',
-              r'$\theta$ \textbf{chosen, US} $' + sym + '$', r'\textbf{Own} $' + sym + '$'] \
+              r'$\theta$ \textbf{chosen, U.S.} $' + sym + '$', r'\textbf{Own} $' + sym + '$'] \
              + ([r'$\tilde V$'] if hasV else [])
     if spec == 'size':
         gap = (r' No finite $\lambda$ makes France re-elect its observed design: it is the corner '
@@ -667,14 +677,14 @@ def escCountryTable(spec = None):
     else:
         gap = (r' No finite $p$ makes France re-elect its observed design, the corner $\theta = 1$.')
     note = (r'\textit{Note:} ' + _costSentence(spec) + r' Each economy is its own calibration at $\rho = 1$ '
-            r'($\beta$ imposed from the US, $\omega$ its own; table \ref{table:US:Calib}); the UK at US '
-            r'income groups is the UK workbook regrouped at the US income percentiles. ' + LQ + 'Chosen' + RQ
+            r'($\beta$ imposed from the U.S., $\omega$ its own; table \ref{table:US:Calib}); the UK at U.S.\ '
+            r'income groups is the UK workbook regrouped at the U.S.\ income percentiles. ' + LQ + 'Chosen' + RQ
             + r' is the design in force in 2020 on the economy\textquotesingle s own freely simulated path '
-            r'under the US parameter $' + sym + ' = ' + C.num(pUS, 3) + r'$, to be read against the observed '
+            r'under the U.S.\ parameter $' + sym + ' = ' + C.num(pUS, 3) + r'$, to be read against the observed '
             r'one; ' + LQ + 'own' + RQ + r' is the value at which that path re-elects the observed design, '
             r'with $\omega$ recalibrated at each trial value.' + gap + C.variantNote(C.US['commonX']))
     return _xwrap('US_ESC_Country', 'results/esc/escCountry.csv',
-                  'The UK and France under the US cost of redistribution',
+                  r'The UK and France under the U.S.\ cost of redistribution',
                   'table:US_ESC:country', 'l' + 'Y'*(len(header) - 1), header, '\n'.join(rows), note,
                   width = r'\textwidth')
 
@@ -722,7 +732,7 @@ def escScaleWedge():
               r'\cmidrule(lr){3-6}\cmidrule(lr){7-9}' + '\n'
               r'\textbf{Cost on} & \textbf{CRRA} ($\rho$) & $\lambda$, $p$ & $\theta^{\ast}$ & '
               r'$f(\theta^{\ast})$ & $f(0)$ & ' + ' & '.join(r'\textbf{' + h + '}' for _, h in SPECCOLUMNS))
-    note = (r'\textit{Note:} Two specifications of the deadweight cost $f$ of \eqref{eq:esc:budget}, each '
+    note = (r'\textit{Note:} Two specifications of the deadweight cost $f$ of equation \eqref{eq:esc:budget}, each '
             r'with one parameter calibrated per $\rho$ so that the design in force in 2020 is the observed '
             r'$\theta^{\ast}$, with $(\beta, \omega)$ recalibrated at each trial value. The cost on '
             r'redistribution is that of table \ref{table:US_ESC:calibration}, $f(\theta, \tau) = '
@@ -769,15 +779,15 @@ def ukEscCalibrationTable(spec = None):
     usNote = ''
     if not us.empty:
         u = us.iloc[-1]
-        usNote = (r' With the US wedge imposed instead ($p = ' + C.num(float(u['p']), 3)
-                  + r'$, Table~\ref{table:US_ESC:calibration}) the UK electorate\textquotesingle s choice is '
+        usNote = (r' With the U.S.\ wedge imposed instead ($p = ' + C.num(float(u['p']), 3)
+                  + r'$, table~\ref{table:US_ESC:calibration}) the UK electorate\textquotesingle s choice is '
                   r'$\theta = ' + C.num(float(u['choice']), 3) + '$.')
-    note = (r'\item \textit{Note:} As Table~\ref{table:US_ESC:calibration}, for the UK model: '
+    note = (r'\item \textit{Note:} As table~\ref{table:US_ESC:calibration}, for the UK model: '
             r'$f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = ' + C.num(φ, 1) + r'$ imposed, $\beta$ '
-            r'imposed from the US calibration at the same $\rho$, and $p$ calibrated so that the UK '
+            r'imposed from the U.S.\ calibration at the same $\rho$, and $p$ calibrated so that the UK '
             r'electorate re-elects the UK\textquotesingle s observed design $\theta^{\ast}$, with $\omega$ '
             r'recalibrated at each trial value. Only $\rho = 1$ has been run for the UK.' + usNote
             + C.variantNote(C.US['commonX']))
     return _xwrap('UK_ESC_Calibration', 'results/esc/escCountry.csv',
-                  'The calibrated cost of redistributive funds in the UK',
+                  'The calibrated cost of redistribution in the UK',
                   'table:UK_ESC:calibration', 'YYYY', header, '\n'.join(rows), note)

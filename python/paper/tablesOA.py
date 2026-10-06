@@ -103,7 +103,7 @@ def oecdCountries():
     cols = []                                         # (header, csv column, formatter)
     for role in ROLES:
         c = F1.PLOT[role]
-        cols.append((r'\textbf{' + _tex(F1.LABEL[c]) + '}', c, ROLEFMT[role]))
+        cols.append((r'\textbf{' + _tex(_varLabel(role, c)) + '}', c, ROLEFMT[role]))
         if c + '_year' in df.columns:
             cols.append((r'\textbf{Year}', c + '_year', lambda v: str(int(round(float(v))))))
     lines = []
@@ -112,14 +112,30 @@ def oecdCountries():
         if iso in F1.HIGHLIGHT:
             name = r'\textbf{' + name + '}'
         lines.append(_row([name] + [_dash(r[c], f) for _, c, f in cols], _keyOf(iso)))
-    note = (r'\textit{Note:} The ' + str(len(df)) + r' OECD members of the introduction' + "'" + r's '
-            r'footnote, as plotted in figure \ref{fig:US:OECDdata}. Each variable is read in ' + str(F1.YEAR)
+    note = (r'\textit{Note:} The ' + str(len(df)) + r' OECD members plotted in figure '
+            r'\ref{fig:US:OECDdata}. Each variable is read in ' + str(F1.YEAR)
             + r' or the nearest year within ' + str(F1.WINDOW) + r' years of it (the year columns); population '
             r'growth is the population of ' + str(F1.YEAR) + r' over that of ' + str(F1.BASE) + r'. Sources in '
             r'table \ref{' + _label('OECD_Sources') + r'}. In bold the economies the paper calibrates.')
-    return _xwrap('OECD_Countries', 'data/oecdFigure1.csv', 'The cross-section of figure 1, by country',
+    return _xwrap('OECD_Countries', 'data/oecdFigure1.csv', r'The cross-section of figure \ref{fig:US:OECDdata}, by country',
                   _label('OECD_Countries'), 'l' + 'Y'*len(cols), ['\\textbf{Country}'] + [h for h, _, _ in cols],
                   _body(lines), note, width = r'\textwidth')
+
+
+# The tables' name of a variable where it is not oecdFigure1.LABEL's: the index is the ratio of replacement
+# rates, not the calibrated theta of the models.
+VARLABEL = {'index': 'Bismarckian--Beveridgean index'}
+EPS = re.compile(r'\bEPS\b|eps_')
+
+
+def _varLabel(role, column):
+    return VARLABEL.get(role, F1.LABEL[column])
+
+
+def _withoutEPS(note):
+    """ A sources note without its sentences on the figure's previous version (the EPS and its eps_* readings),
+    which data/README.md documents. """
+    return ' '.join(s for s in re.split(r'(?<=\.)\s+(?=[A-Z])', str(note)) if not EPS.search(s))
 
 
 def _plottedColumns():
@@ -133,10 +149,11 @@ def oecdSources():
     entries whose columns figure 1 draws come first. URLs are in the csv, not printed. Rows keyed on the
     entry's first column. """
     src = D.oecdFigure1Sources()
+    src = src[[not all(c.strip().startswith('eps_') for c in s.split(',')) for s in src['column']]]
     plotted = _plottedColumns()
     first = lambda s: s.split(',')[0].strip()
     drawn = [any(c.strip() in plotted for c in s.split(',')) for s in src['column']]
-    blocks = [('Plotted in figure 1', src[drawn]),
+    blocks = [('Plotted in the figure of the paper', src[drawn]),
               ('Further concepts in data/oecdFigure1.csv', src[[not d for d in drawn]])]
     lines = []
     for title, sub in blocks:
@@ -147,51 +164,41 @@ def oecdSources():
             source = '; '.join(_tex(x) for x in (r['provider'] + ': ' + r['dataset'], r['vintage'],
                                                   ('retrieved ' + r['retrieved']) if r['retrieved'] else '') if x)
             series = _tex(r['series']) + ('. Years: ' + _tex(r['years']) if r['years'] else '')
-            lines.append(_row([_tex(r['column']), source, series, _tex(r['note']) or '--'],
+            lines.append(_row([_tex(r['column']), source, series, _tex(_withoutEPS(r['note'])) or '--'],
                               _keyOf(first(r['column']))))
     note = (r'\textit{Note:} The columns are those of data/oecdFigure1.csv; data/oecdFigure1\_sources.csv '
-            r'carries the URL of every source. ' + LQ + 'EPS' + RQ + r' is the previous version of figure '
-            r'\ref{fig:US:OECDdata}, whose markers were read back to identify the concepts it plotted.')
+            r'carries the URL of every source.')
     rag = r'>{\raggedright\arraybackslash}'
-    text = _xwrap('OECD_Sources', 'data/oecdFigure1_sources.csv', 'The sources of figure 1',
+    text = _xwrap('OECD_Sources', 'data/oecdFigure1_sources.csv', r'The sources of figure \ref{fig:US:OECDdata}',
                   _label('OECD_Sources'), rag + 'p{3.8cm}' + (rag + 'X')*3,
                   [r'\textbf{Columns}', r'\textbf{Source}', r'\textbf{Series and years}', r'\textbf{Note}'],
                   _body(lines), note, width = r'\textwidth')
     return text.replace('\\centering\n', '\\centering\n\\footnotesize\n', 1)
 
 
-ROLENAME = {'spending': 'Pension spending', 'growth': 'Population growth', 'index': 'Bismarckian index',
-            'gini': 'Gini'}
-CORRVARIANTS = (('named', 'Concepts the introduction' + "'" + 's footnote names', 'NAMED'),
-                ('asEPS', 'Concepts that reproduce the previous version of the figure', 'AS_EPS'),
-                ('epsReadings', 'Values read off the previous version of the figure', 'EPSCOL'))
-
-
 def oecdCorrelations():
-    r""" The pairwise correlations of figure 1's variables (results/paper/oecdCorrelations.csv, written by the
-    OECDdata build), one block per concept set with the plotted one marked: n, Pearson's r and Spearman's
-    rank correlation with their p-values. Rows keyed `<variant>_<x role>_<y role>`. """
+    r""" The pairwise correlations of figure 1's variables in the concepts it plots (results/paper/
+    oecdCorrelations.csv, written by the OECDdata build, variant 'named' = oecdFigure1.NAMED): n, Pearson's r
+    and Spearman's rank correlation with their p-values. The csv's other concept sets, those of the figure's
+    previous version, are not printed (data/README.md). Rows keyed `named_<x role>_<y role>`. """
+    if F1.PLOT != F1.NAMED:
+        raise ValueError('OECD_Correlations prints the named concepts, and figure 1 no longer plots them')
     df = D.oecdCorrelations()
-    lines = []
-    for variant, title, attr in CORRVARIANTS:
-        sub = df[df['variant'] == variant]
-        if sub.empty:
-            continue
-        cols = getattr(F1, attr)
-        role = {v: k for k, v in cols.items()}
-        # the previous figure's readings have no source concept (its Gini matches none): name the variable
-        label = lambda c: _tex(F1.LABEL[c]) if c in F1.LABEL else ROLENAME[role[c]] + ' as plotted there'
-        lines.append(_title(_tex(title) + (' (plotted)' if cols == F1.PLOT else ''), 6))
-        for _, r in sub.iterrows():
-            p = lambda v: r'$<0.001$' if float(v) < 0.0005 else C.num(float(v), 3)
-            lines.append(_row([label(r['x']) + ' and ' + label(r['y']), str(int(r['n'])),
-                               '$' + C.num(float(r['pearson']), 2) + '$', p(r['pearson_p']),
-                               '$' + C.num(float(r['spearman']), 2) + '$', p(r['spearman_p'])],
-                              _keyOf(variant) + '_' + role[r['x']] + '_' + role[r['y']]))
-    note = (r'\textit{Note:} Pairwise complete observations; the $p$-values are those of the two-sided tests of '
-            r'zero correlation. Variables as in table \ref{' + _label('OECD_Countries') + r'} and their sources '
-            r'in table \ref{' + _label('OECD_Sources') + '}.')
-    return _xwrap('OECD_Correlations', 'results/paper/oecdCorrelations.csv', 'Correlations in the cross-section of figure 1',
+    sub = df[df['variant'] == 'named']
+    if sub.empty:
+        raise D.MissingInput('results/paper/oecdCorrelations.csv (variant named)')
+    role = {v: k for k, v in F1.NAMED.items()}
+    label = lambda c: _tex(_varLabel(role[c], c))
+    p = lambda v: r'$<0.001$' if float(v) < 0.0005 else C.num(float(v), 3)
+    lines = [_row([label(r['x']) + ' and ' + label(r['y']), str(int(r['n'])),
+                   '$' + C.num(float(r['pearson']), 2) + '$', p(r['pearson_p']),
+                   '$' + C.num(float(r['spearman']), 2) + '$', p(r['spearman_p'])],
+                  'named_' + role[r['x']] + '_' + role[r['y']]) for _, r in sub.iterrows()]
+    note = (r'\textit{Note:} The concepts plotted in figure \ref{fig:US:OECDdata}. Pairwise complete '
+            r'observations; the $p$-values are those of the two-sided tests of zero correlation. Variables as in '
+            r'table \ref{' + _label('OECD_Countries') + r'} and their sources in table \ref{'
+            + _label('OECD_Sources') + '}.')
+    return _xwrap('OECD_Correlations', 'results/paper/oecdCorrelations.csv', r'Correlations in the cross-section of figure \ref{fig:US:OECDdata}',
                   _label('OECD_Correlations'), r'>{\raggedright\arraybackslash}p{6.4cm}YYYYY',
                   [r'\textbf{Variables}', '$n$', r'\textbf{Pearson} $r$', '$p$', r'\textbf{Spearman}', '$p$'],
                   _body(lines), note, width = r'\textwidth')
@@ -335,16 +342,16 @@ def oecdRhoGridTable(commonX = None):
                               key + '@' + _rhoKey(r['ρ'])))
         lines[-1] = lines[-1].replace(r' \\ % row:', r' \\[.5em] % row:')
     year = C.usCalendar()['year0']
-    note = (r'\textit{Note:} $\beta$ is calibrated for the US, to its interest factor $R$, and imposed on the '
+    note = (r'\textit{Note:} $\beta$ is calibrated for the U.S., to its interest factor $R$, and imposed on the '
             r'UK and France at the same $\rho$; their $R$ is a prediction. $\omega$ is calibrated to each '
             r'country\textquotesingle s tax rate in ' + str(year) + r'. '
-            + (r'$X$ is pinned by the US average workweek and by average hours relative to the US. ' if commonX
+            + (r'$X$ is pinned by the U.S.\ average workweek and by average hours relative to the U.S. ' if commonX
                else r'The vector-$X_i$ calibration has no common $X$. ')
             + r'The savings rate is savings relative to GDP in ' + str(year) + r', a prediction. The calibration '
             r'at $\rho = ' + C.num(C.US['ρBaseline'], 0) + r'$ is table \ref{table:US:Calib' + sfx + '}.'
             + C.variantNote(commonX))
     return _xwrap('OECD_RhoGridTable' + sfx, 'results/calibration/{US,UK,FR}_rhoGrid%s.csv' % ('CommonX' if commonX else ''),
-                  r'The calibration across $\rho$: US, UK and France' + C.variantCaption(commonX),
+                  r'The calibration across $\rho$: the U.S., the UK and France' + C.variantCaption(commonX),
                   _label('OECD_RhoGridTable' + sfx), 'Y'*(1 + len(OECDRHOCOLS)),
                   [r'\textbf{CRRA} ($\rho$)'] + [h for _, h, _ in OECDRHOCOLS], _body(lines), note)
 
@@ -534,8 +541,8 @@ def escTiming():
     same = all(abs(float(r['θPerm']) - float(r['θPermIncumbent'])) < 1e-9 for _, r in rows)
     dates = sorted(int(d) for d in seq['date'].unique())
     note = (r'\textit{Note:} No cost of redistribution; $\rho = ' + C.num(ρLOG, 0) + r'$ is log preferences. '
-            r'With the tax: the largest value of the marginal effect \eqref{eq:esc:seqFOC} of the design on the '
-            r'political objective, over a grid of $\theta_t$ on $[0,1]$ and the dates ' + str(dates[0]) + '--'
+            r'With the tax: the largest value of the marginal effect of the design on the political objective, '
+            r'equation \eqref{eq:esc:seqFOC}, over a grid of $\theta_t$ on $[0,1]$ and the dates ' + str(dates[0]) + '--'
             + str(dates[-1]) + r' of the baseline path'
             + (r'; it is negative everywhere, so the choice is the corner $\theta_t = 0$ at every date. '
                if bool(isTrue(seq['negative']).all()) else '. ')
@@ -601,7 +608,7 @@ def numStationary():
             r'each solved at its own date' + "'" + r's $\nu_t$ and applied from the same initial state, minus '
             r'the date-specific policy of the paper' + "'" + r's solution: the tax rate in percentage points, '
             r'the chosen design in units of $\theta$. Under log preferences ($\rho = 1$) with the design given '
-            r'the two coincide and the U.S. block has no row. The design chosen is at the paper' + "'" + r's cost '
+            r'the two coincide and the U.S.\ block has no row. The design chosen is at the paper' + "'" + r's cost '
             r'specification. The terminal period of the finite horizon is not shown; the last period shown '
             r'carries the date-specific solution\textquotesingle s approach to it (appendix \ref{app:T}) rather '
             r'than the demographic transition.')
@@ -626,7 +633,7 @@ def numSelection():
     num = lambda v: '--' if v is None else str(v)
     fname = lambda lab, n: _tex(lab) + ('' if n == 1 else r' (' + str(n) + ' files)')
     lines = []
-    for arm, title in (('ARG', 'Tax rule: Argentina'), ('US', 'Tax rule: US, UK and France')):
+    for arm, title in (('ARG', 'Tax rule: Argentina'), ('US', 'Tax rule: the U.S., the UK and France')):
         lines.append(_title(title, 6))
         for a, lab, ps in entries:
             if a != arm:
@@ -644,12 +651,16 @@ def numSelection():
                            num(s['candMax']), num(s['fallbacks'])], 'design_' + _fileKey(lab)))
     note = (r'\textit{Note:} Per csv, the rows, the rows that record the counts, and over those the largest '
             r'number of equilibria at any state and period, the largest number of candidates and the total number '
-            r'of states where no candidate passed the equilibrium test and the fallback was used. The tax rule '
-            r'is the selection of the technical documentation; a solve that does not select a tax (the '
+            r'of states at which the solver fell back. The tax rule is the selection of the technical '
+            r'documentation, which falls back on the tax that maximizes its integral criterion where no '
+            r'candidate passes the equilibrium test; a solve that does not select a tax (the '
             r'economic-equilibrium paths, with taxes held at the baseline path) or did not record its counts '
-            r'leaves them out. The design layer is the frozen comparison of the exact recursion under CRRA '
-            r'preferences, whose candidates are the brackets of its consistency residual. The endogenous-design '
-            r'counterfactuals are counted in the files escExperiments.csv and escExperimentsUK.csv merge.')
+            r'leaves them out. The design layer is that of the exact recursion under CRRA preferences, which '
+            r'compares the candidate designs with the retirees\textquotesingle{} savings shares held fixed and '
+            r'then makes the shares consistent: its candidates are the brackets of that consistency residual, and '
+            r'where none closes to an equilibrium it falls back on comparing each design at its own consistent '
+            r'shares. escExperiments.csv and escExperimentsUK.csv, which the endogenous-design exhibits read, '
+            r'merge the escShocks* files, whose counts are the rows above.')
     return _xwrap('NUM_Selection', 'results/{calibration,shocks,sweeps,esc,numerical}/*.csv',
                   'Equilibrium counts in the results the exhibits read', _label('NUM_Selection'),
                   r'>{\raggedright\arraybackslash}p{5.4cm}YYYYY',

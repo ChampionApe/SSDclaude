@@ -38,6 +38,13 @@ numbers.
   exhibit is and how to read it; mechanisms stay in the paper.
 - Which group shows which exhibit is the registry in `python/paper/onlineAppendix.py`; an exhibit the paper
   inputs is detected from the paper's tex, never declared.
+- A sentence that only makes sense on the site (point at, click, the browser's address, the sidebar's download)
+  is wrapped in `[...]{.content-visible when-format="html"}` (a `:::` div for a paragraph); the print edition has
+  its own reading guide in `index.qmd` under `when-format="pdf"`.
+- An exhibit the paper no longer inputs needs a `caption` and a `note` in the registry (its tex no longer supplies
+  them); the site adds the "Note:" label to a registry note, the print edition adds its own. A note that points at
+  the section it is shown in ("Online Appendix OA.3.4" inside OA.3.4) renders as "this section" in both editions;
+  the paper keeps the pointer.
 - Publishing is RKB's call: the site is meant for `https://championape.github.io/SSDclaude`
   (`quarto publish gh-pages`; GitHub Pages is not enabled yet). MathJax loads from its CDN, so an offline
   archive would need it vendored.

@@ -86,7 +86,6 @@ MARKUNIT = {'τ': ('tau', 'p.p.'), 'srOverY': ('sr', 'p.p. of GDP'), 'workweek':
 # The CRRA table printing each shock family of OVERVIEW at every rho of config.US['ρTable'], after the
 # host's name (_shockTable).
 CRRATABLE = {'design': '_CRRA_PensChars', 'ageing': '_CRRA_Ageing', 'french': '_CRRA_OtherShocks'}
-NOTABLERHO = ' (no table at this ρ)'
 
 
 def _rhoPart(ρ):
@@ -98,15 +97,9 @@ def _markText(v, unit):
 
 
 def _shockTable(host, fam, scenario, ρ, sfx):
-    r""" (table, row key) of the table printing `scenario` of family `fam` on `host` at `ρ`, or (None,
-    None). The CRRA tables print every family at every rho except two French rows: leisure and all three
-    characteristics are in the host's LOG table only, at rho = 1. """
-    key = ROWKEY[scenario]
-    if fam != 'french' or key in ('income', 'voting'):
-        return host + CRRATABLE[fam] + sfx, rowKey(key, ρ)
-    if np.isclose(ρ, C.US['ρBaseline']):
-        return host + '_OtherShocks' + sfx, key
-    return None, None
+    r""" (table, row key) of the table printing `scenario` of family `fam` on `host` at `ρ`: the host's CRRA
+    table of the family, which prints every scenario of OVERVIEW and FRENCH at every rho. """
+    return host + CRRATABLE[fam] + sfx, rowKey(ROWKEY[scenario], ρ)
 
 
 def _tint(colour):
@@ -249,7 +242,7 @@ def usOverview(commonX = None):
                 gs = [markId(name, ROWKEY[s], _rhoPart(ρ), part) for s, _ in scen]
                 for (s, lab), v, g in zip(scen, vs, gs):
                     tab, rk = _shockTable('US', fam, s, ρ, sfx)
-                    marks.append(mark(g, plain(lab) + ('' if tab else NOTABLERHO), v, _markText(v, unit),
+                    marks.append(mark(g, plain(lab), v, _markText(v, unit),
                                       series = 'ρ = ' + C.num(ρ, 1), panel = title, table = tab, row = rk))
                 vals.append(tuple(vs) if len(vs) > 1 else vs[0])
                 ids.append(tuple(gs) if len(gs) > 1 else gs[0])
@@ -267,19 +260,23 @@ def usOverview(commonX = None):
 # ---------------------------------------------------------------------------------------------------
 # The counterfactual set the appendix runs, in the same order as the main-text figure where the two
 # overlap. 'mild' is absent: runESCcrra.py's scenario set does not include it, so it exists at rho = 1
-# only and a row of it would be a hole at two thirds of the grid. 'frBoth' has no main-text
-# counterpart: it is the pair whose two halves move the DESIGN in opposite directions, which is why the
-# appendix runs it. 'frAll' is left out: by scale invariance it carries the same design, tax and
-# savings as 'frBoth' and differs only in hours, through France's level of X -- the leisure rescaling
-# the paper no longer reports as a shock of its own ('frLeisure' is likewise run but not drawn).
-ESCSCENARIOS = [('Acute ageing',            'acute'),
-                ('French voting',           'frVoting'),
-                ('French income distr.',    'frIncome'),
-                ('Income distr.\n+ voting', 'frBoth')]
-# The table printing each ESC scenario, per host; 'frBoth' is in none (the all-French row adds leisure).
-ESCTABLE = {'US': {'acute': 'US_ESC_Ageing', 'frIncome': 'US_ESC_IncomeDistr', 'frVoting': 'US_ESC_Voting'},
-            'UK': {'frIncome': 'UK_ESC_IncomeDistr', 'frVoting': 'UK_ESC_Voting'}}
-NOTABLE = ' (no table prints this pair)'
+# only and a row of it would be a hole at two thirds of the grid. The composite, 'French characteristics',
+# is 'frBoth' (France's income distribution and voting patterns at once), the pair whose two halves move the
+# DESIGN in opposite directions. By scale invariance it carries the design, tax and savings of 'frAll', the
+# tables' all-French row, which also imposes France's level of X and so differs in hours alone (the leisure
+# rescaling; 'frLeisure' is run but not drawn).
+ESCSCENARIOS = [('Acute ageing',           'acute'),
+                ('French voting',          'frVoting'),
+                ('French income distr.',   'frIncome'),
+                ('French characteristics', 'frBoth')]
+# The table printing each ESC scenario, per host; 'frBoth' through the all-French rows.
+ESCTABLE = {'US': {'acute': 'US_ESC_Ageing', 'frIncome': 'US_ESC_IncomeDistr', 'frVoting': 'US_ESC_Voting',
+                   'frBoth': 'US_ESC_FrenchAll'},
+            'UK': {'frIncome': 'UK_ESC_IncomeDistr', 'frVoting': 'UK_ESC_Voting', 'frBoth': 'UK_ESC_FrenchAll'}}
+# (scenario, column) a mark must not link to its ESCTABLE row, and the tooltip that says why.
+ESCUNPRINTED = {('frBoth', 'ww_t0'): ' (no table prints this workweek: the all-French rows also impose '
+                                     "France's level of X)"}
+NOTABLE = ' (no table prints this value)'
 
 
 def _capitalShare():
@@ -321,10 +318,11 @@ def _escPairs(name, df, spec, ρs, scen, col, title, scale, level, host = 'US', 
         pairs.append((r'$\rho = ' + C.num(ρ, 1) + '$', vals))
         gids.append([])
         for (lab, s), pv in zip(scen, vals):
-            tab = ESCTABLE[host].get(s)
+            tab = None if (s, col) in ESCUNPRINTED else ESCTABLE[host].get(s)
             ids = [markId(name, *idHost, s, _rhoPart(ρ), part, reading) for reading in ('pinned', 'chosen')]
             gids[-1].append(ids)
-            marks += [mark(g, plain(lab) + ('' if tab else NOTABLE), v, _markText(v, unit),
+            marks += [mark(g, plain(lab) + ('' if tab else ESCUNPRINTED.get((s, col), NOTABLE)), v,
+                           _markText(v, unit),
                            series = 'ρ = {}, θ {}'.format(C.num(ρ, 1), reading), panel = title,
                            table = tab, row = rowKey(reading, ρ) if tab else None)
                       for g, v, reading in zip(ids, pv, ('pinned', 'chosen'))]
@@ -434,7 +432,7 @@ def escOverview():
                for c, ρ in zip(colours, ρs)]
     handles += [Line2D([], [], marker = 'o', linestyle = 'none', markerfacecolor = 'white',
                        markeredgecolor = INK['primary'], markersize = 6,
-                       label = '$\\theta$ pinned at the US design'),
+                       label = '$\\theta$ pinned at the U.S. design'),
                 Line2D([], [], marker = 'o', linestyle = 'none', markerfacecolor = INK['primary'],
                        markeredgecolor = 'white', markersize = 6,
                        label = '$\\theta$ chosen by the electorate')]
@@ -446,11 +444,11 @@ def escOverview():
 # France's characteristics on two hosts, the US and the UK (appendix app:UKUS). One row of panels per
 # host on shared axes per column, so the two hosts are compared by position rather than across figures.
 # ---------------------------------------------------------------------------------------------------
-HOSTS = [('US', 'US'), ('UK', 'UK')]    # (host key, row label)
+HOSTS = [('US', 'U.S.'), ('UK', 'UK')]    # (host key, row label)
 FRENCH = [('French income distr.', 'Income distribution'),
           ('French voting',        'Voting'),
           ('French leisure',       'Leisure preferences'),
-          ('All three',            'All French characteristics')]
+          ('French characteristics', 'All French characteristics')]
 
 
 def _hostRowLabel(ax, text):
@@ -488,7 +486,7 @@ def ukusFrench(commonX = None):
                 gids.append([markId(name, h, ROWKEY[s], _rhoPart(ρ), part) for _, s in scen])
                 for (lab, s), v, g in zip(scen, vals, gids[-1]):
                     tab, rk = _shockTable(h, 'french', s, ρ, sfx)
-                    marks.append(mark(g, plain(lab) + ('' if tab else NOTABLERHO), v,
+                    marks.append(mark(g, plain(lab), v,
                                       _markText(v, unit), series = 'ρ = ' + C.num(ρ, 1),
                                       panel = hostLabel + ': ' + title, table = tab, row = rk))
             _barPanel(ax, title, xlabel if i == len(HOSTS) - 1 else '', labels, series, colours, gids)
@@ -503,7 +501,7 @@ def ukusFrench(commonX = None):
 
 ESCFRENCH = [('French income distr.',    'frIncome'),
              ('French voting',           'frVoting'),
-             ('Income distr.\n+ voting', 'frBoth')]
+             ('French characteristics', 'frBoth')]
 
 
 def ukusEscFrench():
@@ -688,9 +686,8 @@ def robustnessMap():
 
     axes = sfGiven.subplots(1, len(MAPGIVEN), sharey = True)
     for ax, (part, title) in zip(axes, MAPGIVEN):
-        _mapPanel(ax, title, ['U.S.' if h == 'US' else lab for h, lab in HOSTS], givenRows, givenExt)
-        for (h, _), (slots, centre, _) in zip(HOSTS, givenRows):
-            hostLabel = 'U.S.' if h == 'US' else h
+        _mapPanel(ax, title, [lab for _, lab in HOSTS], givenRows, givenExt)
+        for (h, hostLabel), (slots, centre, _) in zip(HOSTS, givenRows):
             if part not in MAPGIVENTABLE[h]:
                 _mapEmpty(ax, centre, 'not reported')
                 continue

@@ -167,8 +167,9 @@ endogenous-design scripts (`python/US/runESC*.py`), and `data/oecdFigure1.csv` b
 
 ## 5. Outside the pipeline
 
-- **Figure 2** (`writing/Paper/Figs/coverageArg.eps`, social security beneficiaries in Argentina) is drawn
-  from Secretaría de Seguridad Social and INDEC series. The data file and the script are not yet in the
+- **Figure 5.1** (`writing/Paper/Figs/coverageArg.eps`, beneficiaries of Argentina's national pension system and of
+  non-contributive old-age pensions) is drawn from Cetrángolo and Grushka (2020), table 6, which reproduces the
+  Boletín Estadístico de la Seguridad Social. The data file and the script are not yet in the
   repository (TODO: add `data/argentinaCoverage.csv` with a Readme row and a builder in `python/paper`).
 - **Numbers quoted from other sources** (pension spending across the OECD, the coverage and spending
   figures of the Argentine reform, replacement rates) are cited where they appear; the calibration

@@ -4,7 +4,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho0.5",
    "label": "ρ = 0.5",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 1.4353620390543371,
    "text": "1.435",
@@ -14,7 +14,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho0.6",
    "label": "ρ = 0.6",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 1.161173696055844,
    "text": "1.161",
@@ -24,7 +24,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho0.7",
    "label": "ρ = 0.7",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.9973561779560508,
    "text": "0.997",
@@ -34,7 +34,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho0.8",
    "label": "ρ = 0.8",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.8902838883438735,
    "text": "0.890",
@@ -44,7 +44,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho0.9",
    "label": "ρ = 0.9",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.8152039468106631,
    "text": "0.815",
@@ -54,7 +54,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.0",
    "label": "ρ = 1.0",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.7606187875474917,
    "text": "0.761",
@@ -64,7 +64,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.1",
    "label": "ρ = 1.1",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.7177450490229625,
    "text": "0.718",
@@ -74,7 +74,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.2",
    "label": "ρ = 1.2",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.6844206255047698,
    "text": "0.684",
@@ -84,7 +84,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.3",
    "label": "ρ = 1.3",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.6575018033009343,
    "text": "0.658",
@@ -94,7 +94,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.4",
    "label": "ρ = 1.4",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.6353015285384522,
    "text": "0.635",
@@ -104,7 +104,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.5",
    "label": "ρ = 1.5",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.6167825598208317,
    "text": "0.617",
@@ -114,7 +114,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.6",
    "label": "ρ = 1.6",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.6009953775826254,
    "text": "0.601",
@@ -124,7 +124,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.7",
    "label": "ρ = 1.7",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.5874857094242014,
    "text": "0.587",
@@ -134,7 +134,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.8",
    "label": "ρ = 1.8",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.5757320616470755,
    "text": "0.576",
@@ -144,7 +144,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho1.9",
    "label": "ρ = 1.9",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.5654344670368524,
    "text": "0.565",
@@ -154,7 +154,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--beta--usa--rho2.0",
    "label": "ρ = 2.0",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Discount factor β",
    "value": 0.5563256288283547,
    "text": "0.556",
@@ -164,7 +164,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho0.5",
    "label": "ρ = 0.5",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 2.3156330145668926,
    "text": "2.316",
@@ -174,7 +174,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho0.6",
    "label": "ρ = 0.6",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.9585620229716452,
    "text": "1.959",
@@ -184,7 +184,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho0.7",
    "label": "ρ = 0.7",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.74651483606693,
    "text": "1.747",
@@ -194,7 +194,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho0.8",
    "label": "ρ = 0.8",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.6085298495466709,
    "text": "1.609",
@@ -204,7 +204,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho0.9",
    "label": "ρ = 0.9",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.512726022248607,
    "text": "1.513",
@@ -214,7 +214,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.0",
    "label": "ρ = 1.0",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.4536273947549907,
    "text": "1.454",
@@ -224,7 +224,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.1",
    "label": "ρ = 1.1",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.3898421231394047,
    "text": "1.390",
@@ -234,7 +234,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.2",
    "label": "ρ = 1.2",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.3483564781985224,
    "text": "1.348",
@@ -244,7 +244,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.3",
    "label": "ρ = 1.3",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.315086067029262,
    "text": "1.315",
@@ -254,7 +254,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.4",
    "label": "ρ = 1.4",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.2877242918886251,
    "text": "1.288",
@@ -264,7 +264,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.5",
    "label": "ρ = 1.5",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.2652123860347029,
    "text": "1.265",
@@ -274,7 +274,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.6",
    "label": "ρ = 1.6",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.2461807293412492,
    "text": "1.246",
@@ -284,7 +284,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.7",
    "label": "ρ = 1.7",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.2300083595131586,
    "text": "1.230",
@@ -294,7 +294,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.8",
    "label": "ρ = 1.8",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.2160687529777403,
    "text": "1.216",
@@ -304,7 +304,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho1.9",
    "label": "ρ = 1.9",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.2040058418746522,
    "text": "1.204",
@@ -314,7 +314,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--omega--usa--rho2.0",
    "label": "ρ = 2.0",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Political weight of the old ω",
    "value": 1.1933935797140762,
    "text": "1.193",
@@ -644,7 +644,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho0.5",
    "label": "ρ = 0.5",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.4429999999999805,
    "text": "2.443",
@@ -654,7 +654,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho0.6",
    "label": "ρ = 0.6",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.4429999999925407,
    "text": "2.443",
@@ -664,7 +664,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho0.7",
    "label": "ρ = 0.7",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.4430000000017955,
    "text": "2.443",
@@ -674,7 +674,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho0.8",
    "label": "ρ = 0.8",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.4430000000001515,
    "text": "2.443",
@@ -684,7 +684,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho0.9",
    "label": "ρ = 0.9",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.4430000000025083,
    "text": "2.443",
@@ -694,7 +694,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho1.0",
    "label": "ρ = 1.0",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.4430000000003025,
    "text": "2.443",
@@ -704,7 +704,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho1.1",
    "label": "ρ = 1.1",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.442999999999815,
    "text": "2.443",
@@ -714,7 +714,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho1.2",
    "label": "ρ = 1.2",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.443000000000058,
    "text": "2.443",
@@ -724,7 +724,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho1.3",
    "label": "ρ = 1.3",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.443000000000122,
    "text": "2.443",
@@ -734,7 +734,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho1.4",
    "label": "ρ = 1.4",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.442999999999897,
    "text": "2.443",
@@ -744,7 +744,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho1.5",
    "label": "ρ = 1.5",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.442999999999994,
    "text": "2.443",
@@ -754,7 +754,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho1.6",
    "label": "ρ = 1.6",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.442999999988809,
    "text": "2.443",
@@ -764,7 +764,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho1.7",
    "label": "ρ = 1.7",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.442999999993325,
    "text": "2.443",
@@ -774,7 +774,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho1.8",
    "label": "ρ = 1.8",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.4429999999907213,
    "text": "2.443",
@@ -784,7 +784,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho1.9",
    "label": "ρ = 1.9",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.442999999983812,
    "text": "2.443",
@@ -794,7 +794,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--R--usa--rho2.0",
    "label": "ρ = 2.0",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Interest factor R, 30 years",
    "value": 2.4429999999929826,
    "text": "2.443",
@@ -1124,7 +1124,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho0.5",
    "label": "ρ = 0.5",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 15.911716082049828,
    "text": "15.91%",
@@ -1134,7 +1134,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho0.6",
    "label": "ρ = 0.6",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 15.78138062241757,
    "text": "15.78%",
@@ -1144,7 +1144,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho0.7",
    "label": "ρ = 0.7",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 15.65711404149882,
    "text": "15.66%",
@@ -1154,7 +1154,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho0.8",
    "label": "ρ = 0.8",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 15.54872416359054,
    "text": "15.55%",
@@ -1164,7 +1164,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho0.9",
    "label": "ρ = 0.9",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 15.45251641146201,
    "text": "15.45%",
@@ -1174,7 +1174,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.0",
    "label": "ρ = 1.0",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 15.373694895582629,
    "text": "15.37%",
@@ -1184,7 +1184,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.1",
    "label": "ρ = 1.1",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 15.2932340635234,
    "text": "15.29%",
@@ -1194,7 +1194,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.2",
    "label": "ρ = 1.2",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 15.22476689519311,
    "text": "15.22%",
@@ -1204,7 +1204,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.3",
    "label": "ρ = 1.3",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 15.16281093921637,
    "text": "15.16%",
@@ -1214,7 +1214,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.4",
    "label": "ρ = 1.4",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 15.105710898193339,
    "text": "15.11%",
@@ -1224,7 +1224,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.5",
    "label": "ρ = 1.5",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 15.05511295068832,
    "text": "15.06%",
@@ -1234,7 +1234,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.6",
    "label": "ρ = 1.6",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 15.007775820304781,
    "text": "15.01%",
@@ -1244,7 +1244,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.7",
    "label": "ρ = 1.7",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 14.96477431828985,
    "text": "14.96%",
@@ -1254,7 +1254,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.8",
    "label": "ρ = 1.8",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 14.9247173803894,
    "text": "14.92%",
@@ -1264,7 +1264,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho1.9",
    "label": "ρ = 1.9",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 14.887459343422641,
    "text": "14.89%",
@@ -1274,7 +1274,7 @@
   {
    "id": "OECD_RhoGrid_vectorX--sr--usa--rho2.0",
    "label": "ρ = 2.0",
-   "series": "US",
+   "series": "U.S.",
    "panel": "Savings rate 2020, % of GDP",
    "value": 14.852586997260689,
    "text": "14.85%",

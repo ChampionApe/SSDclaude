@@ -21,7 +21,7 @@ universal\_match\_rho*.csv (16 files) & 112 & 112 & 1 & 3 & 0 \\ % row: tax_univ
 eeOnly\_match\_rho*.csv (16 files) & 112 & 0 & -- & -- & -- \\ % row: tax_eeonly_match_rho
 epsThetaGrid\_rho1.0000.csv & 378 & 378 & 1 & 3 & 0 \\ % row: tax_epsthetagrid_rho1_0000
 ARG\_stationaryApprox\_commonX.csv & 30 & 30 & 1 & 3 & 0 \\ % row: tax_arg_stationaryapprox_commonx
-\multicolumn{6}{l}{\textit{Tax rule: US, UK and France}} \\
+\multicolumn{6}{l}{\textit{Tax rule: the U.S., the UK and France}} \\
 US\_rhoGridCommonX.csv & 16 & 0 & -- & -- & -- \\ % row: tax_us_rhogridcommonx
 UK\_rhoGridCommonX.csv & 16 & 0 & -- & -- & -- \\ % row: tax_uk_rhogridcommonx
 FR\_rhoGridCommonX.csv & 16 & 0 & -- & -- & -- \\ % row: tax_fr_rhogridcommonx
@@ -58,7 +58,7 @@ escPathCRRA.csv & 48 & 16 & 1 & 1 & 0 \\ % row: design_escpathcrra
 \end{tabularx}
 \begin{tablenotes}[flushleft]
 \footnotesize
-\item[] \textit{Note:} Per csv, the rows, the rows that record the counts, and over those the largest number of equilibria at any state and period, the largest number of candidates and the total number of states where no candidate passed the equilibrium test and the fallback was used. The tax rule is the selection of the technical documentation; a solve that does not select a tax (the economic-equilibrium paths, with taxes held at the baseline path) or did not record its counts leaves them out. The design layer is the frozen comparison of the exact recursion under CRRA preferences, whose candidates are the brackets of its consistency residual. The endogenous-design counterfactuals are counted in the files escExperiments.csv and escExperimentsUK.csv merge.
+\item[] \textit{Note:} Per csv, the rows, the rows that record the counts, and over those the largest number of equilibria at any state and period, the largest number of candidates and the total number of states at which the solver fell back. The tax rule is the selection of the technical documentation, which falls back on the tax that maximizes its integral criterion where no candidate passes the equilibrium test; a solve that does not select a tax (the economic-equilibrium paths, with taxes held at the baseline path) or did not record its counts leaves them out. The design layer is that of the exact recursion under CRRA preferences, which compares the candidate designs with the retirees\textquotesingle{} savings shares held fixed and then makes the shares consistent: its candidates are the brackets of that consistency residual, and where none closes to an equilibrium it falls back on comparing each design at its own consistent shares. escExperiments.csv and escExperimentsUK.csv, which the endogenous-design exhibits read, merge the escShocks* files, whose counts are the rows above.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

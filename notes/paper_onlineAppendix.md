@@ -228,7 +228,19 @@ is RKB's call. A session that drafts the main sections should know:
   against "the share of retirees"; "2.7 million beneficiaries" against the figure's rise of about 2.0; the 2006 sample
   dated before the amnesties while section 5 dates them from 2005; appendix D's "chosen such that 2η¹h¹ = η²h² = h"
   where the workbook matches quartiles 1 and 3 (relative incomes 0.47 and 1.00); section 5's opening sentence and its
-  hand-off, cut in RKB's online edit; an "All three" row in `fig:US:overview`.
+  hand-off, cut in RKB's online edit; an "All three" row in `fig:US:overview`. *Later the same evening*: the 2006
+  timing and the θ-identification sentence are fixed in appendix D; the 2.7 million is Rofman and Apella's (2015)
+  gross count to 2011 and is now cited as such beside the figure's net rise of about 2 million (Cetrángolo and
+  Grushka 2020, table 6, which the figure note now names), the coverage reads "over 90%" in section 5 and the
+  introduction, the 32% is the share of the elderly without a pension (Rofman and Oliveri), the 7.1% is the all-scheme
+  total; the ε and γ₀ mismatches are confirmed and quantified, TODO C8. *The online appendix* was read by a
+  paper-reviewer and revised the same evening (root and paper logs of the date); what it left open: the composite
+  row's workweek marks link to no table (the table's composite also imposes France's X); the OA.3.2 comparison table
+  lists every ρ as a differing row for the ρ-grid tables where the differing columns would read better; the Source
+  blocks show the build step but not the stage that wrote each csv; `data/USMain_test.xlsx` and `ArgentinaTest.xlsx`
+  read as scratch names; the paper's section 6 does not say that a thirty-year β above one is needed at an IES of 0.6
+  or below (the online appendix's OA.2.5 and OA.3.3 now do); publishing to GitHub Pages is still RKB's call, and the
+  paper's introduction now prints the address.
 - **Left for sections 6–8**: TODO W8(a)/(b); the conclusion's "a higher IES changes only the size of the
   earnings-link effect" against section 6, where French voting's effect grows from 0.3 to 1.7 p.p.; section 7 at
   3,708 words against ≈ 2,800 and the conclusion at 504 against ≈ 450. Smaller: section 5 never states the equal

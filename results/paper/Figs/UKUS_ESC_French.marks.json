@@ -5,7 +5,7 @@
    "id": "UKUS_ESC_French--US--frIncome--rho0.5--theta--pinned",
    "label": "French income distr.",
    "series": "ρ = 0.5, θ pinned",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.7382263650417816,
    "text": "0.738",
    "table": "US_ESC_IncomeDistr",
@@ -15,7 +15,7 @@
    "id": "UKUS_ESC_French--US--frIncome--rho0.5--theta--chosen",
    "label": "French income distr.",
    "series": "ρ = 0.5, θ chosen",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.7072190709616772,
    "text": "0.707",
    "table": "US_ESC_IncomeDistr",
@@ -25,7 +25,7 @@
    "id": "UKUS_ESC_French--US--frVoting--rho0.5--theta--pinned",
    "label": "French voting",
    "series": "ρ = 0.5, θ pinned",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.7382263650417816,
    "text": "0.738",
    "table": "US_ESC_Voting",
@@ -35,7 +35,7 @@
    "id": "UKUS_ESC_French--US--frVoting--rho0.5--theta--chosen",
    "label": "French voting",
    "series": "ρ = 0.5, θ chosen",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.6871345872626216,
    "text": "0.687",
    "table": "US_ESC_Voting",
@@ -43,29 +43,29 @@
   },
   {
    "id": "UKUS_ESC_French--US--frBoth--rho0.5--theta--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ pinned",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.7382263650417816,
    "text": "0.738",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@0.5"
   },
   {
    "id": "UKUS_ESC_French--US--frBoth--rho0.5--theta--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ chosen",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.6667328899444145,
    "text": "0.667",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@0.5"
   },
   {
    "id": "UKUS_ESC_French--US--frIncome--rho1.0--theta--pinned",
    "label": "French income distr.",
    "series": "ρ = 1.0, θ pinned",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.7382263650417814,
    "text": "0.738",
    "table": "US_ESC_IncomeDistr",
@@ -75,7 +75,7 @@
    "id": "UKUS_ESC_French--US--frIncome--rho1.0--theta--chosen",
    "label": "French income distr.",
    "series": "ρ = 1.0, θ chosen",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.77153100367925,
    "text": "0.772",
    "table": "US_ESC_IncomeDistr",
@@ -85,7 +85,7 @@
    "id": "UKUS_ESC_French--US--frVoting--rho1.0--theta--pinned",
    "label": "French voting",
    "series": "ρ = 1.0, θ pinned",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.7382263650417814,
    "text": "0.738",
    "table": "US_ESC_Voting",
@@ -95,7 +95,7 @@
    "id": "UKUS_ESC_French--US--frVoting--rho1.0--theta--chosen",
    "label": "French voting",
    "series": "ρ = 1.0, θ chosen",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.6533139302020154,
    "text": "0.653",
    "table": "US_ESC_Voting",
@@ -103,29 +103,29 @@
   },
   {
    "id": "UKUS_ESC_French--US--frBoth--rho1.0--theta--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ pinned",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.7382263650417814,
    "text": "0.738",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@1.0"
   },
   {
    "id": "UKUS_ESC_French--US--frBoth--rho1.0--theta--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ chosen",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.6272223698930828,
    "text": "0.627",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@1.0"
   },
   {
    "id": "UKUS_ESC_French--US--frIncome--rho2.0--theta--pinned",
    "label": "French income distr.",
    "series": "ρ = 2.0, θ pinned",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.7382263650417816,
    "text": "0.738",
    "table": "US_ESC_IncomeDistr",
@@ -135,7 +135,7 @@
    "id": "UKUS_ESC_French--US--frIncome--rho2.0--theta--chosen",
    "label": "French income distr.",
    "series": "ρ = 2.0, θ chosen",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.9184340559348216,
    "text": "0.918",
    "table": "US_ESC_IncomeDistr",
@@ -145,7 +145,7 @@
    "id": "UKUS_ESC_French--US--frVoting--rho2.0--theta--pinned",
    "label": "French voting",
    "series": "ρ = 2.0, θ pinned",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.7382263650417816,
    "text": "0.738",
    "table": "US_ESC_Voting",
@@ -155,7 +155,7 @@
    "id": "UKUS_ESC_French--US--frVoting--rho2.0--theta--chosen",
    "label": "French voting",
    "series": "ρ = 2.0, θ chosen",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.3353545137229725,
    "text": "0.335",
    "table": "US_ESC_Voting",
@@ -163,29 +163,29 @@
   },
   {
    "id": "UKUS_ESC_French--US--frBoth--rho2.0--theta--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ pinned",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.7382263650417816,
    "text": "0.738",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@2.0"
   },
   {
    "id": "UKUS_ESC_French--US--frBoth--rho2.0--theta--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ chosen",
-   "panel": "US: Pension design in 2020",
+   "panel": "U.S.: Pension design in 2020",
    "value": 0.2618621735207383,
    "text": "0.262",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@2.0"
   },
   {
    "id": "UKUS_ESC_French--US--frIncome--rho0.5--tau--pinned",
    "label": "French income distr.",
    "series": "ρ = 0.5, θ pinned",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": -0.7010507156894302,
    "text": "−0.7 p.p.",
    "table": "US_ESC_IncomeDistr",
@@ -195,7 +195,7 @@
    "id": "UKUS_ESC_French--US--frIncome--rho0.5--tau--chosen",
    "label": "French income distr.",
    "series": "ρ = 0.5, θ chosen",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": -0.73454428830321,
    "text": "−0.7 p.p.",
    "table": "US_ESC_IncomeDistr",
@@ -205,7 +205,7 @@
    "id": "UKUS_ESC_French--US--frVoting--rho0.5--tau--pinned",
    "label": "French voting",
    "series": "ρ = 0.5, θ pinned",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": 0.3228161485102188,
    "text": "+0.3 p.p.",
    "table": "US_ESC_Voting",
@@ -215,7 +215,7 @@
    "id": "UKUS_ESC_French--US--frVoting--rho0.5--tau--chosen",
    "label": "French voting",
    "series": "ρ = 0.5, θ chosen",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": 0.20941985963338905,
    "text": "+0.2 p.p.",
    "table": "US_ESC_Voting",
@@ -223,29 +223,29 @@
   },
   {
    "id": "UKUS_ESC_French--US--frBoth--rho0.5--tau--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ pinned",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": -0.42877275794561964,
    "text": "−0.4 p.p.",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@0.5"
   },
   {
    "id": "UKUS_ESC_French--US--frBoth--rho0.5--tau--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ chosen",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": -0.4497021344020996,
    "text": "−0.4 p.p.",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@0.5"
   },
   {
    "id": "UKUS_ESC_French--US--frIncome--rho1.0--tau--pinned",
    "label": "French income distr.",
    "series": "ρ = 1.0, θ pinned",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": -0.6491167705662604,
    "text": "−0.6 p.p.",
    "table": "US_ESC_IncomeDistr",
@@ -255,7 +255,7 @@
    "id": "UKUS_ESC_French--US--frIncome--rho1.0--tau--chosen",
    "label": "French income distr.",
    "series": "ρ = 1.0, θ chosen",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": -0.6332593484756011,
    "text": "−0.6 p.p.",
    "table": "US_ESC_IncomeDistr",
@@ -265,7 +265,7 @@
    "id": "UKUS_ESC_French--US--frVoting--rho1.0--tau--pinned",
    "label": "French voting",
    "series": "ρ = 1.0, θ pinned",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": 0.8394343521717501,
    "text": "+0.8 p.p.",
    "table": "US_ESC_Voting",
@@ -275,7 +275,7 @@
    "id": "UKUS_ESC_French--US--frVoting--rho1.0--tau--chosen",
    "label": "French voting",
    "series": "ρ = 1.0, θ chosen",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": 0.8318981631643907,
    "text": "+0.8 p.p.",
    "table": "US_ESC_Voting",
@@ -283,29 +283,29 @@
   },
   {
    "id": "UKUS_ESC_French--US--frBoth--rho1.0--tau--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ pinned",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": -0.02973656927155177,
    "text": "−0.03 p.p.",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@1.0"
   },
   {
    "id": "UKUS_ESC_French--US--frBoth--rho1.0--tau--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ chosen",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": 0.006696997345018163,
    "text": "+0.01 p.p.",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@1.0"
   },
   {
    "id": "UKUS_ESC_French--US--frIncome--rho2.0--tau--pinned",
    "label": "French income distr.",
    "series": "ρ = 2.0, θ pinned",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": -0.5920995464963386,
    "text": "−0.6 p.p.",
    "table": "US_ESC_IncomeDistr",
@@ -315,7 +315,7 @@
    "id": "UKUS_ESC_French--US--frIncome--rho2.0--tau--chosen",
    "label": "French income distr.",
    "series": "ρ = 2.0, θ chosen",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": -0.34726419555782817,
    "text": "−0.3 p.p.",
    "table": "US_ESC_IncomeDistr",
@@ -325,7 +325,7 @@
    "id": "UKUS_ESC_French--US--frVoting--rho2.0--tau--pinned",
    "label": "French voting",
    "series": "ρ = 2.0, θ pinned",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": 1.6400081707848706,
    "text": "+1.6 p.p.",
    "table": "US_ESC_Voting",
@@ -335,7 +335,7 @@
    "id": "UKUS_ESC_French--US--frVoting--rho2.0--tau--chosen",
    "label": "French voting",
    "series": "ρ = 2.0, θ chosen",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": 2.29554655784944,
    "text": "+2.3 p.p.",
    "table": "US_ESC_Voting",
@@ -343,23 +343,23 @@
   },
   {
    "id": "UKUS_ESC_French--US--frBoth--rho2.0--tau--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ pinned",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": 0.6050139892425227,
    "text": "+0.6 p.p.",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "pinned@2.0"
   },
   {
    "id": "UKUS_ESC_French--US--frBoth--rho2.0--tau--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ chosen",
-   "panel": "US: Equilibrium tax rate",
+   "panel": "U.S.: Equilibrium tax rate",
    "value": 1.0083911586104222,
    "text": "+1.0 p.p.",
-   "table": null,
-   "row": null
+   "table": "US_ESC_FrenchAll",
+   "row": "chosen@2.0"
   },
   {
    "id": "UKUS_ESC_French--UK--frIncome--rho0.5--theta--pinned",
@@ -403,23 +403,23 @@
   },
   {
    "id": "UKUS_ESC_French--UK--frBoth--rho0.5--theta--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ pinned",
    "panel": "UK: Pension design in 2020",
    "value": 0.559745542058043,
    "text": "0.560",
-   "table": null,
-   "row": null
+   "table": "UK_ESC_FrenchAll",
+   "row": "pinned@0.5"
   },
   {
    "id": "UKUS_ESC_French--UK--frBoth--rho0.5--theta--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ chosen",
    "panel": "UK: Pension design in 2020",
    "value": 0.5638724719605825,
    "text": "0.564",
-   "table": null,
-   "row": null
+   "table": "UK_ESC_FrenchAll",
+   "row": "chosen@0.5"
   },
   {
    "id": "UKUS_ESC_French--UK--frIncome--rho1.0--theta--pinned",
@@ -463,23 +463,23 @@
   },
   {
    "id": "UKUS_ESC_French--UK--frBoth--rho1.0--theta--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ pinned",
    "panel": "UK: Pension design in 2020",
    "value": 0.5597455420580429,
    "text": "0.560",
-   "table": null,
-   "row": null
+   "table": "UK_ESC_FrenchAll",
+   "row": "pinned@1.0"
   },
   {
    "id": "UKUS_ESC_French--UK--frBoth--rho1.0--theta--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ chosen",
    "panel": "UK: Pension design in 2020",
    "value": 0.5209151646612508,
    "text": "0.521",
-   "table": null,
-   "row": null
+   "table": "UK_ESC_FrenchAll",
+   "row": "chosen@1.0"
   },
   {
    "id": "UKUS_ESC_French--UK--frIncome--rho2.0--theta--pinned",
@@ -523,23 +523,23 @@
   },
   {
    "id": "UKUS_ESC_French--UK--frBoth--rho2.0--theta--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ pinned",
    "panel": "UK: Pension design in 2020",
    "value": 0.5597455420580427,
    "text": "0.560",
-   "table": null,
-   "row": null
+   "table": "UK_ESC_FrenchAll",
+   "row": "pinned@2.0"
   },
   {
    "id": "UKUS_ESC_French--UK--frBoth--rho2.0--theta--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ chosen",
    "panel": "UK: Pension design in 2020",
    "value": 0.4140215511120936,
    "text": "0.414",
-   "table": null,
-   "row": null
+   "table": "UK_ESC_FrenchAll",
+   "row": "chosen@2.0"
   },
   {
    "id": "UKUS_ESC_French--UK--frIncome--rho0.5--tau--pinned",
@@ -583,23 +583,23 @@
   },
   {
    "id": "UKUS_ESC_French--UK--frBoth--rho0.5--tau--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ pinned",
    "panel": "UK: Equilibrium tax rate",
    "value": 0.10964753104245051,
    "text": "+0.1 p.p.",
-   "table": null,
-   "row": null
+   "table": "UK_ESC_FrenchAll",
+   "row": "pinned@0.5"
   },
   {
    "id": "UKUS_ESC_French--UK--frBoth--rho0.5--tau--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 0.5, θ chosen",
    "panel": "UK: Equilibrium tax rate",
    "value": 0.11694225264838043,
    "text": "+0.1 p.p.",
-   "table": null,
-   "row": null
+   "table": "UK_ESC_FrenchAll",
+   "row": "chosen@0.5"
   },
   {
    "id": "UKUS_ESC_French--UK--frIncome--rho1.0--tau--pinned",
@@ -643,23 +643,23 @@
   },
   {
    "id": "UKUS_ESC_French--UK--frBoth--rho1.0--tau--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ pinned",
    "panel": "UK: Equilibrium tax rate",
    "value": 0.45149047372794043,
    "text": "+0.5 p.p.",
-   "table": null,
-   "row": null
+   "table": "UK_ESC_FrenchAll",
+   "row": "pinned@1.0"
   },
   {
    "id": "UKUS_ESC_French--UK--frBoth--rho1.0--tau--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 1.0, θ chosen",
    "panel": "UK: Equilibrium tax rate",
    "value": 0.44436853326969006,
    "text": "+0.4 p.p.",
-   "table": null,
-   "row": null
+   "table": "UK_ESC_FrenchAll",
+   "row": "chosen@1.0"
   },
   {
    "id": "UKUS_ESC_French--UK--frIncome--rho2.0--tau--pinned",
@@ -703,23 +703,23 @@
   },
   {
    "id": "UKUS_ESC_French--UK--frBoth--rho2.0--tau--pinned",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ pinned",
    "panel": "UK: Equilibrium tax rate",
    "value": 0.7729493986717004,
    "text": "+0.8 p.p.",
-   "table": null,
-   "row": null
+   "table": "UK_ESC_FrenchAll",
+   "row": "pinned@2.0"
   },
   {
    "id": "UKUS_ESC_French--UK--frBoth--rho2.0--tau--chosen",
-   "label": "Income distr. + voting (no table prints this pair)",
+   "label": "French characteristics",
    "series": "ρ = 2.0, θ chosen",
    "panel": "UK: Equilibrium tax rate",
    "value": 0.7818299040545305,
    "text": "+0.8 p.p.",
-   "table": null,
-   "row": null
+   "table": "UK_ESC_FrenchAll",
+   "row": "chosen@2.0"
   }
  ]
 }

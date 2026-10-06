@@ -140,7 +140,7 @@ def argentinaUniversal(commonX = None):
             C.num(ρ, 0) + r"$. The savings rate is savings relative to GDP."
             + C.variantNote(commonX, arm = 'ARG'))
     return _wrap('ArgentinaUniversal' + sfx, 'results/shocks/{eeOnly,universal}_match_rho%.4f%s.csv' % (ρ, C.argVariantTag(commonX)),
-                 'Pension system reform, year %d.' % year + C.variantCaption(commonX, 'ARG'),
+                 'Pension system reform, year %d' % year + C.variantCaption(commonX, 'ARG'),
                  'table:Argentina:Universal' + sfx, 'lccc',
                  [r'\textbf{Scenario}', r'\textbf{Tax rate}', r'\textbf{Savings rate}',
                   r'\textbf{Avg. workweek (hours)}'], rows, note,

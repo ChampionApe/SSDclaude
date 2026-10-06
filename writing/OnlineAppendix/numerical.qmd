@@ -6,15 +6,20 @@ transition, and selects among the candidate equilibria at each state; the techni
 
 ## OA.5.1 Date-specific and stationary policies {#num-stationary}
 
-The gap between the date-specific solution and a time-invariant policy function, the approximation of much of the
-quantitative politico-economic literature, at the same dates. Section 4 summarizes it in a footnote.
+The table prints the gap between the date-specific solution and a time-invariant policy function, the
+approximation of much of the quantitative politico-economic literature, at the same dates. Section 4 summarizes it in a footnote.
 
 {{< include _generated/groups/num-stationary.qmd >}}
 
 ## OA.5.2 Equilibrium selection {#num-selection}
 
-For every file of results behind an exhibit, the largest number of equilibria and of candidate solutions found at
-any state, and the number of states at which the solver fell back on its default. A single equilibrium at every
-state means that the selection rule of section 4 never had to choose.
+The table prints, for every file of results behind an exhibit, the largest number of equilibria and of candidate
+solutions found at any state, and the number of states at which no candidate passed the equilibrium test and the
+solver fell back on the integral rule of the technical documentation. A single equilibrium at every state means
+that the selection rule of section 4 never had to choose. A file prints no count where its solve selects no tax,
+the economic-equilibrium paths, or where its driver did not record the count: the calibration grids of the U.S.,
+the UK and France, the Frisch-elasticity and timing files, and the tax layer of the CRRA endogenous-design
+calibration and path files, whose design layer is counted in the lower panel. The paper's statement in section 4
+rests on the files that record the count.
 
 {{< include _generated/groups/num-selection.qmd >}}
