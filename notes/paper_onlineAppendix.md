@@ -200,7 +200,8 @@ Built and merged: the appendix split (commit `a7bfcd4`), the site and print edit
 in a scratch copy). Open on the site, none blocking: the composite "Income distr. + voting" of the two endogenous-design
 figures is in no table (gate 3's open item, `python/paper`); MathJax loads from its CDN; publishing to GitHub Pages
 is RKB's call. A session that drafts the main sections should know:
-- **`\oa{key}`** cites the online appendix ("Online Appendix \oa{esc-uk}" prints OA.4.3, linked); the keys and
+- **`\oa{key}`** cites the online appendix: it prints "online appendix" linked to the key's page, so the paper writes
+  "the \oa{esc-uk}" (RKB, 2026-10-06: never "Online Appendix OA.4.3"; `\oanum{key}` keeps the number); the keys and
   sections are in `writing/Paper/onlineAppendix.tex` and `notes/brief_onlineAppendix_2026-10-06.md` §2.4. Never in
   a caption or heading (it is a link). `checkPaper.py` fails on an unknown key.
 - **One main-text sentence is stale**: section 7's "appendix \ref{app:US:escTables} reports it as a robustness
