@@ -1,0 +1,47 @@
+# OA.2 Argentina {#arg}
+
+Section 5 of the paper calibrates the model with informal households to Argentina before the coverage reforms and
+reads the reforms as a rise of the universal pension $\epsilon$; appendix D gives the survey, the identifying
+formulas and the sources. This chapter holds the calibration under both treatments of the taste for leisure, the
+reform at every intertemporal elasticity of the model's grid, the equilibrium over pension designs, and the
+calibration at every IES.
+
+## OA.2.1 Calibration {#arg-calibration}
+
+The paper takes the taste for leisure common to the four formal quartiles and pins its level by the average formal
+workweek, so relative hours are a prediction. The alternative identifies one $X_i$ per quartile from the survey's
+relative hours. Only the productivity and leisure parameters differ between the two: the aggregate targets, and
+every result of section 5, are the same under both.
+
+{{< include _generated/groups/arg-calibration.qmd >}}
+
+## OA.2.2 The reform {#arg-reform}
+
+The effect in 2010 of raising $\epsilon$ to the universal level, with the tax rate held at its pre-reform path and
+chosen politically, as in section 5, and the paths of the tax rate, the savings rate and the workweek before and
+after the reform.
+
+{{< include _generated/groups/arg-reform.qmd >}}
+
+## OA.2.3 The reform across the intertemporal elasticity {#arg-rho}
+
+Section 5 reads the reform at three values of the IES $\rho$; the model is solved on a grid of values between them.
+The figure is the paper's; the tables print the reform at every point of the grid and at the three the paper
+quotes. Click a point of the figure for its row.
+
+{{< include _generated/groups/arg-rho.qmd >}}
+
+## OA.2.4 The equilibrium over pension designs {#arg-designs}
+
+The paper's figure of the equilibrium in 2010 over a grid of designs $(\epsilon, \theta)$, each point an economy
+that has always had that design, beside the same figure under the alternative calibration. The grid itself can be
+downloaded from the figure's source.
+
+{{< include _generated/groups/arg-designs.qmd >}}
+
+## OA.2.5 The calibration across the intertemporal elasticity {#arg-rhogrid}
+
+The parameters solved jointly with the equilibrium path at every IES of the grid, which show how the calibration
+absorbs a change in $\rho$.
+
+{{< include _generated/groups/arg-rhogrid.qmd >}}

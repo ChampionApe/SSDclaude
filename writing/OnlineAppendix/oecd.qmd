@@ -1,0 +1,55 @@
+# OA.3 The rich economies with the design given {#oecd}
+
+Section 6 of the paper calibrates the model without informal households to the U.S., France and the UK, and
+imposes on the U.S. the characteristics that set France apart; appendices E to G give the household
+heterogeneity, the results under CRRA preferences, and the same counterfactuals with the UK as host. This chapter
+holds all of them, each under both calibrations of the taste for leisure, and the calibrations at every IES of the
+model's grid.
+
+## OA.3.1 Calibration {#oecd-calibration}
+
+The country parameters and, by income group, the population shares, the taste for leisure, the productivities and
+the propensities to vote. France is grouped at the U.S. income percentiles and, for the UK as host, at the UK's.
+The UK is also regrouped at the U.S. percentiles for one row of the paper's cross-country test in section 7; that
+regrouping is a linear fit of the UK's own group means against their cumulative population shares, not a recount
+of the survey.
+
+{{< include _generated/groups/oecd-calibration.qmd >}}
+
+## OA.3.2 The vector-$X_i$ calibration {#oecd-vectorx}
+
+The paper identifies each income group's productivity and taste for leisure by taking the taste for leisure common
+across groups and fixing its level by the average workweek, so that relative hours are a prediction. The
+alternative takes the observed relative hours as data as well, which identifies one $X_i$ per group and leaves the
+level of hours unidentified. The productivity distribution reaches every aggregate only through
+$\sum_i \gamma_i \eta_i^{1+\xi}/X_i^{\xi}$, which both calibrations normalize to one, so the calibration is block
+recursive: what depends on the design or on the demography is the same under both, and only what is defined
+through $\eta_i$ or $X_i$ separately can move. The table compares every exhibit that exists under both
+calibrations, cell by cell; on each exhibit, the calibration switch and *mark the cells that differ* show the same
+comparison in place.
+
+{{< include _generated/groups/oecd-vectorx.qmd >}}
+
+## OA.3.3 The calibration across the intertemporal elasticity {#oecd-rhogrid}
+
+The parameters solved jointly with the equilibrium path at every IES of the grid, for each country. Sections 6 and
+7 explain the CRRA results by how the calibration absorbs a higher IES; these are the numbers behind that
+explanation.
+
+{{< include _generated/groups/oecd-rhogrid.qmd >}}
+
+## OA.3.4 Counterfactuals on the U.S. {#oecd-us}
+
+The paper's overview figure of section 6 collects the effect of each counterfactual on the tax rate, the savings
+rate and the workweek at three values of the IES. The tables print them: at the paper's benchmark, with the
+economic-equilibrium effect beside the full one, and at each IES. Click a bar for its row.
+
+{{< include _generated/groups/oecd-us.qmd >}}
+
+## OA.3.5 The UK as host {#oecd-uk}
+
+The counterfactuals of section 6 on the UK's own calibration: France's characteristics, with France's households
+regrouped at the UK's income percentiles, and the pension design and ageing at each IES. The figure sets the two
+hosts side by side for France's characteristics; the tables print the UK's numbers.
+
+{{< include _generated/groups/oecd-uk.qmd >}}

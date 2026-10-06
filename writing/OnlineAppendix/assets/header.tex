@@ -1,0 +1,21 @@
+% The print edition: the packages and column types the generated tables use (writing/Paper/Packages.tex), and
+% the online appendix's own numbering, Table OA.k and Figure OA.k, set by the includes before each exhibit.
+\usepackage{booktabs}
+\usepackage{threeparttable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{bm}
+\usepackage{amssymb}
+\usepackage{textcomp}
+\usepackage{placeins}
+\usepackage{longtable}
+\usepackage{xcolor}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\counterwithout{table}{chapter}
+\counterwithout{figure}{chapter}
+\renewcommand{\thetable}{OA.\arabic{table}}
+\renewcommand{\thefigure}{OA.\arabic{figure}}

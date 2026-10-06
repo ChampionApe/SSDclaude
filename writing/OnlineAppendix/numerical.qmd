@@ -1,0 +1,20 @@
+# OA.5 Numerical checks {#num}
+
+Section 4 of the paper computes date-specific Markov policy functions by backward induction along the demographic
+transition, and selects among the candidate equilibria at each state; the technical documentation
+[@BergGE26doc] gives the algorithms and the code. This chapter reports two checks of that computation.
+
+## OA.5.1 Date-specific and stationary policies {#num-stationary}
+
+The gap between the date-specific solution and a time-invariant policy function, the approximation of much of the
+quantitative politico-economic literature, at the same dates. Section 4 summarizes it in a footnote.
+
+{{< include _generated/groups/num-stationary.qmd >}}
+
+## OA.5.2 Equilibrium selection {#num-selection}
+
+For every file of results behind an exhibit, the largest number of equilibria and of candidate solutions found at
+any state, and the number of states at which the solver fell back on its default. A single equilibrium at every
+state means that the selection rule of section 4 never had to choose.
+
+{{< include _generated/groups/num-selection.qmd >}}

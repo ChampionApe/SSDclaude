@@ -1,0 +1,62 @@
+project:
+  type: book
+  output-dir: _book
+  resources:
+    - assets/exhibits.js
+    - _generated/figs/*.png
+    - _generated/data/**
+
+book:
+  title: "Social Security Design and Its Political Support"
+  subtitle: "Online Appendix"
+  author:
+    - name: Rasmus K. S. Berg
+      affiliation: University of Copenhagen
+    - name: Martín Gonzalez-Eiras
+      affiliation: University of Bologna
+  chapters:
+    - index.qmd
+    - data.qmd
+    - argentina.qmd
+    - oecd.qmd
+    - esc.qmd
+    - numerical.qmd
+    - replication.qmd
+  output-file: OnlineAppendix
+  repo-url: https://github.com/ChampionApe/SSDclaude
+  site-url: https://championape.github.io/SSDclaude
+  downloads: [pdf]
+  search: true
+  page-navigation: true
+
+bibliography: _generated/References.bib
+lang: en
+
+format:
+  html:
+    theme: [cosmo, assets/theme.scss]
+    css: assets/exhibits.css
+    include-after-body: assets/scripts.html
+    toc: true
+    toc-depth: 2
+    toc-title: "On this page"
+    number-sections: false
+    html-math-method: mathjax
+    html-table-processing: none
+    link-external-newwindow: true
+    anchor-sections: true
+    smooth-scroll: false
+  pdf:
+    # pdflatex, as the paper: the generated tables use \bm, which unicode-math under LuaLaTeX rejects.
+    # No auto-install: a failed run must not update the machine's TeX distribution.
+    pdf-engine: pdflatex
+    latex-auto-install: false
+    documentclass: scrreprt
+    classoption: [oneside, 11pt]
+    papersize: a4
+    geometry: [margin=1in]
+    number-sections: false
+    toc: true
+    toc-depth: 2
+    colorlinks: true
+    include-in-header: assets/header.tex

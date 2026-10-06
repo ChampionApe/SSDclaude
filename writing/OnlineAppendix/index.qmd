@@ -1,0 +1,35 @@
+# About this appendix {.unnumbered}
+
+This online appendix accompanies *Social Security Design and Its Political Support* by Rasmus K. S. Berg and
+Martín Gonzalez-Eiras. It holds the tables and figures of the paper's quantitative sections, the robustness checks
+the paper summarizes in a sentence, and the numerical checks behind its results, with each figure set beside the
+tables that print its numbers. Every exhibit is built by the paper's own pipeline from the model's results, so the
+numbers are the paper's to the last printed digit; [replication](replication.qmd) lists where each one comes from.
+
+**Reading an exhibit.** Point at a marker of a figure to read its value; click it to bring up the table that prints
+it, with its row highlighted. Point at a table row to find its markers in the figure. Where an exhibit exists under
+both calibrations of the households' taste for leisure, a switch moves between the paper's calibration, common
+$X$, and the alternative, vector $X_i$ ([OA.3.2](oecd.qmd#oecd-vectorx)), and *mark the cells that differ* shows
+which numbers the choice moves. The address in the browser keeps the selection, so a link opens the same table
+and row. Under *Source*, each exhibit lists the files it reads, with downloads, the builder that makes it and the
+command that rebuilds it. A grey badge marks an exhibit of the paper itself; every other exhibit is numbered here,
+Table or Figure OA.*k*.
+
+The print edition, a PDF under the download link of the sidebar, holds every table and figure that is not in the
+paper, with the same numbers.
+
+## Robustness at a glance {#robustness}
+
+The paper's quantitative results under every specification the paper reports. Each panel is one result: how the
+tax rate responds to the earnings link $\theta$, to acute ageing and to France's income distribution and voting
+patterns with the design given, and how the chosen design responds to the last three. Each marker is the same
+result under one specification: the intertemporal elasticity of substitution (IES) $\rho$, the calibration of the
+taste for leisure, the host economy, and for the chosen design the cost specification and the Frisch elasticity
+$\xi$. Results are changes against the host's own baseline at the same IES. Click a marker for the table that
+prints it.
+
+{{< include _generated/groups/robustness.qmd >}}
+
+::: {.oa-version}
+{{< include _generated/version.qmd >}}
+:::

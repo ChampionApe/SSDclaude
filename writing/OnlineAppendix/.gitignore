@@ -1,0 +1,9 @@
+_generated/
+_book/
+.quarto/
+*_files/
+index.tex
+OnlineAppendix.tex
+
+/.quarto/
+**/*.quarto_ipynb

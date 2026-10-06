@@ -1,0 +1,21 @@
+# OA.6 Replication {#rep}
+
+Every table and figure of the paper and of this appendix is produced by the pipeline in `python/paper` of the
+[repository](https://github.com/ChampionApe/SSDclaude), in three stages: the calibrations, the experiments, and a
+build that reads only their results and writes the exhibits in seconds. `REPLICATION.md` in the repository is the
+map from data and code to every output, with the commands and the time each stage takes; the technical
+documentation [@BergGE26doc] describes the model, its equilibria and the algorithms.
+
+The table lists every exhibit shown here, where it appears, the files it reads and the builder that makes it. Each
+exhibit's *Source* has the same, with downloads and the command that rebuilds it.
+
+{{< include _generated/groups/rep-map.qmd >}}
+
+::: {.oa-version}
+{{< include _generated/version.qmd >}}
+:::
+
+## References {.unnumbered}
+
+::: {#refs}
+:::

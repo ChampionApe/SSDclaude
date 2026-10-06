@@ -1,0 +1,20 @@
+# OA.1 The cross-section of figure 1 {#data}
+
+Figure 1 of the paper sets pension spending and the Bismarckian–Beveridgean index of the OECD countries against
+their population growth and their income inequality. This chapter gives the values behind each marker, the year
+each refers to, the sources, and the correlations the paper's introduction describes.
+
+## OA.1.1 Countries, values and sources {#data-countries}
+
+Point at a marker to see which country it is. The table of countries prints every variable the figure draws, with
+the year of each value; the table of sources names, for every column, the provider, the dataset and the series,
+and when it was retrieved.
+
+{{< include _generated/groups/data-countries.qmd >}}
+
+## OA.1.2 Correlations {#data-correlations}
+
+The pairwise correlations between the four variables of figure 1, Pearson and Spearman, with the number of
+countries that report both.
+
+{{< include _generated/groups/data-correlations.qmd >}}

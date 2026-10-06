@@ -1,0 +1,26 @@
+/*-- scss:defaults --*/
+// The paper's house palette (python/paper/figures.py): ink for text, the blue series colour for links and
+// selection. Serif prose, a quiet sans for the interface.
+$font-family-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$font-family-serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+$body-color: #1d1d1b;
+$body-bg: #ffffff;
+$primary: #2a78d6;
+$link-color: #1c5cab;
+$headings-color: #0b0b0b;
+$headings-font-weight: 600;
+$font-size-root: 17px;
+$line-height-base: 1.6;
+$toc-color: #52514e;
+
+/*-- scss:rules --*/
+body { font-family: $font-family-serif; }
+h1, h2, h3, h4, .title, .subtitle, .sidebar, .navbar, #TOC, .quarto-title-meta, .breadcrumb, .nav-page,
+.callout, .sidebar-title, .figure-caption {
+  font-family: $font-family-sans-serif;
+}
+h1.title, .quarto-title h1 { font-weight: 650; letter-spacing: -0.01em; }
+h2 { margin-top: 2.2rem; padding-bottom: .25rem; border-bottom: 1px solid #e1e0d9; font-size: 1.35rem; }
+a { text-underline-offset: 2px; }
+.sidebar-navigation .sidebar-item-text { font-size: .92rem; }
+code { color: #52514e; background: #f4f3ef; }

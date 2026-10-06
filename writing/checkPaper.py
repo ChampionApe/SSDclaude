@@ -3,7 +3,8 @@ r"""Static checks on the paper draft, run by every agent before it reports and b
 Run:  PYTHONUTF8=1 .venv\Scripts\python.exe writing\checkPaper.py [--root writing/Paper] [--main main.tex] [--quiet]
 
 Fails (exit 1) on: a \ref, \eqref, \pageref, \cref, \autoref or \nameref target with no \label; a label defined
-twice; a citation key missing from the .bib that \addbibresource names; an \input, \includegraphics or
+twice; an \oa{key} that onlineAppendix.tex (generated from the online appendix's headings) does not define;
+a citation key missing from the .bib that \addbibresource names; an \input, \includegraphics or
 \addbibresource that does not resolve; a control byte (other than tab, LF, CR) in any .tex or .bib under root,
 which is what a shell heredoc leaves behind. Reports: words per prose file with the Sections/ and Appendix/
 totals, every \todo and every %% TODO tag, and every paragraph with more than one '---' (style guide: at most
@@ -26,6 +27,8 @@ TODO_MACRO = re.compile(r'\\todo(?:\[[^\]]*\])?\{')
 ENV_DROP = re.compile(r'\\begin\{(table|figure|align\*?|equation\*?|subequations|gather\*?|algorithm)\}.*?\\end\{\1\}', re.S)
 MACRO_WORD = re.compile(r'\\(?:ref|eqref|pageref|cref|Cref|autoref|nameref|[Tt]extcites?|[Pp]arencites?|cite[tp]?|citeauthor|citeyear)\*?(?:\[[^\]]*\])*\{[^}]*\}')
 MACRO_DROP = re.compile(r'\\(?:label|input|include|includegraphics|setcounter|renewcommand|newcommand|vspace|hspace|smalltitle)(?:\[[^\]]*\])?\{[^}]*\}')
+OADEF = re.compile(r'\\oadef\{([^}]*)\}')                              # onlineAppendix.tex, generated from the book
+OAUSE = re.compile(r'\\oa\{([^}]*)\}')
 
 def read(path):
     with open(path, encoding = 'utf-8', errors = 'replace') as f:
@@ -123,13 +126,15 @@ def main():
     root = os.path.abspath(a.root)
     files, missingInputs = collect(root, a.main)
     prose = lambda f: not rel(f, root).startswith('Tables/') and rel(f, root) not in ('main.tex', 'Packages.tex')
-    labels, refs, cites, graphics, bibs = {}, [], [], [], []
+    labels, refs, cites, graphics, bibs, oaKeys, oaUses = {}, [], [], [], [], set(), []
     for f in files:
         r = rel(f, root)
         for i, line in enumerate(read(f).split('\n'), 1):
             line = COMMENT.sub('', line)
             for m in LABEL.finditer(line): labels.setdefault(m.group(1).strip(), []).append((r, i))
             for m in REF.finditer(line): refs += [(r, i, k.strip()) for k in m.group(1).split(',')]
+            oaKeys |= {m.group(1).strip() for m in OADEF.finditer(line)}
+            oaUses += [(r, i, m.group(1).strip()) for m in OAUSE.finditer(line)]
             cites += [(r, i, k) for k in citeKeys(line)]
             graphics += [(r, i, m.group(1)) for m in GRAPHICS.finditer(line)]
             bibs += [m.group(1) for m in BIBRES.finditer(line)]
@@ -140,6 +145,10 @@ def main():
     for r, i, k in missingRefs: print('  {}:{}  {}'.format(r, i, k))
     for k, v in dupLabels.items(): print('  {}  defined at {}'.format(k, ', '.join('{}:{}'.format(*x) for x in v)))
     fails += len(missingRefs) + len(dupLabels)
+    missingOa = [(r, i, k) for r, i, k in oaUses if k not in oaKeys]
+    print('== online appendix: {} \\oa keys missing ({} keys defined, {} uses)'.format(len(missingOa), len(oaKeys), len(oaUses)))
+    for r, i, k in missingOa: print('  {}:{}  \\oa{{{}}}'.format(r, i, k))
+    fails += len(missingOa)
     keys = set()
     for b in bibs:
         path = resolve(root, b, ['.bib'])
