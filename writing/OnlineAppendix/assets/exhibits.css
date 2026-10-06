@@ -55,6 +55,18 @@
   .oa-layout--text { grid-template-columns: minmax(0, .6fr) minmax(0, 1fr); }
   .oa-layout--text .oa-texts { position: sticky; top: 4.5rem; }
 }
+/* The window rules above are the fallback; the columns are decided by the exhibit's own width, which Quarto's
+   sidebar and contents list reduce well below the window's. A section of 820px or more carries the text beside
+   its tables, one of 900px or more the figure beside its tables. */
+.oa-group { container-type: inline-size; }
+@container (min-width: 820px) {
+  .oa-layout--text { grid-template-columns: minmax(0, .6fr) minmax(0, 1fr); }
+  .oa-layout--text .oa-texts { position: sticky; top: 4.5rem; }
+}
+@container (min-width: 900px) {
+  .oa-layout--pair { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); }
+  .oa-layout--pair .oa-tables { position: sticky; top: 4.5rem; }
+}
 
 /* figures */
 .oa-figure { margin: 0 0 1rem; }
