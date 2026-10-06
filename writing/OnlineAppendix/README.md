@@ -14,7 +14,9 @@ numbered Table/Figure OA.k as on the site. Design and decisions: `notes/paper_on
 quarto render writing\OnlineAppendix                      (_book/: the site and the PDF, about 45 s)
 ```
 
-Preview: `quarto preview writing\OnlineAppendix`, or serve `_book/` with any static server. The paper's table
+Preview: `quarto preview writing\OnlineAppendix`, or serve `_book/` with any static server. After a render, reload
+the page with the cache bypassed (Ctrl+F5): the browser keeps `assets/exhibits.js` and `.css`, which carry no
+version, and a plain reload can show the previous build's layout or behaviour. The paper's table
 and equation numbers come from `writing/Paper/main.aux` when it is newer than every `.tex` of the paper, and are
 counted from the source otherwise (equations then named by their section); compile the paper first for exact
 numbers.
