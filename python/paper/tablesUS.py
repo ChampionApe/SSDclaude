@@ -294,13 +294,20 @@ def usukfrCalibration(commonX = None):
     r""" Table \ref{table:US:Calib}: the headline calibration for the three countries.
 
     `X` is the POPULATION-WEIGHTED MEAN of X_i -- the only summary of a vector whose level IS the hours
-    unit, and the one the leisure counterfactual is matched on. beta is added as a row the hand-written
-    table omitted: it is imposed on France and the UK from the US calibration at the same rho, so
-    printing it makes that visible rather than implicit. """
+    unit, and the one the leisure counterfactual is matched on. The lower panel holds the parameters the
+    three countries share, each in one cell across the country columns: beta, calibrated on the US and
+    imposed on France and the UK at the same rho, and rho, xi and alpha, imposed. A value that differs
+    across the countries raises rather than printing one of them. """
     commonX = C.US['commonX'] if commonX is None else commonX
     c = D.usCalibrationSummary(commonX)
     cols = [k for k in ('US', 'UK', 'FR') if k in c]     # the hand-written column order
     year0 = C.usCalendar()['year0']
+    # Booktabs horizontals, plus the one deviation: a hairline at 25% black on each side of the value
+    # block, which is what separates the numbers from the prose column now that there is no spanner.
+    # No \addlinespace with it -- the rules are drawn per row, so a gap between rows breaks them into
+    # dashes; \arraystretch carries the air instead. A merged cell carries the right-hand rule in its
+    # own spec, since \multicolumn replaces the spec of the columns it spans.
+    rule = '!{\\color{black!25}\\vrule width 0.5pt}'
 
     # Parameter, the three values, then what identifies them. The values are the table's content and sit
     # in the middle under one spanner rule, which is what separates them from the prose column; the
@@ -308,13 +315,18 @@ def usukfrCalibration(commonX = None):
     def row(key, label, target, fn):
         return keyed(' & '.join([label] + [fn(c[k]) for k in cols] + [target]) + r' \\', key)
 
+    def shared(key, label, target, col, fmt = C.num):
+        v = [float(c[k][col]) for k in cols]
+        if not np.allclose(v, v[0], rtol = 0, atol = 1e-12):
+            raise ValueError('{} is not common to {}: {}'.format(col, cols, v))
+        cell = r'\multicolumn{%d}{c%s}{%s}' % (len(cols), rule, fmt(v[0]))
+        return keyed(' & '.join([label, cell, target]) + r' \\', key)
+
     rows = [
         row('theta', r'$\theta$', 'Replacement rate dispersion', lambda r: C.num(r['θ'])),
         row('omega', r'$\omega$',
             ', '.join(r'$\tau^{' + k + '} = ' + C.pct(c[k]['τ0'], 1) + '$' for k in cols),
             lambda r: C.num(r['ω'])),
-        # Not "imposed on the other two" as well: the note says so, and the cell then fits one line.
-        row('beta', r'$\beta$', '30-year interest rate (US)', lambda r: C.num(r['β'])),
         # Two decimals: with the hours unit normalised to μ = 1 (model.addEigenVectors), the vector-X
         # X_i and their mean sit on an O(1) scale where one decimal is two significant figures.
         row('X', '$X$', 'Average workweek', lambda r: C.num(r['Xbar'], 2)),
@@ -322,19 +334,21 @@ def usukfrCalibration(commonX = None):
             lambda r: C.num(r['ν2020'])),
         row('etaratio', r'$\eta_{H}/\eta_L$', 'Relative productivity, high to low income',
             lambda r: C.num(r['ηHηL'])),
+        r'\midrule',
+        # Not "imposed on the other two" as well: the note says so, and the cell then fits one line.
+        shared('beta', r'$\beta$', '30-year interest rate (US)', 'β'),
+        shared('rho', r'$\rho$', 'Log-GHH preferences', 'ρ', fmt = '{:g}'.format),
+        shared('xi', r'$\xi$', 'Frisch elasticity of labor supply', 'ξ'),
+        shared('alpha', r'$\alpha$', 'Capital income share', 'α'),
     ]
     header = ([r'\textbf{Parameter}'] + [r'\textbf{' + COUNTRYNAME[k] + '}' for k in cols]
               + [r'\textbf{Identified by}'])
     # The one note that spells the variant out; every other US table points here (config.variantNote).
-    note = (r'\item \textit{Note:} $\rho = ' + C.num(C.US['ρBaseline'], 1) + r'$. $X$ is the '
+    note = (r'\item \textit{Note:} $X$ is the '
             r'population-weighted mean of $X_i$; its level is the hours unit, pinned for France and the '
-            r'UK by targeting average hours relative to the US rather than in levels. $\beta$ is '
-            r'calibrated for the US and imposed on the other two.' + C.variantNote(commonX, full = True))
-    # Booktabs horizontals, plus the one deviation: a hairline at 25% black on each side of the value
-    # block, which is what separates the numbers from the prose column now that there is no spanner.
-    # No \addlinespace with it -- the rules are drawn per row, so a gap between rows breaks them into
-    # dashes; \arraystretch carries the air instead.
-    rule = '!{\\color{black!25}\\vrule width 0.5pt}'
+            r'UK by targeting average hours relative to the US rather than in levels. The lower panel is '
+            r'common to the three countries; $\beta$ is calibrated for the US and imposed on the other two.'
+            + C.variantNote(commonX, full = True))
     return (BANNER.format(name = 'USUKFRCalibration' + C.variantSuffix(commonX),
                           src = 'results/paper/usCalibrationSummary.csv')
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'

@@ -132,7 +132,9 @@ three distinct parts, but do not add further subsections elsewhere.
 - **Tables and figures**: `\input{Tables/Name}` on its own line after the discussing paragraph.
   Figures: `\caption` above `\includegraphics`, `\label` after the caption, `[!htb]`, width
   `\linewidth` (or `0.7\linewidth` for a single panel); notes via `threeparttable` +
-  `\tablenotes` in `\footnotesize`, opening "\textit{Note:}".
+  `\tablenotes` in `\footnotesize`, opening "\textit{Note:}". End the `\includegraphics` line with
+  `\par`: `tablenotes[flushleft]` zeroes `\leftskip`/`\rightskip` before its own `\par`, so without it
+  the graphic's paragraph is set flush left and `\centering` is lost (2026-10-06, `fig:Arg`).
 - **Table and figure notes** (2026-09-15). A single note is `\begin{tablenotes}[flushleft]` + `\item[]`,
   set as a paragraph with no list indent; the list form with `\item` is only for notes carrying labelled
   markers keyed to cells (`US_Ageing`'s a/b). A note carries what the main text does not — it never

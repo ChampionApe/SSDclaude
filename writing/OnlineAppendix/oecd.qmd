@@ -1,14 +1,15 @@
 # OA.3 The rich economies with the design given {#oecd}
 
 Section 6 of the paper calibrates the model without informal households to the U.S., France and the UK, and
-imposes on the U.S. the characteristics that set France apart; appendices E to G give the household
-heterogeneity, the results under CRRA preferences, and the same counterfactuals with the UK as host. This chapter
+imposes on the U.S. the characteristics that set France apart; appendices E to G give the data and the household
+heterogeneity behind the calibration, the results under CRRA preferences, and the same counterfactuals with the UK
+as host. This chapter
 holds all of them, each under both calibrations of the taste for leisure, and the calibrations at every IES of the
 model's grid.
 
 ## OA.3.1 Calibration {#oecd-calibration}
 
-The country parameters and, by income group, the population shares, the taste for leisure, the productivities and
+The country parameters, with those the three countries share in a lower panel, and, by income group, the population shares, the taste for leisure, the productivities and
 the propensities to vote. France is grouped at the U.S. income percentiles and, for the UK as host, at the UK's.
 The UK is also regrouped at the U.S. percentiles for one row of the paper's cross-country test in section 7; that
 regrouping is a linear fit of the UK's own group means against their cumulative population shares, not a recount
