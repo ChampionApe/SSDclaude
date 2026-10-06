@@ -45,28 +45,12 @@
   .oa-layout--pair .oa-tables { position: sticky; top: 4.5rem; }
 }
 
-/* the exhibit's own text: beside the exhibit, following the tab and the calibration; a column of its own when
-   the group has only tables or only figures */
+/* the exhibit's own text: above the exhibit, following the tab and the calibration (RKB, 2026-10-06: not a
+   column beside it) */
 .oa-text { margin: 0 0 1rem; }
 .oa-text p { margin: 0; }
 .oa-js .oa-text:not(.is-active) { display: none; }
-.oa-layout--text { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.4rem 2rem; align-items: start; }
-@media (min-width: 1200px) {
-  .oa-layout--text { grid-template-columns: minmax(0, .6fr) minmax(0, 1fr); }
-  .oa-layout--text .oa-texts { position: sticky; top: 4.5rem; }
-}
-/* The window rules above are the fallback; the columns are decided by the exhibit's own width, which Quarto's
-   sidebar and contents list reduce well below the window's (about 730px in a 1160px window). A section of 700px
-   or more carries the text beside its tables, one of 900px or more the figure beside its tables. */
-.oa-group { container-type: inline-size; }
-@container (min-width: 700px) {
-  .oa-layout--text { grid-template-columns: minmax(15rem, .55fr) minmax(0, 1fr); }
-  .oa-layout--text .oa-texts { position: sticky; top: 4.5rem; }
-}
-@container (min-width: 900px) {
-  .oa-layout--pair { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); }
-  .oa-layout--pair .oa-tables { position: sticky; top: 4.5rem; }
-}
+.oa-layout--text { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; align-items: start; }
 
 /* figures */
 .oa-figure { margin: 0 0 1rem; }

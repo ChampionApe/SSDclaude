@@ -767,7 +767,8 @@ def groupHtml(anchor, chapter, members, paper, refs, prov, byName, heads, report
                    + ('<label class="oa-diff"><input type="checkbox"> Mark the cells that differ from the other '
                       'calibration</label><span class="oa-diff-status" aria-live="polite"></span>' if tabs else '')
                    + '</div>')
-    # figure and tables: each text above its own kind; one kind only: the texts in a column of their own
+    # figure and tables: each text above its own kind; one kind only: the texts above the exhibits (a block of
+    # their own, which the stylesheet stacks; RKB preferred this to a column beside the tables)
     layout = 'pair' if figs and tabs else ('text' if textsF or textsT else 'single')
     out.append('<div class="oa-layout oa-layout--{}">'.format(layout))
     if layout == 'text':

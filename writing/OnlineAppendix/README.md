@@ -44,8 +44,8 @@ numbers.
   is wrapped in `[...]{.content-visible when-format="html"}` (a `:::` div for a paragraph); the print edition has
   its own reading guide in `index.qmd` under `when-format="pdf"`.
 - An exhibit's own paragraph is the registry's `text` (the notes' LaTeX vocabulary, no typed number): on the site it
-  sits beside the exhibit and follows the tab and the calibration switch, in a column of its own when the group has
-  only tables or only figures; in the print edition it precedes the exhibit, and the paper's own exhibits keep it
+  sits above the exhibit (above the tabs when the group has tables) and follows the tab and the calibration switch;
+  in the print edition it precedes the exhibit, and the paper's own exhibits keep it
   after the stand-in line. `textAlt` replaces it for the vector-$X_i$ twin (the Argentine twins say "identical").
   Since 2026-10-06 OA.2.2 and OA.2.3 carry texts; the other groups are to be written.
 - An exhibit the paper no longer inputs needs a `caption` and a `note` in the registry (its tex no longer supplies
