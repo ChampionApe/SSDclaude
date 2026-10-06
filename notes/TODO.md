@@ -15,7 +15,7 @@ one data caveat under D1, France's voting at the UK cuts, MGE's; P1 closed 2026-
 
 **P1. The size-scaled leak as the paper's endogenous design** -- closed 2026-09-30. Branch `esc-sizeLeak` (opened and executed 2026-09-24, WP1 to WP6, decisions D1 to D6 at their defaults; 7.2 rewritten 2026-09-29 with the cost as an extensive-margin loss on the tax component, `notes/esc_costLiterature.md`) was fast-forwarded into `main` at `77ba943` after both Overleaf projects were checked unchanged. The plan is restored from history to `archive/notes/plan_escSizeLeak.md` and its five live citers repointed. What stays open from it is C5 below. Diagnosis and outcome: `notes/esc_inequalityChannel.md`; finding #17.
 
-**P2. The paper rewrite** -- branch `paper-rewrite`, opened 2026-09-30 from `main`. Diagnosis, the thesis, the section-by-section recommendation, RKB's decisions D1 to D6 and the five-session work plan with its review gates are all in `notes/paper_presentationPlan.md` (§8 is the entry point for a fresh session). Agents run on Opus 5.5 through `.claude/agents/paper-*.md`. W7 is folded into it: (a) is agent A4's brief, (b) is fixed in session 1. Session 4's appendix split and the online appendix (a site with a print edition): `notes/paper_onlineAppendix.md` (2026-10-06), decisions O1–O8 open.
+**P2. The paper rewrite** -- branch `paper-rewrite`, opened 2026-09-30 from `main`. Diagnosis, the thesis, the section-by-section recommendation, RKB's decisions D1 to D6 and the five-session work plan with its review gates are all in `notes/paper_presentationPlan.md` (§8 is the entry point for a fresh session). Agents run on Opus 5.5 through `.claude/agents/paper-*.md`. W7 is folded into it: (a) is agent A4's brief, (b) is fixed in session 1. Session 4 done 2026-10-06: the appendix split and the online appendix (a Quarto site with a print edition, `writing/OnlineAppendix`), `notes/paper_onlineAppendix.md`; what is open, and the hand-off to drafting sections 6–8, is its §7.
 
 **C5. A linear (Okun) term in the leak** -- follow-up to P1, decision D3. Under a purely quadratic loss the
 first unit of redistribution is free at the margin, so no electorate chooses exactly $\theta = 1$ and
@@ -53,7 +53,8 @@ with a cross-reference to `table:Arg:Calib`, which carries no relative-hours ent
 "unless propensities to vote rise sharply with income" against `prop:esc:corner`, which assumes propensities
 that do not rise; the conclusion's wording is right. (e) `US_ESC_ScaleWedge`'s caption and note and
 `Appendix/US.tex` say "the previous draft"/"an earlier draft" (revision history in referee-facing text; the
-generator in `python/paper`), and the appendix's "the UK chose θ = 1" is in no table.
+generator in `python/paper`), and the appendix's "the UK chose θ = 1" is in no table. (e) closed 2026-10-06: the
+table now sets the two cost specifications side by side, online (OA.4.6), and the appendix paragraph is one pointer.
 
 **W7. After the appendix split** (2026-09-29, root log) -- two calls for RKB. (a) France's LIS survey year
 is not stated anywhere in the draft; `sec:oecd` implies 2019. (b) `sec:esc` and the conclusion say the

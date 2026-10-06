@@ -195,8 +195,11 @@ explorable-deck is for talks; it is Quarto too, and would read the site's data l
 ## 7. State on 2026-10-06 and hand-off to the drafting of sections 6–8
 
 Built and merged: the appendix split (commit `a7bfcd4`), the site and print edition (`7a4c45c`, build with
-`build.py --site` then `quarto render writing/OnlineAppendix`), RKB's section 6 edit merged on top (`4308629`) and
-pushed to Overleaf. A session that drafts the main sections should know:
+`build.py --site` then `quarto render writing/OnlineAppendix`; its README), RKB's section 6 edit merged on top
+(`4308629`) and pushed to Overleaf; integrated and checked the same day (every page's self-test, the paper compiled
+in a scratch copy). Open on the site, none blocking: the composite "Income distr. + voting" of the two endogenous-design
+figures is in no table (gate 3's open item, `python/paper`); MathJax loads from its CDN; publishing to GitHub Pages
+is RKB's call. A session that drafts the main sections should know:
 - **`\oa{key}`** cites the online appendix ("Online Appendix \oa{esc-uk}" prints OA.4.3, linked); the keys and
   sections are in `writing/Paper/onlineAppendix.tex` and `notes/brief_onlineAppendix_2026-10-06.md` §2.4. Never in
   a caption or heading (it is a link). `checkPaper.py` fails on an unknown key.

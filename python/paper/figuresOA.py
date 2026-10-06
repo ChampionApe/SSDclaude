@@ -186,12 +186,13 @@ def escPath():
     panels = [('theta', r'Design in force $\theta_t$', 'Design in force θ_t', '', ),
               ('dtau', 'Tax rate, chosen minus pinned', 'Tax rate, chosen minus pinned', 'percentage points')]
     marks = []
-    columns = ((left, colLeft, r'IES $\rho$, at $\xi = ' + C.num(ξ0, 1) + '$', 'rho'),
-               (right, colRight, r'Frisch elasticity $\xi$, at $\rho = ' + C.num(ρ1, 0) + '$', 'xi'))
+    columns = ((left, colLeft, r'across $\rho$ ($\xi = ' + C.num(ξ0, 1) + '$)', 'rho'),
+               (right, colRight, r'across $\xi$ ($\rho = ' + C.num(ρ1, 0) + '$)', 'xi'))
     for j, (specList, styles, by, tag) in enumerate(columns):
         for i, (pid, title, plainTitle, ylabel) in enumerate(panels):
             ax = axes[i, j]
-            _style(ax, title, ylabel if j == 0 else '', 'year' if i == 1 else None)
+            # the top panel names what its column varies, so the two columns read apart without the key
+            _style(ax, title + (', ' + by if i == 0 else ''), ylabel if j == 0 else '', 'year' if i == 1 else None)
             ax.axhline(θstar if pid == 'theta' else 0., color = INK['primary'], linewidth = 0.9, zorder = 2)
             for s in specList:
                 _, df, suffix, series, ρ, ξ = s
@@ -210,12 +211,13 @@ def escPath():
                                        table, T.escPathKey(x, suffix)))
         handles = [Line2D([], [], color = styles[id(s)][0], marker = styles[id(s)][1], markersize = 3.6,
                           linewidth = 1.2, markeredgecolor = SURFACE, markeredgewidth = 0.5) for s in specList]
-        handles.append(Line2D([], [], color = INK['primary'], linewidth = 0.9))
-        # boxed in the surface colour: the theta* line runs under it
-        leg = axes[0, j].legend(handles, [s[3] for s in specList] + [r'pinned: $\theta^{\ast} = ' + C.num(θstar, 3) + '$'],
-                                loc = 'lower right', title = by, title_fontsize = 7, fontsize = 7,
-                                labelcolor = INK['secondary'], frameon = True, facecolor = 'white',
-                                edgecolor = 'none', framealpha = 1.)
-        leg.get_title().set_color(INK['secondary'])
+        # The ink reference is labelled where it runs (theta* in the design panel; zero in the tax panel is
+        # the pinned reading by the panel's title), so the key holds the three series alone and stays narrow
+        # enough for the tax panel's upper left, which is empty in both columns until the gap opens after 2020.
+        axes[0, j].annotate(r'pinned, $\theta^{\ast} = ' + C.num(θstar, 3) + '$', xy = (1., θstar),
+                            xycoords = ('axes fraction', 'data'), xytext = (-2, 2), textcoords = 'offset points',
+                            ha = 'right', va = 'bottom', fontsize = 7, color = INK['secondary'])
+        leg = axes[1, j].legend(handles, [s[3] for s in specList], loc = 'upper left', fontsize = 7,
+                                labelcolor = INK['secondary'], frameon = False)
         leg.set_zorder(6)
     return _save(fig, name, marks)

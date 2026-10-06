@@ -1,6 +1,8 @@
 project:
   type: book
   output-dir: _book
+  render:                       # the chapters only: README.md documents the folder and is not a page
+    - "*.qmd"
   resources:
     - assets/exhibits.js
     - _generated/figs/*.png

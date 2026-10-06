@@ -4,7 +4,9 @@
 \providecommand{\oaurl}{https://championape.github.io/SSDclaude}
 \newcommand{\oadef}[3]{\expandafter\def\csname oa:#1\endcsname{\href{\oaurl/#2}{#3}}}
 \newcommand{\oa}[1]{\ifcsname oa:#1\endcsname\csname oa:#1\endcsname\else\textbf{OA:#1??}\fi}
-\newcommand{\oahome}{\href{\oaurl}{\nolinkurl{championape.github.io/SSDclaude}}}
+%% \oahome takes no argument, so xspace restores the space TeX drops after it ("\oahome is ...").
+\RequirePackage{xspace}
+\newcommand{\oahome}{\href{\oaurl}{\nolinkurl{championape.github.io/SSDclaude}}\xspace}
 \oadef{data}{data.html}{OA.1}
 \oadef{data-countries}{data.html\#data-countries}{OA.1.1}
 \oadef{data-correlations}{data.html\#data-correlations}{OA.1.2}

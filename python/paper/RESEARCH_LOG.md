@@ -4,6 +4,17 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_paper.md`, in
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-06 — the online appendix built and integrated (package S and the main session); 81 outputs
+
+`onlineAppendix.py` (`build.py --site`: the registry of sections and exhibits, provenance from `build`'s
+tracing, the print edition's copies, `writing/Paper/onlineAppendix.tex` from the chapter headings),
+`texTable.py` (generated tex → HTML, strict over all 67 tables), `test_onlineAppendix.py` (6 checks); the
+Quarto book in `writing/OnlineAppendix` (its README). Integration: B's 19 outputs registered and put in
+`ONLINE_ONLY`; `--map` labels outputs the paper does not input "online appendix"; `ESC_Path`'s keys moved to
+the tax panels, θ* labelled on its line; a run of the paper's references names the paper once
+(`collapseRuns`); equation references fall back to their section without parentheses; `\oahome` gets
+`xspace`. A Quarto LuaLaTeX failure ran `tlmgr update --all` (README trap); the paper compiles cleanly after it.
+
 ## 2026-10-06 — the online appendix's own exhibits (package B): `tablesOA.py`, `figuresOA.py`, 19 outputs
 
 Brief §2.3, rows marked B. Tables `OECD_{Countries,Sources,Correlations}`, `ArgentinaReformPath`±,

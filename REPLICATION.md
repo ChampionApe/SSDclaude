@@ -66,6 +66,12 @@ csv it was read from:
 %% Source:   results/shocks/US_shocksCommonX.csv
 ```
 
+The online appendix shows every one of these outputs, the paper's marked as such, each with the files it
+reads, a download of them and its rebuild command. It is built from the same `results/paper/` files in two
+steps, `python\paper\build.py --site` and `quarto render writing\OnlineAppendix` (Quarto 1.10 and, for its
+PDF print edition, TeX Live with `pdflatex`), into `writing/OnlineAppendix/_book/`; its README explains the
+layout. The paper cites its sections through `\oa{key}` (`writing/Paper/onlineAppendix.tex`, generated).
+
 The map below lists every registered output, the files it reads and the tex files that input it; it is
 rewritten by `build.py --map`. Of the files read, `results/paper/*Summary.csv` are written by stage (i),
 `results/shocks/` and `results/sweeps/` by stage (ii)'s shock scripts, `results/esc/` by its

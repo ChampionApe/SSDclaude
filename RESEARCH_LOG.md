@@ -4,6 +4,17 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-06 — session 4: the appendix split and the online appendix as a Quarto site with a print edition
+
+With RKB (target journals REStud, JPE, AEJ: Economic Policy): `notes/paper_onlineAppendix.md` (the split, option K
+with some UK results kept; the form; decisions O1–O8) and the build contract `notes/brief_onlineAppendix_2026-10-06.md`.
+Four parallel packages (paper-compute ×2, paper-writer, a fork) in the main checkout: row keys and tagged svg marks in
+`python/paper`, 19 online-only exhibits and four UK tables (81 outputs), appendix H with `RobustnessMap`, appendices
+A–G cut to 7,343 words (23 of 34 tables online; stubs keep every label the sections cite), and the new
+`writing/OnlineAppendix` (site plus 51-page PDF, `build.py --site` then `quarto render`). The paper cites it through
+the generated `\oa{key}`. RKB's Overleaf edits pulled and merged twice; pushed. Quarto's automatic LaTeX install
+updated TeX Live (now off); the paper compiles. Hand-off for sections 6–8: `notes/paper_onlineAppendix.md` §7.
+
 ## 2026-10-03 — the final run read, the paper rebuilt on it, both Overleaf projects pushed
 
 The session watching the run was stopped by accident at 08:35 and resumed at 08:40 (the detached chain untouched;

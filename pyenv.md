@@ -25,6 +25,14 @@ No package is needed for the two network-touching scripts, `python/paper/dataTar
 `python/paper/oecdFigure1.py` (stage (0), 2026-09-30): both use `urllib.request` from the standard
 library, and their output is committed to `data/`, so no other stage ever reaches the network.
 
+## The online appendix (2026-10-06)
+
+No Python package beyond the above: `python/paper/onlineAppendix.py` and `texTable.py` use the standard
+library. Rendering `writing/OnlineAppendix` needs **Quarto 1.10.18** (its bundled pandoc) and, for the print
+edition, **TeX Live 2026** with `pdflatex` (`_quarto.yml` pins the engine and turns off Quarto's automatic
+LaTeX installs; on 2026-10-06 a LuaLaTeX run that failed made Quarto run `tlmgr update --all`, which updated
+159 packages; the paper compiles cleanly against them). Google Chrome is optional, for headless screenshots.
+
 ## Setup from scratch
 ```
 python -m venv .venv

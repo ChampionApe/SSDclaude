@@ -434,7 +434,9 @@ def writeMacros(heads):
              r'\providecommand{\oaurl}{' + SITE_URL + '}',
              r'\newcommand{\oadef}[3]{\expandafter\def\csname oa:#1\endcsname{\href{\oaurl/#2}{#3}}}',
              r'\newcommand{\oa}[1]{\ifcsname oa:#1\endcsname\csname oa:#1\endcsname\else\textbf{OA:#1??}\fi}',
-             r'\newcommand{\oahome}{\href{\oaurl}{\nolinkurl{' + SITE_URL.split('//')[1] + '}}}']
+             r'%% \oahome takes no argument, so xspace restores the space TeX drops after it ("\oahome is ...").',
+             r'\RequirePackage{xspace}',
+             r'\newcommand{\oahome}{\href{\oaurl}{\nolinkurl{' + SITE_URL.split('//')[1] + r'}}\xspace}']
     for key, h in heads.items():
         if not h['number']:
             continue
@@ -478,15 +480,14 @@ class Refs:
             return q(self.paper.figures[a.base]['caption']) + ' in the paper'
         title, rel = self.paper.sections.get(label, (None, None))
         if eq:
+            # no parentheses around words: "the cost of an equation in section 7 of the paper", never "of (...)"
             where = self.paper.eqIn.get(label)
             if where:
-                words = 'an equation of {} {} of the paper'.format(*where)
-            else:
-                sec = self.paper.fileTitle.get(rel, '') if rel else ''
-                kind = 'appendix' if rel and rel.startswith('Appendix/') else 'section'
-                words = ('an equation of the paper' + ("'" if latex else '\u2019') + 's ' + kind + ' ' + q(sec)) \
-                    if sec else 'an equation of the paper'
-            return words if eq == 'word' else '(' + words + ')'
+                return 'an equation in {} {} of the paper'.format(*where)
+            sec = self.paper.fileTitle.get(rel, '') if rel else ''
+            kind = 'appendix' if rel and rel.startswith('Appendix/') else 'section'
+            return ('an equation in the paper' + ("'" if latex else '\u2019') + 's ' + kind + ' ' + q(sec)) \
+                if sec else 'an equation of the paper'
         if title:
             return q(title) + ' of the paper'
         return 'the paper'
@@ -527,7 +528,7 @@ class Refs:
         return self.paperText(label, eq, True)
 
     def printTex(self, tex):
-        return TT.printTex(tex, self.latex, self.oaLatex)
+        return collapseRuns(TT.printTex(tex, self.latex, self.oaLatex), latex = True)
 
     def context(self, here):
         return TT.Context(ref = self.html(here), cite = self.cite, oa = self.oaHtml(here))
@@ -631,12 +632,23 @@ def figureHtml(a, paper, refs, prov, here):
     return ('<figure class="oa-figure" id="{}" data-name="{}" data-base="{}" data-variant="{}">'
             '<figcaption>{}{}</figcaption>{}{}{}</figure>').format(
         a.anchor, a.name, a.base, a.variant, badge(a, paper), TT.inline(cap, ctx), body,
-        '<div class="oa-fignote">{}</div>'.format(TT.inline(note, ctx)) if note else '', provenance(a, prov))
+        '<div class="oa-fignote">{}</div>'.format(collapseRuns(TT.inline(note, ctx))) if note else '',
+        provenance(a, prov))
+
+
+_RUN_HTML = re.compile(r' of the paper(</a>)(?=(?:, | and )<a href="[^"]*">[^<]* of the paper</a>)')
+_RUN_TEX = re.compile(r' of the paper(?=(?:, | and )[\w.()]+ of the paper)')
+
+
+def collapseRuns(s, latex = False):
+    """ A run of the paper's references names the paper once, at its end: "tables 12, 13 and 16 of the
+    paper", where each resolved on its own reads "12 of the paper, 13 of the paper and ...". """
+    return _RUN_TEX.sub('', s) if latex else _RUN_HTML.sub(r'\1', s)
 
 
 def tableHtml(a, paper, refs, prov, here):
     ctx = refs.context(here)
-    tab = a.table.html(ctx, number = badge(a, paper), tableId = a.anchor)
+    tab = collapseRuns(a.table.html(ctx, number = badge(a, paper), tableId = a.anchor))
     return ('<div class="oa-panel" role="tabpanel" data-tab="{}" data-name="{}" data-variant="{}">'
             '<div class="oa-scroll">{}</div>{}</div>').format(a.base, a.name, a.variant, tab, provenance(a, prov))
 
