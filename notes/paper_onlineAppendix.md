@@ -203,17 +203,25 @@ is RKB's call. A session that drafts the main sections should know:
 - **`\oa{key}`** cites the online appendix ("Online Appendix \oa{esc-uk}" prints OA.4.3, linked); the keys and
   sections are in `writing/Paper/onlineAppendix.tex` and `notes/brief_onlineAppendix_2026-10-06.md` §2.4. Never in
   a caption or heading (it is a link). `checkPaper.py` fails on an unknown key.
-- **Two main-text sentences are now stale** (the appendix no longer holds what they promise): section 6's
-  footnote "appendix \ref{app:US:vectorX} repeats the section under it" (it is a stub now; the repetition is
-  Online Appendix \oa{oecd}), and section 7's "appendix \ref{app:US:escTables} reports it as a robustness check"
-  (the cost on the design is Online Appendix \oa{esc-scale}). Optional new pointers: section 5's vector-X footnote
+- **One main-text sentence is stale**: section 7's "appendix \ref{app:US:escTables} reports it as a robustness
+  check" (the cost on the design is Online Appendix \oa{esc-scale}). Section 6's went when RKB cut its vector-X
+  footnote; appendix E now points to \ref{app:US:vectorX}. Optional new pointers: section 5's vector-X footnote
   → \oa{arg-calibration}; 7.4's ξ footnote and drift sentence → \oa{esc-path}; section 4's accuracy footnote →
   \oa{num-stationary}, its selection sentence → \oa{num-selection}; figure 1's note → \oa{data}.
 - **Open, RKB's**: C1's point c (propensities to vote in proposition 2); appendix D's pre-reform ε formula (0.21
   with the first quartile, 0.29 with the second); appendix D's claim that the 2006 sample precedes the
   amnesties' coverage increase, while section 5 dates them from 2005.
-- **Moving calibration detail from section 6 to appendix E** also touches the online appendix's OA.3.1 prose
-  (`writing/OnlineAppendix/oecd.qmd`), which describes appendix E; re-read it after the move.
+- **Done 2026-10-06 (afternoon)**, commits `753bed7` and `94865a2`, pushed: section 6's calibration states only
+  its differences from Argentina's (RKB's wording) with the detail in appendix E, OA.3's opening adjusted;
+  `table:US:Calib`'s lower panel of shared parameters; `fig:US:overview` with one design row in two tones, one
+  ageing row (mild as a line), French leisure; every figure centred (style guide §5). The site shows the old
+  overview and table until `build.py --site` and `quarto render`.
+- **Left for sections 6–8**: TODO W8(a)/(b); the conclusion's "a higher IES changes only the size of the
+  earnings-link effect" against section 6, where French voting's effect grows from 0.3 to 1.7 p.p.; section 7 at
+  3,708 words against ≈ 2,800 and the conclusion at 504 against ≈ 450. Smaller: section 5 never states the equal
+  propensities to vote that section 6 now cites for Argentina; style guide §5's rule that section 6 points to the
+  vector-X alternative itself is stale after RKB's cut (his call); an "All three" row in `fig:US:overview`, as in
+  `UKUS_French`, would show the composite section 6 discusses.
 - **One Overleaf channel**: only one session pulls and pushes. A pull overwrites every local text file that
   differs from Overleaf, so commit before every pull (memory `overleaf-pull-overwrites-local`).
 

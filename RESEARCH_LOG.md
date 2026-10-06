@@ -4,6 +4,17 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-06 (afternoon) — section 6's calibration as Argentina's with exceptions; fig:US:overview redrawn
+
+With RKB, alongside the online-appendix session until its commit `4a7ec72` (memory `parallel-sessions-share-checkout`).
+Section 6's calibration now states only how it differs from Argentina's (income groups and France's grouping, β,
+observed voting propensities, Medicare; RKB rewrote the paragraph on Overleaf). Appendix E took the rest: the sample,
+a paragraph on the shared parameters, Medicare's reasoning, France's retirement-age formula, the vector-X pointer.
+`table:US:Calib` gained a lower panel of the shared β, ρ, ξ, α; `fig:US:overview` has one design row in two tones,
+one ageing row with mild ageing as a line, and French leisure (`python/paper/RESEARCH_LOG.md`). Every figure sat
+flush left under `threeparttable`; fixed by `\par` (style guide §5). Two Overleaf round trips, one online edit
+merged by hand; commits `753bed7`, `94865a2`, pushed. Open items: `notes/paper_onlineAppendix.md` §7.
+
 ## 2026-10-06 — session 4: the appendix split and the online appendix as a Quarto site with a print edition
 
 With RKB (target journals REStud, JPE, AEJ: Economic Policy): `notes/paper_onlineAppendix.md` (the split, option K

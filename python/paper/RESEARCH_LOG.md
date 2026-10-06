@@ -4,6 +4,18 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_paper.md`, in
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-06 (afternoon) — the calibration table's shared panel; the overview figure's merged rows
+
+`tablesUS.usukfrCalibration`: β leaves the country rows for a lower panel with ρ, ξ and α, one `\multicolumn` cell
+each that carries the right-hand hairline in its own spec; `shared()` raises if a value differs across countries.
+`figuresUS`: `OVERVIEW` replaces `SCENARIOS` (rows of one or two scenarios with an encoding); `_barPanel(kinds=)`
+draws 'tone' (θ = 0 and θ = 1 from the baseline, the second in the opaque `_tint`, the shorter over the longer with
+a surface gap when both lie on one side) and 'line' (acute ageing as the bar, mild a surface-coloured line, in the
+series colour should it fall outside); `ZEROROW` labels an all-zero row 'unchanged' in both bar figures;
+`_shockTable` is the one mark-to-table lookup (`UKUS_French`'s marks came out identical). Mark ids kept; 63 marks.
+Trap: `build.py --map` re-saves every figure, and the PDFs carry a creation date, so a map run leaves ~17 PDFs
+differing in 4–5 bytes; `git checkout` them.
+
 ## 2026-10-06 — the online appendix built and integrated (package S and the main session); 81 outputs
 
 `onlineAppendix.py` (`build.py --site`: the registry of sections and exhibits, provenance from `build`'s
