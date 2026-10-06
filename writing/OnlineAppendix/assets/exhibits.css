@@ -45,6 +45,17 @@
   .oa-layout--pair .oa-tables { position: sticky; top: 4.5rem; }
 }
 
+/* the exhibit's own text: beside the exhibit, following the tab and the calibration; a column of its own when
+   the group has only tables or only figures */
+.oa-text { margin: 0 0 1rem; }
+.oa-text p { margin: 0; }
+.oa-js .oa-text:not(.is-active) { display: none; }
+.oa-layout--text { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.4rem 2rem; align-items: start; }
+@media (min-width: 1200px) {
+  .oa-layout--text { grid-template-columns: minmax(0, .6fr) minmax(0, 1fr); }
+  .oa-layout--text .oa-texts { position: sticky; top: 4.5rem; }
+}
+
 /* figures */
 .oa-figure { margin: 0 0 1rem; }
 .oa-js .oa-figure:not(.is-active) { display: none; }
@@ -131,6 +142,6 @@
 .oa-version { font: .8rem/1.5 var(--oa-ui); color: var(--oa-ink2); margin-top: 2rem; }
 #oa-test { display: none; }
 @media print {
-  .oa-js .oa-figure, .oa-js .oa-panel { display: block !important; }
+  .oa-js .oa-figure, .oa-js .oa-panel, .oa-js .oa-text { display: block !important; }
   .oa-toolbar, .oa-tabs, .oa-prov { display: none !important; }
 }

@@ -177,6 +177,17 @@
     });
     var act = g.active();
     all(g.el, '.oa-panel').forEach(function (p) { p.classList.toggle('is-active', p === act); });
+    all(g.el, '.oa-text').forEach(function (d) {          // the exhibit's text follows its figure's variant or its panel
+      var on;
+      if (d.getAttribute('data-kind') === 'figure') {
+        var fv = g.available('.oa-figure', 'data-base', d.getAttribute('data-tab'));
+        on = d.getAttribute('data-variant') === g.pick(fv);
+      } else {
+        on = !!act && d.getAttribute('data-tab') === act.getAttribute('data-tab')
+          && d.getAttribute('data-variant') === act.getAttribute('data-variant');
+      }
+      d.classList.toggle('is-active', on);
+    });
     all(g.el, '.oa-tabs [role=tab]').forEach(function (b) {
       var on = b.getAttribute('data-tab') === g.tab;
       b.setAttribute('aria-selected', String(on));

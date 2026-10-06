@@ -42,9 +42,12 @@ VARIANT = {'commonX': ('common <i>X</i>', 'the paper\u2019s'), 'vectorX': ('vect
 class Ex:
     r""" One exhibit of a group: `name` is the headline output in build.OUTPUTS, `twin` adds its `_vectorX` twin
     under the calibration switch, `tab` names its tab, `caption`/`note` (LaTeX) stand in for a figure the paper
-    does not input, `sub` is the tab's subtitle. """
-    def __init__(self, kind, name, tab = '', twin = False, caption = None, note = None):
+    does not input. `text` (LaTeX, the notes' vocabulary) is the exhibit's own paragraph: beside it on the site,
+    following the tab and the calibration, and before it in the print edition; `textAlt` replaces it for the
+    vector-$X_i$ twin, else the twin shows `text`. No number is typed in a text. """
+    def __init__(self, kind, name, tab = '', twin = False, caption = None, note = None, text = None, textAlt = None):
         self.kind, self.name, self.tab, self.twin, self.caption, self.note = kind, name, tab, twin, caption, note
+        self.text, self.textAlt = text, textAlt
 
 
 def F(name, **k):
@@ -57,6 +60,10 @@ def T(name, tab, **k):
 
 TWINNOTE = (r'The paper\textquotesingle s figure under the vector-$X_i$ calibration (Online Appendix \oa{oecd-vectorx}); '
             r'its baseline levels are the baseline rows of the tables of this section.')
+IDENTICAL = (r'Under the vector-$X_i$ calibration this exhibit is identical to the common-$X$ one to the last printed '
+             r'digit, as the comparison in Online Appendix \oa{oecd-vectorx} records: the calibration is block '
+             r'recursive, so the aggregates the reform moves do not depend on how the taste for leisure is split across '
+             r'the quartiles.')
 
 # (anchor, chapter file stem, exhibits). The anchors are the book's headings and the paper's \oa keys.
 GROUPS = [
@@ -68,10 +75,32 @@ GROUPS = [
     ('data-correlations', 'data', [T('OECD_Correlations', 'Correlations')]),
     ('arg-calibration', 'argentina', [T('ArgentinaCalibration', 'Calibration', twin = True)]),
     ('arg-reform', 'argentina', [
-        T('ArgentinaUniversal', 'The reform in 2010', twin = True),
-        T('ArgentinaReformPath', 'Its path', twin = True)]),
+        T('ArgentinaUniversal', 'The reform in 2010', twin = True, textAlt = IDENTICAL,
+          text = r'Table \ref{table:Argentina:Universal}: the effect in 2010 of raising the universal pension $\epsilon$ '
+                 r'to the level at which informal retirees receive the benefit of the least productive formal workers, '
+                 r'unanticipated and permanent. The first row is the pre-reform economy; the second holds the tax rate '
+                 r'at its pre-reform path and so isolates the response of households; the third lets the electorate '
+                 r'reset the tax. Taxes rise, because the reform moves benefits toward informal retirees, who are poorer '
+                 r'than formal ones and value them more at the margin, and savings and hours fall a little; with the tax '
+                 r'held fixed, formal savings rise instead, since informal households now hold a claim on the system '
+                 r'and save less.'),
+        T('ArgentinaReformPath', 'Its path', twin = True, textAlt = IDENTICAL,
+          text = r'The same reform along the path: the tax rate, the savings rate and the workweek in every model period '
+                 r'from the reform year on, on the pre-reform path and on the reform path side by side. The tax response '
+                 r'builds over the first periods, because informal households, now covered, save less for retirement '
+                 r'and as retirees demand more taxation; section \ref{sec:argentina} quotes the response one period on.')]),
     ('arg-rho', 'argentina', [
-        F('ARG_CRRA_LOG', twin = True), T('ArgentinaReformByRho', 'Every IES', twin = True)]),
+        F('ARG_CRRA_LOG', twin = True, textAlt = IDENTICAL,
+          text = r'Figure \ref{fig:ARG:EffectOfCRRA}: the effect of the reform on the tax rate, the savings rate, the '
+                 r'workweek and the ratio of informal to formal savings, on impact and one period on, at every IES of the '
+                 r'grid, each economy recalibrated to the same pre-reform targets. Below an IES of one the responses are '
+                 r'dampened, since the young resist taxation more and the calibration needs a heavier political weight of '
+                 r'the old to reproduce the observed tax rate; between one and two they stay close to the log benchmark.'),
+        T('ArgentinaReformByRho', 'Every IES', twin = True, textAlt = IDENTICAL,
+          text = r'The values behind the figure\textquotesingle s short-run series, one row per point of the grid: the '
+                 r'post-reform tax rate, the change in the savings rate and the workweek in the reform year. The pre-reform '
+                 r'row is common to every IES, because each is recalibrated to the same targets; the pre-reform savings '
+                 r'rate is not a target and varies with the IES, so its column is a change.')]),
     ('arg-designs', 'argentina', [
         F('ARG_LOG_FourInOne', twin = True,
           caption = r'The equilibrium in 2010 over pension designs $(\epsilon, \theta)$, Argentina',
@@ -708,9 +737,24 @@ def enrich(a, byName, report):
     return out
 
 
+def exhibitText(a):
+    """ The registry text an asset shows: `textAlt` for the vector-X twin when given, else `text`. """
+    return a.ex.textAlt if (a.variant == 'vectorX' and a.ex.textAlt) else a.ex.text
+
+
+def textHtml(a, refs, here):
+    t = exhibitText(a)
+    if not t:
+        return ''
+    return '<div class="oa-text" data-kind="{}" data-tab="{}" data-variant="{}"><p>{}</p></div>'.format(
+        a.kind, a.base, a.variant, collapseRuns(TT.inline(t, refs.context(here))))
+
+
 def groupHtml(anchor, chapter, members, paper, refs, prov, byName, heads, report):
     figs = [a for a in members if a.kind == 'figure' and a.ok]
     tabs = [a for a in members if a.kind == 'table' and a.ok]
+    textsF = ''.join(textHtml(a, refs, chapter) for a in figs)
+    textsT = ''.join(textHtml(a, refs, chapter) for a in tabs)
     variants = sorted({a.variant for a in figs + tabs}, key = lambda v: v != 'commonX')
     out = ['<section class="oa-group" id="oagroup_{0}" data-group="{0}" data-variants="{1}">'.format(
         anchor, ' '.join(variants))]
@@ -723,10 +767,14 @@ def groupHtml(anchor, chapter, members, paper, refs, prov, byName, heads, report
                    + ('<label class="oa-diff"><input type="checkbox"> Mark the cells that differ from the other '
                       'calibration</label><span class="oa-diff-status" aria-live="polite"></span>' if tabs else '')
                    + '</div>')
-    layout = 'pair' if figs and tabs else 'single'
+    # figure and tables: each text above its own kind; one kind only: the texts in a column of their own
+    layout = 'pair' if figs and tabs else ('text' if textsF or textsT else 'single')
     out.append('<div class="oa-layout oa-layout--{}">'.format(layout))
+    if layout == 'text':
+        out.append('<div class="oa-texts">' + textsF + textsT + '</div>')
+        textsF = textsT = ''
     if figs:
-        out.append('<div class="oa-figures">' + ''.join(figureHtml(a, paper, refs, prov, chapter) for a in figs)
+        out.append('<div class="oa-figures">' + textsF + ''.join(figureHtml(a, paper, refs, prov, chapter) for a in figs)
                    + '</div>')
     if tabs:
         bases = []
@@ -739,8 +787,8 @@ def groupHtml(anchor, chapter, members, paper, refs, prov, byName, heads, report
             tablist = '<div class="oa-tabs" role="tablist">' + ''.join(
                 '<button type="button" role="tab" data-tab="{}" aria-selected="{}">{}</button>'.format(
                     b, 'true' if k == 0 else 'false', html.escape(label[b])) for k, b in enumerate(bases)) + '</div>'
-        out.append('<div class="oa-tables">' + tablist + ''.join(tableHtml(a, paper, refs, prov, chapter) for a in tabs)
-                   + '</div>')
+        out.append('<div class="oa-tables">' + textsT + tablist
+                   + ''.join(tableHtml(a, paper, refs, prov, chapter) for a in tabs) + '</div>')
     out.append('</div>')
     marks = {a.name: enrich(a, byName, report) for a in figs if a.marks and a.svg}
     if marks:
@@ -755,12 +803,23 @@ def groupHtml(anchor, chapter, members, paper, refs, prov, byName, heads, report
 
 def groupLatex(anchor, members, paper, refs):
     out, shown = [], []
+    own = refs.heads.get(anchor, {}).get('number')
+
+    def para(a):
+        t = exhibitText(a)
+        if not t:
+            return ''
+        t = refs.printTex(t)
+        return t.replace('Online Appendix ' + own, 'this section') if own else t
+
     for a in members:
         if not a.ok:
             continue
         if a.scope == 'paper':
             shown.append(a)
             continue
+        if para(a):
+            out.append(r'\noindent ' + para(a) + r'\par\medskip')
         if a.kind == 'table':
             p = os.path.join(GEN, 'tex', a.name + '.tex')
             write(p, refs.printTex(a.tex))
@@ -801,8 +860,14 @@ def groupLatex(anchor, members, paper, refs):
                 where = ''
             names.append(name + (' (' + where + ')' if where else ''))
         lead = 'Beside these, the site shows the paper' if out else 'The site shows here the paper'
-        out.insert(0, r'\noindent\textit{' + lead + "'" + r's ' + '; '.join(names)
-                   + r', which this edition does not reprint.}\par\medskip')
+        head = [r'\noindent\textit{' + lead + "'" + r's ' + '; '.join(names)
+                + r', which this edition does not reprint.}\par\medskip']
+        for a, name in zip(shown, names):
+            if para(a):                                # a text that opens with its own reference needs no lead
+                lead = '' if para(a).lstrip().startswith(('Table', 'Figure')) else \
+                    r'\textit{' + name[0].upper() + name[1:] + '.} '
+                head.append(r'\noindent ' + lead + para(a) + r'\par\medskip')
+        out[0:0] = head
     out.append(r'\FloatBarrier')
     return '\n'.join(out)
 
