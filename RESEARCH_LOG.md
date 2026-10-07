@@ -15,4 +15,5 @@ diagnostics went to `archive/code/`, superseded results to `archive/results/`; `
 style guide; READMEs, `CLAUDE.md`, the agent definitions and code comments repointed. Tests: `US/test_createCopyFromt0.py`
 archived (nothing calls the US model copies), T2's pre-split copy cut, `test_eu.py`'s FRUK check asserts the sheets
 load, `paper/test_onlineAppendix.py` registered; the permanent-timing and FOC-layer checks stay (the technical note
-quotes them). Fast suites 22 of 24; the two `informalAnalytical` failures date from C8's `8e85632` (TODO C9).
+quotes them). Fast suites 22 of 24; the two `informalAnalytical` failures date from C8's `8e85632` (TODO C9, now
+diagnosed with its fix and file list). OA.2 and OA.3 cite appendices E and F; site republished (gh-pages `3d60368`).

@@ -10,13 +10,22 @@ some of them; new items continue the numbering.
 ## Plan in progress
 
 **C9. Two `informalAnalytical` fast suites fail since C8.** `test_cacheParams.py` and `test_crraBackward.py`
-stop at `LOG.solveVectorized did not converge: max|residual|=1.498e-08 > tol=1.0e-08` (scipy reports success).
-They pass (33 of 33 for the first) at the parent of `8e85632` and fail from it on: the shared workbook's γ₀ =
-0.4706 and the first-quartile ε moved the quick-test model's LOG solve just past its tolerance. No table or
-figure reads this module, but section 3's propositions, the technical note's first chapter and section 5's
-footnote ("the tax also rises when informal households are hand-to-mouth", last computed before C8's inputs)
-rest on it. Decide between the tolerance and the test model's inputs, recheck that footnote, then rerun
-`python\runTests.py` (22 of 24 pass on 2026-10-07).
+stop at `LOG.solveVectorized did not converge: max|residual|=1.498e-08 > tol=1.0e-08` (scipy reports success);
+they pass at the parent of `8e85632`. Diagnosed 2026-10-07 in the scratchpad, nothing changed: `optimize.root`
+(`hybr`) stops on its own step tolerance (`xtol` 1.49e-8) while `model._checkConverged` gates max|z| at 1e-8, and
+C8's inputs (γ₀ = 0.4706, first-quartile ε) put the quick-test model's solve just over the gate. A restart from
+the solution reaches 8.9e-16 and `xtol` 1e-12 reaches 6.9e-13, τ moving by 1.2e-9 either way; `solveRobust`
+already recovers through its grid fallback, so only the suites that call the vectorized solver directly fail.
+Section 5's footnote holds on the current inputs: the hand-to-mouth model calibrated at ρ = 1 (β 0.671, ω 1.491),
+the reform (ε 0.210 → 0.547 from 2010, rule 'match' against the first quartile, κ refreshed) raises the 2010 tax
+from 10.92% to 16.38%. To close, in `python/informalAnalytical/` only, no paper or `results/` file:
+(1) `policy.py`, `LOG.solveVectorized`: restart `optimize.root` once from `res.x` when the gate fails
+(recommended: every solve that meets the gate today stays bitwise unchanged) or default `xtol` to 1e-12;
+(2) `test_calibration.py` (slow suite): pin the footnote, the reform raising the 2010 tax on the calibrated
+model; (3) `model.py`, `getEps`'s docstring: "appendix D" is now E (the same line in `InformalSavings/model.py`
+is optional); (4) the module's `README.md` and `RESEARCH_LOG.md`, and this item. Checks: `python\runTests.py -k
+informalAnalytical`, then `--slow -k informalAnalytical`. `US/policy.py`'s `solveVectorized` has the same
+default and passes; changing it would move the published LOG csvs at ~1e-9, so it stays.
 
 ## Data tasks
 
