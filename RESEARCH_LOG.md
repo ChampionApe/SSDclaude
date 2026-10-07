@@ -4,6 +4,22 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-07 (afternoon) — section 7 restructured: appendix C carries its derivations, the corner leaves the main text, one summary table
+
+With RKB (decided in session; the earlier plan and gate notes are no longer binding, and RKB removed them from `notes/`).
+Section 7 keeps RKB's opening and runs in three parts: the cost (a short corner paragraph citing proposition 3, the budget
+with $f$ as the one displayed equation, the tax-component reading, what the cost changes, the timing), the calibration and
+cross-country test, and the results, which lead with `fig:US_ESC:overview` and the new compact table `US_ESC_Summary`
+(θ chosen and the tax pinned and chosen per counterfactual and ρ; builder `tablesUS.escSummary`, paper-compute agent;
+`US_ESC_Ageing` is online only and appendix F is deleted). New `Appendix/EndogenousDesign.tex` (C): costless
+redistribution with the corner proposition and proof moved from B.4 and the three timings; the cost derived from the
+tax component; the equilibrium with the cost, the $1+\ln f$ factor and the identification of θ; the separability
+proposition for the log case, cited from section 4. Appendix G's note retargeted; `esc.qmd`'s section references.
+Section 7 at 2,738 words (from 3,846), appendix C 2,891. The closing now says inequality moves the design in a direction
+that depends on the IES (W8a); abstract, introduction and conclusion still carry "moves it little". The online appendix's
+exhibit texts (paper-writer: 38 texts, 20 vector-X variants, claim list in the session scratchpad) are on the local site
+awaiting RKB's read and stay uncommitted in `onlineAppendix.py`, together with the summary table's registry line.
+
 ## 2026-10-07 — the C8 run read: the paper's Argentine numbers on ε = 0.21 and γ₀ = 0.47
 
 The Argentine arm finished at 00:29 (`logs/finalRunC8/`, both variants, both stages, the stationary check), every count one

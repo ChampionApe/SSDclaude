@@ -40,19 +40,22 @@ ROWKEY = {'Baseline': 'baseline', r'$\theta = 0$': 'theta0', r'$\theta = 1$': 't
           'France (own calibration)': 'france'}
 
 
-def _xwrap(name, src, caption, label, colspec, header, body, note = None, width = r'.9\textwidth'):
+def _xwrap(name, src, caption, label, colspec, header, body, note = None, width = r'.9\textwidth', size = None):
     """ One threeparttable around a tabularx, matching the hand-written US tables' layout. `header` is a
     list of cells for one row, or a pre-formatted string when a table needs more than one header row
     (escCalibrationTable's grouped columns).
 
     `width`: the four-column shock tables sit at .9\\textwidth. The six-column ESC tables need the full
-    measure -- at .9 each Y column is 2.2cm and the headers break mid-word. """
+    measure -- at .9 each Y column is 2.2cm and the headers break mid-word. `size` (a font-size command,
+    e.g. r'\\footnotesize') sets the tabular's type, not the caption's or the notes'; None leaves it at the
+    paper's. """
     tn = notesBlock(note)
     head = header if isinstance(header, str) else ' & '.join(header)
     return (BANNER.format(name = name, src = src)
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
             + '\\caption{' + caption + '}\n\\label{' + label + '}\n'
             + '\\renewcommand{\\arraystretch}{1.25}\n'
+            + ('' if size is None else size + '\n')
             + '\\begin{tabularx}{' + width + '}{' + colspec + '}\n\\toprule\n'
             + head + ' \\\\\n\\midrule \n'
             + body + '\n\\bottomrule\n\\end{tabularx}\n' + tn
@@ -568,6 +571,78 @@ def escFrenchAll():
                      'table:US_ESC:frenchAll',
                      r' The scenario replaces the U.S.\ $\eta_i$, the level of $X_i$ and the voting weights '
                      r'$\mu_i$ with France\textquotesingle s simultaneously.', france = True)
+
+
+# escSummary's rows: (escExperiments scenario, label, row key). The composite is 'frBoth', escOverview's
+# last row; 'frAll' enters only through the note's check (_compositeClause).
+SUMMARYROWS = [('baseline', 'Baseline', 'baseline'), ('acute', 'Acute ageing', 'acute'),
+               ('frIncome', 'Income distribution', 'frincome'), ('frVoting', 'Voting patterns', 'frvoting'),
+               ('frBoth', 'French characteristics', 'frboth')]
+SUMMARYHEAD = [r'$\theta$ \textbf{chosen}', r'\textbf{Tax, pinned}', r'\textbf{Tax, chosen}']
+
+
+def _summaryCells(df, ρ, spec, scen):
+    """ escSummary's three cells of one scenario at rho: the design in force at t0 with the design chosen,
+    the t0 tax with it pinned and with it chosen (the cells of _escCells for the same two rows). """
+    pin, cho = D.escRow(df, ρ, spec, scen, True), D.escRow(df, ρ, spec, scen, False)
+    return [C.num(cho['θ_t0'], 3), C.pct(pin['τ_t0']), C.pct(cho['τ_t0'])]
+
+
+def _compositeClause(df, spec, ρs):
+    r""" The note's sentence on the composite: 'frBoth' read as all French characteristics ('frAll', which
+    adds France's level of X). Compares the printed cells of the two scenarios per rho. A design that differs
+    in print, or a tax that differs by more than one unit of its last printed digit, raises: the sentence
+    would no longer hold. """
+    off = []
+    for ρ in ρs:
+        a, b = _summaryCells(df, ρ, spec, 'frBoth'), _summaryCells(df, ρ, spec, 'frAll')
+        if a == b:
+            continue
+        gap = max(abs(float(x[:-2]) - float(y[:-2])) for x, y in zip(a[1:], b[1:]))
+        if a[0] != b[0] or gap > 0.01 + 1e-9:
+            raise ValueError('escSummary: frBoth and frAll differ beyond the last printed digit at ρ = {} '
+                             '({} against {}); the note on the composite no longer holds'.format(ρ, a, b))
+        off.append(C.num(ρ, 1))
+    if not off:
+        return (r' Since France\textquotesingle s level of $X$ moves hours and nothing else, it is also the design '
+                r'and the tax under all French characteristics.')
+    return (r' France\textquotesingle s level of $X$, which all French characteristics add, leaves every cell of the '
+            r'row unchanged except the last digit of the tax at $\rho = ' + ', '.join(off) + r'$, so up to that '
+            r'digit it is also the design and the tax under all French characteristics.')
+
+
+def escSummary():
+    r""" Table \ref{table:US_ESC:summary}: one row per scenario of SUMMARYROWS, one group of three columns
+    per rho of config.US['esc']['ρTable'] -- the design in force in 2020 with the design chosen, and the 2020
+    tax rate with the design pinned at theta* and chosen (escExperiments.csv at t0 under
+    config.US['esc']['spec']; the same cells as tables \ref{table:US_ESC:ageing},
+    \ref{table:US_ESC:incomeDistr}, \ref{table:US_ESC:voting}, and \ref{table:US_ESC:frenchAll} for the
+    composite, as far as _compositeClause finds). The baseline row is the baseline's two readings. Row keys
+    `baseline|acute|frincome|frvoting|frboth`, no rho: a row spans the rhos. """
+    df = D.escExperiments()
+    spec, ρs = C.US['esc']['spec'], C.US['esc']['ρTable']
+    rows = []
+    for scen, lab, key in SUMMARYROWS:
+        cells = [lab]
+        for ρ in ρs:
+            cells += _summaryCells(df, ρ, spec, scen)
+        rows.append(keyed(' & '.join(cells) + r' \\', rowKey(key)))
+    header = (' & ' + ' & '.join(r'\multicolumn{3}{c}{$\rho = ' + C.num(ρ, 1) + '$}' for ρ in ρs) + r' \\' + '\n'
+              + ''.join(r'\cmidrule(lr){' + str(2 + 3*k) + '-' + str(4 + 3*k) + '}' for k in range(len(ρs))) + '\n'
+              + ' & '.join([r'\textbf{Scenario}'] + SUMMARYHEAD*len(ρs)))
+    note = (r'\textit{Note:} ' + _costSentence(spec) + r' Every row is a separate equilibrium path read in 2020, '
+            r'with the changed characteristic holding over the whole horizon and the political choice binding '
+            r'from the first period. ' + LQ + 'Pinned' + RQ + r' holds the design at the U.S.\ value '
+            r'$\theta^{\ast}$ and ' + LQ + 'chosen' + RQ + r' lets the electorate choose it one period in advance, '
+            r'both under the cost. The composite imposes France\textquotesingle s income distribution and voting '
+            r'patterns together.' + _compositeClause(df, spec, ρs) + r' The savings and workweek readings are in '
+            r'figure \ref{fig:US_ESC:overview} and the tables of \oa{esc-us}.' + C.variantNote(C.US['commonX']))
+    # Ten columns on the 12pt measure: at the paper's size, or with the default 6pt \tabcolsep, the bold
+    # "pinned" and the percentages overrun their columns (a 9pt gap and \footnotesize leave none overfull).
+    colspec = r'@{}>{\raggedright\arraybackslash}p{2.4cm}*{' + str(3*len(ρs)) + r'}{@{\hspace{9pt}}Y}@{}'
+    return _xwrap('US_ESC_Summary', df.attrs['source'],
+                  'Endogenous pension design across counterfactuals in the U.S.', 'table:US_ESC:summary',
+                  colspec, header, '\n'.join(rows), note, width = r'\textwidth', size = r'\footnotesize')
 
 
 # The UK counterparts (appendix app:UKUS): France's characteristics on the UK at the UK's OWN cost

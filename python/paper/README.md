@@ -64,14 +64,14 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `config.py` | paths, the `ARG` and `US` specifications, calendars, unit conversions; imports nothing from the models |
 | `datasets.py` | the only module that knows the `results/` layout and column names, both arms |
 | `tables.py`, `figures.py` | Argentina builders, one function per output; `figures` owns the house style |
-| `tablesUS.py`, `figuresUS.py` | US/France/UK builders |
+| `tablesUS.py`, `figuresUS.py` | US/France/UK builders; `escSummary` (`US_ESC_Summary`, 2026-10-07): section 7's design and tax per counterfactual and ρ, chosen and pinned, from the four ESC tables' csv |
 | `build.py` | stage (iii): the output registry for both arms, and the copy into `writing/Paper` (not for `ONLINE_ONLY`) |
 | `tablesOA.py`, `figuresOA.py` | the online appendix's own exhibits: figure 1's data, the calibrations across ρ, the endogenous design's path, ξ and timing, the numerical checks |
 | `onlineAppendix.py`, `texTable.py` | `build.py --site`: the registry of the online appendix's sections and exhibits, the generated tables as HTML, the print edition's copies with every reference resolved, the `\oa` macros; reads `results/paper` and the paper's tex only. `test_onlineAppendix.py` checks them |
 | `compareResults.py` | reading a run: every changed csv under `results/` against a commit, rows aligned on the file's keys, the largest difference per column and the columns added (writes nothing) |
 | `dataTargets.py` | stage (0) |
 
-## Outputs wired (81)
+## Outputs wired (82)
 
 Each built file names its own input: every generated `.tex` carries a `%% Source:` banner with the csv it
 was read from, and `--list` reports what is buildable now. The registry is `build.py`'s table; `--map` writes
@@ -79,11 +79,11 @@ which tex file inputs each output into `REPLICATION.md`. Every US and Argentina 
 (headline and `_vectorX`), the ESC outputs headline only. Every table row ends in a `% row: <key>` comment
 (`tables.rowKey`) and every figure also writes `.svg` and `.marks.json` (`figures._save`, `figures.mark`): the
 online appendix's handles from a mark to the table row that prints it. The 25 `ONLINE_ONLY` outputs are built
-into `results/paper` and never copied into `writing/Paper`. Since 2026-10-06 (evening) the paper inputs 15 outputs:
-the calibration and household tables, `ArgentinaUniversal`, `ARG_CRRA_LOG`, `US_overview`, section 7's `US_ESC_Calibration`
-and `US_ESC_Country`, `US_ESC_Ageing` (appendix F), `US_ESC_overview`, `OECDdata` and `RobustnessMap` (appendix G). Every
-other table and figure, the U.S. counterfactual tables of section 6 and the UK's included, is the online appendix's
-(`notes/paper_onlineAppendix.md` §7); `--site` reports the count.
+into `results/paper` and never copied into `writing/Paper`. Since 2026-10-07 the paper inputs 15 outputs:
+the calibration and household tables, `ArgentinaUniversal`, `ARG_CRRA_LOG`, `US_overview`, section 7's `US_ESC_Calibration`,
+`US_ESC_Country`, `US_ESC_overview` and `US_ESC_Summary`, `OECDdata` and `RobustnessMap` (appendix G). Every
+other table and figure, the counterfactual tables of sections 6 and 7 and the UK's included, is the online appendix's;
+`--site` reports the count.
 Every US counterfactual is a new equilibrium path read at 2020 (`python/US/shocks.py`, `writing/US/num_esc.tex`).
 
 ## Traps

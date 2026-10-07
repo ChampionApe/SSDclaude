@@ -2,12 +2,12 @@
 
 Section 7 of the paper lets the electorate choose the design $\theta$ as well as the tax rate, under a deadweight
 cost of redistribution whose parameter $\lambda$ is calibrated so that the U.S. electorate re-elects its observed
-design. This chapter holds the tables of section 7 and of appendix F, the same counterfactuals with the UK
+design. This chapter holds the tables behind section 7, the same counterfactuals with the UK
 as host, the design along the baseline path, the timing of the choice and an alternative cost specification.
 
 ## OA.4.1 The cost and the cross-country test {#esc-calibration}
 
-The paper's two tables of section 7.3: the calibrated cost at each intertemporal elasticity of substitution
+The paper's two tables of section 7.2: the calibrated cost at each intertemporal elasticity of substitution
 (IES), and the designs the UK and France choose under the U.S. parameter, with the UK's own parameter; France, at
 the corner, has none.
 
@@ -50,7 +50,7 @@ a footnote.
 
 ## OA.4.5 The timing of the design choice {#esc-timing}
 
-Section 7.1 shows that each timing of the choice puts the design at a corner when redistribution is costless: a
+Appendix C.1 of the paper shows that each timing of the choice puts the design at a corner when redistribution is costless: a
 design chosen together with the tax rate re-splits benefits current retirees have already earned, a design chosen
 one period ahead trades the young's redistributive stake against the forward-looking one, and a design chosen once
 and for all enters every channel at once. The table reports the numerical checks of these timings.

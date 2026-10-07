@@ -4,6 +4,14 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_paper.md`, in
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-07 — `US_ESC_Summary`: section 7's table of the endogenous design across counterfactuals
+
+`tablesUS.escSummary`, registered in `build.OUTPUTS` (the paper inputs it) and first in the online appendix's `esc-us`
+group: per scenario (baseline, acute ageing, France's income distribution, voting patterns, the `frBoth` composite) and
+ρ, θ chosen and the 2020 tax pinned and chosen. Ten columns overran the 12pt measure, so `_xwrap` takes `size` (None
+elsewhere; the 64 other tables rebuild byte-identical) and the table sets `\footnotesize` with 9pt gaps. `frBoth` and `frAll`
+differ by 0.01 p.p. in the tax at ρ = 0.5 (CRRA); the note says so, and `_compositeClause` raises on a larger gap.
+
 ## 2026-10-06 (late evening) — the online appendix after a reader's review; captions say "the U.S."
 
 `onlineAppendix.py`: a note that points at its own section renders "this section" (site and print); registry notes get
