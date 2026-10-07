@@ -7,9 +7,9 @@ as host, the design along the baseline path, the timing of the choice and an alt
 
 ## OA.4.1 The cost and the cross-country test {#esc-calibration}
 
-The paper's two tables of section 7.2: the calibrated cost at each intertemporal elasticity of substitution
-(IES), and the designs the UK and France choose under the U.S. parameter, with the UK's own parameter; France, at
-the corner, has none.
+The calibrated cost at each intertemporal elasticity of substitution (IES), and the paper's table of section 7.2:
+the designs the UK and France choose under the U.S. parameter, with the UK's own parameter; France, at the corner,
+has none.
 
 {{< include _generated/groups/esc-calibration.qmd >}}
 
@@ -20,8 +20,9 @@ horizon, every other parameter at its U.S. value and the political choice bindin
 read twice, with the design pinned at the U.S. value and with the design chosen, and both readings carry the cost,
 so the distance between them is the political response. The figure's last row, France's income distribution and
 voting patterns together, shares its design, tax rate and savings rate with the table's row that imposes all
-French characteristics, since France's level of $X$ moves hours and nothing else. In the paper's figure an open
-marker is the pinned reading and a filled one the chosen[; click either for its row]{.content-visible when-format="html"}.
+French characteristics, since France's level of $X$ moves hours and nothing else. The paper's table is the first,
+at an IES of one; the figure and the other tables hold every IES. In the figure an open marker is the pinned
+reading and a filled one the chosen[; click either for its row]{.content-visible when-format="html"}.
 
 {{< include _generated/groups/esc-us.qmd >}}
 
@@ -41,10 +42,9 @@ confined to the design itself.
 ## OA.4.4 The design along the baseline path {#esc-path}
 
 The calibration pins the design in 2020 only; every other design on the path, before 2020 as after it, is an
-outcome of the model. Section 7 describes
-the drift of the design along the baseline path in words; here are the paths of the design and of the tax rate,
-chosen and pinned, at each IES and at two other values of the Frisch elasticity $\xi$, which the paper reports in
-a footnote.
+outcome of the model. The paper's figure is the projection from 2020 at an IES of one; here are the full paths of
+the design and of the tax rate from the first period, chosen and pinned, at each IES and at two other values of
+the Frisch elasticity $\xi$, which the paper reports in a footnote.
 
 {{< include _generated/groups/esc-path.qmd >}}
 

@@ -641,8 +641,44 @@ def escSummary():
     # "pinned" and the percentages overrun their columns (a 9pt gap and \footnotesize leave none overfull).
     colspec = r'@{}>{\raggedright\arraybackslash}p{2.4cm}*{' + str(3*len(ρs)) + r'}{@{\hspace{9pt}}Y}@{}'
     return _xwrap('US_ESC_Summary', df.attrs['source'],
-                  'Endogenous pension design across counterfactuals in the U.S.', 'table:US_ESC:summary',
-                  colspec, header, '\n'.join(rows), note, width = r'\textwidth', size = r'\footnotesize')
+                  'Endogenous pension design across counterfactuals and intertemporal elasticities in the U.S.',
+                  'table:US_ESC:summary', colspec, header, '\n'.join(rows), note, width = r'\textwidth',
+                  size = r'\footnotesize')
+
+
+# The paper's rows (sec:esc): escSummary's without the composite, which the online appendix keeps.
+RESULTSROWS = [r for r in SUMMARYROWS if r[0] != 'frBoth']
+
+
+def escResults():
+    r""" Table \ref{table:US_ESC:results}, the paper's table of section sec:esc: RESULTSROWS at the baseline
+    rho alone (config.US['ρBaseline'], log preferences) -- the design in 2020 with the design chosen, and the
+    2020 tax rate with the design pinned at theta* and chosen (escExperiments.csv at t0 under
+    config.US['esc']['spec']; the rho = 1 cells of escSummary). Row keys `baseline|acute|frincome|frvoting`.
+    The note names the cost parameter from escCalibration.csv rather than citing table:US_ESC:calibration,
+    which the paper does not input. """
+    df = D.escExperiments()
+    spec, ρ = C.US['esc']['spec'], C.US['ρBaseline']
+    cal = D.escCalibration()
+    if (ρ, spec) not in cal:
+        raise D.MissingInput('escCalibration ({}, {})'.format(ρ, spec))
+    sym = _wedgeSymbol(spec)
+    rows = [keyed(' & '.join([lab] + _summaryCells(df, ρ, spec, scen)) + r' \\', rowKey(key))
+            for scen, lab, key in RESULTSROWS]
+    note = (r'\textit{Note:} Log preferences, $\rho = ' + C.num(ρ, 0) + r'$. The cost is that of equation '
+            r'\eqref{eq:esc:budget} at $' + sym + ' = ' + C.num(float(cal[(ρ, spec)]['p']), 3) + r'$, the value '
+            r'at which the U.S.\ electorate re-elects its observed design $\theta^{\ast}$ (section '
+            r'\ref{sec:esc:calibration}). Every row is a separate equilibrium path read in 2020, with the changed '
+            r'characteristic holding over the whole horizon and the political choice binding from the first '
+            r'period. ' + LQ + 'Pinned' + RQ + r' holds the design at $\theta^{\ast}$ and ' + LQ + 'chosen' + RQ
+            + r' lets the electorate choose it one period in advance, both under the cost. The same '
+            r'counterfactuals at $\rho = 0.5$ and $2$, with France\textquotesingle s income distribution and voting '
+            r'patterns together, and with the savings rate and the workweek, are in the \oa{esc-us}.'
+            + C.variantNote(C.US['commonX']))
+    return _xwrap('US_ESC_Results', df.attrs['source'],
+                  'Endogenous pension design across counterfactuals in the U.S.', 'table:US_ESC:results',
+                  r'>{\raggedright\arraybackslash}p{4cm}YYY', [r'\textbf{Scenario}'] + SUMMARYHEAD,
+                  '\n'.join(rows), note, width = r'.8\textwidth')
 
 
 # The UK counterparts (appendix app:UKUS): France's characteristics on the UK at the UK's OWN cost
@@ -751,13 +787,17 @@ def escCountryTable(spec = None):
                r'of redistribution is free at the margin.')
     else:
         gap = (r' No finite $p$ makes France re-elect its observed design, the corner $\theta = 1$.')
-    note = (r'\textit{Note:} ' + _costSentence(spec) + r' Each economy is its own calibration at $\rho = 1$ '
+    # The paper inputs this table but not the calibration table, so the note names the U.S. parameter rather
+    # than citing table:US_ESC:calibration as _costSentence does (checkPaper.py fails on a dangling \ref).
+    note = (r'\textit{Note:} The cost is that of equation \eqref{eq:esc:budget}; $' + sym + ' = ' + C.num(pUS, 3)
+            + r'$ is the U.S.\ value at $\rho = 1$, at which the U.S.\ electorate re-elects its observed design '
+            r'(section \ref{sec:esc:calibration}). Each economy is its own calibration at $\rho = 1$ '
             r'($\beta$ imposed from the U.S., $\omega$ its own; table \ref{table:US:Calib}); the UK at U.S.\ '
             r'income groups is the UK workbook regrouped at the U.S.\ income percentiles. ' + LQ + 'Chosen' + RQ
-            + r' is the design in force in 2020 on the economy\textquotesingle s own freely simulated path '
-            r'under the U.S.\ parameter $' + sym + ' = ' + C.num(pUS, 3) + r'$, to be read against the observed '
-            r'one; ' + LQ + 'own' + RQ + r' is the value at which that path re-elects the observed design, '
-            r'with $\omega$ recalibrated at each trial value.' + gap + C.variantNote(C.US['commonX']))
+            + r' is the design in 2020 on the economy\textquotesingle s own freely simulated path under the '
+            r'U.S.\ parameter, to be read against the observed one; ' + LQ + 'own' + RQ + r' is the value at '
+            r'which that path re-elects the observed design, with $\omega$ recalibrated at each trial value.'
+            + gap + C.variantNote(C.US['commonX']))
     return _xwrap('US_ESC_Country', 'results/esc/escCountry.csv',
                   r'The UK and France under the U.S.\ cost of redistribution',
                   'table:US_ESC:country', 'l' + 'Y'*(len(header) - 1), header, '\n'.join(rows), note,

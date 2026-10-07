@@ -1,6 +1,6 @@
 # The online appendix
 
-A Quarto book that holds every table and figure of the paper's pipeline (81 exhibits), the paper's own
+A Quarto book that holds every table and figure of the paper's pipeline (82 exhibits), the paper's own
 marked as such, beside the tables that print their numbers: hover a mark for its value, click it for its
 table and row, switch the calibration variant, host or ρ, mark the cells two variants differ in. The same
 pages render as a PDF print edition (`_book/OnlineAppendix.pdf`), which holds every exhibit the paper does not,

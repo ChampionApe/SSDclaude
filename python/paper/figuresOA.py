@@ -1,4 +1,5 @@
-r""" Figure builders for the online appendix (archive/notes/brief_onlineAppendix_2026-10-06.md, section 2.3). House
+r""" Figure builders for the online appendix (archive/notes/brief_onlineAppendix_2026-10-06.md, section 2.3), and
+one of the paper's, escPathPaper (US_ESC_Path), which is the online path figure cut to the paper's reading. House
 style from figures.py (_panel, SERIES, INK) and figuresUS.RHOCOLOURS; drawn at the measure (5.91 in).
 
 Each writes results/paper/Figs/<name>.{pdf,png,svg} and <name>.marks.json through figures._save. Every data
@@ -220,4 +221,63 @@ def escPath():
         leg = axes[1, j].legend(handles, [s[3] for s in specList], loc = 'upper left', fontsize = 7,
                                 labelcolor = INK['secondary'], frameon = False)
         leg.set_zorder(6)
+    return _save(fig, name, marks)
+
+
+def escPathPaper():
+    r""" The paper's figure of the baseline path (sec:esc, fig:US_ESC:path), at the baseline rho (log
+    preferences) and from the calibration year on, where the calibration pins the design and everything after
+    is the model's: workers per retiree, the design chosen against theta* pinned, and the tax rate with the
+    design chosen and with it pinned (datasets.escPath). The full path from the first period, the other rhos
+    and the Frisch elasticities are ESC_Path. Marks link to ESC_PathTable's `y<year>@<rho>` rows; the
+    nu panel's carry the value alone, which no table prints. """
+    name, table = 'US_ESC_Path', 'ESC_PathTable'
+    ρ1, spec = C.US['ρBaseline'], C.US['esc']['spec']
+    year0 = C.usCalendar()['year0']
+    df = D.escPath(ρ1)
+    df = df[df['date'].astype(int) >= year0].reset_index(drop = True)
+    θstar = float(D.escCalibration()[(ρ1, spec)]['θStar'])
+    suffix = '@' + T._rhoKey(ρ1)
+    xs = df['date'].values.astype(int)
+    chosen, pinned = SERIES[0], SERIES[1]
+    dashed = (0, (4, 2))
+    fig, axes = plt.subplots(1, 3, figsize = (WIDTH, 2.3), constrained_layout = True)
+    panels = [('nu', r'Workers per retiree $\nu_t$', 'Workers per retiree ν_t', ''),
+              ('theta', r'Pension design $\theta_t$', 'Pension design θ_t', ''),
+              ('tau', r'Tax rate $\tau_t$', 'Tax rate τ_t', 'percent')]
+    marks = []
+    for ax, (pid, title, plainTitle, ylabel) in zip(axes, panels):
+        _style(ax, title, ylabel, 'year')
+        # a tick per period, labelled every other one: six four-digit years do not fit a third of the measure
+        ax.set_xticks(xs)
+        ax.set_xticklabels([str(x) if k % 2 == 0 else '' for k, x in enumerate(xs)])
+        if pid == 'nu':
+            series = [('ν', INK['secondary'], '', 'o', 'solid', 1., lambda r, v: C.num(v, 2))]
+        elif pid == 'theta':
+            ax.axhline(θstar, color = pinned, linewidth = 1.2, linestyle = dashed, zorder = 2)
+            series = [('θ', chosen, 'chosen', 'o', 'solid', 1., lambda r, v: _plain(T.escPathCells(r)[0]))]
+        else:
+            series = [('τExo', pinned, 'pinned', 's', dashed, 100., lambda r, v: _plain(T.escPathCells(r)[2])),
+                      ('τ', chosen, 'chosen', 'o', 'solid', 100., lambda r, v: _plain(T.escPathCells(r)[1]))]
+        for col, colour, label, marker, ls, scale, text in series:
+            vs = scale*df[col].values.astype(float)
+            ax.plot(xs, vs, color = colour, linewidth = 1.2, linestyle = ls, zorder = 3)
+            for (_, r), x, v in zip(df.iterrows(), xs, vs):
+                gid = markId(name, pid, label or 'data', x)
+                _point(ax, x, v, gid, colour, marker)
+                marks.append(_mark(gid, str(x), label, plainTitle, v, text(r, v / scale), table,
+                                   T.escPathKey(x, suffix)))
+    # room under the pinned line, and its label above it at the right, where the chosen path has left it
+    lo, hi = axes[1].get_ylim()
+    axes[1].set_ylim(min(lo, θstar - 0.012), hi)
+    axes[1].annotate(r'pinned, $\theta^{\ast} = ' + C.num(θstar, 3) + '$', xy = (1., θstar),
+                     xycoords = ('axes fraction', 'data'), xytext = (-2, 2), textcoords = 'offset points',
+                     ha = 'right', va = 'bottom', fontsize = 7, color = INK['secondary'])
+    handles = [Line2D([], [], color = chosen, marker = 'o', markersize = 3.6, linewidth = 1.2,
+                      markeredgecolor = SURFACE, markeredgewidth = 0.5),
+               Line2D([], [], color = pinned, marker = 's', markersize = 3.6, linewidth = 1.2, linestyle = dashed,
+                      markeredgecolor = SURFACE, markeredgewidth = 0.5)]
+    leg = axes[2].legend(handles, [r'$\theta$ chosen', r'$\theta$ pinned at $\theta^{\ast}$'], loc = 'lower right',
+                         fontsize = 7, labelcolor = INK['secondary'], frameon = False)
+    leg.set_zorder(6)
     return _save(fig, name, marks)

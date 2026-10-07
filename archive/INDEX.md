@@ -37,6 +37,10 @@ Where the reasoning behind each choice the paper rests on is written down.
   `notes/paper_costLiterature.md`.
 - The counterfactuals across ρ under the earlier proportional cost: `notes/esc_experiments_acrossRho.md`
   (2026-08-27).
+- Section 7 refocused on RKB's three comments of 2026-10-07 (the paper's own notation, ρ = 1 in the text and
+  the exhibits, the cost explained as Okun's leaky bucket with the derivation in appendix C): the writer's brief
+  `notes/brief_section7_2026-10-07.md`, with the structure, the cost paragraph and every number's source; paper
+  log 2026-10-07 (afternoon).
 - The exact 2-D CRRA recursion as the published method: US log 2026-08-24 and 2026-09-11.
 - The CRRA design chosen at frozen savings shares (TODO C6): the problem `notes/esc_crraDesignChoiceProblem.md`,
   the briefs `notes/brief_designChoicePilot_2026-10-02.md` and `notes/brief_designChoiceProduction_2026-10-02.md`,

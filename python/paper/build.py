@@ -91,6 +91,10 @@ OUTPUTS = {
     'US_ESC_Voting':          ('table', tablesUS.escVoting,           'Tables/US_ESC_Voting.tex'),
     'US_ESC_FrenchAll':       ('table', tablesUS.escFrenchAll,        'Tables/US_ESC_FrenchAll.tex'),
     'US_ESC_Summary':         ('table', tablesUS.escSummary,          'Tables/US_ESC_Summary.tex'),
+    # The paper's own exhibits of sec:esc (2026-10-07): the rho = 1 rows of the summary, and the projection
+    # from 2020 of the baseline path (ESC_Path holds the full path, every rho and the Frisch elasticities).
+    'US_ESC_Results':         ('table', tablesUS.escResults,          'Tables/US_ESC_Results.tex'),
+    'US_ESC_Path':            ('figure', figuresOA.escPathPaper,      'Figs/US_ESC_Path.pdf'),
     # The cross-country test (app:US:ukESC): the UK, France and the UK at US income groups under the US
     # parameter, and their own. tablesUS.ukEscCalibrationTable, the UK-only table it replaces, stays
     # callable on the comparison arm's rows but is not an output.

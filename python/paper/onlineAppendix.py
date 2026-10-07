@@ -306,8 +306,20 @@ GROUPS = [
                  r'U.S.\ one, and regrouping the UK at the U.S.\ income percentiles moves its chosen design only '
                  r'slightly.')]),
     ('esc-us', 'esc', [
-        F('US_ESC_overview',
-          text = r'Figure \ref{fig:US_ESC:overview}: each counterfactual with the design pinned and with it chosen, at '
+        T('US_ESC_Results', 'The paper\'s table',
+          text = r'Table \ref{table:US_ESC:results}: the paper\textquotesingle s reading at an IES of one, the rows of '
+                 r'the summary table below without the composite. Acute ageing makes the chosen design more Bismarckian '
+                 r'and France\textquotesingle s voting patterns less so, by about as much; France\textquotesingle s '
+                 r'income distribution moves it little, and in every row the tax rate with the design chosen lies within '
+                 r'a few tenths of a point of the pinned reading.'),
+        F('US_ESC_overview', caption = r'Endogenous versus exogenous pension design across counterfactuals',
+          note = r'The first panel is the design in 2020 as a level, with the muted lines at the corners $\theta = 0$ '
+                 r'and $\theta = 1$; the other three are deviations from the endogenous-$\theta$ baseline, whose tax '
+                 r'rate is the baseline row of table \ref{table:US_ESC:summary} and whose savings rate and workweek '
+                 r'are the baseline rows of the tables of this section. The savings rate is savings relative to GDP. '
+                 r'An open marker is the reading with the design pinned at the U.S.\ value, a filled one the reading '
+                 r'with the design chosen.',
+          text = r'Each counterfactual with the design pinned and with it chosen, at '
                  r'three values of the IES. Acute ageing moves the chosen design toward '
                  r'earnings-related benefits and France\textquotesingle s voting patterns toward flat ones at every IES, '
                  r'the voting patterns furthest at $\rho = 2$, where choosing the design also adds to the rise in the tax '
@@ -369,6 +381,11 @@ GROUPS = [
                  r'follows the voting patterns toward flat benefits, while at $\rho = 0.5$ it barely moves; the workweek '
                  r'ends above the UK\textquotesingle s baseline in both readings, where on the U.S.\ it ends below.')]),
     ('esc-path', 'esc', [
+        F('US_ESC_Path',
+          text = r'Figure \ref{fig:US_ESC:path}: the paper\textquotesingle s figure, the projection from the calibration '
+                 r'year at an IES of one. Workers per retiree fall until 2080 and are held constant after; the chosen '
+                 r'design rises with the fall and levels off with it, and the tax rate with the design chosen lies a '
+                 r'little above the one with it pinned.'),
         F('ESC_Path', caption = r'The design and the tax along the baseline path, U.S.',
           note = r'The design chosen one period in advance from the first period on, and the tax rate with the design '
                  r'chosen and with it pinned at $\theta^{\ast}$, along the baseline path at each IES and, at $\rho = 1$, '
