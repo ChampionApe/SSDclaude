@@ -778,7 +778,8 @@ def escCountryTable(spec = None):
             cells.append('--' if u['Vtilde'] != u['Vtilde'] else C.num(float(u['Vtilde']), 3))
         rows.append(keyed(' & '.join(cells) + r' \\', rk))
     pUS = float(us.iloc[-1]['p'])
-    header = [r'\textbf{Economy}', r'$\theta^{\ast}$ \textbf{observed}', r'\textbf{Tax rate}',
+    # \mbox: in the narrow Y column the header otherwise breaks as "ob-served"
+    header = [r'\textbf{Economy}', r'$\theta^{\ast}$ \mbox{\textbf{observed}}', r'\textbf{Tax rate}',
               r'$\theta$ \textbf{chosen, U.S.} $' + sym + '$', r'\textbf{Own} $' + sym + '$'] \
              + ([r'$\tilde V$'] if hasV else [])
     if spec == 'size':

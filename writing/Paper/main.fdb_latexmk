@@ -1,12 +1,12 @@
 # Fdb version 4
-["biber main"] 1791380056.55259 "main.bcf" "main.bbl" "main" 1791380359.46658 0
+["biber main"] 1791380056.55259 "main.bcf" "main.bbl" "main" 1791382776.37624 0
   "References.bib" 1791377513 14848 d015103b38db35071cd1680e92d80c09 ""
-  "main.bcf" 1791380358 114183 e852968c3b8b91e4c87288d633232539 "pdflatex"
+  "main.bcf" 1791382775 114183 e852968c3b8b91e4c87288d633232539 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1791380356.25377 "main.tex" "main.pdf" "main" 1791380359.46763 0
+["pdflatex"] 1791382773.182 "main.tex" "main.pdf" "main" 1791382776.37741 0
   "Appendix/CalibrationOECD.tex" 1791366733 6887 060d1c58915a17cf664f7c2fc71e4e55 ""
   "Appendix/EconomicEquilibrium.tex" 1791366733 18288 53287651353c8c13f016fe8cc389319e ""
   "Appendix/EndogenousDesign.tex" 1791379443 26912 6b6a313b1f59c76e7aaa6ccf7545f080 ""
@@ -35,7 +35,7 @@
   "Tables/FR_householdheterogeneity.tex" 1791366733 948 1aa45fe0e4f6d4d83af54994dfe15fae ""
   "Tables/UK_householdheterogeneity.tex" 1791366733 944 c41d9348a1623117aca1eca592cd30e6 ""
   "Tables/USUKFRCalibration.tex" 1791366733 2005 928ce38eb53ec866cab5c78374ad86be ""
-  "Tables/US_ESC_Country.tex" 1791379920 1869 e9167e3d6f6927a7f4968cc13e4a0ad9 ""
+  "Tables/US_ESC_Country.tex" 1791382772 1876 7916ab32015355a2205cb35b6bf1f5e8 ""
   "Tables/US_ESC_Results.tex" 1791380355 1721 b8edda93e6a26cbd4a76adab37a2fa78 ""
   "Tables/US_householdheterogeneity.tex" 1791366733 950 4b32069a66ee806ffc5c8246e9eb4f48 ""
   "abstract.tex" 1791366733 1706 e52b71ef7ef0f6d0e65ae6da1d7e7cff ""
@@ -317,10 +317,10 @@
   "c:/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1791283122 5655996 795b756740562267ad2ae16e70168a76 ""
   "c:/texlive/2026/texmf-var/web2c/pdftex/pdflatex.fmt" 1791283439 3668387 dadcb3a00b20428d88a18e02edbc10bd ""
   "c:/texlive/2026/texmf.cnf" 1787307820 713 e69b156964470283e0530f5060668171 ""
-  "main.aux" 1791380358 36632 6fdd9d6d4aff77afc82be6072b7d6729 "pdflatex"
+  "main.aux" 1791382775 36632 6fdd9d6d4aff77afc82be6072b7d6729 "pdflatex"
   "main.bbl" 1791380059 61454 37401ce82c22a460578ea9b78d3e6590 "biber main"
-  "main.out" 1791380358 8492 c649b6e9b4c8465a17f7a93e96896e63 "pdflatex"
-  "main.run.xml" 1791380358 2311 075cf7b3afb0b8b9adbd4bc93c49d289 "pdflatex"
+  "main.out" 1791382775 8492 c649b6e9b4c8465a17f7a93e96896e63 "pdflatex"
+  "main.run.xml" 1791382775 2311 075cf7b3afb0b8b9adbd4bc93c49d289 "pdflatex"
   "main.tex" 1791366733 1231 048dc78841f4d9ab06a9d824ce951c41 ""
   "onlineAppendix.tex" 1791366733 2311 66ddfbb84f36a7dd6bb74742fe491470 ""
   "titlepage.tex" 1787665157 775 87aaf3c2922b3597f5a4ea4a5eb2926d ""

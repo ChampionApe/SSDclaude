@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.10.6)  7 OCT 2026 15:39
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.10.6)  7 OCT 2026 16:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1437,7 +1437,12 @@ File: Figs/US_overview.pdf Graphic file (type pdf)
 Package pdftex.def Info: Figs/US_overview.pdf  used on input line 21.
 (pdftex.def)             Requested size: 452.9679pt x 242.66013pt.
 [20] [21 <./Figs/US_overview.pdf>] [22]) (./Sections/EndogenousTheta.tex [23] [
-24] (./Tables/US_ESC_Country.tex) [25]
+24] (./Tables/US_ESC_Country.tex
+Overfull \hbox (2.63148pt too wide) in paragraph at lines 18--18
+ []| 
+ []
+
+) [25]
 <Figs/US_ESC_Path.pdf, id=839, 427.11569pt x 166.22101pt>
 File: Figs/US_ESC_Path.pdf Graphic file (type pdf)
 <use Figs/US_ESC_Path.pdf>
@@ -2122,7 +2127,7 @@ ublic/lm/lmsy6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy7.pfb>
 <c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy8.pfb><c:/texlive/2026/te
 xmf-dist/fonts/type1/public/lm/lmtt10.pfb><c:/texlive/2026/texmf-dist/fonts/typ
 e1/public/lm/lmtt12.pfb>
-Output written on main.pdf (59 pages, 809529 bytes).
+Output written on main.pdf (59 pages, 809531 bytes).
 PDF statistics:
  1495 PDF objects out of 1728 (max. 8388607)
  1091 compressed objects within 11 object streams

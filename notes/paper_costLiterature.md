@@ -212,6 +212,14 @@ lacks, on which the average wedge is the relevant one.
 
 ## 4. Strategy for the paper
 
+**Revised 2026-10-07.** RKB found the tax-component explanation unconvincing in the main text (derived by
+citation, the average-versus-marginal detour, a shape micro-founded by a mechanism whose magnitude the
+calibration rejects, a welfare triangle read as revenue). Section 7 now leads with Okun's leaky bucket in words:
+the transfer the flat component carries, a leak convex in the amount carried, the three properties as
+consequences; points 1 to 3 below are what appendix C.2 does, not the main text. The main text's one sentence on
+margins names participation, formality and reporting (Summers, Disney, Kumler et al.) and the administrative
+and political costs; the magnitude sits in appendix C.2 alone.
+
 1. **Lead with the concept, not the formula.** The flat component is a tax (Summers's tax component); the
    cost is the deadweight loss of that tax. One sentence, two citations (Summers, Disney).
 2. **Say what the model already has, and what $f$ adds.** The intensive-margin distortion of the tax
@@ -239,10 +247,11 @@ lacks, on which the average wedge is the relevant one.
 
 ## 5. In the paper
 
-Cited (section 7 and appendix C): Harberger (1964), Summers (1989), Disney (2004), Saez (2002), Kleven and
-Kreiner (2006), Chetty et al. (2011), Saez, Slemrod and Giertz (2012), Kumler, Verhoogen and Frías (2020),
-and, for the size–design link, Conde-Ruiz and Profeta (2007) and Koethenbuerger, Poutvaara and Profeta (2008).
-Not cited and not in `References.bib`: Okun (1975), Browning and Johnson (1984), Feldstein and Samwick (1992),
+Cited (section 7 and appendix C): Okun (1975, since 2026-10-07, in section 7 and the introduction), Harberger
+(1964), Summers (1989), Disney (2004), Saez (2002), Kleven and Kreiner (2006), Chetty et al. (2011), Saez,
+Slemrod and Giertz (2012), Kumler, Verhoogen and Frías (2020), and, for the size–design link, Conde-Ruiz and
+Profeta (2007) and Koethenbuerger, Poutvaara and Profeta (2008).
+Not cited and not in `References.bib`: Browning and Johnson (1984), Feldstein and Samwick (1992),
 Immervoll et al. (2007), Gruber and Wise (1999), Liebman, Luttmer and Seif (2009), Bergolo and Cruces (2014)
 and Feldstein (1999); the last two are the first candidates if the argument needs more support, next to Kumler
 et al. and to the magnitude sentence. Every reference above was checked against its publisher or RePEc record on

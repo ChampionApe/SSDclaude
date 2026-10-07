@@ -9,6 +9,15 @@ some of them; new items continue the numbering.
 
 ## Plan in progress
 
+## Candidates, not scheduled
+
+**W9. A linear term in the cost of redistribution (RKB's call).** Under the quadratic cost the first unit of
+redistribution is free at the margin, so no electorate chooses France's corner $\theta = 1$; section 7.2's
+footnote and the conclusion leave a linear term in $1-\theta$ to future work. Two parameters, the U.S. and the
+UK designs as targets, France as the prediction: a derivation (appendix C.2's form and the design condition), a
+`spec` in `python/US/base.py fWedge`, and the ESC calibration and experiment stages rerun, CRRA included
+(`python/paper/README.md`, stage (ii) `--prepub`). `notes/paper_costLiterature.md` §2.A has the Okun framing.
+
 ## Data tasks
 
 **D2. Figure 5.1's data outside the pipeline.** `writing/Paper/Figs/coverageArg.eps` (beneficiaries of the

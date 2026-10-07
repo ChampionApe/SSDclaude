@@ -18,4 +18,6 @@ for it). `US_ESC_Calibration`, `US_ESC_Summary` (retitled) and `US_ESC_overview`
 (registry captions, `esc.qmd`); the country table's note names λ instead of citing the calibration table; Okun
 (1975) added to the bib. Checks: `checkPaper.py` OK, latexmk clean at 59 pages, `test_onlineAppendix.py` 6/6,
 `--map` rewritten (84 outputs, 14 the paper's). Committed as `fab23cc` and pushed to Overleaf; the online
-appendix published to GitHub Pages on RKB's go (`quarto publish gh-pages`), RKB reviewing the paper online.
+appendix published to GitHub Pages on RKB's go (`quarto publish gh-pages`), RKB reviewing the paper online. At the
+wrap-up: the country table's "observed" header no longer hyphenates (`\mbox`), the cost note's §4 records the
+leaky-bucket framing, and the linear term for France's corner is TODO W9, a candidate for RKB's call.
