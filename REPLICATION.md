@@ -50,8 +50,8 @@ number of equilibria and of candidates at any state of the solve, and `nFallback
 that fell back to the integral rule; `-1` marks a row whose solver did not count (the economic-equilibrium
 files, the U.S. calibration grids). The CRRA endogenous-design files (`results/esc/*CRRA*.csv`) add the
 design layer's settings and counts, `designRule`, `Ma`, `nEqθMax`, `nBrθMax` and `nFallbackθ`
-(`config.US['esc']`). In the run behind the committed results (2026-10-03) every count reads one
-equilibrium and no fallback, so no selection among equilibria was ever made.
+(`config.US['esc']`). In the runs behind the committed results (the U.S. arm on 2026-10-03, the Argentine arm
+on 2026-10-07) every count reads one equilibrium and no fallback, so no selection among equilibria was ever made.
 
 ## 4. From results to the paper
 

@@ -4,6 +4,19 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_root.md`, ind
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-07 — the C8 run read: the paper's Argentine numbers on ε = 0.21 and γ₀ = 0.47
+
+The Argentine arm finished at 00:29 (`logs/finalRunC8/`, both variants, both stages, the stationary check), every count one
+equilibrium and no fallback. Outputs rebuilt; the paper's numbers updated: ε = 0.21, γ₀ = 0.47 (the calibration table's
+labels say what each targets), the reform raises the 2010 tax rate by 2.1 p.p., 1.4% of GDP, about three quarters of the
+amnesties' 1.8% (was 1.2 p.p., almost half), the savings rate by 0.4 p.p. of GDP, the workweek by a quarter of an hour,
+3.5 p.p. by 2040; the IES paragraph's ranges for ρ in [1, 2] (2.1 to 2.3 p.p.; 3.3 to 3.6 by 2040; informal savings 20%)
+and a new feature at the lowest IES, where the tax falls slightly on impact; section 4's accuracy footnote adds the
+Argentine 0.5 p.p. at ρ = 0.5; abstract, introduction and conclusion say "about three quarters". The twins remain
+identical. Earlier the same night: RKB's online edits to sections 5 and 6 merged (lead paragraphs with a footnote each on
+what the appendices hold), the pointers read "the online appendix", the online appendix's exhibit texts on OA.2.2 and
+OA.2.3 (text above the exhibit, following the tab and the calibration), the figure 5.1 note and sources.
+
 ## 2026-10-06 (night) — C8 decided: ε from the first quartile, γ₀ = 32% of all households; the Argentine arm re-solving
 
 RKB: the pre-reform ε is 70% of the minimum pension, the least productive formal type's benefit, and γ₀ is to count

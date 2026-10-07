@@ -3,10 +3,10 @@
  "marks": [
   {
    "id": "ARG_LOG_FourInOne--tau--pre",
-   "label": "pre-reform ε = 0.29",
+   "label": "pre-reform ε = 0.21",
    "series": "θ = 0.84",
    "panel": "Tax rate τ",
-   "value": 10.9230769230813,
+   "value": 10.92307692200472,
    "text": "10.9%",
    "table": null,
    "row": null
@@ -16,17 +16,17 @@
    "label": "post-reform εᵁ = 0.55",
    "series": "θ = 0.84",
    "panel": "Tax rate τ",
-   "value": 12.950806663036499,
-   "text": "13.0%",
+   "value": 14.20834704115643,
+   "text": "14.2%",
    "table": null,
    "row": null
   },
   {
    "id": "ARG_LOG_FourInOne--sr--pre",
-   "label": "pre-reform ε = 0.29",
+   "label": "pre-reform ε = 0.21",
    "series": "θ = 0.84",
    "panel": "Savings rate",
-   "value": 14.4005478020865,
+   "value": 14.39952646979539,
    "text": "14.4% of GDP",
    "table": null,
    "row": null
@@ -36,14 +36,14 @@
    "label": "post-reform εᵁ = 0.55",
    "series": "θ = 0.84",
    "panel": "Savings rate",
-   "value": 14.00525257300895,
-   "text": "14.0% of GDP",
+   "value": 13.805946490081169,
+   "text": "13.8% of GDP",
    "table": null,
    "row": null
   },
   {
    "id": "ARG_LOG_FourInOne--ww--pre",
-   "label": "pre-reform ε = 0.29",
+   "label": "pre-reform ε = 0.21",
    "series": "θ = 0.84",
    "panel": "Average workweek",
    "value": 42.5375,
@@ -56,18 +56,18 @@
    "label": "post-reform εᵁ = 0.55",
    "series": "θ = 0.84",
    "panel": "Average workweek",
-   "value": 42.0510352577155,
-   "text": "42.1 hours",
+   "value": 41.772928517135306,
+   "text": "41.8 hours",
    "table": null,
    "row": null
   },
   {
    "id": "ARG_LOG_FourInOne--iota--pre",
-   "label": "pre-reform ε = 0.29",
+   "label": "pre-reform ε = 0.21",
    "series": "θ = 0.84",
    "panel": "Informal savings ratio ι = s^0/s",
-   "value": 0.3114876984230408,
-   "text": "0.311",
+   "value": 0.3270991867623001,
+   "text": "0.327",
    "table": null,
    "row": null
   },
@@ -76,8 +76,8 @@
    "label": "post-reform εᵁ = 0.55",
    "series": "θ = 0.84",
    "panel": "Informal savings ratio ι = s^0/s",
-   "value": 0.2704850618184355,
-   "text": "0.270",
+   "value": 0.2772759832296043,
+   "text": "0.277",
    "table": null,
    "row": null
   }

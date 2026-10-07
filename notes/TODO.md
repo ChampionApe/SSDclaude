@@ -39,7 +39,10 @@ rule never bound and every published number is bitwise or within cross-process n
 except the CRRA design rows of C6. **Open: RKB to confirm the restatement of the equilibrium test in the
 three `num_robustroot.tex` and the section 4 sentences of the paper.**
 
-**C8. Argentina's pre-reform ε and γ₀ do not match the text** -- found 2026-10-06 (evening), RKB's call. Two
+**C8. Argentina's pre-reform ε and γ₀ do not match the text** -- found 2026-10-06 (evening), closed 2026-10-07: the run
+read, the paper's Argentine numbers updated (section 5, abstract, introduction, conclusion, section 4's footnote), ε = 0.21
+and γ₀ = 0.47 in the calibration table, the reform's 2010 tax response 2.1 p.p. and about three quarters of the observed
+rise, every count one equilibrium and no fallback. History below. Two
 mismatches, both confirmed on the published ρ = 1 instance (the preview scripts and logs are in the session scratchpad
 `argPreview/`; the self-check reproduced the published calibration and reform bitwise):
 - *ε_pre.* `InformalSavings/model.py` `getEps` reads `auxProd(t0)[1]`, a positional index: the SECOND formal quartile

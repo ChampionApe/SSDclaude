@@ -4,6 +4,16 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_InformalSavin
 `archive/INDEX.md`. Format: one entry per session, at most ~10 lines: what changed, why, where to look. A
 lesson that would recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-07 — the C8 run read
+
+`logs/finalRunC8/runArg.cmd`: stage (i) 20:24 to 23:54 (16 ρ, both variants), stage (ii) to 00:29 with the stationary check.
+ρ = 1, common X: β = 0.6495, ω = 1.4501, ε = 0.2087, θ = 0.8391, η₀ = 0.3437, X₀ = 0.8043; the reform: τ 10.92 → 13.00% in
+2010 (+2.08 p.p.; 18.88 → 22.41% in 2040), savings rate 14.40 → 13.97%, workweek 42.54 → 42.29, informal savings −20%;
+economic-equilibrium-only: savings +0.33 p.p., hours −0.08. Across the grid the 2010 tax response is −0.29 p.p. at ρ = 0.5
+(a reversal, new), +0.72 at 0.6, +2.08 at 1 and +2.09 at 2, with a maximum of +2.25 at ρ = 1.4. Counts 1/3/0 in every
+Argentine file; the vector-X twin agrees to the last digit. Stationary-against-date-specific gap up to 0.49 p.p. at ρ = 0.5
+within the transition (0.19 at ρ = 1). The paper and the online appendix carry the numbers (root log of the date).
+
 ## 2026-10-06 (night) — the pre-reform ε read from the first quartile, γ₀ = 32% of all households (TODO C8)
 
 `model.getEps` indexed `auxProd(t0)`, a positional array, with `[1]`, the second quartile, while the types are labelled

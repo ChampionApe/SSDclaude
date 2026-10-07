@@ -82,7 +82,7 @@ def argentinaCalibration(commonX = None):
     ν = np.asarray(c['ν'], dtype = float)
     nDated = len(C.calendar()['dates'])   # the tail is the steady-state pad and has no calendar meaning
     rows = [
-        [r'$\epsilon$ (\textit{pre}-reform)', '$' + C.num(c['ε']) + '$', 'Minimum-to-full pension coverage'],
+        [r'$\epsilon$ (\textit{pre}-reform)', '$' + C.num(c['ε']) + '$', r'Basic pension, 70\% of the minimum, discounted'],
         [r'$\theta$',   '$' + C.num(c['θ']) + '$', 'Replacement rate dispersion'],
         [r'$\alpha$',   '$' + C.num(c['α']) + '$', 'Factor income shares'],
         [r'$\nu_t$',    '$' + C.vec([ν[0], ν[nDated-1]], 2) + '$', '30-year gross population growth rates'],
@@ -92,7 +92,7 @@ def argentinaCalibration(commonX = None):
           'Average formal workweek of ' + C.num(C.calendar()['workweek'], 1) + ' hours'] if commonX else
          [r'$X_i$',      '$' + C.vec(c['Xi'], 2) + '$', 'Relative working hours']),
         [r'$\eta_i$',   '$' + C.vec(c['ηi'], 2) + '$', 'Income distribution'],
-        [r'$\gamma_0$', '$' + C.num(c['γ0']) + '$', 'Recipients of basic pension'],
+        [r'$\gamma_0$', '$' + C.num(c['γ0']) + '$', r'Elderly without a pension, 32\% of all households'],
         [r'$\omega$',   '$' + C.num(c['ω']) + '$', 'Social security tax of $' + C.pct(c['τ'], 1) + '$'],
         [r'$\eta_0$',   '$' + C.num(c['η0'], 3) + '$',
          r'Informal relative income, eq.\ \eqref{eq:calibration_eta}'],

@@ -94,8 +94,9 @@ GROUPS = [
           text = r'Figure \ref{fig:ARG:EffectOfCRRA}: the effect of the reform on the tax rate, the savings rate, the '
                  r'workweek and the ratio of informal to formal savings, on impact and one period on, at every IES of the '
                  r'grid, each economy recalibrated to the same pre-reform targets. Below an IES of one the responses are '
-                 r'dampened, since the young resist taxation more and the calibration needs a heavier political weight of '
-                 r'the old to reproduce the observed tax rate; between one and two they stay close to the log benchmark.'),
+                 r'dampened, and at the lowest elasticities the tax response on impact reverses, since the young resist '
+                 r'taxation more and the calibration needs a heavier political weight of the old to reproduce the observed '
+                 r'tax rate; between one and two the responses stay close to the log benchmark.'),
         T('ArgentinaReformByRho', 'Every IES', twin = True, textAlt = IDENTICAL,
           text = r'The values behind the figure\textquotesingle s short-run series, one row per point of the grid: the '
                  r'post-reform tax rate, the change in the savings rate and the workweek in the reform year. The pre-reform '

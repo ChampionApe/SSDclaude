@@ -103,9 +103,9 @@ experiment across the ρ grid (`match`; `flat` at ρ=1 only), and the `(ε, θ)`
 
 **Calibration inputs changed 2026-10-06 (TODO C8).** `getEps` reads the first formal quartile by label, the minimum
 pension's type (it read the second by position), and the workbook's γ₀ is 0.4706, informal households per formal
-household, 32% of all. `results/` is being re-solved (`logs/finalRunC8/`); until that run lands and is read, the
-committed results, `results/paper/calibrationSummary.csv` and the paper's Argentine numbers are at the previous inputs
-(ε = 0.29, γ₀ = 0.32).
+household, 32% of all. `results/` was re-solved on 2026-10-06/07 (`logs/finalRunC8/`, both variants, both stages, the
+stationary check included) and read on 2026-10-07: ε = 0.21, ω = 1.45, the reform raises the 2010 tax rate by 2.1 p.p.
+(from 1.25 under the previous inputs); every count one equilibrium and no fallback.
 
 ## Open items
 
