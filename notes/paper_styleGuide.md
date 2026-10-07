@@ -8,13 +8,8 @@ has two. The technical notes under `writing/<model>/` follow their own conventio
 
 - **First person plural, present tense.** "We calibrate", "we find", "the model predicts", "table X
   shows". Past tense only for history (Argentina's reforms, what earlier papers did).
-- **Plain academic register.** The target is the register of the model, log-preference and Argentina
-  sections: claims stated directly, mechanisms explained in one or two sentences, no flourishes.
-  The sections written in September 2026 (endogenous θ, the later OECD paragraphs) drift toward a
-  more rhetorical register — dashes mid-sentence, "in disguise", "the exercise's placebo", "a negative
-  result worth stating plainly", "which is the tension the introduction's cross-section poses". Tone
-  these down when they are revisited: keep the content, drop the meta-commentary and the second clause
-  that restates the first for emphasis.
+- **Plain academic register.** Claims stated directly, mechanisms explained in one or two sentences,
+   no flourishes.No meta-commentary and no second clause that restates the first for emphasis.
 - **Dashes.** The older sections use none. Allow at most one `---` per paragraph, for a genuine aside;
   otherwise start a new sentence.
 - **Hedging is calibrated, not defensive.** "about", "roughly", "a bit less than", "consistent with",
@@ -27,37 +22,14 @@ has two. The technical notes under `writing/<model>/` follow their own conventio
 
 ## 2. Paragraph and section anatomy
 
-**Sentence order inside a results paragraph** is stable across the draft and should be kept:
-
-1. What the exercise is (one sentence; name the table or figure).
-2. The headline number(s), signed and in the paper's units.
-3. The mechanism, typically one sentence opening "The reason for this is that", "This happens
-   because", or "Since ... have a higher marginal utility ...".
-4. Optionally, a comparison to the literature or to the other countries, or a footnote.
-
-**A quantitative section** (Argentina, OECD, endogenous θ) follows this order:
-
-1. Opening paragraphs: why the case matters, what data fact is to be explained, and a one-sentence
-   preview of the finding ("We show that ... ageing is the most significant with pension
-   characteristics being the second most important factor").
-2. `\smalltitle{Calibration.}` — targets, sources, and every identifying assumption, in prose.
-   Parameter-by-parameter, ending with the calibration table `\input`.
-3. One `\smalltitle{...}` per experiment or experiment family, each ending with its table `\input`
-   immediately after the paragraph that discusses it.
-4. `\smalltitle{The effect of the intertemporal elasticity of substitution.}` — the CRRA robustness,
-   after the log-preference results, never mixed into them.
-5. A closing interpretation paragraph (what the parameters absorb, what the model is and is not).
-
-**Section openings** state what the section does and preview the result; they do not summarise the
-paper. **Section closings** hand off to the next section with one sentence ("Section \ref{sec:esc}
-takes up that question by letting the electorate choose θ as well as τ").
-
 **Headings.** `\section` and `\subsection` only for the paper's skeleton; inside a section use
 `\smalltitle{Name.}` — bold run-in heading, sentence case, ending in a period. The endogenous-θ section
 is the one section that uses `\subsection` within itself; that is acceptable there because it has
 three distinct parts, but do not add further subsections elsewhere.
 
 ## 3. Numbers, units and precision
+
+These rules are indicative, adjust if the context warrants it:
 
 | Quantity | Unit and precision | Examples in draft |
 |---|---|---|
@@ -70,11 +42,8 @@ three distinct parts, but do not add further subsections elsewhere.
 | Other parameters | as in the table | "$\xi=0.30$", "$K/Y = 3.23$" |
 | Solver tolerances | scientific | "$6\times10^{-4}$" (rare; mostly for the technical notes) |
 
-- Every savings-rate number is savings over GDP (convention of 2026-09-08). Never "of labor income".
-- A number in prose must match the table it sits next to; the table is the source. Counterfactual
-  rows are changes against the same ρ's own baseline.
-- Quote at most two or three numbers per sentence; a run of numbers across ρ is written as a list
-  in one sentence ("from $0.738$ to $0.766$, $0.778$ and $0.846$ at $\rho = 0.5, 1, 2$").
+- Every savings-rate number is savings over GDP. Never "of labor income".
+- Quote at most two or three numbers per sentence.
 - Signs in words: "increases by", "a drop of", "would reduce". Avoid "+1.4 p.p." in prose.
 
 ## 4. Terminology and notation
@@ -96,18 +65,17 @@ three distinct parts, but do not add further subsections elsewhere.
   leisure, η_i productivity, β discount factor, α capital share, s savings, h hours.
 - **Timing**: model periods are thirty years; calendar years name periods ("2010", "2020", "2040").
 - **Country names**: "the U.S." (with periods, used adjectivally as "U.S.\ inequality"), "the UK"
-  (no periods), "France". "Argentina", "Argentine" as adjective for the survey.
+  (no periods), "France". "Argentina".
 - **Named scenarios** are italicised on first use, `{\it mild ageing}`, `{\it acute ageing}`, then
   bare. The draft mixes `{\it }` and `\emph{}`; either is fine, do not convert existing ones.
 - **Counterfactual labels** used in tables and text alike: pension design (θ), ageing, income
-  distribution, leisure preferences, voting patterns, "French characteristics" for the composite.
+  distribution, leisure preferences, voting patterns.
 - **"Exogenous θ" / "endogenous θ"**, or "θ pinned" / "θ chosen", for the two readings in the
   endogenous-design section.
-- **Endogenous-design cost vocabulary** (2026-09-24): "the deadweight cost of redistribution" or "the
-  cost"; λ is "the cost parameter" (never "the wedge", which was the previous specification's word);
-  $1-f$ is "the share of revenue lost"; $\tilde V$ is "the dispersion of relative incomes"; "the size of
-  the system" is the tax rate. The derivation is one paragraph in `sec:esc`; the technical note has the
-  rest, and the paper refers to it as "the technical documentation".
+- **Endogenous-design cost vocabulary**: "the deadweight cost of redistribution" or "the
+  cost"; λ is "the cost parameter"; $1-f$ is "the share of revenue lost"; $\tilde V$ is "the dispersion
+   of relative incomes"; "the size of the system" is the tax rate. The derivation is one paragraph in
+    `sec:esc`; the technical note has the rest, and the paper refers to it as "the technical documentation".
 - **Pending numbers** are written with the sentence structure in place and the number as
   `\todo{CRRA: <what>}`, specific enough to be filled without re-reading the section. Inside a footnote
   or a table note use `\todo[inline]{...}` (a margin note is not allowed there). `grep -rn "CRRA:"
@@ -129,13 +97,13 @@ three distinct parts, but do not add further subsections elsewhere.
 - **Footnotes** carry data sources, institutional detail, alternative choices not pursued, and
   connections to the literature that would interrupt the argument. They are full sentences. Use them
   freely; the draft averages one or two per paragraph in the calibration passages.
-- **Tables and figures**: `\input{Tables/Name}` on its own line after the discussing paragraph.
-  Figures: `\caption` above `\includegraphics`, `\label` after the caption, `[!htb]`, width
-  `\linewidth` (or `0.7\linewidth` for a single panel); notes via `threeparttable` +
-  `\tablenotes` in `\footnotesize`, opening "\textit{Note:}". End the `\includegraphics` line with
-  `\par`: `tablenotes[flushleft]` zeroes `\leftskip`/`\rightskip` before its own `\par`, so without it
-  the graphic's paragraph is set flush left and `\centering` is lost (2026-10-06, `fig:Arg`).
-- **Table and figure notes** (2026-09-15). A single note is `\begin{tablenotes}[flushleft]` + `\item[]`,
+- **Tables and figures**: Place figures/tables on its own line after discussing paragraph, but adjust
+   placement if it does not fit well on the page. Figures: `\caption` above `\includegraphics`,
+   `\label` after the caption, `[!htb]`, width `\linewidth` (or `0.7\linewidth` for a single panel);
+   notes via `threeparttable` + `\tablenotes` in `\footnotesize`, opening "\textit{Note:}". End the
+   `\includegraphics` line with `\par`: `tablenotes[flushleft]` zeroes `\leftskip`/`\rightskip` before
+   its own `\par`, so without it the graphic's paragraph is set flush left and `\centering` is lost.
+- **Table and figure notes**. A single note is `\begin{tablenotes}[flushleft]` + `\item[]`,
   set as a paragraph with no list indent; the list form with `\item` is only for notes carrying labelled
   markers keyed to cells (`US_Ageing`'s a/b). A note carries what the main text does not — it never
   restates the section's own description of the exercise — and where several tables share a preamble,
@@ -164,18 +132,9 @@ three distinct parts, but do not add further subsections elsewhere.
   the tag when the item is done; do not leave narrative comments in finished text.
 - Do not hand-edit anything carrying the `%% GENERATED` banner.
 
-## 6. What the introduction and conclusion promise
-
-Any new result paragraph must be traceable to one of the claims already made in the introduction
-(paragraphs 6–9) and echoed in the conclusion. If the rewrite changes a magnitude or a sign, change
-it in all three places: the abstract, the introduction, and the conclusion. `grep -rn TODO-ARG035
-writing/Paper` lists the places currently known to be out of sync.
-
-## 7. A short checklist before committing a section
+## 6. A short checklist before committing a section
 
 1. Every number in prose matches the table or figure next to it, in the paper's units.
-2. Each results paragraph names its table or figure and gives a mechanism.
-3. No dashes doing the work of a sentence break; no sentence commenting on the paper's own prose.
-4. Vocabulary from §4 only; no synonyms invented for θ, ε, or the equilibrium concepts.
-5. Cross-references lowercase in running text; citations through biblatex.
-6. The section opens by saying what it does and closes by handing off to the next one.
+2. No dashes doing the work of a sentence break; no sentence commenting on the paper's own prose.
+3. Vocabulary from §4 only; no synonyms invented for θ, ε, or the equilibrium concepts.
+4. Cross-references lowercase in running text; citations through biblatex.

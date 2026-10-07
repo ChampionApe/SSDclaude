@@ -9,13 +9,13 @@ Items are labelled so they can cite each other: `C` code, `R` compute runs, `W` 
 R1, R3, R4 and W3 closed on 2026-09-11 (`python/US/RESEARCH_LOG.md`, `python/paper/RESEARCH_LOG.md`); C4
 and W2 on 2026-09-12, W4 the same day on RKB's instruction, W2b on 2026-09-15 along with the rest of W5.
 Open: W1, a wording call; W5's one remaining part, whether the paper carries a verification paragraph;
-one data caveat under D1, France's voting at the UK cuts, MGE's; P1 closed 2026-09-30 with the merge into `main`; P2 below is the paper rewrite, whose plan is `notes/paper_presentationPlan.md`.
+one data caveat under D1, France's voting at the UK cuts, MGE's; P1 closed 2026-09-30 with the merge into `main`; P2 below is the paper rewrite; its plan, retired on 2026-10-07, is `archive/notes/paper_presentationPlan.md`.
 
 ## Plan in progress
 
 **P1. The size-scaled leak as the paper's endogenous design** -- closed 2026-09-30. Branch `esc-sizeLeak` (opened and executed 2026-09-24, WP1 to WP6, decisions D1 to D6 at their defaults; 7.2 rewritten 2026-09-29 with the cost as an extensive-margin loss on the tax component, `notes/esc_costLiterature.md`) was fast-forwarded into `main` at `77ba943` after both Overleaf projects were checked unchanged. The plan is restored from history to `archive/notes/plan_escSizeLeak.md` and its five live citers repointed. What stays open from it is C5 below. Diagnosis and outcome: `notes/esc_inequalityChannel.md`; finding #17.
 
-**P2. The paper rewrite** -- branch `paper-rewrite`, opened 2026-09-30 from `main`. Diagnosis, the thesis, the section-by-section recommendation, RKB's decisions D1 to D6 and the five-session work plan with its review gates are all in `notes/paper_presentationPlan.md` (§8 is the entry point for a fresh session). Agents run on Opus 5.5 through `.claude/agents/paper-*.md`. W7 is folded into it: (a) is agent A4's brief, (b) is fixed in session 1. Session 4 done 2026-10-06: the appendix split and the online appendix (a Quarto site with a print edition, `writing/OnlineAppendix`), `notes/paper_onlineAppendix.md`; what is open, and the hand-off to drafting sections 6–8, is its §7.
+**P2. The paper rewrite** -- branch `paper-rewrite`, opened 2026-09-30 from `main`, fast-forwarded into `main` and deleted on 2026-10-07. The 2026-09-30 plan with its five sessions and gates ran through session 4 (the appendix split and the online appendix, `notes/paper_onlineAppendix.md`); from 2026-10-06 the sections were reshaped with RKB in session instead, and the plan and the gate notes are retired to `archive/notes/` (`paper_presentationPlan.md`, `paper_gate1-3.md`). W7 was folded into it. State on 2026-10-07: sections 1–6 settled apart from final checks; section 7 restructured (root log of the date: the derivations in appendix C, the corner out of the main text, the summary table `US_ESC_Summary`). Open: the abstract, introduction and conclusion still say "inequality moves the design little" where section 7 now says the direction depends on the IES (W8a), and their rankings lack section 6's ρ ≤ 1 qualifier (W8b); the number audit of every prose number against its table (the plan's E1); RKB's read of the online appendix's exhibit texts and the publication to GitHub Pages; the Overleaf push of the restructured section 7 and appendix C; appendix C's counterpart in the technical note; a `\oa{home}` macro.
 
 **C5. A linear (Okun) term in the leak** -- follow-up to P1, decision D3. Under a purely quadratic loss the
 first unit of redistribution is free at the margin, so no electorate chooses exactly $\theta = 1$ and
@@ -28,7 +28,7 @@ the prediction). Not in this draft; one sentence in `sec:esc` says so.
 layer (alg `esc:crra2D`, `LeadedCRRA2D` `designRule = 'root'`) won the pilot against the first order
 condition layer (finding #19) and produced every CRRA endogenous-design row of the paper: the exact λ moved
 by less than a third of a percent and the chosen designs by at most 1.3e-3 (five third decimals of the paper),
-read in `notes/todo_finalRun_2026-10-02.md` and item 18 of `num_esc.tex`'s checks; the paper's section 4
+read in `archive/notes/todo_finalRun_2026-10-02.md` and item 18 of `num_esc.tex`'s checks; the paper's section 4
 paragraph is rewritten. History: root log 2026-10-02 (evening) and 2026-10-03, `python/US/RESEARCH_LOG.md`.
 
 **C7. Tax candidates compared at frozen savings shares** -- done 2026-10-02/03 (`roots1d.selectMaxFrozen`
@@ -96,7 +96,7 @@ for the abstract, the introduction and the conclusion.
 **W7. After the appendix split** (2026-09-29, root log) -- two calls for RKB. (a) France's LIS survey year
 is not stated anywhere in the draft; `sec:oecd` implies 2019. (b) `sec:esc` and the conclusion say the
 UK's own λ is "within 16%" of the US one: true at ρ = 1 (7.264 vs 8.643), but at ρ = 2 it is 61% above
-(2.786 vs 1.728; appendix G.2 says so). Also whether `sec:esc` gets one sentence on the UK-host results. Folded into P2 (2026-09-30): (a) is agent A4's brief, (b) is fixed in session 1 of `notes/paper_presentationPlan.md` §8; the UK-host sentence is a session 1 call.
+(2.786 vs 1.728; appendix G.2 says so). Also whether `sec:esc` gets one sentence on the UK-host results. Folded into P2 (2026-09-30): (a) is agent A4's brief, (b) is fixed in session 1 of the plan (`archive/notes/paper_presentationPlan.md` §8); the UK-host sentence is a session 1 call.
 
 ## Data tasks
 

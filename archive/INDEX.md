@@ -139,6 +139,12 @@ One line per entry: title, then `file:line`.
 - `notes/numAppendix_analytical_planning.md`: the 2026-08-25 inventory behind the `informalAnalytical`
   numerical notes, delivered in the 2026-08-25 restructure.
 - `notes/figs_inspiration.md`: matplotlib/seaborn snippets from the prior implementation.
+- `notes/paper_presentationPlan.md`: the 2026-09-30 plan of the paper rewrite (diagnosis, decisions D1--D6, five
+  sessions with review gates), retired 2026-10-07 once the sections were reshaped with RKB in session.
+- `notes/paper_gate1.md`, `paper_gate2.md`, `paper_gate3.md`: the gate notes of sessions 1--3 of that plan (agent
+  reports condensed, RKB's decisions in each DECISIONS block).
+- `notes/todo_finalRun_2026-10-02.md`: the checklist and reading of the final pipeline run of 2026-10-03 (equilibrium
+  counts, the CRRA design-layer correction), cited by `python/US/README.md` and `python/paper/compareResults.py`.
 
 ## README snapshots (pre-cut, 2026-09-11)
 

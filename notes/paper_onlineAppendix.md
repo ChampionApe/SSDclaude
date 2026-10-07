@@ -1,7 +1,7 @@
 # The appendix split and the online appendix (2026-10-06)
 
 Proposal for RKB (and MGE), for session 4 of the paper rewrite. It replaces the LaTeX second root (agent D1) of
-`notes/paper_presentationPlan.md` §8 and makes the split of §3's appendix table concrete. Two questions: what stays
+`archive/notes/paper_presentationPlan.md` §8 (the plan, retired 2026-10-07) and makes the split of §3's appendix table concrete. Two questions: what stays
 in the paper's appendix and what goes online, and what the online appendix should be. Fixed by RKB on 2026-10-06:
 B.2–B.3 stay in the paper for now; the online appendix need not be a PDF and may be a website in or beside the
 repository. Record decisions in the block at the end.
@@ -182,7 +182,7 @@ explorable-deck is for talks; it is Quarto too, and would read the site's data l
 
 - **A. Decisions** (below).
 - **B. The paper's appendix**, one session, independent of the form: the split of §3; the robustness map's
-  builder; the open items of `notes/paper_gate3.md` §3 and `notes/paper_gate2.md` §3 (C1's point c, μᵢ in the
+  builder; the open items of `archive/notes/paper_gate3.md` §3 and `archive/notes/paper_gate2.md` §3 (C1's point c, μᵢ in the
   proposition; B.3's μ₀ where r₀ is meant; B.2's β_{t,0}; C's Γ_{t,h}; B.1's "type type"; part v's γ₀ claim;
   D's ε formula with RKB, its ξ promise and its hours sentence; E's LIS year; F.1's repeated mechanism; G.1's
   1.6 → 1.5 p.p. and "France's demography" alone; W8(e)); the main-text pointers after RKB's Overleaf pass.
@@ -242,10 +242,14 @@ is RKB's call. A session that drafts the main sections should know:
   read as scratch names; the paper's section 6 does not say that a thirty-year β above one is needed at an IES of 0.6
   or below (the online appendix's OA.2.5 and OA.3.3 now do); publishing to GitHub Pages is still RKB's call, and the
   paper's introduction now prints the address.
-- **Next on the online appendix (2026-10-07)**: the exhibit texts for the 41 exhibits without one (the registry's `text`,
-  no typed number, drafted by an agent from the paper's descriptions and read before they go in); OA.2.2 and OA.2.3
-  are the model, text above the exhibit following the tab and the calibration. Publishing to GitHub Pages is RKB's
-  call; the paper's introduction already prints the address.
+- **Exhibit texts (2026-10-07)**: a paper-writer drafted the registry's `text` for 38 of the 47 exhibits without one and a
+  `textAlt` for each of their 20 twins (the print edition would otherwise print a paragraph twice), no typed number, every
+  sign and ordering checked against the exhibit's cells at every ρ and under both calibrations and stated per ρ, host or
+  calibration where it holds only there; nine exhibits stay without a text because their chapter paragraph, caption and
+  note already say everything (the three data tables, `ArgentinaCalibration`, `ARG_LOG_FourInOne`, the three
+  calibration-by-IES and path tables, `NUM_Selection`). Committed unread on RKB's instruction; his read on the site is
+  the next step. `US_ESC_Summary`, section 7's new table, joins OA.4.2 and `US_ESC_Ageing` is online only. Publishing
+  to GitHub Pages is RKB's call; the paper's introduction already prints the address.
 - **Left for sections 6–8**: TODO W8(a)/(b); the conclusion's "a higher IES changes only the size of the
   earnings-link effect" against section 6, where French voting's effect grows from 0.3 to 1.7 p.p.; section 7 at
   3,708 words against ≈ 2,800 and the conclusion at 504 against ≈ 450. Smaller: section 5 never states the equal

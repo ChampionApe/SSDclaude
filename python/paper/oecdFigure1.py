@@ -59,7 +59,7 @@ AS_EPS = {'spending': 'pensionSpending_cashInKind', 'growth': 'popGrowth_wb', 'i
           'gini': 'gini_widPretax'}
 EPSCOL = {'spending': 'eps_pensionSpending', 'growth': 'eps_popGrowth', 'index': 'eps_bbIndex',
           'gini': 'eps_gini'}
-PLOT = NAMED                     # gate 1 (notes/paper_presentationPlan.md §8): NAMED or AS_EPS
+PLOT = NAMED                     # gate 1 (archive/notes/paper_presentationPlan.md §8): NAMED or AS_EPS
 LABEL = {'pensionSpending': 'Pension spending, % of GDP',
          'pensionSpending_cashInKind': 'Old-age spending, % of GDP',
          'popGrowth': 'Population 2020 / 1990', 'popGrowth_wb': 'Population 2020 / 1990',

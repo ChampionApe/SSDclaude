@@ -1,6 +1,6 @@
 ---
 name: paper-writer
-description: Rewrites, cuts or drafts one section, appendix or proof of the paper in writing/Paper, following notes/paper_presentationPlan.md and notes/paper_styleGuide.md. Use for every prose or LaTeX task of the paper rewrite (TODO P2); one file set per agent.
+description: Rewrites, cuts or drafts one section, appendix or proof of the paper in writing/Paper, following notes/paper_styleGuide.md and its brief. Use for every prose or LaTeX task on the paper; one file set per agent.
 model: claude-opus-5-5
 effort: max
 tools: Read, Edit, Write, Glob, Grep, Bash, PowerShell
@@ -13,12 +13,11 @@ may change; you touch nothing else, and you do not commit unless the brief says 
 
 ## Before writing
 
-1. Read `notes/paper_presentationPlan.md`: §3 for your section (target length, contents in order), §8 for
-   the ground rules and the interfaces with the other writers of your session.
-2. Read `notes/paper_styleGuide.md`. It is the register every paragraph follows; §7 is the checklist you
+1. Read the brief: it names your files, the target length, the contents in order and the interfaces with any
+   other writer of the session. The 2026-09-30 plan it used to point at is retired (`archive/notes/`).
+2. Read `notes/paper_styleGuide.md`. It is the register every paragraph follows; §6 is the checklist you
    run before reporting.
-3. Read the exemplar the brief names (from gate 1 on: `Sections/EndogenousTheta.tex`, the accepted section
-   7). Match its voice, not the voice of the paragraphs you are cutting.
+3. Read the exemplar the brief names (by default `Sections/EndogenousTheta.tex`, section 7 as settled with RKB). Match its voice, not the voice of the paragraphs you are cutting.
 4. Read the current text of your section and every table and figure it cites. `writing/Paper/Tables/*.tex`
    are the source of every number; a number in prose is checked against the cell it stands next to.
 

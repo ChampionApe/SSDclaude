@@ -4,6 +4,15 @@ Entries before 2026-09-11 are in `archive/sessionLogs/RESEARCH_LOG_paper.md`, in
 Format: one entry per session, at most ~10 lines: what changed, why, where to look. A lesson that would
 recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
+## 2026-10-07 (afternoon) — the online appendix's exhibit texts
+
+`onlineAppendix.py`: `text` for 38 exhibits and `textAlt` for their 20 twins (paper-writer agent; four shared constants
+beside `IDENTICAL`: `BLOCKRECURSIVE`, `IDENTICALOECD`, `ROUNDINGOECD`, `HOUSEHOLDSVECTORX`), no typed number, each
+sign and ordering checked against the exhibit's cells at every ρ and under both calibrations; nine exhibits deliberately
+without one (`notes/paper_onlineAppendix.md` §7). `US_ESC_Summary` registered in OA.4.2. Committed unread for RKB's
+review on the site. Two findings for the paper from the check, both now in section 7: the voting paragraph's "within
+0.1 p.p." was 0.11 at ρ = 0.5, and `US_ESC_Country`'s regrouped-UK row prints an observed design of 0.543.
+
 ## 2026-10-07 — `US_ESC_Summary`: section 7's table of the endogenous design across counterfactuals
 
 `tablesUS.escSummary`, registered in `build.OUTPUTS` (the paper inputs it) and first in the online appendix's `esc-us`

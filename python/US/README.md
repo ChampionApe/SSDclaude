@@ -168,7 +168,7 @@ scan at `ns` = 150: its β-imposed calibration does not converge on the `ns` = 5
 **Selection rule and design layer** (2026-10-02/03): the tax solvers run the frozen-share equilibrium
 test (`roots1d.selectMaxFrozen`, finding #18) and `LeadedCRRA2D` chooses the design at frozen shares
 (`designRule = 'root'`, alg `esc:crra2D`, TODO C6); every driver writes the counts as non-key columns.
-Final run 2026-10-03 (`logs/finalRun1002/`, read in `notes/todo_finalRun_2026-10-02.md`): one equilibrium
+Final run 2026-10-03 (`logs/finalRun1002/`, read in `archive/notes/todo_finalRun_2026-10-02.md`): one equilibrium
 and no fallback at every counted state of every csv, tax and design counts alike; exact `λ` 18.267/1.724
 (US) and 15.117/2.777 (UK) at ρ = 0.5/2, each within a third of a percent of the earlier layer's; the
 chosen designs moved by at most 1.3e-3 (French voting, ρ = 2). The path iteration (`method = 'path'`)

@@ -1,5 +1,5 @@
 r""" Row-by-row comparison of the csvs under results/ against the committed ones (reading a run,
-notes/todo_finalRun_2026-10-02.md): which files changed, which columns are new, and per numeric column
+archive/notes/todo_finalRun_2026-10-02.md): which files changed, which columns are new, and per numeric column
 the largest absolute difference on rows aligned by the file's key columns.
 
     .venv\Scripts\python.exe python\paper\compareResults.py                 # every changed csv

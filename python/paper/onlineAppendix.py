@@ -64,14 +64,37 @@ IDENTICAL = (r'Under the vector-$X_i$ calibration this exhibit is identical to t
              r'digit, as the comparison in \oa{oecd-vectorx} records: the calibration is block '
              r'recursive, so the aggregates the reform moves do not depend on how the taste for leisure is split across '
              r'the quartiles.')
+BLOCKRECURSIVE = (r'the calibration is block recursive, so what the design and the demography move does not depend on how '
+                  r'the taste for leisure is split across the income groups.')
+IDENTICALOECD = (r'Under the vector-$X_i$ calibration this table is identical to the common-$X$ one to the last printed '
+                 r'digit, as the comparison in \oa{oecd-vectorx} records: ' + BLOCKRECURSIVE)
+ROUNDINGOECD = (r'Under the vector-$X_i$ calibration this table differs from the common-$X$ one only in the last printed '
+                r'digit of a few cells at the lowest IES, as the comparison in \oa{oecd-vectorx} records: ' + BLOCKRECURSIVE)
+HOUSEHOLDSVECTORX = (r'Under the vector-$X_i$ calibration the taste for leisure differs across the groups, identified from '
+                     r'relative hours, and rises with income, and the productivities spread further apart than under the '
+                     r'common $X$; the population shares and the propensities to vote are data and do not change.')
 
 # (anchor, chapter file stem, exhibits). The anchors are the book's headings and the paper's \oa keys.
 GROUPS = [
     ('robustness', 'index', [
         F('RobustnessMap', caption = r'The paper\textquotesingle s results across specifications',
-          note = r'Each marker opens the table that prints it.')]),
+          note = r'Each marker opens the table that prints it.',
+          text = r'Figure \ref{fig:robustness}: a marker across the zero line from the highlighted one reverses the '
+                 r'paper\textquotesingle s sign. With the design given, the Beveridgean corner against the Bismarckian '
+                 r'one, acute ageing and France\textquotesingle s voting patterns raise the tax rate in every '
+                 r'specification; France\textquotesingle s income distribution lowers it on the U.S., and on the UK raises '
+                 r'it under a common $X$ and lowers it under the vector $X_i$. With the design chosen, acute ageing makes '
+                 r'the design more Bismarckian and France\textquotesingle s voting patterns less so throughout, while '
+                 r'France\textquotesingle s income distribution moves it in a direction that changes with the IES and the '
+                 r'host, and to the Bismarckian corner under the cost on the design.')]),
     ('data-countries', 'data', [
-        F('OECDdata'), T('OECD_Countries', 'Countries'), T('OECD_Sources', 'Sources')]),
+        F('OECDdata',
+          text = r'Figure \ref{fig:US:OECDdata}: one marker per country, with the three economies the paper calibrates '
+                 r'labeled. The Bismarckian--Beveridgean index is the ratio of the gross replacement rates for men at mean '
+                 r'and at half-mean earnings: one where benefits are proportional to earnings, one half where they are '
+                 r'flat. Pension spending and the index both fall as population growth rises, and neither has a clear '
+                 r'relation to the Gini coefficient (table \ref{table:OA:OECD_Correlations}).'),
+        T('OECD_Countries', 'Countries'), T('OECD_Sources', 'Sources')]),
     ('data-correlations', 'data', [T('OECD_Correlations', 'Correlations')]),
     ('arg-calibration', 'argentina', [T('ArgentinaCalibration', 'Calibration', twin = True)]),
     ('arg-reform', 'argentina', [
@@ -111,40 +134,211 @@ GROUPS = [
         F('ARG_RhoGrid', twin = True, caption = r'The Argentine calibration across the intertemporal elasticity',
           note = r'The parameters solved jointly with the equilibrium path at each IES of the grid, against the same '
                  r'targets; the table of this section prints their values, and $\rho = 1$ is the paper\textquotesingle s '
-                 r'calibration.'),
+                 r'calibration.',
+          text = r'Four panels are parameters solved at each IES and two are predictions of the calibration, the savings '
+                 r'rate and the informal savings ratio in 2010. The discount factor and the political weight of the old '
+                 r'both fall as the IES rises, the second because the young resist taxation less and a lighter weight of '
+                 r'the old reproduces the observed tax rate; the savings rate falls, the informal savings ratio rises, and '
+                 r'the informal productivity and taste for leisure barely move.',
+          textAlt = r'Under the vector-$X_i$ calibration the discount factor, the political weight of the old, the '
+                    r'savings rate and the informal savings ratio are those of the common $X$ at every IES; only the '
+                    r'informal productivity and taste for leisure take other values, and they too barely move with the '
+                    r'IES.'),
         T('ARG_RhoGridTable', 'Calibration by IES', twin = True)]),
     ('oecd-calibration', 'oecd', [
-        T('USUKFRCalibration', 'Countries', twin = True), T('US_householdheterogeneity', 'U.S.', twin = True),
-        T('FR_householdheterogeneity', 'France', twin = True), T('UK_householdheterogeneity', 'UK', twin = True),
-        T('FRUK_householdheterogeneity', 'France at the UK\u2019s cuts', twin = True),
-        T('UKUS_householdheterogeneity', 'The UK at U.S. cuts', twin = True)]),
+        T('USUKFRCalibration', 'Countries', twin = True,
+          text = r'Table \ref{table:US:Calib}: the three calibrations at an IES of one. France has the '
+                 r'lowest population growth and the narrowest productivity spread of the three and the U.S.\ the highest '
+                 r'population growth, while the political weight of the old is close in the U.S.\ and France and lower in '
+                 r'the UK.',
+          textAlt = r'Under the vector-$X_i$ calibration only $X$, whose level is the unit of hours, and the productivity '
+                    r'spread change; $\theta$, $\omega$, the demography and the shared parameters are those of the common '
+                    r'$X$. The spread widens in all three countries, the UK\textquotesingle s now slightly above the U.S.\ '
+                    r'one, and France\textquotesingle s stays the narrowest.'),
+        T('US_householdheterogeneity', 'U.S.', twin = True, textAlt = HOUSEHOLDSVECTORX,
+          text = r'Table \ref{table:a_US:CalibUS}: the U.S.\ households in three income groups, the first two cut so that '
+                 r'their mean incomes are half the mean and the mean. Productivity and the propensity to vote both rise '
+                 r'with income, and the low group holds most households.'),
+        T('FR_householdheterogeneity', 'France', twin = True, textAlt = HOUSEHOLDSVECTORX,
+          text = r'Table \ref{table:a_US:CalibFR}: France\textquotesingle s households grouped at the U.S.\ income '
+                 r'percentiles, so the population shares are the U.S.\ ones and each French group can stand in for its '
+                 r'U.S.\ counterpart in the counterfactuals of \oa{oecd-us}. The productivity profile is flatter than the '
+                 r'U.S.\ one and the propensity to vote is nearly flat.'),
+        T('UK_householdheterogeneity', 'UK', twin = True, textAlt = HOUSEHOLDSVECTORX,
+          text = r'Table \ref{table:a_US:CalibUK}: the UK\textquotesingle s households at its own cuts, half-mean and mean '
+                 r'income as for the U.S., which put most of them in the medium group. The propensity to vote rises with '
+                 r'income, less steeply than in the U.S.'),
+        T('FRUK_householdheterogeneity', 'France at the UK\u2019s cuts', twin = True,
+          text = r'Table \ref{table:a_US:CalibFRUK}: France\textquotesingle s households regrouped at the '
+                 r'UK\textquotesingle s income percentiles, the groups imposed on the UK in \oa{oecd-uk} and, with the '
+                 r'design chosen, in \oa{esc-uk}. Propensities to vote are observed at the U.S.\ cuts only, so each group '
+                 r'carries the population-weighted average of the observed values it overlaps. At these cuts '
+                 r'France\textquotesingle s productivity spread is wider than the UK\textquotesingle s (table '
+                 r'\ref{table:a_US:CalibUK}).',
+          textAlt = HOUSEHOLDSVECTORX + (r' At these cuts France\textquotesingle s productivity spread is narrower than '
+                                         r'the UK\textquotesingle s (table \ref{table:a_US:CalibUK_vectorX}), where under '
+                                         r'the common $X$ it is wider.')),
+        T('UKUS_householdheterogeneity', 'The UK at U.S. cuts', twin = True, textAlt = HOUSEHOLDSVECTORX,
+          text = r'The UK\textquotesingle s households regrouped at the U.S.\ income percentiles, so the population shares '
+                 r'are the U.S.\ ones. At these cuts the UK\textquotesingle s productivity profile is much flatter than at '
+                 r'its own (table \ref{table:a_US:CalibUK}), the source of the low dispersion of relative incomes in the '
+                 r'regrouped row of table \ref{table:US_ESC:country}.')]),
     ('oecd-vectorx', 'oecd', []),
     ('oecd-rhogrid', 'oecd', [
         F('OECD_RhoGrid', twin = True,
           caption = r'The calibrations of the U.S., the UK and France across the intertemporal elasticity',
           note = r'The parameters solved jointly with the equilibrium path at each IES of the grid, against the same '
                  r'targets, with $\beta$ calibrated for the U.S. and imposed on the UK and France; the table of this '
-                 r'section prints their values, and $\rho = 1$ is the paper\textquotesingle s calibration.'),
+                 r'section prints their values, and $\rho = 1$ is the paper\textquotesingle s calibration.',
+          text = r'One line per country; the discount factor is the U.S.\ one in all three. The political weight of the '
+                 r'old falls as the IES rises in every country, since the young resist taxation less, and keeps its '
+                 r'ranking, highest in the U.S.\ and lowest in the UK; the savings rate falls in every country, and the '
+                 r'interest factor of the UK and France, a prediction, rises toward the U.S.\ target.',
+          textAlt = r'Under the vector-$X_i$ calibration there is no common taste for leisure to draw, and every other '
+                    r'panel is that of the common $X$ up to the last printed digit.'),
         T('OECD_RhoGridTable', 'Calibration by IES', twin = True)]),
     ('oecd-us', 'oecd', [
-        F('US_overview', twin = True), T('US_PensChars', 'Pension design', twin = True),
-        T('US_Ageing', 'Ageing', twin = True), T('US_OtherShocks', 'French characteristics', twin = True),
-        T('US_CRRA_PensChars', 'Design by IES', twin = True), T('US_CRRA_Ageing', 'Ageing by IES', twin = True),
-        T('US_CRRA_OtherShocks', 'French by IES', twin = True)]),
+        F('US_overview', twin = True,
+          text = r'Figure \ref{fig:US:overview}: one row per characteristic changed in the U.S.\ calibration, at three '
+                 r'values of the IES. The design and ageing dominate the tax panel at an IES of one or below, '
+                 r'while at an IES of two France\textquotesingle s voting patterns move the tax rate by more than the whole '
+                 r'range of the design. France\textquotesingle s leisure preferences dominate the workweek panel and leave '
+                 r'the tax and savings rates essentially unchanged.',
+          textAlt = r'Only the rows that impose France\textquotesingle s productivities or its taste for leisure differ '
+                    r'from the paper\textquotesingle s figure: France\textquotesingle s income distribution lowers the tax '
+                    r'rate and lengthens the workweek by more at every IES, and its leisure preferences shorten the '
+                    r'workweek a little less. The rows for the design, ageing and voting patterns are the '
+                    r'paper\textquotesingle s.'),
+        T('US_PensChars', 'Pension design', twin = True, textAlt = IDENTICALOECD,
+          text = r'The design at its two corners against the observed one, at an IES of one. Moving to flat benefits '
+                 r'raises the tax rate and lowers the savings rate and the workweek; with the tax held at its baseline '
+                 r'path it raises the savings rate instead, so the tax response is what lowers it, while for hours the '
+                 r'two effects point the same way. Fully earnings-related benefits reverse every sign.'),
+        T('US_Ageing', 'Ageing', twin = True, textAlt = IDENTICALOECD,
+          text = r'The two ageing scenarios at an IES of one. Ageing raises the tax rate and lowers the savings rate and '
+                 r'the workweek, acute ageing by more than mild; with the tax held at its baseline path the savings rate '
+                 r'does not move and the workweek lengthens, so both falls come from the tax response.'),
+        T('US_OtherShocks', 'French characteristics', twin = True,
+          text = r'France\textquotesingle s characteristics on the U.S.\ at an IES of one. France\textquotesingle s income '
+                 r'distribution lowers the tax rate and raises the savings rate and the workweek, its voting patterns '
+                 r'raise the tax rate, and its leisure preferences shorten the workweek and move nothing else. All three '
+                 r'together bring the workweek close to France\textquotesingle s but move the tax rate away from it.',
+          textAlt = r'Under the vector-$X_i$ calibration only the rows that impose France\textquotesingle s productivities '
+                    r'or its taste for leisure differ: France\textquotesingle s income distribution lowers the tax rate and '
+                    r'raises the savings rate by more, alone and with the other characteristics, and the workweek is '
+                    r'longer in each of these rows. Every sign is that of the common $X$, and the voting row and '
+                    r'France\textquotesingle s own path are unchanged.'),
+        T('US_CRRA_PensChars', 'Design by IES', twin = True, textAlt = IDENTICALOECD,
+          text = r'The design at its two corners at each IES. Flat benefits raise the tax rate and shorten the workweek '
+                 r'at every IES and fully earnings-related ones do the reverse, both by less the higher the IES, since the '
+                 r'calibration then needs a lower political weight of the old and the difference between rich and poor '
+                 r'retirees counts for less. Flat benefits lower the savings rate at $\rho = 0.5$ and $1$ but raise it a '
+                 r'little at $\rho = 2$, where both corners raise it.'),
+        T('US_CRRA_Ageing', 'Ageing by IES', twin = True, textAlt = IDENTICALOECD,
+          text = r'The two ageing scenarios at each IES. Ageing raises the tax rate and lowers the savings rate and the '
+                 r'workweek at every IES, acute ageing by more than mild, and the tax response falls only a little as the '
+                 r'IES rises, where that of the design falls steeply (table \ref{table:US:CRRA:pensChars}).'),
+        T('US_CRRA_OtherShocks', 'French by IES', twin = True,
+          text = r'France\textquotesingle s characteristics on the U.S.\ at each IES. The income distribution lowers the '
+                 r'tax rate at every IES and the voting patterns raise it, the first by less and the second by more the '
+                 r'higher the IES, and the leisure preferences move essentially the workweek alone. With all three '
+                 r'together the tax rate falls at $\rho = 0.5$ and $1$ and rises at $\rho = 2$, where the voting patterns '
+                 r'prevail.',
+          textAlt = r'Under the vector-$X_i$ calibration only the rows that impose France\textquotesingle s productivities '
+                    r'or its taste for leisure differ: the income distribution lowers the tax rate by more at every IES, '
+                    r'and with all three characteristics together the tax rate falls at every IES, only marginally at '
+                    r'$\rho = 2$, where under the common $X$ it rises. The voting rows are those of the common $X$.')]),
     ('oecd-uk', 'oecd', [
         F('UKUS_French', twin = True, caption = r'French characteristics in the U.S.\ and the UK',
           note = r'Every panel is the deviation from the host\textquotesingle s own baseline at the same $\rho$, '
                  r'whose levels are the baseline rows of the tables of this section. France\textquotesingle s income '
                  r'groups are cut at the host\textquotesingle s income percentiles. The savings rate is savings '
-                 r'relative to GDP.'),
-        T('UK_OtherShocks', 'French characteristics', twin = True),
-        T('UK_CRRA_OtherShocks', 'French by IES', twin = True), T('UK_CRRA_PensChars', 'Design by IES', twin = True),
-        T('UK_CRRA_Ageing', 'Ageing by IES', twin = True)]),
+                 r'relative to GDP.',
+          text = r'France\textquotesingle s characteristics on the two hosts, the U.S.\ in the upper row of panels and the '
+                 r'UK in the lower, on shared axes so that the hosts compare by position; the last row imposes all three '
+                 r'at once. Together they raise the UK\textquotesingle s tax rate at every IES, while on the U.S.\ they '
+                 r'lower it at $\rho = 0.5$ and $1$ and raise it at $\rho = 2$.',
+          textAlt = r'The same comparison under the vector-$X_i$ calibration, which changes the rows that impose '
+                    r'France\textquotesingle s productivities or its taste for leisure. France\textquotesingle s income '
+                    r'distribution lowers the tax rate on both hosts at every IES, and all three characteristics together '
+                    r'lower it on both at $\rho = 0.5$ and $1$, while at $\rho = 2$ they raise the UK\textquotesingle s a '
+                    r'little and leave the U.S.\ one essentially unchanged.'),
+        T('UK_OtherShocks', 'French characteristics', twin = True,
+          text = r'France\textquotesingle s characteristics on the UK at an IES of one, laid out as the U.S.\ table '
+                 r'\ref{table:US:otherShocks}. France\textquotesingle s income distribution and voting patterns each move '
+                 r'the UK\textquotesingle s tax rate by less than the U.S.\ one, and with all three characteristics '
+                 r'together the UK\textquotesingle s tax rate rises toward France\textquotesingle s, where the U.S.\ one '
+                 r'moves away from it.',
+          textAlt = r'Under the vector-$X_i$ calibration the rows that impose France\textquotesingle s productivities or '
+                    r'its taste for leisure differ: France\textquotesingle s income distribution lowers the '
+                    r'UK\textquotesingle s tax rate and raises its savings rate and workweek, the reverse of every '
+                    r'common-$X$ sign, and with all three characteristics together the UK\textquotesingle s tax rate falls '
+                    r'a little. The voting row and France\textquotesingle s own path are unchanged.'),
+        T('UK_CRRA_OtherShocks', 'French by IES', twin = True,
+          text = r'France\textquotesingle s characteristics on the UK at each IES. Each moves the UK\textquotesingle s '
+                 r'savings rate by little and the leisure preferences move the workweek alone; the income distribution '
+                 r'and the voting patterns both raise the tax rate, by more the higher the IES, and so do all three '
+                 r'together.',
+          textAlt = r'Under the vector-$X_i$ calibration France\textquotesingle s income distribution lowers the '
+                    r'UK\textquotesingle s tax rate at every IES, by less the higher the IES, and all three characteristics '
+                    r'together lower it at $\rho = 0.5$ and $1$ and raise it at $\rho = 2$; the voting rows are '
+                    r'essentially those of the common $X$.'),
+        T('UK_CRRA_PensChars', 'Design by IES', twin = True, textAlt = ROUNDINGOECD,
+          text = r'The design at its two corners on the UK at each IES. As on the U.S.\ (table '
+                 r'\ref{table:US:CRRA:pensChars}), flat benefits raise the tax rate and shorten the workweek at every IES '
+                 r'and fully earnings-related ones do the reverse, both by less the higher the IES; unlike on the U.S., '
+                 r'flat benefits lower the savings rate at every IES.'),
+        T('UK_CRRA_Ageing', 'Ageing by IES', twin = True, textAlt = ROUNDINGOECD,
+          text = r'The two ageing scenarios on the UK at each IES. As on the U.S., ageing raises the tax rate and lowers '
+                 r'the savings rate and the workweek at every IES, acute ageing by more than mild, and the tax response '
+                 r'falls only a little as the IES rises; every effect is smaller than on the U.S.\ (table '
+                 r'\ref{table:US:CRRA:ageing}).')]),
     ('esc-calibration', 'esc', [
-        T('US_ESC_Calibration', 'The cost'), T('US_ESC_Country', 'The cross-country test')]),
+        T('US_ESC_Calibration', 'The cost',
+          text = r'Table \ref{table:US_ESC:calibration}: one row per IES, each with the cost parameter at which the U.S.\ '
+                 r'electorate re-elects its observed design in 2020. The parameter, and with it the share of revenue lost '
+                 r'at the observed design and at flat benefits, falls steeply as the IES rises, since a higher elasticity '
+                 r'strengthens the forward-looking channels that hold the choice away from the Beveridgean corner.'),
+        T('US_ESC_Country', 'The cross-country test',
+          text = r'Table \ref{table:US_ESC:country}: the test of the cost parameter calibrated on the U.S.\ alone, at an '
+                 r'IES of one. Under the U.S.\ parameter the chosen designs keep the observed ranking of the UK, the U.S.\ '
+                 r'and France, compressed toward the U.S.\ value; the UK\textquotesingle s own parameter lies below the '
+                 r'U.S.\ one, and regrouping the UK at the U.S.\ income percentiles moves its chosen design only '
+                 r'slightly.')]),
     ('esc-us', 'esc', [
-        F('US_ESC_overview'), T('US_ESC_Ageing', 'Ageing'), T('US_ESC_IncomeDistr', 'Income distribution'),
-        T('US_ESC_Voting', 'Voting patterns'), T('US_ESC_FrenchAll', 'All French characteristics')]),
+        F('US_ESC_overview',
+          text = r'Figure \ref{fig:US_ESC:overview}: each counterfactual with the design pinned and with it chosen, at '
+                 r'three values of the IES. Acute ageing moves the chosen design toward '
+                 r'earnings-related benefits and France\textquotesingle s voting patterns toward flat ones at every IES, '
+                 r'the voting patterns furthest at $\rho = 2$, where choosing the design also adds to the rise in the tax '
+                 r'rate and shortens the workweek; the direction in which France\textquotesingle s income distribution '
+                 r'moves the design changes with the IES, and the last row follows the voting patterns.'),
+        T('US_ESC_Summary', 'Summary'),
+        T('US_ESC_Ageing', 'Ageing',
+          text = r'Table \ref{table:US_ESC:ageing}: acute ageing at each IES, read with the design pinned at the U.S.\ '
+                 r'value and with it chosen, both under the cost. The baseline rows are the economy with the cost in place '
+                 r'and the design chosen, so they differ slightly from those of \oa{oecd-us}. The chosen design is more '
+                 r'Bismarckian at every IES and nearly the same across them, and choosing it adds a little to the rise in '
+                 r'the tax rate and to the fall in the savings rate and leaves the workweek almost unchanged.'),
+        T('US_ESC_IncomeDistr', 'Income distribution',
+          text = r'France\textquotesingle s income distribution on the U.S.\ at each IES, read with the design pinned and '
+                 r'with it chosen. With the design pinned the tax rate falls at every IES, by less than without the cost '
+                 r'(table \ref{table:US:CRRA:otherShocks}), since the compressed distribution also lowers the share of '
+                 r'revenue the flat component dissipates. The chosen design is less Bismarckian than the observed one at '
+                 r'$\rho = 0.5$ and more Bismarckian at $\rho = 1$ and $2$, and choosing it keeps the tax rate close to '
+                 r'the pinned reading at $\rho = 0.5$ and $1$ and raises it at $\rho = 2$.'),
+        T('US_ESC_Voting', 'Voting patterns',
+          text = r'France\textquotesingle s voting patterns on the U.S.\ at each IES, read with the design pinned and '
+                 r'with it chosen. The chosen design moves toward flat benefits at every IES, furthest at $\rho = 2$, '
+                 r'where the cost that holds the observed design in place is thinnest; choosing it keeps the tax rate '
+                 r'close to the pinned reading at $\rho = 0.5$ and $1$, and at $\rho = 2$ raises it and shortens the '
+                 r'workweek.'),
+        T('US_ESC_FrenchAll', 'All French characteristics',
+          text = r'All of France\textquotesingle s household characteristics on the U.S.\ at each IES, read with the '
+                 r'design pinned and with it chosen. The voting patterns prevail: the chosen design moves toward flat '
+                 r'benefits at every IES, further than under the voting patterns alone (table '
+                 r'\ref{table:US_ESC:voting}), and choosing it keeps the tax rate close to the pinned reading at '
+                 r'$\rho = 0.5$ and $1$ and raises it at $\rho = 2$.')]),
     ('esc-uk', 'esc', [
         F('UKUS_ESC_French',
           caption = r'Endogenous pension design under French characteristics in the U.S.\ and the UK',
@@ -153,18 +347,67 @@ GROUPS = [
                  r'corners; the second is the tax rate as a deviation from the host\textquotesingle s '
                  r'endogenous-$\theta$ baseline, whose levels are the baseline rows of the tables of this section. An '
                  r'open marker is the reading with the design pinned at the host\textquotesingle s value, a filled '
-                 r'one the reading with the design chosen.'),
-        T('UK_ESC_IncomeDistr', 'Income distribution'),
-        T('UK_ESC_Voting', 'Voting patterns'), T('UK_ESC_FrenchAll', 'All French characteristics')]),
+                 r'one the reading with the design chosen.',
+          text = r'France\textquotesingle s characteristics on the two hosts with the design chosen, the U.S.\ in the '
+                 r'upper row of panels and the UK in the lower, on shared axes so that the hosts compare by position. The '
+                 r'last row is France\textquotesingle s income distribution and voting patterns together, whose design '
+                 r'and tax rate are those of the tables\textquotesingle{} all-French rows. On the U.S.\ that row follows '
+                 r'the voting patterns at every IES; on the UK it does so at $\rho = 1$ and $2$, while at $\rho = 0.5$ the '
+                 r'chosen design barely moves.'),
+        T('UK_ESC_IncomeDistr', 'Income distribution',
+          text = r'France\textquotesingle s income distribution on the UK at each IES, read with the design pinned at the '
+                 r'UK\textquotesingle s value and with it chosen. The chosen design moves toward earnings-related benefits '
+                 r'at $\rho = 0.5$ and toward flat ones at $\rho = 1$ and $2$, each time the reverse of its move on the '
+                 r'U.S.\ (table \ref{table:US_ESC:incomeDistr}).'),
+        T('UK_ESC_Voting', 'Voting patterns',
+          text = r'France\textquotesingle s voting patterns on the UK at each IES, read with the design pinned at the '
+                 r'UK\textquotesingle s value and with it chosen. The chosen design moves toward flat benefits at every '
+                 r'IES, furthest at $\rho = 2$, as on the U.S.\ (table \ref{table:US_ESC:voting}).'),
+        T('UK_ESC_FrenchAll', 'All French characteristics',
+          text = r'All of France\textquotesingle s household characteristics on the UK at each IES, read with the design '
+                 r'pinned at the UK\textquotesingle s value and with it chosen. At $\rho = 1$ and $2$ the chosen design '
+                 r'follows the voting patterns toward flat benefits, while at $\rho = 0.5$ it barely moves; the workweek '
+                 r'ends above the UK\textquotesingle s baseline in both readings, where on the U.S.\ it ends below.')]),
     ('esc-path', 'esc', [
         F('ESC_Path', caption = r'The design and the tax along the baseline path, U.S.',
           note = r'The design chosen one period in advance from the first period on, and the tax rate with the design '
                  r'chosen and with it pinned at $\theta^{\ast}$, along the baseline path at each IES and, at $\rho = 1$, '
-                 r'at the Frisch elasticities $\xi = 0.2$ and $0.4$; the tables of this section print the values.'),
-        T('ESC_PathTable', 'The path'), T('ESC_Xi', 'The Frisch elasticity')]),
-    ('esc-timing', 'esc', [T('ESC_Timing', 'Timing of the choice')]),
-    ('esc-scale', 'esc', [T('US_ESC_ScaleWedge', 'The alternative cost')]),
-    ('num-stationary', 'numerical', [T('NUM_Stationary', 'Stationary policies')]),
+                 r'at the Frisch elasticities $\xi = 0.2$ and $0.4$; the tables of this section print the values.',
+          text = r'Along the baseline path the chosen design dips below the observed one before 2020 at every '
+                 r'specification, returns to it in 2020, where the calibration pins it, and then rises toward '
+                 r'earnings-related benefits as ageing proceeds, leveling off with population growth. After 2020 the '
+                 r'tax rate with the design chosen lies slightly above the one with it pinned, since a more Bismarckian '
+                 r'system dissipates less and is worth more to the electorate at the margin, and the Frisch elasticity '
+                 r'barely moves either line.'),
+        T('ESC_PathTable', 'The path'),
+        T('ESC_Xi', 'The Frisch elasticity',
+          text = r'The design choice at three Frisch elasticities and an IES of one, each recalibrated with its own cost '
+                 r'parameter; the design channel runs through hours, which makes this the elasticity to vary. The cost '
+                 r'parameter falls a little as the elasticity rises, the designs on the baseline path and under acute '
+                 r'ageing are nearly unchanged, and only the level of the tax rate under acute ageing moves, lower at a '
+                 r'higher elasticity whether the design is pinned or chosen.')]),
+    ('esc-timing', 'esc', [
+        T('ESC_Timing', 'Timing of the choice',
+          text = r'One block per timing of the choice, all without the cost of redistribution. Chosen with the tax or one '
+                 r'period in advance, the design is the Beveridgean corner at every IES checked. Chosen once and for all, '
+                 r'it is the Beveridgean corner at the lower elasticities of the grid shown and the Bismarckian corner at '
+                 r'the higher ones; near the switch the electorate is close to indifferent between the two, so the switch '
+                 r'is not sharply located.')]),
+    ('esc-scale', 'esc', [
+        T('US_ESC_ScaleWedge', 'The alternative cost',
+          text = r'The paper\textquotesingle s cost in the upper block and the cost on the design in the lower. Under '
+                 r'both, acute ageing makes the chosen design more Bismarckian and France\textquotesingle s voting '
+                 r'patterns less so at every IES, the first by less and the second by more under the cost on the design. '
+                 r'Under the cost on the design, France\textquotesingle s income distribution, which compresses the '
+                 r'redistributive stakes but leaves that cost in place, takes the design to the Bismarckian corner at '
+                 r'every IES.')]),
+    ('num-stationary', 'numerical', [
+        T('NUM_Stationary', 'Stationary policies',
+          text = r'One row per policy and IES, one column per date of the path. Argentina\textquotesingle s informal '
+                 r'savers add a state, and a design chosen at $t$ is weighed against the electorate of $t+1$, so both '
+                 r'differ from the stationary approximation even at an IES of one. The tax gaps are largest at the lowest '
+                 r'IES, in Argentina above all, and every gap shrinks toward zero late in the horizon, apart from the last '
+                 r'period shown.')]),
     ('num-selection', 'numerical', [T('NUM_Selection', 'Equilibrium selection')]),
 ]
 CHAPTERS = ['index', 'data', 'argentina', 'oecd', 'esc', 'numerical', 'replication']
