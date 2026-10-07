@@ -21,7 +21,10 @@ exhibit texts (paper-writer: 38 texts, 20 vector-X variants, claim list in the s
 awaiting RKB's read, committed unread on his instruction with the summary table's registry line. Wrap-up: `paper-rewrite`
 fast-forwarded into `main` and deleted, `main` pushed to GitHub; the retired plan, the gate notes and the final-run
 checklist moved from `notes/` to `archive/notes/` (INDEX) with their live pointers repointed; `notes/TODO.md` P2 restated;
-the paper-writer agent definition no longer reads the plan. Overleaf not pushed: section 7 and appendix C are new there.
+the paper-writer agent definition no longer reads the plan. Then, on RKB's instruction: the online appendix published
+to GitHub Pages (an empty `gh-pages` branch created by plumbing, `quarto publish gh-pages`, Pages auto-enabled;
+https://championape.github.io/SSDclaude serves the site and the print edition), the paper pushed to Overleaf without
+force (10 files updated, appendix F deleted online), `esc-sizeLeak` deleted locally and on GitHub.
 
 ## 2026-10-07 — the C8 run read: the paper's Argentine numbers on ε = 0.21 and γ₀ = 0.47
 

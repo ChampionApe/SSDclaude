@@ -52,6 +52,8 @@ numbers.
   them); the site adds the "Note:" label to a registry note, the print edition adds its own. A note that points at
   the section it is shown in ("Online Appendix OA.3.4" inside OA.3.4) renders as "this section" in both editions;
   the paper keeps the pointer.
-- Publishing is RKB's call: the site is meant for `https://championape.github.io/SSDclaude`
-  (`quarto publish gh-pages`; GitHub Pages is not enabled yet). MathJax loads from its CDN, so an offline
-  archive would need it vendored.
+- Published at `https://championape.github.io/SSDclaude` since 2026-10-07: GitHub Pages serves the root of the
+  `gh-pages` branch, which `quarto publish gh-pages --no-prompt --no-browser` (run from this folder, after
+  `build.py --site`) renders and pushes; the branch holds the rendered site only and is never edited by hand.
+  Publish on RKB's go, after the paper's compile so the stand-in lines carry the paper's current numbers. MathJax
+  loads from its CDN, so an offline archive would need it vendored.

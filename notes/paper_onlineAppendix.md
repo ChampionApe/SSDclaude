@@ -248,8 +248,8 @@ is RKB's call. A session that drafts the main sections should know:
   calibration where it holds only there; nine exhibits stay without a text because their chapter paragraph, caption and
   note already say everything (the three data tables, `ArgentinaCalibration`, `ARG_LOG_FourInOne`, the three
   calibration-by-IES and path tables, `NUM_Selection`). Committed unread on RKB's instruction; his read on the site is
-  the next step. `US_ESC_Summary`, section 7's new table, joins OA.4.2 and `US_ESC_Ageing` is online only. Publishing
-  to GitHub Pages is RKB's call; the paper's introduction already prints the address.
+  the next step. `US_ESC_Summary`, section 7's new table, joins OA.4.2 and `US_ESC_Ageing` is online only. Published
+  on 2026-10-07 at the address the introduction prints (`writing/OnlineAppendix/README.md` for the publish command).
 - **Left for sections 6–8**: TODO W8(a)/(b); the conclusion's "a higher IES changes only the size of the
   earnings-link effect" against section 6, where French voting's effect grows from 0.3 to 1.7 p.p.; section 7 at
   3,708 words against ≈ 2,800 and the conclusion at 504 against ≈ 450. Smaller: section 5 never states the equal
