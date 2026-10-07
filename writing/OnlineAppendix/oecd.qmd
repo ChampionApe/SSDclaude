@@ -2,7 +2,7 @@
 
 Section 6 of the paper calibrates the model without informal households to the U.S., France and the UK, and
 changes the U.S. calibration one characteristic at a time, its pension design, its demography and the
-characteristics that set France apart; appendix E gives the data and the household
+characteristics that set France apart; appendix F gives the data and the household
 heterogeneity behind the calibration. This chapter holds every table behind section 6's figure, the counterfactuals
 under CRRA preferences and the same counterfactuals with the UK as host, each under both calibrations of the taste
 for leisure, and the calibrations at every intertemporal elasticity of substitution (IES) of the model's grid.

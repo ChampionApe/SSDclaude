@@ -1,7 +1,7 @@
 # OA.2 Argentina {#arg}
 
 Section 5 of the paper calibrates the model with informal households to Argentina before the coverage reforms and
-reads the reforms as a rise of the universal pension $\epsilon$; appendix D gives the survey, the identifying
+reads the reforms as a rise of the universal pension $\epsilon$; appendix E gives the survey, the identifying
 formulas and the sources. This chapter holds the calibration under both treatments of the taste for leisure, the
 reform at every intertemporal elasticity of the model's grid, the equilibrium over pension designs, and the
 calibration at every IES.
