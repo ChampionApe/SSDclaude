@@ -13,6 +13,8 @@ What is checked:
   6. CRRA calibrates at one rho just below and one just above 1, landing near the LOG parameters. Only
      these two easy points -- rho ~ 0.5/~2 wait for a later, more robust test.
   7. Parameter rewriting mid-calibration does not interact with base.py's cacheParams().
+  8. The paper's claim in section 5's footnote: with hand-to-mouth informal households the reform also raises
+     the tax at t0, on the calibrated model.
 """
 import os, sys
 from contextlib import contextmanager
@@ -169,6 +171,29 @@ second = mC.calibration_report(bumped, 'LOG')['τ']
 check('a parameter rewrite between solves genuinely changes the answer (no stale reads)',
       not np.isclose(first, second, rtol = 1e-8),
       '-> τ(t0) {:.6f} -> {:.6f} after β +10%'.format(first, second))
+
+# ---- 8. section 5's footnote: with hand-to-mouth informal households the reform also raises the tax
+# The reform as python/InformalSavings/shockUniversal.py runs it (rule 'match' against the first formal type):
+# from t0 on the informal retiree receives that type's whole benefit, eps_t = theta_t hetaRatio_{t-1,1} +
+# (1 - theta_t), and kappa is rebuilt after eps (aux_κ reads eps_{t+1}). Under log preferences the policy
+# carries no state, so the reformed tax at t0 needs no model copy. On m as sections 2 to 4 leave it
+# (calibrated, db restored after the forced failure). The footnote claims the sign; the size is reported.
+τPre = float(m.solvePEE_LOG()['τ'].xs(t0))
+εPre = m.db['eps'].values.astype(float).copy()
+θR = m.db['θ'].values.astype(float)
+εU = θR*np.asarray(m.BT.hηRatio(lag = '[t-1]'))[:, list(m.db['i']).index(1)] + (1 - θR)
+pos0 = int(m.db['t0'])
+εR = εPre.copy()
+εR[pos0:] = εU[pos0:]
+m.db.update(m.adjPar('eps', εR))
+m.db.update(m.addLeadAndLags('κ', m.aux_κ))
+m.x0.clear()
+m.LOG.x0.pop('vectorized', None)
+τPost = float(m.solvePEE_LOG()['τ'].xs(t0))
+check("the reform raises the tax at t0 with hand-to-mouth informal households (section 5's footnote)",
+      εR[pos0] > εPre[pos0] and τPost > τPre + 1e-3,
+      '-> eps(t0) {:.4f} -> {:.4f}, tax at t0 {:.4f} -> {:.4f} ({:+.2f} p.p.)'.format(
+          εPre[pos0], εR[pos0], τPre, τPost, 100*(τPost - τPre)))
 
 
 report()

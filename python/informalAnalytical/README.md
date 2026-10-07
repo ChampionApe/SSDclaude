@@ -23,7 +23,7 @@ code-relative indexing unless stated.
 | `model.py` | `ModelInformalAnalytical`: db scaffolding (§0-2), EE solve (§3), steady state (§4), initial state (§5), end-to-end PEE (§6-7), calibration (§8), model copies (§9) |
 | `policy.py` | `LOG`/`CRRA`: identify the policy sequence only; the model class calls `EE_*_solve`/`EE_report` with the returned `τ` |
 | `test.py` | loads `data/ArgentinaTest.xlsx`; a bare `ModelInformalAnalytical()` gives NaN/inf `θ`/`κ`/`ε`, expected |
-| tests | `test_ee.py`, `test_cacheParams.py`, `test_crraTerminal.py`, `test_crraBackward.py`, `test_crraPEE.py`, `test_createCopyFromt0.py`; slow: `test_calibration.py` |
+| tests | `test_ee.py`, `test_cacheParams.py`, `test_crraTerminal.py`, `test_crraBackward.py`, `test_crraPEE.py`, `test_createCopyFromt0.py`; slow: `test_calibration.py`, which also pins section 5's footnote (the reform raises the 2010 tax with hand-to-mouth informal households) |
 
 ## The pattern every numerical problem follows
 
@@ -59,7 +59,9 @@ No term of `z_t` depends on any lag of `τ`, so `z_t = z_t(τ_t, τ_{t+1})` and 
 triangular, solved exactly by backward recursion over scalar problems. Holds only while `θ`/`ε` are
 exogenous. Three entry points: `solveVectorized` (`alg:fast`), `solveBackward` (`alg:gridsearch`, for
 diagnosing the FOC), and **`solveRobust`** (vectorised, else backward then polish, else the grid solution
-flagged; catches only `RuntimeError`). `solveVectorized` genuinely fails at `ω ≥ 5` on Argentina.
+flagged; catches only `RuntimeError`). `solveVectorized` genuinely fails at `ω ≥ 5` on Argentina. scipy
+stops on a step tolerance, not on `max|z|`, so `solveVectorized` restarts the root once from its own
+solution when the 1e-8 gate is missed; a solve that meets the gate is never restarted.
 
 - `tLag` is an explicit argument resolved by `db['t'].get_loc(t)`, never `t - 1`.
 - Corners and multiplicity go through `roots1d.selectMaxFrozen`, not `robustRoot`'s extended grid: every tax

@@ -315,7 +315,7 @@ class ModelInformalAnalytical:
         h1,h2 = (self.db['Γh']*self.db['Xi'][i]**ξ/self.db['ηi'][i]**(1+ξ)).xs(self.db['t0']), (self.db['Γh']*self.db['Xi'][ii]**ξ/self.db['ηi'][ii]**(1+ξ)).xs(self.db['t0'])
         return (self.db['RR0']*h1-h2)/(1-h2-self.db['RR0']*(1-h1))
     def getEps(self, coverageRate = 0.7, refType = 1):
-        """ The pre-reform ϵ of the Argentine calibration (paper, appendix D): the basic pension was 70% of the
+        """ The pre-reform ϵ of the Argentine calibration (paper, app:EPH): the basic pension was 70% of the
         minimum pension, read as the benefit of the least productive formal type (label `refType`, the first income
         quartile), relative to h_{t-1} bbar_t and discounted because it starts five (men) or ten (women) years
         after the formal retirement age. `auxProd` is positional and the formal types are labelled 1..J

@@ -159,7 +159,11 @@ class LOG:
         """ Solve the stacked LOG political FOC (eq:fast) for the whole tax path at once, via the
         bounded-root reparameterization (gridsearch.robustRoot, eq:root). x0: defaults to a cached
         self.x0['vectorized'] warm-start, else the constant db['τ0'] path. update: cache the solved τ̃ on
-        convergence. Returns just τ + solver diagnostics (see reportVectorized). """
+        convergence. Returns just τ + solver diagnostics (see reportVectorized).
+
+        scipy's default method stops on a step tolerance in τ̃ (xtol), not on max|z|, so it can report
+        success with max|z| just above `tol`; the root is then restarted once from its own solution before
+        the gate is applied. A solve that meets the gate the first time is never restarted. """
         if x0 is None:
             x0 = self.x0.get('vectorized', np.full(self.T, self.db['τ0']))
 
@@ -171,6 +175,8 @@ class LOG:
         # for the solve (base.py's cacheParams). self.BT, not self.BG: this works through BaseTime.
         with self.BT.cacheParams():
             res = optimize.root(residual, x0, **kwargs)
+            if np.max(np.abs(res.fun)) > tol:          # a NaN residual compares False: no restart, the gate raises
+                res = optimize.root(residual, res.x, **kwargs)
         if update:
             self.x0['vectorized'] = res.x
         return self.reportVectorized(res, l, u, tol = tol)
