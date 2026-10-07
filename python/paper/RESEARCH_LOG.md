@@ -17,4 +17,5 @@ files now write ∂f/∂x and "inherited design" (RKB: conform the section to th
 for it). `US_ESC_Calibration`, `US_ESC_Summary` (retitled) and `US_ESC_overview` are online exhibits now
 (registry captions, `esc.qmd`); the country table's note names λ instead of citing the calibration table; Okun
 (1975) added to the bib. Checks: `checkPaper.py` OK, latexmk clean at 59 pages, `test_onlineAppendix.py` 6/6,
-`--map` rewritten (84 outputs, 14 the paper's). The site is rendered but not published (on RKB's go).
+`--map` rewritten (84 outputs, 14 the paper's). Committed as `fab23cc` and pushed to Overleaf; the online
+appendix is rendered but not published (on RKB's go).
