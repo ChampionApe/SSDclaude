@@ -65,7 +65,7 @@ flagged; catches only `RuntimeError`). `solveVectorized` genuinely fails at `ω 
 - Corners and multiplicity go through `roots1d.selectMaxFrozen`, not `robustRoot`'s extended grid: every tax
   candidate (both corners, every crossing) is tested and ranked at its own frozen formal savings shares
   (`LOG.objectiveFrozen`, `CRRA.objectiveFrozen`; `CRRA.focParts_t`/`zAtShares` split the splines from the
-  retirees' term; `num_robustroot.tex`, finding #18, wired 2026-10-02). Every solve reports `nCand`/`nEq`/
+  retirees' term; `num_robustroot.tex`, finding #18). Every solve reports `nCand`/`nEq`/
   `fallback` per period and state and a `multiplicity` summary; `selection = 'legacy'` reinstates the
   integral criterion for comparisons; `solveRobust(check = True)` runs the full-grid pass (+30 ms).
   `maxResid` is restricted to periods with an interior maximum.
@@ -90,8 +90,8 @@ FOCs/budgets, EE solve, steady state, initial state, `LOG` (all three entry poin
 and `t<T`), end-to-end PEE, model copies. `steadyState_CRRA_bounds` derives the bracket from `Base.ΓsCap`
 (finding #7).
 
-`getEps` reads the first formal quartile by label since 2026-10-06 (TODO C8; it read the second by position), and the
-shared workbook's γ₀ is 0.4706, as in `InformalSavings`; nothing of this module's committed output depends on it.
+`getEps` reads the first formal quartile, the minimum pension's type, by label, and the shared workbook's γ₀ is
+0.4706, as in `InformalSavings`. No output of the paper's pipeline reads this module.
 
 **Nested-fixed-point calibration (§8)** works for LOG and near-LOG CRRA (`ρ` within ~0.02 of 1) and is
 untested far from 1; its outer search has no globalisation.

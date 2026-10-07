@@ -8,9 +8,9 @@ Five things are worth pinning, and they are the five that would silently produce
   1. NO WEDGE IS THE IDENTITY. ModelESC with spec=None must reproduce ModelUS to machine precision, and
      so must spec='scale'/'flat' at phi=1 (f == 1). Without this every ESC result is measured against a
      baseline that has quietly moved.
-  2. THE WEDGE IS THE APPENDIX'S. Gamma_s, Theta_h and s_i/s under 'scale' are checked against the
-     appendix's own closed forms (app:ESC, "Marginal costs of raising redistributive, public funds"),
-     evaluated independently here rather than by re-running the code under test.
+  2. THE WEDGE IS THE DOCUMENTED ONE. Gamma_s, Theta_h and s_i/s under 'scale' are checked against their
+     closed forms with the cost substituted (writing/US/model_esc.tex, eq esc:AB), evaluated independently
+     here rather than by re-running the code under test.
   3. z_t DOES NOT SEE theta_{t+1}. LeadedLOG.z passes (tau, theta) as placeholders for
      (tau_{t+1}, theta_{t+1}) on the grounds that they reach the FOC only through the zero-mass informal
      household. Driven over the whole unit square, z_t must not move -- otherwise tau_t and theta_{t+1}
@@ -100,7 +100,7 @@ check("'scale': A+B = f(theta), 'flat': A = theta",
       np.allclose(mW.B.wedgeA(θq) + mW.B.wedgeB(θq), fq)
       and np.allclose(build(ModelESC, {'spec': 'flat', 'phi': .5, 'p': .4}).B.wedgeA(θq), θq))
 
-# ---- 2. the wedge is the appendix's closed forms (app:ESC), evaluated independently
+# ---- 2. the wedge in the closed forms (writing/US/model_esc.tex, eq esc:AB), evaluated independently
 # Gamma_s = (1/(1+xi)) Gamma_h beta / (1 + beta + (1-alpha)/alpha tau f(theta)(1 + theta beta))
 # Theta_h denominator: Gamma_h - (1-alpha)/alpha f(theta) tau theta Gamma_s
 # s_i/s = y_i/Gamma_h + (1-alpha)/alpha f(theta) tau (1-theta)/(1+beta) (y_i/Gamma_h - 1)

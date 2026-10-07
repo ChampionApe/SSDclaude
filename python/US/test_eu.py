@@ -15,7 +15,7 @@ no reason. What it asserts instead are the things that must hold whatever the da
   * the UK's own income groups and its US-percentile regrouping are NOT interchangeable.
   * a French income profile swapped onto a calibrated vector-X ModelFR keeps Gamma_h at lambda, not 1
     (shocks.ηLevel preserves the host's own level -- the UK-as-host exercise depends on it), and the
-    France workbook's UK regrouping fails by naming its sheet while the sheet is absent.
+    France workbook's UK regrouping loads.
 """
 import os, sys
 import numpy as np
@@ -119,15 +119,12 @@ check("[UKUS host] France's income profile swapped in leaves Gamma_h at the host
 check('[UKUS host] the swap pins theta at the host design',
       np.isclose(float(mS.db['θ'].xs(t0)), float(mHost.db['θ'].xs(t0)), rtol = 1e-12))
 
-# ---- France at the UK's cuts: the loader names the missing sheet rather than failing obscurely
+# ---- France at the UK's cuts (sheets heterogeneityUK/calibrationUK), the UK host's France
 try:
     testEU.load('FR', grouping = 'UK')
-    frukLoads = True
-    msg = 'the sheet pair exists'
+    frukLoads, msg = True, 'the sheet pair exists'
 except KeyError as e:
-    frukLoads = False
-    msg = str(e)
-check("[FRUK] load('FR', grouping='UK') either loads or names the missing sheet",
-      frukLoads or 'heterogeneityUK' in msg, '-> ' + msg[:90])
+    frukLoads, msg = False, str(e)
+check("[FRUK] load('FR', grouping='UK') loads", frukLoads, '-> ' + msg[:90])
 
 report()

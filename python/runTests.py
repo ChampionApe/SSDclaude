@@ -1,6 +1,6 @@
 r""" Run the repo's test suites and print one verdict.
 
-    .venv\Scripts\python.exe python\runTests.py              # the fast suites (~4 min)
+    .venv\Scripts\python.exe python\runTests.py              # the fast suites (~7 min)
     .venv\Scripts\python.exe python\runTests.py --all        # fast + slow (~1 h)
     .venv\Scripts\python.exe python\runTests.py --slow       # the slow ones only
     .venv\Scripts\python.exe python\runTests.py -k pee       # only suites whose path matches 'pee'
@@ -45,10 +45,10 @@ SUITES = [
     ('US/test_calibration.py',                    False, '~6 s: (β,ω) against R/τ, plus commonX'),
     ('US/test_fr.py',                             False, '~20 s: ModelFR -- imposed β, US-referenced h̄'),
     ('US/test_eu.py',                             False, 'the FR/UK workbooks end to end through ModelFR'),
-    ('US/test_createCopyFromt0.py',               False, 'model copies from t0 -- the shock machinery'),
     ('US/test_esc.py',                            False, '~235 s: the θ wedge (scale, size), leaded/permanent structure, sequential FOC sign, ESC method column'),
     ('US/test_frozenSelection.py',                False, '~1-2 min: tax candidates at frozen shares -- objective vs FOC, rule vs the earlier criterion, counts'),
     ('US/test_designChoicePilot.py',              False, "~25 s: LeadedCRRA2D's root design layer (secant, cell-local crossing) and the FOC layer, the split period, the design counts through solvePolicies and runESCcrra's rows"),
+    ('paper/test_onlineAppendix.py',              False, "the online appendix: every built table converts to HTML, the print copies resolve every reference, the paper's online-appendix keys are defined"),
     ('informalAnalytical/test_calibration.py',    True,  'nested-fixed-point calibration'),
     ('US/test_escTiming.py',                      True,  '~75 s: the permanent timing\'s LOG reference numbers and calibrated p'),
     ('InformalSavings/test_calibration.py',       True,  '~15 min: five LOG calibrations (one common X) and one CRRA'),

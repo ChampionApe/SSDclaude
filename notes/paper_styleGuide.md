@@ -1,15 +1,14 @@
 # Style guide for the paper draft (`writing/Paper`)
 
-Synthesized from the current draft on 2026-09-08, for the rewrite sessions. It describes how the
-existing sections are written so new text blends in, and picks one register where the draft currently
-has two. The technical notes under `writing/<model>/` follow their own conventions and are not covered.
+The register of the paper: how its sections are written, so that new text blends in. The technical notes
+under `writing/<model>/` follow their own conventions and are not covered.
 
 ## 1. Voice and register
 
 - **First person plural, present tense.** "We calibrate", "we find", "the model predicts", "table X
   shows". Past tense only for history (Argentina's reforms, what earlier papers did).
 - **Plain academic register.** Claims stated directly, mechanisms explained in one or two sentences,
-   no flourishes.No meta-commentary and no second clause that restates the first for emphasis.
+   no flourishes. No meta-commentary and no second clause that restates the first for emphasis.
 - **Dashes.** The older sections use none. Allow at most one `---` per paragraph, for a genuine aside;
   otherwise start a new sentence.
 - **Hedging is calibrated, not defensive.** "about", "roughly", "a bit less than", "consistent with",
@@ -18,7 +17,7 @@ has two. The technical notes under `writing/<model>/` follow their own conventio
 - **No narration of the research process.** The paper never says what was tried and abandoned in the
   main text; alternatives not pursued go in a footnote, stated as a choice with its cost (see the
   footnote on the placement of the deadweight wedge, or on holding θ fixed in the inequality
-  counterfactual). Development history stays in `notes/` and the logs.
+  counterfactual). Development history stays in the logs and `archive/`.
 
 ## 2. Paragraph and section anatomy
 
@@ -117,12 +116,17 @@ These rules are indicative, adjust if the context warrants it:
   `\addlinespace` in those tables: a `\vrule` in the column spec is drawn per row and a gap breaks it.
   The household-heterogeneity tables still carry the old `|`-and-`\hline` design and are the last ones
   that do.
-- **The calibration variant is not printed** (2026-09-15). The paper is the common-`X` calibration
-  throughout, so no caption or note in the main text names it; only a vector-`X_i` twin in an appendix
-  says what it is (`config.variantNote`, `variantCaption`). Each arm references the alternative once —
-  Argentina in a footnote to its calibration paragraph, the OECD section inline in its own, `sec:esc` in
-  a footnote to the results opening — pointing at `app:EPH:vectorX` or `app:US:vectorX` with a one-line
-  summary of what agrees and what moves. Do not add a second pointer in the same section.
+- **The calibration variant is not printed.** The paper is the common-`X` calibration throughout, so no
+  caption or note names it; only a vector-`X_i` twin in the online appendix says what it is
+  (`config.variantNote`, `variantCaption`). The alternative is pointed at once per arm: Argentina in a
+  footnote to its calibration paragraph (`app:EPH:vectorX`, a stub in the Argentine calibration appendix
+  that sends the reader on to `\oa{arg-calibration}`), the rich economies in their calibration appendix
+  (`app:US`, pointing at `\oa{oecd-vectorx}`). Sections 6 and 7 carry no pointer.
+- **The online appendix** is cited with `\oa{key}`, which prints "online appendix" linked to the key's
+  page, so the text reads "the \oa{esc-uk}"; never "Online Appendix OA.4.3" (`\oanum{key}` gives the number
+  where one is needed), and never inside a caption or heading, since it is a link. The keys are the
+  anchors of `writing/OnlineAppendix/*.qmd`, written to `writing/Paper/onlineAppendix.tex` by
+  `build.py --site`; `writing/checkPaper.py` fails on an unknown key.
 - **Equations**: `align` (unnumbered `align*` for one-off calibration formulas), `subequations` with
   a shared label for a block of definitions; inline `$...$` for symbols. Multi-letter functions in
   `\mathrm{}` (`\mathrm{LE_{men}}`), calligraphic for objective functions ($\mathcal{W}_t$).

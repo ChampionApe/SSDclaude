@@ -17,7 +17,7 @@ published numbers were produced at.
 TWO PARTS. `part = 'main'` is what a routine rebuild runs: the exogenous-theta shocks in both variants and
 the LOG leg of the endogenous-theta appendix, all cheap. `part = 'prepub'` holds the heavy runs whose
 results move only when the model does, run once before submission: the exact CRRA ESC leg (the published
-method, config.US['esc']['exact']) and the timing checks of TODO R3. The merge (`escExperiments`) belongs
+method, config.US['esc']['exact']) and the timing checks. The merge (`escExperiments`) belongs
 to both. The two parts are selected on the command line, never mixed by default, so that a development
 rebuild can never turn into an overnight solve.
 
@@ -166,7 +166,7 @@ EXPERIMENTS = {
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escCountry.csv')],
         'note':    'the UK and France under the ESC cost, LOG (rho = 1)',
     },
-    # The timing checks of TODO R3. Permanent: the anticipated-vote fixed point under LOG at three phi and
+    # The timing checks. Permanent: the anticipated-vote fixed point under LOG at three phi and
     # both specs (its reference numbers are also test_esc.py's), and under CRRA traced in rho (a corner
     # at every rho, which is what the trace shows). Sequential: the costless FOC of eq:esc:seqFOC on the
     # solved baseline at rho = 0.5 and 2 -- negative on all of [0,1] is the "three timings, one corner"

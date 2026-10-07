@@ -1,0 +1,233 @@
+406 rows from 6 files -> logs/pilotDesignChoice/pilotDesignChoice.csv
+
+===== M1 =====
+rule                                                       core    foc legacy legacy-foc legacy-root   root   root-foc
+ρ   scenario nCand ns  nθ knotsθ period item                                                                          
+0.5 baseline 41    150 13 4      7      cells nEqτ > 1               0      0                                         
+                                        fallbackθ                    0                                    0           
+                                        fallbackτ                    0      0                                         
+                                        frozen passes               39                                  442           
+                                        max|Δθ|                                 0.004934    0.003191          0.004993
+                                        max|Δτ|                                3.815e-05   3.296e-05         3.803e-05
+                                        nBrθ|nCandθ max              3                                    1           
+                                        nEqθ max                     1                                    1           
+                                        nEqτ max                     1      1                                         
+                                        states nEqθ != 1             0                                    0           
+                                        tChoose                  105.2  82.21                         508.7           
+                                        tCore             18.37                                                       
+    frVoting 41    150 13 4      7      cells nEqτ > 1               0      0                                         
+                                        fallbackθ                    0                                    0           
+                                        fallbackτ                    0      0                                         
+                                        frozen passes               39                                  442           
+                                        max|Δθ|                                 0.002887    0.001942          0.004239
+                                        max|Δτ|                                  3.4e-05    2.83e-05         2.346e-05
+                                        nBrθ|nCandθ max              3                                    1           
+                                        nEqθ max                     1                                    1           
+                                        nEqτ max                     1      1                                         
+                                        states nEqθ != 1             0                                    0           
+                                        tChoose                  85.06  102.8                         477.2           
+                                        tCore             21.13                                                       
+2.0 baseline 41    150 13 4      7      cells nEqτ > 1               0      0                                         
+                                        fallbackθ                    0                                    0           
+                                        fallbackτ                    0      0                                         
+                                        frozen passes               39                                  458           
+                                        max|Δθ|                                 0.008327   0.0009261          0.008337
+                                        max|Δτ|                                0.0001101   1.855e-05         0.0001116
+                                        nBrθ|nCandθ max              3                                    1           
+                                        nEqθ max                     1                                    1           
+                                        nEqτ max                     1      1                                         
+                                        states nEqθ != 1             0                                    0           
+                                        tChoose                    105   82.8                         522.6           
+                                        tCore             18.28                                                       
+    frVoting 41    150 13 4      7      cells nEqτ > 1               0      0                                         
+                                        fallbackθ                    0                                    0           
+                                        fallbackτ                    0      0                                         
+                                        frozen passes               39                                  458           
+                                        max|Δθ|                                   0.0263     0.02451           0.01483
+                                        max|Δτ|                                0.0002487   0.0002571         0.0002261
+                                        nBrθ|nCandθ max              3                                    1           
+                                        nEqθ max                     1                                    1           
+                                        nEqτ max                     1      1                                         
+                                        states nEqθ != 1             0                                    0           
+                                        tChoose                  86.27  102.8                         489.4           
+                                        tCore             22.13                                                       
+-- seconds (M1)
+rule                                  core    foc legacy   root
+ρ   scenario nCand nθ knotsθ item                              
+0.5 baseline 41    13 4      tChoose        105.2   82.2  508.7
+                             tCore    18.4                     
+    frVoting 41    13 4      tChoose         85.1  102.8  477.2
+                             tCore    21.1                     
+2.0 baseline 41    13 4      tChoose        105.0   82.8  522.6
+                             tCore    18.3                     
+    frVoting 41    13 4      tChoose         86.3  102.8  489.4
+                             tCore    22.1                     
+
+===== M2 =====
+rule                                                            foc     legacy legacy-foc legacy-root       root  root-foc
+ρ   scenario nCand ns nθ knotsθ period item                                                                               
+0.5 baseline 41    50 13 4      -1     Σ tChoose              187.6      147.4                              1305          
+                                       Σ tCore                33.63      36.85                             45.15          
+                                       θ nCandMax                 3                                            1          
+                                       θ nEqMax                   1                                            1          
+                                       θ nFallback                0                                            0          
+                                       θ nStatesMultiple          0                                            0          
+                                       τ nCandMax                 3          3                                 0          
+                                       τ nEqMax                   1          1                                 0          
+                                       τ nFallback                0          0                                 0          
+                                       τ nStatesMultiple          0          0                                 0          
+                                 0     max|Δθ|                                    0.01968    0.007216              0.02029
+                                 1     max|Δθ|                                    0.02055    0.005955              0.01952
+                                 2     max|Δθ|                                    0.01596    0.003632              0.01596
+                                       targetDrift R       -0.00523   -0.00528                         -0.005072          
+                                       targetDrift τ       -0.00179  -0.001279                         -0.001385          
+                                       θ_t0 (in force)       0.7169     0.7364                            0.7334          
+                                       θ_t1                  0.7775     0.7626                            0.7621          
+                                       τ_t0                  0.1425      0.143                            0.1429          
+                                 3     max|Δθ|                                    0.01231    0.009105              0.01108
+                                 4     max|Δθ|                                    0.01827     0.01359              0.01137
+                                 5     max|Δθ|                                    0.01144     0.01528              0.01095
+                                 6     max|Δθ|                                    0.01135    0.002724                0.011
+                                 7     max|Δθ|                                   0.005475    0.004428             0.004989
+2.0 baseline 41    50 13 4      -1     Σ tChoose              192.6      141.3                              1318          
+                                       Σ tCore                31.63      38.88                             43.11          
+                                       θ nCandMax                 3                                            1          
+                                       θ nEqMax                   1                                            1          
+                                       θ nFallback                0                                            0          
+                                       θ nStatesMultiple          0                                            0          
+                                       τ nCandMax                 3          3                                 0          
+                                       τ nEqMax                   1          1                                 0          
+                                       τ nFallback                0          0                                 0          
+                                       τ nStatesMultiple          0          0                                 0          
+                                 0     max|Δθ|                                     0.0114    0.001405              0.01089
+                                 1     max|Δθ|                                    0.02636     0.03045              0.02547
+                                 2     max|Δθ|                                    0.01686    0.001089              0.01678
+                                       targetDrift R      0.0004106  0.0003802                         0.0003978          
+                                       targetDrift τ      0.0002389  0.0001602                         0.0001611          
+                                       θ_t0 (in force)       0.7152     0.7383                            0.7385          
+                                       θ_t1                  0.7745     0.7584                            0.7585          
+                                       τ_t0                  0.1445     0.1444                            0.1444          
+                                 3     max|Δθ|                                    0.02285    0.009825              0.02287
+                                 4     max|Δθ|                                    0.02268    0.005905              0.02292
+                                 5     max|Δθ|                                    0.02272    0.003317              0.02273
+                                 6     max|Δθ|                                     0.0227    0.004511              0.02313
+                                 7     max|Δθ|                                    0.00827    0.001076             0.007965
+    frVoting 41    50 13 4      -1     Σ tChoose              159.4      104.6                             797.2          
+                                       Σ tCore                25.24      26.59                             26.24          
+                                       θ nCandMax                 3                                            1          
+                                       θ nEqMax                   1                                            1          
+                                       θ nFallback                0                                            0          
+                                       θ nStatesMultiple          0                                            0          
+                                       τ nCandMax                 3          3                                 0          
+                                       τ nEqMax                   1          1                                 0          
+                                       τ nFallback                0          0                                 0          
+                                       τ nStatesMultiple          0          0                                 0          
+                                 0     max|Δθ|                                    0.02205     0.01055              0.02209
+                                 1     max|Δθ|                                   0.009649    0.002561             0.007822
+                                 2     max|Δθ|                                    0.01594    0.002926              0.01426
+                                       targetDrift R        0.05726    0.05646                           0.05668          
+                                       targetDrift τ         0.0234    0.02321                           0.02323          
+                                       θ_t0 (in force)       0.3439     0.3347                            0.3366          
+                                       θ_t1                  0.4466     0.4313                             0.433          
+                                       τ_t0                  0.1677     0.1675                            0.1675          
+                                 3     max|Δθ|                                    0.01858     0.01354              0.01848
+                                 4     max|Δθ|                                    0.01587    0.002308              0.01587
+                                 5     max|Δθ|                                     0.0165    0.002019              0.01643
+                                 6     max|Δθ|                                    0.01529    0.002672              0.01601
+                                 7     max|Δθ|                                    0.02688     0.02589              0.01728
+-- seconds (M2)
+rule                                            foc legacy    root
+ρ   scenario nCand nθ knotsθ item                                 
+0.5 baseline 41    13 4      θ_t0 (in force)  222.5  185.6  1351.4
+2.0 baseline 41    13 4      θ_t0 (in force)  225.3  181.7  1362.7
+    frVoting 41    13 4      θ_t0 (in force)  185.6  132.3   824.4
+
+===== M3 =====
+rule                                                             foc    legacy      root   state
+ρ   scenario nCand ns nθ knotsθ period item                                                     
+2.0 frVoting 13    50 13 4      7      max|θ(nCand)-θ(81)|  0.004344   0.02541   0.02157        
+                                       s_ at the state                                    0.0389
+                                       θ at (s mid, θ*)       0.5437    0.5415    0.5434        
+                                       θ_t at the state                                     0.75
+             21    50 13 4      7      max|θ(nCand)-θ(81)|  0.003938   0.02321   0.02914        
+                                       s_ at the state                                    0.0389
+                                       θ at (s mid, θ*)       0.5434    0.5309    0.5335        
+                                       θ_t at the state                                     0.75
+             41    50 13 4      7      max|θ(nCand)-θ(81)|  0.002181  0.004572  0.005979        
+                                       s_ at the state                                    0.0389
+                                       θ at (s mid, θ*)       0.5418    0.5413    0.5496        
+                                       θ_t at the state                                     0.75
+             81    50 13 4      7      s_ at the state                                    0.0389
+                                       θ at (s mid, θ*)       0.5401    0.5413     0.548        
+                                       θ_t at the state                                     0.75
+-- seconds (M3)
+rule                                            foc legacy   root
+ρ   scenario nCand nθ knotsθ item                                
+2.0 frVoting 13    13 4      θ at (s mid, θ*)  12.7    5.4   41.4
+             21    13 4      θ at (s mid, θ*)  15.7    8.4   65.1
+             41    13 4      θ at (s mid, θ*)  34.3   19.5  176.7
+             81    13 4      θ at (s mid, θ*)  66.7   40.8  340.0
+
+===== M4 =====
+rule                                                                           foc   legacy     root root-foc state 1 (s_=0.0195, τ=0.2101) state 2 (s_=0.04051, τ=0.2201) state 3 (s_=0.05991, τ=0.2201)
+ρ   scenario nCand ns nθ knotsθ period item                                                                                                                                                              
+2.0 frVoting 41    50 13 4      7      (fwd-bwd)/|fd|                                                                               -0.1103                       -0.09923                       -0.09081
+                                       (spline-fd)/|fd|                                                                              0.2253                         0.2014                          0.184
+                                       central difference                                                                         -0.002146                      -0.002453                      -0.002718
+                                       spline slope                                                                               -0.001662                      -0.001959                      -0.002218
+                         8      7      max|Δθ|                                                        0.01579                                                                                            
+                                       max|θ(knots=8)-θ(knots=4)|         0.002054                                                                                                                       
+                                       states nEqθ != 1                          0                                                                                                                       
+                      21 4      7      max|θ(nθ=21)-θ(nθ=13)| common θ_t  0.001699  0.02859  0.01627                                                                                                     
+-- seconds (M4)
+rule                                                             foc legacy   root
+ρ   scenario nCand nθ knotsθ item                                                 
+2.0 frVoting 41    13 8      max|θ(knots=8)-θ(knots=4)|         31.6              
+                   21 4      max|θ(nθ=21)-θ(nθ=13)| common θ_t  47.1   42.1  294.7
+
+===== M5 =====
+rule                                                    LeadedLOG      foc    legacy      root
+ρ    scenario nCand ns nθ knotsθ period item                                                  
+1.00 baseline 41    50 13 4      2      θ_t0 (in force)    0.7382                             
+1.02 baseline 41    50 13 4      2      gap to LOG                 0.00454  0.009208  0.009217
+                                        gap/(ρ-1)                    0.227    0.4604    0.4608
+                                        θ_t0 (in force)             0.7427    0.7474    0.7474
+1.05 baseline 41    50 13 4      2      gap to LOG                 0.01546   0.01303   0.01303
+                                        gap/(ρ-1)                   0.3091    0.2606    0.2607
+                                        θ_t0 (in force)             0.7537    0.7512    0.7512
+1.10 baseline 41    50 13 4      2      gap to LOG                 0.03174   0.01874   0.01875
+                                        gap/(ρ-1)                   0.3174    0.1874    0.1875
+                                        θ_t0 (in force)             0.7699    0.7569     0.757
+-- seconds (M5)
+rule                                             foc legacy    root
+ρ    scenario nCand nθ knotsθ item                                 
+1.02 baseline 41    13 4      θ_t0 (in force)  144.3   97.7   637.0
+1.05 baseline 41    13 4      θ_t0 (in force)  184.9  103.8   893.0
+1.10 baseline 41    13 4      θ_t0 (in force)  254.2  141.3  1479.3
+
+===== M6 =====
+rule                                                                  foc        root
+ρ   scenario nCand ns  nθ knotsθ period item                                         
+0.5 baseline 41    150 13 4      7      deviation gain max      0.0006122  -1.187e-06
+                                        deviation gain max rel  4.063e-06  -5.307e-09
+                                        resolveAt-grid max abs   0.003549    0.005365
+                                        resolveAt-grid max rel  6.824e-05   7.206e-05
+    frVoting 41    150 13 4      7      deviation gain max      0.0001024  -3.624e-13
+                                        deviation gain max rel  2.195e-06  -6.945e-15
+                                        resolveAt-grid max abs    0.01083     0.01167
+                                        resolveAt-grid max rel  5.974e-05   5.241e-05
+2.0 baseline 41    150 13 4      7      deviation gain max       7.55e-06  -3.613e-13
+                                        deviation gain max rel  1.638e-05  -3.355e-13
+                                        resolveAt-grid max abs  7.939e-06   6.622e-06
+                                        resolveAt-grid max rel  1.501e-05   9.238e-06
+    frVoting 41    150 13 4      7      deviation gain max      1.233e-06  -5.773e-15
+                                        deviation gain max rel  1.498e-06    -3.5e-15
+                                        resolveAt-grid max abs  2.622e-06   2.247e-06
+                                        resolveAt-grid max rel  2.869e-06   2.733e-06
+-- seconds (M6)
+rule                                              foc  root
+ρ   scenario nCand nθ knotsθ item                          
+0.5 baseline 41    13 4      deviation gain max  15.1  15.3
+    frVoting 41    13 4      deviation gain max  13.7  12.5
+2.0 baseline 41    13 4      deviation gain max  15.2  15.1
+    frVoting 41    13 4      deviation gain max  12.0  11.9

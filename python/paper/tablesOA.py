@@ -1,4 +1,4 @@
-r""" Table builders for the online appendix (writing/OnlineAppendix; notes/brief_onlineAppendix_2026-10-06.md,
+r""" Table builders for the online appendix (writing/OnlineAppendix; archive/notes/brief_onlineAppendix_2026-10-06.md,
 section 2.3). Each returns the complete tex body of one file in results/paper/Tables/, which is not copied
 into writing/Paper. Layout as tablesUS: tables.BANNER and tablesUS._xwrap, label `table:OA:<Name>` (plus
 config.variantSuffix on a twin), a note in the house form.

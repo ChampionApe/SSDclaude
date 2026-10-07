@@ -1,4 +1,4 @@
-r""" The permanent timing's reference numbers (notes/TODO.md R3), LOG. A SLOW suite (~75 s).
+r""" The permanent timing's reference numbers, LOG. A SLOW suite (~75 s).
 
 Run:  .venv\Scripts\python.exe python\US\test_escTiming.py
 

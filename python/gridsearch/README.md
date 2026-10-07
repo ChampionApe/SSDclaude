@@ -26,7 +26,7 @@ or `(M,N)` on one sorted grid.
   crossing; among equilibria the highest own objective wins. Returns `x`, `atBound`, `nMax`, `nCand`,
   `nEq`, `nEqRaw`, `nMerged`, `fallback`, `W`. `selectMax` is the
   earlier integral criterion (`objectiveProfile`), kept as the fallback where no candidate passes and
-  for callers not yet wired (the informal models). `interpAlong` and `_quadAt` are its helpers. **Pass
+  for the solvers' `selection = 'legacy'`. `interpAlong` and `_quadAt` are its helpers. **Pass
   the interior grid only.**
 - Vectorised across columns (`np.maximum.accumulate`); `_columnCrossings` is the readable rule and the
   test oracle. Ragged columns are grouped by NaN pattern (`np.unique(..., axis=1)`), 1–2 patterns per 900
@@ -70,9 +70,8 @@ encoding), `test_interp.py` (all of `interp`, centred on the NaN semantics), `te
 ## Status
 
 All five modules implemented, tested, and consumed end to end by all three model variants and the
-`calibrateGrid` marches. `griddedInterp2D` was the only addition the two-state case needed. All three models' solvers run `selectMaxFrozen` (the US on 2026-10-02, the informal models the same evening); the
-one-cell form is restricted to candidates next to an infeasible cell and passing candidates within a cell merge
-(`RESEARCH_LOG.md`, 2026-10-02 evening).
+`calibrateGrid` marches. `griddedInterp2D` was the only addition the two-state case needed. All three models'
+solvers run `selectMaxFrozen`.
 
 **Deliberately not built**: a `SolveGrid`-style class with traversal order, per-state warm starts, window
 refinement and index maps (the prior implementation, at `c958031^:python/InformalSavings/inspiration/`).

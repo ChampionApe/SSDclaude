@@ -28,8 +28,8 @@ is the *index* of the baseline year.
 | `model.py` | `ModelInformalSavings`: db scaffolding (§0-2), EE solve (§3), steady state (§4), initial state (§5), calibration (§8, grid §8.1) |
 | `policy.py` | `LOG`/`CRRA`, the backward recursion over `ι_{t-1}` and over `(s_{t-1}, ι_{t-1})` |
 | `test.py` | loads `data/ArgentinaTest.xlsx`; a bare `ModelInformalSavings()` gives NaN/inf `θ`/`κ`/`ε`, expected |
-| experiments | `calibrateRhoGrid.py` (`--x0 β ω η0 X0` seeds the anchor; required at α = 0.35), `retargetCalibration.py`, `shockUniversal.py`, `shockEEOnly.py`, `sweepEpsThetaGrid.py`, `plotUniversalShock.py`, `plotBoundary.py` |
-| diagnostics | `measureGrids.py`, `measureOuterSettings.py`, `diagnoseRho07.py`, `diagnoseLogCrraBoundary.py` (`--mode common|production` is the point of it) |
+| experiments | `calibrateRhoGrid.py` (`--x0 β ω η0 X0` seeds the anchor; required at α = 0.35), `shockUniversal.py`, `shockEEOnly.py`, `sweepEpsThetaGrid.py` |
+| diagnostics | retired to `archive/code/InformalSavings/` (`measureGrids.py`, `measureOuterSettings.py`, `diagnoseRho07.py`, `diagnoseLogCrraBoundary.py`, the K/Y retarget and two plots); the measurements they produced back the settings below |
 | prepub check | `stationaryApprox.py`: a stationary policy function (ν frozen at each date's value, on the baseline's grids) against the exact date-specific one along the demographic path, LOG and CRRA; `results/numerical/`, driven by `python/paper/runShocks.py --prepub` |
 | tests | `test_ee.py`, `test_peeLOG.py`, `test_peeCRRA.py`, `test_peePath.py`, `test_createCopyFromt0.py`; slow: `test_calibration.py` (~12 min), `test_calibrationGrid.py` (~45 min) |
 
@@ -40,20 +40,18 @@ directory (the scripts `chdir` so `test.py` finds `data/`).
 ## Conventions and traps
 
 One line each; the measurement behind each is in `archive/readmes/InformalSavings_README_2026-09-11.md`
-and `notes/informalSavings_numericalDeviations.md`.
+and `archive/notes/informalSavings_numericalDeviations.md`.
 
 - `hRatio = h_{t,i}/h_t` vs `hηRatio = h_{t,i}η_{t,i}/h_t`: `hi`/`bi` need the first, `si_s`'s third
   term, `c2i`, `dlnc2i_dτ` the second. Checks: `∑γ_iη_i·hRatio_i = 1`, `∑γ_i·hηRatio_i = 1`.
 - `χ^R` carries a *period* index: `ι_t`/`c10`/`tildec10` use `χ^R_{t+1}`, `c20`/`dv20` use `χ^R_t`.
 - `Γs`/`B`/`B0`/`si_s`/`ι` report on `db['txE']` (length `T-1`); everything else length `T`.
-- **Tax candidates are compared at frozen formal shares** (2026-10-02, `roots1d.selectMaxFrozen`, finding
-  #18): `zbarParts_*`/`zbarAtShares` rebuild the formal retirees' term at a candidate's own shares (under CRRA
+- **Tax candidates are compared at frozen formal shares** (`roots1d.selectMaxFrozen`, finding #18):
+  `zbarParts_*`/`zbarAtShares` rebuild the formal retirees' term at a candidate's own shares (under CRRA
   at its tax and the hours there), `_zState` adds the ι part, the integral along τ is the frozen objective.
   The ι fixed point and the level `s_{t-1}` are grid states and stay as they are. Every solve reports
   `nCand`/`nEq`/`fallback` per state and a `multiplicity` summary; the drivers write `nEqMax`/`nCandMax`/
-  `nFallback` as non-key columns; `selection = 'legacy'` reinstates the integral criterion. On the headline
-  instances the rule binds at a lower corner next to a crossing within 1.5 cells, which exposed the one-cell
-  clause of the test (TODO C7, `notes/brief_equilibriumTestCell_2026-10-02.md`).
+  `nFallback` as non-key columns; `selection = 'legacy'` reinstates the integral criterion.
 - Two calibration variants (`ModelInformalSavings(commonX=...)`, `calibrateRhoGrid.py --commonX`, own csv
   and `instancesCommonX/`). Vector X (default): `Γ_h = 1` and `∑γ_i(η_i/X_i)^ξ = 1`, relative hours as
   data. Common X: one scalar `X`, `η_i` closed-form from income with `Γ_h = 1`, `X` solved after the root
@@ -97,15 +95,13 @@ reported unlagged on `txE`, so the state entering `t0` is `report['ι'].xs(t0-1)
 
 Done and verified: scaffolding and calibration (§0-2, §8, §8.1), EE solve, steady state, initial state,
 `LOG` and `CRRA` policies, the path solve (§6-7), grid diagnostics, model copies, the universalisation
-experiment across the ρ grid (`match`; `flat` at ρ=1 only), and the `(ε, θ)` grid. Results:
-`archive/notes/informalSavings_results.md`. Departures from the `num_*.tex` specs:
-`notes/informalSavings_numericalDeviations.md`, read before editing those specs.
+experiment across the ρ grid (`match`; `flat` at ρ=1 only), and the `(ε, θ)` grid. Departures from the
+`num_*.tex` specs, read before editing those specs: `archive/notes/informalSavings_numericalDeviations.md`.
 
-**Calibration inputs changed 2026-10-06 (TODO C8).** `getEps` reads the first formal quartile by label, the minimum
-pension's type (it read the second by position), and the workbook's γ₀ is 0.4706, informal households per formal
-household, 32% of all. `results/` was re-solved on 2026-10-06/07 (`logs/finalRunC8/`, both variants, both stages, the
-stationary check included) and read on 2026-10-07: ε = 0.21, ω = 1.45, the reform raises the 2010 tax rate by 2.1 p.p.
-(from 1.25 under the previous inputs); every count one equilibrium and no fallback.
+`getEps` reads the pre-reform ε from the minimum pension's type, the first formal quartile, by label, and the
+workbook's γ₀ = 0.4706 counts informal households per formal household (32% of all). The committed results are
+the run of 2026-10-07 on these inputs (`logs/finalRunC8/`, both variants, both stages, the stationary check): ε =
+0.21, ω = 1.45, every count one equilibrium and no fallback.
 
 ## Open items
 
@@ -115,8 +111,9 @@ stationary check included) and read on 2026-10-07: ε = 0.21, ω = 1.45, the ref
   consumption columns until then.
 - `κ`'s cached `db['κ']` goes stale under a varying `ε`; `shockUniversal.installEps` rewrites it, nothing
   detects an omission.
-- The low-ρ tail is converged but not resolved (`verifyResidual` 1.2e-3 at ρ=0.5), and β > 1 below ρ≈0.85
-  (`notes/argentina_calibrationTarget.md`).
+- The low-ρ tail is converged but not resolved (`verifyResidual` 3.7e-3 at ρ = 0.5, 1.2e-3 at 0.6), and β > 1
+  at ρ ≤ 0.6 (the online appendix says so in OA.2.5; the earlier diagnosis is
+  `archive/notes/argentina_calibrationTarget.md`).
 - `initialState_solve` returns the CRRA steady-state `s` in both cases (agrees with LOG to 1e-11, not
   bitwise); deliberate.
 - `lnRleadΘ` reads `α`/`power_h` at `t` though they are `t+1` objects; immaterial unless they vary.

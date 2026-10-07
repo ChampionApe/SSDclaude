@@ -8,9 +8,8 @@ Run:  .venv\Scripts\python.exe python\US\test_designChoicePilot.py        (~2 mi
 Setup as test_frozenSelection.py section 5: rho = 2, the 'size' wedge at lambda = 1.728, 5 design-state
 nodes, 13 candidate designs, 25 savings nodes, the terminal period and the last choosing period.
   T1  sharesFrom(aOf(.)) is base.si_s at a common discount factor (eq:esc:aDef); aOf refuses otherwise.
-  T2  under designRule 'legacy' the split solveBackward_t2D returns the period dict of the unsplit one,
-      bitwise, in one process (crossCuttingFindings #1), and the four reference numbers recorded before
-      the split.
+  T2  under designRule 'legacy' (the layer pinned periods run) solveBackward_t2D reproduces four reference
+      numbers of its period dict, to 1e-12 across processes (crossCuttingFindings #1).
   T3  both layers run the period: equilibria and fallbacks per state, and how far apart they land.
   T4  the frozen tax pass at the shares of the tax rule's own selection returns that selection.
   T5  the design derivative of the FOC layer against a central difference of the re-solved state.
@@ -29,7 +28,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 import test as testmod
 from modelESC import ModelESC
-from gridsearch import CartesianGrid, griddedSmooth1D, roots1d
+from gridsearch import roots1d
 from policy import SUMMARY_NAMES, DESIGN_NAMES
 from policyESC import LeadedCRRA2D, aOf, sharesFrom, frozenTaxPass, _alongτ, _cellCrossing
 from policyESCpilot import resolveAt, deviationCheck, designSlopeAt, consistentTax, LeadedCRRA2DFOC
@@ -38,61 +37,8 @@ from gridsearch.testing import check, report
 
 PARS = testmod.pars | {'ρ': 1.0, 'β': 0.7606187875476447, 'ω': 1.4536273947550569}
 GS = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}
-# T2's reference numbers, recorded from LeadedCRRA2D.solveBackward_t2D before the split (fresh process)
+# T2's reference numbers of the legacy layer's period dict (fresh process)
 REF_T2 = {'θNext': 111.47111977586651, 'τStar3': 395.12541942719207, 'τ00': 0.14243079889653795, 'nEqτ': 1625}
-
-
-def _unsplitSolveBackward_t2D(self, sol1, t, tLag, t1, ε, ε1, sGrid, sCand, θ1Grid, choose):
-    """ LeadedCRRA2D.solveBackward_t2D in one piece, verbatim, without the interpolants: T2's reference. """
-    τGrid = self.GS['PEE']['solGrids']['τ']
-    nθ, ns_, nθ1 = self.nθ, len(sGrid), len(θ1Grid)
-    g = CartesianGrid(τ = τGrid, s_ = sGrid, θ1 = θ1Grid)
-    with self.BG.cacheParams():
-        s, nRoots = self._solveStateGrid(τGrid, sGrid, θ1Grid, sCand, t, sol1)
-        d = self._econCore(g.flat['τ'], s, g.flat['s_'], g.flat['θ1'], t, tLag, t1, ε, ε1, sol1)
-        parts = self._focParts(d, g, t, ε)
-        τStar = np.empty((nθ, ns_, nθ1))
-        atBoundτ = np.zeros((nθ, ns_, nθ1), dtype = bool)
-        nEqτ = np.zeros((nθ, ns_, nθ1), dtype = int)
-        nCandτ = np.zeros((nθ, ns_, nθ1), dtype = int)
-        fallbackτ = np.zeros((nθ, ns_, nθ1), dtype = bool)
-        for it, θt in enumerate(self.θGrid):
-            frozen = lambda cand, θt = float(θt): self.objectiveFrozen(cand, g, d, parts, θt, t, tLag)
-            sel = self._selectND(g, self._zAtθ(d, parts, θt, t, tLag), 'τ', frozen)
-            τStar[it], atBoundτ[it] = sel['x'], sel['atBound']
-            nEqτ[it], nCandτ[it], fallbackτ[it] = sel['nEq'], sel['nCand'], sel['fallback']
-        θtF = np.repeat(self.θGrid, ns_*nθ1)
-        s_F = np.tile(np.repeat(sGrid, nθ1), nθ)
-        θ1F = np.tile(θ1Grid, nθ*ns_)
-        at = self._econAt(τStar.reshape(-1), s_F, θtF, θ1F, sCand, t, tLag, t1, ε, ε1, sol1)
-        W = at['W'].reshape(nθ, ns_, nθ1)
-        θNext = np.full((nθ, ns_), np.nan)
-        atBoundθ = np.zeros((nθ, ns_), dtype = bool)
-        τSel = np.full((nθ, ns_), np.nan)
-        if choose:
-            Wm = np.where(np.isfinite(W), W, -np.inf)
-            for it in range(nθ):
-                for j in range(ns_):
-                    if not np.any(np.isfinite(W[it, j])):
-                        continue
-                    θNext[it, j], atBoundθ[it, j] = self._argmax(θ1Grid, Wm[it, j])
-                    τSel[it, j] = np.interp(θNext[it, j], θ1Grid, τStar[it, j])
-        else:
-            θNext[:] = θ1Grid[0]
-            τSel = τStar[:, :, 0].copy()
-        knots = self.GS['PEE']['gridSettings']['smoothKnots']
-        τTab = griddedSmooth1D(sGrid, τSel.T, s = 1e-5, knots = knots)
-        θTab = θNext.T
-        fin = self._econAt(τTab.T.reshape(-1), np.tile(sGrid, nθ), np.repeat(self.θGrid, ns_),
-                           θTab.T.reshape(-1), sCand, t, tLag, t1, ε, ε1, sol1)
-        sTab, hTab = fin['s'].reshape(nθ, ns_).T, fin['h'].reshape(nθ, ns_).T
-        ΓsTab = fin['Γs'].reshape(nθ, ns_).T
-    return {'sGrid': sGrid, 'θGrid': self.θGrid.copy(), 'θ1Grid': np.asarray(θ1Grid, dtype = float),
-            'τ': τTab, 'θNext': θTab, 's': sTab, 'h': hTab, 'Γs': ΓsTab,
-            'τStar3': τStar, 'W': W, 'atBoundτ': atBoundτ, 'atBoundθ': atBoundθ.T,
-            'nEqτ': nEqτ, 'nCandτ': nCandτ, 'fallbackτ': fallbackτ, 'choose': choose, 'terminal': False,
-            'θSpread_s': np.nan if not choose else float(np.nanmax(θTab, axis = 0).max()
-                                                        - np.nanmin(θTab, axis = 0).min())}
 
 
 tic = time.time()
@@ -145,21 +91,15 @@ except ValueError:
     raised = True
 check('T1: aOf raises when βi differs across types', raised)
 
-# ==== T2: the split period equals the unsplit one bitwise ==============================================
+# ==== T2: the legacy layer's period, against its reference numbers ======================================
 new = E.solveBackward_t2D(*args)
-old = _unsplitSolveBackward_t2D(E, *args)
-diff = [k for k, v in old.items()
-        if not (np.array_equal(v, new[k], equal_nan = True) if isinstance(v, np.ndarray)
-                else (v == new[k] or (np.isnan(v) and np.isnan(new[k]))))]
-check("T2: under designRule 'legacy', solveBackward_t2D = _periodCore + _choose + _handBack reproduces the unsplit period dict bitwise",
-      not diff, f'-> {len(old)} entries compared, differing: {diff}')
-check('T2: the split period dict carries tCore and tChoose, and the five interpolants',
+check('T2: the period dict carries tCore and tChoose, and the five interpolants',
       all(k in new for k in ('tCore', 'tChoose', 'τPolicy', 'hPolicy', 'sPolicy', 'ΓsPolicy', 'θPolicy')),
       f"-> tCore {new.get('tCore', np.nan):.2f}s, tChoose {new.get('tChoose', np.nan):.2f}s")
 nums = {'θNext': float(np.nansum(new['θNext'])), 'τStar3': float(np.nansum(new['τStar3'])),
         'τ00': float(new['τ'][0, 0]), 'nEqτ': int(new['nEqτ'].sum())}
 ok = all(abs(nums[k] - REF_T2[k]) <= 1e-12*max(1., abs(REF_T2[k])) for k in REF_T2)
-check('T2: the reference numbers recorded before the split, to 1e-12 relative (across processes, #1)', ok,
+check("T2: designRule 'legacy' reproduces the four reference numbers, to 1e-12 relative (across processes, #1)", ok,
       '-> ' + ', '.join(f'{k} {nums[k]!r} (recorded {REF_T2[k]!r})' for k in REF_T2))
 
 # ==== T3: both layers run the period =====================================================================

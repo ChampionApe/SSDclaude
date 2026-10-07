@@ -131,7 +131,8 @@ class LOG:
         reproduced bitwise. Those results are all superseded, every calibration path was overriding it
         explicitly, and the configurations that still reached the adaptive branch by default were the ones
         that silently failed -- test_calibration.py §8 spent a session broken that way. None remains
-        available and is what diagnoseRho07.py pins explicitly to reproduce its own measurements.
+        available and is what archive/code/InformalSavings/diagnoseRho07.py pinned explicitly to reproduce its
+        own measurements.
 
         NOTE the override trap this creates: initGS merges the caller's dict OVER these defaults, so
         passing smoothKnots=None explicitly now DISABLES pinned knots rather than requesting the default.
@@ -151,8 +152,9 @@ class LOG:
         u_ι = min{padι[1]·min_τ ι*(τ), capι}.
 
         Anchoring the upper bound on the MINIMUM is deliberate and is what retires the absolute cap as the
-        operative bound (measureGrids.py, 2026-08-19). ι*(τ) diverges as τ→1 -- 25 484 at τ=0.9999 on the
-        Argentina calibration -- so a rule anchored on max_τ ι*(τ) has no finite content and the grid's
+        operative bound (archive/code/InformalSavings/measureGrids.py, 2026-08-19). ι*(τ) diverges as τ→1 --
+        25 484 at τ=0.9999 on the Argentina calibration -- so a rule anchored on max_τ ι*(τ) has no finite
+        content and the grid's
         real upper bound was whatever capι happened to be set to, an absolute number that would not
         survive a change of data. Measured against the reachable set (policy.reachableBox), both bounds
         are stable multiples of the minimum instead: across ρ ∈ [0.5, 2.0] and under LOG, min_τ ι*(τ) is
@@ -821,8 +823,9 @@ class CRRA(LOG):
         range is a single order of magnitude, so there is no resolution problem to fix.
 
         The anchor is NOT s*(0), and not the calibration's own τ_0 either -- both were measured and
-        rejected (measureGrids.py, 2026-08-19). s*(τ) at low τ moves the wrong way: across ρ ∈ [0.5, 2.0]
-        s*(0) falls by 83% while the reachable box's upper edge RISES by 20%, a correlation of -1.000, so
+        rejected (archive/code/InformalSavings/measureGrids.py, 2026-08-19). s*(τ) at low τ moves the wrong
+        way: across ρ ∈ [0.5, 2.0] s*(0) falls by 83% while the reachable box's upper edge RISES by 20%, a
+        correlation of -1.000, so
         no constant pad on it can track the box (occupancy ran 40% at ρ=0.5 against 80% at ρ=2.0). s*(τ_0)
         is better but still drifts 77%. At τ=0.3 the steady state is ρ-stable to 1.5% while remaining a
         solved function of the calibrated parameters, so it moves with the DATA without moving with ρ,

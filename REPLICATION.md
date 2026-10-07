@@ -180,8 +180,8 @@ endogenous-design scripts (`python/US/runESC*.py`), and `data/oecdFigure1.csv` b
 
 ## 6. Checks
 
-- `python\runTests.py`: the model and solver test suites (22 fast suites, about 3 minutes; `--all` adds
-  four slow ones, about an hour).
+- `python\runTests.py`: the model, solver and online-appendix test suites (24 fast suites, about 7 minutes; `--all` adds
+  five slow ones, about an hour).
 - `python\paper\build.py --list`: every registered output is buildable from the committed results.
 - `writing\checkPaper.py`: every cross-reference and citation in the paper resolves, with word counts per
   section and the list of pending items.

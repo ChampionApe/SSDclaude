@@ -1,8 +1,8 @@
 # Cross-cutting findings
 
 Findings that recurred across modules, written once and cited by number from code and READMEs. Each entry
-is the statement, the tell and the habit. The long-form versions, with the measurements behind each, are
-in `archive/findings_longform.md` under the same numbers. **Do not renumber.**
+is the statement, the tell and the habit. The long forms of 1–15, with the measurements behind each, are
+in `archive/findings_longform.md` under the same numbers; 16–19 exist only here. **Do not renumber.**
 
 ## 1. Bitwise reproducibility holds within a process, not across processes
 
@@ -192,7 +192,7 @@ Tell: a skip key that is a strict subset of what the rows depend on.
 **Statement.** On Windows, Git's `tail -F` opens a file without write sharing, so a PowerShell
 `Add-Content` to that file fails with "being used by another process"; inside a `.ps1` the error is
 non-terminating, the script runs on, and the pipeline log ends up with its first line only while every
-stage silently completes (twice on 2026-09-11: `logs/argPipeline0911.log`, `logs/usPipeline0911.log`).
+stage silently completes (twice on 2026-09-11, the pipeline logs of both arms).
 
 **Tell.** A pipeline log frozen at `START`/`WAITING` while the per-stage logs keep growing; no `exit`
 lines, no `DONE`; the stage logs' mtimes are the only record.
@@ -204,7 +204,7 @@ stage logs and their mtimes before concluding anything about the run.
 ## 15. Spending a normalisation makes distinct objects coincide numerically
 
 **Statement.** A free normalisation fixes units, not meaning. Imposing the hours unit
-`mu = sum_i gamma_i y^x_i = 1` in the US calibration (2026-09-12, TODO C4) moved no equilibrium object at
+`mu = sum_i gamma_i y^x_i = 1` in the US calibration (2026-09-12) moved no equilibrium object at
 all, but made the average workweek `hbar` equal the aggregate `h` at every date, since `gamma_i` does not
 vary with `t`. The two stay different objects -- one unweighted, one productivity-weighted -- and the
 `test_ee.py` check asserting they differ was right to fail.
@@ -239,7 +239,7 @@ treat a mismatch as a revert until proven otherwise; `--dry-run` says exactly wh
 the policy does nothing. Section 7's wedge $f(\theta)=\phi+(1-\phi)\theta^p$ burned a share $1-\phi$ of
 revenue at $\theta=0$ even when all incomes were equal, where flat and earnings-related benefits pay the
 same. A compressed income distribution then shrank the stakes and left the cost in place, and the French
-income row and the UK went to the $\theta=1$ corner (2026-09-24, `notes/esc_inequalityChannel.md`).
+income row and the UK went to the $\theta=1$ corner (2026-09-24, `archive/notes/esc_inequalityChannel.md`).
 
 **Tell.** A counterfactual that removes the priced quantity (here the income dispersion $\tilde V$) sends
 the choice to a corner, by more than any other experiment moves it; or the cost is positive at a point
@@ -278,7 +278,7 @@ assembled from continuation policies interpolated piecewise-linearly over a 13-n
 it has a kink every three or four candidate cells; the fixed-knot spline missed a central finite
 difference by 18 to 23 percent, the located design failed the one-shot deviation test at its own frozen
 state by $10^{-5}$ relative, and the baseline design at $t_0$ came out 0.023 below the direct-evaluation
-answer (2026-10-02, `notes/brief_designChoicePilot_2026-10-02.md`, `python/US/policyESCpilot.py`). The
+answer (2026-10-02, `archive/pilots/designChoice_2026-10-02/report.txt`, `python/US/policyESCpilot.py`). The
 same construction along the tax axis works, because there the kinks are dense relative to the 101-node
 grid and small. Direct evaluation with a parabola through three nodes straddles the same kinks and is
 biased by at most a fraction of a cell, which the deviation test confirmed.

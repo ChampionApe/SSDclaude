@@ -10,7 +10,7 @@ at every point of the grid, and that the warm start is worth what it costs.
 Slow (~20 min): three real calibrations on the resolved 45x45 inner grid, plus a refined verification at
 each. The 45x45 is not the PEE default; it is kept here so this file exercises the settings the sweep
 actually runs at, not because 30x30 fails -- since smoothKnots the two agree to ~2e-4 in the parameters
-(deviations item 17, which retracted item 12's displaced-root finding). Reducing it would make this a
+(archive/notes/informalSavings_numericalDeviations.md, item 12). Reducing it would make this a
 test of a configuration nothing else uses.
 """
 import os, sys, time

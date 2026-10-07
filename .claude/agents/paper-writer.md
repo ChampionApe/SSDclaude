@@ -14,7 +14,7 @@ may change; you touch nothing else, and you do not commit unless the brief says 
 ## Before writing
 
 1. Read the brief: it names your files, the target length, the contents in order and the interfaces with any
-   other writer of the session. The 2026-09-30 plan it used to point at is retired (`archive/notes/`).
+   other writer of the session.
 2. Read `notes/paper_styleGuide.md`. It is the register every paragraph follows; §6 is the checklist you
    run before reporting.
 3. Read the exemplar the brief names (by default `Sections/EndogenousTheta.tex`, section 7 as settled with RKB). Match its voice, not the voice of the paragraphs you are cutting.

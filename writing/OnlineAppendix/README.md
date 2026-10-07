@@ -4,7 +4,8 @@ A Quarto book that holds every table and figure of the paper's pipeline (81 exhi
 marked as such, beside the tables that print their numbers: hover a mark for its value, click it for its
 table and row, switch the calibration variant, host or ρ, mark the cells two variants differ in. The same
 pages render as a PDF print edition (`_book/OnlineAppendix.pdf`), which holds every exhibit the paper does not,
-numbered Table/Figure OA.k as on the site. Design and decisions: `notes/paper_onlineAppendix.md`.
+numbered Table/Figure OA.k as on the site. Its design and decisions (2026-10-06) are archived:
+`archive/notes/paper_onlineAppendix.md`, with the build contract `archive/notes/brief_onlineAppendix_2026-10-06.md`.
 
 ## Build
 
@@ -47,7 +48,9 @@ numbers.
   sits above the exhibit (above the tabs when the group has tables) and follows the tab and the calibration switch;
   in the print edition it precedes the exhibit, and the paper's own exhibits keep it
   after the stand-in line. `textAlt` replaces it for the vector-$X_i$ twin (the Argentine twins say "identical").
-  Since 2026-10-06 OA.2.2 and OA.2.3 carry texts; the other groups are to be written.
+  Nine exhibits carry no text on purpose, their chapter paragraph, caption and note saying everything (the
+  three data tables, `ArgentinaCalibration`, `ARG_LOG_FourInOne`, the calibration-by-IES and path tables,
+  `NUM_Selection`).
 - An exhibit the paper no longer inputs needs a `caption` and a `note` in the registry (its tex no longer supplies
   them); the site adds the "Note:" label to a registry note, the print edition adds its own. A note that points at
   the section it is shown in ("Online Appendix OA.3.4" inside OA.3.4) renders as "this section" in both editions;

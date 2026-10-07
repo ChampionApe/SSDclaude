@@ -1,4 +1,4 @@
-r""" Figure builders for the online appendix (notes/brief_onlineAppendix_2026-10-06.md, section 2.3). House
+r""" Figure builders for the online appendix (archive/notes/brief_onlineAppendix_2026-10-06.md, section 2.3). House
 style from figures.py (_panel, SERIES, INK) and figuresUS.RHOCOLOURS; drawn at the measure (5.91 in).
 
 Each writes results/paper/Figs/<name>.{pdf,png,svg} and <name>.marks.json through figures._save. Every data

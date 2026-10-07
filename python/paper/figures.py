@@ -3,8 +3,7 @@ r""" Figure builders. Each writes one pdf (and a png alongside for quick viewing
 House style, applied by `_panel`:
   * two categorical hues in a FIXED order, blue then orange, never cycled. The pair is validated for
     colour-vision deficiency (worst-case adjacent dE 24.7 protan / 32.7 tritan, normal 33.6) -- do not
-    substitute by eye. Blue is also plotUniversalShock.py's existing series colour, so the repo's
-    figures stay one family.
+    substitute by eye.
   * one y-axis per panel, never two. Panels carry different units on purpose; a shared axis across
     unlike measures is what a small-multiple layout exists to avoid.
   * a legend whenever a panel has two series, so identity is never carried by colour alone.

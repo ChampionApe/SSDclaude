@@ -2,7 +2,7 @@ r""" modelFR.ModelFR -- the US-referenced calibration (see modelFR.py's docstrin
 
 Run:  .venv\Scripts\python.exe python\US\test_fr.py
 
-There is no France workbook yet, and this suite deliberately does not need one. It calibrates ModelFR on
+This suite deliberately needs no country workbook (test_eu.py loads them). It calibrates ModelFR on
 the US workbook against the US model's OWN calibration, where the whole protocol reduces to an identity
 that can be checked exactly:
 

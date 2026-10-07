@@ -1,11 +1,12 @@
-# The deadweight cost of section 7: literature, and how the paper motivates it (2026-09-29)
+# The deadweight cost of section 7: literature, and how the paper motivates it
 
-Review note for RKB and MGE, written with the rewrite of subsection 7.2 (`sec:esc`, "Costly redistribution,
-and the preferred specification"). §1 states the specification and what it has to be motivated against;
-§2 reviews the literature block by block, with what each reference does and how it relates to $f$; §3 maps
-the three arguments of $f$ to the references; §4 is the strategy the paper follows. The derivation itself is
-in the technical note (`writing/US/model_esc.tex`, "The deadweight cost of redistributive benefits"); the
-diagnosis that led to the form is `notes/esc_inequalityChannel.md`.
+The literature behind the cost of redistribution in section 7 (`sec:esc`) and its derivation in appendix C
+(`Appendix/EndogenousDesign.tex`), kept for revisions and referee responses. Written 2026-09-29, when the
+cost was recast as a loss on margins the model lacks. §1 states the specification and what it has to be
+motivated against; §2 reviews the literature block by block, with what each reference does and how it relates
+to $f$; §3 maps the three arguments of $f$ to the references; §4 is the strategy the paper follows; §5 says
+which references the paper cites. The technical note's version is `writing/US/model_esc.tex` ("The deadweight
+cost of redistributive benefits"); the diagnosis that led to the form is `archive/notes/esc_inequalityChannel.md`.
 
 ## 1. The specification, and the objection it has to meet
 
@@ -41,12 +42,14 @@ lacks, on which the average wedge is the relevant one.
   per unit of revenue linear in the tax rate (property 1). $\tilde V$ is *not* from Harberger. It comes from
   the wedges fed in: type-specific wedges $\propto(1-1/y_i)$ on bases $y_i$ sum to $\tilde V$. The same
   quadratic implies a zero marginal cost of the first unit of redistribution, hence no interior choice can
-  reach $\theta=1$ (France; TODO C5).
+  reach $\theta=1$, France's observed design (section 7 and appendix C say so).
 - **Okun (1975), *Equality and Efficiency: The Big Tradeoff*, Brookings.** The leaky bucket: redistribution
   loses resources in transit, and the leak rises with the amount carried. *Relation.* The plain-language
   version of $f$. The amount a flat component carries is $\propto\tau(1-\theta)\times$ dispersion, so a
   leak convex in it gives all three properties at once without committing to a margin. Also the natural
-  frame for C5: Okun's leak can have a component proportional to the amount carried (a linear term).
+  frame for a linear term: Okun's leak can have a component proportional to the amount carried, which would
+  let an electorate choose $\theta=1$ exactly, at the price of a second parameter that the UK's design could
+  pin (two targets, two parameters, France as the prediction). Not in the paper.
 - **Browning and Johnson (1984), "The Trade-Off between Equality and Efficiency", *JPE* 92(2):175--203.**
   Estimates, on 1976 US microdata, the marginal cost of reducing inequality with a policy whose
   distributional effects resemble the tax-transfer system. The cost is high even for modest elasticities:
@@ -183,8 +186,7 @@ lacks, on which the average wedge is the relevant one.
   political, not a deadweight cost. The high earners' outside option is close in spirit to the
   avoidance/opt-out reading of $f$.
 - **Koethenbuerger, Poutvaara and Profeta (2008), "Why Are More Redistributive Social Security Systems
-  Smaller? A Median Voter Approach", *Oxford Economic Papers* 60(2):275--292.** (The plan and the 2026-09-24
-  log said *JPubE*; the bib's *OEP* is right.) Flat benefits redistribute within a generation and, with
+  Smaller? A Median Voter Approach", *Oxford Economic Papers* 60(2):275--292.** Flat benefits redistribute within a generation and, with
   endogenous labour supply, carry larger efficiency costs than earnings-related ones; the median voter,
   typically middle-aged and high-income in data for eight European countries, resolves this
   efficiency-redistribution trade-off by choosing a smaller system when it is more redistributive.
@@ -202,11 +204,11 @@ lacks, on which the average wedge is the relevant one.
 
 | Property of $f$ | Theory | Evidence | Strength |
 |---|---|---|---|
-| (3) quadratic in $1-\theta$, zero at $\theta=1$ | Harberger; Summers (which part is a wedge) | Disney (participation); Kumler et al. (reporting) | strong in form; zero marginal cost at $\theta=1$ is a property to own (C5) |
+| (3) quadratic in $1-\theta$, zero at $\theta=1$ | Harberger; Summers (which part is a wedge) | Disney (participation); Kumler et al. (reporting) | strong in form; zero marginal cost at $\theta=1$ is a property to own (Okun above) |
 | (1) loss per unit of revenue linear in $\tau$ | Harberger | Disney (the tax component's level matters); KPP / Conde-Ruiz--Profeta for the size--design link | strong |
 | (2) proportional to $\tilde V$ | Saez; Kleven--Kreiner (average wedges on a participation margin); alternatively Feldstein--Samwick (non-linear marginal wedges) | direct evidence across the income distribution is thin; Kumler et al. in direction | the weakest link; symmetry is an assumption |
 | one $\lambda$ for several margins | Feldstein (1999); Saez--Slemrod--Giertz | | adequate |
-| magnitude of $\lambda$ | $\lambda\approx\Pi\varepsilon$, $\Pi$ of the order of $\nu_{2020}=1.34$ | $\varepsilon$ 0.1--0.4 (Chetty et al.; SSG) gives $\lambda$ 0.13--0.54 | $\lambda$ = 18.24 / 8.64 / 1.73 at $\rho$ = 0.5 / 1 / 2: roughly 30--140x, 16--65x, 3--13x |
+| magnitude of $\lambda$ | $\lambda\approx\Pi\varepsilon$, $\Pi$ of the order of $\nu_{2020}=1.34$ | $\varepsilon$ 0.1--0.4 (Chetty et al.; SSG) gives $\lambda$ 0.13--0.54 | $\lambda$ = 18.27 / 8.64 / 1.72 at $\rho$ = 0.5 / 1 / 2: roughly 30--140x, 16--65x, 3--13x |
 
 ## 4. Strategy for the paper
 
@@ -226,21 +228,23 @@ lacks, on which the average wedge is the relevant one.
    test.
 5. **Own the two soft spots in footnotes, as choices with their cost.** The symmetric treatment of the
    subsidy below the mean (Saez), and the return factor absorbed into $\lambda$. The zero marginal cost at
-   $\theta=1$ already has its sentence in the across-countries paragraph.
+   $\theta=1$ has its sentence in section 7's cross-country test and in appendix C.
 6. **Be exact about magnitude.** Shape from the theory, size from the calibration: $\lambda$ is more than an
    order of magnitude above what participation and taxable-income elasticities (0.1 to 0.4; Chetty et al.,
    Saez--Slemrod--Giertz) imply at $\rho\le1$, a few times above at $\rho=2$, and absorbs administrative,
    evasion and political costs. The $\rho=2$ proximity is a mild further argument for $\rho\in[1,2]$.
-7. **Keep the paper's derivation to one paragraph** and send the rest to the technical documentation, which
-   should then take the same extensive-margin framing (its "Harberger loss" paragraph still reads as a
-   compensated-elasticity argument; follow-up).
+7. **Keep the derivation out of the main text.** Section 7 states the budget with $f$ and its reading as the
+   loss on the tax component; appendix C derives it from the tax component and the participation and
+   reporting margins; the technical note takes the same extensive-margin framing.
 
-## 5. Status
+## 5. In the paper
 
-Subsection 7.2 rewritten along §4 on 2026-09-29 (`writing/Paper/Sections/EndogenousTheta.tex`; six
-references added to `References.bib`: Harberger64a1, Saez02a1, KlevenK06a1, ChettyGMW11a1, SaezSG12a1,
-KumlerVF20a1). The technical note's cost paragraph (`writing/US/model_esc.tex`) reframed the same day. Every
-reference above was checked against its publisher or RePEc record on 2026-09-29; the details in §2 are
-from those records, and the one point not resolved from an abstract (how Disney computes his tax
-component) is flagged where it sits. Candidates for the paper if the argument needs more support:
-Bergolo and Cruces (2014) next to Kumler et al., and Feldstein (1999) next to the magnitude sentence.
+Cited (section 7 and appendix C): Harberger (1964), Summers (1989), Disney (2004), Saez (2002), Kleven and
+Kreiner (2006), Chetty et al. (2011), Saez, Slemrod and Giertz (2012), Kumler, Verhoogen and Frías (2020),
+and, for the size–design link, Conde-Ruiz and Profeta (2007) and Koethenbuerger, Poutvaara and Profeta (2008).
+Not cited and not in `References.bib`: Okun (1975), Browning and Johnson (1984), Feldstein and Samwick (1992),
+Immervoll et al. (2007), Gruber and Wise (1999), Liebman, Luttmer and Seif (2009), Bergolo and Cruces (2014)
+and Feldstein (1999); the last two are the first candidates if the argument needs more support, next to Kumler
+et al. and to the magnitude sentence. Every reference above was checked against its publisher or RePEc record on
+2026-09-29; the one point not resolved from an abstract (how Disney computes his tax component) is flagged where
+it sits.

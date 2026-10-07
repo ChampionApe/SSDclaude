@@ -49,16 +49,16 @@ ARG = {
     # Grid settings. calibrateRhoGrid.py gives BOTH solvers interpKind/smoothKnots and only the grid
     # SIZES to CRRA; LOG keeps its own documented nι=50. Anything re-solving a calibrated instance must
     # mirror that split or it solves under a different interpolant than it was fitted under
-    # (notes/informalSavings_resolvedIssues.md). loadCalibrated() enforces it; do not bypass.
+    # (archive/notes/informalSavings_resolvedIssues.md). loadCalibrated() enforces it; do not bypass.
     'gridSettings': {'interpKind': 'cubic', 'smoothKnots': 4, 'nι': 45, 'ns': 45},
     # WHICH CALIBRATION VARIANT THE ARGENTINA OUTPUTS LEAD WITH (as US['commonX']). False: vector X_i
     # from relative income and relative hours; True: one scalar X across the formal types pinned by the
     # formal workweek, relative formal hours a prediction. X enters no aggregate, so tau, K/Y, the
     # savings rate and every counterfactual coincide across the two to solver precision (measured at
-    # <= 4e-12 over the whole rho grid, notes/argentina_commonX_vs_vectorX.md); what differs is the
+    # <= 4e-12 over the whole rho grid, archive/notes/argentina_commonX_vs_vectorX.md); what differs is the
     # calibration table (eta_i, X_i, eta_0, X_0) and the relative-hours diagnostic. The headline outputs
     # read this; their twins pass commonX = not this.
-    # Common X since 2026-09-12 (TODO W2), matching the OECD arm: it identifies one leisure parameter
+    # Common X, matching the OECD arm: it identifies one leisure parameter
     # rather than four, puts the workweek level on a target, and turns relative formal hours into a
     # prediction to be checked against the survey.
     'commonX': True,
@@ -164,7 +164,8 @@ US = {
     #           redistributed. lambda lives in the csvs' `p` column (the paper prints it as lambda).
     #   'scale' (the previous wedge, the appendix comparison arm US_ESC_ScaleWedge): f(theta) =
     #           phi + (1-phi) theta^p, the cost attached to the design label rather than to the transfer.
-    #   'flat'  (only the flat component carries the cost) is implemented in python/US/ but not run.
+    #   'flat'  (only the flat component carries the cost) runs only in the permanent stage's comparison
+    #           rows of escPermanent.csv, which no output prints.
     # The rho points of the pre-publication stationary-vs-date-specific check (runShocksUS.py 'stationary';
     # rho = 1 is exact by the LOG decoupling and is not run). sec:numerical's footnote quotes the maximal gap
     # over these points.
@@ -201,7 +202,7 @@ US = {
         # writing/US/num_esc.tex, the root in a, adopted on the pilot (python/US/RESEARCH_LOG.md, 2026-10-02).
         'designRule': 'root',
         'Ma':         5,
-        # The pre-publication timing checks (TODO R3): the permanent choice traced in rho under CRRA.
+        # The pre-publication timing checks: the permanent choice traced in rho under CRRA.
         'ρPermanentCRRA': [1.1, 1.2, 1.3, 1.4, 1.5, 2.0],
         # The UK as host of the French characteristics under the chosen design (appendix app:UKUS), at the
         # UK's OWN cost parameter, calibrated per rho as the US one is: LOG from escCountry.csv ('own'), CRRA
