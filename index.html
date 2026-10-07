@@ -1,0 +1,3852 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Rasmus K. S. Berg">
+<meta name="author" content="Martín Gonzalez-Eiras">
+
+<title>Social Security Design and Its Political Support</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./data.html" rel="next">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-1f247cefb6dea6ea33b203160e60f6a9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="assets/exhibits.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">About this appendix</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Social Security Design and Its Political Support</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ChampionApe/SSDclaude" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="./OnlineAppendix.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">About this appendix</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">OA.1 The cross-section of figure 1.1</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./argentina.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">OA.2 Argentina</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./oecd.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">OA.3 The rich economies with the design given</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./esc.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">OA.4 The endogenous pension design</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numerical.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">OA.5 Numerical checks</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./replication.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">OA.6 Replication</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#about-this-appendix" id="toc-about-this-appendix" class="nav-link active" data-scroll-target="#about-this-appendix">About this appendix</a>
+  <ul class="collapse">
+  <li><a href="#robustness" id="toc-robustness" class="nav-link" data-scroll-target="#robustness">Robustness at a glance</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Social Security Design and Its Political Support</h1>
+<p class="subtitle lead">Online Appendix</p>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Authors</div>
+  <div class="quarto-title-meta-heading">Affiliations</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Rasmus K. S. Berg </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            University of Copenhagen
+          </p>
+      </div>
+    <div class="quarto-title-meta-contents">
+    <p class="author">Martín Gonzalez-Eiras </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            University of Bologna
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="about-this-appendix" class="level1 unnumbered page-columns page-full">
+<h1 class="unnumbered">About this appendix</h1>
+<p>This online appendix accompanies <em>Social Security Design and Its Political Support</em> by Rasmus K. S. Berg and Martín Gonzalez-Eiras. It holds the tables and figures behind the paper’s quantitative sections, the robustness checks that the paper’s appendix G summarizes in one figure, and the numerical checks behind its results, with each figure set beside the tables that print its numbers. Every exhibit is built by the paper’s own pipeline from the model’s results, so the numbers are the paper’s to the last printed digit; <a href="./replication.html">replication</a> lists where each one comes from.</p>
+<p><strong>Reading an exhibit.</strong> Point at a marker of a figure to read its value; click it to bring up the table that prints it, with its row highlighted. Point at a table row to find its markers in the figure. Where an exhibit exists under both calibrations of the households’ taste for leisure, a switch moves between the paper’s calibration, common <span class="math inline">\(X\)</span>, and the alternative, vector <span class="math inline">\(X_i\)</span> (<a href="./oecd.html#oecd-vectorx">OA.3.2</a>), and <em>mark the cells that differ</em> shows which numbers the choice moves. The address in the browser keeps the selection, so a link opens the same table and row. Under <em>Source</em>, each exhibit lists the files it reads, with downloads, the builder that makes it and the command that rebuilds it. A grey badge marks an exhibit of the paper itself; every other exhibit is numbered here, Table or Figure OA.<em>k</em>.</p>
+<p>The print edition, a PDF under the download link of the sidebar, holds every table and figure that is not in the paper, with the same numbers.</p>
+<section id="robustness" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="robustness">Robustness at a glance</h2>
+<p>Figure G.1 of the paper, repeated here, sets its quantitative results against every specification the paper reports. Each panel is one result: how the tax rate responds to the Bismarckian index <span class="math inline">\(\theta\)</span>, to acute ageing and to France’s income distribution and voting patterns with the design given, and how the chosen design responds to the last three. Each marker is the same result under one specification: the intertemporal elasticity of substitution (IES) <span class="math inline">\(\rho\)</span>, the calibration of the taste for leisure, the host economy, and for the chosen design the cost specification and the Frisch elasticity <span class="math inline">\(\xi\)</span>. Results are changes against the host’s own baseline at the same IES, and the paper’s own reading, the U.S. under a common <span class="math inline">\(X\)</span> at an IES of one with the cost of section 7, is the highlighted marker. <span>Click a marker for the table that prints it.</span></p>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="column-body-outset">
+<section class="oa-group" id="oagroup_robustness" data-group="robustness" data-variants="commonX">
+<div class="oa-layout oa-layout--text">
+<div class="oa-texts"><div class="oa-text" data-kind="figure" data-tab="RobustnessMap" data-variant="commonX"><p>Figure <a href="#oafig_RobustnessMap">G.1 of the paper</a>: a marker across the zero line from the highlighted one reverses the paper’s sign. With the design given, the Beveridgean corner against the Bismarckian one, acute ageing and France’s voting patterns raise the tax rate in every specification; France’s income distribution lowers it on the U.S., and on the UK raises it under a common <span class="math inline">\(X\)</span> and lowers it under the vector <span class="math inline">\(X_i\)</span>. With the design chosen, acute ageing makes the design more Bismarckian and France’s voting patterns less so throughout, while France’s income distribution moves it in a direction that changes with the IES and the host, and to the Bismarckian corner under the cost on the design.</p></div></div>
+<div class="oa-figures"><figure class="oa-figure figure" id="oafig_RobustnessMap" data-name="RobustnessMap" data-base="RobustnessMap" data-variant="commonX"><figcaption><span class="oa-badge oa-badge--paper">In the paper · figure G.1, appendix G</span> The main results across specifications</figcaption><div class="oa-svg"><svg class="oa-svgroot" role="img" focusable="false" xlink="http://www.w3.org/1999/xlink" viewbox="0 0 425.52 323.856" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ 
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="RobustnessMap-figure_1">
+  <g id="RobustnessMap-patch_1">
+   <path d="M 0 323.856 
+L 425.52 323.856 
+L 425.52 0 
+L 0 0 
+z
+" style="fill: #ffffff"></path>
+  </g>
+  <g id="RobustnessMap-subfigure_1">
+   <g id="RobustnessMap-patch_2">
+    <path d="M 0 109.400544 
+L 425.52 109.400544 
+L 425.52 0 
+L 0 0 
+L 0 109.400544 
+z
+" style="fill: none"></path>
+   </g>
+   <g id="RobustnessMap-axes_1">
+    <g id="RobustnessMap-patch_3">
+     <path d="M 24.016646 92.900304 
+L 116.517065 92.900304 
+L 116.517065 30.161423 
+L 24.016646 30.161423 
+z
+" style="fill: #ffffff"></path>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_1">
+     <g id="RobustnessMap-xtick_1">
+      <g id="RobustnessMap-line2d_1">
+       <path d="M 28.221211 92.900304 
+L 28.221211 30.161423 
+" clip-path="url(#RobustnessMap-pa2161396c8)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_2">
+       <defs>
+        <path id="RobustnessMap-mad11125b4d" d="M 0 0 
+L 0 3.5 
+" style="stroke: #898781; stroke-width: 0.8"></path>
+       </defs>
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="28.221211" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_1">
+       
+       <g style="fill: #898781" transform="translate(23.052695 104.838781) scale(0.065 -0.065)">
+        <defs>
+         <path id="RobustnessMap-DejaVuSans-13" d="M 2034 4250 
+Q 1547 4250 1301 3770 
+Q 1056 3291 1056 2328 
+Q 1056 1369 1301 889 
+Q 1547 409 2034 409 
+Q 2525 409 2770 889 
+Q 3016 1369 3016 2328 
+Q 3016 3291 2770 3770 
+Q 2525 4250 2034 4250 
+z
+M 2034 4750 
+Q 2819 4750 3233 4129 
+Q 3647 3509 3647 2328 
+Q 3647 1150 3233 529 
+Q 2819 -91 2034 -91 
+Q 1250 -91 836 529 
+Q 422 1150 422 2328 
+Q 422 3509 836 4129 
+Q 1250 4750 2034 4750 
+z
+" transform="scale(0.015625)"></path>
+         <path id="RobustnessMap-DejaVuSans-11" d="M 684 794 
+L 1344 794 
+L 1344 0 
+L 684 0 
+L 684 794 
+z
+" transform="scale(0.015625)"></path>
+        </defs>
+        <use href="#RobustnessMap-DejaVuSans-13"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(95.40625 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_2">
+      <g id="RobustnessMap-line2d_3">
+       <path d="M 51.526757 92.900304 
+L 51.526757 30.161423 
+" clip-path="url(#RobustnessMap-pa2161396c8)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_4">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="51.526757" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_2">
+       
+       <g style="fill: #898781" transform="translate(46.358242 104.838781) scale(0.065 -0.065)">
+        <defs>
+         <path id="RobustnessMap-DejaVuSans-15" d="M 1228 531 
+L 3431 531 
+L 3431 0 
+L 469 0 
+L 469 531 
+Q 828 903 1448 1529 
+Q 2069 2156 2228 2338 
+Q 2531 2678 2651 2914 
+Q 2772 3150 2772 3378 
+Q 2772 3750 2511 3984 
+Q 2250 4219 1831 4219 
+Q 1534 4219 1204 4116 
+Q 875 4013 500 3803 
+L 500 4441 
+Q 881 4594 1212 4672 
+Q 1544 4750 1819 4750 
+Q 2544 4750 2975 4387 
+Q 3406 4025 3406 3419 
+Q 3406 3131 3298 2873 
+Q 3191 2616 2906 2266 
+Q 2828 2175 2409 1742 
+Q 1991 1309 1228 531 
+z
+" transform="scale(0.015625)"></path>
+         <path id="RobustnessMap-DejaVuSans-18" d="M 691 4666 
+L 3169 4666 
+L 3169 4134 
+L 1269 4134 
+L 1269 2991 
+Q 1406 3038 1543 3061 
+Q 1681 3084 1819 3084 
+Q 2600 3084 3056 2656 
+Q 3513 2228 3513 1497 
+Q 3513 744 3044 326 
+Q 2575 -91 1722 -91 
+Q 1428 -91 1123 -41 
+Q 819 9 494 109 
+L 494 744 
+Q 775 591 1075 516 
+Q 1375 441 1709 441 
+Q 2250 441 2565 725 
+Q 2881 1009 2881 1497 
+Q 2881 1984 2565 2268 
+Q 2250 2553 1709 2553 
+Q 1456 2553 1204 2497 
+Q 953 2441 691 2322 
+L 691 4666 
+z
+" transform="scale(0.015625)"></path>
+        </defs>
+        <use href="#RobustnessMap-DejaVuSans-15"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-18" transform="translate(95.40625 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_3">
+      <g id="RobustnessMap-line2d_5">
+       <path d="M 74.832304 92.900304 
+L 74.832304 30.161423 
+" clip-path="url(#RobustnessMap-pa2161396c8)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_6">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="74.832304" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_3">
+       
+       <g style="fill: #898781" transform="translate(69.663788 104.838781) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-18"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(95.40625 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_4">
+      <g id="RobustnessMap-line2d_7">
+       <path d="M 98.137851 92.900304 
+L 98.137851 30.161423 
+" clip-path="url(#RobustnessMap-pa2161396c8)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_8">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="98.137851" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_4">
+       
+       <g style="fill: #898781" transform="translate(92.969335 104.838781) scale(0.065 -0.065)">
+        <defs>
+         <path id="RobustnessMap-DejaVuSans-1a" d="M 525 4666 
+L 3525 4666 
+L 3525 4397 
+L 1831 0 
+L 1172 0 
+L 2766 4134 
+L 525 4134 
+L 525 4666 
+z
+" transform="scale(0.015625)"></path>
+        </defs>
+        <use href="#RobustnessMap-DejaVuSans-1a"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-18" transform="translate(95.40625 0)"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_2">
+     <g id="RobustnessMap-ytick_1">
+      <g id="RobustnessMap-line2d_9">
+       <defs>
+        <path id="RobustnessMap-mf386afe614" d="M 0 0 
+L -3.5 0 
+" style="stroke: #898781; stroke-width: 0.8"></path>
+       </defs>
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="24.016646" y="46.235021" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_5">
+       
+       <g style="fill: #0b0b0b" transform="translate(3.00024 48.8942) scale(0.07 -0.07)">
+        <defs>
+         <path id="RobustnessMap-DejaVuSans-38" d="M 556 4666 
+L 1191 4666 
+L 1191 1831 
+Q 1191 1081 1462 751 
+Q 1734 422 2344 422 
+Q 2950 422 3222 751 
+Q 3494 1081 3494 1831 
+L 3494 4666 
+L 4128 4666 
+L 4128 1753 
+Q 4128 841 3676 375 
+Q 3225 -91 2344 -91 
+Q 1459 -91 1007 375 
+Q 556 841 556 1753 
+L 556 4666 
+z
+" transform="scale(0.015625)"></path>
+         <path id="RobustnessMap-DejaVuSans-36" d="M 3425 4513 
+L 3425 3897 
+Q 3066 4069 2747 4153 
+Q 2428 4238 2131 4238 
+Q 1616 4238 1336 4038 
+Q 1056 3838 1056 3469 
+Q 1056 3159 1242 3001 
+Q 1428 2844 1947 2747 
+L 2328 2669 
+Q 3034 2534 3370 2195 
+Q 3706 1856 3706 1288 
+Q 3706 609 3251 259 
+Q 2797 -91 1919 -91 
+Q 1588 -91 1214 -16 
+Q 841 59 441 206 
+L 441 856 
+Q 825 641 1194 531 
+Q 1563 422 1919 422 
+Q 2459 422 2753 634 
+Q 3047 847 3047 1241 
+Q 3047 1584 2836 1778 
+Q 2625 1972 2144 2069 
+L 1759 2144 
+Q 1053 2284 737 2584 
+Q 422 2884 422 3419 
+Q 422 4038 858 4394 
+Q 1294 4750 2059 4750 
+Q 2388 4750 2728 4690 
+Q 3069 4631 3425 4513 
+z
+" transform="scale(0.015625)"></path>
+        </defs>
+        <use href="#RobustnessMap-DejaVuSans-38"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(73.1875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-36" transform="translate(104.96875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(168.453125 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_2">
+      <g id="RobustnessMap-line2d_10">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="24.016646" y="76.826706" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_6">
+       
+       <g style="fill: #0b0b0b" transform="translate(7.303052 79.485886) scale(0.07 -0.07)">
+        <defs>
+         <path id="RobustnessMap-DejaVuSans-2e" d="M 628 4666 
+L 1259 4666 
+L 1259 2694 
+L 3353 4666 
+L 4166 4666 
+L 1850 2491 
+L 4331 0 
+L 3500 0 
+L 1259 2247 
+L 1259 0 
+L 628 0 
+L 628 4666 
+z
+" transform="scale(0.015625)"></path>
+        </defs>
+        <use href="#RobustnessMap-DejaVuSans-38"></use>
+        <use href="#RobustnessMap-DejaVuSans-2e" transform="translate(73.1875 0)"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_11">
+     <path d="M 24.016646 61.530864 
+L 116.517065 61.530864 
+" clip-path="url(#RobustnessMap-pa2161396c8)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_12">
+     <path d="M 28.221211 92.900304 
+L 28.221211 30.161423 
+" clip-path="url(#RobustnessMap-pa2161396c8)" style="fill: none; stroke: #0b0b0b; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_4">
+     <path d="M 24.016646 92.900304 
+L 24.016646 30.161423 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_5">
+     <path d="M 24.016646 92.900304 
+L 116.517065 92.900304 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap--given--theta--US--vectorX--rho0.5">
+     <defs>
+      <path id="RobustnessMap-mcdfff92553" d="M 0 4.384062 
+L 4.384062 0 
+L 0 -4.384062 
+L -4.384062 0 
+z
+" style="stroke: #2a78d6; stroke-linejoin: miter"></path>
+     </defs>
+     <g clip-path="url(#RobustnessMap-pa2161396c8)">
+      <use href="#RobustnessMap-mcdfff92553" x="112.3125" y="38.457473" style="fill-opacity: 0; stroke: #2a78d6; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--theta--US--vectorX--rho1.0">
+     <defs>
+      <path id="RobustnessMap-md74ff850c7" d="M 0 4.384062 
+L 4.384062 0 
+L 0 -4.384062 
+L -4.384062 0 
+z
+" style="stroke: #eb6834; stroke-linejoin: miter"></path>
+     </defs>
+     <g clip-path="url(#RobustnessMap-pa2161396c8)">
+      <use href="#RobustnessMap-md74ff850c7" x="86.355112" y="46.235021" style="fill-opacity: 0; stroke: #eb6834; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--theta--US--vectorX--rho2.0">
+     <defs>
+      <path id="RobustnessMap-m2356f785bd" d="M 0 4.384062 
+L 4.384062 0 
+L 0 -4.384062 
+L -4.384062 0 
+z
+" style="stroke: #52514e; stroke-linejoin: miter"></path>
+     </defs>
+     <g clip-path="url(#RobustnessMap-pa2161396c8)">
+      <use href="#RobustnessMap-m2356f785bd" x="42.028116" y="54.012568" style="fill-opacity: 0; stroke: #52514e; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--theta--UK--vectorX--rho0.5">
+     <g clip-path="url(#RobustnessMap-pa2161396c8)">
+      <use href="#RobustnessMap-mcdfff92553" x="86.711945" y="69.049159" style="fill-opacity: 0; stroke: #2a78d6; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--theta--UK--vectorX--rho1.0">
+     <g clip-path="url(#RobustnessMap-pa2161396c8)">
+      <use href="#RobustnessMap-md74ff850c7" x="69.579137" y="76.826706" style="fill-opacity: 0; stroke: #eb6834; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--theta--UK--vectorX--rho2.0">
+     <g clip-path="url(#RobustnessMap-pa2161396c8)">
+      <use href="#RobustnessMap-m2356f785bd" x="53.949521" y="84.604254" style="fill-opacity: 0; stroke: #52514e; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_7">
+     
+     <g style="fill: #0b0b0b" transform="translate(24.016646 24.161423) scale(0.08 -0.08)">
+      <defs>
+       <path id="RobustnessMap-DejaVuSans-Oblique-34c" d="M 2913 2219 
+L 925 2219 
+Q 791 1284 928 888 
+Q 1100 400 1566 400 
+Q 2034 400 2391 891 
+Q 2703 1322 2913 2219 
+z
+M 3009 2750 
+Q 3094 3638 2984 3950 
+Q 2813 4444 2353 4444 
+Q 1875 4444 1525 3956 
+Q 1250 3563 1034 2750 
+L 3009 2750 
+z
+M 2444 4913 
+Q 3194 4913 3494 4250 
+Q 3794 3591 3566 2422 
+Q 3341 1256 2781 594 
+Q 2225 -72 1475 -72 
+Q 722 -72 425 594 
+Q 128 1256 353 2422 
+Q 581 3591 1134 4250 
+Q 1691 4913 2444 4913 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-20" d="M 678 2906 
+L 4684 2906 
+L 4684 2381 
+L 678 2381 
+L 678 2906 
+z
+M 678 1631 
+L 4684 1631 
+L 4684 1100 
+L 678 1100 
+L 678 1631 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-3" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-44" d="M 2194 1759 
+Q 1497 1759 1228 1600 
+Q 959 1441 959 1056 
+Q 959 750 1161 570 
+Q 1363 391 1709 391 
+Q 2188 391 2477 730 
+Q 2766 1069 2766 1631 
+L 2766 1759 
+L 2194 1759 
+z
+M 3341 1997 
+L 3341 0 
+L 2766 0 
+L 2766 531 
+Q 2569 213 2275 61 
+Q 1981 -91 1556 -91 
+Q 1019 -91 701 211 
+Q 384 513 384 1019 
+Q 384 1609 779 1909 
+Q 1175 2209 1959 2209 
+L 2766 2209 
+L 2766 2266 
+Q 2766 2663 2505 2880 
+Q 2244 3097 1772 3097 
+Q 1472 3097 1187 3025 
+Q 903 2953 641 2809 
+L 641 3341 
+Q 956 3463 1253 3523 
+Q 1550 3584 1831 3584 
+Q 2591 3584 2966 3190 
+Q 3341 2797 3341 1997 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-4a" d="M 2906 1791 
+Q 2906 2416 2648 2759 
+Q 2391 3103 1925 3103 
+Q 1463 3103 1205 2759 
+Q 947 2416 947 1791 
+Q 947 1169 1205 825 
+Q 1463 481 1925 481 
+Q 2391 481 2648 825 
+Q 2906 1169 2906 1791 
+z
+M 3481 434 
+Q 3481 -459 3084 -895 
+Q 2688 -1331 1869 -1331 
+Q 1566 -1331 1297 -1286 
+Q 1028 -1241 775 -1147 
+L 775 -588 
+Q 1028 -725 1275 -790 
+Q 1522 -856 1778 -856 
+Q 2344 -856 2625 -561 
+Q 2906 -266 2906 331 
+L 2906 616 
+Q 2728 306 2450 153 
+Q 2172 0 1784 0 
+Q 1141 0 747 490 
+Q 353 981 353 1791 
+Q 353 2603 747 3093 
+Q 1141 3584 1784 3584 
+Q 2172 3584 2450 3431 
+Q 2728 3278 2906 2969 
+L 2906 3500 
+L 3481 3500 
+L 3481 434 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-4c" d="M 603 3500 
+L 1178 3500 
+L 1178 0 
+L 603 0 
+L 603 3500 
+z
+M 603 4863 
+L 1178 4863 
+L 1178 4134 
+L 603 4134 
+L 603 4863 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-51" d="M 3513 2113 
+L 3513 0 
+L 2938 0 
+L 2938 2094 
+Q 2938 2591 2744 2837 
+Q 2550 3084 2163 3084 
+Q 1697 3084 1428 2787 
+Q 1159 2491 1159 1978 
+L 1159 0 
+L 581 0 
+L 581 3500 
+L 1159 3500 
+L 1159 2956 
+Q 1366 3272 1645 3428 
+Q 1925 3584 2291 3584 
+Q 2894 3584 3203 3211 
+Q 3513 2838 3513 2113 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-56" d="M 2834 3397 
+L 2834 2853 
+Q 2591 2978 2328 3040 
+Q 2066 3103 1784 3103 
+Q 1356 3103 1142 2972 
+Q 928 2841 928 2578 
+Q 928 2378 1081 2264 
+Q 1234 2150 1697 2047 
+L 1894 2003 
+Q 2506 1872 2764 1633 
+Q 3022 1394 3022 966 
+Q 3022 478 2636 193 
+Q 2250 -91 1575 -91 
+Q 1294 -91 989 -36 
+Q 684 19 347 128 
+L 347 722 
+Q 666 556 975 473 
+Q 1284 391 1588 391 
+Q 1994 391 2212 530 
+Q 2431 669 2431 922 
+Q 2431 1156 2273 1281 
+Q 2116 1406 1581 1522 
+L 1381 1569 
+Q 847 1681 609 1914 
+Q 372 2147 372 2553 
+Q 372 3047 722 3315 
+Q 1072 3584 1716 3584 
+Q 2034 3584 2315 3537 
+Q 2597 3491 2834 3397 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-57" d="M 1172 4494 
+L 1172 3500 
+L 2356 3500 
+L 2356 3053 
+L 1172 3053 
+L 1172 1153 
+Q 1172 725 1289 603 
+Q 1406 481 1766 481 
+L 2356 481 
+L 2356 0 
+L 1766 0 
+Q 1100 0 847 248 
+Q 594 497 594 1153 
+L 594 3053 
+L 172 3053 
+L 172 3500 
+L 594 3500 
+L 594 4494 
+L 1172 4494 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-14" d="M 794 531 
+L 1825 531 
+L 1825 4091 
+L 703 3866 
+L 703 4441 
+L 1819 4666 
+L 2450 4666 
+L 2450 531 
+L 3481 531 
+L 3481 0 
+L 794 0 
+L 794 531 
+z
+" transform="scale(0.015625)"></path>
+      </defs>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-34c" transform="translate(0 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-20" transform="translate(80.664062 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-13" transform="translate(183.935547 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(247.558594 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-44" transform="translate(279.345703 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(340.625 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-44" transform="translate(404.101562 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(465.380859 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-51" transform="translate(493.164062 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-56" transform="translate(556.542969 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-57" transform="translate(608.642578 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(647.851562 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-34c" transform="translate(679.638672 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-20" transform="translate(760.302734 0.234375)"></use>
+      <use href="#RobustnessMap-DejaVuSans-14" transform="translate(863.574219 0.234375)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--theta--US--commonX--rho0.5">
+     <defs>
+      <path id="RobustnessMap-md97cf4c6fb" d="M 0 2.3 
+C 0.609967 2.3 1.195034 2.057657 1.626346 1.626346 
+C 2.057657 1.195034 2.3 0.609967 2.3 0 
+C 2.3 -0.609967 2.057657 -1.195034 1.626346 -1.626346 
+C 1.195034 -2.057657 0.609967 -2.3 0 -2.3 
+C -0.609967 -2.3 -1.195034 -2.057657 -1.626346 -1.626346 
+C -2.057657 -1.195034 -2.3 -0.609967 -2.3 0 
+C -2.3 0.609967 -2.057657 1.195034 -1.626346 1.626346 
+C -1.195034 2.057657 -0.609967 2.3 0 2.3 
+z
+" style="stroke: #fcfcfb; stroke-width: 0.5"></path>
+     </defs>
+     <g clip-path="url(#RobustnessMap-pa2161396c8)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="112.3125" y="38.457473" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--theta--US--commonX--rho1.0">
+     <defs>
+      <path id="RobustnessMap-mbb7d6609d3" d="M 0 2.3 
+C 0.609967 2.3 1.195034 2.057657 1.626346 1.626346 
+C 2.057657 1.195034 2.3 0.609967 2.3 0 
+C 2.3 -0.609967 2.057657 -1.195034 1.626346 -1.626346 
+C 1.195034 -2.057657 0.609967 -2.3 0 -2.3 
+C -0.609967 -2.3 -1.195034 -2.057657 -1.626346 -1.626346 
+C -2.057657 -1.195034 -2.3 -0.609967 -2.3 0 
+C -2.3 0.609967 -2.057657 1.195034 -1.626346 1.626346 
+C -1.195034 2.057657 -0.609967 2.3 0 2.3 
+z
+" style="stroke: #fcfcfb; stroke-width: 0.5"></path>
+     </defs>
+     <g clip-path="url(#RobustnessMap-pa2161396c8)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="86.355112" y="46.235021" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--theta--US--commonX--rho2.0">
+     <defs>
+      <path id="RobustnessMap-m80f078aee7" d="M 0 2.3 
+C 0.609967 2.3 1.195034 2.057657 1.626346 1.626346 
+C 2.057657 1.195034 2.3 0.609967 2.3 0 
+C 2.3 -0.609967 2.057657 -1.195034 1.626346 -1.626346 
+C 1.195034 -2.057657 0.609967 -2.3 0 -2.3 
+C -0.609967 -2.3 -1.195034 -2.057657 -1.626346 -1.626346 
+C -2.057657 -1.195034 -2.3 -0.609967 -2.3 0 
+C -2.3 0.609967 -2.057657 1.195034 -1.626346 1.626346 
+C -1.195034 2.057657 -0.609967 2.3 0 2.3 
+z
+" style="stroke: #fcfcfb; stroke-width: 0.5"></path>
+     </defs>
+     <g clip-path="url(#RobustnessMap-pa2161396c8)">
+      <use href="#RobustnessMap-m80f078aee7" x="42.028116" y="54.012568" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--theta--UK--commonX--rho0.5">
+     <g clip-path="url(#RobustnessMap-pa2161396c8)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="86.623559" y="69.049159" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--theta--UK--commonX--rho1.0">
+     <g clip-path="url(#RobustnessMap-pa2161396c8)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="69.579137" y="76.826706" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--theta--UK--commonX--rho2.0">
+     <g clip-path="url(#RobustnessMap-pa2161396c8)">
+      <use href="#RobustnessMap-m80f078aee7" x="53.938606" y="84.604254" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_13">
+     <defs>
+      <path id="RobustnessMap-mcf3e4fc426" d="M 0 4.75 
+C 1.259715 4.75 2.468004 4.24951 3.358757 3.358757 
+C 4.24951 2.468004 4.75 1.259715 4.75 0 
+C 4.75 -1.259715 4.24951 -2.468004 3.358757 -3.358757 
+C 2.468004 -4.24951 1.259715 -4.75 0 -4.75 
+C -1.259715 -4.75 -2.468004 -4.24951 -3.358757 -3.358757 
+C -4.24951 -2.468004 -4.75 -1.259715 -4.75 0 
+C -4.75 1.259715 -4.24951 2.468004 -3.358757 3.358757 
+C -2.468004 4.24951 -1.259715 4.75 0 4.75 
+z
+" style="stroke: #0b0b0b; stroke-width: 0.9"></path>
+     </defs>
+     <g clip-path="url(#RobustnessMap-pa2161396c8)">
+      <use href="#RobustnessMap-mcf3e4fc426" x="86.355112" y="46.235021" style="fill-opacity: 0; stroke: #0b0b0b; stroke-width: 0.9"></use>
+     </g>
+    </g>
+   </g>
+   <g id="RobustnessMap-axes_2">
+    <g id="RobustnessMap-patch_6">
+     <path d="M 126.017545 92.900304 
+L 218.517963 92.900304 
+L 218.517963 30.161423 
+L 126.017545 30.161423 
+z
+" style="fill: #ffffff"></path>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_3">
+     <g id="RobustnessMap-xtick_5">
+      <g id="RobustnessMap-line2d_14">
+       <path d="M 130.222109 92.900304 
+L 130.222109 30.161423 
+" clip-path="url(#RobustnessMap-pcd370dc19b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_15">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="130.222109" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_8">
+       
+       <g style="fill: #898781" transform="translate(128.154297 104.838781) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-13"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_6">
+      <g id="RobustnessMap-line2d_16">
+       <path d="M 157.28963 92.900304 
+L 157.28963 30.161423 
+" clip-path="url(#RobustnessMap-pcd370dc19b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_17">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="157.28963" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_9">
+       
+       <g style="fill: #898781" transform="translate(155.221818 104.838781) scale(0.065 -0.065)">
+        <defs>
+         <path id="RobustnessMap-DejaVuSans-16" d="M 2597 2516 
+Q 3050 2419 3304 2112 
+Q 3559 1806 3559 1356 
+Q 3559 666 3084 287 
+Q 2609 -91 1734 -91 
+Q 1441 -91 1130 -33 
+Q 819 25 488 141 
+L 488 750 
+Q 750 597 1062 519 
+Q 1375 441 1716 441 
+Q 2309 441 2620 675 
+Q 2931 909 2931 1356 
+Q 2931 1769 2642 2001 
+Q 2353 2234 1838 2234 
+L 1294 2234 
+L 1294 2753 
+L 1863 2753 
+Q 2328 2753 2575 2939 
+Q 2822 3125 2822 3475 
+Q 2822 3834 2567 4026 
+Q 2313 4219 1838 4219 
+Q 1578 4219 1281 4162 
+Q 984 4106 628 3988 
+L 628 4550 
+Q 988 4650 1302 4700 
+Q 1616 4750 1894 4750 
+Q 2613 4750 3031 4423 
+Q 3450 4097 3450 3541 
+Q 3450 3153 3228 2886 
+Q 3006 2619 2597 2516 
+z
+" transform="scale(0.015625)"></path>
+        </defs>
+        <use href="#RobustnessMap-DejaVuSans-16"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_7">
+      <g id="RobustnessMap-line2d_18">
+       <path d="M 184.357151 92.900304 
+L 184.357151 30.161423 
+" clip-path="url(#RobustnessMap-pcd370dc19b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_19">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="184.357151" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_10">
+       
+       <g style="fill: #898781" transform="translate(182.289339 104.838781) scale(0.065 -0.065)">
+        <defs>
+         <path id="RobustnessMap-DejaVuSans-19" d="M 2113 2584 
+Q 1688 2584 1439 2293 
+Q 1191 2003 1191 1497 
+Q 1191 994 1439 701 
+Q 1688 409 2113 409 
+Q 2538 409 2786 701 
+Q 3034 994 3034 1497 
+Q 3034 2003 2786 2293 
+Q 2538 2584 2113 2584 
+z
+M 3366 4563 
+L 3366 3988 
+Q 3128 4100 2886 4159 
+Q 2644 4219 2406 4219 
+Q 1781 4219 1451 3797 
+Q 1122 3375 1075 2522 
+Q 1259 2794 1537 2939 
+Q 1816 3084 2150 3084 
+Q 2853 3084 3261 2657 
+Q 3669 2231 3669 1497 
+Q 3669 778 3244 343 
+Q 2819 -91 2113 -91 
+Q 1303 -91 875 529 
+Q 447 1150 447 2328 
+Q 447 3434 972 4092 
+Q 1497 4750 2381 4750 
+Q 2619 4750 2861 4703 
+Q 3103 4656 3366 4563 
+z
+" transform="scale(0.015625)"></path>
+        </defs>
+        <use href="#RobustnessMap-DejaVuSans-19"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_8">
+      <g id="RobustnessMap-line2d_20">
+       <path d="M 211.424673 92.900304 
+L 211.424673 30.161423 
+" clip-path="url(#RobustnessMap-pcd370dc19b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_21">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="211.424673" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_11">
+       
+       <g style="fill: #898781" transform="translate(209.35686 104.838781) scale(0.065 -0.065)">
+        <defs>
+         <path id="RobustnessMap-DejaVuSans-1c" d="M 703 97 
+L 703 672 
+Q 941 559 1184 500 
+Q 1428 441 1663 441 
+Q 2288 441 2617 861 
+Q 2947 1281 2994 2138 
+Q 2813 1869 2534 1725 
+Q 2256 1581 1919 1581 
+Q 1219 1581 811 2004 
+Q 403 2428 403 3163 
+Q 403 3881 828 4315 
+Q 1253 4750 1959 4750 
+Q 2769 4750 3195 4129 
+Q 3622 3509 3622 2328 
+Q 3622 1225 3098 567 
+Q 2575 -91 1691 -91 
+Q 1453 -91 1209 -44 
+Q 966 3 703 97 
+z
+M 1959 2075 
+Q 2384 2075 2632 2365 
+Q 2881 2656 2881 3163 
+Q 2881 3666 2632 3958 
+Q 2384 4250 1959 4250 
+Q 1534 4250 1286 3958 
+Q 1038 3666 1038 3163 
+Q 1038 2656 1286 2365 
+Q 1534 2075 1959 2075 
+z
+" transform="scale(0.015625)"></path>
+        </defs>
+        <use href="#RobustnessMap-DejaVuSans-1c"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_4">
+     <g id="RobustnessMap-ytick_3">
+      <g id="RobustnessMap-line2d_22">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="126.017545" y="46.235021" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_4">
+      <g id="RobustnessMap-line2d_23">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="126.017545" y="76.826706" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_24">
+     <path d="M 126.017545 61.530864 
+L 218.517963 61.530864 
+" clip-path="url(#RobustnessMap-pcd370dc19b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_25">
+     <path d="M 130.222109 92.900304 
+L 130.222109 30.161423 
+" clip-path="url(#RobustnessMap-pcd370dc19b)" style="fill: none; stroke: #0b0b0b; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_7">
+     <path d="M 126.017545 92.900304 
+L 126.017545 30.161423 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_8">
+     <path d="M 126.017545 92.900304 
+L 218.517963 92.900304 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap--given--acute--US--vectorX--rho0.5">
+     <g clip-path="url(#RobustnessMap-pcd370dc19b)">
+      <use href="#RobustnessMap-mcdfff92553" x="214.313399" y="38.457473" style="fill-opacity: 0; stroke: #2a78d6; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--acute--US--vectorX--rho1.0">
+     <g clip-path="url(#RobustnessMap-pcd370dc19b)">
+      <use href="#RobustnessMap-md74ff850c7" x="208.512637" y="46.235021" style="fill-opacity: 0; stroke: #eb6834; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--acute--US--vectorX--rho2.0">
+     <g clip-path="url(#RobustnessMap-pcd370dc19b)">
+      <use href="#RobustnessMap-m2356f785bd" x="198.409089" y="54.012568" style="fill-opacity: 0; stroke: #52514e; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--acute--UK--vectorX--rho0.5">
+     <g clip-path="url(#RobustnessMap-pcd370dc19b)">
+      <use href="#RobustnessMap-mcdfff92553" x="175.313651" y="69.049159" style="fill-opacity: 0; stroke: #2a78d6; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--acute--UK--vectorX--rho1.0">
+     <g clip-path="url(#RobustnessMap-pcd370dc19b)">
+      <use href="#RobustnessMap-md74ff850c7" x="172.887704" y="76.826706" style="fill-opacity: 0; stroke: #eb6834; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--acute--UK--vectorX--rho2.0">
+     <g clip-path="url(#RobustnessMap-pcd370dc19b)">
+      <use href="#RobustnessMap-m2356f785bd" x="169.305939" y="84.604254" style="fill-opacity: 0; stroke: #52514e; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_12">
+     
+     <g style="fill: #0b0b0b" transform="translate(126.017545 24.161423) scale(0.08 -0.08)">
+      <defs>
+       <path id="RobustnessMap-DejaVuSans-24" d="M 2188 4044 
+L 1331 1722 
+L 3047 1722 
+L 2188 4044 
+z
+M 1831 4666 
+L 2547 4666 
+L 4325 0 
+L 3669 0 
+L 3244 1197 
+L 1141 1197 
+L 716 0 
+L 50 0 
+L 1831 4666 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-46" d="M 3122 3366 
+L 3122 2828 
+Q 2878 2963 2633 3030 
+Q 2388 3097 2138 3097 
+Q 1578 3097 1268 2742 
+Q 959 2388 959 1747 
+Q 959 1106 1268 751 
+Q 1578 397 2138 397 
+Q 2388 397 2633 464 
+Q 2878 531 3122 666 
+L 3122 134 
+Q 2881 22 2623 -34 
+Q 2366 -91 2075 -91 
+Q 1284 -91 818 406 
+Q 353 903 353 1747 
+Q 353 2603 823 3093 
+Q 1294 3584 2113 3584 
+Q 2378 3584 2631 3529 
+Q 2884 3475 3122 3366 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-58" d="M 544 1381 
+L 544 3500 
+L 1119 3500 
+L 1119 1403 
+Q 1119 906 1312 657 
+Q 1506 409 1894 409 
+Q 2359 409 2629 706 
+Q 2900 1003 2900 1516 
+L 2900 3500 
+L 3475 3500 
+L 3475 0 
+L 2900 0 
+L 2900 538 
+Q 2691 219 2414 64 
+Q 2138 -91 1772 -91 
+Q 1169 -91 856 284 
+Q 544 659 544 1381 
+z
+M 1991 3584 
+L 1991 3584 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-48" d="M 3597 1894 
+L 3597 1613 
+L 953 1613 
+Q 991 1019 1311 708 
+Q 1631 397 2203 397 
+Q 2534 397 2845 478 
+Q 3156 559 3463 722 
+L 3463 178 
+Q 3153 47 2828 -22 
+Q 2503 -91 2169 -91 
+Q 1331 -91 842 396 
+Q 353 884 353 1716 
+Q 353 2575 817 3079 
+Q 1281 3584 2069 3584 
+Q 2775 3584 3186 3129 
+Q 3597 2675 3597 1894 
+z
+M 3022 2063 
+Q 3016 2534 2758 2815 
+Q 2500 3097 2075 3097 
+Q 1594 3097 1305 2825 
+Q 1016 2553 972 2059 
+L 3022 2063 
+z
+" transform="scale(0.015625)"></path>
+      </defs>
+      <use href="#RobustnessMap-DejaVuSans-24"></use>
+      <use href="#RobustnessMap-DejaVuSans-46" transform="translate(66.65625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-58" transform="translate(121.640625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-57" transform="translate(185.015625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(224.21875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(285.75 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-44" transform="translate(317.53125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(378.8125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(442.296875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(503.828125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-51" transform="translate(531.609375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(594.984375 0)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--acute--US--commonX--rho0.5">
+     <g clip-path="url(#RobustnessMap-pcd370dc19b)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="214.313399" y="38.457473" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--acute--US--commonX--rho1.0">
+     <g clip-path="url(#RobustnessMap-pcd370dc19b)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="208.512637" y="46.235021" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--acute--US--commonX--rho2.0">
+     <g clip-path="url(#RobustnessMap-pcd370dc19b)">
+      <use href="#RobustnessMap-m80f078aee7" x="198.409089" y="54.012568" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--acute--UK--commonX--rho0.5">
+     <g clip-path="url(#RobustnessMap-pcd370dc19b)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="175.277992" y="69.049159" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--acute--UK--commonX--rho1.0">
+     <g clip-path="url(#RobustnessMap-pcd370dc19b)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="172.887704" y="76.826706" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--acute--UK--commonX--rho2.0">
+     <g clip-path="url(#RobustnessMap-pcd370dc19b)">
+      <use href="#RobustnessMap-m80f078aee7" x="169.30004" y="84.604254" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_26">
+     <g clip-path="url(#RobustnessMap-pcd370dc19b)">
+      <use href="#RobustnessMap-mcf3e4fc426" x="208.512637" y="46.235021" style="fill-opacity: 0; stroke: #0b0b0b; stroke-width: 0.9"></use>
+     </g>
+    </g>
+   </g>
+   <g id="RobustnessMap-axes_3">
+    <g id="RobustnessMap-patch_9">
+     <path d="M 228.018443 92.900304 
+L 320.518862 92.900304 
+L 320.518862 30.161423 
+L 228.018443 30.161423 
+z
+" style="fill: #ffffff"></path>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_5">
+     <g id="RobustnessMap-xtick_9">
+      <g id="RobustnessMap-line2d_27">
+       <path d="M 248.361984 92.900304 
+L 248.361984 30.161423 
+" clip-path="url(#RobustnessMap-pdc4cf5a568)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_28">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="248.361984" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_13">
+       
+       <g style="fill: #898781" transform="translate(240.47007 104.838781) scale(0.065 -0.065)">
+        <defs>
+         <path id="RobustnessMap-DejaVuSans-c9c" d="M 678 2272 
+L 4684 2272 
+L 4684 1741 
+L 678 1741 
+L 678 2272 
+z
+" transform="scale(0.015625)"></path>
+        </defs>
+        <use href="#RobustnessMap-DejaVuSans-c9c"></use>
+        <use href="#RobustnessMap-DejaVuSans-14" transform="translate(83.796875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(147.421875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-19" transform="translate(179.203125 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_10">
+      <g id="RobustnessMap-line2d_29">
+       <path d="M 275.871012 92.900304 
+L 275.871012 30.161423 
+" clip-path="url(#RobustnessMap-pdc4cf5a568)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_30">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="275.871012" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_14">
+       
+       <g style="fill: #898781" transform="translate(267.979098 104.838781) scale(0.065 -0.065)">
+        <defs>
+         <path id="RobustnessMap-DejaVuSans-1b" d="M 2034 2216 
+Q 1584 2216 1326 1975 
+Q 1069 1734 1069 1313 
+Q 1069 891 1326 650 
+Q 1584 409 2034 409 
+Q 2484 409 2743 651 
+Q 3003 894 3003 1313 
+Q 3003 1734 2745 1975 
+Q 2488 2216 2034 2216 
+z
+M 1403 2484 
+Q 997 2584 770 2862 
+Q 544 3141 544 3541 
+Q 544 4100 942 4425 
+Q 1341 4750 2034 4750 
+Q 2731 4750 3128 4425 
+Q 3525 4100 3525 3541 
+Q 3525 3141 3298 2862 
+Q 3072 2584 2669 2484 
+Q 3125 2378 3379 2068 
+Q 3634 1759 3634 1313 
+Q 3634 634 3220 271 
+Q 2806 -91 2034 -91 
+Q 1263 -91 848 271 
+Q 434 634 434 1313 
+Q 434 1759 690 2068 
+Q 947 2378 1403 2484 
+z
+M 1172 3481 
+Q 1172 3119 1398 2916 
+Q 1625 2713 2034 2713 
+Q 2441 2713 2670 2916 
+Q 2900 3119 2900 3481 
+Q 2900 3844 2670 4047 
+Q 2441 4250 2034 4250 
+Q 1625 4250 1398 4047 
+Q 1172 3844 1172 3481 
+z
+" transform="scale(0.015625)"></path>
+        </defs>
+        <use href="#RobustnessMap-DejaVuSans-c9c"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(83.796875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(147.421875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-1b" transform="translate(179.203125 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_11">
+      <g id="RobustnessMap-line2d_31">
+       <path d="M 303.38004 92.900304 
+L 303.38004 30.161423 
+" clip-path="url(#RobustnessMap-pdc4cf5a568)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_32">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="303.38004" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_15">
+       
+       <g style="fill: #898781" transform="translate(298.211524 104.838781) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-13"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(95.40625 0)"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_6">
+     <g id="RobustnessMap-ytick_5">
+      <g id="RobustnessMap-line2d_33">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="228.018443" y="46.235021" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_6">
+      <g id="RobustnessMap-line2d_34">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="228.018443" y="76.826706" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_35">
+     <path d="M 228.018443 61.530864 
+L 320.518862 61.530864 
+" clip-path="url(#RobustnessMap-pdc4cf5a568)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_36">
+     <path d="M 303.38004 92.900304 
+L 303.38004 30.161423 
+" clip-path="url(#RobustnessMap-pdc4cf5a568)" style="fill: none; stroke: #0b0b0b; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_10">
+     <path d="M 228.018443 92.900304 
+L 228.018443 30.161423 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_11">
+     <path d="M 228.018443 92.900304 
+L 320.518862 92.900304 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap--given--income--US--vectorX--rho0.5">
+     <g clip-path="url(#RobustnessMap-pdc4cf5a568)">
+      <use href="#RobustnessMap-mcdfff92553" x="232.223008" y="38.457473" style="fill-opacity: 0; stroke: #2a78d6; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--income--US--vectorX--rho1.0">
+     <g clip-path="url(#RobustnessMap-pdc4cf5a568)">
+      <use href="#RobustnessMap-md74ff850c7" x="247.540338" y="46.235021" style="fill-opacity: 0; stroke: #eb6834; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--income--US--vectorX--rho2.0">
+     <g clip-path="url(#RobustnessMap-pdc4cf5a568)">
+      <use href="#RobustnessMap-m2356f785bd" x="268.228028" y="54.012568" style="fill-opacity: 0; stroke: #52514e; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--income--UK--vectorX--rho0.5">
+     <g clip-path="url(#RobustnessMap-pdc4cf5a568)">
+      <use href="#RobustnessMap-mcdfff92553" x="275.956481" y="69.049159" style="fill-opacity: 0; stroke: #2a78d6; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--income--UK--vectorX--rho1.0">
+     <g clip-path="url(#RobustnessMap-pdc4cf5a568)">
+      <use href="#RobustnessMap-md74ff850c7" x="287.687354" y="76.826706" style="fill-opacity: 0; stroke: #eb6834; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--income--UK--vectorX--rho2.0">
+     <g clip-path="url(#RobustnessMap-pdc4cf5a568)">
+      <use href="#RobustnessMap-m2356f785bd" x="293.125436" y="84.604254" style="fill-opacity: 0; stroke: #52514e; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_16">
+     
+     <g style="fill: #0b0b0b" transform="translate(228.018443 24.161423) scale(0.08 -0.08)">
+      <defs>
+       <path id="RobustnessMap-DejaVuSans-29" d="M 628 4666 
+L 3309 4666 
+L 3309 4134 
+L 1259 4134 
+L 1259 2759 
+L 3109 2759 
+L 3109 2228 
+L 1259 2228 
+L 1259 0 
+L 628 0 
+L 628 4666 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-55" d="M 2631 2963 
+Q 2534 3019 2420 3045 
+Q 2306 3072 2169 3072 
+Q 1681 3072 1420 2755 
+Q 1159 2438 1159 1844 
+L 1159 0 
+L 581 0 
+L 581 3500 
+L 1159 3500 
+L 1159 2956 
+Q 1341 3275 1631 3429 
+Q 1922 3584 2338 3584 
+Q 2397 3584 2469 3576 
+Q 2541 3569 2628 3553 
+L 2631 2963 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-4b" d="M 3513 2113 
+L 3513 0 
+L 2938 0 
+L 2938 2094 
+Q 2938 2591 2744 2837 
+Q 2550 3084 2163 3084 
+Q 1697 3084 1428 2787 
+Q 1159 2491 1159 1978 
+L 1159 0 
+L 581 0 
+L 581 4863 
+L 1159 4863 
+L 1159 2956 
+Q 1366 3272 1645 3428 
+Q 1925 3584 2291 3584 
+Q 2894 3584 3203 3211 
+Q 3513 2838 3513 2113 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-52" d="M 1959 3097 
+Q 1497 3097 1228 2736 
+Q 959 2375 959 1747 
+Q 959 1119 1226 758 
+Q 1494 397 1959 397 
+Q 2419 397 2687 759 
+Q 2956 1122 2956 1747 
+Q 2956 2369 2687 2733 
+Q 2419 3097 1959 3097 
+z
+M 1959 3584 
+Q 2709 3584 3137 3096 
+Q 3566 2609 3566 1747 
+Q 3566 888 3137 398 
+Q 2709 -91 1959 -91 
+Q 1206 -91 779 398 
+Q 353 888 353 1747 
+Q 353 2609 779 3096 
+Q 1206 3584 1959 3584 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-50" d="M 3328 2828 
+Q 3544 3216 3844 3400 
+Q 4144 3584 4550 3584 
+Q 5097 3584 5394 3201 
+Q 5691 2819 5691 2113 
+L 5691 0 
+L 5113 0 
+L 5113 2094 
+Q 5113 2597 4934 2840 
+Q 4756 3084 4391 3084 
+Q 3944 3084 3684 2787 
+Q 3425 2491 3425 1978 
+L 3425 0 
+L 2847 0 
+L 2847 2094 
+Q 2847 2600 2669 2842 
+Q 2491 3084 2119 3084 
+Q 1678 3084 1418 2786 
+Q 1159 2488 1159 1978 
+L 1159 0 
+L 581 0 
+L 581 3500 
+L 1159 3500 
+L 1159 2956 
+Q 1356 3278 1631 3431 
+Q 1906 3584 2284 3584 
+Q 2666 3584 2933 3390 
+Q 3200 3197 3328 2828 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-47" d="M 2906 2969 
+L 2906 4863 
+L 3481 4863 
+L 3481 0 
+L 2906 0 
+L 2906 525 
+Q 2725 213 2448 61 
+Q 2172 -91 1784 -91 
+Q 1150 -91 751 415 
+Q 353 922 353 1747 
+Q 353 2572 751 3078 
+Q 1150 3584 1784 3584 
+Q 2172 3584 2448 3432 
+Q 2725 3281 2906 2969 
+z
+M 947 1747 
+Q 947 1113 1208 752 
+Q 1469 391 1925 391 
+Q 2381 391 2643 752 
+Q 2906 1113 2906 1747 
+Q 2906 2381 2643 2742 
+Q 2381 3103 1925 3103 
+Q 1469 3103 1208 2742 
+Q 947 2381 947 1747 
+z
+" transform="scale(0.015625)"></path>
+      </defs>
+      <use href="#RobustnessMap-DejaVuSans-29"></use>
+      <use href="#RobustnessMap-DejaVuSans-55" transform="translate(50.234375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(89.140625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-51" transform="translate(150.671875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-46" transform="translate(214.046875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4b" transform="translate(269.03125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(332.40625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(364.1875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-51" transform="translate(391.96875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-46" transform="translate(455.34375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-52" transform="translate(510.328125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-50" transform="translate(571.515625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(668.921875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(730.453125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-47" transform="translate(762.234375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(825.71875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-56" transform="translate(853.5 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-57" transform="translate(905.59375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-55" transform="translate(944.796875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-11" transform="translate(976.734375 0)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--income--US--commonX--rho0.5">
+     <g clip-path="url(#RobustnessMap-pdc4cf5a568)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="250.236217" y="38.457473" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--income--US--commonX--rho1.0">
+     <g clip-path="url(#RobustnessMap-pdc4cf5a568)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="261.381806" y="46.235021" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--income--US--commonX--rho2.0">
+     <g clip-path="url(#RobustnessMap-pdc4cf5a568)">
+      <use href="#RobustnessMap-m80f078aee7" x="276.503959" y="54.012568" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--income--UK--commonX--rho0.5">
+     <g clip-path="url(#RobustnessMap-pdc4cf5a568)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="306.142513" y="69.049159" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--income--UK--commonX--rho1.0">
+     <g clip-path="url(#RobustnessMap-pdc4cf5a568)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="313.441678" y="76.826706" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--income--UK--commonX--rho2.0">
+     <g clip-path="url(#RobustnessMap-pdc4cf5a568)">
+      <use href="#RobustnessMap-m80f078aee7" x="316.314297" y="84.604254" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_37">
+     <g clip-path="url(#RobustnessMap-pdc4cf5a568)">
+      <use href="#RobustnessMap-mcf3e4fc426" x="261.381806" y="46.235021" style="fill-opacity: 0; stroke: #0b0b0b; stroke-width: 0.9"></use>
+     </g>
+    </g>
+   </g>
+   <g id="RobustnessMap-axes_4">
+    <g id="RobustnessMap-patch_12">
+     <path d="M 330.019342 92.900304 
+L 422.51976 92.900304 
+L 422.51976 30.161423 
+L 330.019342 30.161423 
+z
+" style="fill: #ffffff"></path>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_7">
+     <g id="RobustnessMap-xtick_12">
+      <g id="RobustnessMap-line2d_38">
+       <path d="M 334.223906 92.900304 
+L 334.223906 30.161423 
+" clip-path="url(#RobustnessMap-p358e721936)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_39">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="334.223906" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_17">
+       
+       <g style="fill: #898781" transform="translate(329.05539 104.838781) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-13"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(95.40625 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_13">
+      <g id="RobustnessMap-line2d_40">
+       <path d="M 359.097479 92.900304 
+L 359.097479 30.161423 
+" clip-path="url(#RobustnessMap-p358e721936)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_41">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="359.097479" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_18">
+       
+       <g style="fill: #898781" transform="translate(353.928964 104.838781) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-13"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-18" transform="translate(95.40625 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_14">
+      <g id="RobustnessMap-line2d_42">
+       <path d="M 383.971053 92.900304 
+L 383.971053 30.161423 
+" clip-path="url(#RobustnessMap-p358e721936)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_43">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="383.971053" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_19">
+       
+       <g style="fill: #898781" transform="translate(378.802537 104.838781) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-14"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(95.40625 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_15">
+      <g id="RobustnessMap-line2d_44">
+       <path d="M 408.844626 92.900304 
+L 408.844626 30.161423 
+" clip-path="url(#RobustnessMap-p358e721936)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_45">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="408.844626" y="92.900304" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_20">
+       
+       <g style="fill: #898781" transform="translate(403.67611 104.838781) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-14"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-18" transform="translate(95.40625 0)"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_8">
+     <g id="RobustnessMap-ytick_7">
+      <g id="RobustnessMap-line2d_46">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="330.019342" y="46.235021" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_8">
+      <g id="RobustnessMap-line2d_47">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="330.019342" y="76.826706" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_48">
+     <path d="M 330.019342 61.530864 
+L 422.51976 61.530864 
+" clip-path="url(#RobustnessMap-p358e721936)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_49">
+     <path d="M 334.223906 92.900304 
+L 334.223906 30.161423 
+" clip-path="url(#RobustnessMap-p358e721936)" style="fill: none; stroke: #0b0b0b; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_13">
+     <path d="M 330.019342 92.900304 
+L 330.019342 30.161423 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_14">
+     <path d="M 330.019342 92.900304 
+L 422.51976 92.900304 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap--given--voting--US--vectorX--rho0.5">
+     <g clip-path="url(#RobustnessMap-p358e721936)">
+      <use href="#RobustnessMap-mcdfff92553" x="350.457708" y="38.457473" style="fill-opacity: 0; stroke: #2a78d6; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--voting--US--vectorX--rho1.0">
+     <g clip-path="url(#RobustnessMap-p358e721936)">
+      <use href="#RobustnessMap-md74ff850c7" x="378.727831" y="46.235021" style="fill-opacity: 0; stroke: #eb6834; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--voting--US--vectorX--rho2.0">
+     <g clip-path="url(#RobustnessMap-p358e721936)">
+      <use href="#RobustnessMap-m2356f785bd" x="418.315196" y="54.012568" style="fill-opacity: 0; stroke: #52514e; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--voting--UK--vectorX--rho0.5">
+     <g clip-path="url(#RobustnessMap-p358e721936)">
+      <use href="#RobustnessMap-mcdfff92553" x="345.586702" y="69.049159" style="fill-opacity: 0; stroke: #2a78d6; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--voting--UK--vectorX--rho1.0">
+     <g clip-path="url(#RobustnessMap-p358e721936)">
+      <use href="#RobustnessMap-md74ff850c7" x="350.559881" y="76.826706" style="fill-opacity: 0; stroke: #eb6834; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--voting--UK--vectorX--rho2.0">
+     <g clip-path="url(#RobustnessMap-p358e721936)">
+      <use href="#RobustnessMap-m2356f785bd" x="360.761679" y="84.604254" style="fill-opacity: 0; stroke: #52514e; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_21">
+     
+     <g style="fill: #0b0b0b" transform="translate(330.019342 24.161423) scale(0.08 -0.08)">
+      <defs>
+       <path id="RobustnessMap-DejaVuSans-59" d="M 191 3500 
+L 800 3500 
+L 1894 563 
+L 2988 3500 
+L 3597 3500 
+L 2284 0 
+L 1503 0 
+L 191 3500 
+z
+" transform="scale(0.015625)"></path>
+      </defs>
+      <use href="#RobustnessMap-DejaVuSans-29"></use>
+      <use href="#RobustnessMap-DejaVuSans-55" transform="translate(50.234375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(89.140625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-51" transform="translate(150.671875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-46" transform="translate(214.046875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4b" transform="translate(269.03125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(332.40625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-59" transform="translate(364.1875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-52" transform="translate(423.375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-57" transform="translate(484.5625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(523.765625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-51" transform="translate(551.546875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(614.921875 0)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--voting--US--commonX--rho0.5">
+     <g clip-path="url(#RobustnessMap-p358e721936)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="350.457708" y="38.457473" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--voting--US--commonX--rho1.0">
+     <g clip-path="url(#RobustnessMap-p358e721936)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="378.727831" y="46.235021" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--voting--US--commonX--rho2.0">
+     <g clip-path="url(#RobustnessMap-p358e721936)">
+      <use href="#RobustnessMap-m80f078aee7" x="418.315196" y="54.012568" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--voting--UK--commonX--rho0.5">
+     <g clip-path="url(#RobustnessMap-p358e721936)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="345.54483" y="69.049159" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--voting--UK--commonX--rho1.0">
+     <g clip-path="url(#RobustnessMap-p358e721936)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="350.559881" y="76.826706" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--given--voting--UK--commonX--rho2.0">
+     <g clip-path="url(#RobustnessMap-p358e721936)">
+      <use href="#RobustnessMap-m80f078aee7" x="360.754353" y="84.604254" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_50">
+     <g clip-path="url(#RobustnessMap-p358e721936)">
+      <use href="#RobustnessMap-mcf3e4fc426" x="378.727831" y="46.235021" style="fill-opacity: 0; stroke: #0b0b0b; stroke-width: 0.9"></use>
+     </g>
+    </g>
+   </g>
+   <g id="RobustnessMap-text_22">
+    
+    <g style="fill: #0b0b0b" transform="translate(4.2552 9.838834) scale(0.09 -0.09)">
+     <defs>
+      <path id="RobustnessMap-DejaVuSans-27" d="M 1259 4147 
+L 1259 519 
+L 2022 519 
+Q 2988 519 3436 956 
+Q 3884 1394 3884 2338 
+Q 3884 3275 3436 3711 
+Q 2988 4147 2022 4147 
+L 1259 4147 
+z
+M 628 4666 
+L 1925 4666 
+Q 3281 4666 3915 4102 
+Q 4550 3538 4550 2338 
+Q 4550 1131 3912 565 
+Q 3275 0 1925 0 
+L 628 0 
+L 628 4666 
+z
+" transform="scale(0.015625)"></path>
+      <path id="RobustnessMap-DejaVuSans-1d" d="M 750 794 
+L 1409 794 
+L 1409 0 
+L 750 0 
+L 750 794 
+z
+M 750 3309 
+L 1409 3309 
+L 1409 2516 
+L 750 2516 
+L 750 3309 
+z
+" transform="scale(0.015625)"></path>
+      <path id="RobustnessMap-DejaVuSans-5b" d="M 3513 3500 
+L 2247 1797 
+L 3578 0 
+L 2900 0 
+L 1881 1375 
+L 863 0 
+L 184 0 
+L 1544 1831 
+L 300 3500 
+L 978 3500 
+L 1906 2253 
+L 2834 3500 
+L 3513 3500 
+z
+" transform="scale(0.015625)"></path>
+      <path id="RobustnessMap-DejaVuSans-f" d="M 750 794 
+L 1409 794 
+L 1409 256 
+L 897 -744 
+L 494 -744 
+L 750 256 
+L 750 794 
+z
+" transform="scale(0.015625)"></path>
+      <path id="RobustnessMap-DejaVuSans-53" d="M 1159 525 
+L 1159 -1331 
+L 581 -1331 
+L 581 3500 
+L 1159 3500 
+L 1159 2969 
+Q 1341 3281 1617 3432 
+Q 1894 3584 2278 3584 
+Q 2916 3584 3314 3078 
+Q 3713 2572 3713 1747 
+Q 3713 922 3314 415 
+Q 2916 -91 2278 -91 
+Q 1894 -91 1617 61 
+Q 1341 213 1159 525 
+z
+M 3116 1747 
+Q 3116 2381 2855 2742 
+Q 2594 3103 2138 3103 
+Q 1681 3103 1420 2742 
+Q 1159 2381 1159 1747 
+Q 1159 1113 1420 752 
+Q 1681 391 2138 391 
+Q 2594 391 2855 752 
+Q 3116 1113 3116 1747 
+z
+" transform="scale(0.015625)"></path>
+     </defs>
+     <use href="#RobustnessMap-DejaVuSans-27"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(77 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-56" transform="translate(138.53125 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(190.625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(218.40625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-51" transform="translate(281.890625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(345.265625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(377.046875 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(440.53125 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-59" transform="translate(468.3125 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(527.5 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-51" transform="translate(589.03125 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-1d" transform="translate(652.40625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(686.09375 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-46" transform="translate(717.875 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4b" transform="translate(772.859375 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-44" transform="translate(836.234375 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-51" transform="translate(897.515625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(960.890625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(1024.375 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(1085.90625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(1117.6875 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-51" transform="translate(1145.46875 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(1208.84375 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-57" transform="translate(1240.625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4b" transform="translate(1279.828125 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(1343.203125 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(1404.734375 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-57" transform="translate(1436.515625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-44" transform="translate(1475.71875 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-5b" transform="translate(1537 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(1596.1875 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-55" transform="translate(1627.96875 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-44" transform="translate(1669.078125 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-57" transform="translate(1730.359375 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(1769.5625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-f" transform="translate(1831.09375 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(1862.875 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-53" transform="translate(1894.65625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(1958.140625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-55" transform="translate(2019.671875 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-46" transform="translate(2058.578125 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(2113.5625 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-51" transform="translate(2175.09375 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-57" transform="translate(2238.46875 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-44" transform="translate(2277.671875 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(2338.953125 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(2402.4375 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(2463.96875 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-53" transform="translate(2495.75 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-52" transform="translate(2559.234375 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(2620.421875 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-51" transform="translate(2648.203125 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-57" transform="translate(2711.578125 0)"></use>
+     <use href="#RobustnessMap-DejaVuSans-56" transform="translate(2750.78125 0)"></use>
+    </g>
+   </g>
+  </g>
+  <g id="RobustnessMap-subfigure_2">
+   <g id="RobustnessMap-patch_15">
+    <path d="M 0 323.856 
+L 425.52 323.856 
+L 425.52 112.639104 
+L 0 112.639104 
+L 0 323.856 
+z
+" style="fill: none"></path>
+   </g>
+   <g id="RobustnessMap-axes_5">
+    <g id="RobustnessMap-patch_16">
+     <path d="M 53.932896 288.753639 
+L 169.80512 288.753639 
+L 169.80512 142.810683 
+L 53.932896 142.810683 
+z
+" style="fill: #ffffff"></path>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_9">
+     <g id="RobustnessMap-xtick_16">
+      <g id="RobustnessMap-line2d_51">
+       <path d="M 59.199816 288.753639 
+L 59.199816 142.810683 
+" clip-path="url(#RobustnessMap-p2e3e46a119)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_52">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="59.199816" y="288.753639" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_23">
+       
+       <g style="fill: #898781" transform="translate(49.895675 300.692116) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-13"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(95.40625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(159.03125 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(222.65625 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_17">
+      <g id="RobustnessMap-line2d_53">
+       <path d="M 89.214211 288.753639 
+L 89.214211 142.810683 
+" clip-path="url(#RobustnessMap-p2e3e46a119)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_54">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="89.214211" y="288.753639" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_24">
+       
+       <g style="fill: #898781" transform="translate(79.91007 300.692116) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-13"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(95.40625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-15" transform="translate(159.03125 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-18" transform="translate(222.65625 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_18">
+      <g id="RobustnessMap-line2d_55">
+       <path d="M 119.228606 288.753639 
+L 119.228606 142.810683 
+" clip-path="url(#RobustnessMap-p2e3e46a119)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_56">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="119.228606" y="288.753639" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_25">
+       
+       <g style="fill: #898781" transform="translate(109.924466 300.692116) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-13"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(95.40625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-18" transform="translate(159.03125 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(222.65625 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_19">
+      <g id="RobustnessMap-line2d_57">
+       <path d="M 149.243002 288.753639 
+L 149.243002 142.810683 
+" clip-path="url(#RobustnessMap-p2e3e46a119)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_58">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="149.243002" y="288.753639" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_26">
+       
+       <g style="fill: #898781" transform="translate(139.938861 300.692116) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-13"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(95.40625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-1a" transform="translate(159.03125 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-18" transform="translate(222.65625 0)"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_10">
+     <g id="RobustnessMap-ytick_9">
+      <g id="RobustnessMap-line2d_59">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="53.932896" y="161.428921" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_27">
+       
+       <g style="fill: #0b0b0b" transform="translate(32.91649 164.0881) scale(0.07 -0.07)">
+        <use href="#RobustnessMap-DejaVuSans-38"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(73.1875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-36" transform="translate(104.96875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(168.453125 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_10">
+      <g id="RobustnessMap-line2d_60">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="53.932896" y="196.86363" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_28">
+       
+       <g style="fill: #0b0b0b" transform="translate(3.00024 195.672194) scale(0.07 -0.07)">
+        <use href="#RobustnessMap-DejaVuSans-38"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(73.1875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-36" transform="translate(104.96875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(168.453125 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-f" transform="translate(200.234375 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-3" transform="translate(232.015625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-46" transform="translate(263.796875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-52" transform="translate(318.78125 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-56" transform="translate(379.96875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-57" transform="translate(432.0625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-3" transform="translate(471.265625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-52" transform="translate(503.046875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-51" transform="translate(564.234375 0)"></use>
+       </g>
+       
+       <g style="fill: #0b0b0b" transform="translate(9.998052 204.074109) scale(0.07 -0.07)">
+        <use href="#RobustnessMap-DejaVuSans-57"></use>
+        <use href="#RobustnessMap-DejaVuSans-4b" transform="translate(39.203125 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-48" transform="translate(102.578125 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-3" transform="translate(164.109375 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-47" transform="translate(195.890625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-48" transform="translate(259.375 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-56" transform="translate(320.90625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(373 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(400.78125 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-51" transform="translate(464.265625 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_11">
+      <g id="RobustnessMap-line2d_61">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="53.932896" y="232.29834" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_29">
+       
+       <g style="fill: #0b0b0b" transform="translate(37.219302 234.957519) scale(0.07 -0.07)">
+        <use href="#RobustnessMap-DejaVuSans-38"></use>
+        <use href="#RobustnessMap-DejaVuSans-2e" transform="translate(73.1875 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_12">
+      <g id="RobustnessMap-line2d_62">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="53.932896" y="259.47496" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_30">
+       
+       <g style="fill: #0b0b0b" transform="translate(4.792896 262.13496) scale(0.07 -0.07)">
+        <defs>
+         <path id="RobustnessMap-DejaVuSans-Oblique-352" d="M 2016 397 
+Q 2428 394 2628 159 
+Q 2844 -88 2772 -463 
+Q 2700 -822 2422 -1072 
+Q 2119 -1344 1609 -1344 
+Q 1656 -1109 1700 -872 
+Q 1913 -888 2072 -750 
+Q 2194 -641 2216 -525 
+Q 2247 -359 2175 -222 
+Q 2100 -91 1922 -91 
+Q -25 -91 241 1275 
+Q 422 2213 1516 2488 
+Q 663 2600 822 3413 
+Q 941 4028 1678 4284 
+L 1028 4284 
+L 1141 4863 
+L 3606 4863 
+L 3494 4284 
+Q 1528 4284 1350 3375 
+Q 1234 2778 2881 2750 
+L 2778 2219 
+Q 1009 2288 819 1275 
+Q 659 428 2016 397 
+z
+" transform="scale(0.015625)"></path>
+        </defs>
+        <use href="#RobustnessMap-DejaVuSans-38" transform="translate(0 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(73.193359 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-36" transform="translate(104.980469 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(168.457031 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-f" transform="translate(200.244141 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-3" transform="translate(232.03125 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-Oblique-352" transform="translate(263.818359 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-20" transform="translate(339.0625 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(442.333984 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(505.957031 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-15" transform="translate(537.744141 0.015625)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_13">
+      <g id="RobustnessMap-line2d_63">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="53.932896" y="278.393491" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_31">
+       
+       <g style="fill: #0b0b0b" transform="translate(4.792896 281.053491) scale(0.07 -0.07)">
+        <defs>
+         <path id="RobustnessMap-DejaVuSans-17" d="M 2419 4116 
+L 825 1625 
+L 2419 1625 
+L 2419 4116 
+z
+M 2253 4666 
+L 3047 4666 
+L 3047 1625 
+L 3713 1625 
+L 3713 1100 
+L 3047 1100 
+L 3047 0 
+L 2419 0 
+L 2419 1100 
+L 313 1100 
+L 313 1709 
+L 2253 4666 
+z
+" transform="scale(0.015625)"></path>
+        </defs>
+        <use href="#RobustnessMap-DejaVuSans-38" transform="translate(0 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(73.193359 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-36" transform="translate(104.980469 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(168.457031 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-f" transform="translate(200.244141 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-3" transform="translate(232.03125 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-Oblique-352" transform="translate(263.818359 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-20" transform="translate(339.0625 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(442.333984 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(505.957031 0.015625)"></use>
+        <use href="#RobustnessMap-DejaVuSans-17" transform="translate(537.744141 0.015625)"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_64">
+     <path d="M 53.932896 179.146275 
+L 169.80512 179.146275 
+" clip-path="url(#RobustnessMap-p2e3e46a119)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_65">
+     <path d="M 53.932896 214.580985 
+L 169.80512 214.580985 
+" clip-path="url(#RobustnessMap-p2e3e46a119)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_66">
+     <path d="M 53.932896 250.015694 
+L 169.80512 250.015694 
+" clip-path="url(#RobustnessMap-p2e3e46a119)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_67">
+     <path d="M 53.932896 268.934226 
+L 169.80512 268.934226 
+" clip-path="url(#RobustnessMap-p2e3e46a119)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_68">
+     <path d="M 59.199816 288.753639 
+L 59.199816 142.810683 
+" clip-path="url(#RobustnessMap-p2e3e46a119)" style="fill: none; stroke: #0b0b0b; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_17">
+     <path d="M 53.932896 288.753639 
+L 53.932896 142.810683 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_18">
+     <path d="M 53.932896 288.753639 
+L 169.80512 288.753639 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-text_32">
+     
+     <g style="fill: #898781" transform="translate(100.058305 233.986816) scale(0.065 -0.065)">
+      <defs>
+       <path id="RobustnessMap-DejaVuSans-Oblique-51" d="M 3566 2113 
+L 3156 0 
+L 2578 0 
+L 2988 2091 
+Q 3016 2238 3031 2350 
+Q 3047 2463 3047 2528 
+Q 3047 2791 2881 2937 
+Q 2716 3084 2419 3084 
+Q 1956 3084 1622 2776 
+Q 1288 2469 1184 1941 
+L 800 0 
+L 225 0 
+L 903 3500 
+L 1478 3500 
+L 1363 2950 
+Q 1603 3253 1940 3418 
+Q 2278 3584 2650 3584 
+Q 3113 3584 3367 3334 
+Q 3622 3084 3622 2631 
+Q 3622 2519 3608 2391 
+Q 3594 2263 3566 2113 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-Oblique-52" d="M 1625 -91 
+Q 1009 -91 651 289 
+Q 294 669 294 1325 
+Q 294 1706 417 2101 
+Q 541 2497 738 2766 
+Q 1047 3184 1428 3384 
+Q 1809 3584 2291 3584 
+Q 2888 3584 3255 3212 
+Q 3622 2841 3622 2241 
+Q 3622 1825 3500 1412 
+Q 3378 1000 3181 728 
+Q 2875 309 2494 109 
+Q 2113 -91 1625 -91 
+z
+M 891 1344 
+Q 891 869 1089 633 
+Q 1288 397 1691 397 
+Q 2269 397 2648 901 
+Q 3028 1406 3028 2181 
+Q 3028 2634 2825 2865 
+Q 2622 3097 2228 3097 
+Q 1903 3097 1650 2945 
+Q 1397 2794 1197 2484 
+Q 1050 2253 970 1956 
+Q 891 1659 891 1344 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-Oblique-57" d="M 2706 3500 
+L 2619 3053 
+L 1472 3053 
+L 1100 1153 
+Q 1081 1047 1072 975 
+Q 1063 903 1063 863 
+Q 1063 663 1183 572 
+Q 1303 481 1569 481 
+L 2150 481 
+L 2053 0 
+L 1503 0 
+Q 991 0 739 200 
+Q 488 400 488 806 
+Q 488 878 497 964 
+Q 506 1050 525 1153 
+L 897 3053 
+L 409 3053 
+L 500 3500 
+L 978 3500 
+L 1172 4494 
+L 1747 4494 
+L 1556 3500 
+L 2706 3500 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-Oblique-3" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-Oblique-55" d="M 2853 2969 
+Q 2766 3016 2653 3041 
+Q 2541 3066 2413 3066 
+Q 1953 3066 1609 2717 
+Q 1266 2369 1153 1784 
+L 800 0 
+L 225 0 
+L 909 3500 
+L 1484 3500 
+L 1375 2956 
+Q 1603 3259 1920 3421 
+Q 2238 3584 2597 3584 
+Q 2691 3584 2781 3573 
+Q 2872 3563 2963 3538 
+L 2853 2969 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-Oblique-58" d="M 428 1388 
+L 838 3500 
+L 1416 3500 
+L 1006 1409 
+Q 975 1256 961 1147 
+Q 947 1038 947 966 
+Q 947 700 1109 554 
+Q 1272 409 1569 409 
+Q 2031 409 2368 721 
+Q 2706 1034 2809 1563 
+L 3194 3500 
+L 3769 3500 
+L 3091 0 
+L 2516 0 
+L 2631 550 
+Q 2388 244 2052 76 
+Q 1716 -91 1338 -91 
+Q 878 -91 622 161 
+Q 366 413 366 863 
+Q 366 956 381 1097 
+Q 397 1238 428 1388 
+z
+" transform="scale(0.015625)"></path>
+      </defs>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-51"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-52" transform="translate(63.375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-57" transform="translate(124.5625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-3" transform="translate(163.765625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-55" transform="translate(195.546875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-58" transform="translate(236.65625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-51" transform="translate(300.03125 0)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_33">
+     
+     <g style="fill: #0b0b0b" transform="translate(53.932896 136.810683) scale(0.08 -0.08)">
+      <use href="#RobustnessMap-DejaVuSans-24"></use>
+      <use href="#RobustnessMap-DejaVuSans-46" transform="translate(66.65625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-58" transform="translate(121.640625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-57" transform="translate(185.015625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(224.21875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(285.75 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-44" transform="translate(317.53125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(378.8125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(442.296875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(503.828125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-51" transform="translate(531.609375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(594.984375 0)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--acute--host--US--rho0.5">
+     <g clip-path="url(#RobustnessMap-p2e3e46a119)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="153.050161" y="152.420096" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--acute--host--US--rho1.0">
+     <g clip-path="url(#RobustnessMap-p2e3e46a119)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="163.857247" y="161.428921" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--acute--host--US--rho2.0">
+     <g clip-path="url(#RobustnessMap-p2e3e46a119)">
+      <use href="#RobustnessMap-m80f078aee7" x="164.538201" y="170.437745" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--acute--scale--US--rho0.5">
+     <g clip-path="url(#RobustnessMap-p2e3e46a119)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="81.046548" y="187.854806" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--acute--scale--US--rho1.0">
+     <g clip-path="url(#RobustnessMap-p2e3e46a119)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="107.322001" y="196.86363" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--acute--scale--US--rho2.0">
+     <g clip-path="url(#RobustnessMap-p2e3e46a119)">
+      <use href="#RobustnessMap-m80f078aee7" x="158.351614" y="205.872454" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--acute--xi--0.2--rho1.0">
+     <g clip-path="url(#RobustnessMap-p2e3e46a119)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="163.820865" y="259.47496" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--acute--xi--0.4--rho1.0">
+     <g clip-path="url(#RobustnessMap-p2e3e46a119)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="163.991692" y="278.393491" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_69">
+     <g clip-path="url(#RobustnessMap-p2e3e46a119)">
+      <use href="#RobustnessMap-mcf3e4fc426" x="163.857247" y="161.428921" style="fill-opacity: 0; stroke: #0b0b0b; stroke-width: 0.9"></use>
+     </g>
+    </g>
+   </g>
+   <g id="RobustnessMap-axes_6">
+    <g id="RobustnessMap-patch_19">
+     <path d="M 179.3056 288.753639 
+L 295.177824 288.753639 
+L 295.177824 142.810683 
+L 179.3056 142.810683 
+z
+" style="fill: #ffffff"></path>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_11">
+     <g id="RobustnessMap-xtick_20">
+      <g id="RobustnessMap-line2d_70">
+       <path d="M 204.096396 288.753639 
+L 204.096396 142.810683 
+" clip-path="url(#RobustnessMap-p3e707b026c)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_71">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="204.096396" y="288.753639" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_34">
+       
+       <g style="fill: #898781" transform="translate(198.92788 300.692116) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-13"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(95.40625 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_21">
+      <g id="RobustnessMap-line2d_72">
+       <path d="M 236.878213 288.753639 
+L 236.878213 142.810683 
+" clip-path="url(#RobustnessMap-p3e707b026c)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_73">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="236.878213" y="288.753639" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_35">
+       
+       <g style="fill: #898781" transform="translate(231.709698 300.692116) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-13"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-14" transform="translate(95.40625 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_22">
+      <g id="RobustnessMap-line2d_74">
+       <path d="M 269.660031 288.753639 
+L 269.660031 142.810683 
+" clip-path="url(#RobustnessMap-p3e707b026c)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_75">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="269.660031" y="288.753639" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_36">
+       
+       <g style="fill: #898781" transform="translate(264.491515 300.692116) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-13"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-15" transform="translate(95.40625 0)"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_12">
+     <g id="RobustnessMap-ytick_14">
+      <g id="RobustnessMap-line2d_76">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="179.3056" y="161.428921" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_15">
+      <g id="RobustnessMap-line2d_77">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="179.3056" y="196.86363" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_16">
+      <g id="RobustnessMap-line2d_78">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="179.3056" y="232.29834" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_17">
+      <g id="RobustnessMap-line2d_79">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="179.3056" y="259.47496" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_18">
+      <g id="RobustnessMap-line2d_80">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="179.3056" y="278.393491" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_81">
+     <path d="M 179.3056 179.146275 
+L 295.177824 179.146275 
+" clip-path="url(#RobustnessMap-p3e707b026c)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_82">
+     <path d="M 179.3056 214.580985 
+L 295.177824 214.580985 
+" clip-path="url(#RobustnessMap-p3e707b026c)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_83">
+     <path d="M 179.3056 250.015694 
+L 295.177824 250.015694 
+" clip-path="url(#RobustnessMap-p3e707b026c)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_84">
+     <path d="M 179.3056 268.934226 
+L 295.177824 268.934226 
+" clip-path="url(#RobustnessMap-p3e707b026c)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_85">
+     <path d="M 204.096396 288.753639 
+L 204.096396 142.810683 
+" clip-path="url(#RobustnessMap-p3e707b026c)" style="fill: none; stroke: #0b0b0b; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_20">
+     <path d="M 179.3056 288.753639 
+L 179.3056 142.810683 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_21">
+     <path d="M 179.3056 288.753639 
+L 295.177824 288.753639 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-text_37">
+     
+     <g style="fill: #898781" transform="translate(225.431009 261.163436) scale(0.065 -0.065)">
+      <use href="#RobustnessMap-DejaVuSans-Oblique-51"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-52" transform="translate(63.375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-57" transform="translate(124.5625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-3" transform="translate(163.765625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-55" transform="translate(195.546875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-58" transform="translate(236.65625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-51" transform="translate(300.03125 0)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_38">
+     
+     <g style="fill: #898781" transform="translate(225.431009 280.081968) scale(0.065 -0.065)">
+      <use href="#RobustnessMap-DejaVuSans-Oblique-51"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-52" transform="translate(63.375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-57" transform="translate(124.5625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-3" transform="translate(163.765625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-55" transform="translate(195.546875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-58" transform="translate(236.65625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-51" transform="translate(300.03125 0)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_39">
+     
+     <g style="fill: #0b0b0b" transform="translate(179.3056 136.810683) scale(0.08 -0.08)">
+      <use href="#RobustnessMap-DejaVuSans-29"></use>
+      <use href="#RobustnessMap-DejaVuSans-55" transform="translate(50.234375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(89.140625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-51" transform="translate(150.671875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-46" transform="translate(214.046875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4b" transform="translate(269.03125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(332.40625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(364.1875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-51" transform="translate(391.96875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-46" transform="translate(455.34375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-52" transform="translate(510.328125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-50" transform="translate(571.515625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(668.921875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(730.453125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-47" transform="translate(762.234375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(825.71875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-56" transform="translate(853.5 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-57" transform="translate(905.59375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-55" transform="translate(944.796875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-11" transform="translate(976.734375 0)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frIncome--host--US--rho0.5">
+     <g clip-path="url(#RobustnessMap-p3e707b026c)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="193.931645" y="152.420096" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frIncome--host--US--rho1.0">
+     <g clip-path="url(#RobustnessMap-p3e707b026c)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="215.014257" y="161.428921" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frIncome--host--US--rho2.0">
+     <g clip-path="url(#RobustnessMap-p3e707b026c)">
+      <use href="#RobustnessMap-m80f078aee7" x="263.171751" y="170.437745" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frIncome--scale--US--rho0.5">
+     <g clip-path="url(#RobustnessMap-p3e707b026c)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="289.910905" y="187.854806" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frIncome--scale--US--rho1.0">
+     <g clip-path="url(#RobustnessMap-p3e707b026c)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="289.910543" y="196.86363" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frIncome--scale--US--rho2.0">
+     <g clip-path="url(#RobustnessMap-p3e707b026c)">
+      <use href="#RobustnessMap-m80f078aee7" x="289.91046" y="205.872454" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frIncome--host--UK--rho0.5">
+     <g clip-path="url(#RobustnessMap-p3e707b026c)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="208.610379" y="223.289515" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frIncome--host--UK--rho1.0">
+     <g clip-path="url(#RobustnessMap-p3e707b026c)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="201.269562" y="232.29834" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frIncome--host--UK--rho2.0">
+     <g clip-path="url(#RobustnessMap-p3e707b026c)">
+      <use href="#RobustnessMap-m80f078aee7" x="184.572519" y="241.307164" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_86">
+     <g clip-path="url(#RobustnessMap-p3e707b026c)">
+      <use href="#RobustnessMap-mcf3e4fc426" x="215.014257" y="161.428921" style="fill-opacity: 0; stroke: #0b0b0b; stroke-width: 0.9"></use>
+     </g>
+    </g>
+   </g>
+   <g id="RobustnessMap-axes_7">
+    <g id="RobustnessMap-patch_22">
+     <path d="M 304.678304 288.753639 
+L 420.550528 288.753639 
+L 420.550528 142.810683 
+L 304.678304 142.810683 
+z
+" style="fill: #ffffff"></path>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_13">
+     <g id="RobustnessMap-xtick_23">
+      <g id="RobustnessMap-line2d_87">
+       <path d="M 316.457306 288.753639 
+L 316.457306 142.810683 
+" clip-path="url(#RobustnessMap-pa37f879a42)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_88">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="316.457306" y="288.753639" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_40">
+       
+       <g style="fill: #898781" transform="translate(306.497579 300.692116) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-c9c"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(83.796875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(147.421875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-17" transform="translate(179.203125 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-18" transform="translate(242.828125 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_24">
+      <g id="RobustnessMap-line2d_89">
+       <path d="M 349.399407 288.753639 
+L 349.399407 142.810683 
+" clip-path="url(#RobustnessMap-pa37f879a42)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_90">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="349.399407" y="288.753639" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_41">
+       
+       <g style="fill: #898781" transform="translate(339.43968 300.692116) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-c9c"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(83.796875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(147.421875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-16" transform="translate(179.203125 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(242.828125 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_25">
+      <g id="RobustnessMap-line2d_91">
+       <path d="M 382.341508 288.753639 
+L 382.341508 142.810683 
+" clip-path="url(#RobustnessMap-pa37f879a42)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_92">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="382.341508" y="288.753639" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_42">
+       
+       <g style="fill: #898781" transform="translate(372.381781 300.692116) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-c9c"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(83.796875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(147.421875 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-14" transform="translate(179.203125 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-18" transform="translate(242.828125 0)"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-xtick_26">
+      <g id="RobustnessMap-line2d_93">
+       <path d="M 415.283608 288.753639 
+L 415.283608 142.810683 
+" clip-path="url(#RobustnessMap-pa37f879a42)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+      </g>
+      <g id="RobustnessMap-line2d_94">
+       <g>
+        <use href="#RobustnessMap-mad11125b4d" x="415.283608" y="288.753639" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+      <g id="RobustnessMap-text_43">
+       
+       <g style="fill: #898781" transform="translate(408.04728 300.692116) scale(0.065 -0.065)">
+        <use href="#RobustnessMap-DejaVuSans-13"></use>
+        <use href="#RobustnessMap-DejaVuSans-11" transform="translate(63.625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(95.40625 0)"></use>
+        <use href="#RobustnessMap-DejaVuSans-13" transform="translate(159.03125 0)"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-matplotlib.axis_14">
+     <g id="RobustnessMap-ytick_19">
+      <g id="RobustnessMap-line2d_95">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="304.678304" y="161.428921" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_20">
+      <g id="RobustnessMap-line2d_96">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="304.678304" y="196.86363" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_21">
+      <g id="RobustnessMap-line2d_97">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="304.678304" y="232.29834" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_22">
+      <g id="RobustnessMap-line2d_98">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="304.678304" y="259.47496" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+     <g id="RobustnessMap-ytick_23">
+      <g id="RobustnessMap-line2d_99">
+       <g>
+        <use href="#RobustnessMap-mf386afe614" x="304.678304" y="278.393491" style="fill: #898781; stroke: #898781; stroke-width: 0.8"></use>
+       </g>
+      </g>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_100">
+     <path d="M 304.678304 179.146275 
+L 420.550528 179.146275 
+" clip-path="url(#RobustnessMap-pa37f879a42)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_101">
+     <path d="M 304.678304 214.580985 
+L 420.550528 214.580985 
+" clip-path="url(#RobustnessMap-pa37f879a42)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_102">
+     <path d="M 304.678304 250.015694 
+L 420.550528 250.015694 
+" clip-path="url(#RobustnessMap-pa37f879a42)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_103">
+     <path d="M 304.678304 268.934226 
+L 420.550528 268.934226 
+" clip-path="url(#RobustnessMap-pa37f879a42)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-line2d_104">
+     <path d="M 415.283608 288.753639 
+L 415.283608 142.810683 
+" clip-path="url(#RobustnessMap-pa37f879a42)" style="fill: none; stroke: #0b0b0b; stroke-width: 0.8; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_23">
+     <path d="M 304.678304 288.753639 
+L 304.678304 142.810683 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-patch_24">
+     <path d="M 304.678304 288.753639 
+L 420.550528 288.753639 
+" style="fill: none; stroke: #898781; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"></path>
+    </g>
+    <g id="RobustnessMap-text_44">
+     
+     <g style="fill: #898781" transform="translate(350.803713 261.163436) scale(0.065 -0.065)">
+      <use href="#RobustnessMap-DejaVuSans-Oblique-51"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-52" transform="translate(63.375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-57" transform="translate(124.5625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-3" transform="translate(163.765625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-55" transform="translate(195.546875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-58" transform="translate(236.65625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-51" transform="translate(300.03125 0)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_45">
+     
+     <g style="fill: #898781" transform="translate(350.803713 280.081968) scale(0.065 -0.065)">
+      <use href="#RobustnessMap-DejaVuSans-Oblique-51"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-52" transform="translate(63.375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-57" transform="translate(124.5625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-3" transform="translate(163.765625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-55" transform="translate(195.546875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-58" transform="translate(236.65625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-51" transform="translate(300.03125 0)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_46">
+     
+     <g style="fill: #0b0b0b" transform="translate(304.678304 136.810683) scale(0.08 -0.08)">
+      <use href="#RobustnessMap-DejaVuSans-29"></use>
+      <use href="#RobustnessMap-DejaVuSans-55" transform="translate(50.234375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(89.140625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-51" transform="translate(150.671875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-46" transform="translate(214.046875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4b" transform="translate(269.03125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(332.40625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-59" transform="translate(364.1875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-52" transform="translate(423.375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-57" transform="translate(484.5625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(523.765625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-51" transform="translate(551.546875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(614.921875 0)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frVoting--host--US--rho0.5">
+     <g clip-path="url(#RobustnessMap-pa37f879a42)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="404.063141" y="152.420096" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frVoting--host--US--rho1.0">
+     <g clip-path="url(#RobustnessMap-pa37f879a42)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="396.635645" y="161.428921" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frVoting--host--US--rho2.0">
+     <g clip-path="url(#RobustnessMap-pa37f879a42)">
+      <use href="#RobustnessMap-m80f078aee7" x="326.807307" y="170.437745" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frVoting--scale--US--rho0.5">
+     <g clip-path="url(#RobustnessMap-pa37f879a42)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="396.737017" y="187.854806" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frVoting--scale--US--rho1.0">
+     <g clip-path="url(#RobustnessMap-pa37f879a42)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="370.20578" y="196.86363" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frVoting--scale--US--rho2.0">
+     <g clip-path="url(#RobustnessMap-pa37f879a42)">
+      <use href="#RobustnessMap-m80f078aee7" x="309.945223" y="205.872454" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frVoting--host--UK--rho0.5">
+     <g clip-path="url(#RobustnessMap-pa37f879a42)">
+      <use href="#RobustnessMap-md97cf4c6fb" x="404.531821" y="223.289515" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frVoting--host--UK--rho1.0">
+     <g clip-path="url(#RobustnessMap-pa37f879a42)">
+      <use href="#RobustnessMap-mbb7d6609d3" x="406.84834" y="232.29834" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap--chosen--frVoting--host--UK--rho2.0">
+     <g clip-path="url(#RobustnessMap-pa37f879a42)">
+      <use href="#RobustnessMap-m80f078aee7" x="385.903348" y="241.307164" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_105">
+     <g clip-path="url(#RobustnessMap-pa37f879a42)">
+      <use href="#RobustnessMap-mcf3e4fc426" x="396.635645" y="161.428921" style="fill-opacity: 0; stroke: #0b0b0b; stroke-width: 0.9"></use>
+     </g>
+    </g>
+   </g>
+   <g id="RobustnessMap-text_47">
+    
+    <g style="fill: #0b0b0b" transform="translate(4.2552 122.569344) scale(0.09 -0.09)">
+     <defs>
+      <path id="RobustnessMap-DejaVuSans-49" d="M 2375 4863 
+L 2375 4384 
+L 1825 4384 
+Q 1516 4384 1395 4259 
+Q 1275 4134 1275 3809 
+L 1275 3500 
+L 2222 3500 
+L 2222 3053 
+L 1275 3053 
+L 1275 0 
+L 697 0 
+L 697 3053 
+L 147 3053 
+L 147 3500 
+L 697 3500 
+L 697 3744 
+Q 697 4328 969 4595 
+Q 1241 4863 1831 4863 
+L 2375 4863 
+z
+" transform="scale(0.015625)"></path>
+     </defs>
+     <use href="#RobustnessMap-DejaVuSans-27" transform="translate(0 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(77.001953 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-56" transform="translate(138.525391 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(190.625 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(218.408203 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-51" transform="translate(281.884766 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(345.263672 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-46" transform="translate(377.050781 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4b" transform="translate(432.03125 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-52" transform="translate(495.410156 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-56" transform="translate(556.591797 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(608.691406 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-51" transform="translate(670.214844 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-1d" transform="translate(733.59375 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(767.285156 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-46" transform="translate(799.072266 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4b" transform="translate(854.052734 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-44" transform="translate(917.431641 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-51" transform="translate(978.710938 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(1042.089844 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(1105.566406 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(1167.089844 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(1198.876953 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-51" transform="translate(1226.660156 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(1290.039062 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-57" transform="translate(1321.826172 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4b" transform="translate(1361.035156 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(1424.414062 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(1485.9375 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-47" transform="translate(1517.724609 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(1581.201172 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-56" transform="translate(1642.724609 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(1694.824219 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(1722.607422 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-51" transform="translate(1786.083984 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(1849.462891 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-Oblique-34c" transform="translate(1881.25 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(1942.431641 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(1974.21875 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-51" transform="translate(2002.001953 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(2065.380859 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-49" transform="translate(2097.167969 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-52" transform="translate(2132.373047 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-55" transform="translate(2193.554688 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-46" transform="translate(2232.667969 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-48" transform="translate(2287.648438 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(2349.171875 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(2380.958984 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-51" transform="translate(2408.742188 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-3" transform="translate(2472.121094 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-15" transform="translate(2503.908203 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-13" transform="translate(2567.53125 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-15" transform="translate(2631.154297 0.234375)"></use>
+     <use href="#RobustnessMap-DejaVuSans-13" transform="translate(2694.777344 0.234375)"></use>
+    </g>
+   </g>
+   <g id="RobustnessMap-legend_1">
+    <g id="RobustnessMap-line2d_106">
+     <g>
+      <use href="#RobustnessMap-md97cf4c6fb" x="54.315547" y="313.424359" style="fill: #2a78d6; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_48">
+     
+     <g style="fill: #52514e" transform="translate(63.415547 315.874359) scale(0.07 -0.07)">
+      <defs>
+       <path id="RobustnessMap-DejaVuSans-Oblique-355" d="M 1203 2875 
+Q 1453 3194 1981 3475 
+Q 2188 3584 2756 3584 
+Q 3394 3584 3694 3078 
+Q 3994 2572 3834 1747 
+Q 3672 922 3175 415 
+Q 2678 -91 2041 -91 
+Q 1656 -91 1409 63 
+Q 1163 213 1044 525 
+L 681 -1331 
+L 103 -1331 
+L 697 1716 
+Q 838 2438 1203 2875 
+z
+M 3238 1747 
+Q 3359 2381 3169 2744 
+Q 2978 3103 2522 3103 
+Q 2066 3103 1734 2744 
+Q 1403 2381 1281 1747 
+Q 1156 1113 1347 750 
+Q 1538 391 1994 391 
+Q 2450 391 2781 750 
+Q 3113 1113 3238 1747 
+z
+" transform="scale(0.015625)"></path>
+      </defs>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-355" transform="translate(0 0.78125)"></use>
+      <use href="#RobustnessMap-DejaVuSans-20" transform="translate(82.958984 0.78125)"></use>
+      <use href="#RobustnessMap-DejaVuSans-13" transform="translate(186.230469 0.78125)"></use>
+      <use href="#RobustnessMap-DejaVuSans-11" transform="translate(249.853516 0.78125)"></use>
+      <use href="#RobustnessMap-DejaVuSans-18" transform="translate(281.640625 0.78125)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_107">
+     <g>
+      <use href="#RobustnessMap-mbb7d6609d3" x="104.435547" y="313.424359" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_49">
+     
+     <g style="fill: #52514e" transform="translate(113.535547 315.874359) scale(0.07 -0.07)">
+      <use href="#RobustnessMap-DejaVuSans-Oblique-355" transform="translate(0 0.78125)"></use>
+      <use href="#RobustnessMap-DejaVuSans-20" transform="translate(82.958984 0.78125)"></use>
+      <use href="#RobustnessMap-DejaVuSans-14" transform="translate(186.230469 0.78125)"></use>
+      <use href="#RobustnessMap-DejaVuSans-11" transform="translate(249.853516 0.78125)"></use>
+      <use href="#RobustnessMap-DejaVuSans-13" transform="translate(281.640625 0.78125)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_108">
+     <g>
+      <use href="#RobustnessMap-m80f078aee7" x="154.555547" y="313.424359" style="fill: #52514e; stroke: #fcfcfb; stroke-width: 0.5"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_50">
+     
+     <g style="fill: #52514e" transform="translate(163.655547 315.874359) scale(0.07 -0.07)">
+      <use href="#RobustnessMap-DejaVuSans-Oblique-355" transform="translate(0 0.78125)"></use>
+      <use href="#RobustnessMap-DejaVuSans-20" transform="translate(82.958984 0.78125)"></use>
+      <use href="#RobustnessMap-DejaVuSans-15" transform="translate(186.230469 0.78125)"></use>
+      <use href="#RobustnessMap-DejaVuSans-11" transform="translate(249.853516 0.78125)"></use>
+      <use href="#RobustnessMap-DejaVuSans-13" transform="translate(281.640625 0.78125)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_109">
+     <g>
+      <use href="#RobustnessMap-m2356f785bd" x="204.675547" y="313.424359" style="fill-opacity: 0; stroke: #52514e; stroke-linejoin: miter"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_51">
+     
+     <g style="fill: #52514e" transform="translate(213.775547 315.874359) scale(0.07 -0.07)">
+      <defs>
+       <path id="RobustnessMap-DejaVuSans-Oblique-3b" d="M 878 4666 
+L 1516 4666 
+L 2316 2981 
+L 3763 4666 
+L 4500 4666 
+L 2578 2438 
+L 3738 0 
+L 3103 0 
+L 2163 1966 
+L 459 0 
+L -275 0 
+L 1906 2509 
+L 878 4666 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-Oblique-4c" d="M 1172 4863 
+L 1747 4863 
+L 1606 4134 
+L 1031 4134 
+L 1172 4863 
+z
+M 909 3500 
+L 1484 3500 
+L 800 0 
+L 225 0 
+L 909 3500 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-4f" d="M 603 4863 
+L 1178 4863 
+L 1178 0 
+L 603 0 
+L 603 4863 
+z
+" transform="scale(0.015625)"></path>
+       <path id="RobustnessMap-DejaVuSans-45" d="M 3116 1747 
+Q 3116 2381 2855 2742 
+Q 2594 3103 2138 3103 
+Q 1681 3103 1420 2742 
+Q 1159 2381 1159 1747 
+Q 1159 1113 1420 752 
+Q 1681 391 2138 391 
+Q 2594 391 2855 752 
+Q 3116 1113 3116 1747 
+z
+M 1159 2969 
+Q 1341 3281 1617 3432 
+Q 1894 3584 2278 3584 
+Q 2916 3584 3314 3078 
+Q 3713 2572 3713 1747 
+Q 3713 922 3314 415 
+Q 2916 -91 2278 -91 
+Q 1894 -91 1617 61 
+Q 1341 213 1159 525 
+L 1159 0 
+L 581 0 
+L 581 4863 
+L 1159 4863 
+L 1159 2969 
+z
+" transform="scale(0.015625)"></path>
+      </defs>
+      <use href="#RobustnessMap-DejaVuSans-59" transform="translate(0 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(59.179688 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-46" transform="translate(120.703125 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-57" transform="translate(175.683594 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-52" transform="translate(214.892578 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-55" transform="translate(276.074219 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(317.1875 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-3b" transform="translate(348.974609 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-Oblique-4c" transform="translate(417.480469 -14.984326) scale(0.7)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(439.663086 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-46" transform="translate(471.450195 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-44" transform="translate(526.430664 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4f" transform="translate(587.709961 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(615.493164 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-45" transform="translate(643.276367 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-55" transform="translate(706.75293 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-44" transform="translate(747.866211 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-57" transform="translate(809.145508 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(848.354492 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-52" transform="translate(876.137695 0.015625)"></use>
+      <use href="#RobustnessMap-DejaVuSans-51" transform="translate(937.319336 0.015625)"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-line2d_110">
+     <g>
+      <use href="#RobustnessMap-mcf3e4fc426" x="300.645547" y="313.424359" style="fill-opacity: 0; stroke: #0b0b0b; stroke-width: 0.9"></use>
+     </g>
+    </g>
+    <g id="RobustnessMap-text_52">
+     
+     <g style="fill: #52514e" transform="translate(309.745547 315.874359) scale(0.07 -0.07)">
+      <defs>
+       <path id="RobustnessMap-DejaVuSans-a" d="M 1147 4666 
+L 1147 2931 
+L 616 2931 
+L 616 4666 
+L 1147 4666 
+z
+" transform="scale(0.015625)"></path>
+      </defs>
+      <use href="#RobustnessMap-DejaVuSans-57"></use>
+      <use href="#RobustnessMap-DejaVuSans-4b" transform="translate(39.203125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(102.578125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(164.109375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-53" transform="translate(195.890625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-44" transform="translate(259.375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-53" transform="translate(320.65625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(384.140625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-55" transform="translate(445.671875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-a" transform="translate(486.78125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-56" transform="translate(514.265625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-3" transform="translate(566.359375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-55" transform="translate(598.140625 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-48" transform="translate(637.046875 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-44" transform="translate(698.578125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-47" transform="translate(759.859375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4c" transform="translate(823.34375 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-51" transform="translate(851.125 0)"></use>
+      <use href="#RobustnessMap-DejaVuSans-4a" transform="translate(914.5 0)"></use>
+     </g>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clippath id="RobustnessMap-pa2161396c8">
+   <rect x="24.016646" y="30.161423" width="92.500418" height="62.738881"></rect>
+  </clippath>
+  <clippath id="RobustnessMap-pcd370dc19b">
+   <rect x="126.017545" y="30.161423" width="92.500418" height="62.738881"></rect>
+  </clippath>
+  <clippath id="RobustnessMap-pdc4cf5a568">
+   <rect x="228.018443" y="30.161423" width="92.500418" height="62.738881"></rect>
+  </clippath>
+  <clippath id="RobustnessMap-p358e721936">
+   <rect x="330.019342" y="30.161423" width="92.500418" height="62.738881"></rect>
+  </clippath>
+  <clippath id="RobustnessMap-p2e3e46a119">
+   <rect x="53.932896" y="142.810683" width="115.872224" height="145.942956"></rect>
+  </clippath>
+  <clippath id="RobustnessMap-p3e707b026c">
+   <rect x="179.3056" y="142.810683" width="115.872224" height="145.942956"></rect>
+  </clippath>
+  <clippath id="RobustnessMap-pa37f879a42">
+   <rect x="304.678304" y="142.810683" width="115.872224" height="145.942956"></rect>
+  </clippath>
+ </defs>
+</svg></div><div class="oa-fignote"><em>Note:</em> Every value is read in 2020. Table <a href="esc.html#oatab_US_ESC_Summary">6 of the paper</a> prints the designs chosen for the U.S. under a common <span class="math inline">\(X\)</span> with the cost of section 7.1 of the paper; every other value is printed in the online appendix, sections oecd-us and oecd-uk with the design given and esc-us and esc-uk with it chosen.</div><details class="oa-prov"><summary>Source</summary><ul><li><code>results/esc/escExperiments.csv</code> <a href="_generated/data/results/esc/escExperiments.csv" download="">csv</a> <a href="https://github.com/ChampionApe/SSDclaude/blob/d28ec02/results/esc/escExperiments.csv">on GitHub</a></li><li><code>results/esc/escExperimentsUK.csv</code> <a href="_generated/data/results/esc/escExperimentsUK.csv" download="">csv</a> <a href="https://github.com/ChampionApe/SSDclaude/blob/d28ec02/results/esc/escExperimentsUK.csv">on GitHub</a></li><li><code>results/esc/escXiRobustness.csv</code> <a href="_generated/data/results/esc/escXiRobustness.csv" download="">csv</a> <a href="https://github.com/ChampionApe/SSDclaude/blob/d28ec02/results/esc/escXiRobustness.csv">on GitHub</a></li><li><code>results/shocks/UK_shocks.csv</code> <a href="_generated/data/results/shocks/UK_shocks.csv" download="">csv</a> <a href="https://github.com/ChampionApe/SSDclaude/blob/d28ec02/results/shocks/UK_shocks.csv">on GitHub</a></li><li><code>results/shocks/UK_shocksCommonX.csv</code> <a href="_generated/data/results/shocks/UK_shocksCommonX.csv" download="">csv</a> <a href="https://github.com/ChampionApe/SSDclaude/blob/d28ec02/results/shocks/UK_shocksCommonX.csv">on GitHub</a></li><li><code>results/shocks/US_shocks.csv</code> <a href="_generated/data/results/shocks/US_shocks.csv" download="">csv</a> <a href="https://github.com/ChampionApe/SSDclaude/blob/d28ec02/results/shocks/US_shocks.csv">on GitHub</a></li><li><code>results/shocks/US_shocksCommonX.csv</code> <a href="_generated/data/results/shocks/US_shocksCommonX.csv" download="">csv</a> <a href="https://github.com/ChampionApe/SSDclaude/blob/d28ec02/results/shocks/US_shocksCommonX.csv">on GitHub</a></li><li>The values drawn: <a href="_generated/data/marks/RobustnessMap.csv" download="">csv</a></li></ul><p>Built by <code>figuresUS.robustnessMap</code> from commit <code>d28ec02</code> with uncommitted changes. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only RobustnessMap</code>; on another system substitute <code>.venv/bin/python</code></p></details></figure></div>
+</div>
+<script type="application/json" class="oa-marks">{"RobustnessMap": [{"id": "RobustnessMap--given--theta--US--commonX--rho0.5", "label": "U.S.", "series": "ρ = 0.5, common X", "panel": "Design given: θ = 0 against θ = 1", "value": 9.020523191484301, "text": "+9.0 p.p.", "table": "US_CRRA_PensChars", "row": "theta0@0.5", "tab": "US_CRRA_PensChars", "variant": "commonX", "href": "oecd.html?g=oecd-us&variant=commonX&tab=US_CRRA_PensChars&row=theta0%400.5#oecd-us"}, {"id": "RobustnessMap--given--theta--US--vectorX--rho0.5", "label": "U.S.", "series": "ρ = 0.5, vector Xᵢ", "panel": "Design given: θ = 0 against θ = 1", "value": 9.02052319148429, "text": "+9.0 p.p.", "table": "US_CRRA_PensChars_vectorX", "row": "theta0@0.5", "tab": "US_CRRA_PensChars", "variant": "vectorX", "href": "oecd.html?g=oecd-us&variant=vectorX&tab=US_CRRA_PensChars&row=theta0%400.5#oecd-us"}, {"id": "RobustnessMap--given--theta--US--commonX--rho1.0", "label": "U.S.", "series": "ρ = 1.0, common X", "panel": "Design given: θ = 0 against θ = 1", "value": 6.23605851872344, "text": "+6.2 p.p.", "table": "US_CRRA_PensChars", "row": "theta0@1.0", "tab": "US_CRRA_PensChars", "variant": "commonX", "href": "oecd.html?g=oecd-us&variant=commonX&tab=US_CRRA_PensChars&row=theta0%401.0#oecd-us"}, {"id": "RobustnessMap--given--theta--US--vectorX--rho1.0", "label": "U.S.", "series": "ρ = 1.0, vector Xᵢ", "panel": "Design given: θ = 0 against θ = 1", "value": 6.23605851872344, "text": "+6.2 p.p.", "table": "US_CRRA_PensChars_vectorX", "row": "theta0@1.0", "tab": "US_CRRA_PensChars", "variant": "vectorX", "href": "oecd.html?g=oecd-us&variant=vectorX&tab=US_CRRA_PensChars&row=theta0%401.0#oecd-us"}, {"id": "RobustnessMap--given--theta--US--commonX--rho2.0", "label": "U.S.", "series": "ρ = 2.0, common X", "panel": "Design given: θ = 0 against θ = 1", "value": 1.4810749994429107, "text": "+1.5 p.p.", "table": "US_CRRA_PensChars", "row": "theta0@2.0", "tab": "US_CRRA_PensChars", "variant": "commonX", "href": "oecd.html?g=oecd-us&variant=commonX&tab=US_CRRA_PensChars&row=theta0%402.0#oecd-us"}, {"id": "RobustnessMap--given--theta--US--vectorX--rho2.0", "label": "U.S.", "series": "ρ = 2.0, vector Xᵢ", "panel": "Design given: θ = 0 against θ = 1", "value": 1.4810749994429107, "text": "+1.5 p.p.", "table": "US_CRRA_PensChars_vectorX", "row": "theta0@2.0", "tab": "US_CRRA_PensChars", "variant": "vectorX", "href": "oecd.html?g=oecd-us&variant=vectorX&tab=US_CRRA_PensChars&row=theta0%402.0#oecd-us"}, {"id": "RobustnessMap--given--theta--UK--commonX--rho0.5", "label": "UK", "series": "ρ = 0.5, common X", "panel": "Design given: θ = 0 against θ = 1", "value": 6.26485497442455, "text": "+6.3 p.p.", "table": "UK_CRRA_PensChars", "row": "theta0@0.5", "tab": "UK_CRRA_PensChars", "variant": "commonX", "href": "oecd.html?g=oecd-uk&variant=commonX&tab=UK_CRRA_PensChars&row=theta0%400.5#oecd-uk"}, {"id": "RobustnessMap--given--theta--UK--vectorX--rho0.5", "label": "UK", "series": "ρ = 0.5, vector Xᵢ", "panel": "Design given: θ = 0 against θ = 1", "value": 6.27433628221627, "text": "+6.3 p.p.", "table": "UK_CRRA_PensChars_vectorX", "row": "theta0@0.5", "tab": "UK_CRRA_PensChars", "variant": "vectorX", "href": "oecd.html?g=oecd-uk&variant=vectorX&tab=UK_CRRA_PensChars&row=theta0%400.5#oecd-uk"}, {"id": "RobustnessMap--given--theta--UK--commonX--rho1.0", "label": "UK", "series": "ρ = 1.0, common X", "panel": "Design given: θ = 0 against θ = 1", "value": 4.43648967324143, "text": "+4.4 p.p.", "table": "UK_CRRA_PensChars", "row": "theta0@1.0", "tab": "UK_CRRA_PensChars", "variant": "commonX", "href": "oecd.html?g=oecd-uk&variant=commonX&tab=UK_CRRA_PensChars&row=theta0%401.0#oecd-uk"}, {"id": "RobustnessMap--given--theta--UK--vectorX--rho1.0", "label": "UK", "series": "ρ = 1.0, vector Xᵢ", "panel": "Design given: θ = 0 against θ = 1", "value": 4.43648967324143, "text": "+4.4 p.p.", "table": "UK_CRRA_PensChars_vectorX", "row": "theta0@1.0", "tab": "UK_CRRA_PensChars", "variant": "vectorX", "href": "oecd.html?g=oecd-uk&variant=vectorX&tab=UK_CRRA_PensChars&row=theta0%401.0#oecd-uk"}, {"id": "RobustnessMap--given--theta--UK--commonX--rho2.0", "label": "UK", "series": "ρ = 2.0, common X", "panel": "Design given: θ = 0 against θ = 1", "value": 2.7587204662666993, "text": "+2.8 p.p.", "table": "UK_CRRA_PensChars", "row": "theta0@2.0", "tab": "UK_CRRA_PensChars", "variant": "commonX", "href": "oecd.html?g=oecd-uk&variant=commonX&tab=UK_CRRA_PensChars&row=theta0%402.0#oecd-uk"}, {"id": "RobustnessMap--given--theta--UK--vectorX--rho2.0", "label": "UK", "series": "ρ = 2.0, vector Xᵢ", "panel": "Design given: θ = 0 against θ = 1", "value": 2.7598913612219294, "text": "+2.8 p.p.", "table": "UK_CRRA_PensChars_vectorX", "row": "theta0@2.0", "tab": "UK_CRRA_PensChars", "variant": "vectorX", "href": "oecd.html?g=oecd-uk&variant=vectorX&tab=UK_CRRA_PensChars&row=theta0%402.0#oecd-uk"}, {"id": "RobustnessMap--given--acute--US--commonX--rho0.5", "label": "U.S.", "series": "ρ = 0.5, common X", "panel": "Design given: Acute ageing", "value": 9.320168894342839, "text": "+9.3 p.p.", "table": "US_CRRA_Ageing", "row": "acute@0.5", "tab": "US_CRRA_Ageing", "variant": "commonX", "href": "oecd.html?g=oecd-us&variant=commonX&tab=US_CRRA_Ageing&row=acute%400.5#oecd-us"}, {"id": "RobustnessMap--given--acute--US--vectorX--rho0.5", "label": "U.S.", "series": "ρ = 0.5, vector Xᵢ", "panel": "Design given: Acute ageing", "value": 9.320168894342832, "text": "+9.3 p.p.", "table": "US_CRRA_Ageing_vectorX", "row": "acute@0.5", "tab": "US_CRRA_Ageing", "variant": "vectorX", "href": "oecd.html?g=oecd-us&variant=vectorX&tab=US_CRRA_Ageing&row=acute%400.5#oecd-us"}, {"id": "RobustnessMap--given--acute--US--commonX--rho1.0", "label": "U.S.", "series": "ρ = 1.0, common X", "panel": "Design given: Acute ageing", "value": 8.677247609958, "text": "+8.7 p.p.", "table": "US_CRRA_Ageing", "row": "acute@1.0", "tab": "US_CRRA_Ageing", "variant": "commonX", "href": "oecd.html?g=oecd-us&variant=commonX&tab=US_CRRA_Ageing&row=acute%401.0#oecd-us"}, {"id": "RobustnessMap--given--acute--US--vectorX--rho1.0", "label": "U.S.", "series": "ρ = 1.0, vector Xᵢ", "panel": "Design given: Acute ageing", "value": 8.677247609957991, "text": "+8.7 p.p.", "table": "US_CRRA_Ageing_vectorX", "row": "acute@1.0", "tab": "US_CRRA_Ageing", "variant": "vectorX", "href": "oecd.html?g=oecd-us&variant=vectorX&tab=US_CRRA_Ageing&row=acute%401.0#oecd-us"}, {"id": "RobustnessMap--given--acute--US--commonX--rho2.0", "label": "U.S.", "series": "ρ = 2.0, common X", "panel": "Design given: Acute ageing", "value": 7.557431616015739, "text": "+7.6 p.p.", "table": "US_CRRA_Ageing", "row": "acute@2.0", "tab": "US_CRRA_Ageing", "variant": "commonX", "href": "oecd.html?g=oecd-us&variant=commonX&tab=US_CRRA_Ageing&row=acute%402.0#oecd-us"}, {"id": "RobustnessMap--given--acute--US--vectorX--rho2.0", "label": "U.S.", "series": "ρ = 2.0, vector Xᵢ", "panel": "Design given: Acute ageing", "value": 7.55743161601587, "text": "+7.6 p.p.", "table": "US_CRRA_Ageing_vectorX", "row": "acute@2.0", "tab": "US_CRRA_Ageing", "variant": "vectorX", "href": "oecd.html?g=oecd-us&variant=vectorX&tab=US_CRRA_Ageing&row=acute%402.0#oecd-us"}, {"id": "RobustnessMap--given--acute--UK--commonX--rho0.5", "label": "UK", "series": "ρ = 0.5, common X", "panel": "Design given: Acute ageing", "value": 4.99372103066682, "text": "+5.0 p.p.", "table": "UK_CRRA_Ageing", "row": "acute@0.5", "tab": "UK_CRRA_Ageing", "variant": "commonX", "href": "oecd.html?g=oecd-uk&variant=commonX&tab=UK_CRRA_Ageing&row=acute%400.5#oecd-uk"}, {"id": "RobustnessMap--given--acute--UK--vectorX--rho0.5", "label": "UK", "series": "ρ = 0.5, vector Xᵢ", "panel": "Design given: Acute ageing", "value": 4.997673237885171, "text": "+5.0 p.p.", "table": "UK_CRRA_Ageing_vectorX", "row": "acute@0.5", "tab": "UK_CRRA_Ageing", "variant": "vectorX", "href": "oecd.html?g=oecd-uk&variant=vectorX&tab=UK_CRRA_Ageing&row=acute%400.5#oecd-uk"}, {"id": "RobustnessMap--given--acute--UK--commonX--rho1.0", "label": "UK", "series": "ρ = 1.0, common X", "panel": "Design given: Acute ageing", "value": 4.72879598531582, "text": "+4.7 p.p.", "table": "UK_CRRA_Ageing", "row": "acute@1.0", "tab": "UK_CRRA_Ageing", "variant": "commonX", "href": "oecd.html?g=oecd-uk&variant=commonX&tab=UK_CRRA_Ageing&row=acute%401.0#oecd-uk"}, {"id": "RobustnessMap--given--acute--UK--vectorX--rho1.0", "label": "UK", "series": "ρ = 1.0, vector Xᵢ", "panel": "Design given: Acute ageing", "value": 4.72879598531583, "text": "+4.7 p.p.", "table": "UK_CRRA_Ageing_vectorX", "row": "acute@1.0", "tab": "UK_CRRA_Ageing", "variant": "vectorX", "href": "oecd.html?g=oecd-uk&variant=vectorX&tab=UK_CRRA_Ageing&row=acute%401.0#oecd-uk"}, {"id": "RobustnessMap--given--acute--UK--commonX--rho2.0", "label": "UK", "series": "ρ = 2.0, common X", "panel": "Design given: Acute ageing", "value": 4.33116097702366, "text": "+4.3 p.p.", "table": "UK_CRRA_Ageing", "row": "acute@2.0", "tab": "UK_CRRA_Ageing", "variant": "commonX", "href": "oecd.html?g=oecd-uk&variant=commonX&tab=UK_CRRA_Ageing&row=acute%402.0#oecd-uk"}, {"id": "RobustnessMap--given--acute--UK--vectorX--rho2.0", "label": "UK", "series": "ρ = 2.0, vector Xᵢ", "panel": "Design given: Acute ageing", "value": 4.331814885068441, "text": "+4.3 p.p.", "table": "UK_CRRA_Ageing_vectorX", "row": "acute@2.0", "tab": "UK_CRRA_Ageing", "variant": "vectorX", "href": "oecd.html?g=oecd-uk&variant=vectorX&tab=UK_CRRA_Ageing&row=acute%402.0#oecd-uk"}, {"id": "RobustnessMap--given--income--US--commonX--rho0.5", "label": "U.S.", "series": "ρ = 0.5, common X", "panel": "Design given: French income distr.", "value": -1.545494759988758, "text": "−1.5 p.p.", "table": "US_CRRA_OtherShocks", "row": "income@0.5", "tab": "US_CRRA_OtherShocks", "variant": "commonX", "href": "oecd.html?g=oecd-us&variant=commonX&tab=US_CRRA_OtherShocks&row=income%400.5#oecd-us"}, {"id": "RobustnessMap--given--income--US--vectorX--rho0.5", "label": "U.S.", "series": "ρ = 0.5, vector Xᵢ", "panel": "Design given: French income distr.", "value": -2.06934341213368, "text": "−2.1 p.p.", "table": "US_CRRA_OtherShocks_vectorX", "row": "income@0.5", "tab": "US_CRRA_OtherShocks", "variant": "vectorX", "href": "oecd.html?g=oecd-us&variant=vectorX&tab=US_CRRA_OtherShocks&row=income%400.5#oecd-us"}, {"id": "RobustnessMap--given--income--US--commonX--rho1.0", "label": "U.S.", "series": "ρ = 1.0, common X", "panel": "Design given: French income distr.", "value": -1.2213658425352687, "text": "−1.2 p.p.", "table": "US_CRRA_OtherShocks", "row": "income@1.0", "tab": "US_CRRA_OtherShocks", "variant": "commonX", "href": "oecd.html?g=oecd-us&variant=commonX&tab=US_CRRA_OtherShocks&row=income%401.0#oecd-us"}, {"id": "RobustnessMap--given--income--US--vectorX--rho1.0", "label": "U.S.", "series": "ρ = 1.0, vector Xᵢ", "panel": "Design given: French income distr.", "value": -1.6238945924601789, "text": "−1.6 p.p.", "table": "US_CRRA_OtherShocks_vectorX", "row": "income@1.0", "tab": "US_CRRA_OtherShocks", "variant": "vectorX", "href": "oecd.html?g=oecd-us&variant=vectorX&tab=US_CRRA_OtherShocks&row=income%401.0#oecd-us"}, {"id": "RobustnessMap--given--income--US--commonX--rho2.0", "label": "U.S.", "series": "ρ = 2.0, common X", "panel": "Design given: French income distr.", "value": -0.7815930411672917, "text": "−0.8 p.p.", "table": "US_CRRA_OtherShocks", "row": "income@2.0", "tab": "US_CRRA_OtherShocks", "variant": "commonX", "href": "oecd.html?g=oecd-us&variant=commonX&tab=US_CRRA_OtherShocks&row=income%402.0#oecd-us"}, {"id": "RobustnessMap--given--income--US--vectorX--rho2.0", "label": "U.S.", "series": "ρ = 2.0, vector Xᵢ", "panel": "Design given: French income distr.", "value": -1.022268368906862, "text": "−1.0 p.p.", "table": "US_CRRA_OtherShocks_vectorX", "row": "income@2.0", "tab": "US_CRRA_OtherShocks", "variant": "vectorX", "href": "oecd.html?g=oecd-us&variant=vectorX&tab=US_CRRA_OtherShocks&row=income%402.0#oecd-us"}, {"id": "RobustnessMap--given--income--UK--commonX--rho0.5", "label": "UK", "series": "ρ = 0.5, common X", "panel": "Design given: French income distr.", "value": 0.08033646749868034, "text": "+0.1 p.p.", "table": "UK_CRRA_OtherShocks", "row": "income@0.5", "tab": "UK_CRRA_OtherShocks", "variant": "commonX", "href": "oecd.html?g=oecd-uk&variant=commonX&tab=UK_CRRA_OtherShocks&row=income%400.5#oecd-uk"}, {"id": "RobustnessMap--given--income--UK--vectorX--rho0.5", "label": "UK", "series": "ρ = 0.5, vector Xᵢ", "panel": "Design given: French income distr.", "value": -0.7975144291337694, "text": "−0.8 p.p.", "table": "UK_CRRA_OtherShocks_vectorX", "row": "income@0.5", "tab": "UK_CRRA_OtherShocks", "variant": "vectorX", "href": "oecd.html?g=oecd-uk&variant=vectorX&tab=UK_CRRA_OtherShocks&row=income%400.5#oecd-uk"}, {"id": "RobustnessMap--given--income--UK--commonX--rho1.0", "label": "UK", "series": "ρ = 1.0, common X", "panel": "Design given: French income distr.", "value": 0.29260612970919003, "text": "+0.3 p.p.", "table": "UK_CRRA_OtherShocks", "row": "income@1.0", "tab": "UK_CRRA_OtherShocks", "variant": "commonX", "href": "oecd.html?g=oecd-uk&variant=commonX&tab=UK_CRRA_OtherShocks&row=income%401.0#oecd-uk"}, {"id": "RobustnessMap--given--income--UK--vectorX--rho1.0", "label": "UK", "series": "ρ = 1.0, vector Xᵢ", "panel": "Design given: French income distr.", "value": -0.45636466975886025, "text": "−0.5 p.p.", "table": "UK_CRRA_OtherShocks_vectorX", "row": "income@1.0", "tab": "UK_CRRA_OtherShocks", "variant": "vectorX", "href": "oecd.html?g=oecd-uk&variant=vectorX&tab=UK_CRRA_OtherShocks&row=income%401.0#oecd-uk"}, {"id": "RobustnessMap--given--income--UK--commonX--rho2.0", "label": "UK", "series": "ρ = 2.0, common X", "panel": "Design given: French income distr.", "value": 0.37614581438873973, "text": "+0.4 p.p.", "table": "UK_CRRA_OtherShocks", "row": "income@2.0", "tab": "UK_CRRA_OtherShocks", "variant": "commonX", "href": "oecd.html?g=oecd-uk&variant=commonX&tab=UK_CRRA_OtherShocks&row=income%402.0#oecd-uk"}, {"id": "RobustnessMap--given--income--UK--vectorX--rho2.0", "label": "UK", "series": "ρ = 2.0, vector Xᵢ", "panel": "Design given: French income distr.", "value": -0.2982178517970696, "text": "−0.3 p.p.", "table": "UK_CRRA_OtherShocks_vectorX", "row": "income@2.0", "tab": "UK_CRRA_OtherShocks", "variant": "vectorX", "href": "oecd.html?g=oecd-uk&variant=vectorX&tab=UK_CRRA_OtherShocks&row=income%402.0#oecd-uk"}, {"id": "RobustnessMap--given--voting--US--commonX--rho0.5", "label": "U.S.", "series": "ρ = 0.5, common X", "panel": "Design given: French voting", "value": 0.32632628387781193, "text": "+0.3 p.p.", "table": "US_CRRA_OtherShocks", "row": "voting@0.5", "tab": "US_CRRA_OtherShocks", "variant": "commonX", "href": "oecd.html?g=oecd-us&variant=commonX&tab=US_CRRA_OtherShocks&row=voting%400.5#oecd-us"}, {"id": "RobustnessMap--given--voting--US--vectorX--rho0.5", "label": "U.S.", "series": "ρ = 0.5, vector Xᵢ", "panel": "Design given: French voting", "value": 0.3263262838778508, "text": "+0.3 p.p.", "table": "US_CRRA_OtherShocks_vectorX", "row": "voting@0.5", "tab": "US_CRRA_OtherShocks", "variant": "vectorX", "href": "oecd.html?g=oecd-us&variant=vectorX&tab=US_CRRA_OtherShocks&row=voting%400.5#oecd-us"}, {"id": "RobustnessMap--given--voting--US--commonX--rho1.0", "label": "U.S.", "series": "ρ = 1.0, common X", "panel": "Design given: French voting", "value": 0.8946025559203902, "text": "+0.9 p.p.", "table": "US_CRRA_OtherShocks", "row": "voting@1.0", "tab": "US_CRRA_OtherShocks", "variant": "commonX", "href": "oecd.html?g=oecd-us&variant=commonX&tab=US_CRRA_OtherShocks&row=voting%401.0#oecd-us"}, {"id": "RobustnessMap--given--voting--US--vectorX--rho1.0", "label": "U.S.", "series": "ρ = 1.0, vector Xᵢ", "panel": "Design given: French voting", "value": 0.8946025559203818, "text": "+0.9 p.p.", "table": "US_CRRA_OtherShocks_vectorX", "row": "voting@1.0", "tab": "US_CRRA_OtherShocks", "variant": "vectorX", "href": "oecd.html?g=oecd-us&variant=vectorX&tab=US_CRRA_OtherShocks&row=voting%401.0#oecd-us"}, {"id": "RobustnessMap--given--voting--US--commonX--rho2.0", "label": "U.S.", "series": "ρ = 2.0, common X", "panel": "Design given: French voting", "value": 1.6903741234254284, "text": "+1.7 p.p.", "table": "US_CRRA_OtherShocks", "row": "voting@2.0", "tab": "US_CRRA_OtherShocks", "variant": "commonX", "href": "oecd.html?g=oecd-us&variant=commonX&tab=US_CRRA_OtherShocks&row=voting%402.0#oecd-us"}, {"id": "RobustnessMap--given--voting--US--vectorX--rho2.0", "label": "U.S.", "series": "ρ = 2.0, vector Xᵢ", "panel": "Design given: French voting", "value": 1.6903741234256504, "text": "+1.7 p.p.", "table": "US_CRRA_OtherShocks_vectorX", "row": "voting@2.0", "tab": "US_CRRA_OtherShocks", "variant": "vectorX", "href": "oecd.html?g=oecd-us&variant=vectorX&tab=US_CRRA_OtherShocks&row=voting%402.0#oecd-us"}, {"id": "RobustnessMap--given--voting--UK--commonX--rho0.5", "label": "UK", "series": "ρ = 0.5, common X", "panel": "Design given: French voting", "value": 0.2275693178435803, "text": "+0.2 p.p.", "table": "UK_CRRA_OtherShocks", "row": "voting@0.5", "tab": "UK_CRRA_OtherShocks", "variant": "commonX", "href": "oecd.html?g=oecd-uk&variant=commonX&tab=UK_CRRA_OtherShocks&row=voting%400.5#oecd-uk"}, {"id": "RobustnessMap--given--voting--UK--vectorX--rho0.5", "label": "UK", "series": "ρ = 0.5, vector Xᵢ", "panel": "Design given: French voting", "value": 0.22841100327670033, "text": "+0.2 p.p.", "table": "UK_CRRA_OtherShocks_vectorX", "row": "voting@0.5", "tab": "UK_CRRA_OtherShocks", "variant": "vectorX", "href": "oecd.html?g=oecd-uk&variant=vectorX&tab=UK_CRRA_OtherShocks&row=voting%400.5#oecd-uk"}, {"id": "RobustnessMap--given--voting--UK--commonX--rho1.0", "label": "UK", "series": "ρ = 1.0, common X", "panel": "Design given: French voting", "value": 0.32838014785120107, "text": "+0.3 p.p.", "table": "UK_CRRA_OtherShocks", "row": "voting@1.0", "tab": "UK_CRRA_OtherShocks", "variant": "commonX", "href": "oecd.html?g=oecd-uk&variant=commonX&tab=UK_CRRA_OtherShocks&row=voting%401.0#oecd-uk"}, {"id": "RobustnessMap--given--voting--UK--vectorX--rho1.0", "label": "UK", "series": "ρ = 1.0, vector Xᵢ", "panel": "Design given: French voting", "value": 0.3283801478512302, "text": "+0.3 p.p.", "table": "UK_CRRA_OtherShocks_vectorX", "row": "voting@1.0", "tab": "UK_CRRA_OtherShocks", "variant": "vectorX", "href": "oecd.html?g=oecd-uk&variant=vectorX&tab=UK_CRRA_OtherShocks&row=voting%401.0#oecd-uk"}, {"id": "RobustnessMap--given--voting--UK--commonX--rho2.0", "label": "UK", "series": "ρ = 2.0, common X", "panel": "Design given: French voting", "value": 0.5333058924659295, "text": "+0.5 p.p.", "table": "UK_CRRA_OtherShocks", "row": "voting@2.0", "tab": "UK_CRRA_OtherShocks", "variant": "commonX", "href": "oecd.html?g=oecd-uk&variant=commonX&tab=UK_CRRA_OtherShocks&row=voting%402.0#oecd-uk"}, {"id": "RobustnessMap--given--voting--UK--vectorX--rho2.0", "label": "UK", "series": "ρ = 2.0, vector Xᵢ", "panel": "Design given: French voting", "value": 0.5334531603244902, "text": "+0.5 p.p.", "table": "UK_CRRA_OtherShocks_vectorX", "row": "voting@2.0", "tab": "UK_CRRA_OtherShocks", "variant": "vectorX", "href": "oecd.html?g=oecd-uk&variant=vectorX&tab=UK_CRRA_OtherShocks&row=voting%402.0#oecd-uk"}, {"id": "RobustnessMap--chosen--acute--host--US--rho0.5", "label": "U.S.", "series": "ρ = 0.5", "panel": "Design chosen: Acute ageing", "value": 0.07817111126314946, "text": "+0.078", "table": "US_ESC_Ageing", "row": "chosen@0.5", "tab": "US_ESC_Ageing", "variant": "commonX", "href": "esc.html?g=esc-us&variant=commonX&tab=US_ESC_Ageing&row=chosen%400.5#esc-us"}, {"id": "RobustnessMap--chosen--acute--host--US--rho1.0", "label": "U.S.", "series": "ρ = 1.0", "panel": "Design chosen: Acute ageing", "value": 0.08717269712546605, "text": "+0.087", "table": "US_ESC_Ageing", "row": "chosen@1.0", "tab": "US_ESC_Ageing", "variant": "commonX", "href": "esc.html?g=esc-us&variant=commonX&tab=US_ESC_Ageing&row=chosen%401.0#esc-us"}, {"id": "RobustnessMap--chosen--acute--host--US--rho2.0", "label": "U.S.", "series": "ρ = 2.0", "panel": "Design chosen: Acute ageing", "value": 0.08773988611756112, "text": "+0.088", "table": "US_ESC_Ageing", "row": "chosen@2.0", "tab": "US_ESC_Ageing", "variant": "commonX", "href": "esc.html?g=esc-us&variant=commonX&tab=US_ESC_Ageing&row=chosen%402.0#esc-us"}, {"id": "RobustnessMap--chosen--acute--scale--US--rho0.5", "label": "U.S., cost on the design", "series": "ρ = 0.5", "panel": "Design chosen: Acute ageing", "value": 0.01819687877238041, "text": "+0.018", "table": "US_ESC_ScaleWedge", "row": "scale@0.5", "tab": "US_ESC_ScaleWedge", "variant": "commonX", "href": "esc.html?g=esc-scale&variant=commonX&tab=US_ESC_ScaleWedge&row=scale%400.5#esc-scale"}, {"id": "RobustnessMap--chosen--acute--scale--US--rho1.0", "label": "U.S., cost on the design", "series": "ρ = 1.0", "panel": "Design chosen: Acute ageing", "value": 0.04008258791032282, "text": "+0.040", "table": "US_ESC_ScaleWedge", "row": "scale@1.0", "tab": "US_ESC_ScaleWedge", "variant": "commonX", "href": "esc.html?g=esc-scale&variant=commonX&tab=US_ESC_ScaleWedge&row=scale%401.0#esc-scale"}, {"id": "RobustnessMap--chosen--acute--scale--US--rho2.0", "label": "U.S., cost on the design", "series": "ρ = 2.0", "panel": "Design chosen: Acute ageing", "value": 0.0825868696933354, "text": "+0.083", "table": "US_ESC_ScaleWedge", "row": "scale@2.0", "tab": "US_ESC_ScaleWedge", "variant": "commonX", "href": "esc.html?g=esc-scale&variant=commonX&tab=US_ESC_ScaleWedge&row=scale%402.0#esc-scale"}, {"id": "RobustnessMap--chosen--acute--xi--0.2--rho1.0", "label": "U.S., ξ = 0.2", "series": "ρ = 1.0", "panel": "Design chosen: Acute ageing", "value": 0.08714239303330917, "text": "+0.087", "table": "ESC_Xi", "row": "xi0.2", "tab": "ESC_Xi", "variant": "commonX", "href": "esc.html?g=esc-path&variant=commonX&tab=ESC_Xi&row=xi0.2#esc-path"}, {"id": "RobustnessMap--chosen--acute--xi--0.4--rho1.0", "label": "U.S., ξ = 0.4", "series": "ρ = 1.0", "panel": "Design chosen: Acute ageing", "value": 0.08728468077324314, "text": "+0.087", "table": "ESC_Xi", "row": "xi0.4", "tab": "ESC_Xi", "variant": "commonX", "href": "esc.html?g=esc-path&variant=commonX&tab=ESC_Xi&row=xi0.4#esc-path"}, {"id": "RobustnessMap--chosen--frIncome--host--US--rho0.5", "label": "U.S.", "series": "ρ = 0.5", "panel": "Design chosen: French income distr.", "value": -0.0310072822953128, "text": "−0.031", "table": "US_ESC_IncomeDistr", "row": "chosen@0.5", "tab": "US_ESC_IncomeDistr", "variant": "commonX", "href": "esc.html?g=esc-us&variant=commonX&tab=US_ESC_IncomeDistr&row=chosen%400.5#esc-us"}, {"id": "RobustnessMap--chosen--frIncome--host--US--rho1.0", "label": "U.S.", "series": "ρ = 1.0", "panel": "Design chosen: French income distr.", "value": 0.03330462427810299, "text": "+0.033", "table": "US_ESC_IncomeDistr", "row": "chosen@1.0", "tab": "US_ESC_IncomeDistr", "variant": "commonX", "href": "esc.html?g=esc-us&variant=commonX&tab=US_ESC_IncomeDistr&row=chosen%401.0#esc-us"}, {"id": "RobustnessMap--chosen--frIncome--host--US--rho2.0", "label": "U.S.", "series": "ρ = 2.0", "panel": "Design chosen: French income distr.", "value": 0.1802076869088225, "text": "+0.180", "table": "US_ESC_IncomeDistr", "row": "chosen@2.0", "tab": "US_ESC_IncomeDistr", "variant": "commonX", "href": "esc.html?g=esc-us&variant=commonX&tab=US_ESC_IncomeDistr&row=chosen%402.0#esc-us"}, {"id": "RobustnessMap--chosen--frIncome--scale--US--rho0.5", "label": "U.S., cost on the design", "series": "ρ = 0.5", "panel": "Design chosen: French income distr.", "value": 0.2617747127436625, "text": "+0.262", "table": "US_ESC_ScaleWedge", "row": "scale@0.5", "tab": "US_ESC_ScaleWedge", "variant": "commonX", "href": "esc.html?g=esc-scale&variant=commonX&tab=US_ESC_ScaleWedge&row=scale%400.5#esc-scale"}, {"id": "RobustnessMap--chosen--frIncome--scale--US--rho1.0", "label": "U.S., cost on the design", "series": "ρ = 1.0", "panel": "Design chosen: French income distr.", "value": 0.26177361026159074, "text": "+0.262", "table": "US_ESC_ScaleWedge", "row": "scale@1.0", "tab": "US_ESC_ScaleWedge", "variant": "commonX", "href": "esc.html?g=esc-scale&variant=commonX&tab=US_ESC_ScaleWedge&row=scale%401.0#esc-scale"}, {"id": "RobustnessMap--chosen--frIncome--scale--US--rho2.0", "label": "U.S., cost on the design", "series": "ρ = 2.0", "panel": "Design chosen: French income distr.", "value": 0.2617733556501265, "text": "+0.262", "table": "US_ESC_ScaleWedge", "row": "scale@2.0", "tab": "US_ESC_ScaleWedge", "variant": "commonX", "href": "esc.html?g=esc-scale&variant=commonX&tab=US_ESC_ScaleWedge&row=scale%402.0#esc-scale"}, {"id": "RobustnessMap--chosen--frIncome--host--UK--rho0.5", "label": "UK", "series": "ρ = 0.5", "panel": "Design chosen: French income distr.", "value": 0.013769779050943232, "text": "+0.014", "table": "UK_ESC_IncomeDistr", "row": "chosen@0.5", "tab": "UK_ESC_IncomeDistr", "variant": "commonX", "href": "esc.html?g=esc-uk&variant=commonX&tab=UK_ESC_IncomeDistr&row=chosen%400.5#esc-uk"}, {"id": "RobustnessMap--chosen--frIncome--host--UK--rho1.0", "label": "UK", "series": "ρ = 1.0", "panel": "Design chosen: French income distr.", "value": -0.008623174844169745, "text": "−0.009", "table": "UK_ESC_IncomeDistr", "row": "chosen@1.0", "tab": "UK_ESC_IncomeDistr", "variant": "commonX", "href": "esc.html?g=esc-uk&variant=commonX&tab=UK_ESC_IncomeDistr&row=chosen%401.0#esc-uk"}, {"id": "RobustnessMap--chosen--frIncome--host--UK--rho2.0", "label": "UK", "series": "ρ = 2.0", "panel": "Design chosen: French income distr.", "value": -0.059557027608263424, "text": "−0.060", "table": "UK_ESC_IncomeDistr", "row": "chosen@2.0", "tab": "UK_ESC_IncomeDistr", "variant": "commonX", "href": "esc.html?g=esc-uk&variant=commonX&tab=UK_ESC_IncomeDistr&row=chosen%402.0#esc-uk"}, {"id": "RobustnessMap--chosen--frVoting--host--US--rho0.5", "label": "U.S.", "series": "ρ = 0.5", "panel": "Design chosen: French voting", "value": -0.05109176599436849, "text": "−0.051", "table": "US_ESC_Voting", "row": "chosen@0.5", "tab": "US_ESC_Voting", "variant": "commonX", "href": "esc.html?g=esc-us&variant=commonX&tab=US_ESC_Voting&row=chosen%400.5#esc-us"}, {"id": "RobustnessMap--chosen--frVoting--host--US--rho1.0", "label": "U.S.", "series": "ρ = 1.0", "panel": "Design chosen: French voting", "value": -0.08491244919913155, "text": "−0.085", "table": "US_ESC_Voting", "row": "chosen@1.0", "tab": "US_ESC_Voting", "variant": "commonX", "href": "esc.html?g=esc-us&variant=commonX&tab=US_ESC_Voting&row=chosen%401.0#esc-us"}, {"id": "RobustnessMap--chosen--frVoting--host--US--rho2.0", "label": "U.S.", "series": "ρ = 2.0", "panel": "Design chosen: French voting", "value": -0.40287185530302666, "text": "−0.403", "table": "US_ESC_Voting", "row": "chosen@2.0", "tab": "US_ESC_Voting", "variant": "commonX", "href": "esc.html?g=esc-us&variant=commonX&tab=US_ESC_Voting&row=chosen%402.0#esc-us"}, {"id": "RobustnessMap--chosen--frVoting--scale--US--rho0.5", "label": "U.S., cost on the design", "series": "ρ = 0.5", "panel": "Design chosen: French voting", "value": -0.08445086093636034, "text": "−0.084", "table": "US_ESC_ScaleWedge", "row": "scale@0.5", "tab": "US_ESC_ScaleWedge", "variant": "commonX", "href": "esc.html?g=esc-scale&variant=commonX&tab=US_ESC_ScaleWedge&row=scale%400.5#esc-scale"}, {"id": "RobustnessMap--chosen--frVoting--scale--US--rho1.0", "label": "U.S., cost on the design", "series": "ρ = 1.0", "panel": "Design chosen: French voting", "value": -0.20525935119010064, "text": "−0.205", "table": "US_ESC_ScaleWedge", "row": "scale@1.0", "tab": "US_ESC_ScaleWedge", "variant": "commonX", "href": "esc.html?g=esc-scale&variant=commonX&tab=US_ESC_ScaleWedge&row=scale%401.0#esc-scale"}, {"id": "RobustnessMap--chosen--frVoting--scale--US--rho2.0", "label": "U.S., cost on the design", "series": "ρ = 2.0", "panel": "Design chosen: French voting", "value": -0.4796524026106257, "text": "−0.480", "table": "US_ESC_ScaleWedge", "row": "scale@2.0", "tab": "US_ESC_ScaleWedge", "variant": "commonX", "href": "esc.html?g=esc-scale&variant=commonX&tab=US_ESC_ScaleWedge&row=scale%402.0#esc-scale"}, {"id": "RobustnessMap--chosen--frVoting--host--UK--rho0.5", "label": "UK", "series": "ρ = 0.5", "panel": "Design chosen: French voting", "value": -0.04895765589990364, "text": "−0.049", "table": "UK_ESC_Voting", "row": "chosen@0.5", "tab": "UK_ESC_Voting", "variant": "commonX", "href": "esc.html?g=esc-uk&variant=commonX&tab=UK_ESC_Voting&row=chosen%400.5#esc-uk"}, {"id": "RobustnessMap--chosen--frVoting--host--UK--rho1.0", "label": "UK", "series": "ρ = 1.0", "panel": "Design chosen: French voting", "value": -0.03840951756681765, "text": "−0.038", "table": "UK_ESC_Voting", "row": "chosen@1.0", "tab": "UK_ESC_Voting", "variant": "commonX", "href": "esc.html?g=esc-uk&variant=commonX&tab=UK_ESC_Voting&row=chosen%401.0#esc-uk"}, {"id": "RobustnessMap--chosen--frVoting--host--UK--rho2.0", "label": "UK", "series": "ρ = 2.0", "panel": "Design chosen: French voting", "value": -0.13378135827787146, "text": "−0.134", "table": "UK_ESC_Voting", "row": "chosen@2.0", "tab": "UK_ESC_Voting", "variant": "commonX", "href": "esc.html?g=esc-uk&variant=commonX&tab=UK_ESC_Voting&row=chosen%402.0#esc-uk"}]}</script>
+</section>
+</div>
+<div class="oa-version">
+<p>Built on 2026-10-07 from commit <a href="https://github.com/ChampionApe/SSDclaude/commit/d28ec02"><code>d28ec02</code></a> with uncommitted changes in <code>results/paper</code> or <code>python/paper</code>. The paper’s section, table and figure numbers are counted from its source, as LaTeX sets them; its equations, which are not counted, are referred to by their section.</p>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script src="assets/exhibits.js"></script>
+
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/championape\.github\.io\/SSDclaude");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./data.html" class="pagination-link" aria-label="OA.1 The cross-section of figure 1.1">
+        <span class="nav-page-text"><span class="chapter-title">OA.1 The cross-section of figure 1.1</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
