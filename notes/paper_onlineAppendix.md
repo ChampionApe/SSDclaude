@@ -242,6 +242,10 @@ is RKB's call. A session that drafts the main sections should know:
   read as scratch names; the paper's section 6 does not say that a thirty-year β above one is needed at an IES of 0.6
   or below (the online appendix's OA.2.5 and OA.3.3 now do); publishing to GitHub Pages is still RKB's call, and the
   paper's introduction now prints the address.
+- **Next on the online appendix (2026-10-07)**: the exhibit texts for the 41 exhibits without one (the registry's `text`,
+  no typed number, drafted by an agent from the paper's descriptions and read before they go in); OA.2.2 and OA.2.3
+  are the model, text above the exhibit following the tab and the calibration. Publishing to GitHub Pages is RKB's
+  call; the paper's introduction already prints the address.
 - **Left for sections 6–8**: TODO W8(a)/(b); the conclusion's "a higher IES changes only the size of the
   earnings-link effect" against section 6, where French voting's effect grows from 0.3 to 1.7 p.p.; section 7 at
   3,708 words against ≈ 2,800 and the conclusion at 504 against ≈ 450. Smaller: section 5 never states the equal
