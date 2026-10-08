@@ -44,3 +44,26 @@ variant, `US_ESC_Path` the three chosen paths, `ESC_PathTable` two variant block
 `US_ESC_Calibration`/`_Summary` self-contained ("the quadratic cost", no online-only figure). Group `esc-variants` (OA.4.2,
 later sections renumbered). The robustness map is unchanged: a variant row needs a new kind in `_mapChosen`. Checks: the
 quadratic cells of every ESC table equal HEAD's; 88 outputs build; `test_onlineAppendix.py` 6/6; `checkPaper.py` OK.
+
+## 2026-10-08 (afternoon, evening) — section 7 rewritten on the cost with a linear term
+
+RKB's sketch (`notes/plan_endogenousDesign.md` §A-B) executed autonomously by eleven agents on Fable and Opus
+(§C the plan, the decisions in §C.1, the status and RKB's calls at its head). Three costs at ρ = 1, one general
+form ln f = -τ(1-θ)[λ₁M + ½λ₂Ṽ(1-θ)] with M = Σγ_i|y_i-1| the amount the flat component carries (adopted at gate
+1 over a common Ṽ weight, under which the U.S. design caps λ₁ below France's corner threshold under every
+variant): the quadratic (the earlier draft's), the linear (knife-edge: the UK at θ = 0, France at its corner,
+every U.S. counterfactual a corner) and the linear-quadratic (λ, κ) pinned on the U.S. and UK designs (κ =
+0.129, λ = 5.237; France predicted 0.806; pinned on France instead, κ = 0.629 and the UK at 0.397). The paper:
+section 7 on RKB's outline (3,029 words; the implicit tax, the literature in four blocks, the cost as the
+ingredients the literature supplies, US_ESC_Variants, US_ESC_Path and US_ESC_Results across the variants, the
+inequality finding against figure 1: under the linear-quadratic cost France's income distribution moves the
+design to 0.850, nearly as far as ageing), appendix C (the general form, the corner stated in words, the
+propositions moved to the technical note; 3,655 words), appendix G new (G.1 calibration across variants and
+countries, G.2 the counterfactuals, G.3 the role of ρ; the robustness map is appendix H), the abstract,
+introduction and conclusion aligned, the technical note's specification, calibration kinds and the two
+propositions. Pipeline: `config.US['esc']` paperSpec and variants beside spec (until R6), six new outputs, the
+online appendix's `esc-variants` group (OA.4.2), 88 outputs mapped, site rendered locally, not published.
+Reviews: the referee pass (`archive/notes/review_escVariants_R1_2026-10-08.md`, nine findings applied, three
+pushes for RKB) and the numbers audit (R2, twelve items applied; no numeric mismatch beyond a rounded ratio).
+Checks: checkPaper OK, latexmk clean (69 pages), test_onlineAppendix OK, the fast suites 25 of 25. Commits
+428412e to the wrap-up, local; appendix C pushed to Overleaf at RKB's request at eefb460, nothing since.

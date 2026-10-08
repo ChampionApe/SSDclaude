@@ -40,8 +40,22 @@ Short opening paragraph.
 
 Everything below is executed autonomously; RKB reviews the result. Decisions taken by the session are
 listed in C.1 so they can be reversed; the phases in C.2 run in the order given, the agents in C.3, the
-gates in C.4. Briefs for the agents are `notes/brief_escVariants_*_2026-10-08.md`; the theorist's note is
-`notes/esc_variants.md`. When the work closes, this plan and the briefs move to `archive/notes/`.
+gates in C.4. The theorist's note is `notes/esc_variants.md`; the agent briefs and the two reviews moved
+to `archive/notes/` on 2026-10-08 (indexed under "The endogenous design"). This plan stays live until RKB
+has reviewed the result and taken the calls below; then it follows them.
+
+**Status, 2026-10-08 evening: executed through phase W5.** Local commits only, no push. The calls RKB has
+to make, in order of weight: (1) the inequality finding (C.1 decision 1's amendment, §2b of the section 7
+brief): under the linear-quadratic cost France's income distribution moves the chosen design to 0.850,
+nearly as far as acute ageing (0.874), against 0.772 under the quadratic cost, so the paper now says
+inequality moves spending little under every variant and the design little under the quadratic cost
+only; the abstract, introduction, conclusion and section 7.3 are written that way. (2) The $M$ weight on
+the linear term (decision 1 as amended): it is what brings France's corner within reach and what makes
+the income-distribution response large; the referee's push (c) asks for an empirical counterpart. (3) The
+UK pin against the France pin for the shape (decision 3): the paper's row is the UK pin; the France pin
+is appendix G.1's "what France's corner takes" row. (4) Appendix C's length: 3,655 words against 3,038
+before the rewrite, with the two propositions and their proofs now in the technical note; the referee's
+cut list is exhausted, further cuts are content calls. (5) R6, the CRRA leg for the preferred cost (TODO).
 
 ### C.1 Decisions (RKB to confirm or reverse)
 

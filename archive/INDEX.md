@@ -41,6 +41,16 @@ Where the reasoning behind each choice the paper rests on is written down.
   the exhibits, the cost explained as Okun's leaky bucket with the derivation in appendix C): the writer's brief
   `notes/brief_section7_2026-10-07.md`, with the structure, the cost paragraph and every number's source; paper
   log 2026-10-07 (afternoon).
+- The cost with a linear term (2026-10-08): the three variants (quadratic, linear, linear-quadratic; the
+  linear term weighted by the amount carried $M$, the quadratic by $\tilde V$), the Bismarckian-corner
+  condition, the joint calibration on the U.S. and the UK with France the prediction, and the finding that
+  the linear-quadratic cost makes the design respond to inequality: the live plan
+  `notes/plan_endogenousDesign.md` (§C.1 the decisions, §C.6 the open items) and the theorist's note
+  `notes/esc_variants.md` (§7 the version the paper uses); the agent briefs
+  `notes/brief_escVariants_{theory,code,code2,runs,pipeline,W1_section7,W2_appendixC,W3_appendixG,W4_rest,W5_appendixCcut,R1_referee,R2_numbers}_2026-10-08.md`
+  and the two reviews `notes/review_escVariants_{R1,R2}_2026-10-08.md` (the referee's three pushes and the
+  cut list; the numbers audit); the runs' logs `logs/escVariants/` (gitignored); paper, US and root logs of
+  2026-10-08; TODO R6 and C11.
 - The exact 2-D CRRA recursion as the published method: US log 2026-08-24 and 2026-09-11.
 - The CRRA design chosen at frozen savings shares (TODO C6): the problem `notes/esc_crraDesignChoiceProblem.md`,
   the briefs `notes/brief_designChoicePilot_2026-10-02.md` and `notes/brief_designChoiceProduction_2026-10-02.md`,
