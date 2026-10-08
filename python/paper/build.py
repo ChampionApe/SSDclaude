@@ -101,12 +101,6 @@ OUTPUTS = {
     'US_ESC_Country':         ('table', tablesUS.escCountryTable,     'Tables/US_ESC_Country.tex'),
     # The previous cost specification (config.US['esc']['comparisonSpec']) as one appendix table.
     'US_ESC_ScaleWedge':      ('table', tablesUS.escScaleWedge,       'Tables/US_ESC_ScaleWedge.tex'),
-    # The cost specifications at rho = 1 (config.US['esc']['variants']): their calibration (sec:esc), across
-    # economies and across every counterfactual (the endogenous design's appendix), and on the UK as host.
-    'US_ESC_Variants':        ('table', tablesUS.escVariants,         'Tables/US_ESC_Variants.tex'),
-    'US_ESC_VariantsCountry': ('table', tablesUS.escVariantsCountry,  'Tables/US_ESC_VariantsCountry.tex'),
-    'US_ESC_VariantsShocks':  ('table', tablesUS.escVariantsShocks,   'Tables/US_ESC_VariantsShocks.tex'),
-    'UK_ESC_VariantsShocks':  ('table', tablesUS.ukEscVariantsShocks, 'Tables/UK_ESC_VariantsShocks.tex'),
     # France's characteristics on the UK at the UK's own cost parameter (app:UKUS), and the US-UK figure.
     'UK_ESC_IncomeDistr':     ('table', tablesUS.ukEscIncomeDistr,    'Tables/UK_ESC_IncomeDistr.tex'),
     'UK_ESC_Voting':          ('table', tablesUS.ukEscVoting,         'Tables/UK_ESC_Voting.tex'),
@@ -140,8 +134,7 @@ _ARGALT = C.variantSuffix(not C.ARG['commonX'], 'ARG')
 ONLINE_ONLY = ({'ArgentinaReformByRho', 'ArgentinaReformByRho' + _ARGALT,
                 'UK_CRRA_PensChars', 'UK_CRRA_PensChars' + ALTTAG, 'UK_CRRA_Ageing', 'UK_CRRA_Ageing' + ALTTAG,
                 'OECD_Countries', 'OECD_Sources', 'OECD_Correlations',
-                'ESC_Path', 'ESC_PathTable', 'ESC_Xi', 'ESC_Timing', 'NUM_Stationary', 'NUM_Selection',
-                'UK_ESC_VariantsShocks'}
+                'ESC_Path', 'ESC_PathTable', 'ESC_Xi', 'ESC_Timing', 'NUM_Stationary', 'NUM_Selection'}
                | {n + t for n in ('ArgentinaReformPath', 'ARG_RhoGridTable', 'ARG_RhoGrid') for t in ('', _ARGALT)}
                | {n + t for n in ('OECD_RhoGridTable', 'OECD_RhoGrid') for t in ('', ALTTAG)})
 

@@ -295,58 +295,23 @@ GROUPS = [
                  r'\ref{table:US:CRRA:ageing}).')]),
     ('esc-calibration', 'esc', [
         T('US_ESC_Calibration', 'The cost',
-          text = r'Table \ref{table:US_ESC:calibration}: one row per IES, each with the quadratic cost\textquotesingle s '
-                 r'parameter at which the U.S.\ electorate re-elects its observed design in 2020. The parameter, and with it the share of revenue lost '
+          text = r'Table \ref{table:US_ESC:calibration}: one row per IES, each with the cost parameter at which the U.S.\ '
+                 r'electorate re-elects its observed design in 2020. The parameter, and with it the share of revenue lost '
                  r'at the observed design and at flat benefits, falls steeply as the IES rises, since a higher elasticity '
                  r'strengthens the forward-looking channels that hold the choice away from the Beveridgean corner.'),
         T('US_ESC_Country', 'The cross-country test',
-          text = r'Table \ref{table:US_ESC:country}: the test of the quadratic cost\textquotesingle s parameter calibrated '
-                 r'on the U.S.\ alone, at an IES of one. Under the U.S.\ parameter the chosen designs keep the observed ranking of the UK, the U.S.\ '
+          text = r'Table \ref{table:US_ESC:country}: the test of the cost parameter calibrated on the U.S.\ alone, at an '
+                 r'IES of one. Under the U.S.\ parameter the chosen designs keep the observed ranking of the UK, the U.S.\ '
                  r'and France, compressed toward the U.S.\ value; the UK\textquotesingle s own parameter lies below the '
                  r'U.S.\ one, and regrouping the UK at the U.S.\ income percentiles moves its chosen design only '
                  r'slightly.')]),
-    ('esc-variants', 'esc', [
-        T('US_ESC_Variants', 'The three costs',
-          text = r'Table \ref{table:US_ESC:variants}: the three specifications of the cost at an IES of one, each with '
-                 r'its U.S.\ parameters, the share of revenue that reaches U.S.\ households at the observed design and at '
-                 r'flat benefits, and the designs the UK and France choose under it. The linear-quadratic cost holds the '
-                 r'UK at its observed design, as its calibration requires, and predicts France more Bismarckian than the '
-                 r'U.S.\ but interior; the linear cost sends France to the Bismarckian corner and the UK to the '
-                 r'Beveridgean one; the quadratic cost compresses both toward the U.S.\ design.'),
-        T('US_ESC_VariantsCountry', 'Across economies',
-          text = r'Table \ref{table:US_ESC:variantsCountry}: each specification on the four economies, with the two '
-                 r'dispersions of relative incomes that weight the cost, the design chosen under the U.S.\ parameters and '
-                 r'the parameters at which each economy re-elects its own. The U.S.\ and the UK carry about the same '
-                 r'amount relative to their dispersion, France and above all the UK at the U.S.\ income percentiles '
-                 r'more, so the linear term weighs on them more at common parameters: under the linear-quadratic cost both '
-                 r'choose more Bismarckian designs than under the quadratic, and under the linear cost both are at the '
-                 r'corner. Pinning $\kappa$ by France\textquotesingle s corner instead takes a much larger linear term '
-                 r'and predicts the UK well below its observed design.'),
-        T('US_ESC_VariantsShocks', 'Counterfactuals',
-          text = r'Table \ref{table:US_ESC:variantsShocks}: every counterfactual on the U.S.\ under each specification, '
-                 r'with the design pinned and chosen. Under the linear-quadratic cost each characteristic moves the '
-                 r'design the way it does under the quadratic, ageing and France\textquotesingle s income distribution '
-                 r'toward earnings-related benefits and its voting patterns toward flat ones, and further; under the '
-                 r'linear cost each characteristic alone takes the design to a corner or next to it, while the '
-                 r'composites leave it near the U.S.\ design. Choosing the design adds to the rise in the tax rate under '
-                 r'ageing at every specification.'),
-        T('UK_ESC_VariantsShocks', 'The UK as host',
-          text = r'France\textquotesingle s characteristics on the UK under each specification, at the UK\textquotesingle s '
-                 r'own parameters. Under the linear-quadratic and the quadratic cost France\textquotesingle s voting '
-                 r'patterns move the UK\textquotesingle s design toward flat benefits and its income distribution leaves '
-                 r'it nearly where it is; under the linear cost the income distribution moves it toward earnings-related '
-                 r'benefits and the voting patterns further toward flat ones. In every row choosing the design leaves the '
-                 r'tax rate within 0.1 p.p.\ of the pinned reading.')]),
     ('esc-us', 'esc', [
         T('US_ESC_Results', 'The paper\'s table',
-          text = r'Table \ref{table:US_ESC:results}: the paper\textquotesingle s reading at an IES of one under the three '
-                 r'specifications of the cost; the quadratic block is the summary table\textquotesingle s middle one '
-                 r'without the composite. Under every specification acute ageing makes the chosen design more '
-                 r'Bismarckian and France\textquotesingle s voting patterns less so; France\textquotesingle s income '
-                 r'distribution moves it toward earnings-related benefits, little under the quadratic cost and by more '
-                 r'under the linear-quadratic, and the linear cost takes every counterfactual to a corner or next to it. '
-                 r'Except under the linear cost, the tax rate with the design chosen lies within 0.5 p.p.\ of the '
-                 r'pinned reading.'),
+          text = r'Table \ref{table:US_ESC:results}: the paper\textquotesingle s reading at an IES of one, the rows of '
+                 r'the summary table below without the composite. Acute ageing makes the chosen design more Bismarckian '
+                 r'and France\textquotesingle s voting patterns less so, by about as much; France\textquotesingle s '
+                 r'income distribution moves it little, and in every row the tax rate with the design chosen lies within '
+                 r'a few tenths of a point of the pinned reading.'),
         F('US_ESC_overview', caption = r'Endogenous versus exogenous pension design across counterfactuals',
           note = r'The first panel is the design in 2020 as a level, with the muted lines at the corners $\theta = 0$ '
                  r'and $\theta = 1$; the other three are deviations from the endogenous-$\theta$ baseline, whose tax '
@@ -418,13 +383,9 @@ GROUPS = [
     ('esc-path', 'esc', [
         F('US_ESC_Path',
           text = r'Figure \ref{fig:US_ESC:path}: the paper\textquotesingle s figure, the projection from the calibration '
-                 r'year at an IES of one under the three specifications of the cost. Workers per retiree fall until 2080 '
-                 r'and are held constant after; under every specification the chosen design rises with the fall and '
-                 r'levels off with it, least under the quadratic cost and furthest under the linear one, which reaches '
-                 r'the Bismarckian corner in the first period after 2020. From 2080 on the tax rate with the design '
-                 r'chosen lies above the one with it pinned under the same cost by 0.31 p.p.\ under the linear-quadratic '
-                 r'cost, 0.20 p.p.\ under the quadratic and 1.01 p.p.\ under the linear; the figure draws the pinned tax '
-                 r'rate of the linear-quadratic cost.'),
+                 r'year at an IES of one. Workers per retiree fall until 2080 and are held constant after; the chosen '
+                 r'design rises with the fall and levels off with it, and the tax rate with the design chosen lies a '
+                 r'little above the one with it pinned.'),
         F('ESC_Path', caption = r'The design and the tax along the baseline path, U.S.',
           note = r'The design chosen one period in advance from the first period on, and the tax rate with the design '
                  r'chosen and with it pinned at $\theta^{\ast}$, along the baseline path at each IES and, at $\rho = 1$, '
@@ -451,7 +412,7 @@ GROUPS = [
                  r'is not sharply located.')]),
     ('esc-scale', 'esc', [
         T('US_ESC_ScaleWedge', 'The alternative cost',
-          text = r'The quadratic cost in the upper block and the cost on the design in the lower. Under '
+          text = r'The paper\textquotesingle s cost in the upper block and the cost on the design in the lower. Under '
                  r'both, acute ageing makes the chosen design more Bismarckian and France\textquotesingle s voting '
                  r'patterns less so at every IES, the first by less and the second by more under the cost on the design. '
                  r'Under the cost on the design, France\textquotesingle s income distribution, which compresses the '
@@ -783,7 +744,7 @@ def writeMacros(heads):
     lines = [r'%% GENERATED by python/paper/onlineAppendix.py from the headings of writing/OnlineAppendix/*.qmd '
              r'-- do not edit by hand.',
              r'%% \oa{key} prints "online appendix", linked to the key (write "the \oa{key}")' + "'" + r's number for a section, linked to its page:',
-             r'%% "in the \oa{esc-uk}" reads "in the online appendix"; \oanum{esc-uk} prints "OA.4.4". An unknown key prints in bold, '
+             r'%% "in the \oa{esc-uk}" reads "in the online appendix"; \oanum{esc-uk} prints "OA.4.3". An unknown key prints in bold, '
              r'never silently.',
              r'\providecommand{\oaurl}{' + SITE_URL + '}',
              r'\newcommand{\oadef}[3]{\expandafter\def\csname oa:#1\endcsname{\href{\oaurl/#2}{online appendix}}'

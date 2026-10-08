@@ -9,16 +9,6 @@ Run:  .venv\Scripts\python.exe python\US\runESC.py                     # every s
       ... --spec scale flat  --phi 0.25 0.5 0.75
       ... --spec size --phi 0.5 --commonX --stage calib path shocks country     # the paper's wedge
       ... --spec size --phi 0.5 --commonX --stage shocks --host UK   # French characteristics on the UK
-      ... --spec sizeL sizeLQ --phi 0.5 --commonX [--pinKappa UK|FR] [--kappa K]   # the linear variants
-
-The cost specs (Base.fWedge, Eq esc:AB; M = Base.Mabs, Vtilde = Base.Vtilde): 'size' f = exp(-lambda tau
-Vtilde (1-theta)^2/2), 'sizeL' f = exp(-lambda tau M (1-theta)), 'sizeLQ' f = exp(-lambda tau (1-theta)
-[kappa M + Vtilde (1-theta)/2]), 'sizeLQV' as 'sizeLQ' with Vtilde for M; 'scale'/'flat' the theta^p forms.
-Under 'sizeLQ'/'sizeLQV' the calib stage calibrates (lambda, kappa) jointly (calibrateJoint: the US design
-and the --pinKappa economy's, the UK at its own design by default or France at the corner), or lambda alone
-at a fixed --kappa (kappaFrom = 'fixed'). Every later stage reads kappa off the calibration row. Under
-CORNER_SPECS France's own cost is the threshold kind (ownKind 'threshold', ModelESC.calibrateWedgeCorner):
-the smallest lambda at which its design is the corner theta = 1.
 
 Four stages, each writing its own csv under results/esc/:
 
@@ -55,12 +45,10 @@ sys.stdout.reconfigure(encoding = 'utf-8', line_buffering = True)
 sys.path.insert(0, HERE)
 os.chdir(HERE)
 
-from scipy import optimize
-
 import test as testmod
 import testEU
 import shocks as sh
-from modelESC import ModelESC, WEDGE_BRACKET, CORNER_TOL, KAPPA_SPECS
+from modelESC import ModelESC
 from modelFR import ModelFR
 from policy import multiplicityColumns
 
@@ -140,89 +128,6 @@ def pickCalib(calib, spec, phi, commonX):
     return hit
 
 
-# The specs under which France's own cost is the threshold kind (calibrateWedgeCorner), and the outer
-# kappa scan of calibrateJoint.
-CORNER_SPECS = ('sizeL', 'sizeLQ', 'sizeLQV')
-KAPPA_GRID = (0., 0.25, 0.5, 1., 2., 4.)
-
-
-def kappaOf(row):
-    """ A calibration row's kappa (a pandas Series or dict): NaN or absent -- every spec but KAPPA_SPECS,
-    and rows written before the column existed -- is 0.0, which no other spec reads. """
-    k = row.get('kappa', np.nan)
-    k = np.nan if k is None else float(k)
-    return 0.0 if not np.isfinite(k) else k
-
-
-def kappaColumn(m):
-    """ The csv column `kappa` of a row written from model m: its db['wedgeKappa'] under KAPPA_SPECS, NaN
-    under every other spec (plan_endogenousDesign.md C.5). """
-    return float(m.db['wedgeKappa']) if m.db.get('wedgeSpec') in KAPPA_SPECS else np.nan
-
-
-def kappaRoot(g, kind, kappas = KAPPA_GRID, xtol = 1e-3, verbose = True):
-    """ calibrateJoint's outer root in kappa. g(kappa) is the pinned economy's design minus its theta*
-    (kind 'sign': the first sign change over `kappas`, then brentq to xtol) or its design (kind 'corner':
-    the first adjacent pair below / at the corner design >= 1 - CORNER_TOL, then bisection in kappa to
-    xtol, returning the corner end: the smallest kappa found at the corner). g is evaluated once per kappa
-    (memoised, so brentq does not repeat the scan's endpoints); an exception in the scan is a NaN datum, one
-    in the refinement propagates. Returns {'kappa', 'converged', 'scan': [(kappa, value)], 'message'};
-    kappa NaN when the scan brackets nothing. """
-    cache = {}
-
-    def G(k):
-        k = float(k)
-        if k not in cache:
-            cache[k] = float(g(k))
-        return cache[k]
-
-    scan = []
-    for k in kappas:
-        try:
-            v = G(k)
-        except Exception as e:
-            v = np.nan
-            if verbose:
-                print(f'    κ={k:.4g}: FAILED {type(e).__name__}: {e}')
-        scan.append((float(k), v))
-    ks, v = np.array([s[0] for s in scan]), np.array([s[1] for s in scan])
-    ok = np.isfinite(v)
-    none = {'kappa': np.nan, 'converged': False, 'scan': scan}
-    if kind == 'sign':
-        idx = [j for j in range(len(v)-1) if ok[j] and ok[j+1] and v[j]*v[j+1] <= 0]
-        if not idx:
-            return none | {'message': 'no sign change of the pinned design minus its θ* over the κ scan'}
-        j = idx[0]
-        if v[j] == 0.:
-            return {'kappa': float(ks[j]), 'converged': True, 'scan': scan, 'message': 'calibrated'}
-        if v[j+1] == 0.:
-            return {'kappa': float(ks[j+1]), 'converged': True, 'scan': scan, 'message': 'calibrated'}
-        k, r = optimize.brentq(G, ks[j], ks[j+1], xtol = xtol, full_output = True)
-        return {'kappa': float(k), 'converged': bool(r.converged), 'scan': scan, 'message': 'calibrated'}
-    if kind != 'corner':
-        raise ValueError(f'kappaRoot: unknown kind {kind!r}.')
-    corner = ok & (v >= 1 - CORNER_TOL)
-    fin = np.flatnonzero(ok)
-    if len(fin) == 0:
-        return none | {'message': 'every κ in the scan failed'}
-    if corner[fin[0]]:
-        return none | {'message': f'the pinned design is already the corner at the first κ = {ks[fin[0]]:.4g}'}
-    idx = [j for j in range(len(v)-1) if ok[j] and ok[j+1] and not corner[j] and corner[j+1]]
-    if not idx:
-        return none | {'message': 'the pinned design never reaches the corner over the κ scan'}
-    lo, hi = float(ks[idx[0]]), float(ks[idx[0]+1])
-    while hi - lo > xtol:
-        mid = 0.5*(lo + hi)
-        d = G(mid)
-        if not np.isfinite(d):
-            raise RuntimeError(f'kappaRoot: the pinned design is not finite at κ = {mid}.')
-        if d >= 1 - CORNER_TOL:
-            hi = mid
-        else:
-            lo = mid
-    return {'kappa': hi, 'converged': True, 'scan': scan, 'message': 'threshold'}
-
-
 class ModelESCFR(ModelESC, ModelFR):
     """ France/UK under the wedge. ModelESC first in the MRO so its __init__ strips `wedge` before
     ModelFR's strips `usRef`; calibrate() then resolves to ModelFR's (beta imposed from the US, omega the
@@ -283,23 +188,16 @@ def readout(m, τ, report, hbarRef, pos, workweekData = None):
                       hbarRef, pos = pos)
 
 
-def dispersion(m):
-    """ The two dispersion weights at t0 (the young's vintage) as csv columns: Vtilde and Mabs. """
-    t0 = m.t0Year
-    with m.B.cacheParams():
-        return {'Vtilde': float(m.B.Vtilde(t0)), 'Mabs': float(m.B.Mabs(t0))}
-
-
 def wedgeReadout(m, τ0):
-    """ The wedge read at t0 on a calibrated model, as five csv columns: Vtilde and Mabs (dispersion),
+    """ The wedge read at t0 on a calibrated model, as four csv columns: Vtilde (the young's vintage at t0),
     fStar = f(theta*, tau0), f0 = f(0, tau0) and tau0 -- tau_{t0} on the calibrated path, which the
     calibration's own target db['tau0'] reproduces to tauDrift. Under 'scale'/'flat' f ignores tau (and
     under no wedge f = 1); tau0 is written regardless so the column means one thing in every row. """
     t0 = m.t0Year
     θStar = float(m.db['θ'].xs(t0))
     with m.B.cacheParams():
-        return dispersion(m) | {'fStar': float(m.B.fWedge(θStar, τ0, t0)),
-                                'f0': float(m.B.fWedge(0., τ0, t0)), 'τ0': float(τ0)}
+        return {'Vtilde': float(m.B.Vtilde(t0)), 'fStar': float(m.B.fWedge(θStar, τ0, t0)),
+                'f0': float(m.B.fWedge(0., τ0, t0)), 'τ0': float(τ0)}
 
 
 def baselineRefs(m):
@@ -314,86 +212,8 @@ def baselineRefs(m):
 
 # ---------------------------------------------------------------- stage: calibration
 
-def calibrateJoint(pin, phi, ρ = 1.0, commonX = False, bracket = None, kappas = KAPPA_GRID, xtol = 1e-3,
-                   verbose = True, spec = 'sizeLQ'):
-    """ The joint kind under spec ('sizeLQ' or 'sizeLQV'): (lambda, kappa) such that the US design in
-    force at t0 is its theta* and the pinned economy's is its own observed one, nested. For each kappa the
-    inner ModelESC.calibrateWedge gives lambda_US(kappa) on the US; the pinned economy is built at
-    (lambda_US(kappa), kappa) as stageCountry's US-wedge branch builds it (buildEU, calibrate,
-    ESC.solveBackward, leadedDesignAtT0: the design in force at t0 on its freely simulated path). pin 'UK'
-    (the UK at its own cuts): the outer root is that design minus the UK's theta*; pin 'FR': the smallest
-    kappa at which France's design is the corner theta = 1, the indicator calibrateWedgeCorner uses
-    (design >= 1 - CORNER_TOL; kappaRoot's two kinds). kappas must reach above the root (the default's 4).
-
-    bracket: the inner lambda bracket for every kappa; None narrows it from the lambda_US of the solved
-    kappa next to the one asked (lambda falls in kappa) and falls back to WEDGE_BRACKET[spec] when
-    the narrowed scan finds no sign change. Returns {'m': the US model left calibrated at the solution,
-    'rec': the inner calibrateWedge record there (None without a solution), 'kappa', 'θPin' (the pinned
-    economy's design at the solution), 'converged', 'scan' (kappaRoot's), 'message'}. """
-    if pin not in ('UK', 'FR'):
-        raise ValueError(f"calibrateJoint: pin is 'UK' or 'FR', not {pin!r}.")
-    if spec not in KAPPA_SPECS:
-        raise ValueError(f'calibrateJoint: spec is one of {KAPPA_SPECS}, not {spec!r}.')
-    m = buildUS({'spec': spec, 'phi': phi, 'p': 1.0, 'kappa': 0.}, ρ = ρ, commonX = commonX)
-    full = WEDGE_BRACKET[spec] if bracket is None else tuple(bracket)
-    solved, last = {}, {'κ': None}
-
-    def innerBracket(κ):
-        if bracket is not None:
-            return full, 12
-        lo = [k for k in solved if k < κ]
-        hi = [k for k in solved if k > κ]
-        if lo and hi:
-            return (0.9*solved[min(hi)]['p'], 1.1*solved[max(lo)]['p']), 4
-        if lo:
-            return (0.25*solved[max(lo)]['p'], 1.1*solved[max(lo)]['p']), 6
-        if hi:
-            return (0.9*solved[min(hi)]['p'], 4.*solved[min(hi)]['p']), 6
-        return full, 12
-
-    def evaluate(κ):
-        κ = float(κ)
-        tic = time.time()
-        br, nScan = innerBracket(κ)
-        rec = m.calibrateWedge(spec = spec, phi = phi, bracket = br, nScan = nScan, kappa = κ,
-                               verbose = False)
-        if not rec['converged'] and br != full:
-            rec = m.calibrateWedge(spec = spec, phi = phi, bracket = full, kappa = κ, verbose = False)
-        last['κ'] = κ
-        if not rec['converged']:
-            raise RuntimeError(f"no US λ at κ = {κ}: {rec['message']}")
-        mP = buildEU(pin, {'spec': spec, 'phi': phi, 'p': rec['p'], 'kappa': κ}, ρ = ρ,
-                     commonX = commonX)
-        mP.calibrate()
-        θStarP = float(mP.db['θ'].xs(mP.t0Year))
-        d = mP.leadedDesignAtT0(mP.ESC.solveBackward())
-        solved[κ] = {'p': rec['p'], 'rec': rec, 'θPin': d}
-        if verbose:
-            print(f'    κ={κ:.4f}: λ_US={rec["p"]:.6f}  {pin} design={d:.6f} (θ*={θStarP:.4f})  '
-                  f'[{time.time()-tic:.0f}s]')
-        return d - θStarP if pin == 'UK' else d
-
-    root = kappaRoot(evaluate, 'sign' if pin == 'UK' else 'corner', kappas, xtol, verbose = verbose)
-    if verbose:
-        print('  κ scan ({}): {}'.format(pin, '  '.join(f'{k:.3g}:{v:+.5f}' for k, v in root['scan'])))
-    if not np.isfinite(root['kappa']):
-        return {'m': m, 'rec': None, 'kappa': np.nan, 'θPin': np.nan, 'converged': False,
-                'scan': root['scan'], 'message': root['message']}
-    κ = root['kappa']
-    if last['κ'] != κ:                              # leave the US model at the solution
-        evaluate(κ)
-    s = solved[κ]
-    return {'m': m, 'rec': s['rec'], 'kappa': κ, 'θPin': s['θPin'],
-            'converged': bool(root['converged'] and s['rec']['converged']), 'scan': root['scan'],
-            'message': root['message']}
-
-
-def stageCalib(specs, phis, out, ρ = 1.0, commonX = False, bracket = None, kappa = None, pin = 'UK'):
-    """ bracket: the scan bracket for the wedge parameter, None = ModelESC.WEDGE_BRACKET[spec]. kappa:
-    under KAPPA_SPECS, None calibrates (lambda, kappa) jointly with `pin` (calibrateJoint, kappaFrom = pin),
-    a number holds kappa there and calibrates lambda alone (kappaFrom = 'fixed'). Every row carries kappa
-    (NaN except KAPPA_SPECS), kappaFrom, θPin (the pinned economy's design at the joint solution), Vtilde
-    and Mabs. """
+def stageCalib(specs, phis, out, ρ = 1.0, commonX = False, bracket = None):
+    """ bracket: the scan bracket for the wedge parameter, None = ModelESC.WEDGE_BRACKET[spec]. """
     rows = []
     m = buildUS(None, ρ = ρ, commonX = commonX)
     m.calibrate()
@@ -401,8 +221,7 @@ def stageCalib(specs, phis, out, ρ = 1.0, commonX = False, bracket = None, kapp
     sols = m.ESC.solveBackward()
     rows.append({'spec': 'none', 'phi': np.nan, 'commonX': commonX, 'p': np.nan, 'converged': True,
                  'θStar': float(m.db['θ'].xs(t0)), 'choice': m.leadedDesignAtT0(sols),
-                 'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(t0)), 'τDrift': np.nan, 'RDrift': np.nan,
-                 'kappa': np.nan, 'kappaFrom': np.nan, 'θPin': np.nan}
+                 'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(t0)), 'τDrift': np.nan, 'RDrift': np.nan}
                 | wedgeReadout(m, float(m.db['τ0'])) | multiplicityColumns(m.ESC.lastMultiplicity))
     print('no wedge: θ*={θStar:.4f} -> choice {choice:.4f}  (Vtilde={Vtilde:.4f})'.format(**rows[-1]))
     mergeWrite(out, rows, KEYCAL)
@@ -410,36 +229,20 @@ def stageCalib(specs, phis, out, ρ = 1.0, commonX = False, bracket = None, kapp
     for spec in specs:
         for phi in phis:
             tic = time.time()
-            joint = spec in KAPPA_SPECS and kappa is None
-            kappaFrom = (pin if joint else 'fixed') if spec in KAPPA_SPECS else np.nan
-            print(f'\n[{spec}, φ={phi}] calibrating p{" and κ (pinned by " + pin + ")" if joint else ""} ...')
-            θPin = np.nan
+            print(f'\n[{spec}, φ={phi}] calibrating p ...')
+            m = buildUS({'spec': spec, 'phi': phi, 'p': 1.0}, ρ = ρ, commonX = commonX)
             try:
-                if joint:
-                    jr = calibrateJoint(pin, phi, ρ = ρ, commonX = commonX, bracket = bracket, spec = spec)
-                    m, rec, θPin = jr['m'], jr['rec'], jr['θPin']
-                    if rec is None:
-                        print(f"  joint calibration FAILED: {jr['message']}")
-                        rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': np.nan,
-                                     'converged': False, 'kappa': np.nan, 'kappaFrom': kappaFrom,
-                                     'θPin': np.nan, 'message': jr['message']} | multiplicityColumns(None))
-                        mergeWrite(out, rows, KEYCAL); continue
-                    rec = rec | {'converged': jr['converged']}
-                else:
-                    κFix = kappa if (spec in KAPPA_SPECS and kappa is not None) else 0.
-                    m = buildUS({'spec': spec, 'phi': phi, 'p': 1.0, 'kappa': κFix}, ρ = ρ, commonX = commonX)
-                    rec = m.calibrateWedge(spec = spec, phi = phi, bracket = bracket)
+                rec = m.calibrateWedge(spec = spec, phi = phi, bracket = bracket)
             except Exception as e:
                 print(f'  FAILED: {type(e).__name__}: {e}')
                 rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': np.nan,
-                             'converged': False, 'kappa': np.nan, 'kappaFrom': kappaFrom, 'θPin': np.nan}
-                            | multiplicityColumns(None))
+                             'converged': False} | multiplicityColumns(None))
                 mergeWrite(out, rows, KEYCAL); continue
             r = {'spec': spec, 'phi': phi, 'commonX': commonX, 'p': rec['p'],
                  'converged': rec['converged'],
                  'θStar': rec['θ'], 'residual': rec['residual'],
-                 'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(m.t0Year))} | dispersion(m) \
-                | {'kappa': kappaColumn(m), 'kappaFrom': kappaFrom, 'θPin': θPin}
+                 'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(m.t0Year)),
+                 'Vtilde': float(m.B.Vtilde(m.t0Year))}
             if rec['converged']:
                 led = m.solveLeaded(pinAtT0 = False)
                 # 'choice' is the calibration's own target read back off the solved path: the design in
@@ -450,10 +253,8 @@ def stageCalib(specs, phis, out, ρ = 1.0, commonX = False, bracket = None, kapp
                 r |= wedgeReadout(m, float(led['τ'].xs(m.t0Year)))
             r |= multiplicityColumns(led['multiplicity'] if rec['converged'] else None)
             rows.append(r)
-            print('  -> p={p}  θ*={θStar:.4f}  β={β:.4f} ω={ω:.4f}  Vtilde={Vtilde:.4f} Mabs={Mabs:.4f} f(θ*)={fStar} '
-                  'f(0)={f0}  ({:.0f}s)'.format(time.time()-tic, **({'fStar': np.nan, 'f0': np.nan} | r)))
-            if spec in KAPPA_SPECS:
-                print(f'     κ={r["kappa"]} (kappaFrom {kappaFrom}), pinned design θPin={θPin}')
+            print('  -> p={p}  θ*={θStar:.4f}  β={β:.4f} ω={ω:.4f}  Vtilde={Vtilde:.4f} f(θ*)={fStar} f(0)={f0}  ({:.0f}s)'
+                  .format(time.time()-tic, **({'fStar': np.nan, 'f0': np.nan} | r)))
             mergeWrite(out, rows, KEYCAL)
     return pd.DataFrame(rows)
 
@@ -467,8 +268,8 @@ def stagePath(specs, phis, calib, out, ρ = 1.0, commonX = False):
             hit = pickCalib(calib, spec, phi, commonX)
             if hit.empty:
                 continue
-            p, κ = float(hit.iloc[0]['p']), kappaOf(hit.iloc[0])
-            m = buildUS({'spec': spec, 'phi': phi, 'p': p, 'kappa': κ}, ρ = ρ, commonX = commonX)
+            p = float(hit.iloc[0]['p'])
+            m = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
             m.calibrate()
             base, hbarRef = baselineRefs(m)
             led = m.solveLeaded(pinAtT0 = False)
@@ -478,8 +279,7 @@ def stagePath(specs, phis, calib, out, ρ = 1.0, commonX = False):
                     break
                 r = readout(m, led['τ'], led['report'], hbarRef, pos)
                 rb = readout(m, base['τ'], base['report'], hbarRef, pos)
-                rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p, 'kappa': kappaColumn(m),
-                             'pos': pos,
+                rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p, 'pos': pos,
                              'date': dates[pos] if pos < len(dates) else np.nan,
                              'ν': float(m.db['ν'].xs(t)),
                              'θ': float(led['θ'].xs(t)), 'τ': r['τ'], 'sr': r['sr'],
@@ -539,10 +339,9 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, host = 'US')
             if hit.empty:
                 print(f'  [{spec}, φ={phi}] no calibrated cost for host {host} -- skipped')
                 continue
-            p, κ = float(hit.iloc[0]['p']), kappaOf(hit.iloc[0])
-            wedge = {'spec': spec, 'phi': phi, 'p': p, 'kappa': κ}
-            m = (buildUS(wedge, ρ = ρ, commonX = commonX) if host == 'US'
-                 else buildEU(host, wedge, ρ = ρ, commonX = commonX))
+            p = float(hit.iloc[0]['p'])
+            m = (buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX) if host == 'US'
+                 else buildEU(host, {'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX))
             m.calibrate()
             _, hbarRef = baselineRefs(m)
             data = frenchData(m, commonX = commonX, grouping = frGrouping)
@@ -557,7 +356,7 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, host = 'US')
                         print(f'  {name:<10} pin={pin}: FAILED {type(e).__name__}: {e}')
                         continue
                     rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'host': host, 'p': p,
-                                 'kappa': kappaColumn(m), 'scenario': name,
+                                 'scenario': name,
                                  'θpinned': pin, 'θ_tm1': r['θ_'], 'θ_t0': r['θ0'], 'θ_t1': r['θ1'],
                                  'τ_t0': r['t0']['τ'], 'sr_t0': r['t0']['sr'], 'ww_t0': r['t0']['workweek'],
                                  'τ_t1': r['t1']['τ'], 'sr_t1': r['t1']['sr'], 'ww_t1': r['t1']['workweek']}
@@ -572,8 +371,7 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, host = 'US')
             # rows are read against. Exogenous theta only: France's design is a datum here, and a leaded
             # France would be a different exercise (that is stageCountry's question).
             try:
-                f = franceRow(m, spec, phi, p, hbarRef, ρ = ρ, commonX = commonX, grouping = frGrouping,
-                              kappa = κ)
+                f = franceRow(m, spec, phi, p, hbarRef, ρ = ρ, commonX = commonX, grouping = frGrouping)
                 rows.append(f | {'host': host})
                 print('  {:<10} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}'
                       .format('France', 'True', f['θ_t0'], f['τ_t0'], f['sr_t0'], f['ww_t0']))
@@ -583,17 +381,15 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, host = 'US')
     return pd.DataFrame(rows)
 
 
-def franceRow(m, spec, phi, p, hbarRef, ρ = 1.0, commonX = False, grouping = None, kappa = 0.):
+def franceRow(m, spec, phi, p, hbarRef, ρ = 1.0, commonX = False, grouping = None):
     """ France's own calibrated equilibrium at 2020 under the same wedge, in escShocks' row schema.
 
     Not a shock on the host model: France carries its own eta, X, mu, nu AND its own calibrated omega, so
     what separates it from the all-French-characteristics row is precisely what the observable
     characteristics do not explain. The workweek is on the host's scale (hbarRef, and the host's datum
     passed explicitly to readout) and is ModelFR's own hours target, so that cell reproduces the datum
-    rather than predicting it. grouping: France's income cuts, those of the host (None = US, 'UK').
-    kappa: the wedge's shape under KAPPA_SPECS. """
-    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p, 'kappa': kappa}, grouping = grouping, ρ = ρ,
-                  commonX = commonX)
+    rather than predicting it. grouping: France's income cuts, those of the host (None = US, 'UK'). """
+    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, grouping = grouping, ρ = ρ, commonX = commonX)
     mFR.calibrate()
     pos = mFR.db['t0']
     out = mFR.solvePEE_LOG()
@@ -601,8 +397,8 @@ def franceRow(m, spec, phi, p, hbarRef, ρ = 1.0, commonX = False, grouping = No
     r0 = readout(mFR, out['τ'], out['report'], hbarRef, pos, workweekData = ww)
     r1 = readout(mFR, out['τ'], out['report'], hbarRef, pos+1, workweekData = ww)
     θ = mFR.db['θ'].values.astype(float)
-    return {'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p, 'kappa': kappaColumn(mFR),
-            'scenario': 'France', 'θpinned': True,
+    return {'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p, 'scenario': 'France',
+            'θpinned': True,
             'θ_tm1': float(θ[pos-1]), 'θ_t0': float(θ[pos]), 'θ_t1': float(θ[pos+1]),
             'τ_t0': r0['τ'], 'sr_t0': r0['sr'], 'ww_t0': r0['workweek'],
             'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek']} | multiplicityColumns(out.get('multiplicity'))
@@ -676,25 +472,19 @@ def frenchData(m, commonX = False, grouping = None):
 # ---------------------------------------------------------------- stage: France and the UK
 
 def stageCountry(specs, phis, calib, out, commonX = False):
-    """ France, the UK and the UK at US percentiles under (i) the US cost (p and kappa off the calibration
-    row) and (ii) their own: France under CORNER_SPECS by the threshold kind (calibrateWedgeCorner;
-    ownKind 'threshold', p the bound, θStar = choice = 1), every other own row by the interior kind at the
-    row's kappa (ownKind 'interior'). Under a joint KAPPA_SPECS calibration the pinning economy's own lambda
-    should reproduce lambda_US; the difference is printed. """
     rows = []
     for spec in specs:
         for phi in phis:
             hit = pickCalib(calib, spec, phi, commonX)
             if hit.empty:
                 continue
-            pUS, κ = float(hit.iloc[0]['p']), kappaOf(hit.iloc[0])
-            kappaFrom = hit.iloc[0].get('kappaFrom', np.nan)
-            wedge = {'spec': spec, 'phi': phi, 'p': pUS, 'kappa': κ}
+            pUS = float(hit.iloc[0]['p'])
             for country, grouping in (('FR', None), ('UK', None), ('UK', 'US')):
                 label = country + (grouping or '')
                 # (i) the US-calibrated wedge, imposed
                 try:
-                    m = buildEU(country, wedge, grouping = grouping, commonX = commonX)
+                    m = buildEU(country, {'spec': spec, 'phi': phi, 'p': pUS}, grouping = grouping,
+                                commonX = commonX)
                     m.calibrate()
                     t0 = m.t0Year
                     sols = m.ESC.solveBackward()
@@ -704,8 +494,7 @@ def stageCountry(specs, phis, calib, out, commonX = False):
                     τc = float(m.solvePEE_LOG()['τ'].xs(t0))
                     rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'country': label,
                                  'wedgeFrom': 'US',
-                                 'p': pUS, 'kappa': kappaColumn(m), 'ownKind': np.nan,
-                                 'θStar': θStar, 'choice': ch,
+                                 'p': pUS, 'θStar': θStar, 'choice': ch,
                                  'ω': float(m.db['ω'].xs(t0)), 'τ': τc} | wedgeReadout(m, τc)
                                 | multiplicityColumns(mult))
                     print('[{}, φ={}] {:<5} US wedge p={:.4f}: θ*={:.4f} -> choice {:.4f}  (Vtilde={:.4f})'
@@ -714,29 +503,20 @@ def stageCountry(specs, phis, calib, out, commonX = False):
                     print(f'  {label} US-wedge FAILED {type(e).__name__}: {e}')
                 # (ii) its own calibrated p
                 try:
-                    m = buildEU(country, wedge, grouping = grouping, commonX = commonX)
-                    threshold = spec in CORNER_SPECS and country == 'FR'
-                    if threshold:
-                        rec = m.calibrateWedgeCorner(spec, phi = phi, kappa = κ, verbose = False)
-                        choice = rec['θ']
-                    else:
-                        rec = m.calibrateWedge(spec = spec, phi = phi, verbose = False, kappa = κ)
-                        choice = rec['θ'] + rec['residual']
+                    m = buildEU(country, {'spec': spec, 'phi': phi, 'p': pUS}, grouping = grouping,
+                                commonX = commonX)
+                    rec = m.calibrateWedge(spec = spec, phi = phi, verbose = False)
                     own = (wedgeReadout(m, m.ESC.τAt(m.t0Year, rec['θ'])) if rec['converged']
-                           else dispersion(m))
+                           else {'Vtilde': float(m.B.Vtilde(m.t0Year))})
                     rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'country': label,
                                  'wedgeFrom': 'own',
-                                 'p': rec['p'], 'kappa': kappaColumn(m),
-                                 'ownKind': 'threshold' if threshold else 'interior',
-                                 'θStar': rec['θ'], 'choice': choice,
+                                 'p': rec['p'], 'θStar': rec['θ'], 'choice': rec['θ'] + rec['residual'],
                                  'converged': rec['converged'],
                                  'ω': float(m.db['ω'].xs(m.t0Year))} | own
                                 # calibrateWedge's last recursion is the one at the calibrated p
                                 | multiplicityColumns(m.ESC.lastMultiplicity if rec['converged'] else None))
                     print('[{}, φ={}] {:<5} own wedge: p={} θ*={:.4f} ({})'
                           .format(spec, phi, label, rec['p'], rec['θ'], rec['message']))
-                    if spec in KAPPA_SPECS and label == kappaFrom:
-                        print(f"  {label} pins κ: own λ - λ_US = {rec['p'] - pUS:+.3e} (λ_US = {pUS:.6f})")
                 except Exception as e:
                     print(f'  {label} own-wedge FAILED {type(e).__name__}: {e}')
                 mergeWrite(out, rows, KEYCTY)
@@ -774,9 +554,6 @@ def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None, commonX = False):
     mergeWrite(out, rows, KEYPERM)
 
     for spec in specs:
-        if spec in CORNER_SPECS:
-            print(f"  [{spec}] the permanent stage calibrates 'scale', 'flat' and 'size' only -- skipped")
-            continue
         for phi in phis:
             # (b) the permanent timing's own calibrated p
             m = buildUS({'spec': spec, 'phi': phi, 'p': 0.4}, ρ = ρ, commonX = commonX)
@@ -820,9 +597,8 @@ def stageFig1(specs, phis, calib, out, ρ = 1.0, commonX = False):
             hit = pickCalib(calib, spec, phi, commonX)
             if hit.empty:
                 continue
-            p, κ = float(hit.iloc[0]['p']), kappaOf(hit.iloc[0])
-            wedge = {'spec': spec, 'phi': phi, 'p': p, 'kappa': κ}
-            base = buildUS(wedge, ρ = ρ, commonX = commonX)
+            p = float(hit.iloc[0]['p'])
+            base = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
             base.calibrate()
             t0 = base.t0Year
             pars0 = {'β': base.simpleβinv(), 'ω': float(base.db['ω'].xs(t0))}
@@ -834,7 +610,7 @@ def stageFig1(specs, phis, calib, out, ρ = 1.0, commonX = False):
             for axis, values in (('nu', np.linspace(0.95, 1.55, 13)),
                                  ('inequality', np.linspace(0.5, 1.3, 9))):
                 for v in np.round(values, 10):          # a key column: must round-trip through the csv
-                    m = buildUS(wedge, ρ = ρ, commonX = commonX)
+                    m = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
                     m.db.update(m.adjPar('β', pars0['β']))
                     m.db.update(m.adjPar('ω', pars0['ω']))
                     if axis == 'nu':
@@ -847,8 +623,8 @@ def stageFig1(specs, phis, calib, out, ρ = 1.0, commonX = False):
                         sols = m.ESC.solveBackward()
                         θStar = float(m.db['θ'].xs(t0))
                         ch = m.leadedDesignAtT0(sols)
-                        rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p,
-                                     'kappa': kappaColumn(m), 'axis': axis, 'value': float(v),
+                        rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p, 'axis': axis,
+                                     'value': float(v),
                                      'ν': float(m.db['ν'].xs(t0)), 'θData': θStar, 'θChoice': ch,
                                      'τ': m.ESC.τAt(t0, θStar),
                                      'τAtChoice': m.ESC.τAt(t0, ch),
@@ -872,20 +648,9 @@ def main():
     p.add_argument('--stage', nargs = '*', default = ['calib', 'path', 'shocks', 'country', 'fig1',
                                                      'permanent'],
                    choices = ('calib', 'path', 'shocks', 'country', 'fig1', 'permanent'))
-    p.add_argument('--spec', nargs = '*', default = ['scale', 'flat'],
-                   choices = ('scale', 'flat', 'size', 'sizeL', 'sizeLQ', 'sizeLQV'),
-                   help = "'size' is the paper's wedge (f(theta, tau), lambda in the p slot); 'sizeL' its "
-                          "linear and 'sizeLQ' its linear-quadratic variant (kappa; M on the linear term, "
-                          "'sizeLQV' Vtilde); 'scale' the previous one "
-                          "and the comparison arm; 'flat' MGE's variant")
-    p.add_argument('--kappa', type = float, default = None,
-                   help = "calib stage, 'sizeLQ'/'sizeLQV': hold kappa at this value and calibrate lambda alone "
-                          "(kappaFrom = 'fixed'); default: (lambda, kappa) jointly with --pinKappa. Every "
-                          "other stage reads kappa off the calibration row.")
-    p.add_argument('--pinKappa', default = 'UK', choices = ('UK', 'FR'),
-                   help = "calib stage, 'sizeLQ'/'sizeLQV' without --kappa: the second economy of the joint "
-                          "calibration -- 'UK' its own design at its own cuts, 'FR' the smallest kappa at "
-                          "which France chooses the corner theta = 1")
+    p.add_argument('--spec', nargs = '*', default = ['scale', 'flat'], choices = ('scale', 'flat', 'size'),
+                   help = "'size' is the paper's wedge (f(theta, tau), lambda in the p slot); 'scale' the "
+                          "previous one and the comparison arm; 'flat' MGE's variant")
     p.add_argument('--phi', type = float, nargs = '*', default = [0.5, 0.25, 0.75])
     p.add_argument('--rho', type = float, default = 1.0)
     p.add_argument('--commonX', action = 'store_true',
@@ -915,8 +680,7 @@ def main():
     calib = None
     if 'calib' in a.stage:
         calib = stageCalib(a.spec, a.phi, f('escCalibration'), ρ = a.rho, commonX = a.commonX,
-                           bracket = None if a.bracket is None else tuple(a.bracket), kappa = a.kappa,
-                           pin = a.pinKappa)
+                           bracket = None if a.bracket is None else tuple(a.bracket))
     else:
         calib = pd.read_csv(f('escCalibration'))
     if 'path' in a.stage:

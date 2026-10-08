@@ -162,10 +162,6 @@ US = {
     #           quadratic in the implicit tax the flat component levies on each type, scaled by the size of
     #           the system; Vtilde = sum_i gamma_i (y_i-1)^2/y_i. Nothing is lost when nothing is
     #           redistributed. lambda lives in the csvs' `p` column (the paper prints it as lambda).
-    #   The general form of the rho = 1 variants: ln f = -tau (1-theta)[lambda_1 M + 1/2 lambda_2 Vtilde (1-theta)],
-    #           M = sum_i gamma_i |y_i-1| (the csvs' `Mabs`). 'size' is lambda_1 = 0; 'sizeL' lambda_2 = 0
-    #           (lambda_1 in `p`); 'sizeLQ' lambda_1 = lambda kappa, lambda_2 = lambda (`p`, `kappa`), the
-    #           preferred one; 'sizeLQV' the same with Vtilde for M, kept for the record (datasets.escParams).
     #   'scale' (the previous wedge, the appendix comparison arm US_ESC_ScaleWedge): f(theta) =
     #           phi + (1-phi) theta^p, the cost attached to the design label rather than to the transfer.
     #   'flat'  (only the flat component carries the cost) runs only in the permanent stage's comparison
@@ -175,16 +171,7 @@ US = {
     # over these points.
     'ρStationary': [0.5, 0.7, 1.3, 1.5, 2.0],
     'esc': {
-        # TWO SPECS UNTIL THE CRRA LEG IS RUN FOR THE PREFERRED ONE (TODO R6). 'spec' drives every
-        # rho-dependent exhibit, since the exact CRRA rows exist for it alone: US_ESC_Calibration,
-        # US_ESC_Summary, US_ESC_Ageing/IncomeDistr/Voting/FrenchAll, US_ESC_Country, US_ESC_ScaleWedge, the
-        # UK_ESC_* tables, US_ESC_overview, UKUS_ESC_French, ESC_Path, ESC_Xi and RobustnessMap. 'paperSpec'
-        # and 'variants' (paper order, with the name the exhibits print) drive the rho = 1 variant exhibits:
-        # US_ESC_Variants, US_ESC_Results, US_ESC_Path, US_ESC_VariantsCountry, US_ESC_VariantsShocks,
-        # UK_ESC_VariantsShocks, and ESC_PathTable's variant blocks. When R6 is run, 'spec' becomes 'sizeLQ'.
-        'spec':           'size',
-        'paperSpec':      'sizeLQ',
-        'variants':       [('sizeLQ', 'linear-quadratic'), ('sizeL', 'linear'), ('size', 'quadratic')],
+        'spec':           'size',      # the paper's cost specification
         'comparisonSpec': 'scale',     # the previous wedge, kept as one appendix table (US_ESC_ScaleWedge)
         # phi is a DUMMY KEY under 'size': f does not use it, but every ESC csv is merge-keyed on
         # (spec, phi, commonX) and the readers (runESC.pickCalib, datasets.escRow/escCalibration) filter on
