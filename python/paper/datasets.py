@@ -307,18 +307,21 @@ def usSweep(country, commonX = None):
 # ---------------------------------------------------------------------------------------------------
 # Endogenous system characteristics (results/esc/)
 # ---------------------------------------------------------------------------------------------------
-def escCountry(commonX = None, spec = None):
+def escCountry(commonX = None, spec = None, tag = ''):
     """ python/US/runESC.stageCountry's csv: France, the UK and the UK regrouped at US income percentiles
     ('UKUS') under the ESC cost, at the requested variant, spec (config.US['esc']['spec'] by default) and
     phi. Two readings per economy, `wedgeFrom` 'US' (the US-calibrated parameter imposed; `choice` is
     what that electorate then picks, `τ` its observed 2020 tax rate) and 'own' (the parameter calibrated
     to re-elect the economy's own design; only converged rows are kept, so an economy whose observed
     design no finite value reaches has no 'own' row). `Vtilde` is present on rows written since the
-    'size' spec. The stage runs under LOG only, and the csv carries no rho column, so rho = 1 is stamped
-    on here rather than read -- a CRRA country stage would have to write the column itself. """
+    'size' spec, `Mabs`, `kappa` and `ownKind` ('interior', or 'threshold': `p` is then the smallest value at
+    which the design is the corner theta = 1) on rows written since the cost variants. The stage runs under
+    LOG only, and the csv carries no rho column, so rho = 1 is stamped on here rather than read -- a CRRA
+    country stage would have to write the column itself. `tag` reads a tagged run's csv (escCountry<tag>.csv,
+    '_kappaFR': 'sizeLQ' with kappa pinned by France's corner). """
     commonX = C.US['commonX'] if commonX is None else commonX
     spec = C.US['esc']['spec'] if spec is None else spec
-    df = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCountry.csv')))
+    df = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCountry' + tag + '.csv')))
     keep = [i for i, rec in enumerate(df.to_dict('records'))
             if _escVariant(rec, commonX) and rec['spec'] == spec
             and np.isclose(float(rec['phi']), C.US['esc']['phi'])
@@ -358,21 +361,23 @@ def _escMethodOK(rec):
     return v == escMethod()
 
 
-def escCalibration(commonX = None):
+def escCalibration(commonX = None, tag = ''):
     """ The calibrated deadweight cost, {(rho, spec): record} with p (the cost parameter under either
     spec: lambda under 'size'), thetaStar, beta, omega, and -- on rows written since the 'size' spec --
-    fStar, f0, Vtilde and τ0 (escWedge reads them).
+    fStar, f0, Vtilde and τ0 (escWedge reads them); since the cost variants also Mabs, and under
+    'sizeLQ'/'sizeLQV' kappa, kappaFrom (the economy whose design pins kappa with the U.S.) and θPin.
 
     Two files because two solvers produced them: escCalibration.csv is the LOG case (rho = 1; also
     carries the no-wedge row under spec 'none', keyed here as (1.0, 'none')), escCalibrationCRRA.csv the
     CRRA rows with their own rho column, at the published method (escMethod) only. Only converged rows at
     config.US['esc']['phi'] AND at the requested calibration variant are returned -- an unconverged,
     wrong-variant or wrong-method calibration must surface as a missing key, not as a cell of a number
-    that was never calibrated for this economy by the published solver. """
+    that was never calibrated for this economy by the published solver. `tag` reads a tagged LOG run's csv
+    alone (escCalibration<tag>.csv; '_kappaFR' is 'sizeLQ' with kappa pinned by France's corner). """
     commonX = C.US['commonX'] if commonX is None else commonX
     phi = C.US['esc']['phi']
     out = {}
-    log = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCalibration.csv')))
+    log = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCalibration' + tag + '.csv')))
     for rec in log.to_dict('records'):
         if not _escVariant(rec, commonX):
             continue
@@ -380,6 +385,8 @@ def escCalibration(commonX = None):
             out[(1.0, 'none')] = rec
         elif bool(rec['converged']) and np.isclose(float(rec['phi']), phi):
             out[(1.0, rec['spec'])] = rec
+    if tag:
+        return out
     crra = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCalibrationCRRA.csv')))
     for rec in crra.to_dict('records'):
         if (_escVariant(rec, commonX) and _escMethodOK(rec) and bool(rec['converged'])
@@ -410,6 +417,72 @@ def escWedge(rec, spec):
                                .format(spec))
         φ, p, θ = float(rec['phi']), float(rec['p']), float(rec['θStar'])
         out['fStar'], out['f0'] = φ + (1-φ)*θ**p, φ
+    return out
+
+
+SIZESPECS = ('size', 'sizeL', 'sizeLQ', 'sizeLQV')    # the specs of the general form (escParams)
+
+
+def escParams(rec, spec):
+    """ The cost parameters of one calibration or country row (escCalibration, escCountry) under `spec`, as
+    {'λ1', 'λ2', 'κ'} in the general form ln f = -τ(1-θ)[λ1 M + ½ λ2 Ṽ (1-θ)] (config.US['esc']):
+    'size' λ1 = 0, λ2 = p, κ = 0; 'sizeL' λ1 = p, λ2 = 0, κ None (no shape, the limit κ -> ∞);
+    'sizeLQ' and 'sizeLQV' λ1 = κ p, λ2 = p with κ = `kappa` ('sizeLQV' weights λ1 by Ṽ, not M). A row
+    without p (an own calibration that found none) gives NaN where p enters. Raises on any other spec, and
+    on a 'sizeLQ'/'sizeLQV' row whose kappa is missing. """
+    p = _col(rec, 'p')
+    p = np.nan if p is None else p
+    if spec == 'size':
+        return {'λ1': 0., 'λ2': p, 'κ': 0.}
+    if spec == 'sizeL':
+        return {'λ1': p, 'λ2': 0., 'κ': None}
+    if spec in ('sizeLQ', 'sizeLQV'):
+        κ = _col(rec, 'kappa')
+        if κ is None:
+            raise MissingInput('column kappa of the {!r} rows in results/esc/escCalibration.csv, escCountry.csv'
+                               .format(spec))
+        return {'λ1': κ*p, 'λ2': p, 'κ': κ}
+    raise ValueError('escParams: {!r} is not a spec of the general form {}'.format(spec, SIZESPECS))
+
+
+def escEconomies(commonX = None, tol = 1e-6):
+    """ What the cost variants' exhibits print per economy at rho = 1, {economy: {'θStar', 'τ', 'Vtilde',
+    'Mabs'}} for 'US' (escCalibration.csv: θStar, τ0, Vtilde, Mabs) and 'UK', 'FR', 'UKUS' (escCountry.csv,
+    wedgeFrom 'US': θStar, τ, Vtilde, Mabs): the observed design, the 2020 tax rate and the two dispersions
+    of relative incomes, Ṽ = Σ γ_i (y_i-1)²/y_i and M = Σ γ_i |y_i-1|. These are properties of the economy,
+    not of the cost, so each is read over every spec of SIZESPECS that carries it -- the 'size' rows predate
+    Mabs -- and a spread across specs above `tol` raises (a stale row, crossCuttingFindings #13). A
+    quantity no row carries is MissingInput. """
+    commonX = C.US['commonX'] if commonX is None else commonX
+    cal = escCalibration(commonX)
+    cols = {'θStar': 'θStar', 'τ': 'τ0', 'Vtilde': 'Vtilde', 'Mabs': 'Mabs'}
+    found = {'US': {k: [] for k in cols}}
+    for spec in SIZESPECS:
+        if (1.0, spec) in cal:
+            for k, c in cols.items():
+                v = _col(cal[(1.0, spec)], c)
+                if v is not None:
+                    found['US'][k].append(v)
+    cols = dict(cols, τ = 'τ')
+    for spec in SIZESPECS:
+        cty = escCountry(commonX, spec)
+        for rec in cty[cty['wedgeFrom'] == 'US'].to_dict('records'):
+            d = found.setdefault(rec['country'], {k: [] for k in cols})
+            for k, c in cols.items():
+                v = _col(rec, c)
+                if v is not None:
+                    d[k].append(v)
+    out = {}
+    for eco, d in found.items():
+        out[eco] = {}
+        for k, vs in d.items():
+            if not vs:
+                raise MissingInput('{} of {} in results/esc/escCalibration.csv, escCountry.csv (specs {})'
+                                   .format(k, eco, ', '.join(SIZESPECS)))
+            if max(vs) - min(vs) > tol:
+                raise ValueError('escEconomies: {} of {} differs across the cost specs by {:.2e} (stale rows?)'
+                                 .format(k, eco, max(vs) - min(vs)))
+            out[eco][k] = vs[0]
     return out
 
 

@@ -407,8 +407,15 @@ def escPathSpecs():
 
 def escPathKey(year, suffix):
     """ ESC_PathTable's row key for `year` in the specification whose key suffix is `suffix` ('@1.0',
-    'xi0.2@1.0'): 'y2050@1.0', 'y2050xi0.2@1.0'. """
+    'xi0.2@1.0', 'sizeLQ@1.0'): 'y2050@1.0', 'y2050xi0.2@1.0', 'y2050sizeLQ@1.0'. """
     return 'y{}{}'.format(int(year), suffix)
+
+
+def escVariantSuffix(spec):
+    """ The key suffix of the baseline path at rho = 1 under cost specification `spec`: the rho = 1 block's
+    ('@1.0') under config.US['esc']['spec'], else the spec's own block of escPathTable ('sizeLQ@1.0'). """
+    sfx = '@' + _rhoKey(C.US['ρBaseline'])
+    return sfx if spec == C.US['esc']['spec'] else spec + sfx
 
 
 def escPathCells(r):
@@ -419,26 +426,34 @@ def escPathCells(r):
 
 def escPathTable():
     r""" The design and the tax along the baseline path, chosen against pinned: per specification (each rho of
-    config.US['esc']['ρTable'] at the workbook xi, the other xi at rho = 1) and date, the design in force with
-    the choice binding from the first period, the tax on that path, the tax with the design held at theta*
+    config.US['esc']['ρTable'] at the workbook xi, the other xi at rho = 1, all under config.US['esc']['spec'];
+    then each other cost specification of config.US['esc']['variants'] at rho = 1) and date, the design in force
+    with the choice binding from the first period, the tax on that path, the tax with the design held at theta*
     throughout, and their difference. results/esc/escPath.csv (rho = 1), escPathCRRA.csv (the published
-    method), escXiRobustness.csv. Rows keyed `y<year>@<rho>` and `y<year>xi<xi>@<rho>`. """
+    method), escXiRobustness.csv. Rows keyed `y<year>@<rho>`, `y<year>xi<xi>@<rho>` and `y<year><spec>@<rho>`
+    (escVariantSuffix). """
     specs = escPathSpecs()
-    θstar = float(D.escCalibration()[(C.US['ρBaseline'], C.US['esc']['spec'])]['θStar'])
+    ρ1 = C.US['ρBaseline']
+    θstar = float(D.escCalibration()[(ρ1, C.US['esc']['spec'])]['θStar'])
+    variants = [(s, n) for s, n in C.US['esc']['variants'] if s != C.US['esc']['spec']]
+    blocks = [(title, df, suffix) for title, df, suffix, _, _, _ in specs]
+    blocks += [(r'$\rho = ' + C.num(ρ1, 1) + '$, ' + n + ' cost', D.escPath(ρ1, spec = s), escVariantSuffix(s))
+               for s, n in variants]
     lines = []
-    for title, df, suffix, _, _, _ in specs:
+    for title, df, suffix in blocks:
         lines.append(_title(title, 5))
         for _, r in df.iterrows():
             lines.append(_row([str(int(r['date']))] + escPathCells(r), escPathKey(r['date'], suffix)))
         lines[-1] = lines[-1].replace(r' \\ % row:', r' \\[.5em] % row:')
     ξ0 = specs[0][5]
     note = (r'\textit{Note:} Chosen: the design is chosen one period in advance from the first period on, '
-            r'at the cost parameter calibrated for each specification (table \ref{table:US_ESC:calibration} and '
-            r'table \ref{' + _label('ESC_Xi') + r'}); its first value is the initial condition. Pinned: the same '
-            r'model with the design held at $\theta^{\ast} = ' + C.num(θstar, 3) + r'$ throughout. The '
-            r'$\rho$ blocks are at $\xi = ' + C.num(ξ0, 1) + r'$, and $\rho \neq 1$ is solved by the exact '
-            r'two-dimensional recursion. The last period shown precedes the terminal period of the finite '
-            r'horizon.')
+            r'at the cost parameter calibrated for each specification (table \ref{table:US_ESC:calibration}, '
+            r'table \ref{' + _label('ESC_Xi') + r'} and, for the cost specifications, table '
+            r'\ref{table:US_ESC:variants}); its first value is the initial condition. Pinned: the same '
+            r'model with the design held at $\theta^{\ast} = ' + C.num(θstar, 3) + r'$ throughout, under the same '
+            r'cost. The $\rho$ and $\xi$ blocks are under the quadratic cost, the $\rho$ blocks at $\xi = '
+            + C.num(ξ0, 1) + r'$, and $\rho \neq 1$ is solved by the exact two-dimensional recursion. The last '
+            r'period shown precedes the terminal period of the finite horizon.')
     return _xwrap('ESC_PathTable', 'results/esc/escPath.csv, escPathCRRA.csv, escXiRobustness.csv',
                   'The design and the tax along the baseline path, chosen and pinned', _label('ESC_PathTable'),
                   'YYYYY', [r'\textbf{Year}', r'$\theta_t$ \textbf{chosen}', r'\textbf{Tax rate, chosen}',

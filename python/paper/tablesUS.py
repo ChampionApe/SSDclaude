@@ -467,10 +467,10 @@ def _costSentence(spec = None):
     calibration table for the parameter. """
     spec = C.US['esc']['spec'] if spec is None else spec
     if spec == 'size':
-        return (r'The deadweight cost $f(\theta_t, \tau_t)$ of equation \eqref{eq:esc:budget} is quadratic in the '
-                r'implicit tax the flat component levies and scaled by the size of the system, '
-                r'$f = \exp\{-\tfrac12 \lambda \tau_t \tilde V (1-\theta_t)^2\}$, with $\lambda$ '
-                r'calibrated per $\rho$ (table \ref{table:US_ESC:calibration}).')
+        return (r'The deadweight cost $f(\theta_t, \tau_t)$ of equation \eqref{eq:esc:budget} is the quadratic cost, '
+                r'$f = \exp\{-\tfrac12 \lambda \tau_t \tilde V (1-\theta_t)^2\}$: quadratic in the implicit tax the '
+                r'flat component levies and scaled by the size of the system, with $\lambda$ calibrated per $\rho$ '
+                r'(table \ref{table:US_ESC:calibration}).')
     return (r'The proportional deadweight cost $f(\theta) = \phi + (1-\phi)\theta^{p}$ of '
             r'equation \eqref{eq:esc:budget}, with $\phi = ' + C.num(C.US['esc']['phi'], 1) + r'$ imposed and $p$ '
             r'calibrated per $\rho$ (table \ref{table:US_ESC:calibration}).')
@@ -636,7 +636,7 @@ def escSummary():
             r'$\theta^{\ast}$ and ' + LQ + 'chosen' + RQ + r' lets the electorate choose it one period in advance, '
             r'both under the cost. The composite imposes France\textquotesingle s income distribution and voting '
             r'patterns together.' + _compositeClause(df, spec, ρs) + r' The savings and workweek readings are in '
-            r'figure \ref{fig:US_ESC:overview} and the tables of \oa{esc-us}.' + C.variantNote(C.US['commonX']))
+            r'the \oa{esc-us}.' + C.variantNote(C.US['commonX']))
     # Ten columns on the 12pt measure: at the paper's size, or with the default 6pt \tabcolsep, the bold
     # "pinned" and the percentages overrun their columns (a 9pt gap and \footnotesize leave none overfull).
     colspec = r'@{}>{\raggedright\arraybackslash}p{2.4cm}*{' + str(3*len(ρs)) + r'}{@{\hspace{9pt}}Y}@{}'
@@ -650,35 +650,396 @@ def escSummary():
 RESULTSROWS = [r for r in SUMMARYROWS if r[0] != 'frBoth']
 
 
-def escResults():
-    r""" Table \ref{table:US_ESC:results}, the paper's table of section sec:esc: RESULTSROWS at the baseline
-    rho alone (config.US['ρBaseline'], log preferences) -- the design in 2020 with the design chosen, and the
-    2020 tax rate with the design pinned at theta* and chosen (escExperiments.csv at t0 under
-    config.US['esc']['spec']; the rho = 1 cells of escSummary). Row keys `baseline|acute|frincome|frvoting`.
-    The note names the cost parameter from escCalibration.csv rather than citing table:US_ESC:calibration,
-    which the paper does not input. """
-    df = D.escExperiments()
-    spec, ρ = C.US['esc']['spec'], C.US['ρBaseline']
-    cal = D.escCalibration()
+# ---------------------------------------------------------------------------------------------------
+# The cost specifications at rho = 1 (sec:esc and its appendix): config.US['esc']['variants'] in the paper's
+# order, the preferred one ('paperSpec') first. The general form is ln f = -tau (1-theta)[lambda_1 M +
+# 1/2 lambda_2 Vtilde (1-theta)]; datasets.escParams turns a row's p and kappa into (lambda_1, lambda_2).
+# Every builder from here to the UK counterparts reads the variants; the builders above read
+# config.US['esc']['spec'], whose exact CRRA rows they need.
+# ---------------------------------------------------------------------------------------------------
+LQVSPEC = 'sizeLQV'      # Vtilde on both terms: one sentence of US_ESC_VariantsCountry's note, for the record
+ALTTAG = '_kappaFR'      # the tagged run of 'sizeLQ' with kappa pinned by France's corner (runESC.py --tag)
+
+
+def _variantList():
+    """ [(spec, name)] of config.US['esc']['variants'], in the paper's order. """
+    return [tuple(v) for v in C.US['esc']['variants']]
+
+
+def _cap(s):
+    return s[:1].upper() + s[1:]
+
+
+def _param(v):
+    """ A cost parameter as the variant tables print it: three decimals, a zero the specification imposes
+    as 0, a missing value as --. """
+    if v is None or v != v:
+        return '--'
+    return '0' if v == 0 else C.num(v, 3)
+
+
+def _calRow(cal, spec, src = 'escCalibration.csv'):
+    """ The converged rho = 1 calibration row of `spec` in `cal` (datasets.escCalibration), or MissingInput. """
+    ρ = C.US['ρBaseline']
     if (ρ, spec) not in cal:
-        raise D.MissingInput('escCalibration ({}, {})'.format(ρ, spec))
-    sym = _wedgeSymbol(spec)
-    rows = [keyed(' & '.join([lab] + _summaryCells(df, ρ, spec, scen)) + r' \\', rowKey(key))
-            for scen, lab, key in RESULTSROWS]
-    note = (r'\textit{Note:} Log preferences, $\rho = ' + C.num(ρ, 0) + r'$. The cost is that of equation '
-            r'\eqref{eq:esc:budget} at $' + sym + ' = ' + C.num(float(cal[(ρ, spec)]['p']), 3) + r'$, the value '
-            r'at which the U.S.\ electorate re-elects its observed design $\theta^{\ast}$ (section '
-            r'\ref{sec:esc:calibration}). Every row is a separate equilibrium path read in 2020, with the changed '
-            r'characteristic holding over the whole horizon and the political choice binding from the first '
-            r'period. ' + LQ + 'Pinned' + RQ + r' holds the design at $\theta^{\ast}$ and ' + LQ + 'chosen' + RQ
-            + r' lets the electorate choose it one period in advance, both under the cost. The same '
-            r'counterfactuals at $\rho = 0.5$ and $2$, with France\textquotesingle s income distribution and voting '
-            r'patterns together, and with the savings rate and the workweek, are in the \oa{esc-us}.'
+        raise D.MissingInput('the converged {!r} row of results/esc/{} (ρ = {})'.format(spec, src, ρ))
+    return cal[(ρ, spec)]
+
+
+def _countryRows(spec, tag = ''):
+    """ {economy of COUNTRYROWS: {'US': row, 'own': row or None}} of escCountry<tag>.csv under `spec`
+    (datasets.escCountry keeps converged own rows only). A missing U.S.-parameter row is MissingInput. """
+    df = D.escCountry(spec = spec, tag = tag)
+    out = {}
+    for key, _, _ in COUNTRYROWS:
+        d = {}
+        for w in ('US', 'own'):
+            hit = df[(df['country'] == key) & (df['wedgeFrom'] == w)]
+            d[w] = None if hit.empty else hit.iloc[-1].to_dict()
+        if d['US'] is None:
+            raise D.MissingInput('escCountry{}.csv ({}, U.S. parameters, {})'.format(tag, key, spec))
+        out[key] = d
+    return out
+
+
+def _isThreshold(rec):
+    """ Is an own row the threshold kind (p the smallest value at which the design is the corner)? A row
+    written before `ownKind` existed is interior. """
+    k = rec.get('ownKind', None)
+    return k == k and k is not None and str(k) == 'threshold'
+
+
+def _ownValue(rec):
+    r""" US_ESC_Variants' own-value cell: the row's p (the parameter its specification calibrates), a
+    threshold as a bound ($\geq$), no own row as --. """
+    if rec is None:
+        return '--'
+    p = float(rec['p'])
+    return (r'$\geq ' + C.num(p, 3) + '$') if _isThreshold(rec) else C.num(p, 3)
+
+
+def _ownCells(rec, spec):
+    r""" US_ESC_VariantsCountry's own (lambda_1, lambda_2) cells of one own row: a threshold as a bound
+    ($\geq$) on each parameter it moves, a zero the specification imposes as 0, no own row as --. """
+    if rec is None:
+        return ['--', '--']
+    par = D.escParams(rec, spec)
+    bound = _isThreshold(rec)
+    return [(r'$\geq ' + C.num(v, 3) + '$') if (bound and v != 0) else _param(v) for v in (par['λ1'], par['λ2'])]
+
+
+def _kappaTitle(rec, spec):
+    r""" How a 'sizeLQ' calibration pinned kappa, as a block title's clause: ', $\kappa = 0.112$ pinned by the
+    UK'. Empty under the one-parameter specs. """
+    if spec not in ('sizeLQ', LQVSPEC):
+        return ''
+    par = D.escParams(rec, spec)
+    frm = rec.get('kappaFrom', None)
+    by = {'UK': 'the UK', 'FR': 'France'}.get(frm if frm == frm else None)
+    return r', $\kappa = ' + C.num(par['κ'], 3) + '$ ' + ('pinned by ' + by if by else 'imposed')
+
+
+def _pinSentence(cal, specs):
+    r""" US_ESC_Variants' sentence on what pins each specification's parameters: the U.S. design alone for
+    the one-parameter costs, and for 'sizeLQ' the U.S. design with the UK's (kappaFrom 'UK', France then
+    the prediction), with France's corner (kappaFrom 'FR', the fallback; the UK the prediction) or an
+    imposed kappa. """
+    single = [name for spec, name in specs if spec in ('size', 'sizeL')]
+    s = (r'The ' + ' and the '.join(single) + (' cost has one parameter' if len(single) == 1 else
+                                               ' costs have one parameter each')
+         + r', calibrated so that the U.S.\ electorate re-elects its observed design $\theta^{\ast}$ with '
+           r'$(\beta, \omega)$ recalibrated at each trial value')
+    for spec, name in specs:
+        if spec not in ('sizeLQ', LQVSPEC):
+            continue
+        rec = _calRow(cal, spec)
+        κ = C.num(D.escParams(rec, spec)['κ'], 3)
+        frm = rec.get('kappaFrom', None)
+        if frm == 'UK':
+            s += (r'; the ' + name + r' cost has two, pinned jointly by the U.S.\ and the UK designs at $\kappa = '
+                  r'\lambda_1/\lambda_2 = ' + κ + r'$, so that the UK\textquotesingle s own value is the U.S.\ one '
+                  r'and France\textquotesingle s design is a prediction')
+        elif frm == 'FR':
+            s += (r'; the ' + name + r' cost has two, pinned jointly by the U.S.\ design and France\textquotesingle s '
+                  r'corner, $\kappa = \lambda_1/\lambda_2 = ' + κ + r'$ being the smallest ratio at which France '
+                  r'chooses $\theta = 1$, so that France\textquotesingle s own value is the U.S.\ one and the '
+                  r'UK\textquotesingle s design is a prediction')
+        else:
+            s += (r'; the ' + name + r' cost at the imposed $\kappa = \lambda_1/\lambda_2 = ' + κ + r'$, with '
+                  r'$\lambda_2$ calibrated as the others')
+    return s + '.'
+
+
+def escVariants():
+    r""" Table \ref{table:US_ESC:variants} (section sec:esc): one row per cost specification of
+    config.US['esc']['variants'], in the paper's order -- the U.S. parameters lambda_1 and lambda_2
+    (datasets.escParams), the shares of revenue that reach households at the observed design and at a flat
+    benefit in 2020 (datasets.escWedge), the designs the UK and France choose under the U.S. parameters, and
+    the UK's and France's own value of the parameter the specification calibrates (France's a threshold,
+    printed as a bound; -- where there is none). Log preferences. Reads results/esc/escCalibration.csv and
+    escCountry.csv. Row keys `<spec>`. """
+    specs = _variantList()
+    cal = D.escCalibration()
+    rows = []
+    for spec, name in specs:
+        r = _calRow(cal, spec)
+        par, w = D.escParams(r, spec), D.escWedge(r, spec)
+        cty = _countryRows(spec)
+        cells = ([_cap(name), _param(par['λ1']), _param(par['λ2']), C.num(w['fStar'], 3), C.num(w['f0'], 3)]
+                 + [C.num(float(cty[k]['US']['choice']), 3) for k in ('UK', 'FR')]
+                 + [_ownValue(cty[k]['own']) for k in ('UK', 'FR')])
+        rows.append(keyed(' & '.join(cells) + r' \\', spec))
+    header = (r' & \multicolumn{4}{c}{\textbf{U.S.}} & \multicolumn{2}{c}{$\theta$ \textbf{chosen}} & '
+              r'\multicolumn{2}{c}{\textbf{Own value}} \\' + '\n'
+              r'\cmidrule(lr){2-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}' + '\n'
+              r'\textbf{Cost} & $\lambda_1$ & $\lambda_2$ & $f(\theta^{\ast})$ & $f(0)$ & \textbf{UK} & '
+              r'\textbf{France} & \textbf{UK} & \textbf{France}')
+    note = (r'\textit{Note:} Log preferences, $\rho = 1$. The cost is that of equation \eqref{eq:esc:fGeneral}, '
+            r'$\ln f(\theta_t, \tau_t) = -\tau_t(1-\theta_t)\big[\lambda_1 M + \tfrac12\lambda_2\tilde V'
+            r'(1-\theta_t)\big]$, with $M = \sum_i\gamma_i|y_i-1|$ the amount the flat component carries and '
+            r'$\tilde V$ the dispersion of relative incomes; the linear cost sets $\lambda_2 = 0$ and the quadratic '
+            r'$\lambda_1 = 0$. ' + _pinSentence(cal, specs) + r' $f(\theta^{\ast})$ and $f(0)$ are the shares of '
+            r'revenue that reach U.S.\ households at the observed design and at a flat benefit, at the 2020 tax '
+            r'rate. ' + LQ + r'$\theta$ chosen' + RQ + r' is the design in 2020 on the economy\textquotesingle s own '
+            r'freely simulated path under the U.S.\ parameters; ' + LQ + 'own value' + RQ + r' is the value of the '
+            r'parameter the specification calibrates ($\lambda_1$ under the linear cost, $\lambda_2$ under the '
+            r'others, at the U.S.\ $\kappa$ under the linear-quadratic) at which that path re-elects the observed '
+            r'design, with $\beta$ imposed from the U.S.\ and $\omega$ recalibrated at each trial value. '
+            r'France\textquotesingle s observed design is the corner $\theta = 1$, so its own value is the smallest '
+            r'at which its electorate chooses the corner, a bound ($\geq$); under the quadratic cost no finite value '
+            r'reaches it (--). The observed designs and 2020 tax rates are those of table \ref{table:US:Calib} and '
+            r'the dispersions of each economy are in table \ref{table:US_ESC:variantsCountry}; the UK is at its own '
+            r'income percentiles, and at the U.S.\ ones in the same table.' + C.variantNote(C.US['commonX']))
+    return _xwrap('US_ESC_Variants', 'results/esc/escCalibration.csv, escCountry.csv',
+                  'Three specifications of the cost of redistribution', 'table:US_ESC:variants',
+                  r'@{}>{\raggedright\arraybackslash}p{2.5cm}*{8}{Y}@{}', header, '\n'.join(rows), note,
+                  width = r'\textwidth', size = r'\footnotesize')
+
+
+def escResults():
+    r""" Table \ref{table:US_ESC:results}, the paper's table of section sec:esc: RESULTSROWS at the baseline rho
+    (log preferences), one block of three columns per cost specification of config.US['esc']['variants'] in the
+    paper's order -- the design in 2020 with the design chosen, and the 2020 tax rate with the design pinned at
+    theta* and chosen (escExperiments.csv at t0; the quadratic block is the rho = 1 cells of escSummary). The
+    note names the preferred specification's parameters (config.US['esc']['paperSpec'], escCalibration.csv).
+    Row keys `baseline|acute|frincome|frvoting`. """
+    df = D.escExperiments()
+    ρ, specs, paper = C.US['ρBaseline'], _variantList(), C.US['esc']['paperSpec']
+    par = D.escParams(_calRow(D.escCalibration(), paper), paper)
+    rows = []
+    for scen, lab, key in RESULTSROWS:
+        cells = [lab]
+        for spec, _ in specs:
+            cells += _summaryCells(df, ρ, spec, scen)
+        rows.append(keyed(' & '.join(cells) + r' \\', rowKey(key)))
+    header = (' & ' + ' & '.join(r'\multicolumn{3}{c}{\textbf{' + _cap(name) + '}}' for _, name in specs) + r' \\'
+              + '\n' + ''.join(r'\cmidrule(lr){' + str(2 + 3*k) + '-' + str(4 + 3*k) + '}' for k in range(len(specs)))
+              + '\n' + ' & '.join([r'\textbf{Scenario}'] + SUMMARYHEAD*len(specs)))
+    # The calibrations are pointed at through the online appendix, not \ref{table:US_ESC:variants}: the paper
+    # inputs this table before it inputs that one, and checkPaper.py fails on a dangling \ref.
+    note = (r'\textit{Note:} Log preferences, $\rho = ' + C.num(ρ, 0) + r'$. One block of columns per specification '
+            r'of the cost, each calibrated so that the U.S.\ electorate re-elects its observed design $\theta^{\ast}$; '
+            r'the ' + dict(specs)[paper] + r' cost at $\lambda_1 = ' + _param(par['λ1']) + r'$ and $\lambda_2 = '
+            + _param(par['λ2']) + r'$. Every row is a separate equilibrium path read in 2020, with the changed '
+            r'characteristic holding over the whole horizon and the political choice binding from the first period. '
+            + LQ + 'Pinned' + RQ + r' holds the design at $\theta^{\ast}$ and ' + LQ + 'chosen' + RQ + r' lets the '
+            r'electorate choose it one period in advance, both under the cost. The calibrations, the savings rate and '
+            r'the workweek, the other counterfactuals and the UK as host are in the \oa{esc-variants}, the quadratic '
+            r'cost at $\rho = 0.5$ and $2$ in the \oa{esc-us}.' + C.variantNote(C.US['commonX']))
+    # Ten columns on the 12pt measure, as escSummary: \footnotesize and a 9pt gap leave none overfull.
+    colspec = r'@{}>{\raggedright\arraybackslash}p{2.4cm}*{' + str(3*len(specs)) + r'}{@{\hspace{9pt}}Y}@{}'
+    return _xwrap('US_ESC_Results', df.attrs['source'] + ', escCalibration.csv',
+                  'Endogenous pension design across counterfactuals and cost specifications in the U.S.',
+                  'table:US_ESC:results', colspec, header, '\n'.join(rows), note, width = r'\textwidth',
+                  size = r'\footnotesize')
+
+
+def escVariantsCountry():
+    r""" Table \ref{table:US_ESC:variantsCountry} (appendix G.1): one block per cost specification of
+    config.US['esc']['variants'], rows the U.S., the UK, France and the UK at U.S. income groups -- the
+    observed design and 2020 tax rate, the two dispersions Vtilde and M (datasets.escEconomies), the design
+    chosen in 2020 under the block's U.S. parameters (the U.S. re-elects its own by construction), and the
+    own (lambda_1, lambda_2) at which the economy re-elects its observed design (France's a threshold, printed
+    as a bound). A last block for 'sizeLQ' pinned on the U.S. and France's corner, from escCalibration_kappaFR.csv
+    and escCountry_kappaFR.csv, when those files exist (the note says so when they do not); France's design
+    under LQVSPEC in the note when its rows exist. Log preferences. Row keys `<economy>@<spec>`,
+    `<economy>@sizeLQ_kappaFR`. """
+    specs = _variantList()
+    cal = D.escCalibration()
+    eco = D.escEconomies()
+    order = [('US', r'U.S.', 'usa')] + list(COUNTRYROWS)
+
+    def block(title, spec, crec, cty, sfx):
+        out = [(r'\multicolumn{8}{l}{\textit{' + title + r'}}', None)]
+        par = D.escParams(crec, spec)
+        for key, name, rk in order:
+            e = eco[key]
+            if key == 'US':
+                chosen, own = float(crec['choice']), [_param(par['λ1']), _param(par['λ2'])]
+            else:
+                chosen, own = float(cty[key]['US']['choice']), _ownCells(cty[key]['own'], spec)
+            out.append((' & '.join([name, C.num(e['θStar'], 3), C.pct(e['τ'], 1), C.num(e['Vtilde'], 3),
+                                    C.num(e['Mabs'], 3), C.num(chosen, 3)] + own), rk + '@' + sfx))
+        return out
+
+    blocks = []
+    for spec, name in specs:
+        crec = _calRow(cal, spec)
+        blocks.append(block(_cap(name) + ' cost' + _kappaTitle(crec, spec), spec, crec, _countryRows(spec), spec))
+    paper = C.US['esc']['paperSpec']
+    pname = dict(specs)[paper]
+    pinFrom = lambda rec: rec.get('kappaFrom') if isinstance(rec.get('kappaFrom'), str) else ''
+    pinName = {'UK': r'the UK\textquotesingle s design', 'FR': r'France\textquotesingle s corner'}
+    main = _calRow(cal, paper)
+    alt = None
+    if os.path.exists(os.path.join(C.ESCDIR, 'escCalibration' + ALTTAG + '.csv')):
+        acal = D.escCalibration(tag = ALTTAG)
+        if (C.US['ρBaseline'], paper) in acal:
+            alt = acal[(C.US['ρBaseline'], paper)]
+    other = 'UK' if pinFrom(main) == 'FR' else 'FR'
+    if alt is not None and pinFrom(alt) == other:
+        blocks.append(block(_cap(pname) + ' cost' + _kappaTitle(alt, paper), paper, alt,
+                            _countryRows(paper, ALTTAG), paper + ALTTAG))
+        altSentence = (r'; the last block pins the ' + pname + r' cost\textquotesingle s $\kappa$ by ' + pinName[other]
+                       + (' instead of ' + pinName[pinFrom(main)] if pinFrom(main) in pinName else ''))
+    else:
+        altSentence = (r'; the pinning of the ' + pname + r' cost\textquotesingle s $\kappa$ by ' + pinName[other]
+                       + r', the alternative to the one shown, has not been run')
+    lines = []
+    for b, blk in enumerate(blocks):
+        for k, (text, key) in enumerate(blk):
+            gap = '[.5em]' if (k == len(blk) - 1 and b < len(blocks) - 1) else ''
+            lines.append(keyed(text + r' \\' + gap, key))
+    lqv = ''
+    try:
+        rv, cv = _calRow(cal, LQVSPEC), _countryRows(LQVSPEC)
+        pv = D.escParams(rv, LQVSPEC)
+        lqv = (r' With $\tilde V$ in place of $M$ on the linear term, at $\kappa = ' + C.num(pv['κ'], 3) + r'$ and '
+               r'with the U.S.\ design re-elected ($\lambda_1 = ' + _param(pv['λ1']) + r'$, $\lambda_2 = '
+               + _param(pv['λ2']) + r'$), France chooses $' + C.num(float(cv['FR']['US']['choice']), 3)
+               + r'$ under the U.S.\ parameters.')
+    except D.MissingInput:
+        pass
+    # theta* alone in the header: at \footnotesize a bold "observed" is wider than the column (the note says it)
+    header = [r'\textbf{Economy}', r'$\theta^{\ast}$', r'\textbf{Tax rate}', r'$\tilde V$', '$M$',
+              r'$\theta$ \textbf{chosen}', r'\textbf{Own} $\lambda_1$', r'\textbf{Own} $\lambda_2$']
+    note = (r'\textit{Note:} Log preferences, $\rho = 1$. One block per specification of the cost of table '
+            r'\ref{table:US_ESC:variants}, each with its own U.S.\ calibration' + altSentence + r'. $\theta^{\ast}$ and '
+            r'the tax rate are each economy\textquotesingle s observed design and 2020 tax rate (table '
+            r'\ref{table:US:Calib}); $\tilde V = \sum_i\gamma_i(y_i-1)^2/y_i$ and $M = \sum_i\gamma_i|y_i-1|$ are the '
+            r'dispersions of relative incomes that weight the quadratic and the linear term of the cost. ' + LQ
+            + r'$\theta$ chosen' + RQ + r' is the design in 2020 on the economy\textquotesingle s own freely '
+            r'simulated path under the block\textquotesingle s U.S.\ parameters, which the U.S.\ re-elects by '
+            r'construction; ' + LQ + 'own' + RQ + r' are the parameters at which that path re-elects the observed '
+            r'design, with $\omega$ recalibrated at each trial value and, under the linear-quadratic cost, '
+            r'$\kappa = \lambda_1/\lambda_2$ held at the block\textquotesingle s value. France\textquotesingle s '
+            r'observed design is the corner $\theta = 1$, so its own values are the smallest at which its '
+            r'electorate chooses the corner ($\geq$); under the quadratic cost no finite value does (--). Each '
+            r'economy is its own calibration at $\rho = 1$ ($\beta$ imposed from the U.S.); the UK at U.S.\ income '
+            r'groups is the UK workbook regrouped at the U.S.\ income percentiles.' + lqv
             + C.variantNote(C.US['commonX']))
-    return _xwrap('US_ESC_Results', df.attrs['source'],
-                  'Endogenous pension design across counterfactuals in the U.S.', 'table:US_ESC:results',
-                  r'>{\raggedright\arraybackslash}p{4cm}YYY', [r'\textbf{Scenario}'] + SUMMARYHEAD,
-                  '\n'.join(rows), note, width = r'.8\textwidth')
+    src = 'results/esc/escCalibration{,' + ALTTAG + '}.csv, escCountry{,' + ALTTAG + '}.csv'
+    return _xwrap('US_ESC_VariantsCountry', src, 'The cost specifications across economies',
+                  'table:US_ESC:variantsCountry', r'@{}>{\raggedright\arraybackslash}p{3.1cm}*{7}{Y}@{}', header,
+                  '\n'.join(lines), note, width = r'\textwidth', size = r'\footnotesize')
+
+
+# US_ESC_VariantsShocks' rows: (escExperiments scenario, label, row key). 'France' is France's own path.
+VSHOCKROWS = [('baseline', 'Baseline', 'baseline'), ('mild', 'Mild ageing', 'mild'),
+              ('acute', 'Acute ageing', 'acute'), ('frIncome', 'Income distribution', 'frincome'),
+              ('frVoting', 'Voting patterns', 'frvoting'),
+              ('frBoth', 'Income distribution and voting patterns', 'frboth'),
+              ('frAll', 'All French characteristics', 'frall'), ('France', 'France', 'france')]
+VSHOCKHEAD = (r' & & \multicolumn{2}{c}{\textbf{Tax rate}} & \multicolumn{2}{c}{\textbf{Savings rate}} & '
+              r'\multicolumn{2}{c}{\textbf{Workweek}} \\' + '\n'
+              r'\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}' + '\n'
+              r'\textbf{Scenario} & $\theta$ \textbf{chosen} & \textbf{Pinned} & \textbf{Chosen} & \textbf{Pinned} & '
+              r'\textbf{Chosen} & \textbf{Pinned} & \textbf{Chosen}')
+
+
+def _vshockCells(df, spec, scen):
+    """ The seven cells of one scenario at rho = 1: the design in 2020 with the design chosen, then the tax rate,
+    the savings rate (s/Y, datasets.escSavingsOverY) and the workweek, each pinned and chosen. Savings as
+    levels on the baseline row and as the change in p.p. against the baseline with the design chosen on the
+    others (as _escTable). 'France' has the pinned reading alone (its own path at theta = 1). """
+    ρ = C.US['ρBaseline']
+    sr = lambda r: D.escSavingsOverY(r['sr_t0'])
+    base = D.escRow(df, ρ, spec, 'baseline', False)
+    if scen == 'France':
+        p = D.escRow(df, ρ, spec, 'France', True)
+        return [C.num(p['θ_t0'], 3), C.pct(p['τ_t0']), '--', C.pp(sr(p) - sr(base)), '--', C.num(p['ww_t0']), '--']
+    pin, cho = D.escRow(df, ρ, spec, scen, True), D.escRow(df, ρ, spec, scen, False)
+    srCells = ([C.pct(sr(pin)), C.pct(sr(cho))] if scen == 'baseline'
+               else [C.pp(sr(pin) - sr(base)), C.pp(sr(cho) - sr(base))])
+    return ([C.num(cho['θ_t0'], 3), C.pct(pin['τ_t0']), C.pct(cho['τ_t0'])] + srCells
+            + [C.num(pin['ww_t0']), C.num(cho['ww_t0'])])
+
+
+def _variantShocks(name, host, caption, label, scenarios, note):
+    r""" One block per cost specification of config.US['esc']['variants'] and one row per scenario of
+    VSHOCKROWS in `scenarios`, from escExperiments{,UK}.csv at rho = 1 (_vshockCells). On a host other than the
+    U.S. a specification without a converged own parameter for the host (escCountry.csv) is not run there and
+    its block is left out; the note then says so. Row keys `<scenario key>@<spec>`. """
+    df = D.escExperiments(host)
+    rows = [r for r in VSHOCKROWS if r[0] in scenarios]
+    blocks, skipped = [], []
+    for spec, vname in _variantList():
+        if host != 'US':
+            cty = D.escCountry(spec = spec)
+            if cty[(cty['country'] == host) & (cty['wedgeFrom'] == 'own')].empty:
+                skipped.append(vname)
+                continue
+        blocks.append([(r'\multicolumn{8}{l}{\textit{' + _cap(vname) + r' cost}}', None)]
+                      + [(' & '.join([lab] + _vshockCells(df, spec, scen)), key + '@' + spec)
+                         for scen, lab, key in rows])
+    if not blocks:
+        raise D.MissingInput('{} rows of any cost specification in {}'.format(host, df.attrs['source']))
+    lines = []
+    for b, blk in enumerate(blocks):
+        for k, (text, key) in enumerate(blk):
+            gap = '[.5em]' if (k == len(blk) - 1 and b < len(blocks) - 1) else ''
+            lines.append(keyed(text + r' \\' + gap, key))
+    if skipped:
+        note += (r' The ' + ' and the '.join(skipped) + (' cost has' if len(skipped) == 1 else ' costs have')
+                 + r' no own parameter for ' + HOSTNAME[host] + r' and ' + ('is' if len(skipped) == 1 else 'are')
+                 + r' not run on it.')
+    return _xwrap(name, df.attrs['source'] + (', escCountry.csv' if host != 'US' else ''), caption, label,
+                  r'@{}>{\raggedright\arraybackslash}X*{7}{c}@{}', VSHOCKHEAD, '\n'.join(lines),
+                  note + C.variantNote(C.US['commonX']), width = r'\textwidth', size = r'\footnotesize')
+
+
+def escVariantsShocks():
+    r""" Table \ref{table:US_ESC:variantsShocks} (appendix G.2): every counterfactual of VSHOCKROWS on the U.S.
+    under each cost specification at rho = 1, pinned and chosen (escExperiments.csv; _variantShocks). """
+    note = (r'\textit{Note:} Log preferences, $\rho = 1$. One block per specification of the cost, each at its '
+            r'U.S.\ calibration (table \ref{table:US_ESC:variants}). Every row is a separate equilibrium path read in '
+            r'2020, with the changed characteristic holding over the whole horizon and the political choice binding '
+            r'from the first period. ' + LQ + 'Pinned' + RQ + r' holds the design at $\theta^{\ast}$ and ' + LQ
+            + 'chosen' + RQ + r' lets the electorate choose it one period in advance, both under the cost. The ageing '
+            r'scenarios are those of section \ref{sec:oecd}; the two composite rows impose France\textquotesingle s '
+            r'income distribution and voting patterns together and, in the second, also its level of $X$. The France '
+            r'row is France\textquotesingle s own calibrated path at its observed design $\theta = 1$, where none of '
+            r'the three costs bites, and has no chosen reading. The savings rate is savings relative to GDP: its '
+            r'level on the baseline row and, on every other row, the change against the baseline with the design '
+            r'chosen, in percentage points. The workweek is in hours.')
+    return _variantShocks('US_ESC_VariantsShocks', 'US',
+                          'Endogenous pension design across counterfactuals and cost specifications: all readings',
+                          'table:US_ESC:variantsShocks', [r[0] for r in VSHOCKROWS], note)
+
+
+def ukEscVariantsShocks():
+    r""" Table \ref{table:UK_ESC:variantsShocks} (online appendix): France's characteristics on the UK as host
+    under each cost specification with a converged UK own parameter, at that parameter (escExperimentsUK.csv,
+    escCountry.csv; _variantShocks). """
+    note = (r'\textit{Note:} The UK as host, at its own cost parameters, those at which its electorate re-elects its '
+            r'observed design (table \ref{table:US_ESC:variantsCountry}), with France\textquotesingle s income groups '
+            r'cut at the UK\textquotesingle s own income percentiles (table \ref{table:a_US:CalibFRUK}). The readings '
+            r'and the units are those of table \ref{table:US_ESC:variantsShocks}; the France row is '
+            r'France\textquotesingle s own calibrated path at the UK\textquotesingle s income groups.')
+    return _variantShocks('UK_ESC_VariantsShocks', 'UK',
+                          'Endogenous pension design under French characteristics and cost specifications in the UK',
+                          'table:UK_ESC:variantsShocks',
+                          ['baseline', 'frIncome', 'frVoting', 'frBoth', 'frAll', 'France'], note)
 
 
 # The UK counterparts (appendix app:UKUS): France's characteristics on the UK at the UK's OWN cost
@@ -731,7 +1092,7 @@ def escCalibrationTable(spec = None):
     header = ' & '.join([r'\textbf{CRRA} ($\rho$)', '$' + sym + '$', r'$\theta^{\ast}$',
                          r'$f(\theta^{\ast})$', '$f(0)$', r'$\tilde V$'])
     if spec == 'size':
-        form = (r'$f(\theta, \tau) = \exp\{-\tfrac12 \lambda \tau \tilde V (1-\theta)^2\}$ with '
+        form = (r'The quadratic cost, $f(\theta, \tau) = \exp\{-\tfrac12 \lambda \tau \tilde V (1-\theta)^2\}$ with '
                 r'$\tilde V = \sum_i \gamma_i (y_i - 1)^2 / y_i$ the dispersion of relative labor '
                 r'incomes; $f(\theta^{\ast})$ and $f(0)$ are read at the 2020 tax rate, so $1 - f$ is the '
                 r'share of revenue lost at the observed design and at a flat benefit')

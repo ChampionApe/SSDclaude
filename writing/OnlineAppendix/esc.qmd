@@ -1,19 +1,31 @@
 # OA.4 The endogenous pension design {#esc}
 
 Section 7 of the paper lets the electorate choose the design $\theta$ as well as the tax rate, under a deadweight
-cost of redistribution whose parameter $\lambda$ is calibrated so that the U.S. electorate re-elects its observed
-design. This chapter holds the tables behind section 7, the same counterfactuals with the UK
-as host, the design along the baseline path, the timing of the choice and an alternative cost specification.
+cost of redistribution calibrated so that the U.S. electorate re-elects its observed design. The cost comes in three
+specifications, quadratic, linear and linear-quadratic; the quadratic one is solved at every intertemporal
+elasticity of substitution (IES), the other two at an IES of one. This chapter holds the tables behind section 7,
+the three specifications compared, the same counterfactuals with the UK as host, the design along the baseline
+path, the timing of the choice and a cost on the design rather than on redistribution.
 
-## OA.4.1 The cost and the cross-country test {#esc-calibration}
+## OA.4.1 The quadratic cost and the cross-country test {#esc-calibration}
 
-The calibrated cost at each intertemporal elasticity of substitution (IES), and the paper's table of section 7.2:
-the designs the UK and France choose under the U.S. parameter, with the UK's own parameter; France, at the corner,
-has none.
+The quadratic cost calibrated at each IES, and its cross-country test at an IES of one: the designs the UK and
+France choose under the U.S. parameter, with the UK's own parameter; France, at the corner, has none.
 
 {{< include _generated/groups/esc-calibration.qmd >}}
 
-## OA.4.2 Counterfactuals on the U.S. {#esc-us}
+## OA.4.2 The cost specifications {#esc-variants}
+
+The three specifications at an IES of one, $\ln f = -\tau_t(1-\theta_t)\big[\lambda_1 M + \tfrac12\lambda_2\tilde
+V(1-\theta_t)\big]$, with $M = \sum_i\gamma_i|y_i-1|$ the amount the flat component carries and $\tilde V$ the
+dispersion of relative incomes: the quadratic cost of OA.4.1 ($\lambda_1 = 0$), the linear one ($\lambda_2 = 0$)
+and the linear-quadratic one, the paper's, whose two parameters the U.S. and UK designs pin together. The tables
+give the calibration of each, the designs the UK and France choose under it, every counterfactual on the U.S.
+under each, and the UK as host.
+
+{{< include _generated/groups/esc-variants.qmd >}}
+
+## OA.4.3 Counterfactuals on the U.S. {#esc-us}
 
 Each counterfactual is a separate equilibrium path read in 2020, with one characteristic changed over the whole
 horizon, every other parameter at its U.S. value and the political choice binding from the first period. Each is
@@ -21,15 +33,17 @@ read twice, with the design pinned at the U.S. value and with the design chosen,
 so the distance between them is the political response. The figure's last row, France's income distribution and
 voting patterns together, shares its design, tax rate and savings rate with the table's row that imposes all
 French characteristics, since France's level of $X$ moves hours and nothing else. The paper's table is the first,
-at an IES of one; the figure and the other tables hold every IES. In the figure an open marker is the pinned
-reading and a filled one the chosen[; click either for its row]{.content-visible when-format="html"}.
+at an IES of one under the three specifications of the cost; the figure and the other tables hold every IES under
+the quadratic cost. In the figure an open marker is the pinned reading and a filled one the chosen[; click either
+for its row]{.content-visible when-format="html"}.
 
 {{< include _generated/groups/esc-us.qmd >}}
 
-## OA.4.3 The UK as host {#esc-uk}
+## OA.4.4 The UK as host {#esc-uk}
 
-The same counterfactuals with the UK as host, at the UK's own cost parameter, the one at which its electorate
-re-elects the UK's observed design; it lies below the U.S. parameter at an IES of one or below and above it at two.
+The same counterfactuals with the UK as host under the quadratic cost, at the UK's own cost parameter, the one at
+which its electorate re-elects the UK's observed design; it lies below the U.S. parameter at an IES of one or below
+and above it at two. The UK as host under the other two specifications is in OA.4.2.
 The figure sets the two hosts side by side; the tables print the UK's numbers. On both hosts France's voting
 profile moves the design most, toward flat benefits, and by less on the UK, whose own voting profile is already
 flatter than the U.S. one. France's income distribution moves the two hosts' designs in opposite directions, since
@@ -39,16 +53,17 @@ confined to the design itself.
 
 {{< include _generated/groups/esc-uk.qmd >}}
 
-## OA.4.4 The design along the baseline path {#esc-path}
+## OA.4.5 The design along the baseline path {#esc-path}
 
 The calibration pins the design in 2020 only; every other design on the path, before 2020 as after it, is an
-outcome of the model. The paper's figure is the projection from 2020 at an IES of one; here are the full paths of
-the design and of the tax rate from the first period, chosen and pinned, at each IES and at two other values of
-the Frisch elasticity $\xi$, which the paper reports in a footnote.
+outcome of the model. The paper's figure is the projection from 2020 at an IES of one under the three
+specifications of the cost; here are the full paths of the design and of the tax rate from the first period,
+chosen and pinned, under the quadratic cost at each IES and at two other values of the Frisch elasticity $\xi$,
+which the paper reports in a footnote, and under the other two at an IES of one.
 
 {{< include _generated/groups/esc-path.qmd >}}
 
-## OA.4.5 The timing of the design choice {#esc-timing}
+## OA.4.6 The timing of the design choice {#esc-timing}
 
 Appendix C.1 of the paper shows that each timing of the choice puts the design at a corner when redistribution is costless: a
 design chosen together with the tax rate re-splits benefits current retirees have already earned, a design chosen
@@ -57,9 +72,9 @@ and for all enters every channel at once. The table reports the numerical checks
 
 {{< include _generated/groups/esc-timing.qmd >}}
 
-## OA.4.6 An alternative cost specification {#esc-scale}
+## OA.4.7 A cost on the design {#esc-scale}
 
-A cost attached to the design rather than to the transfer it performs. The table sets it beside the paper's cost, which scales with the dispersion of
+A cost attached to the design rather than to the transfer it performs. The table sets it beside the quadratic cost, which scales with the dispersion of
 relative incomes: the calibration of each, and the design each lets the electorate choose under acute ageing and
 under France's income distribution and voting patterns.
 

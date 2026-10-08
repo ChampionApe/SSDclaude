@@ -33,3 +33,14 @@ benefit, the fall in the informal savings ratio as figure 5.2 prints it (ι defi
 (one in the code and the appendices) and got the type-0 conditions right; appendix D's β_j, B^i and p, appendix E's
 tense and notation (Law 24,347 dated 1994), five control spaces. Checks: `checkPaper.py` OK, latexmk clean at 60
 pages, `test_onlineAppendix.py` 6/6; the site rendered locally, not republished. Open: TODO W10, D3, W11; W12, C10.
+
+## 2026-10-08 (afternoon) — the cost variants through stage (iii) (phase D, `notes/brief_escVariants_pipeline_2026-10-08.md`)
+
+`config.US['esc']` gains `paperSpec = 'sizeLQ'` and `variants` (linear-quadratic, linear, quadratic); `spec` stays `'size'`
+for every rho-dependent exhibit until TODO R6. `datasets.escParams` (lambda_1, lambda_2, kappa from `p`, `kappa`),
+`escEconomies` (theta*, tau, Vtilde, M per economy), `tag` for the `_kappaFR` csvs. New outputs: `US_ESC_Variants`,
+`US_ESC_VariantsCountry`, `US_ESC_VariantsShocks`, `UK_ESC_VariantsShocks` (online only); `US_ESC_Results` one block per
+variant, `US_ESC_Path` the three chosen paths, `ESC_PathTable` two variant blocks (the path marks link there). Notes of
+`US_ESC_Calibration`/`_Summary` self-contained ("the quadratic cost", no online-only figure). Group `esc-variants` (OA.4.2,
+later sections renumbered). The robustness map is unchanged: a variant row needs a new kind in `_mapChosen`. Checks: the
+quadratic cells of every ESC table equal HEAD's; 88 outputs build; `test_onlineAppendix.py` 6/6; `checkPaper.py` OK.

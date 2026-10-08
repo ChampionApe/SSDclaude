@@ -9,8 +9,8 @@ some of them; new items continue the numbering.
 
 ## Plan in progress
 
-The read-through of 2026-10-08 raised six items; 3, 5 and 6 are fixed (`8a96925`). These remain, for RKB to take
-in turn.
+The read-through of 2026-10-08 raised six items; 3, 5 and 6 are fixed (`8a96925`), and the introduction's timing
+footnote (W11) with the cost variants. These remain, for RKB to take in turn.
 
 **W10. The ranking of determinants at ρ = 2.** At ρ = 2 France's voting patterns raise the U.S. tax rate by
 1.7 p.p. (14.43% to 16.12%, `US_CRRA_OtherShocks`) and the full swing of the design by 1.5 p.p. (θ = 1 to 0,
@@ -26,10 +26,6 @@ so $\tilde V \geq 0.10$ against the 0.065 of `US_ESC_Country` (table 4), section
 0.543), appendix F.3 and OA.3.1. That the regrouping moves the UK's choice little probably survives. A recount of
 the survey at the U.S. cuts, then stage (i) for `UKUS` and the ESC stages. Section 7.2 also sets the UK at its own
 cuts (0.223) against France at the U.S. cuts (0.218); at the UK's cuts France is about 0.25.
-
-**W11. The introduction's footnote on the timing of the choice** (`Introduction.tex:25`) narrates the research
-("We also explore…", "We test…") and claims runs at other labor supply elasticities that OA.4.5 (`ESC_Timing`)
-does not show: it varies ρ only.
 
 ## Candidates, not scheduled
 

@@ -49,7 +49,7 @@ lacks, on which the average wedge is the relevant one.
   leak convex in it gives all three properties at once without committing to a margin. Also the natural
   frame for a linear term: Okun's leak can have a component proportional to the amount carried, which would
   let an electorate choose $\theta=1$ exactly, at the price of a second parameter that the UK's design could
-  pin (two targets, two parameters, France as the prediction). Not in the paper.
+  pin (two targets, two parameters, France as the prediction). In the paper since 2026-10-08 (§4).
 - **Browning and Johnson (1984), "The Trade-Off between Equality and Efficiency", *JPE* 92(2):175--203.**
   Estimates, on 1976 US microdata, the marginal cost of reducing inequality with a policy whose
   distributional effects resemble the tax-transfer system. The cost is high even for modest elasticities:
@@ -220,6 +220,20 @@ consequences; points 1 to 3 below are what appendix C.2 does, not the main text.
 margins names participation, formality and reporting (Summers, Disney, Kumler et al.) and the administrative
 and political costs; the magnitude sits in appendix C.2 alone.
 
+**Revised 2026-10-08: a linear term.** The leak has two parts, a constant share of every unit the flat component
+carries (Okun's leak proper, standing for administrative and political costs) and the Harberger loss, which rises
+with the load, both scaled by τ: $\ln f = -\tau(1-\theta)[\lambda_1 M + \tfrac12\lambda_2\tilde V(1-\theta)]$, with
+$M = \sum_i\gamma_i|y_i-1|$, the amount the flat component carries (`eq:esc:Mabs`), on the linear term and $\tilde V$
+on the quadratic, each the weight its own derivation gives (`notes/esc_variants.md` §7). Three variants: quadratic
+(the cost above), linear, and linear-quadratic, the paper's, with $(\lambda,\kappa)$ pinned by the U.S. and UK
+designs and France the prediction. The linear term prices the first unit of redistribution at $\lambda_1\tau M$,
+which lets an electorate choose θ = 1; its factor τ, which the literal leak lacks, is owned in a footnote of
+appendix C.2. Finding: the ordering of the UK, the U.S. and France holds under every variant, but no pair
+$(\lambda,\kappa)$ that keeps the U.S. on its design reconciles the UK and France. The UK pins a small linear term
+($\kappa = 0.129$), at which France chooses 0.806; the linear term France's corner needs puts the UK well below its
+0.560. Point 5's zero marginal cost at θ = 1 is now the quadratic variant's, and the conclusion keeps a formality
+margin as the structural candidate.
+
 1. **Lead with the concept, not the formula.** The flat component is a tax (Summers's tax component); the
    cost is the deadweight loss of that tax. One sentence, two citations (Summers, Disney).
 2. **Say what the model already has, and what $f$ adds.** The intensive-margin distortion of the tax
@@ -251,6 +265,8 @@ Cited (section 7 and appendix C): Okun (1975, since 2026-10-07, in section 7 and
 (1964), Summers (1989), Disney (2004), Saez (2002), Kleven and Kreiner (2006), Chetty et al. (2011), Saez,
 Slemrod and Giertz (2012), Kumler, Verhoogen and Frías (2020), and, for the size–design link, Conde-Ruiz and
 Profeta (2007) and Koethenbuerger, Poutvaara and Profeta (2008).
+The variants of 2026-10-08 cite nothing new: the linear term is Okun's leak and the quadratic Harberger's loss,
+under the keys above.
 Not cited and not in `References.bib`: Browning and Johnson (1984), Feldstein and Samwick (1992),
 Immervoll et al. (2007), Gruber and Wise (1999), Liebman, Luttmer and Seif (2009), Bergolo and Cruces (2014)
 and Feldstein (1999); the last two are the first candidates if the argument needs more support, next to Kumler
