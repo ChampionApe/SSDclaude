@@ -12,7 +12,9 @@ decisions (read decisions 1 to 5 as amended at gate 1). The section presents thr
 redistribution at $\rho = 1$ and leads with the preferred one, the linear-quadratic cost; the other two get
 one paragraph. The economics is derived in `notes/esc_variants.md` (its §7 is the version under the $M$
 weight, the paper's; §1-§6 the derivation and the proxies); its three or four sentences for section 7.1
-are yours to adapt. Target 2,000 to 2,300 words (`checkPaper.py` counts; the current text is 1,594).
+are yours to adapt. There is no target length (RKB, 2026-10-08: no hard target, cuts come later if
+needed): write what the content of §2 needs, without padding, and report the word count
+(`checkPaper.py` counts; the current text is 1,594).
 
 ## 2. Structure, in order
 
@@ -41,7 +43,17 @@ generated notes cite it).
   \parencite{ChettyGMW11a1,SaezSG12a1} for the magnitudes; (iv) the size of the system and its design,
   \textcite{CondeRuizP07a1} and \textcite{KoethenbuergerPP08a1}. Every key exists in `References.bib`;
   `notes/paper_costLiterature.md` §2 says what each reference finds, use it rather than memory.
-- *The specification.* The budget `eq:esc:budget` with the general $f$ (keep the display and its label;
+- *The specification, as the ingredients the literature supplies* (RKB, 2026-10-08: the variants should
+  show how the different ingredients affect the results). The quadratic term is the Harberger loss of the
+  implicit tax on the margins the model lacks, block (i) to (iii) of the literature paragraph: a loss
+  quadratic in the wedge, so the first unit of redistribution is free at the margin. The linear term is
+  Okun's leak proper, a constant share of every unit carried, the administrative and political cost of the
+  transfer rather than a behavioural response: it prices the first unit and is what lets an electorate
+  choose the Bismarckian corner. The scaling of both by the size of the system is the
+  efficiency-redistribution trade-off of block (iv), Koethenbuerger, Poutvaara and Profeta's channel read
+  from the other side (the \oa{esc-scale} comparison, a cost that does not scale with the size, shows what
+  that ingredient does). Name each term by its ingredient when you present the variants, and keep the
+  functional labels (quadratic, linear, linear-quadratic) for the tables. The budget `eq:esc:budget` with the general $f$ (keep the display and its label;
   the form is now $f = \exp\{-\tau_t(1-\theta_t)[\lambda_1 M + \tfrac12\lambda_2\tilde V(1-\theta_t)]\}$ with
   $M \equiv \sum_i\gamma_i|y_i-1|$ beside $\tilde V$). The leaky-bucket reading: the amount the flat
   component carries is proportional to $\tau_t(1-\theta_t)M$ (appendix C.2); a leak with a constant share
@@ -84,13 +96,34 @@ note cites it).
   channel for ageing; the stakes and the cost scaling together for the income distribution; the
   redistributive force regaining ground for voting), each updated to the new numbers and to the $M$
   weight where it matters (France's income profile lowers $M$ by less than $\tilde V$).
-- One paragraph on the other variants: the linear cost as the limit with no curvature, every counterfactual
-  a corner, which is why the quadratic part is needed; the quadratic cost as the damped case; the
-  responses ordered by the shape (`notes/esc_variants.md` §5). The rest in appendix G.2.
+- One paragraph on the other variants, read as what each ingredient contributes to the results: the
+  Harberger curvature alone (the quadratic cost) damps every response and keeps France off its corner;
+  Okun's leak alone (the linear cost) prices the first unit but has no curvature, so every counterfactual
+  is a corner and the UK falls to the Beveridgean one; together, the leak moves the responses and the
+  corner within reach while the curvature keeps the choice interior; the size scaling, switched off in
+  the \oa{esc-scale} comparison, is what carries the ageing response through the tax (`notes/esc_variants.md`
+  §5). The rest in appendix G.2.
 - One closing paragraph on the intertemporal elasticity, on the quadratic cost's numbers (the current
   closing paragraph condensed: the cost parameter falling in $\rho$, the ageing response stable, the
   inequality and voting responses not), saying the other variants are computed at $\rho = 1$, with the
   pointer to appendix G.3 and `\oa{esc-us}`.
+
+## 2b. A finding the section must state plainly (from the runs, 2026-10-08)
+
+Under the preferred cost France's income distribution raises the chosen design from 0.738 to 0.850, nearly
+as much as acute ageing (0.874), whereas under the quadratic cost it moved it little (0.772); France's
+voting patterns lower it to 0.622 (0.653 under the quadratic cost), and the two together net to 0.641
+(the composite, the pair figure 1 confronts). The tax rate moves little with the income distribution under
+every variant. So the earlier draft's reading, "ageing moves the design a long way, inequality little", holds
+for spending and for the design under the quadratic cost only; under the preferred cost a compressed
+distribution moves the design about as far as ageing, the other way from the voting patterns. The
+mechanism (`notes/esc_variants.md` §5 and §7): the leak has no curvature, so every response is larger
+than under the quadratic cost, and the linear term's weight, the amount carried $M$, falls by a quarter
+where $\tilde V$ halves, so the cost of redistribution falls by less than the redistributive stake.
+Write what the table shows, read it against figure 1 honestly (the cross-section's weak relation between
+inequality and the design is matched by the quadratic cost, and by the composite of France's two
+characteristics under the preferred one), and do not soften it; the abstract, introduction and conclusion
+are aligned to your wording afterwards (W4 left a `%% TODO-W4` tag at `Introduction.tex:28` for it).
 
 ## 3. Numbers
 

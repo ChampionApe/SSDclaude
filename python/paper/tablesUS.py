@@ -835,17 +835,16 @@ def escResults():
     header = (' & ' + ' & '.join(r'\multicolumn{3}{c}{\textbf{' + _cap(name) + '}}' for _, name in specs) + r' \\'
               + '\n' + ''.join(r'\cmidrule(lr){' + str(2 + 3*k) + '-' + str(4 + 3*k) + '}' for k in range(len(specs)))
               + '\n' + ' & '.join([r'\textbf{Scenario}'] + SUMMARYHEAD*len(specs)))
-    # The calibrations are pointed at through the online appendix, not \ref{table:US_ESC:variants}: the paper
-    # inputs this table before it inputs that one, and checkPaper.py fails on a dangling \ref.
     note = (r'\textit{Note:} Log preferences, $\rho = ' + C.num(ρ, 0) + r'$. One block of columns per specification '
             r'of the cost, each calibrated so that the U.S.\ electorate re-elects its observed design $\theta^{\ast}$; '
             r'the ' + dict(specs)[paper] + r' cost at $\lambda_1 = ' + _param(par['λ1']) + r'$ and $\lambda_2 = '
             + _param(par['λ2']) + r'$. Every row is a separate equilibrium path read in 2020, with the changed '
             r'characteristic holding over the whole horizon and the political choice binding from the first period. '
             + LQ + 'Pinned' + RQ + r' holds the design at $\theta^{\ast}$ and ' + LQ + 'chosen' + RQ + r' lets the '
-            r'electorate choose it one period in advance, both under the cost. The calibrations, the savings rate and '
-            r'the workweek, the other counterfactuals and the UK as host are in the \oa{esc-variants}, the quadratic '
-            r'cost at $\rho = 0.5$ and $2$ in the \oa{esc-us}.' + C.variantNote(C.US['commonX']))
+            r'electorate choose it one period in advance, both under the cost. The calibrations are in table '
+            r'\ref{table:US_ESC:variants}; the savings rate and the workweek, the other counterfactuals and the UK as '
+            r'host are in the \oa{esc-variants}, the quadratic cost at $\rho = 0.5$ and $2$ in the \oa{esc-us}.'
+            + C.variantNote(C.US['commonX']))
     # Ten columns on the 12pt measure, as escSummary: \footnotesize and a 9pt gap leave none overfull.
     colspec = r'@{}>{\raggedright\arraybackslash}p{2.4cm}*{' + str(3*len(specs)) + r'}{@{\hspace{9pt}}Y}@{}'
     return _xwrap('US_ESC_Results', df.attrs['source'] + ', escCalibration.csv',

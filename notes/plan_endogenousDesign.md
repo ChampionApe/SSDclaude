@@ -152,9 +152,9 @@ generalised across variants, `escVariantsCountry` and `escVariantsShocks` for ap
 a data change; `test_onlineAppendix.py` and `build.py` clean.
 
 **Phase W, writing (after D; four writers in parallel, disjoint files).**
-- W1 section 7 (`Sections/EndogenousTheta.tex`): paper-writer-lead, Fable max. RKB's outline B, about
-  2,000 words, the preferred specification leading, the other variants in one paragraph, the $\rho$
-  paragraph on the quadratic cost's numbers.
+- W1 section 7 (`Sections/EndogenousTheta.tex`): paper-writer-lead, Fable max. RKB's outline B, no
+  target length (RKB, 2026-10-08: cuts come later if needed), the preferred specification leading, the
+  other variants in one paragraph, the $\rho$ paragraph on the quadratic cost's numbers.
 - W2 appendix C (`Appendix/EndogenousDesign.tex`): paper-writer-lead, Fable max. C.2 for the general form
   and the three variants from `notes/esc_variants.md`, the corner condition, C.3's design condition
   generalised; C.1 and C.4 untouched unless a label moves.
@@ -170,6 +170,18 @@ appendix G, the introduction, the conclusion and the online appendix texts: pape
 session applies the fixes, runs `checkPaper.py`, latexmk, `build.py --map`, `build.py --site` and the
 quarto render (not published), writes the logs (paper, US, root), closes TODO W9, adds R6, indexes the
 briefs in `archive/INDEX.md`, commits.
+
+**Phase W5, appendix C cut back (after R1 and W4; RKB, 2026-10-08).** RKB read the pushed appendix C and
+wants it much shorter later, closer to the version before the rewrite, with propositions 4 (the Bismarckian
+corner, new) and 5 (separability, pre-existing) in the technical documentation only. A paper-writer-lead
+(Fable max) cuts C.2 to the specification of the general form, its three properties and the one choice (a
+paragraph and a footnote), states the corner in one paragraph in words (the threshold on $\lambda_1$ and
+what moves it: the size of the system, the dispersion, the voting profile, ageing) with a pointer to the
+technical documentation, and moves proposition 4 with its proof, the tax-response and comparative-statics
+paragraphs, and proposition 5 with its proof, to `writing/US/model_esc.tex` (after W4's pass on that file),
+leaving C.4 a short paragraph; section 4's and section 7's references to `prop:esc:separability` become
+references to appendix C.4 and the technical documentation. R1's optional-cut list feeds this phase. Target:
+at or below the pre-rewrite length (about 3,000 words).
 
 ### C.3 Agents
 
