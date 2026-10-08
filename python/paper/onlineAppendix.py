@@ -354,7 +354,7 @@ GROUPS = [
     ('esc-uk', 'esc', [
         F('UKUS_ESC_French',
           caption = r'Endogenous pension design under French characteristics in the U.S.\ and the UK',
-          note = r'Each host at its own cost parameter. The first column is the design in force in 2020 as a level, '
+          note = r'Each host at its own cost parameter. The first column is the design $\theta_{2020}$ as a level, '
                  r'the reference line at the host\textquotesingle s observed design and the muted lines at the '
                  r'corners; the second is the tax rate as a deviation from the host\textquotesingle s '
                  r'endogenous-$\theta$ baseline, whose levels are the baseline rows of the tables of this section. An '

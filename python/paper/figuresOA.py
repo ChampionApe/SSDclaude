@@ -184,7 +184,7 @@ def escPath():
     colRight = {id(s): (refStyle if np.isclose(s[5], ξ0) else next(others)) for s in right}
 
     fig, axes = plt.subplots(2, 2, figsize = (WIDTH, 4.6), constrained_layout = True, sharex = True)
-    panels = [('theta', r'Design in force $\theta_t$', 'Design in force θ_t', '', ),
+    panels = [('theta', r'Pension design $\theta_t$', 'Pension design θ_t', '', ),
               ('dtau', 'Tax rate, chosen minus pinned', 'Tax rate, chosen minus pinned', 'percentage points')]
     marks = []
     columns = ((left, colLeft, r'across $\rho$ ($\xi = ' + C.num(ξ0, 1) + '$)', 'rho'),

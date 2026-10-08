@@ -488,8 +488,8 @@ def escXi():
               + r' & $\theta$ \textbf{chosen} & \textbf{Tax, pinned} & \textbf{Tax, chosen}')
     θstar = float(D.escCalibration()[(C.US['ρBaseline'], C.US['esc']['spec'])]['θStar'])
     note = (r'\textit{Note:} Log preferences ($\rho = 1$). At each Frisch elasticity $\xi$ the model is '
-            r'recalibrated, $(\beta, \omega, X)$ to their targets and $\lambda$ so that the design in force in '
-            + str(t0) + r' is $\theta^{\ast} = ' + C.num(θstar, 3) + r'$. The design columns follow the '
+            r'recalibrated, $(\beta, \omega, X)$ to their targets and $\lambda$ so that $\theta_{'
+            + str(t0) + r'} = \theta^{\ast} = ' + C.num(θstar, 3) + r'$. The design columns follow the '
             r'baseline path of table \ref{' + _label('ESC_PathTable') + r'}. Acute ageing sets $\nu_t = 1$ '
             r'throughout, a new equilibrium path read at ' + str(t0) + r', with the design pinned at '
             r'$\theta^{\ast}$ or chosen; at $\xi = ' + C.num(ξ0, 1) + r'$ it is the row of table '
@@ -522,7 +522,8 @@ def escTiming():
     none = none.iloc[-1]
     permC = permC[permC['wedge'] == 'none'].sort_values('ρ')
     ρLOG = C.US['ρAnchor']
-    year0 = C.usCalendar()['year0']
+    cal = C.usCalendar()
+    year0, yearBefore = cal['year0'], cal['dates'][cal['t0'] - 1]
     isTrue = lambda s: s.astype(str).isin(['True', 'true', '1', '1.0'])
     sci = lambda v: '$' + '{:.3g}'.format(float(v)) + '$'
     gap = r'[.5em]'
@@ -548,8 +549,9 @@ def escTiming():
                if bool(isTrue(seq['negative']).all()) else '. ')
             + r'Its scale is that of the objective, which differs across $\rho$; the log case is checked in the '
               r'regression suite of the code. '
-            + r'One period in advance: the design in force in ' + str(year0) + r' on the path where the choice '
-            r'binds from the first period. Once and for all: the design chosen in ' + str(year0) + r', with the '
+            + r'One period in advance: $\theta_{' + str(year0) + r'}$, the design chosen in ' + str(yearBefore)
+            + r', on the path where the choice binds from the first period. Once and for all: the design chosen in '
+            + str(year0) + r', with the '
             r'savings of the period before made in anticipation of the vote, and the tax rate at that design.'
             + (r' Pinning the savings ratio at the incumbent design instead, an unanticipated vote, gives the same '
                r'design in every row.' if same else ''))

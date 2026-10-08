@@ -738,8 +738,8 @@ def escCalibrationTable(spec = None):
     else:
         form = (r'$f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = ' + C.num(C.US['esc']['phi'], 1)
                 + r'$ imposed, so $f(0) = \phi$')
-    note = (r'\textit{Note:} ' + form + r'; $' + sym + r'$ is calibrated so the design in force in 2020 '
-            r'is the observed one, with $(\beta, \omega)$ recalibrated at each trial value. The cost is '
+    note = (r'\textit{Note:} ' + form + r'; $' + sym + r'$ is calibrated so that $\theta_{2020}$, the design '
+            r'chosen in 1990, is the observed one, with $(\beta, \omega)$ recalibrated at each trial value. The cost is '
             r'proportional, so it cancels from the replacement-rate ratio and $\theta^{\ast}$ is the '
             r'data\textquotesingle s own. Without the cost the choice would be in the corner $\theta = 0$ '
             r'for every $\rho$.' + C.variantNote(C.US['commonX']))
@@ -849,8 +849,8 @@ def escScaleWedge():
               r'\textbf{Cost on} & \textbf{CRRA} ($\rho$) & $\lambda$, $p$ & $\theta^{\ast}$ & '
               r'$f(\theta^{\ast})$ & $f(0)$ & ' + ' & '.join(r'\textbf{' + h + '}' for _, h in SPECCOLUMNS))
     note = (r'\textit{Note:} Two specifications of the deadweight cost $f$ of equation \eqref{eq:esc:budget}, each '
-            r'with one parameter calibrated per $\rho$ so that the design in force in 2020 is the observed '
-            r'$\theta^{\ast}$, with $(\beta, \omega)$ recalibrated at each trial value. The cost on '
+            r'with one parameter calibrated per $\rho$ so that $\theta_{2020}$, the design chosen in 1990, is the '
+            r'observed $\theta^{\ast}$, with $(\beta, \omega)$ recalibrated at each trial value. The cost on '
             r'redistribution is that of table \ref{table:US_ESC:calibration}, $f(\theta, \tau) = '
             r'\exp\{-\tfrac12 \lambda \tau \tilde V (1-\theta)^2\}$: quadratic in the implicit tax the flat '
             r'component levies and scaled by the size of the system, so nothing is lost when nothing is '
@@ -858,8 +858,8 @@ def escScaleWedge():
             + C.num(C.US['esc']['phi'], 1) + r'$ imposed: a flat benefit forfeits a share $1 - \phi$ of '
             r'revenue whatever it redistributes. $f(\theta^{\ast})$ and $f(0)$ are the shares of revenue '
             r'that reach households at the observed design and at a flat benefit; the cost on '
-            r'redistribution is read at the 2020 tax rate. The last three columns are the design in force in 2020 '
-            r'when the electorate chooses it; under the cost on redistribution they are the '
+            r'redistribution is read at the 2020 tax rate. The last three columns are $\theta_{2020}$ '
+            r'when the electorate chooses the design; under the cost on redistribution they are the '
             r'endogenous-$\theta$ rows of tables \ref{table:US_ESC:ageing}, \ref{table:US_ESC:incomeDistr} '
             r'and \ref{table:US_ESC:voting}.' + C.variantNote(C.US['commonX']))
     return _xwrap('US_ESC_ScaleWedge', 'results/esc/escCalibration{,CRRA}.csv, escExperiments.csv',

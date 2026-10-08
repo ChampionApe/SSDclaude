@@ -1,6 +1,6 @@
 \section{The Model}\label{sec:model}
 \subsection{Demographics, Inequality, and Institutions}\label{sec:model:Demo}
-We consider an economy populated by overlapping generations of workers and retirees. Within each generational cohort, we consider $J+1$ household types indexed $j = 0, ..., J$. The $j>0$ household types allocate time between labor and leisure, pay taxes on labor income, consume, and save. When they reach retirement, they spend the return on their savings and any social security benefits they may receive, and die. Type $j=0$ households similarly allocate time between labor and leisure, consume, and save for retirement. However, they supply labor to an informal labor market, thus not subject to labor income taxes, and they save for retirement using an informal savings technology. The distribution of type $j>0$ households is given by $\gamma_j$ with $\sum_{j>0} \gamma_j = 1$, and the share of type $j=0$ households is $\gamma_0$. The ratio of workers to retirees in period $t$ follows a deterministic process, and is given by $\nu_t$. 
+We consider an economy populated by overlapping generations of workers and retirees. Within each generational cohort, we consider $J+1$ household types indexed $j = 0, \dots, J$. The $j>0$ household types allocate time between labor and leisure, pay taxes on labor income, consume, and save. When they reach retirement, they spend the return on their savings and any social security benefits they may receive, and die. Type $j=0$ households similarly allocate time between labor and leisure, consume, and save for retirement. However, they supply labor to an informal labor market, thus not subject to labor income taxes, and they save for retirement using an informal savings technology. The distribution of type $j>0$ households is given by $\gamma_j$ with $\sum_{j>0} \gamma_j = 1$, and the share of type $j=0$ households is $\gamma_0$. The ratio of workers to retirees in period $t$ follows a deterministic process, and is given by $\nu_t$. 
 
 
 The government runs a pay-as-you-go (PAYG) pension system with a balanced budget. Each period, the government imposes a tax on labor supplied in the formal sector and transfers the collected amount directly to retirees. We consider social security systems that differ along two dimensions: whether workers need to qualify to receive full benefits or not and the type of benefits provided, either tied to earnings or flat-rate. We describe the different systems in section \ref{sec:model:socialSecurity}. 
@@ -22,11 +22,11 @@ where $N_t$ is the number of formal workers at time $t$, $h_{t,i}$ is time alloc
 
 The representative firm produces output using labor and capital and a conventional Cobb-Douglas technology
 \begin{align}\label{eq:production}
-    Y_t = A_tK_t^{\alpha}H_t^{1-\alpha}
+    Y_t = K_t^{\alpha}H_t^{1-\alpha}
 \end{align} 
 In equilibrium this implies the following factor prices:
 \begin{align}\label{eq:factorPrices}
-    R_t = \alpha A_t \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha-1}, \qquad w_t = (1-\alpha)A_t \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha}.
+    R_t = \alpha \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha-1}, \qquad w_t = (1-\alpha) \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha}.
 \end{align}
 
 Informal households produce with a linear technology, so the informal wage $w_t^0$ and the return on informal savings $R_t^0$ are proportional to the formal sector's factor prices. 
@@ -56,9 +56,9 @@ where $\tau_t$ is the social security tax rate. As retirees, households receive 
 Optimization yields the first order conditions that represent a leisure/consumption tradeoff and a conventional Euler condition for intertemporal consumption smoothing:\footnote{We are using shorthand notation $u_i \equiv u(c_i,h_i)$ with timing implicit by the variable we take derivatives with respect to.}
 \begin{align}
     -\dfrac{\partial u_i}{\partial h_{t,i} } &= \dfrac{\partial u_i}{\partial c_{1,t}^i}\left(w_t(1-\tau_t)\eta_i+\dfrac{\partial b_{t+1}^i/\partial h_{t,i} }{R_{t+1}}\right), \ \ \ \  i>0 \\ 
-    -\dfrac{\partial u_i}{\partial h_{t,0} } &= \dfrac{\partial u_i}{\partial c_{0,t}^i}\left(w^0_t \eta_0+\dfrac{\partial b_{t+1}^0/\partial h_{t,0} }{R^0_{t+1}}\right),  \\ 
+    -\dfrac{\partial u_0}{\partial h_{t,0} } &= \dfrac{\partial u_0}{\partial c_{1,t}^0}\left(w^0_t \eta_0+\dfrac{\partial b_{t+1}^0/\partial h_{t,0} }{R^0_{t+1}}\right),  \\
     \dfrac{\partial u_i}{\partial c_{1,t}^i} &= \beta R_{t+1}\dfrac{\partial u_{i}}{\partial c_{2,t+1}^i}, \ \ \ \ i>0 \\
-    \dfrac{\partial u_i}{\partial c_{1,t}^0} &= \beta R^0_{t+1}\dfrac{\partial u_{i}}{\partial c_{2,t+1}^0}.\label{6d}
+    \dfrac{\partial u_0}{\partial c_{1,t}^0} &= \beta R^0_{t+1}\dfrac{\partial u_0}{\partial c_{2,t+1}^0}.\label{6d}
 \end{align}
 \end{subequations}
 

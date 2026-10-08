@@ -405,7 +405,7 @@ def escOverview():
 
     # (column, title, axis label, deviation scale, is a level). sr_t0 is s/(wh); (1 - alpha) turns it
     # into s/Y before the percentage-point scaling.
-    panels = [('θ_t0',  'Pension design in 2020', '$\\theta$ in force', 1., True),
+    panels = [('θ_t0',  'Pension design in 2020', '$\\theta_{2020}$', 1., True),
               ('τ_t0',  'Equilibrium tax rate', 'Percentage points', 100., False),
               ('sr_t0', 'Savings over GDP', 'Percentage points of GDP', 100.*(1 - α), False),
               ('ww_t0', 'Average workweek', 'Hours per week', 1., False)]
@@ -517,7 +517,7 @@ def ukusEscFrench():
     if not scen:
         raise D.MissingInput('the French scenarios at every rho in results/esc/escExperiments{,UK}.csv')
     labels = [lab for lab, _ in scen]
-    panels = [('θ_t0', 'Pension design in 2020', '$\\theta$ in force', 1., True),
+    panels = [('θ_t0', 'Pension design in 2020', '$\\theta_{2020}$', 1., True),
               ('τ_t0', 'Equilibrium tax rate', 'Percentage points', 100., False)]
     fig, grid = plt.subplots(len(HOSTS), len(panels), figsize = (8.0, 2*(0.5*len(labels) + 1.4) + 0.9),
                              sharey = True, sharex = 'col')
@@ -671,7 +671,7 @@ def robustnessMap():
     fig = plt.figure(figsize = (5.91, hGiven + hChosen + 0.55), layout = 'constrained')
     sfGiven, sfChosen = fig.subfigures(2, 1, height_ratios = [hGiven, hChosen + 0.55])
     for sf, text in ((sfGiven, 'Design given: change in the tax rate, percentage points'),
-                     (sfChosen, r'Design chosen: change in the design $\theta$ in force in 2020')):
+                     (sfChosen, r'Design chosen: change in the design $\theta_{2020}$')):
         sf.suptitle(text, x = 0.01, ha = 'left', fontsize = 9, color = INK['primary'])
 
     def point(ax, x, y, c, marker, filled, gid, ring):
