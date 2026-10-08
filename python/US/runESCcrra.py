@@ -6,6 +6,11 @@ Run:  .venv\Scripts\python.exe python\US\runESCcrra.py                       # r
       ... --stage calib path shocks sens
       ... --exact --stage calib path shocks --ns 150                        # the published method
       ... --exact --rho 2.0 --spec size --phi 0.5 --commonX --bracket L U     # the paper's wedge, lambda in p
+      ... --exact --rho 2.0 --spec sizeLQ --phi 0.5 --commonX [--kappa K]   # kappa: default the LOG row's
+
+The specs are runESC.py's. Under KAPPA_SPECS ('sizeLQ', 'sizeLQV') kappa is held (the CRRA leg calibrates
+lambda alone) at --kappa, by default the kappa of the LOG calibration row for the same (spec, phi, variant)
+in escCalibration.csv; every calib, path and shocks row carries the column kappa (NaN except KAPPA_SPECS).
 
 TWO METHODS, one `method` column. Every row written here carries method = 'exact' or 'path', and the
 column is part of every merge key, so the two vintages coexist in one csv and the paper pipeline selects
@@ -72,7 +77,9 @@ os.chdir(HERE)
 import test as testmod
 import shocks as sh
 from modelESC import ModelESC
-from runESC import SHOCKS_ESC, HOSTS, mergeWrite, buildEU, readout as escReadout, wedgeReadout
+from runESC import (SHOCKS_ESC, HOSTS, mergeWrite, buildEU, readout as escReadout, wedgeReadout, pickCalib,
+                    kappaOf, kappaColumn, dispersion)
+from modelESC import KAPPA_SPECS
 from runShocksUS import frenchData, hostRow
 from policy import multiplicityColumns
 
@@ -80,8 +87,25 @@ OUTDIR = os.path.join(REPO, 'results', 'esc')
 GSC = {'n': 101, 'ns': 150, 'smoothKnots': 4, 'interpKind': 'linear'}
 
 # The default scan bracket per spec when --bracket is not given (see the argument's comment): p for the
-# theta^p forms, lambda for 'size' (about 8.6 at rho = 1 under LOG and expected to fall in rho, as p does).
-BRACKET_CRRA = {'scale': (0.01, 3.0), 'flat': (0.01, 3.0), 'size': (0.25, 200.)}
+# theta^p forms, lambda for 'size' (about 8.6 at rho = 1 under LOG and expected to fall in rho, as p does);
+# 'sizeL' is 'size''s scaled by 0.26 (lambda_L is about 0.26 lambda_Q under a Vtilde weight and 0.76 of
+# that under M, ModelESC.WEDGE_BRACKET's comment); 'sizeLQ'/'sizeLQV' span lambda_Q*0.262/(kappa + 0.262)
+# for kappa up to 4, as WEDGE_BRACKET does.
+BRACKET_CRRA = {'scale': (0.01, 3.0), 'flat': (0.01, 3.0), 'size': (0.25, 200.), 'sizeL': (0.065, 52.),
+                'sizeLQ': (0.05, 200.), 'sizeLQV': (0.05, 200.)}
+
+
+def logKappa(spec, phi, commonX):
+    """ The kappa a CRRA run holds when --kappa is not given: 0.0 for every spec but KAPPA_SPECS, there the
+    kappa of the converged LOG calibration row for (spec, phi, commonX) in escCalibration.csv (NaN when
+    there is none). """
+    if spec not in KAPPA_SPECS:
+        return 0.
+    f = os.path.join(OUTDIR, 'escCalibration.csv')
+    if not os.path.exists(f):
+        return np.nan
+    hit = pickCalib(pd.read_csv(f), spec, phi, commonX)
+    return kappaOf(hit.iloc[0]) if not hit.empty else np.nan
 
 # Row-identity keys, rho-indexed counterparts of runESC's. commonX is in all three -- see mergeWrite.
 # method too: an exact row and a path row answer the same question by different solvers and must not
@@ -127,12 +151,14 @@ def buildHost(host, ρ, wedge = None, nθCandCRRA = 13, commonX = False, gs = No
     return m
 
 
-def franceRowCRRA(m, ρ, spec, phi, p, hbarRef, commonX = False, gs = None, grouping = None):
+def franceRowCRRA(m, ρ, spec, phi, p, hbarRef, commonX = False, gs = None, grouping = None, kappa = 0.):
     """ runESC.franceRow at rho != 1: France's own calibrated equilibrium at 2020 under the same wedge,
     exogenous theta, in escShocksCRRA's row schema. See runESC.franceRow for what the row means and why
     its workweek is a target rather than a prediction. Exogenous theta, so the row is method-free; the
-    caller stamps the method it is filed under. grouping: France cut at the host's groups. """
-    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, grouping = grouping, ρ = ρ, commonX = commonX)
+    caller stamps the method it is filed under. grouping: France cut at the host's groups. kappa: the
+    wedge's shape under KAPPA_SPECS. """
+    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p, 'kappa': kappa}, grouping = grouping, ρ = ρ,
+                  commonX = commonX)
     mFR.CRRA.initGS(GSC if gs is None else gs)
     mFR.calibrate(preferences = 'CRRA')
     pos = mFR.db['t0']
@@ -141,8 +167,8 @@ def franceRowCRRA(m, ρ, spec, phi, p, hbarRef, commonX = False, gs = None, grou
     r0 = escReadout(mFR, out['τ'], out['report'], hbarRef, pos, workweekData = ww)
     r1 = escReadout(mFR, out['τ'], out['report'], hbarRef, pos+1, workweekData = ww)
     θ = mFR.db['θ'].values.astype(float)
-    return {'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p, 'scenario': 'France',
-            'θpinned': True,
+    return {'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p, 'kappa': kappaColumn(mFR),
+            'scenario': 'France', 'θpinned': True,
             'θ_tm1': float(θ[pos-1]), 'θ_t0': float(θ[pos]), 'θ_t1': float(θ[pos+1]),
             'τ_t0': r0['τ'], 'sr_t0': r0['sr'], 'ww_t0': r0['workweek'],
             'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek'], 'multiplicity': out.get('multiplicity')}
@@ -272,7 +298,7 @@ def pathRowsFrom(m, led, base, ρ, spec, phi, pCal, commonX, method, designRule 
                        float(m.db['workweek']), hbarRef, pos = pos)
         rb = sh.readout(m, base['τ'], base['report'], float(m.db['workweek']), hbarRef, pos = pos)
         rows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': commonX, 'method': method,
-                     'p': pCal, 'pos': pos,
+                     'p': pCal, 'kappa': kappaColumn(m), 'pos': pos,
                      'date': dates[pos] if pos < len(dates) else np.nan,
                      'ν': float(m.db['ν'].xs(t)), 'θ': float(led['θ'].xs(t)),
                      'τ': r['τ'], 'sr': r['sr'], 'workweek': r['workweek'],
@@ -285,8 +311,13 @@ def pathRowsFrom(m, led, base, ρ, spec, phi, pCal, commonX, method, designRule 
 def main():
     p = argparse.ArgumentParser(description = 'Endogenous theta under CRRA.')
     p.add_argument('--rho', type = float, nargs = '*', default = [2.0])
-    p.add_argument('--spec', nargs = '*', default = ['scale'], choices = ('scale', 'flat', 'size'),
-                   help = "'size' is the paper's wedge (f(theta, tau), lambda in the p slot)")
+    p.add_argument('--spec', nargs = '*', default = ['scale'],
+                   choices = ('scale', 'flat', 'size', 'sizeL', 'sizeLQ', 'sizeLQV'),
+                   help = "'size' is the paper's wedge (f(theta, tau), lambda in the p slot); 'sizeL', "
+                          "'sizeLQ', 'sizeLQV' its linear and linear-quadratic variants (runESC.py)")
+    p.add_argument('--kappa', type = float, default = None,
+                   help = "'sizeLQ'/'sizeLQV': the kappa held while lambda is calibrated; default the LOG calibration "
+                          "row's (escCalibration.csv, same spec, phi and variant)")
     p.add_argument('--commonX', action = 'store_true',
                    help = 'the common-X calibration variant (the paper leads with it). Written as a '
                           'column and part of the merge key -- see runESC.mergeWrite.')
@@ -368,6 +399,12 @@ def main():
         for spec in a.spec:
             for phi in a.phi:
                 tag = f'rho={ρ}, {spec}, phi={phi}'
+                κ = (a.kappa if a.kappa is not None else logKappa(spec, phi, a.commonX)) \
+                    if spec in KAPPA_SPECS else 0.
+                if not np.isfinite(κ):
+                    print(f'  [{tag}] no kappa: no converged LOG {spec} row in escCalibration.csv and no '
+                          f'--kappa -- skipped.')
+                    continue
                 # ---------------------------------------------------- calibrate p
                 pCal = np.nan
                 if 'calib' in a.stage:
@@ -388,8 +425,9 @@ def main():
                                 nScanHere = max(nScan, 14)
                                 print('  no path-iteration p on file: full bracket, nScan = {}'
                                       .format(nScanHere))
-                    m = buildHost(a.host, ρ, {'spec': spec, 'phi': phi, 'p': 0.2}, nθCandCRRA = a.nCand,
-                                commonX = a.commonX, gs = gs, nθCand2D = a.nCand2D, **layer)
+                    m = buildHost(a.host, ρ, {'spec': spec, 'phi': phi, 'p': 0.2, 'kappa': κ},
+                                  nθCandCRRA = a.nCand, commonX = a.commonX, gs = gs, nθCand2D = a.nCand2D,
+                                  **layer)
                     try:
                         rec = m.calibrateWedge(spec = spec, phi = phi,
                                                preferences = 'CRRA2D' if a.exact else 'CRRA',
@@ -400,9 +438,9 @@ def main():
                         # the wedge read at the calibrated point: tau0 is the calibration target, which
                         # the path stage's targetDrift measures the solved path against
                         wr = (wedgeReadout(m, float(m.db['τ0'])) if rec['converged']
-                              else {'Vtilde': float(m.B.Vtilde(m.t0Year))})
+                              else dispersion(m))
                         calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': a.commonX, 'host': a.host,
-                                        'method': method, 'p': rec['p'],
+                                        'method': method, 'p': rec['p'], 'kappa': kappaColumn(m),
                                         'converged': rec['converged'], 'θStar': rec['θ'],
                                         'residual': rec['residual'], 'message': rec['message'],
                                         'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(m.t0Year)),
@@ -418,7 +456,7 @@ def main():
                     except Exception as e:
                         print(f'  FAILED {type(e).__name__}: {e}')
                         calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': a.commonX, 'host': a.host,
-                                        'method': method, 'p': np.nan,
+                                        'method': method, 'p': np.nan, 'kappa': kappaColumn(m),
                                         'converged': False, 'message': f'{type(e).__name__}: {e}'}
                                        | solverColumns(a.designRule, a.Ma, None))
                     mergeWrite(fCal, calRows, KEYCAL)
@@ -436,8 +474,9 @@ def main():
                     continue
 
                 # ---------------------------------------------------- the design path
-                m = buildHost(a.host, ρ, {'spec': spec, 'phi': phi, 'p': pCal}, nθCandCRRA = a.nCand,
-                            commonX = a.commonX, gs = gs, nθCand2D = a.nCand2D, **layer)
+                m = buildHost(a.host, ρ, {'spec': spec, 'phi': phi, 'p': pCal, 'kappa': κ},
+                              nθCandCRRA = a.nCand, commonX = a.commonX, gs = gs, nθCand2D = a.nCand2D,
+                              **layer)
                 m.calibrate()
                 t0 = m.t0Year
                 θStar = float(m.db['θ'].xs(t0))
@@ -528,7 +567,7 @@ def main():
                                                 hbarRef, pos = pos0+1)
                                 shkRows.append({'ρ': ρ, 'spec': spec, 'phi': phi,
                                                 'commonX': a.commonX, 'host': a.host, 'method': method,
-                                                'p': pCal,
+                                                'p': pCal, 'kappa': kappaColumn(mt),
                                                 'scenario': name, 'θpinned': pin,
                                                 'θ_tm1': float(θPath.iloc[pos0-1]),
                                                 'θ_t0': float(θPath.iloc[pos0]),
@@ -549,7 +588,7 @@ def main():
                     try:
                         tic = time.time()
                         f = franceRowCRRA(m, ρ, spec, phi, pCal, hbarRef, commonX = a.commonX, gs = gs,
-                                          grouping = frGrouping)
+                                          grouping = frGrouping, kappa = κ)
                         f['method'], f['host'] = method, a.host
                         f |= solverColumns(a.designRule, a.Ma, f.pop('multiplicity'))
                         shkRows.append(f)

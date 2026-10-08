@@ -174,8 +174,19 @@ class Base:
     #   'size'   A = fθ, B = f(1-θ),  f(θ,τ) = exp(-½ λ τ Ṽ (1-θ)²)   the paper's spec: the Harberger loss of
     #            the flat component's implicit taxes; Ṽ = Σ_i γ_i (y_i-1)²/y_i (Vtilde), λ = db['wedgeP'],
     #            db['wedgePhi'] is a dummy f never reads
+    #   'sizeL'  A = fθ, B = f(1-θ),  f(θ,τ) = exp(-λ τ M (1-θ))        linear, weight M = Σ_i γ_i |y_i-1|
+    #            (Mabs, the amount the flat component carries): ∂ln f/∂θ = λτM > 0 at θ = 1, so the corner
+    #            θ = 1 can be chosen
+    #   'sizeLQ' A = fθ, B = f(1-θ),  f(θ,τ) = exp(-λ τ (1-θ)[κ M + ½ Ṽ (1-θ)])   the linear term weighted by
+    #            M, the quadratic by Ṽ; κ = db['wedgeKappa']
+    #   'sizeLQV' as 'sizeLQ' with Ṽ on both terms: f = exp(-λ τ Ṽ (1-θ)[κ + ½(1-θ)])
+    #            Under 'sizeLQ'/'sizeLQV' (the only specs that read κ) κ = 0 is 'size' bitwise: the linear
+    #            term is a separate summand, so at κ = 0 the exponent is 'size''s own expression minus an exact 0
     #   'scale'  A = fθ, B = f(1-θ),  f(θ) = φ+(1-φ)θ^p                 the previous spec, the comparison arm
     #   'flat'   A = θ,  B = f(1-θ),  f(θ) = φ+(1-φ)θ^p                 only the FLAT component is costly
+    #
+    # Under the four size specs ln f is linear in τ, so ∂_τ ln f = ln f/τ (dlnfWedge_dτ), and f = 1 at θ = 1
+    # and wherever Ṽ = M = 0 (finding #17).
     #
     # THE ONE RULE THAT MAKES THIS SMALL: in every equilibrium object, θ_{t+1} appears only multiplying
     # (1-α)/α·τ_{t+1} (the discounted earnings-related return to an hour) and (1-θ_{t+1}) only multiplying
@@ -185,15 +196,15 @@ class Base:
     #
     # f takes the τ OF THE SAME DATE as the θ it scales -- (θ_t, τ_t) in bi, c2i and dlnc2i_dτ, (θ_{t+1},
     # τ_{t+1}) everywhere else -- so every call site passes the τ in scope, and dlnc2i_dτ carries ∂_τ ln f.
-    # Ṽ carries the vintage of the bracket it multiplies: lag = '[t-1]' beside hηRatio(t, lag = '[t-1]')
+    # Ṽ and M carry the vintage of the bracket they multiply: lag = '[t-1]' beside hηRatio(t, lag = '[t-1]')
     # (the retirees' cohort), the young's elsewhere. Under None, 'scale' and 'flat' τ is ignored, so those
     # paths are unchanged bit for bit (test_esc.py).
     #
-    # λ, φ, p are read from db (0-D parameters, constant across t and j), not passed as arguments, unlike
+    # λ, κ, φ, p are read from db (0-D parameters, constant across t and j), not passed as arguments, unlike
     # θ/τ: they are primitives of the political environment, not objects any solver chooses.
     def Vtilde(self, t = None, lag = ''):
         """ Ṽ = Σ_i γ_i (y_i-1)²/y_i, y_i = hηRatio (relative labour income, Σ_i γ_i y_i = 1): the
-        Harberger weight in f under 'size' (Eq esc:Vtilde). Scalar on Base/BaseGrid, (T,) on BaseTime. Terms
+        Harberger weight in f under the size specs (Eq esc:Vtilde). Scalar on Base/BaseGrid, (T,) on BaseTime. Terms
         with γ_i = 0 are masked BEFORE the product is formed, so a zero-mass slot with a synthetic or
         non-finite y_i cannot poison the sum through 0·inf or 0·NaN. Memoised inside cacheParams(). """
         def _v():
@@ -204,37 +215,75 @@ class Base:
             return np.where(live, γ*(ySafe-1)**2/ySafe, 0.).sum(axis = -1)
         return self._memo(('Vtilde', lag, self._year(t)), _v)
 
+    def Mabs(self, t = None, lag = ''):
+        """ M = Σ_i γ_i |y_i-1|, y_i = hηRatio: the weight of the linear term of f under 'sizeL' and
+        'sizeLQ' (Eq esc:AB), the amount the flat component carries. Shapes, vintage (lag), the zero-mass
+        mask and the memo as Vtilde. """
+        def _m():
+            γ = np.asarray(self(f'γi{lag}', t), dtype = float)
+            y = np.asarray(self.hηRatio(t, lag = lag), dtype = float)
+            live = γ > 0
+            ySafe = np.where(live, y, 1.)
+            return np.where(live, γ*np.abs(ySafe-1), 0.).sum(axis = -1)
+        return self._memo(('Mabs', lag, self._year(t)), _m)
+
+    def _lnfLinearWeight(self, spec, t, lag):
+        """ The dispersion weight of the linear term of ln f: M under 'sizeL'/'sizeLQ', Ṽ under 'sizeLQV'. """
+        return self.Vtilde(t, lag) if spec == 'sizeLQV' else self.Mabs(t, lag)
+
     def fWedge(self, θ, τ = None, t = None, lag = ''):
         """ f, the share of contributions that reaches beneficiaries (Eq esc:AB): 1 with no wedge;
-        φ+(1-φ)θ^p under 'scale'/'flat' (τ ignored); exp(-½ λ τ Ṽ (1-θ)²) under 'size', which needs the
-        τ of the same date as θ and raises without one. t, lag select Ṽ's vintage (Vtilde). Broadcasts
-        over θ and τ; on BaseTime both are (T,). """
+        φ+(1-φ)θ^p under 'scale'/'flat' (τ ignored); exp(-½ λ τ Ṽ (1-θ)²) under 'size',
+        exp(-λ τ M (1-θ)) under 'sizeL', exp(-λ τ (1-θ)[κ M + ½ Ṽ (1-θ)]) under 'sizeLQ' and
+        exp(-λ τ Ṽ (1-θ)[κ + ½(1-θ)]) under 'sizeLQV' (M = Mabs, Ṽ = Vtilde). The four size specs need
+        the τ of the same date as θ and raise without one. t, lag select the weights' vintage.
+        Broadcasts over θ and τ; on BaseTime both are (T,). """
         spec = self.db.get('wedgeSpec')
         if spec is None:
             return 1.
-        if spec == 'size':
+        if spec in ('size', 'sizeL', 'sizeLQ', 'sizeLQV'):
             if τ is None:
-                raise ValueError("fWedge: spec 'size' needs the τ of the same date as θ (f = f(θ, τ)).")
+                raise ValueError(f"fWedge: spec {spec!r} needs the τ of the same date as θ (f = f(θ, τ)).")
+            if spec == 'size':
+                return np.exp(-0.5*self.db['wedgeP']*np.asarray(τ, dtype = float)*self.Vtilde(t, lag)
+                              *(1-np.asarray(θ, dtype = float))**2)
+            if spec == 'sizeL':
+                return np.exp(-self.db['wedgeP']*np.asarray(τ, dtype = float)*self.Mabs(t, lag)
+                              *(1-np.asarray(θ, dtype = float)))
+            kappa, D = self.db['wedgeKappa'], self._lnfLinearWeight(spec, t, lag)
             return np.exp(-0.5*self.db['wedgeP']*np.asarray(τ, dtype = float)*self.Vtilde(t, lag)
-                          *(1-np.asarray(θ, dtype = float))**2)
+                          *(1-np.asarray(θ, dtype = float))**2
+                          - self.db['wedgeP']*kappa*np.asarray(τ, dtype = float)*D
+                          *(1-np.asarray(θ, dtype = float)))
         if spec not in ('scale', 'flat'):
             raise ValueError(f'fWedge: unknown wedge spec {spec!r}.')
         φ, p = self.db['wedgePhi'], self.db['wedgeP']
         return φ + (1-φ)*np.asarray(θ, dtype = float)**p
 
     def dlnfWedge_dτ(self, θ, τ = None, t = None, lag = ''):
-        """ ∂_τ ln f(θ,τ) = -½ λ Ṽ (1-θ)² under 'size'; 0 under every other spec (f does not see τ). """
-        if self.db.get('wedgeSpec') != 'size':
-            return 0.
-        return -0.5*self.db['wedgeP']*self.Vtilde(t, lag)*(1-np.asarray(θ, dtype = float))**2
+        """ ∂_τ ln f(θ,τ) = ln f/τ: -½ λ Ṽ (1-θ)² under 'size', -λ M (1-θ) under 'sizeL',
+        -λ (1-θ)[κ M + ½ Ṽ (1-θ)] under 'sizeLQ', -λ Ṽ (1-θ)[κ + ½(1-θ)] under 'sizeLQV' (as fWedge, the κ
+        term a separate summand); 0 under every other spec (f does not see τ). """
+        spec = self.db.get('wedgeSpec')
+        if spec == 'size':
+            return -0.5*self.db['wedgeP']*self.Vtilde(t, lag)*(1-np.asarray(θ, dtype = float))**2
+        if spec == 'sizeL':
+            return -self.db['wedgeP']*self.Mabs(t, lag)*(1-np.asarray(θ, dtype = float))
+        if spec in ('sizeLQ', 'sizeLQV'):
+            return (-0.5*self.db['wedgeP']*self.Vtilde(t, lag)*(1-np.asarray(θ, dtype = float))**2
+                    - self.db['wedgeP']*self.db['wedgeKappa']*self._lnfLinearWeight(spec, t, lag)
+                    *(1-np.asarray(θ, dtype = float)))
+        return 0.
 
     def wedgeA(self, θ, τ = None, t = None, lag = ''):
-        """ The coefficient on own past earnings h_{t-1,i}η_{t-1,i} in the benefit formula. τ is the tax
-        of the same date as θ (needed under 'size', ignored otherwise); t, lag select Ṽ's vintage. """
+        """ The coefficient on own past earnings h_{t-1,i}η_{t-1,i} in the benefit formula: θ under None and
+        'flat', fθ under every other spec. τ is the tax of the same date as θ (needed under the size specs,
+        ignored otherwise); t, lag select Ṽ's vintage. """
         return θ if self.db.get('wedgeSpec') in (None, 'flat') else self.fWedge(θ, τ, t, lag)*θ
 
     def wedgeB(self, θ, τ = None, t = None, lag = ''):
-        """ The coefficient on the flat component h_{t-1}. τ, t, lag as in wedgeA. """
+        """ The coefficient on the flat component h_{t-1}: 1-θ under None, f(1-θ) under every other spec.
+        τ, t, lag as in wedgeA. """
         return (1-θ) if self.db.get('wedgeSpec') is None else self.fWedge(θ, τ, t, lag)*(1-θ)
 
     #######################################################################
@@ -256,7 +305,7 @@ class Base:
     def bi(self, θ, bbar, h_, t = None, *, τ = None):
         """ Eq (governmentBudget): b_t^i = [A(θ_t,τ_t) h_{t-1,i} η_{t-1,i} + B(θ_t,τ_t) h_{t-1}] bbar_t.
         θ, bbar = period-t design / benefit level; h_ = h_{t-1} (aggregate, lagged). τ = τ_t, keyword-only
-        so it cannot be mistaken for bbar or h_ positionally: required under 'size' (bbar carries τ_t
+        so it cannot be mistaken for bbar or h_ positionally: required under the size specs (bbar carries τ_t
         already, but f needs it separately), ignored under every other spec. """
         hiη_ = self._bcast(h_) * self.hηRatio(t, lag = '[t-1]')
         A, B = self.wedgeA(θ, τ, t, '[t-1]'), self.wedgeB(θ, τ, t, '[t-1]')
@@ -570,7 +619,7 @@ class Base:
         predetermined, so a grid derivative would fold in a channel that does not belong in the FOC. The
         closed form here holds siRatio_ fixed by construction.
 
-        Under 'size' the bracket's f(θ_t, τ_t) moves with τ_t, so the numerator carries the factor
+        Under the size specs the bracket's f(θ_t, τ_t) moves with τ_t, so the numerator carries the factor
         (1 + τ ∂_τ ln f) (Eq esc:dlnc2i); dlnfWedge_dτ is 0 under every other spec and the factor is exactly 1. """
         α, p_, κ_ = self.get('α', t), self.get('p[t-1]', t), self.get('κ[t-1]', t)
         A0 = (1-α)/α * p_/κ_

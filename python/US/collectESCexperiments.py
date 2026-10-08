@@ -23,7 +23,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 ESC = os.path.join(REPO, 'results', 'esc')
 
-COLUMNS = ('ρ', 'preferences', 'spec', 'phi', 'commonX', 'method', 'p', 'scenario', 'θpinned',
+# kappa: the 'sizeLQ' cost's shape (NaN under every other spec, and in rows written before the column).
+COLUMNS = ('ρ', 'preferences', 'spec', 'phi', 'commonX', 'method', 'p', 'kappa', 'scenario', 'θpinned',
            'θ_tm1', 'θ_t0', 'θ_t1', 'τ_t0', 'sr_t0', 'ww_t0', 'τ_t1', 'sr_t1', 'ww_t1')
 
 

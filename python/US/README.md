@@ -19,8 +19,9 @@
 | `calibrateRhoGrid.py`, `calibrateRhoGridEU.py`, `runShocksUS.py`, `runESC.py`, `runESCcrra.py`, `runESCxi.py`, `collectESCexperiments.py` | drivers |
 | `stationaryApprox.py`, `stationaryApproxESC.py` | prepub checks: a stationary policy function (ν frozen at each date's value) against the exact date-specific one along the demographic path, for taxes (CRRA) and for the endogenous design (LOG, exact 2-D CRRA); `results/numerical/` |
 
-Nine fast test suites (~6 min; `test_esc.py` alone ~235 s, both cost specs; `test_designChoicePilot.py`, the
-CRRA design layer; `test_frozenSelection.py`, the tax-candidate selection) and two slow ones
+Ten fast test suites (~8 min; `test_esc.py` alone ~235 s, both cost specs; `test_escVariants.py` ~150 s,
+the linear specs; `test_designChoicePilot.py`, the CRRA design layer; `test_frozenSelection.py`, the
+tax-candidate selection) and two slow ones
 (`test_escTiming.py`, the permanent timing's reference numbers, ~75 s; `test_escCRRA.py`, ~7 min),
 registered in `python/runTests.py`.
 
@@ -110,10 +111,14 @@ calibration (`--noFrance` skips).
 
 ## Endogenous `θ`
 
-- The leaded choice under a deadweight cost on benefits, `Base.fWedge(θ, τ, t, lag)` with three specs
+- The leaded choice under a deadweight cost on benefits, `Base.fWedge(θ, τ, t, lag)` with six specs
   (`writing/US/model_esc.tex`, Eq `esc:AB`). **`'size'` is the paper's**: `f = exp(-½ λ τ Ṽ (1-θ)²)`, the
   Harberger loss of the flat component's implicit taxes, `Ṽ = Σ γ_i (y_i-1)²/y_i` (`Base.Vtilde`, zero-mass
-  slot masked), `λ` in the `wedgeP` slot and the csv column `p`, `φ` a dummy key. `'scale'`
+  slot masked), `λ` in the `wedgeP` slot and the csv column `p`, `φ` a dummy key. With `M = Σ γ_i |y_i-1|`
+  (`Base.Mabs`, the csv column `Mabs`): `'sizeL'` `exp(-λτM(1-θ))`; `'sizeLQ'` `exp(-λτ(1-θ)[κM+½Ṽ(1-θ)])`
+  (the planned paper spec); `'sizeLQV'` `exp(-λτṼ(1-θ)[κ+½(1-θ)])` (the record). `κ` in `wedgeKappa` and
+  the csv column `kappa`, `κ = 0` is `'size'` bitwise; the linear term costs `λτ(M or κM or κṼ) > 0` at the
+  margin of `θ = 1`, so the corner can be chosen. `'scale'`
   (`f = φ+(1-φ)θ^p`) is the earlier wedge and the online appendix's comparison arm; `'flat'` runs only in
   the permanent stage's comparison rows, which no output prints. `f` takes the τ of the same date as its θ,
   so every call site passes it, and `dlnc2i_dτ`
@@ -124,7 +129,10 @@ calibration (`--noFrance` skips).
   in every stage of `runESC.py` and `runESCcrra.py` (#13), so the two specs' rows coexist in one csv.
 - Calibration target: the design *in force* in 2020 (`leadedDesignAtT0`), by a log-grid scan of the cost
   parameter for one sign change (`WEDGE_BRACKET` per spec) then a bracketed root. At `ρ` = 1: `λ` = 8.643
-  under `'size'` (`Ṽ_US` = 0.436, `f(θ*)` = 0.982, `f(0)` = 0.762), `p` = 0.4076 under `'scale'`.
+  under `'size'` (`Ṽ_US` = 0.436, `f(θ*)` = 0.982, `f(0)` = 0.762), `p` = 0.4076 under `'scale'`. Three
+  kinds: interior (`calibrateWedge`), threshold (`calibrateWedgeCorner`, the smallest `λ` at which the design
+  is the corner, a bound: France under the linear specs, `ownKind`), joint (`runESC.calibrateJoint`,
+  `(λ, κ)` on the US and `--pinKappa` UK (its design) or FR (its corner), `kappaFrom`, `θPin`).
 - `LeadedCRRA2D` is the exact 2-D recursion and the PUBLISHED CRRA method (`runESCcrra.py --exact`,
   `method` = exact rows; the path iteration's rows stay under `method` = path as the cross-check). Pinned
   periods collapse the candidate grid inside the recursion; the θ-state grid matters (13 nodes), the `s`
@@ -150,6 +158,8 @@ committed results are the final run of 2026-10-03 (`logs/finalRun1002/`, read in
   calibrations; France has none, its observed `θ = 1` being out of reach of a cost quadratic in the
   redistribution performed. As ESC host (`--host UK`, CRRA into `escCalibrationCRRAUK.csv`) the UK's exact
   calibration scans at `ns` = 150 at `ρ` = 0.5, where `ns` = 50 does not converge. Its data caveats: `data/README.md`.
+- `'sizeL'`/`'sizeLQ'`/`'sizeLQV'` (2026-10-08): implemented and tested, LOG drivers wired, no result committed;
+  `runESCcrra.py` accepts them (`κ` from the LOG row), the permanent stage refuses them.
 - `PermanentCRRA` puts the costless permanent choice at θ = 0 for ρ ≤ 1.3 and θ = 1 for ρ ≥ 1.4
   (`escPermanentCRRA.csv`, the online appendix's `ESC_Timing`).
 - The path iteration (`method = 'path'`) values each candidate on its own re-solved path, an approximation

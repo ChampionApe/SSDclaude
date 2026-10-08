@@ -5,8 +5,9 @@ choice of theta (app:ESC). The "A+B" combination.
     m.calibrate()                       # (beta, omega) as ModelUS, with the wedge installed
     out = m.solveLeaded()               # the sequence of policy functions + the equilibrium path
     rec = m.calibrateWedge()            # p such that the leaded choice reproduces the observed design
+    rec = m.calibrateWedgeCorner('sizeL')   # the smallest lambda at which the design is the corner theta = 1
 
-THREE SPECS, and they differ in more than a formula (Base.wedgeA/wedgeB, Eq esc:AB):
+SIX SPECS, and they differ in more than a formula (Base.wedgeA/wedgeB, Eq esc:AB):
 
     'size'    b^i = f(theta_t, tau_t)[theta*eta_i*h_i + (1-theta)h]*bbar,
               f = exp(-lambda*tau*Vtilde*(1-theta)^2/2)                  the paper's spec: the Harberger
@@ -14,10 +15,22 @@ THREE SPECS, and they differ in more than a formula (Base.wedgeA/wedgeB, Eq esc:
               (Vtilde = sum_i gamma_i (y_i-1)^2/y_i, Base.Vtilde) and with the size of the system (tau).
               lambda lives in the 'p' slot (db['wedgeP']); 'phi' stays in the db as a dummy (0.5) because
               every csv key carries it, and f never reads it.
+    'sizeL'   as 'size' with f = exp(-lambda*tau*M*(1-theta)), M = sum_i gamma_i |y_i-1| (Base.Mabs, the
+              amount the flat component carries): the marginal cost at theta = 1 is lambda*tau*M > 0, so
+              the leaded choice can be the corner theta = 1.
+    'sizeLQ'  as 'size' with f = exp(-lambda*tau*(1-theta)[kappa*M + Vtilde*(1-theta)/2]), kappa in
+              db['wedgeKappa'] (the wedge dict's 'kappa'); kappa = 0 is 'size'.
+    'sizeLQV' as 'sizeLQ' with Vtilde on the linear term too: f = exp(-lambda*tau*Vtilde*(1-theta)
+              [kappa + (1-theta)/2]).
     'scale'   b^i = f(theta)[theta*eta_i*h_i + (1-theta)h]*bbar,  f = phi+(1-phi)theta^p   the previous spec
     'flat'    b^i = [theta*eta_i*h_i + (1-theta)f(theta)h]*bbar                              MGE's variant
 
-Under 'size' and 'scale' f cancels out of the OECD replacement-rate ratio that identifies theta, so theta is
+Three calibration kinds for the cost parameter: interior (calibrateWedge: p such that the design in force at
+t0 is theta*), threshold (calibrateWedgeCorner: the smallest lambda at which it is the corner theta = 1, a
+bound rather than a point), and joint ((lambda, kappa) under 'sizeLQ'/'sizeLQV' on two economies,
+runESC.calibrateJoint).
+
+Under the size specs and 'scale' f cancels out of the OECD replacement-rate ratio that identifies theta, so theta is
 the same number as in the exogenous-theta model. Under 'flat' it does NOT cancel: the same RR0 datum implies a
 different theta for every p, so theta and the wedge are jointly identified and getTheta becomes a scalar
 root. That is why the calibration below targets the DATUM (RR0, through theta*(p)) rather than the number
@@ -45,28 +58,37 @@ reports `targetDrift`, the distance the endogenous path lands from the (R, tau) 
 to. Read it before trusting a result: it is the diagnostic that says whether the fixed-point approximation
 held at this parameter point, and it costs nothing.
 """
+from copy import deepcopy
 import numpy as np, pandas as pd
 from scipy import optimize
 from model import ModelUS
 from policy import multiplicitySummary
 from policyESC import LeadedLOG, LeadedCRRA, LeadedCRRA2D, PermanentLOG, PermanentCRRA
 
-WEDGE_SPECS = (None, 'scale', 'flat', 'size')
+WEDGE_SPECS = (None, 'scale', 'flat', 'size', 'sizeL', 'sizeLQ', 'sizeLQV')
 # calibrateWedge's default scan bracket per spec (a log grid): p in [0.05, 3] for the theta^p forms; lambda
 # in [0.5, 200] for 'size' at rho = 1 under LOG, where the calibrated lambda is about 8.6 (test_esc.py,
 # vector X) and the residual runs from the theta -> 0 corner at small lambda to the theta -> 1 corner at
-# large, with one sign change. The CRRA driver has its own defaults (runESCcrra.BRACKET_CRRA, --bracket):
-# the required cost falls steeply in rho.
-WEDGE_BRACKET = {'scale': (0.05, 3.0), 'flat': (0.05, 3.0), 'size': (0.5, 200.)}
+# large, with one sign change. Under a Vtilde-weighted linear term the marginal cost at theta* is
+# lambda*tau*Vtilde against lambda*tau*Vtilde*(1-theta*) under 'size', so lambda_L would be about
+# 0.26 lambda_Q; the M weight ('sizeL') scales it by Vtilde/M, 0.76 for the US. Under 'sizeLQV' lambda is
+# about 8.64*0.262/(kappa + 0.262), under 'sizeLQ' the same with kappa*M/Vtilde for kappa. The CRRA driver
+# has its own defaults (runESCcrra.BRACKET_CRRA, --bracket): the required cost falls steeply in rho.
+WEDGE_BRACKET = {'scale': (0.05, 3.0), 'flat': (0.05, 3.0), 'size': (0.5, 200.), 'sizeL': (0.05, 50.),
+                 'sizeLQ': (0.05, 200.), 'sizeLQV': (0.05, 200.)}
+CORNER_TOL = 1e-6                     # a design >= 1 - CORNER_TOL at t0 is the corner theta = 1
+KAPPA_SPECS = ('sizeLQ', 'sizeLQV')   # the specs that read db['wedgeKappa']
 
 
 class ModelESC(ModelUS):
-    _defaultWedge = {'spec': None, 'phi': 0.5, 'p': 1.0}
+    _defaultWedge = {'spec': None, 'phi': 0.5, 'p': 1.0, 'kappa': 0.0}
 
     def __init__(self, *args, wedge = None, nθ = 41, nθCand = 121, nθCandCRRA = 13,
                  nθCandPerm = 21, nθ2D = 13, nθCand2D = 21, designRule = 'root', Ma = 5, **kwargs):
-        """ wedge: {'spec': None|'scale'|'flat'|'size', 'phi': float, 'p': float} ('p' is lambda under
-        'size'). spec=None reproduces ModelUS exactly (Base.wedgeA/wedgeB are then the identity), which is
+        """ wedge: {'spec': None|'scale'|'flat'|'size'|'sizeL'|'sizeLQ'|'sizeLQV', 'phi': float, 'p': float,
+        'kappa': float} ('p' is lambda under the size specs; 'kappa' is read under 'sizeLQ'/'sizeLQV' only,
+        default 0).
+        spec=None reproduces ModelUS exactly (Base.wedgeA/wedgeB are then the identity), which is
         what test_esc.py pins. designRule, Ma: LeadedCRRA2D's design layer ('root', alg esc:crra2D, or
         'legacy') and the root layer's tabulation nodes. """
         self._wedge0 = self._defaultWedge | (wedge or {})
@@ -83,24 +105,28 @@ class ModelESC(ModelUS):
         """ Write the wedge parameters BEFORE the parent fills db: updateAuxPars runs inside the parent's
         __init__ and re-derives theta through getθ, which is wedge-aware under 'flat'. """
         self.db.update({'wedgeSpec': self._wedge0['spec'], 'wedgePhi': self._wedge0['phi'],
-                        'wedgeP': self._wedge0['p']})
+                        'wedgeP': self._wedge0['p'], 'wedgeKappa': float(self._wedge0['kappa'])})
         super().initPars(pars = pars)
 
     # ------------------------------------------------------------------ wedge parameters
     @property
     def wedge(self):
-        return {'spec': self.db['wedgeSpec'], 'phi': self.db['wedgePhi'], 'p': self.db['wedgeP']}
+        return {'spec': self.db['wedgeSpec'], 'phi': self.db['wedgePhi'], 'p': self.db['wedgeP'],
+                'kappa': self.db['wedgeKappa']}
 
-    def setWedge(self, spec = None, phi = None, p = None, update = True):
+    def setWedge(self, spec = None, phi = None, p = None, update = True, kappa = None):
         """ Install wedge parameters and refresh the auxiliary ones. `update` re-derives theta (and Γh,
         eps, kappa) -- necessary under 'flat', where theta is a function of p, and harmless under 'scale'.
-        Pass update=False only if you are about to overwrite db['θ'] yourself. """
+        Pass update=False only if you are about to overwrite db['θ'] yourself. kappa: the linear term's
+        shape under KAPPA_SPECS (db['wedgeKappa']); None leaves it as it is. """
         if spec is not None:
             self.db['wedgeSpec'] = None if spec == 'none' else spec
         if phi is not None:
             self.db['wedgePhi'] = float(phi)
         if p is not None:
             self.db['wedgeP'] = float(p)
+        if kappa is not None:
+            self.db['wedgeKappa'] = float(kappa)
         if update:
             self.updateAuxPars()
         return self.wedge
@@ -461,17 +487,18 @@ class ModelESC(ModelUS):
         return self.ESCPC.solve(t0, siRatio_, s0 = s0, verbose = verbose)['θ']
 
     # ------------------------------------------------------------------ calibrating the wedge
-    def wedgeResidual(self, p, spec, phi, calKwargs = None, preferences = 'LOG'):
+    def wedgeResidual(self, p, spec, phi, calKwargs = None, preferences = 'LOG', kappa = None):
         """ (the equilibrium design at t0) - theta* at wedge parameter p, with (beta, omega) recalibrated
         to (R_{t0}, tau_{t0}) at that p. theta* is db['θ'] AFTER setWedge, so it moves with p under
-        'flat'. preferences selects which solver evaluates the design.
+        'flat'. preferences selects which solver evaluates the design. kappa: the KAPPA_SPECS' shape,
+        installed with p; None keeps db['wedgeKappa'].
 
         For the LEADED timings the target is the design in FORCE at t0 on a freely simulated path
         (leadedDesignAtT0), not the choice made at t0. That is the design the tables report, so it is the
         one the baseline has to reproduce; see leadedDesignAtT0 for the one-period distinction and what
         it costs. For the PERMANENT timings the choice at t0 IS the design at t0 -- the reform is dated
         t0 -- so those two entries are unchanged. """
-        self.setWedge(spec = spec, phi = phi, p = float(p))
+        self.setWedge(spec = spec, phi = phi, p = float(p), kappa = kappa)
         self.calibrate(**(calKwargs or {}))
         θStar = float(self.db['θ'].xs(self.t0Year))
         design = {'LOG':      lambda: self.leadedDesignAtT0(),
@@ -483,8 +510,9 @@ class ModelESC(ModelUS):
 
     def calibrateWedge(self, spec = 'scale', phi = 0.5, bracket = None, nScan = 12,
                        calKwargs = None, xtol = 1e-6, verbose = True, preferences = 'LOG',
-                       beforeScan = None, beforeRefine = None):
-        """ Calibrate p (lambda under 'size'; phi imposed) so the equilibrium design at t0 is the observed
+                       beforeScan = None, beforeRefine = None, kappa = None):
+        """ The interior kind: calibrate p (lambda under the size specs; phi imposed, and kappa under
+        KAPPA_SPECS, None keeping db['wedgeKappa']) so the equilibrium design at t0 is the observed
         one (wedgeResidual). bracket: None picks WEDGE_BRACKET[spec]. preferences: 'LOG', 'CRRA' (path
         iteration), 'CRRA2D' (the exact 2-D recursion; the published CRRA method), 'permLOG', 'permCRRA'.
         beforeScan/beforeRefine: callables run before the scan and before the bracketed root --
@@ -496,21 +524,26 @@ class ModelESC(ModelUS):
         theta = 0 or 1 the residual does not move with p at all, and a root finder handed such a bracket
         would report a spurious convergence at whichever endpoint it happened to test. The scan reports
         what it saw, so a run that fails to find an interior crossing says so rather than returning a
-        number. Returns {'p', 'residual', 'scan', 'converged', 'wedge', 'θ'}. """
+        number. Returns {'p', 'residual', 'scan', 'converged', 'wedge', 'θ'}.
+
+        The bracketed root starts from the warm starts the scan left (its last node's), which can lie too far
+        from the bracket for (beta, omega) to converge; if the root raises, it is retried once from the warm
+        starts of the bracket's left node (_warmStart). """
         bracket = WEDGE_BRACKET[spec] if bracket is None else bracket
         grid = np.exp(np.linspace(np.log(bracket[0]), np.log(bracket[1]), nScan))
-        scan = []
+        scan, warm = [], []
         if beforeScan is not None:
             beforeScan()
         for p in grid:
             try:
-                r = self.wedgeResidual(p, spec, phi, calKwargs, preferences)
+                r = self.wedgeResidual(p, spec, phi, calKwargs, preferences, kappa = kappa)
             except Exception as e:                   # a failed inner calibration is a datum, not a stop
                 r = np.nan
                 if verbose:
                     print(f'    p={p:.4f}: inner solve failed ({type(e).__name__}: {e})')
             scan.append({'p': float(p), 'residual': float(r),
                          'θ': float(self.db['θ'].xs(self.t0Year))})
+            warm.append(self._warmStart() if np.isfinite(r) else None)
             if verbose and np.isfinite(r):
                 print(f"    p={p:.4f}: θ*={scan[-1]['θ']:.4f}  choice-θ* = {r:+.5f}")
         v = np.array([s['residual'] for s in scan])
@@ -523,9 +556,101 @@ class ModelESC(ModelUS):
         k = idx[0]
         if beforeRefine is not None:
             beforeRefine()
-        f = lambda p: self.wedgeResidual(p, spec, phi, calKwargs, preferences)
-        p = optimize.brentq(f, grid[k], grid[k+1], xtol = xtol)
-        res = self.wedgeResidual(p, spec, phi, calKwargs, preferences)  # leaves db at the calibrated point
+        f = lambda p: self.wedgeResidual(p, spec, phi, calKwargs, preferences, kappa = kappa)
+        try:
+            p = optimize.brentq(f, grid[k], grid[k+1], xtol = xtol)
+        except Exception as e:
+            if warm[k] is None:
+                raise
+            if verbose:
+                print(f'    the root failed from the scan\'s last warm start ({type(e).__name__}: {e}); '
+                      f'retrying from p={grid[k]:.4f}\'s')
+            self._restoreWarmStart(warm[k])
+            p = optimize.brentq(f, grid[k], grid[k+1], xtol = xtol)
+        res = f(p)                                                    # leaves db at the calibrated point
         return {'p': float(p), 'residual': float(res), 'scan': scan, 'converged': abs(res) < 1e-4,
                 'wedge': self.wedge, 'θ': float(self.db['θ'].xs(self.t0Year)),
                 'message': 'calibrated'}
+
+    def _warmStart(self):
+        """ A copy of every warm start a calibration leaves: self.x0 (the (beta, omega) root's
+        'calibration' among them), self.LOG.x0 and self.CRRA.x0. A failed calibration restores db but
+        leaves the solvers' warm starts where it failed, so a retry restores all three (_restoreWarmStart). """
+        return {'x0': deepcopy(self.x0), 'LOG': deepcopy(self.LOG.x0), 'CRRA': deepcopy(self.CRRA.x0)}
+
+    def _restoreWarmStart(self, snap):
+        """ Install a _warmStart snapshot in place (other objects may hold the dicts). """
+        for d, k in ((self.x0, 'x0'), (self.LOG.x0, 'LOG'), (self.CRRA.x0, 'CRRA')):
+            d.clear()
+            d.update(deepcopy(snap[k]))
+
+    def calibrateWedgeCorner(self, spec, phi = 0.5, kappa = None, bracket = None, nScan = 10, calKwargs = None,
+                             tol = 1e-3, preferences = 'LOG', verbose = True):
+        """ The threshold kind: the smallest lambda at which the design in force at t0 is the corner
+        theta = 1 (design >= 1 - CORNER_TOL), for a spec whose marginal cost at theta = 1 is positive
+        ('sizeL'; 'sizeLQ', 'sizeLQV' at kappa > 0). kappa as in calibrateWedge.
+
+        Scans `bracket` (None: WEDGE_BRACKET[spec]) on a log grid of nScan nodes, each a wedgeResidual
+        ((beta, omega) recalibrated) whose design is residual + theta*; takes the first pair of adjacent
+        finite nodes whose left one is below the corner and right one at it, and bisects that interval in
+        log lambda until hi/lo - 1 <= tol, starting from the left node's warm starts (_warmStart). Returns {'p': the right end of the final interval, the smallest
+        lambda found at the corner (a bound); 'converged'; 'scan' (p, residual, θ = theta*, design per
+        node); 'θ': 1.0; 'residual': 0.0; 'choiceBelow': the design at the left end; 'wedge'; 'message'},
+        with the model left calibrated at 'p'. No corner in the bracket, or the corner already at its first
+        finite node: converged = False, p = NaN, and the message says which. """
+        bracket = WEDGE_BRACKET[spec] if bracket is None else bracket
+        grid = np.exp(np.linspace(np.log(bracket[0]), np.log(bracket[1]), nScan))
+        atCorner = lambda d: d >= 1 - CORNER_TOL
+        last = {'p': None}
+
+        def design(p):
+            r = self.wedgeResidual(p, spec, phi, calKwargs, preferences, kappa = kappa)
+            last['p'] = float(p)
+            return float(r) + float(self.db['θ'].xs(self.t0Year)), float(r)
+
+        scan, warm = [], []
+        for p in grid:
+            try:
+                d, r = design(p)
+            except Exception as e:                   # a failed inner calibration is a datum, not a stop
+                d = r = np.nan
+                if verbose:
+                    print(f'    λ={p:.4f}: inner solve failed ({type(e).__name__}: {e})')
+            scan.append({'p': float(p), 'residual': r, 'θ': float(self.db['θ'].xs(self.t0Year)), 'design': d})
+            warm.append(self._warmStart() if np.isfinite(d) else None)
+            if verbose and np.isfinite(d):
+                print(f"    λ={p:.4f}: θ*={scan[-1]['θ']:.4f}  design={d:.6f}{'  (corner)' if atCorner(d) else ''}")
+        fail = {'p': np.nan, 'converged': False, 'scan': scan, 'θ': 1.0, 'residual': np.nan,
+                'choiceBelow': np.nan, 'wedge': self.wedge}
+        fin = [k for k, s in enumerate(scan) if np.isfinite(s['design'])]
+        if not fin:
+            return fail | {'message': 'every scan node failed'}
+        if atCorner(scan[fin[0]]['design']):
+            return fail | {'message': f"the corner already at the bracket's first finite node λ = "
+                                      f"{scan[fin[0]]['p']:.4g}: the threshold is below the bracket"}
+        if not any(atCorner(scan[k]['design']) for k in fin):
+            return fail | {'message': f'no corner in the scanned bracket: the design stays below θ = 1 up '
+                                      f'to λ = {bracket[1]:.4g}'}
+        idx = [k for k in range(len(scan)-1) if k in fin and k+1 in fin
+               and not atCorner(scan[k]['design']) and atCorner(scan[k+1]['design'])]
+        if not idx:
+            return fail | {'message': 'the first corner node follows a failed node: no bracketing pair'}
+        k = idx[0]
+        lo, hi, dLo, dHi = grid[k], grid[k+1], scan[k]['design'], scan[k+1]['design']
+        if warm[k] is not None:                      # bisect from the lower node's warm starts, not the scan's last
+            self._restoreWarmStart(warm[k])
+        while hi/lo - 1 > tol:
+            mid = float(np.sqrt(lo*hi))
+            d, _ = design(mid)
+            if not np.isfinite(d):
+                raise RuntimeError(f'calibrateWedgeCorner: the design is not finite at λ = {mid}.')
+            if atCorner(d):
+                hi, dHi = mid, d
+            else:
+                lo, dLo = mid, d
+        if last['p'] != float(hi):                   # leave the model at the threshold
+            dHi, _ = design(hi)
+        if verbose:
+            print(f'    threshold λ = {hi:.6f} (design {dHi:.6f}; {dLo:.6f} at λ = {lo:.6f})')
+        return {'p': float(hi), 'converged': bool(atCorner(dHi)), 'scan': scan, 'θ': 1.0, 'residual': 0.0,
+                'choiceBelow': float(dLo), 'wedge': self.wedge, 'message': 'threshold'}
