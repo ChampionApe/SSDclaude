@@ -21,3 +21,15 @@ for it). `US_ESC_Calibration`, `US_ESC_Summary` (retitled) and `US_ESC_overview`
 appendix published to GitHub Pages on RKB's go (`quarto publish gh-pages`), RKB reviewing the paper online. At the
 wrap-up: the country table's "observed" header no longer hyphenates (`\mbox`), the cost note's §4 records the
 leaky-bucket framing, and the linear term for France's corner is TODO W9, a candidate for RKB's call.
+
+## 2026-10-08 — read-through; review items 3, 5 and 6 fixed, TFP out of section 2
+
+A read-through of the paper and the online appendix against the tables raised six items; RKB had 3, 5 and 6 fixed
+(`8a96925`, pushed to Overleaf, which was untouched since `5cc21cb`). "In force" left the exhibits: figure G.1's
+lower panel, `ESC_Path` ("Pension design θ_t", as in figure 7.1), the design axes of `US_ESC_overview` and
+`UKUS_ESC_French`, and five notes, which say "θ_2020, the design chosen in 1990" as section 7.2 does; docstrings and
+the technical note keep it. Section 5: the savings mechanism as in proposition 1, ε in units of the average formal
+benefit, the fall in the informal savings ratio as figure 5.2 prints it (ι defined in its note). Section 2 lost TFP
+(one in the code and the appendices) and got the type-0 conditions right; appendix D's β_j, B^i and p, appendix E's
+tense and notation (Law 24,347 dated 1994), five control spaces. Checks: `checkPaper.py` OK, latexmk clean at 60
+pages, `test_onlineAppendix.py` 6/6; the site rendered locally, not republished. Open: TODO W10, D3, W11; W12, C10.
