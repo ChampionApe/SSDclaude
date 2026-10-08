@@ -44,7 +44,7 @@ gates in C.4. The theorist's note is `notes/esc_variants.md`; the agent briefs a
 to `archive/notes/` on 2026-10-08 (indexed under "The endogenous design"). This plan stays live until RKB
 has reviewed the result and taken the calls below; then it follows them.
 
-**Status, 2026-10-08 evening: executed through phase W5.** Local commits only, no push. The calls RKB has
+**Status, 2026-10-08 evening: executed through phase W5.** Local commits only; the paper tree pushed to Overleaf at bef83fa on RKB's request, no GitHub push, site not published. The calls RKB has
 to make, in order of weight: (1) the inequality finding (C.1 decision 1's amendment, §2b of the section 7
 brief): under the linear-quadratic cost France's income distribution moves the chosen design to 0.850,
 nearly as far as acute ageing (0.874), against 0.772 under the quadratic cost, so the paper now says

@@ -31,5 +31,5 @@ instruction after reading it on Overleaf). Three new agent types on Fable at max
 `general-purpose` with the model and effort set per call. Gate 1 changed a decision on the theorist's result
 (the M weight on the linear term) and a run finding changed the paper's inequality claim; both are recorded in
 the plan's §C.1 for RKB's review, with the plan's status paragraph listing his calls. Local commits by path at
-every phase, no push to GitHub, Overleaf or the site. The precision item of the leaded recursion (TODO C11) and
+every phase, no push to GitHub or the site; the paper tree pushed to Overleaf at bef83fa on RKB's request. The precision item of the leaded recursion (TODO C11) and
 the CRRA leg for the preferred cost (R6) are the open code items; the briefs and reviews are in `archive/notes/`.

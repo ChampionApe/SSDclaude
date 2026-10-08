@@ -66,4 +66,5 @@ online appendix's `esc-variants` group (OA.4.2), 88 outputs mapped, site rendere
 Reviews: the referee pass (`archive/notes/review_escVariants_R1_2026-10-08.md`, nine findings applied, three
 pushes for RKB) and the numbers audit (R2, twelve items applied; no numeric mismatch beyond a rounded ratio).
 Checks: checkPaper OK, latexmk clean (69 pages), test_onlineAppendix OK, the fast suites 25 of 25. Commits
-428412e to the wrap-up, local; appendix C pushed to Overleaf at RKB's request at eefb460, nothing since.
+428412e to the wrap-up, local; appendix C pushed to Overleaf at RKB's request at eefb460; the paper tree at bef83fa pushed on RKB's request
+(14 files, no online edit found by the dry-run pull).
