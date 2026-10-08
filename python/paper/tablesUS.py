@@ -842,8 +842,9 @@ def escResults():
             r'characteristic holding over the whole horizon and the political choice binding from the first period. '
             + LQ + 'Pinned' + RQ + r' holds the design at $\theta^{\ast}$ and ' + LQ + 'chosen' + RQ + r' lets the '
             r'electorate choose it one period in advance, both under the cost. The calibrations are in table '
-            r'\ref{table:US_ESC:variants}; the savings rate and the workweek, the other counterfactuals and the UK as '
-            r'host are in the \oa{esc-variants}, the quadratic cost at $\rho = 0.5$ and $2$ in the \oa{esc-us}.'
+            r'\ref{table:US_ESC:variants}; the savings rate, the workweek and the other counterfactuals in table '
+            r'\ref{table:US_ESC:variantsShocks}, the quadratic cost at $\rho = 0.5$ and $2$ in table '
+            r'\ref{table:US_ESC:summary}, and the UK as host in the \oa{esc-variants}.'
             + C.variantNote(C.US['commonX']))
     # Ten columns on the 12pt measure, as escSummary: \footnotesize and a 9pt gap leave none overfull.
     colspec = r'@{}>{\raggedright\arraybackslash}p{2.4cm}*{' + str(3*len(specs)) + r'}{@{\hspace{9pt}}Y}@{}'
@@ -924,8 +925,10 @@ def escVariantsCountry():
               r'$\theta$ \textbf{chosen}', r'\textbf{Own} $\lambda_1$', r'\textbf{Own} $\lambda_2$']
     note = (r'\textit{Note:} Log preferences, $\rho = 1$. One block per specification of the cost of table '
             r'\ref{table:US_ESC:variants}, each with its own U.S.\ calibration' + altSentence + r'. $\theta^{\ast}$ and '
-            r'the tax rate are each economy\textquotesingle s observed design and 2020 tax rate (table '
-            r'\ref{table:US:Calib}); $\tilde V = \sum_i\gamma_i(y_i-1)^2/y_i$ and $M = \sum_i\gamma_i|y_i-1|$ are the '
+            r'the tax rate are each economy\textquotesingle s observed design and 2020 tax rate, those of table '
+            r'\ref{table:US:Calib} except the design of the UK at U.S.\ income groups, which is this '
+            r'table\textquotesingle s own, read off the UK workbook regrouped at the U.S.\ income percentiles; '
+            r'$\tilde V = \sum_i\gamma_i(y_i-1)^2/y_i$ and $M = \sum_i\gamma_i|y_i-1|$ are the '
             r'dispersions of relative incomes that weight the quadratic and the linear term of the cost. ' + LQ
             + r'$\theta$ chosen' + RQ + r' is the design in 2020 on the economy\textquotesingle s own freely '
             r'simulated path under the block\textquotesingle s U.S.\ parameters, which the U.S.\ re-elects by '
@@ -934,8 +937,7 @@ def escVariantsCountry():
             r'$\kappa = \lambda_1/\lambda_2$ held at the block\textquotesingle s value. France\textquotesingle s '
             r'observed design is the corner $\theta = 1$, so its own values are the smallest at which its '
             r'electorate chooses the corner ($\geq$); under the quadratic cost no finite value does (--). Each '
-            r'economy is its own calibration at $\rho = 1$ ($\beta$ imposed from the U.S.); the UK at U.S.\ income '
-            r'groups is the UK workbook regrouped at the U.S.\ income percentiles.' + lqv
+            r'economy is its own calibration at $\rho = 1$ ($\beta$ imposed from the U.S.).' + lqv
             + C.variantNote(C.US['commonX']))
     src = 'results/esc/escCalibration{,' + ALTTAG + '}.csv, escCountry{,' + ALTTAG + '}.csv'
     return _xwrap('US_ESC_VariantsCountry', src, 'The cost specifications across economies',
@@ -1019,8 +1021,8 @@ def escVariantsShocks():
             r'income distribution and voting patterns together and, in the second, also its level of $X$. The France '
             r'row is France\textquotesingle s own calibrated path at its observed design $\theta = 1$, where none of '
             r'the three costs bites, and has no chosen reading. The savings rate is savings relative to GDP: its '
-            r'level on the baseline row and, on every other row, the change against the baseline with the design '
-            r'chosen, in percentage points. The workweek is in hours.')
+            r'level on the baseline row and, on every other row and in both columns, the change against the baseline '
+            r'with the design chosen, in percentage points. The workweek is in hours.')
     return _variantShocks('US_ESC_VariantsShocks', 'US',
                           'Endogenous pension design across counterfactuals and cost specifications: all readings',
                           'table:US_ESC:variantsShocks', [r[0] for r in VSHOCKROWS], note)

@@ -2,7 +2,7 @@
 
 This online appendix accompanies *Social Security Design and Its Political Support* by Rasmus K. S. Berg and
 Martín Gonzalez-Eiras. It holds the tables and figures behind the paper's quantitative sections, the robustness checks
-that the paper's appendix G summarizes in one figure, and the numerical checks behind its results, with each figure set beside the
+that the paper's appendix H summarizes in one figure, and the numerical checks behind its results, with each figure set beside the
 tables that print its numbers. Every exhibit is built by the paper's own pipeline from the model's results, so the
 numbers are the paper's to the last printed digit; [replication](replication.qmd) lists where each one comes from.
 
@@ -32,7 +32,7 @@ in marked, and the download of the files each exhibit reads.
 
 ## Robustness at a glance {#robustness}
 
-Figure G.1 of the paper, repeated here, sets its quantitative results against every specification the paper reports.
+Figure H.1 of the paper, repeated here, sets its quantitative results against every specification the paper reports.
 Each panel is one result: how the tax rate responds to the Bismarckian index $\theta$, to acute ageing and to France's income distribution and voting
 patterns with the design given, and how the chosen design responds to the last three. Each marker is the same
 result under one specification: the intertemporal elasticity of substitution (IES) $\rho$, the calibration of the

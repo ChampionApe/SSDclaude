@@ -336,7 +336,7 @@ GROUPS = [
                  r'patterns move the UK\textquotesingle s design toward flat benefits and its income distribution leaves '
                  r'it nearly where it is; under the linear cost the income distribution moves it toward earnings-related '
                  r'benefits and the voting patterns further toward flat ones. In every row choosing the design leaves the '
-                 r'tax rate within a tenth of a point of the pinned reading.')]),
+                 r'tax rate within 0.1 p.p.\ of the pinned reading.')]),
     ('esc-us', 'esc', [
         T('US_ESC_Results', 'The paper\'s table',
           text = r'Table \ref{table:US_ESC:results}: the paper\textquotesingle s reading at an IES of one under the three '
@@ -345,7 +345,7 @@ GROUPS = [
                  r'Bismarckian and France\textquotesingle s voting patterns less so; France\textquotesingle s income '
                  r'distribution moves it toward earnings-related benefits, little under the quadratic cost and by more '
                  r'under the linear-quadratic, and the linear cost takes every counterfactual to a corner or next to it. '
-                 r'Except under the linear cost, the tax rate with the design chosen lies within half a point of the '
+                 r'Except under the linear cost, the tax rate with the design chosen lies within 0.5 p.p.\ of the '
                  r'pinned reading.'),
         F('US_ESC_overview', caption = r'Endogenous versus exogenous pension design across counterfactuals',
           note = r'The first panel is the design in 2020 as a level, with the muted lines at the corners $\theta = 0$ '
@@ -421,8 +421,10 @@ GROUPS = [
                  r'year at an IES of one under the three specifications of the cost. Workers per retiree fall until 2080 '
                  r'and are held constant after; under every specification the chosen design rises with the fall and '
                  r'levels off with it, least under the quadratic cost and furthest under the linear one, which reaches '
-                 r'the Bismarckian corner in the first period after 2020, and the tax rate with the design chosen lies a '
-                 r'little above the one with it pinned.'),
+                 r'the Bismarckian corner in the first period after 2020. From 2080 on the tax rate with the design '
+                 r'chosen lies above the one with it pinned under the same cost by 0.31 p.p.\ under the linear-quadratic '
+                 r'cost, 0.20 p.p.\ under the quadratic and 1.01 p.p.\ under the linear; the figure draws the pinned tax '
+                 r'rate of the linear-quadratic cost.'),
         F('ESC_Path', caption = r'The design and the tax along the baseline path, U.S.',
           note = r'The design chosen one period in advance from the first period on, and the tax rate with the design '
                  r'chosen and with it pinned at $\theta^{\ast}$, along the baseline path at each IES and, at $\rho = 1$, '

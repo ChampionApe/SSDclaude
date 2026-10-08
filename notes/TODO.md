@@ -22,10 +22,13 @@ effect", `Conclusion.tex:5`) claim more.
 **D3. The UK at the U.S. income cuts.** `UKMain.xlsx`'s `calibrationUS` regroups the UK by a linear fit
 (`data/README.md`): relative incomes (0.79, 1.07, 1.45) at shares 58/18/24%. The UK's own groups, (0.50, 1.00,
 2.13) at 29/58/13%, bound any exact regrouping: the top 24% average at least 1.61 and the bottom 58% at most 0.75,
-so $\tilde V \geq 0.10$ against the 0.065 of `US_ESC_Country` (table 4), section 7.2 (with the re-read design
-0.543), appendix F.3 and OA.3.1. That the regrouping moves the UK's choice little probably survives. A recount of
-the survey at the U.S. cuts, then stage (i) for `UKUS` and the ESC stages. Section 7.2 also sets the UK at its own
-cuts (0.223) against France at the U.S. cuts (0.218); at the UK's cuts France is about 0.25.
+so $\tilde V \geq 0.10$ against the 0.065 of `US_ESC_VariantsCountry` (appendix G.1, with the re-read design
+0.543), appendix F.3 and OA.3.1. That the regrouping moves the UK's choice little holds under the quadratic cost
+only (0.644 against 0.625): under the preferred linear-quadratic cost the regrouped UK chooses 0.846 against
+0.560, because the regrouping's $M/\tilde V$ is 3.7 against 1.3 at the UK's own cuts and the linear term is
+weighted by $M$ (2026-10-08; appendix G.1's footnote states the caveat). A recount of the survey at the U.S.
+cuts, then stage (i) for `UKUS` and the ESC stages. Section 7.2 also sets the UK at its own cuts (0.223) against
+France at the U.S. cuts (0.218); at the UK's cuts France is about 0.25.
 
 ## Candidates, not scheduled
 
@@ -42,12 +45,24 @@ alone; and `build.py --list` runs every builder in full (its comment says the lo
 2026-10-08 it rewrote every figure PDF. Fixing both changes each figure PDF once, the paper's copies with them
 (an Overleaf push).
 
-**W9. A linear term in the cost of redistribution (RKB's call).** Under the quadratic cost the first unit of
-redistribution is free at the margin, so no electorate chooses France's corner $\theta = 1$; section 7.2's
-footnote and the conclusion leave a linear term in $1-\theta$ to future work. Two parameters, the U.S. and the
-UK designs as targets, France as the prediction: a derivation (appendix C.2's form and the design condition), a
-`spec` in `python/US/base.py fWedge`, and the ESC calibration and experiment stages rerun, CRRA included
-(`python/paper/README.md`, stage (ii) `--prepub`). `notes/paper_costLiterature.md` §2.A has the Okun framing.
+**R6. The CRRA leg for the preferred cost at $\rho = 0.5$ and $2$.** Section 7's closing paragraph and appendix
+G.3 read the quadratic cost's exact CRRA rows; the linear and linear-quadratic costs are solved at $\rho = 1$
+only (W9 closed on 2026-10-08 with the variants of `notes/plan_endogenousDesign.md` §C). `runESCcrra.py` accepts
+`--spec sizeLQ --kappa <κ>` (the shape held at its $\rho = 1$ value 0.1287, $\lambda$ recalibrated per $\rho$);
+`config.US['esc']['bracket']['sizeLQ']` needs scan brackets per $\rho$ (from the LOG $\lambda = 5.237$ as for
+`'size'`: about $[\lambda/3, 5\lambda]$ at $\rho = 0.5$ and $[\lambda/20, 3\lambda]$ at $2$) and the UK host
+(`escCalibrationCRRAUK.csv`) its own; about 3 h for the two $\rho$ in parallel plus the UK host. Then
+`config.US['esc']['spec'] = 'sizeLQ'` makes every $\rho$ exhibit the preferred cost's and the two-spec
+configuration (`paperSpec`, `variants`) collapses. Decision 5 of the plan.
+
+**C11. The tax policy interpolated on the design-state grid.** The leaded recursion interpolates
+$\mathcal{T}_{t+1}$ linearly on the 41-node state grid; the design objective is flat, so the parabolic refinement
+amplifies a $3\times10^{-5}$ error in $\tau$ into 0.004 in the 2020 choice (0.797 against 0.794 with the policy
+evaluated at the candidates) and $5\times10^{-4}$ in the 1990 choice the calibration targets; near the joint
+root the UK's design is uneven in $\kappa$ for the same reason ($\kappa$ uncertain by about $\pm0.005$).
+Evaluating the tax policy at the 121 candidates costs one `τOfθ` call per period (`notes/esc_variants.md`, "A
+precision item"). It moves every published design by up to 0.004 and breaks `test_esc.py`'s bitwise reference,
+so it waits for a run that recalibrates everything (R6 is the occasion).
 
 ## Data tasks
 

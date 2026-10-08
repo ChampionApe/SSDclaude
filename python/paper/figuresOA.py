@@ -230,9 +230,9 @@ def escPathPaper():
     is the model's: workers per retiree, the design chosen under each cost specification of
     config.US['esc']['variants'] against theta* pinned, and the tax rate with the design chosen under each and
     with it pinned under the preferred one (config.US['esc']['paperSpec']; datasets.escPath per spec). The
-    preferred specification is drawn solid with marks, the others as thinner unmarked lines in the ink colours.
-    The full path from the first period, the other rhos and the Frisch elasticities are ESC_Path. Marks link to
-    ESC_PathTable's rows of the preferred specification (tablesOA.escVariantSuffix); the nu panel's carry the
+    preferred specification is drawn solid, the others as thinner lines with smaller marks in the ink colours.
+    The full path from the first period, the other rhos and the Frisch elasticities are ESC_Path. Every mark
+    links to ESC_PathTable's row of its own specification (tablesOA.escVariantSuffix); the nu panel's carry the
     value, which no table prints. """
     name, table = 'US_ESC_Path', 'ESC_PathTable'
     ρ1, paper = C.US['ρBaseline'], C.US['esc']['paperSpec']
@@ -252,8 +252,11 @@ def escPathPaper():
     chosen, pinned = SERIES[0], SERIES[1]
     dashed = (0, (4, 2))
     # the other specifications, in the paper's order: (spec, colour, line style)
-    others = [(s, c, ls) for (s, _), (c, ls) in zip([v for v in variants if v[0] != paper],
-                                                    [(INK['secondary'], (0, (3, 1.5))), (INK['muted'], (0, (1, 1.2)))])]
+    others = [(s, c, ls, m) for (s, _), (c, ls, m) in zip([v for v in variants if v[0] != paper],
+                                                          [(INK['secondary'], (0, (3, 1.5)), '^'),
+                                                           (INK['muted'], (0, (1, 1.2)), 'v')])]
+    names = dict(variants)
+    seriesText = {'chosen': 'chosen, ' + names[paper] + ' cost', 'pinned': 'pinned, ' + names[paper] + ' cost', '': ''}
     fig, axes = plt.subplots(1, 3, figsize = (WIDTH, 2.6), constrained_layout = True)
     panels = [('nu', r'Workers per retiree $\nu_t$', 'Workers per retiree ν_t', ''),
               ('theta', r'Pension design $\theta_t$', 'Pension design θ_t', ''),
@@ -273,17 +276,25 @@ def escPathPaper():
             series = [('τExo', pinned, 'pinned', 's', dashed, 100., lambda r, v: _plain(T.escPathCells(r)[2])),
                       ('τ', chosen, 'chosen', 'o', 'solid', 100., lambda r, v: _plain(T.escPathCells(r)[1]))]
         if pid != 'nu':
-            col, scale = ('θ', 1.) if pid == 'theta' else ('τ', 100.)
-            for spec, colour, ls in others:
-                ax.plot(xs, scale*paths[spec][col].values.astype(float), color = colour, linewidth = 0.9,
-                        linestyle = ls, zorder = 2.5)
+            # the other specifications' chosen paths, marked and linked to their own ESC_PathTable rows
+            col, scale, cell = ('θ', 1., 0) if pid == 'theta' else ('τ', 100., 1)
+            for spec, colour, ls, marker in others:
+                d = paths[spec]
+                vs = scale*d[col].values.astype(float)
+                ax.plot(xs, vs, color = colour, linewidth = 0.9, linestyle = ls, zorder = 2.5)
+                for (_, r), x, v in zip(d.iterrows(), xs, vs):
+                    gid = markId(name, pid, 'chosen_' + spec, x)
+                    _point(ax, x, v, gid, colour, marker, ms = 2.8, z = 2.6)
+                    marks.append(_mark(gid, str(x), 'chosen, ' + names[spec] + ' cost', plainTitle, v,
+                                       _plain(T.escPathCells(r)[cell]), table,
+                                       T.escPathKey(x, T.escVariantSuffix(spec))))
         for col, colour, label, marker, ls, scale, text in series:
             vs = scale*df[col].values.astype(float)
             ax.plot(xs, vs, color = colour, linewidth = 1.2, linestyle = ls, zorder = 3)
             for (_, r), x, v in zip(df.iterrows(), xs, vs):
                 gid = markId(name, pid, label or 'data', x)
                 _point(ax, x, v, gid, colour, marker)
-                marks.append(_mark(gid, str(x), label, plainTitle, v, text(r, v / scale), table,
+                marks.append(_mark(gid, str(x), seriesText[label], plainTitle, v, text(r, v / scale), table,
                                    T.escPathKey(x, suffix)))
     # room under the pinned line, and its label above it at the right, where the chosen path has left it
     lo, hi = axes[1].get_ylim()
@@ -291,13 +302,13 @@ def escPathPaper():
     axes[1].annotate(r'pinned, $\theta^{\ast} = ' + C.num(θstar, 3) + '$', xy = (1., θstar),
                      xycoords = ('axes fraction', 'data'), xytext = (-2, 2), textcoords = 'offset points',
                      ha = 'right', va = 'bottom', fontsize = 7, color = INK['secondary'])
-    names = dict(variants)
     handles = ([Line2D([], [], color = chosen, marker = 'o', markersize = 3.6, linewidth = 1.2,
                        markeredgecolor = SURFACE, markeredgewidth = 0.5)]
-               + [Line2D([], [], color = c, linewidth = 0.9, linestyle = ls) for _, c, ls in others]
+               + [Line2D([], [], color = c, linewidth = 0.9, linestyle = ls, marker = m, markersize = 2.8,
+                         markeredgecolor = SURFACE, markeredgewidth = 0.5) for _, c, ls, m in others]
                + [Line2D([], [], color = pinned, marker = 's', markersize = 3.6, linewidth = 1.2, linestyle = dashed,
                          markeredgecolor = SURFACE, markeredgewidth = 0.5)])
-    labels = ([r'$\theta$ chosen, ' + names[paper] + ' cost'] + [names[s] + ' cost' for s, _, _ in others]
+    labels = ([r'$\theta$ chosen, ' + names[paper] + ' cost'] + [names[s] + ' cost' for s, _, _, _ in others]
               + [r'$\theta$ pinned at $\theta^{\ast}$'])
     leg = fig.legend(handles, labels, loc = 'outside lower center', ncol = len(handles), fontsize = 7,
                      labelcolor = INK['secondary'], frameon = False, columnspacing = 1.2, handlelength = 2.4)

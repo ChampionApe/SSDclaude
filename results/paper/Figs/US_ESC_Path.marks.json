@@ -62,9 +62,129 @@
    "row": "y2170sizeLQ@1.0"
   },
   {
+   "id": "US_ESC_Path--theta--chosen_sizeL--2020",
+   "label": "2020",
+   "series": "chosen, linear cost",
+   "panel": "Pension design θ_t",
+   "value": 0.7382261640538778,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y2020sizeL@1.0"
+  },
+  {
+   "id": "US_ESC_Path--theta--chosen_sizeL--2050",
+   "label": "2050",
+   "series": "chosen, linear cost",
+   "panel": "Pension design θ_t",
+   "value": 1.0,
+   "text": "1.000",
+   "table": "ESC_PathTable",
+   "row": "y2050sizeL@1.0"
+  },
+  {
+   "id": "US_ESC_Path--theta--chosen_sizeL--2080",
+   "label": "2080",
+   "series": "chosen, linear cost",
+   "panel": "Pension design θ_t",
+   "value": 1.0,
+   "text": "1.000",
+   "table": "ESC_PathTable",
+   "row": "y2080sizeL@1.0"
+  },
+  {
+   "id": "US_ESC_Path--theta--chosen_sizeL--2110",
+   "label": "2110",
+   "series": "chosen, linear cost",
+   "panel": "Pension design θ_t",
+   "value": 1.0,
+   "text": "1.000",
+   "table": "ESC_PathTable",
+   "row": "y2110sizeL@1.0"
+  },
+  {
+   "id": "US_ESC_Path--theta--chosen_sizeL--2140",
+   "label": "2140",
+   "series": "chosen, linear cost",
+   "panel": "Pension design θ_t",
+   "value": 1.0,
+   "text": "1.000",
+   "table": "ESC_PathTable",
+   "row": "y2140sizeL@1.0"
+  },
+  {
+   "id": "US_ESC_Path--theta--chosen_sizeL--2170",
+   "label": "2170",
+   "series": "chosen, linear cost",
+   "panel": "Pension design θ_t",
+   "value": 1.0,
+   "text": "1.000",
+   "table": "ESC_PathTable",
+   "row": "y2170sizeL@1.0"
+  },
+  {
+   "id": "US_ESC_Path--theta--chosen_size--2020",
+   "label": "2020",
+   "series": "chosen, quadratic cost",
+   "panel": "Pension design θ_t",
+   "value": 0.738226379401147,
+   "text": "0.738",
+   "table": "ESC_PathTable",
+   "row": "y2020@1.0"
+  },
+  {
+   "id": "US_ESC_Path--theta--chosen_size--2050",
+   "label": "2050",
+   "series": "chosen, quadratic cost",
+   "panel": "Pension design θ_t",
+   "value": 0.797328434018981,
+   "text": "0.797",
+   "table": "ESC_PathTable",
+   "row": "y2050@1.0"
+  },
+  {
+   "id": "US_ESC_Path--theta--chosen_size--2080",
+   "label": "2080",
+   "series": "chosen, quadratic cost",
+   "panel": "Pension design θ_t",
+   "value": 0.8040217663614139,
+   "text": "0.804",
+   "table": "ESC_PathTable",
+   "row": "y2080@1.0"
+  },
+  {
+   "id": "US_ESC_Path--theta--chosen_size--2110",
+   "label": "2110",
+   "series": "chosen, quadratic cost",
+   "panel": "Pension design θ_t",
+   "value": 0.8086228529539058,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2110@1.0"
+  },
+  {
+   "id": "US_ESC_Path--theta--chosen_size--2140",
+   "label": "2140",
+   "series": "chosen, quadratic cost",
+   "panel": "Pension design θ_t",
+   "value": 0.8086228529530396,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2140@1.0"
+  },
+  {
+   "id": "US_ESC_Path--theta--chosen_size--2170",
+   "label": "2170",
+   "series": "chosen, quadratic cost",
+   "panel": "Pension design θ_t",
+   "value": 0.8086228529535724,
+   "text": "0.809",
+   "table": "ESC_PathTable",
+   "row": "y2170@1.0"
+  },
+  {
    "id": "US_ESC_Path--theta--chosen--2020",
    "label": "2020",
-   "series": "chosen",
+   "series": "chosen, linear-quadratic cost",
    "panel": "Pension design θ_t",
    "value": 0.7382263674719398,
    "text": "0.738",
@@ -74,7 +194,7 @@
   {
    "id": "US_ESC_Path--theta--chosen--2050",
    "label": "2050",
-   "series": "chosen",
+   "series": "chosen, linear-quadratic cost",
    "panel": "Pension design θ_t",
    "value": 0.8239903846896756,
    "text": "0.824",
@@ -84,7 +204,7 @@
   {
    "id": "US_ESC_Path--theta--chosen--2080",
    "label": "2080",
-   "series": "chosen",
+   "series": "chosen, linear-quadratic cost",
    "panel": "Pension design θ_t",
    "value": 0.8489936764521895,
    "text": "0.849",
@@ -94,7 +214,7 @@
   {
    "id": "US_ESC_Path--theta--chosen--2110",
    "label": "2110",
-   "series": "chosen",
+   "series": "chosen, linear-quadratic cost",
    "panel": "Pension design θ_t",
    "value": 0.8500991890466763,
    "text": "0.850",
@@ -104,7 +224,7 @@
   {
    "id": "US_ESC_Path--theta--chosen--2140",
    "label": "2140",
-   "series": "chosen",
+   "series": "chosen, linear-quadratic cost",
    "panel": "Pension design θ_t",
    "value": 0.8500991890467361,
    "text": "0.850",
@@ -114,7 +234,7 @@
   {
    "id": "US_ESC_Path--theta--chosen--2170",
    "label": "2170",
-   "series": "chosen",
+   "series": "chosen, linear-quadratic cost",
    "panel": "Pension design θ_t",
    "value": 0.8500991890467079,
    "text": "0.850",
@@ -122,9 +242,129 @@
    "row": "y2170sizeLQ@1.0"
   },
   {
+   "id": "US_ESC_Path--tau--chosen_sizeL--2020",
+   "label": "2020",
+   "series": "chosen, linear cost",
+   "panel": "Tax rate τ_t",
+   "value": 14.42857124475496,
+   "text": "14.43%",
+   "table": "ESC_PathTable",
+   "row": "y2020sizeL@1.0"
+  },
+  {
+   "id": "US_ESC_Path--tau--chosen_sizeL--2050",
+   "label": "2050",
+   "series": "chosen, linear cost",
+   "panel": "Tax rate τ_t",
+   "value": 19.81481615602286,
+   "text": "19.81%",
+   "table": "ESC_PathTable",
+   "row": "y2050sizeL@1.0"
+  },
+  {
+   "id": "US_ESC_Path--tau--chosen_sizeL--2080",
+   "label": "2080",
+   "series": "chosen, linear cost",
+   "panel": "Tax rate τ_t",
+   "value": 21.262098182935148,
+   "text": "21.26%",
+   "table": "ESC_PathTable",
+   "row": "y2080sizeL@1.0"
+  },
+  {
+   "id": "US_ESC_Path--tau--chosen_sizeL--2110",
+   "label": "2110",
+   "series": "chosen, linear cost",
+   "panel": "Tax rate τ_t",
+   "value": 21.262098182935148,
+   "text": "21.26%",
+   "table": "ESC_PathTable",
+   "row": "y2110sizeL@1.0"
+  },
+  {
+   "id": "US_ESC_Path--tau--chosen_sizeL--2140",
+   "label": "2140",
+   "series": "chosen, linear cost",
+   "panel": "Tax rate τ_t",
+   "value": 21.262098182935148,
+   "text": "21.26%",
+   "table": "ESC_PathTable",
+   "row": "y2140sizeL@1.0"
+  },
+  {
+   "id": "US_ESC_Path--tau--chosen_sizeL--2170",
+   "label": "2170",
+   "series": "chosen, linear cost",
+   "panel": "Tax rate τ_t",
+   "value": 21.262098182935148,
+   "text": "21.26%",
+   "table": "ESC_PathTable",
+   "row": "y2170sizeL@1.0"
+  },
+  {
+   "id": "US_ESC_Path--tau--chosen_size--2020",
+   "label": "2020",
+   "series": "chosen, quadratic cost",
+   "panel": "Tax rate τ_t",
+   "value": 14.42857144180204,
+   "text": "14.43%",
+   "table": "ESC_PathTable",
+   "row": "y2020@1.0"
+  },
+  {
+   "id": "US_ESC_Path--tau--chosen_size--2050",
+   "label": "2050",
+   "series": "chosen, quadratic cost",
+   "panel": "Tax rate τ_t",
+   "value": 19.47719318871744,
+   "text": "19.48%",
+   "table": "ESC_PathTable",
+   "row": "y2050@1.0"
+  },
+  {
+   "id": "US_ESC_Path--tau--chosen_size--2080",
+   "label": "2080",
+   "series": "chosen, quadratic cost",
+   "panel": "Tax rate τ_t",
+   "value": 20.86975382540735,
+   "text": "20.87%",
+   "table": "ESC_PathTable",
+   "row": "y2080@1.0"
+  },
+  {
+   "id": "US_ESC_Path--tau--chosen_size--2110",
+   "label": "2110",
+   "series": "chosen, quadratic cost",
+   "panel": "Tax rate τ_t",
+   "value": 20.8757120498718,
+   "text": "20.88%",
+   "table": "ESC_PathTable",
+   "row": "y2110@1.0"
+  },
+  {
+   "id": "US_ESC_Path--tau--chosen_size--2140",
+   "label": "2140",
+   "series": "chosen, quadratic cost",
+   "panel": "Tax rate τ_t",
+   "value": 20.87571204987081,
+   "text": "20.88%",
+   "table": "ESC_PathTable",
+   "row": "y2140@1.0"
+  },
+  {
+   "id": "US_ESC_Path--tau--chosen_size--2170",
+   "label": "2170",
+   "series": "chosen, quadratic cost",
+   "panel": "Tax rate τ_t",
+   "value": 20.87571204987142,
+   "text": "20.88%",
+   "table": "ESC_PathTable",
+   "row": "y2170@1.0"
+  },
+  {
    "id": "US_ESC_Path--tau--pinned--2020",
    "label": "2020",
-   "series": "pinned",
+   "series": "pinned, linear-quadratic cost",
    "panel": "Tax rate τ_t",
    "value": 14.42857142857131,
    "text": "14.43%",
@@ -134,7 +374,7 @@
   {
    "id": "US_ESC_Path--tau--pinned--2050",
    "label": "2050",
-   "series": "pinned",
+   "series": "pinned, linear-quadratic cost",
    "panel": "Tax rate τ_t",
    "value": 19.19951405778395,
    "text": "19.20%",
@@ -144,7 +384,7 @@
   {
    "id": "US_ESC_Path--tau--pinned--2080",
    "label": "2080",
-   "series": "pinned",
+   "series": "pinned, linear-quadratic cost",
    "panel": "Tax rate τ_t",
    "value": 20.50387828046517,
    "text": "20.50%",
@@ -154,7 +394,7 @@
   {
    "id": "US_ESC_Path--tau--pinned--2110",
    "label": "2110",
-   "series": "pinned",
+   "series": "pinned, linear-quadratic cost",
    "panel": "Tax rate τ_t",
    "value": 20.50387828046517,
    "text": "20.50%",
@@ -164,7 +404,7 @@
   {
    "id": "US_ESC_Path--tau--pinned--2140",
    "label": "2140",
-   "series": "pinned",
+   "series": "pinned, linear-quadratic cost",
    "panel": "Tax rate τ_t",
    "value": 20.50387828046517,
    "text": "20.50%",
@@ -174,7 +414,7 @@
   {
    "id": "US_ESC_Path--tau--pinned--2170",
    "label": "2170",
-   "series": "pinned",
+   "series": "pinned, linear-quadratic cost",
    "panel": "Tax rate τ_t",
    "value": 20.50387828046517,
    "text": "20.50%",
@@ -184,7 +424,7 @@
   {
    "id": "US_ESC_Path--tau--chosen--2020",
    "label": "2020",
-   "series": "chosen",
+   "series": "chosen, linear-quadratic cost",
    "panel": "Tax rate τ_t",
    "value": 14.42857143080634,
    "text": "14.43%",
@@ -194,7 +434,7 @@
   {
    "id": "US_ESC_Path--tau--chosen--2050",
    "label": "2050",
-   "series": "chosen",
+   "series": "chosen, linear-quadratic cost",
    "panel": "Tax rate τ_t",
    "value": 19.410913513287813,
    "text": "19.41%",
@@ -204,7 +444,7 @@
   {
    "id": "US_ESC_Path--tau--chosen--2080",
    "label": "2080",
-   "series": "chosen",
+   "series": "chosen, linear-quadratic cost",
    "panel": "Tax rate τ_t",
    "value": 20.81056407285179,
    "text": "20.81%",
@@ -214,7 +454,7 @@
   {
    "id": "US_ESC_Path--tau--chosen--2110",
    "label": "2110",
-   "series": "chosen",
+   "series": "chosen, linear-quadratic cost",
    "panel": "Tax rate τ_t",
    "value": 20.81172709156743,
    "text": "20.81%",
@@ -224,7 +464,7 @@
   {
    "id": "US_ESC_Path--tau--chosen--2140",
    "label": "2140",
-   "series": "chosen",
+   "series": "chosen, linear-quadratic cost",
    "panel": "Tax rate τ_t",
    "value": 20.81172709156748,
    "text": "20.81%",
@@ -234,7 +474,7 @@
   {
    "id": "US_ESC_Path--tau--chosen--2170",
    "label": "2170",
-   "series": "chosen",
+   "series": "chosen, linear-quadratic cost",
    "panel": "Tax rate τ_t",
    "value": 20.811727091567462,
    "text": "20.81%",
