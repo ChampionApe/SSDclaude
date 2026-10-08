@@ -158,8 +158,12 @@ committed results are the final run of 2026-10-03 (`logs/finalRun1002/`, read in
   calibrations; France has none, its observed `θ = 1` being out of reach of a cost quadratic in the
   redistribution performed. As ESC host (`--host UK`, CRRA into `escCalibrationCRRAUK.csv`) the UK's exact
   calibration scans at `ns` = 150 at `ρ` = 0.5, where `ns` = 50 does not converge. Its data caveats: `data/README.md`.
-- `'sizeL'`/`'sizeLQ'`/`'sizeLQV'` (2026-10-08): implemented and tested, LOG drivers wired, no result committed;
-  `runESCcrra.py` accepts them (`κ` from the LOG row), the permanent stage refuses them.
+- `'sizeL'`/`'sizeLQ'`/`'sizeLQV'` (2026-10-08, logs `logs/escVariants/`): LOG rows in `results/esc/` (calib, path,
+  shocks, country, UK host; `*_kappaFR.csv` the France-pinned `'sizeLQ'`). `'sizeL'` `λ` = 1.710: the UK chooses
+  0, France the corner (threshold 1.312). `'sizeLQ'` pinned on the UK: `κ` = 0.129, `λ` = 5.237, France predicted
+  0.806; pinned on France `κ` = 0.629, `λ` = 2.068, the UK predicted 0.397. `'sizeLQV'` at the same U.S. cost
+  (`κ` = 0.1698 in Ṽ units): France 0.749. `runESCcrra.py` accepts them (`κ` from the LOG row, not run), the
+  permanent stage refuses them.
 - `PermanentCRRA` puts the costless permanent choice at θ = 0 for ρ ≤ 1.3 and θ = 1 for ρ ≥ 1.4
   (`escPermanentCRRA.csv`, the online appendix's `ESC_Timing`).
 - The path iteration (`method = 'path'`) values each candidate on its own re-solved path, an approximation
