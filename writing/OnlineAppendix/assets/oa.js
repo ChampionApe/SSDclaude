@@ -202,7 +202,7 @@ export function counterfactuals(data, {rows, facets, series, outcome, mode = "gi
     title.className = "oa-facet-title";
     title.textContent = f.label;
     return [title, Plot.plot({
-      width: w, height: rows.length * (nS * 15 + 30) + (last ? 50 : 8), marginLeft: 150, marginRight: 14, marginTop: 4,
+      width: w, height: rows.length * (nS * 10 + 14) + (last ? 50 : 8), marginLeft: 150, marginRight: 14, marginTop: 4,
       marginBottom: last ? 46 : 4, style: {fontSize: "12px"},
       x: {domain: d3.extent(xs), nice: true, insetLeft: 4, insetRight: 4, axis: null},
       y: {domain: series.values, axis: null, padding: 0.12},
