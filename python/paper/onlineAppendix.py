@@ -1,21 +1,23 @@
-r""" The online appendix: writing/OnlineAppendix, a Quarto book of the paper's exhibits, built from results/paper.
+r""" The online appendix: writing/OnlineAppendix, a Quarto book of short pages built from results/paper.
 
-Run:   .venv\Scripts\python.exe python\paper\onlineAppendix.py     (or build.py --site, which calls build())
-then:  quarto render writing\OnlineAppendix                         (the site in _book/, and _book/OnlineAppendix.pdf)
+Run:   .venv\Scripts\python.exe python\paper\build.py --site      (calls build())
+then:  quarto render writing\OnlineAppendix
 
-Reads results/paper (each built table's tex; each figure's pdf, png, svg and marks.json), the output map of
-REPLICATION.md (`build.py --map`), build.py's source for the builder of each output, the paper's tex (which
-exhibits it inputs, its figures' captions and notes, its section titles, and its numbers from main.aux when that
-file is newer than every .tex of the paper) and git. It imports no model code and runs no builder. Writes
-  writing/OnlineAppendix/_generated/   one include per exhibit group (a block of HTML for the site and one of LaTeX
-                                        for the print edition), the figures, the tables' print copies, the csvs
-                                        offered for download, the bibliography, the version stamp
-  writing/Paper/onlineAppendix.tex      the paper's \oa macros, from the chapters' OA-numbered headings
+The pages (*.qmd, listed in _quarto.yml) are written by hand: the prose, the small titles, the Observable JS cells
+of the interactive figures, and an include per exhibit:
+  {{< include _generated/exhibits/<id>.qmd >}}        a static figure or table, whole
+  {{< include _generated/exhibits/<id>-head.qmd >}}   an interactive figure's number and caption, above its cells,
+  {{< include _generated/exhibits/<id>-foot.qmd >}}   and its note and links below them.
+This module writes those blocks and everything else the pages read, into _generated/: the figures (svg), the
+datasets of the interactive figures and the csvs each exhibit offers (data/), the palette (style.js), the
+replication map (rep-map.qmd), the version stamp and the bibliography; and writing/Paper/onlineAppendix.tex, the
+paper's \oa macros from the pages' headings (`# B4. Title {#key}`) with every retired key aliased to its page.
 
-GROUPS is the registry and the order of the book's numbering. An exhibit the paper inputs is shown as the paper's
-and left out of the print edition; every other one is Table or Figure OA.k, numbered in the same order in both
-formats. A missing exhibit, or a figure without its svg or marks, degrades (the png; linking by table only) and is
-reported, never fatal: the online-only builders may not have run yet.
+EXHIBITS is the registry: id -> the output shown and, where neither the paper nor the output's own tex supplies
+them, its caption and note (LaTeX; no number is typed in them). Exhibits are numbered per page in the order the page
+includes them (Figure A2.1, Table B4.2); one the paper inputs also carries its number in the paper (main.aux).
+Reads results/paper, the output map of REPLICATION.md (`build.py --map`), build.py's source, the paper's tex and
+git; imports no model code and runs no builder. A missing output is reported and its block says so, never fatal.
 """
 import os, re, sys, json, html, shutil, subprocess, datetime
 
@@ -28,395 +30,135 @@ SITE = os.path.join(C.REPO, 'writing', 'OnlineAppendix')
 GEN = os.path.join(SITE, '_generated')
 TABLES = os.path.join(C.PAPERDIR, 'Tables')
 FIGS = os.path.join(C.PAPERDIR, 'Figs')
+DATA = os.path.join(C.PAPERDIR, 'Data')
 MACROS = os.path.join(C.PAPERTEX, 'onlineAppendix.tex')
 MAPFILE = os.path.join(C.REPO, 'REPLICATION.md')
 SITE_URL = 'https://championape.github.io/SSDclaude'
 REPO_URL = 'https://github.com/ChampionApe/SSDclaude'
-TWIN = '_vectorX'                          # the variant suffix of every twin (both arms lead with common X)
-VARIANT = {'commonX': ('common <i>X</i>', 'the paper\u2019s'), 'vectorX': ('vector <i>X<sub>i</sub></i>', '')}
 
 
 # ---------------------------------------------------------------------------------------------------
 # The registry.
 
 class Ex:
-    r""" One exhibit of a group: `name` is the headline output in build.OUTPUTS, `twin` adds its `_vectorX` twin
-    under the calibration switch, `tab` names its tab, `caption`/`note` (LaTeX) stand in for a figure the paper
-    does not input. `text` (LaTeX, the notes' vocabulary) is the exhibit's own paragraph: beside it on the site,
-    following the tab and the calibration, and before it in the print edition; `textAlt` replaces it for the
-    vector-$X_i$ twin, else the twin shows `text`. No number is typed in a text. """
-    def __init__(self, kind, name, tab = '', twin = False, caption = None, note = None, text = None, textAlt = None):
-        self.kind, self.name, self.tab, self.twin, self.caption, self.note = kind, name, tab, twin, caption, note
-        self.text, self.textAlt = text, textAlt
+    """ One exhibit. kind 'figure' (a static figure of results/paper/Figs), 'table' (a table of
+    results/paper/Tables) or 'explorer' (an interactive figure over the dataset `output` of results/paper/Data,
+    drawn by the page's OJS cells). `caption`/`note` (LaTeX) stand in where the paper or the table's tex does not
+    supply them. """
+    def __init__(self, kind, output, caption = None, note = None):
+        self.kind, self.output, self.caption, self.note = kind, output, caption, note
 
 
-def F(name, **k):
-    return Ex('figure', name, **k)
+E = Ex
+EXHIBITS = {
+    # A1
+    'ARG_LOG_FourInOne': E('figure', 'ARG_LOG_FourInOne',
+        caption = r'The equilibrium in 2010 over pension designs $(\epsilon, \theta)$, Argentina',
+        note = r'Each point is an economy that has always had that design, at $\rho = 1$. The line is the calibrated '
+               r'$\theta$; the markers are the pre-reform $\epsilon$ and the universal level of the reform. The '
+               r'savings rate is savings relative to GDP.'),
+    # A2
+    'ARG_RhoGrid': E('figure', 'ARG_RhoGrid',
+        caption = r'The Argentine calibration across the intertemporal elasticity',
+        note = r'The parameters solved jointly with the equilibrium path at each $\rho$ of the grid, against the '
+               r'same targets, and two predictions of the calibration, the savings rate and the informal savings '
+               r'ratio in 2010. $\rho = 1$ is the paper\textquotesingle s calibration.'),
+    'ARG_CRRA_LOG': E('figure', 'ARG_CRRA_LOG'),
+    'ARG_ReformPaths': E('explorer', 'ARG_ReformPaths',
+        caption = r'The reform along the path at one intertemporal elasticity',
+        note = r'Levels on the pre-reform path and on the reform path, each economy calibrated at its $\rho$. The '
+               r'workweek is normalised so that the pre-reform path reads the observed average workweek in 2010. '
+               r'The changes printed under the panels are the two points of figure \ref{fig:ARG:EffectOfCRRA} at '
+               r'the chosen $\rho$. The faint lines are $\rho = 1$, the paper\textquotesingle s calibration.'),
+    # A3
+    'ARG_LeisureCalibration': E('table', 'ARG_LeisureCalibration'),
+    'ARG_LeisureRho': E('table', 'ARG_LeisureRho'),
+    # B1
+    'OECD_RhoGrid': E('figure', 'OECD_RhoGrid',
+        caption = r'The calibrations of the U.S., the UK and France across the intertemporal elasticity',
+        note = r'The parameters solved jointly with the equilibrium path at each $\rho$ of the grid, against the '
+               r'same targets, with $\beta$ calibrated for the U.S.\ and imposed on the UK and France. $\rho = 1$ '
+               r'is the paper\textquotesingle s calibration.'),
+    # B2
+    'OECD_Hosts': E('explorer', 'OECD_Counterfactuals',
+        caption = r'What shapes pensions, savings and labor supply in the U.S.\ and the UK',
+        note = r'Each bar is the change against the host\textquotesingle s own baseline at the same $\rho$, in 2020. '
+               r'In the design row the full colour is $\theta = 0$ and the light tone $\theta = 1$; in the ageing '
+               r'row the bar is acute ageing and the tick mild ageing. France\textquotesingle s income groups are cut '
+               r'at the host\textquotesingle s income percentiles. Log preferences at $\rho = 1$, CRRA otherwise.'),
+    'OECD_Regroupings': E('table', 'OECD_Regroupings'),
+    'UKUS_householdheterogeneity': E('table', 'UKUS_householdheterogeneity'),
+    'FRUK_householdheterogeneity': E('table', 'FRUK_householdheterogeneity'),
+    'OECD_Groupings': E('explorer', 'OECD_Counterfactuals',
+        caption = r'The UK at its own and at the U.S.\ income groups',
+        note = r'As figure \ref{oa:OECD_Hosts}, for the UK at its own income groups, France cut at the same groups, '
+               r'and for the UK regrouped at the U.S.\ income groups, France at its own (the U.S.) groups. Each '
+               r'bar is the change against that economy\textquotesingle s own baseline.'),
+    # B3
+    'OECD_Frisch': E('explorer', 'OECD_Counterfactuals',
+        caption = r'The counterfactuals of the U.S.\ across the intertemporal and the Frisch elasticity',
+        note = r'As figure \ref{oa:OECD_Hosts}, for the U.S. Across $\xi$ the U.S.\ and France are recalibrated at '
+               r'each value under log preferences ($\rho = 1$), the targets unchanged.'),
+    # B4
+    'OECD_LeisureCalibration': E('table', 'OECD_LeisureCalibration'),
+    'OECD_LeisureGroups': E('table', 'OECD_LeisureGroups'),
+    'OECD_LeisureRows': E('explorer', 'OECD_Counterfactuals',
+        caption = r'The counterfactuals the treatment of the taste for leisure moves',
+        note = r'France\textquotesingle s income distribution and leisure preferences under the common $X$ and '
+               r'the vector $X_i$, each the change against the baseline of the same calibration and $\rho$. The '
+               r'design, ageing and voting rows are the same under the two.'),
+    # C1
+    'ESC_PathsCountries': E('explorer', 'ESC_Paths',
+        caption = r'The baseline path with the design chosen, by country',
+        note = r'Log preferences ($\rho = 1$). Each country keeps its own calibration and demography; the cost '
+               r'parameter is the U.S.\ one or the country\textquotesingle s own, as selected, and France has no own '
+               r'parameter. A design chosen at one date applies from the following one. Open markers are the '
+               r'observed designs.'),
+    'ESC_PathsReadings': E('explorer', 'ESC_Paths',
+        caption = r'The baseline path with the design chosen and with it pinned',
+        note = r'Log preferences ($\rho = 1$). Pinned holds the design at the country\textquotesingle s observed '
+               r'value throughout, under the same cost.'),
+    # C2
+    'ESC_Hosts': E('explorer', 'ESC_Counterfactuals',
+        caption = r'What shapes the pension design in the U.S.\ and the UK',
+        note = r'Each host at its own cost parameter. An open marker is the reading with the design pinned at the '
+               r'host\textquotesingle s observed value, a filled one the reading with the design chosen; the design '
+               r'is a level, the other outcomes the change against the baseline of the same reading and $\rho$, in '
+               r'2020. The vertical line in the design panel is the host\textquotesingle s observed design.'),
+    # C3
+    'ESC_Costs': E('explorer', 'ESC_Counterfactuals',
+        caption = r'The counterfactuals under the two cost specifications, U.S.',
+        note = r'As figure \ref{oa:ESC_Hosts}, for the U.S.\ under the paper\textquotesingle s cost and under a cost '
+               r'on the design, each calibrated at each $\rho$ (table \ref{table:OA:ESC_CostCalibration}).'),
+    'ESC_CostCalibration': E('table', 'ESC_CostCalibration'),
+    # C4
+    'ESC_Frisch': E('explorer', 'ESC_Counterfactuals',
+        caption = r'The endogenous design across the intertemporal and the Frisch elasticity, U.S.',
+        note = r'As figure \ref{oa:ESC_Hosts}, for the U.S. Across $\xi$ the model is recalibrated at each value '
+               r'under log preferences ($\rho = 1$), the cost parameter included; only acute ageing was run there.'),
+    'ESC_PathsParameters': E('explorer', 'ESC_Paths',
+        caption = r'The baseline path across the intertemporal and the Frisch elasticity, U.S.',
+        note = r'The paper\textquotesingle s cost, recalibrated at each value. Under CRRA preferences the workweek with '
+               r'the design pinned is not stored.'),
+    # C5
+    'ESC_Timing': E('table', 'ESC_Timing'),
+    # D1
+    'OECDdata': E('figure', 'OECDdata'),
+    'OECD_Countries': E('table', 'OECD_Countries'),
+    'OECD_Sources': E('table', 'OECD_Sources'),
+    'OECD_Correlations': E('table', 'OECD_Correlations'),
+    # D2
+    'NUM_Stationary': E('table', 'NUM_Stationary'),
+    'NUM_Selection': E('table', 'NUM_Selection'),
+}
 
-
-def T(name, tab, **k):
-    return Ex('table', name, tab, **k)
-
-
-TWINNOTE = (r'The paper\textquotesingle s figure under the vector-$X_i$ calibration (\oa{oecd-vectorx}); '
-            r'its baseline levels are the baseline rows of the tables of this section.')
-IDENTICAL = (r'Under the vector-$X_i$ calibration this exhibit is identical to the common-$X$ one to the last printed '
-             r'digit, as the comparison in \oa{oecd-vectorx} records: the calibration is block '
-             r'recursive, so the aggregates the reform moves do not depend on how the taste for leisure is split across '
-             r'the quartiles.')
-BLOCKRECURSIVE = (r'the calibration is block recursive, so what the design and the demography move does not depend on how '
-                  r'the taste for leisure is split across the income groups.')
-IDENTICALOECD = (r'Under the vector-$X_i$ calibration this table is identical to the common-$X$ one to the last printed '
-                 r'digit, as the comparison in \oa{oecd-vectorx} records: ' + BLOCKRECURSIVE)
-ROUNDINGOECD = (r'Under the vector-$X_i$ calibration this table differs from the common-$X$ one only in the last printed '
-                r'digit of a few cells at the lowest IES, as the comparison in \oa{oecd-vectorx} records: ' + BLOCKRECURSIVE)
-HOUSEHOLDSVECTORX = (r'Under the vector-$X_i$ calibration the taste for leisure differs across the groups, identified from '
-                     r'relative hours, and rises with income, and the productivities spread further apart than under the '
-                     r'common $X$; the population shares and the propensities to vote are data and do not change.')
-
-# (anchor, chapter file stem, exhibits). The anchors are the book's headings and the paper's \oa keys.
-GROUPS = [
-    ('data-countries', 'data', [
-        F('OECDdata',
-          text = r'Figure \ref{fig:US:OECDdata}: one marker per country, with the three economies the paper calibrates '
-                 r'labeled. The Bismarckian--Beveridgean index is the ratio of the gross replacement rates for men at mean '
-                 r'and at half-mean earnings: one where benefits are proportional to earnings, one half where they are '
-                 r'flat. Pension spending and the index both fall as population growth rises, and neither has a clear '
-                 r'relation to the Gini coefficient (table \ref{table:OA:OECD_Correlations}).'),
-        T('OECD_Countries', 'Countries'), T('OECD_Sources', 'Sources')]),
-    ('data-correlations', 'data', [T('OECD_Correlations', 'Correlations')]),
-    ('arg-calibration', 'argentina', [T('ArgentinaCalibration', 'Calibration', twin = True)]),
-    ('arg-reform', 'argentina', [
-        T('ArgentinaUniversal', 'The reform in 2010', twin = True, textAlt = IDENTICAL,
-          text = r'Table \ref{table:Argentina:Universal}: the effect in 2010 of raising the universal pension $\epsilon$ '
-                 r'to the level at which informal retirees receive the benefit of the least productive formal workers, '
-                 r'unanticipated and permanent. The first row is the pre-reform economy; the second holds the tax rate '
-                 r'at its pre-reform path and so isolates the response of households; the third lets the electorate '
-                 r'reset the tax. Taxes rise, because the reform moves benefits toward informal retirees, who are poorer '
-                 r'than formal ones and value them more at the margin, and savings and hours fall a little; with the tax '
-                 r'held fixed, formal savings rise instead, since informal households now hold a claim on the system '
-                 r'and save less.'),
-        T('ArgentinaReformPath', 'Its path', twin = True, textAlt = IDENTICAL,
-          text = r'The same reform along the path: the tax rate, the savings rate and the workweek in every model period '
-                 r'from the reform year on, on the pre-reform path and on the reform path side by side. The tax response '
-                 r'builds over the first periods, because informal households, now covered, save less for retirement '
-                 r'and as retirees demand more taxation; section \ref{sec:argentina} quotes the response one period on.')]),
-    ('arg-rho', 'argentina', [
-        F('ARG_CRRA_LOG', twin = True, textAlt = IDENTICAL,
-          text = r'Figure \ref{fig:ARG:EffectOfCRRA}: the effect of the reform on the tax rate, the savings rate, the '
-                 r'workweek and the ratio of informal to formal savings, on impact and one period on, at every IES of the '
-                 r'grid, each economy recalibrated to the same pre-reform targets. Below an IES of one the responses are '
-                 r'dampened, and at the lowest elasticities the tax response on impact reverses, since the young resist '
-                 r'taxation more and the calibration needs a heavier political weight of the old to reproduce the observed '
-                 r'tax rate; between one and two the responses stay close to the log benchmark.'),
-        T('ArgentinaReformByRho', 'Every IES', twin = True, textAlt = IDENTICAL,
-          text = r'The values behind the figure\textquotesingle s short-run series, one row per point of the grid: the '
-                 r'post-reform tax rate, the change in the savings rate and the workweek in the reform year. The pre-reform '
-                 r'row is common to every IES, because each is recalibrated to the same targets; the pre-reform savings '
-                 r'rate is not a target and varies with the IES, so its column is a change.')]),
-    ('arg-designs', 'argentina', [
-        F('ARG_LOG_FourInOne', twin = True,
-          caption = r'The equilibrium in 2010 over pension designs $(\epsilon, \theta)$, Argentina',
-          note = r'The line is the calibrated $\theta$, the markers the pre-reform $\epsilon$ and the universal '
-                 r'level of the reform. The savings rate is savings relative to GDP.')]),
-    ('arg-rhogrid', 'argentina', [
-        F('ARG_RhoGrid', twin = True, caption = r'The Argentine calibration across the intertemporal elasticity',
-          note = r'The parameters solved jointly with the equilibrium path at each IES of the grid, against the same '
-                 r'targets; the table of this section prints their values, and $\rho = 1$ is the paper\textquotesingle s '
-                 r'calibration.',
-          text = r'Four panels are parameters solved at each IES and two are predictions of the calibration, the savings '
-                 r'rate and the informal savings ratio in 2010. The discount factor and the political weight of the old '
-                 r'both fall as the IES rises, the second because the young resist taxation less and a lighter weight of '
-                 r'the old reproduces the observed tax rate; the savings rate falls, the informal savings ratio rises, and '
-                 r'the informal productivity and taste for leisure barely move.',
-          textAlt = r'Under the vector-$X_i$ calibration the discount factor, the political weight of the old, the '
-                    r'savings rate and the informal savings ratio are those of the common $X$ at every IES; only the '
-                    r'informal productivity and taste for leisure take other values, and they too barely move with the '
-                    r'IES.'),
-        T('ARG_RhoGridTable', 'Calibration by IES', twin = True)]),
-    ('oecd-calibration', 'oecd', [
-        T('USUKFRCalibration', 'Countries', twin = True,
-          text = r'Table \ref{table:US:Calib}: the three calibrations at an IES of one. France has the '
-                 r'lowest population growth and the narrowest productivity spread of the three and the U.S.\ the highest '
-                 r'population growth, while the political weight of the old is close in the U.S.\ and France and lower in '
-                 r'the UK.',
-          textAlt = r'Under the vector-$X_i$ calibration only $X$, whose level is the unit of hours, and the productivity '
-                    r'spread change; $\theta$, $\omega$, the demography and the shared parameters are those of the common '
-                    r'$X$. The spread widens in all three countries, the UK\textquotesingle s now slightly above the U.S.\ '
-                    r'one, and France\textquotesingle s stays the narrowest.'),
-        T('US_householdheterogeneity', 'U.S.', twin = True, textAlt = HOUSEHOLDSVECTORX,
-          text = r'Table \ref{table:a_US:CalibUS}: the U.S.\ households in three income groups, the first two cut so that '
-                 r'their mean incomes are half the mean and the mean. Productivity and the propensity to vote both rise '
-                 r'with income, and the low group holds most households.'),
-        T('FR_householdheterogeneity', 'France', twin = True, textAlt = HOUSEHOLDSVECTORX,
-          text = r'Table \ref{table:a_US:CalibFR}: France\textquotesingle s households grouped at the U.S.\ income '
-                 r'percentiles, so the population shares are the U.S.\ ones and each French group can stand in for its '
-                 r'U.S.\ counterpart in the counterfactuals of \oa{oecd-us}. The productivity profile is flatter than the '
-                 r'U.S.\ one and the propensity to vote is nearly flat.'),
-        T('UK_householdheterogeneity', 'UK', twin = True, textAlt = HOUSEHOLDSVECTORX,
-          text = r'Table \ref{table:a_US:CalibUK}: the UK\textquotesingle s households at its own cuts, half-mean and mean '
-                 r'income as for the U.S., which put most of them in the medium group. The propensity to vote rises with '
-                 r'income, less steeply than in the U.S.'),
-        T('FRUK_householdheterogeneity', 'France at the UK\u2019s cuts', twin = True,
-          text = r'Table \ref{table:a_US:CalibFRUK}: France\textquotesingle s households regrouped at the '
-                 r'UK\textquotesingle s income percentiles, the groups imposed on the UK in \oa{oecd-uk} and, with the '
-                 r'design chosen, in \oa{esc-uk}. Propensities to vote are observed at the U.S.\ cuts only, so each group '
-                 r'carries the population-weighted average of the observed values it overlaps. At these cuts '
-                 r'France\textquotesingle s productivity spread is wider than the UK\textquotesingle s (table '
-                 r'\ref{table:a_US:CalibUK}).',
-          textAlt = HOUSEHOLDSVECTORX + (r' At these cuts France\textquotesingle s productivity spread is narrower than '
-                                         r'the UK\textquotesingle s (table \ref{table:a_US:CalibUK_vectorX}), where under '
-                                         r'the common $X$ it is wider.')),
-        T('UKUS_householdheterogeneity', 'The UK at U.S. cuts', twin = True, textAlt = HOUSEHOLDSVECTORX,
-          text = r'The UK\textquotesingle s households regrouped at the U.S.\ income percentiles, so the population shares '
-                 r'are the U.S.\ ones. At these cuts the UK\textquotesingle s productivity profile is much flatter than at '
-                 r'its own (table \ref{table:a_US:CalibUK}), the source of the low dispersion of relative incomes in the '
-                 r'regrouped row of table \ref{table:US_ESC:country}.')]),
-    ('oecd-vectorx', 'oecd', []),
-    ('oecd-rhogrid', 'oecd', [
-        F('OECD_RhoGrid', twin = True,
-          caption = r'The calibrations of the U.S., the UK and France across the intertemporal elasticity',
-          note = r'The parameters solved jointly with the equilibrium path at each IES of the grid, against the same '
-                 r'targets, with $\beta$ calibrated for the U.S. and imposed on the UK and France; the table of this '
-                 r'section prints their values, and $\rho = 1$ is the paper\textquotesingle s calibration.',
-          text = r'One line per country; the discount factor is the U.S.\ one in all three. The political weight of the '
-                 r'old falls as the IES rises in every country, since the young resist taxation less, and keeps its '
-                 r'ranking, highest in the U.S.\ and lowest in the UK; the savings rate falls in every country, and the '
-                 r'interest factor of the UK and France, a prediction, rises toward the U.S.\ target.',
-          textAlt = r'Under the vector-$X_i$ calibration there is no common taste for leisure to draw, and every other '
-                    r'panel is that of the common $X$ up to the last printed digit.'),
-        T('OECD_RhoGridTable', 'Calibration by IES', twin = True)]),
-    ('oecd-us', 'oecd', [
-        F('US_overview', twin = True,
-          text = r'Figure \ref{fig:US:overview}: one row per characteristic changed in the U.S.\ calibration, at three '
-                 r'values of the IES. The design and ageing dominate the tax panel at an IES of one or below, '
-                 r'while at an IES of two France\textquotesingle s voting patterns move the tax rate by more than the whole '
-                 r'range of the design. France\textquotesingle s leisure preferences dominate the workweek panel and leave '
-                 r'the tax and savings rates essentially unchanged.',
-          textAlt = r'Only the rows that impose France\textquotesingle s productivities or its taste for leisure differ '
-                    r'from the paper\textquotesingle s figure: France\textquotesingle s income distribution lowers the tax '
-                    r'rate and lengthens the workweek by more at every IES, and its leisure preferences shorten the '
-                    r'workweek a little less. The rows for the design, ageing and voting patterns are the '
-                    r'paper\textquotesingle s.'),
-        T('US_PensChars', 'Pension design', twin = True, textAlt = IDENTICALOECD,
-          text = r'The design at its two corners against the observed one, at an IES of one. Moving to flat benefits '
-                 r'raises the tax rate and lowers the savings rate and the workweek; with the tax held at its baseline '
-                 r'path it raises the savings rate instead, so the tax response is what lowers it, while for hours the '
-                 r'two effects point the same way. Fully earnings-related benefits reverse every sign.'),
-        T('US_Ageing', 'Ageing', twin = True, textAlt = IDENTICALOECD,
-          text = r'The two ageing scenarios at an IES of one. Ageing raises the tax rate and lowers the savings rate and '
-                 r'the workweek, acute ageing by more than mild; with the tax held at its baseline path the savings rate '
-                 r'does not move and the workweek lengthens, so both falls come from the tax response.'),
-        T('US_OtherShocks', 'French characteristics', twin = True,
-          text = r'France\textquotesingle s characteristics on the U.S.\ at an IES of one. France\textquotesingle s income '
-                 r'distribution lowers the tax rate and raises the savings rate and the workweek, its voting patterns '
-                 r'raise the tax rate, and its leisure preferences shorten the workweek and move nothing else. All three '
-                 r'together bring the workweek close to France\textquotesingle s but move the tax rate away from it.',
-          textAlt = r'Under the vector-$X_i$ calibration only the rows that impose France\textquotesingle s productivities '
-                    r'or its taste for leisure differ: France\textquotesingle s income distribution lowers the tax rate and '
-                    r'raises the savings rate by more, alone and with the other characteristics, and the workweek is '
-                    r'longer in each of these rows. Every sign is that of the common $X$, and the voting row and '
-                    r'France\textquotesingle s own path are unchanged.'),
-        T('US_CRRA_PensChars', 'Design by IES', twin = True, textAlt = IDENTICALOECD,
-          text = r'The design at its two corners at each IES. Flat benefits raise the tax rate and shorten the workweek '
-                 r'at every IES and fully earnings-related ones do the reverse, both by less the higher the IES, since the '
-                 r'calibration then needs a lower political weight of the old and the difference between rich and poor '
-                 r'retirees counts for less. Flat benefits lower the savings rate at $\rho = 0.5$ and $1$ but raise it a '
-                 r'little at $\rho = 2$, where both corners raise it.'),
-        T('US_CRRA_Ageing', 'Ageing by IES', twin = True, textAlt = IDENTICALOECD,
-          text = r'The two ageing scenarios at each IES. Ageing raises the tax rate and lowers the savings rate and the '
-                 r'workweek at every IES, acute ageing by more than mild, and the tax response falls only a little as the '
-                 r'IES rises, where that of the design falls steeply (table \ref{table:US:CRRA:pensChars}).'),
-        T('US_CRRA_OtherShocks', 'French by IES', twin = True,
-          text = r'France\textquotesingle s characteristics on the U.S.\ at each IES. The income distribution lowers the '
-                 r'tax rate at every IES and the voting patterns raise it, the first by less and the second by more the '
-                 r'higher the IES, and the leisure preferences move essentially the workweek alone. With all three '
-                 r'together the tax rate falls at $\rho = 0.5$ and $1$ and rises at $\rho = 2$, where the voting patterns '
-                 r'prevail.',
-          textAlt = r'Under the vector-$X_i$ calibration only the rows that impose France\textquotesingle s productivities '
-                    r'or its taste for leisure differ: the income distribution lowers the tax rate by more at every IES, '
-                    r'and with all three characteristics together the tax rate falls at every IES, only marginally at '
-                    r'$\rho = 2$, where under the common $X$ it rises. The voting rows are those of the common $X$.')]),
-    ('oecd-uk', 'oecd', [
-        F('UKUS_French', twin = True, caption = r'French characteristics in the U.S.\ and the UK',
-          note = r'Every panel is the deviation from the host\textquotesingle s own baseline at the same $\rho$, '
-                 r'whose levels are the baseline rows of the tables of this section. France\textquotesingle s income '
-                 r'groups are cut at the host\textquotesingle s income percentiles. The savings rate is savings '
-                 r'relative to GDP.',
-          text = r'France\textquotesingle s characteristics on the two hosts, the U.S.\ in the upper row of panels and the '
-                 r'UK in the lower, on shared axes so that the hosts compare by position; the last row imposes all three '
-                 r'at once. Together they raise the UK\textquotesingle s tax rate at every IES, while on the U.S.\ they '
-                 r'lower it at $\rho = 0.5$ and $1$ and raise it at $\rho = 2$.',
-          textAlt = r'The same comparison under the vector-$X_i$ calibration, which changes the rows that impose '
-                    r'France\textquotesingle s productivities or its taste for leisure. France\textquotesingle s income '
-                    r'distribution lowers the tax rate on both hosts at every IES, and all three characteristics together '
-                    r'lower it on both at $\rho = 0.5$ and $1$, while at $\rho = 2$ they raise the UK\textquotesingle s a '
-                    r'little and leave the U.S.\ one essentially unchanged.'),
-        T('UK_OtherShocks', 'French characteristics', twin = True,
-          text = r'France\textquotesingle s characteristics on the UK at an IES of one, laid out as the U.S.\ table '
-                 r'\ref{table:US:otherShocks}. France\textquotesingle s income distribution and voting patterns each move '
-                 r'the UK\textquotesingle s tax rate by less than the U.S.\ one, and with all three characteristics '
-                 r'together the UK\textquotesingle s tax rate rises toward France\textquotesingle s, where the U.S.\ one '
-                 r'moves away from it.',
-          textAlt = r'Under the vector-$X_i$ calibration the rows that impose France\textquotesingle s productivities or '
-                    r'its taste for leisure differ: France\textquotesingle s income distribution lowers the '
-                    r'UK\textquotesingle s tax rate and raises its savings rate and workweek, the reverse of every '
-                    r'common-$X$ sign, and with all three characteristics together the UK\textquotesingle s tax rate falls '
-                    r'a little. The voting row and France\textquotesingle s own path are unchanged.'),
-        T('UK_CRRA_OtherShocks', 'French by IES', twin = True,
-          text = r'France\textquotesingle s characteristics on the UK at each IES. Each moves the UK\textquotesingle s '
-                 r'savings rate by little and the leisure preferences move the workweek alone; the income distribution '
-                 r'and the voting patterns both raise the tax rate, by more the higher the IES, and so do all three '
-                 r'together.',
-          textAlt = r'Under the vector-$X_i$ calibration France\textquotesingle s income distribution lowers the '
-                    r'UK\textquotesingle s tax rate at every IES, by less the higher the IES, and all three characteristics '
-                    r'together lower it at $\rho = 0.5$ and $1$ and raise it at $\rho = 2$; the voting rows are '
-                    r'essentially those of the common $X$.'),
-        T('UK_CRRA_PensChars', 'Design by IES', twin = True, textAlt = ROUNDINGOECD,
-          text = r'The design at its two corners on the UK at each IES. As on the U.S.\ (table '
-                 r'\ref{table:US:CRRA:pensChars}), flat benefits raise the tax rate and shorten the workweek at every IES '
-                 r'and fully earnings-related ones do the reverse, both by less the higher the IES; unlike on the U.S., '
-                 r'flat benefits lower the savings rate at every IES.'),
-        T('UK_CRRA_Ageing', 'Ageing by IES', twin = True, textAlt = ROUNDINGOECD,
-          text = r'The two ageing scenarios on the UK at each IES. As on the U.S., ageing raises the tax rate and lowers '
-                 r'the savings rate and the workweek at every IES, acute ageing by more than mild, and the tax response '
-                 r'falls only a little as the IES rises; every effect is smaller than on the U.S.\ (table '
-                 r'\ref{table:US:CRRA:ageing}).')]),
-    ('esc-calibration', 'esc', [
-        T('US_ESC_Calibration', 'The cost',
-          text = r'Table \ref{table:US_ESC:calibration}: one row per IES, each with the cost parameter at which the U.S.\ '
-                 r'electorate re-elects its observed design in 2020. The parameter, and with it the share of revenue lost '
-                 r'at the observed design and at flat benefits, falls steeply as the IES rises, since a higher elasticity '
-                 r'strengthens the forward-looking channels that hold the choice away from the Beveridgean corner.'),
-        T('US_ESC_Country', 'The cross-country test',
-          text = r'Table \ref{table:US_ESC:country}: the test of the cost parameter calibrated on the U.S.\ alone, at an '
-                 r'IES of one. Under the U.S.\ parameter the chosen designs keep the observed ranking of the UK, the U.S.\ '
-                 r'and France, compressed toward the U.S.\ value; the UK\textquotesingle s own parameter lies below the '
-                 r'U.S.\ one, and regrouping the UK at the U.S.\ income percentiles moves its chosen design only '
-                 r'slightly.')]),
-    ('esc-us', 'esc', [
-        T('US_ESC_Results', 'The paper\'s table',
-          text = r'Table \ref{table:US_ESC:results}: the paper\textquotesingle s reading at an IES of one, the rows of '
-                 r'the summary table below without the composite. Acute ageing makes the chosen design more Bismarckian '
-                 r'and France\textquotesingle s voting patterns less so, by about as much; France\textquotesingle s '
-                 r'income distribution moves it little, and in every row the tax rate with the design chosen lies within '
-                 r'a few tenths of a point of the pinned reading.'),
-        F('US_ESC_overview', caption = r'Endogenous versus exogenous pension design across counterfactuals',
-          note = r'The first panel is the design in 2020 as a level, with the muted lines at the corners $\theta = 0$ '
-                 r'and $\theta = 1$; the other three are deviations from the endogenous-$\theta$ baseline, whose tax '
-                 r'rate is the baseline row of table \ref{table:US_ESC:summary} and whose savings rate and workweek '
-                 r'are the baseline rows of the tables of this section. The savings rate is savings relative to GDP. '
-                 r'An open marker is the reading with the design pinned at the U.S.\ value, a filled one the reading '
-                 r'with the design chosen.',
-          text = r'Each counterfactual with the design pinned and with it chosen, at '
-                 r'three values of the IES. Acute ageing moves the chosen design toward '
-                 r'earnings-related benefits and France\textquotesingle s voting patterns toward flat ones at every IES, '
-                 r'the voting patterns furthest at $\rho = 2$, where choosing the design also adds to the rise in the tax '
-                 r'rate and shortens the workweek; the direction in which France\textquotesingle s income distribution '
-                 r'moves the design changes with the IES, and the last row follows the voting patterns.'),
-        T('US_ESC_Summary', 'Summary'),
-        T('US_ESC_Ageing', 'Ageing',
-          text = r'Table \ref{table:US_ESC:ageing}: acute ageing at each IES, read with the design pinned at the U.S.\ '
-                 r'value and with it chosen, both under the cost. The baseline rows are the economy with the cost in place '
-                 r'and the design chosen, so they differ slightly from those of \oa{oecd-us}. The chosen design is more '
-                 r'Bismarckian at every IES and nearly the same across them, and choosing it adds a little to the rise in '
-                 r'the tax rate and to the fall in the savings rate and leaves the workweek almost unchanged.'),
-        T('US_ESC_IncomeDistr', 'Income distribution',
-          text = r'France\textquotesingle s income distribution on the U.S.\ at each IES, read with the design pinned and '
-                 r'with it chosen. With the design pinned the tax rate falls at every IES, by less than without the cost '
-                 r'(table \ref{table:US:CRRA:otherShocks}), since the compressed distribution also lowers the share of '
-                 r'revenue the flat component dissipates. The chosen design is less Bismarckian than the observed one at '
-                 r'$\rho = 0.5$ and more Bismarckian at $\rho = 1$ and $2$, and choosing it keeps the tax rate close to '
-                 r'the pinned reading at $\rho = 0.5$ and $1$ and raises it at $\rho = 2$.'),
-        T('US_ESC_Voting', 'Voting patterns',
-          text = r'France\textquotesingle s voting patterns on the U.S.\ at each IES, read with the design pinned and '
-                 r'with it chosen. The chosen design moves toward flat benefits at every IES, furthest at $\rho = 2$, '
-                 r'where the cost that holds the observed design in place is thinnest; choosing it keeps the tax rate '
-                 r'close to the pinned reading at $\rho = 0.5$ and $1$, and at $\rho = 2$ raises it and shortens the '
-                 r'workweek.'),
-        T('US_ESC_FrenchAll', 'All French characteristics',
-          text = r'All of France\textquotesingle s household characteristics on the U.S.\ at each IES, read with the '
-                 r'design pinned and with it chosen. The voting patterns prevail: the chosen design moves toward flat '
-                 r'benefits at every IES, further than under the voting patterns alone (table '
-                 r'\ref{table:US_ESC:voting}), and choosing it keeps the tax rate close to the pinned reading at '
-                 r'$\rho = 0.5$ and $1$ and raises it at $\rho = 2$.')]),
-    ('esc-uk', 'esc', [
-        F('UKUS_ESC_French',
-          caption = r'Endogenous pension design under French characteristics in the U.S.\ and the UK',
-          note = r'Each host at its own cost parameter. The first column is the design $\theta_{2020}$ as a level, '
-                 r'the reference line at the host\textquotesingle s observed design and the muted lines at the '
-                 r'corners; the second is the tax rate as a deviation from the host\textquotesingle s '
-                 r'endogenous-$\theta$ baseline, whose levels are the baseline rows of the tables of this section. An '
-                 r'open marker is the reading with the design pinned at the host\textquotesingle s value, a filled '
-                 r'one the reading with the design chosen.',
-          text = r'France\textquotesingle s characteristics on the two hosts with the design chosen, the U.S.\ in the '
-                 r'upper row of panels and the UK in the lower, on shared axes so that the hosts compare by position. The '
-                 r'last row is France\textquotesingle s income distribution and voting patterns together, whose design '
-                 r'and tax rate are those of the tables\textquotesingle{} all-French rows. On the U.S.\ that row follows '
-                 r'the voting patterns at every IES; on the UK it does so at $\rho = 1$ and $2$, while at $\rho = 0.5$ the '
-                 r'chosen design barely moves.'),
-        T('UK_ESC_IncomeDistr', 'Income distribution',
-          text = r'France\textquotesingle s income distribution on the UK at each IES, read with the design pinned at the '
-                 r'UK\textquotesingle s value and with it chosen. The chosen design moves toward earnings-related benefits '
-                 r'at $\rho = 0.5$ and toward flat ones at $\rho = 1$ and $2$, each time the reverse of its move on the '
-                 r'U.S.\ (table \ref{table:US_ESC:incomeDistr}).'),
-        T('UK_ESC_Voting', 'Voting patterns',
-          text = r'France\textquotesingle s voting patterns on the UK at each IES, read with the design pinned at the '
-                 r'UK\textquotesingle s value and with it chosen. The chosen design moves toward flat benefits at every '
-                 r'IES, furthest at $\rho = 2$, as on the U.S.\ (table \ref{table:US_ESC:voting}).'),
-        T('UK_ESC_FrenchAll', 'All French characteristics',
-          text = r'All of France\textquotesingle s household characteristics on the UK at each IES, read with the design '
-                 r'pinned at the UK\textquotesingle s value and with it chosen. At $\rho = 1$ and $2$ the chosen design '
-                 r'follows the voting patterns toward flat benefits, while at $\rho = 0.5$ it barely moves; the workweek '
-                 r'ends above the UK\textquotesingle s baseline in both readings, where on the U.S.\ it ends below.')]),
-    ('esc-path', 'esc', [
-        F('US_ESC_Path',
-          text = r'Figure \ref{fig:US_ESC:path}: the paper\textquotesingle s figure, the projection from the calibration '
-                 r'year at an IES of one. Workers per retiree fall until 2080 and are held constant after; the chosen '
-                 r'design rises with the fall and levels off with it, and the tax rate with the design chosen lies a '
-                 r'little above the one with it pinned.'),
-        F('ESC_Path', caption = r'The design and the tax along the baseline path, U.S.',
-          note = r'The design chosen one period in advance from the first period on, and the tax rate with the design '
-                 r'chosen and with it pinned at $\theta^{\ast}$, along the baseline path at each IES and, at $\rho = 1$, '
-                 r'at the Frisch elasticities $\xi = 0.2$ and $0.4$; the tables of this section print the values.',
-          text = r'Along the baseline path the chosen design dips below the observed one before 2020 at every '
-                 r'specification, returns to it in 2020, where the calibration pins it, and then rises toward '
-                 r'earnings-related benefits as ageing proceeds, leveling off with population growth. After 2020 the '
-                 r'tax rate with the design chosen lies slightly above the one with it pinned, since a more Bismarckian '
-                 r'system dissipates less and is worth more to the electorate at the margin, and the Frisch elasticity '
-                 r'barely moves either line.'),
-        T('ESC_PathTable', 'The path'),
-        T('ESC_Xi', 'The Frisch elasticity',
-          text = r'The design choice at three Frisch elasticities and an IES of one, each recalibrated with its own cost '
-                 r'parameter; the design channel runs through hours, which makes this the elasticity to vary. The cost '
-                 r'parameter falls a little as the elasticity rises, the designs on the baseline path and under acute '
-                 r'ageing are nearly unchanged, and only the level of the tax rate under acute ageing moves, lower at a '
-                 r'higher elasticity whether the design is pinned or chosen.')]),
-    ('esc-timing', 'esc', [
-        T('ESC_Timing', 'Timing of the choice',
-          text = r'One block per timing of the choice, all without the cost of redistribution. Chosen with the tax or one '
-                 r'period in advance, the design is the Beveridgean corner at every IES checked. Chosen once and for all, '
-                 r'it is the Beveridgean corner at the lower elasticities of the grid shown and the Bismarckian corner at '
-                 r'the higher ones; near the switch the electorate is close to indifferent between the two, so the switch '
-                 r'is not sharply located.')]),
-    ('esc-scale', 'esc', [
-        T('US_ESC_ScaleWedge', 'The alternative cost',
-          text = r'The paper\textquotesingle s cost in the upper block and the cost on the design in the lower. Under '
-                 r'both, acute ageing makes the chosen design more Bismarckian and France\textquotesingle s voting '
-                 r'patterns less so at every IES, the first by less and the second by more under the cost on the design. '
-                 r'Under the cost on the design, France\textquotesingle s income distribution, which compresses the '
-                 r'redistributive stakes but leaves that cost in place, takes the design to the Bismarckian corner at '
-                 r'every IES.')]),
-    ('num-stationary', 'numerical', [
-        T('NUM_Stationary', 'Stationary policies',
-          text = r'One row per policy and IES, one column per date of the path. Argentina\textquotesingle s informal '
-                 r'savers add a state, and a design chosen at $t$ is weighed against the electorate of $t+1$, so both '
-                 r'differ from the stationary approximation even at an IES of one. The tax gaps are largest at the lowest '
-                 r'IES, in Argentina above all, and every gap shrinks toward zero late in the horizon, apart from the last '
-                 r'period shown.')]),
-    ('num-selection', 'numerical', [T('NUM_Selection', 'Equilibrium selection')]),
-]
-CHAPTERS = ['index', 'data', 'argentina', 'oecd', 'esc', 'numerical', 'replication']
+# Keys of the site before 2026-10-09, which drafts of the paper cite: each is defined as an alias of its new page.
+OLDKEYS = {'arg-calibration': 'arg-leisure', 'arg-reform': 'arg-ies', 'arg-rho': 'arg-ies', 'arg-rhogrid': 'arg-ies',
+           'oecd-us': 'oecd', 'oecd-calibration': 'oecd-regroup', 'oecd-vectorx': 'oecd-leisure',
+           'oecd-rhogrid': 'oecd-ies', 'oecd-uk': 'oecd-countries',
+           'esc-calibration': 'esc', 'esc-us': 'esc-countries', 'esc-uk': 'esc-countries', 'esc-path': 'esc-paths',
+           'esc-scale': 'esc-costs', 'data-countries': 'data', 'data-correlations': 'data',
+           'num-stationary': 'num', 'num-selection': 'num'}
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -448,12 +190,6 @@ def uncomment(text):
     return '\n'.join(l[:TT.commentStart(l)] if TT.commentStart(l) is not None else l for l in text.split('\n'))
 
 
-def latexText(s):
-    """ Plain text made safe for LaTeX. """
-    return (s.replace('\\', r'\textbackslash{}').replace('&', r'\&').replace('%', r'\%').replace('#', r'\#')
-             .replace('_', r'\_').replace('$', r'\$'))
-
-
 def git(*args):
     try:
         return subprocess.run(['git', '-C', C.REPO] + list(args), capture_output = True, text = True,
@@ -462,8 +198,13 @@ def git(*args):
         return ''
 
 
+def plain(tex):
+    """ A short piece of LaTeX (a title, a caption) as plain unescaped text. """
+    return html.unescape(re.sub('<[^>]+>', '', TT.inline(tex or '', TT.Context())))
+
+
 # ---------------------------------------------------------------------------------------------------
-# What the paper says: which exhibits it inputs, its figures' captions, its section titles, its numbers.
+# What the paper says: which exhibits it inputs, its figures' captions and notes, its numbers.
 
 class Paper:
     def __init__(self):
@@ -473,25 +214,20 @@ class Paper:
             for f in sorted(os.listdir(os.path.join(root, d))):
                 if f.endswith('.tex'):
                     self.files[d + '/' + f] = uncomment(read(os.path.join(root, d, f)))
-        self.uses = {}                                   # exhibit name -> [tex files]
+        self.uses = {}                                   # output name -> [tex files that input it]
         for rel, text in self.files.items():
             for m in re.finditer(r'\\input\s*\{Tables/([^}]+)\}', text):
                 self.uses.setdefault(m.group(1).strip(), []).append(rel)
             for m in re.finditer(r'\\includegraphics\s*(?:\[[^\]]*\])?\s*\{Figs/([^}.]+)(?:\.\w+)?\}', text):
                 self.uses.setdefault(m.group(1).strip(), []).append(rel)
-        self.sections = {}                               # label -> (title, file); also file -> first title
-        self.fileTitle = {}
+        self.sections = {}                               # label -> (title, file)
         for rel, text in self.files.items():
             for m in re.finditer(r'\\(section|subsection)\*?\s*\{', text):
                 title, j = TT.braceArg(text, m.end() - 1)
-                if m.group(1) == 'section' and rel not in self.fileTitle:
-                    self.fileTitle[rel] = title
                 lm = re.match(r'\s*\\label\{([^}]*)\}', text[j:j + 200])
                 if lm:
                     self.sections[lm.group(1)] = (title, rel)
-            for m in re.finditer(r'\\label\{(eq:[^}]*)\}', text):
-                self.sections.setdefault(m.group(1), (None, rel))
-        self.figures = {}                                # figure name -> {caption, label, note, file}
+        self.figures = {}                                # figure output -> {caption, label, note}
         for rel, text in self.files.items():
             for m in re.finditer(r'\\begin\{figure\*?\}(.*?)\\end\{figure\*?\}', text, re.S):
                 body = m.group(1)
@@ -503,93 +239,22 @@ class Paper:
                 note = re.search(r'\\item\s*\[\]\s*(.*?)\\end\{tablenotes\}', body, re.S)
                 self.figures[g.group(1)] = {'caption': TT.braceArg(body, cap.end() - 1)[0] if cap else '',
                                             'label': lab.group(1) if lab else None,
-                                            'note': note.group(1).strip() if note else '', 'file': rel}
-        self.numbers, self.fresh, self.eqIn = {}, False, {}
+                                            'note': note.group(1).strip() if note else ''}
+        self.numbers, self.fresh = {}, False
         aux = os.path.join(root, 'main.aux')
         if os.path.exists(aux):
             newest = max(os.path.getmtime(os.path.join(d, f)) for d, _, fs in os.walk(root)
                          for f in fs if f.endswith('.tex'))
             self.fresh = os.path.getmtime(aux) > newest
-            if self.fresh:
-                for m in re.finditer(r'\\newlabel\{([^}]*)\}\{\{([^}]*)\}', read(aux)):
-                    self.numbers[m.group(1)] = m.group(2)
-        if not self.fresh:
-            self._count(root)
+            for m in re.finditer(r'\\newlabel\{([^}]*)\}\{\{([^}]*)\}', read(aux)):
+                self.numbers[m.group(1)] = m.group(2)
         self.bib = _bib(os.path.join(root, 'References.bib'))
 
-    def _count(self, root):
-        r""" The paper's section, appendix, table and figure numbers as LaTeX sets them, counted from main.tex's
-        \input order, for when main.aux is stale: sections 1, 2, ..., appendices A, B, ... (the appendices
-        environment), tables numbered through the document, figures within sections (Packages.tex's
-        \numberwithin). Equations are not counted: `eqIn` holds the section each eq: label sits in. """
-        state = {'sec': '', 'nsec': 0, 'napp': 0, 'sub': 0, 'tab': 0, 'fig': 0, 'env': None, 'cur': ''}
-
-        def walk(text, appendix):
-            for m in re.finditer(r'\\(section|subsection)(\*?)\s*\{|\\begin\{(table|figure)\*?\}|\\end\{(?:table|figure)\*?\}'
-                                 r'|\\caption\b|\\label\{([^}]*)\}|\\input\{(Tables/[^}]*)\}', text):
-                kind, star, env, label, tab = m.group(1), m.group(2), m.group(3), m.group(4), m.group(5)
-                if kind and not star:
-                    if kind == 'section':
-                        if appendix:
-                            state['napp'] += 1
-                            state['sec'] = chr(ord('A') + state['napp'] - 1)
-                        else:
-                            state['nsec'] += 1
-                            state['sec'] = str(state['nsec'])
-                        state['sub'], state['fig'], state['cur'] = 0, 0, state['sec']
-                    else:
-                        state['sub'] += 1
-                        state['cur'] = '{}.{}'.format(state['sec'], state['sub'])
-                elif env:
-                    state['env'] = env
-                elif m.group(0).startswith('\\end'):
-                    state['env'] = None
-                elif m.group(0) == '\\caption':
-                    if state['env'] == 'table':
-                        state['tab'] += 1
-                        state['cur'] = str(state['tab'])
-                    elif state['env'] == 'figure':
-                        state['fig'] += 1
-                        state['cur'] = '{}.{}'.format(state['sec'], state['fig'])
-                elif label:
-                    if label.startswith('eq:'):
-                        self.eqIn[label] = ('appendix' if appendix else 'section', state['sec'])
-                    elif label.split(':')[0] in ('sec', 'app', 'table', 'fig'):   # propositions are not counted
-                        self.numbers[label] = state['cur']
-                elif tab:
-                    p = os.path.join(root, tab + ('' if tab.endswith('.tex') else '.tex'))
-                    if os.path.exists(p):
-                        walk(uncomment(read(p)), appendix)
-
-        main = uncomment(read(os.path.join(root, 'main.tex')))
-        appendix = False
-        for m in re.finditer(r'\\begin\{appendices\}|\\appendix\b|\\input\{([^}]*)\}', main):
-            if m.group(1) is None:
-                appendix = True
-                continue
-            rel = m.group(1) + ('' if m.group(1).endswith('.tex') else '.tex')
-            if rel.startswith(('Sections/', 'Appendix/')) and os.path.exists(os.path.join(root, rel)):
-                walk(self.files.get(rel) or uncomment(read(os.path.join(root, rel))), appendix)
-        self.counted = True
-
-    def where(self, name):
-        """ The paper's place for an exhibit it inputs, as a phrase ('section 7', or a title when main.aux is
-        stale). """
-        files = self.uses.get(name, [])
-        if not files:
-            return None
-        rel = files[0]
-        kind = 'section' if rel.startswith('Sections/') else 'appendix'
-        title = self.fileTitle.get(rel, '')
-        label = next((l for l, (t, f) in self.sections.items() if f == rel and t == title), None)
-        if label in self.numbers:
-            return '{} {}'.format(kind, self.numbers[label])
-        return '{} \u201c{}\u201d'.format(kind, plain(title))
-
-
-def plain(tex):
-    """ A short piece of LaTeX (a title, a caption) as plain unescaped text. """
-    return html.unescape(re.sub('<[^>]+>', '', TT.inline(tex or '', TT.Context())))
+    def label(self, name, table):
+        """ The paper's label of an output it inputs: the table's own, or the figure environment's. """
+        if table is not None:
+            return table.label
+        return self.figures.get(name, {}).get('label')
 
 
 def _bib(path):
@@ -599,8 +264,7 @@ def _bib(path):
         return out
     text = read(path)
     for m in re.finditer(r'@\w+\s*\{\s*([^,\s]+)\s*,', text):
-        j = text.find('{', m.start())
-        body, _ = TT.braceArg(text, j)
+        body, _ = TT.braceArg(text, text.find('{', m.start()))
         a = re.search(r'author\s*=\s*[{"](.*?)[}"]\s*,\s*\n', body, re.S)
         y = re.search(r'(?:year|date)\s*=\s*[{"]?(\d{4})', body)
         names = []
@@ -617,121 +281,65 @@ def _bib(path):
 
 class Provenance:
     def __init__(self):
-        self.reads, self.inputBy = {}, {}
+        self.reads = {}
         if os.path.exists(MAPFILE):
             text = read(MAPFILE)
             i, j = text.find('<!-- outputs:begin -->'), text.find('<!-- outputs:end -->')
             for line in text[i:j].split('\n'):
                 cells = [c.strip() for c in line.split('|')]
-                if len(cells) < 6 or not cells[1].startswith('`'):
-                    continue
-                name = cells[1].strip('`')
-                self.reads[name] = re.findall(r'`([^`]+)`(?:\s*\((\d+) files\))?', cells[4])
+                if len(cells) >= 6 and cells[1].startswith('`'):
+                    self.reads[cells[1].strip('`')] = re.findall(r'`([^`]+)`(?:\s*\((\d+) files\))?', cells[4])
         self.builder = {}
         src = read(os.path.join(HERE, 'build.py'))
         for m in re.finditer(r"_variants\(\s*'([^']+)',\s*([\w.]+)", src):
             self.builder[m.group(1)] = m.group(2)
-            self.builder[m.group(1) + TWIN] = m.group(2) + '(commonX = False)'
-        for m in re.finditer(r"'([^']+)'\s*:\s*\(\s*'(?:table|figure)'\s*,\s*([\w.]+)", src):
+        for m in re.finditer(r"'([^']+)'\s*:\s*\(\s*'(?:table|figure|data)'\s*,\s*([\w.]+)", src):
             self.builder.setdefault(m.group(1), m.group(2))
         self.commit = git('rev-parse', '--short', 'HEAD') or 'unknown'
-        self.dirty = bool(git('status', '--porcelain', '--', 'results/paper', 'python/paper'))
+        self.dirty = bool(git('status', '--porcelain', '--', 'results', 'python/paper'))
         self.date = datetime.date.today().isoformat()
 
-    def sources(self, name, texBanner = None):
-        """ [(path or pattern, number of files or '')]: the traced reads, else the table's own banner. """
-        if name in self.reads:
-            return self.reads[name]
-        if texBanner and texBanner.get('source'):
-            return [(s.strip(), '') for s in texBanner['source'].split(',')]
-        return []
-
 
 # ---------------------------------------------------------------------------------------------------
-# The exhibits.
+# The pages: their headings (the \oa keys and the page codes) and the exhibits they include, in order.
 
-class Asset:
-    """ One output on the page: a table or a figure in one calibration variant. """
-    def __init__(self, ex, name, variant, group):
-        self.ex, self.name, self.variant, self.group = ex, name, variant, group
-        self.kind, self.base = ex.kind, ex.name
-        self.table = self.svg = self.png = self.pdf = None
-        self.marks, self.ok, self.problems = [], False, []
-        self.scope = 'online'
-        self.number = None                             # 'OA.k' for an online exhibit
-        self.anchor = ('oatab_' if self.kind == 'table' else 'oafig_') + name
+HEADING = re.compile(r'^(#{1,2})\s+(?:([A-D]\d?)\.\s+)?(.*?)\s*\{#([A-Za-z0-9_-]+)[^}]*\}\s*$', re.M)
+INCLUDE = re.compile(r'\{\{<\s*include\s+_generated/exhibits/([A-Za-z0-9_]+?)(-head)?\.qmd\s*>\}\}')
 
 
-def load(groups, paper, report):
-    assets = []
-    for anchor, chapter, exs in groups:
-        for ex in exs:
-            for variant, name in [('commonX', ex.name)] + ([('vectorX', ex.name + TWIN)] if ex.twin else []):
-                a = Asset(ex, name, variant, anchor)
-                a.chapter = chapter
-                if name in paper.uses:
-                    a.scope = 'paper'
-                if a.kind == 'table':
-                    p = os.path.join(TABLES, name + '.tex')
-                    if os.path.exists(p):
-                        a.tex = read(p)
-                        try:
-                            a.table = TT.parse(a.tex)
-                            a.ok = True
-                        except Exception as e:             # a table the converter cannot read is reported
-                            report.append('table {} not converted: {}'.format(name, e))
-                    else:
-                        report.append('missing table {} ({})'.format(name, anchor))
-                else:
-                    for ext in ('svg', 'png', 'pdf'):
-                        p = os.path.join(FIGS, name + '.' + ext)
-                        setattr(a, ext, p if os.path.exists(p) else None)
-                    mp = os.path.join(FIGS, name + '.marks.json')
-                    if os.path.exists(mp):
-                        a.marks = json.loads(read(mp)).get('marks', [])
-                    a.ok = bool(a.svg or a.png)
-                    if not a.ok:
-                        report.append('missing figure {} ({})'.format(name, anchor))
-                    elif not a.svg:
-                        report.append('figure {} has no svg: png shown, no marks'.format(name))
-                    elif not a.marks:
-                        report.append('figure {} has no marks: not interactive'.format(name))
-                assets.append(a)
-    return assets
+def pageFiles():
+    """ The book's pages in the order of _quarto.yml. """
+    return re.findall(r'^\s*-\s*(?:part:\s*)?([\w-]+\.qmd)\s*$', read(os.path.join(SITE, '_quarto.yml')), re.M)
 
 
-def number(assets):
-    k = {'table': 0, 'figure': 0}
-    for a in assets:
-        if a.ok and a.scope == 'online':
-            k[a.kind] += 1
-            a.number = 'OA.{}'.format(k[a.kind])
-
-
-# ---------------------------------------------------------------------------------------------------
-# The book's headings: the OA numbers and anchors the paper's \oa macros and the cross-links use.
-
-HEADING = re.compile(r'^(#{1,3})\s+(OA\.\d+(?:\.\d+)*)\s+(.*?)\s*\{#([A-Za-z0-9_-]+)[^}]*\}\s*$', re.M)
-
-
-def headings():
-    out = {}
-    for ch in CHAPTERS:
-        p = os.path.join(SITE, ch + '.qmd')
-        if not os.path.exists(p):
-            continue
-        for m in HEADING.finditer(read(p)):
-            out[m.group(4)] = {'number': m.group(2), 'title': m.group(3), 'page': ch + '.html',
-                               'level': len(m.group(1))}
+def pages():
+    """ [{file, page, code, title, key, keys, exhibits}] per page: `keys` {key: (target, code)} of every heading
+    with an anchor, `exhibits` the ids the page includes, in order. """
+    out = []
+    for f in pageFiles():
+        text = read(os.path.join(SITE, f))
+        page = f[:-4] + '.html'
+        heads = list(HEADING.finditer(text))
+        top = next((h for h in heads if len(h.group(1)) == 1), None)
+        code = top.group(2) if top else None
+        keys = {h.group(4): (page if len(h.group(1)) == 1 else page + '#' + h.group(4), code) for h in heads}
+        ids = []
+        for m in INCLUDE.finditer(text):
+            if m.group(1) not in ids:
+                ids.append(m.group(1))
+        out.append({'file': f, 'page': page, 'code': code, 'title': top.group(3) if top else '',
+                    'key': top.group(4) if top else None, 'keys': keys, 'exhibits': ids})
     return out
 
 
-def writeMacros(heads):
+def writeMacros(pgs):
+    keys = {}
+    for p in pgs:
+        keys.update({k: v for k, v in p['keys'].items() if v[1]})
     lines = [r'%% GENERATED by python/paper/onlineAppendix.py from the headings of writing/OnlineAppendix/*.qmd '
              r'-- do not edit by hand.',
-             r'%% \oa{key} prints "online appendix", linked to the key (write "the \oa{key}")' + "'" + r's number for a section, linked to its page:',
-             r'%% "in the \oa{esc-uk}" reads "in the online appendix"; \oanum{esc-uk} prints "OA.4.3". An unknown key prints in bold, '
-             r'never silently.',
+             r'%% \oa{key} prints "online appendix", linked to the key' + "'" + r's page: "in the \oa{esc-paths}" reads '
+             r'"in the online appendix"; \oanum{esc-paths} prints its section, "C1". An unknown key prints in bold.',
              r'\providecommand{\oaurl}{' + SITE_URL + '}',
              r'\newcommand{\oadef}[3]{\expandafter\def\csname oa:#1\endcsname{\href{\oaurl/#2}{online appendix}}'
              r'\expandafter\def\csname oanum:#1\endcsname{\href{\oaurl/#2}{#3}}}',
@@ -740,549 +348,279 @@ def writeMacros(heads):
              r'%% \oahome takes no argument, so xspace restores the space TeX drops after it ("\oahome is ...").',
              r'\RequirePackage{xspace}',
              r'\newcommand{\oahome}{\href{\oaurl}{\nolinkurl{' + SITE_URL.split('//')[1] + r'}}\xspace}']
-    for key, h in heads.items():
-        if not h['number']:
-            continue
-        target = h['page'] if h['level'] == 1 else h['page'] + r'\#' + key
-        lines.append(r'\oadef{' + key + '}{' + target + '}{' + h['number'] + '}')
+    for key, (target, code) in keys.items():
+        lines.append(r'\oadef{' + key + '}{' + target.replace('#', r'\#') + '}{' + code + '}')
+    lines.append(r'%% Retired keys (the site before 2026-10-09), defined as their new pages.')
+    for old, new in OLDKEYS.items():
+        if new in keys and old not in keys:
+            target, code = keys[new]
+            lines.append(r'\oadef{' + old + '}{' + target.replace('#', r'\#') + '}{' + code + '}')
     return write(MACROS, '\n'.join(lines) + '\n')
 
 
 # ---------------------------------------------------------------------------------------------------
-# References between exhibits, the paper and the appendix.
+# References from captions and notes: to the site's exhibits (\ref{oa:<id>}, a table's own label), to the
+# paper (its numbers from main.aux), to the site's pages (\oa) and to the literature.
+
+def anchor(i):
+    return 'ex-' + i
+
 
 class Refs:
-    def __init__(self, assets, paper, heads):
-        self.paper, self.heads = paper, heads
-        self.byLabel = {}
-        for a in assets:
-            if a.kind == 'table' and a.table and a.table.label:
-                self.byLabel[a.table.label] = a
-            elif a.kind == 'figure' and a.base in paper.figures and a.name == a.base:
-                lab = paper.figures[a.base].get('label')
-                if lab:
-                    self.byLabel[lab] = a
-        self.byName = {a.name: a for a in assets}
+    def __init__(self, paper, pgs, numbers, labels):
+        self.paper, self.numbers, self.labels = paper, numbers, labels      # numbers: id -> (word, number, page)
+        self.keys = {}
+        for p in pgs:
+            self.keys.update(p['keys'])
 
-    def href(self, a, here = None):
-        page = (a.chapter if a.chapter else 'index') + '.html'
-        return ('#' if here == a.chapter else page + '#') + a.anchor
+    def _exhibit(self, i, here):
+        word, num, page = self.numbers[i]
+        return '<a href="{}#{}">{}</a>'.format('' if page == here else page, anchor(i), num)
 
-    def paperText(self, label, eq, latex):
-        r""" A label of the paper as words: its number when main.aux is fresh, else the title of the table, the
-        figure or the section it names. `latex` gives LaTeX source (titles kept as written), else escaped HTML. """
-        num = self.paper.numbers.get(label)
-        if num:
-            return ('equation ({}) of the paper' if eq == 'word' else '({}) of the paper' if eq
-                    else '{} of the paper').format(num)
-        q = (lambda s: "``" + s + "''") if latex else (lambda s: '\u201c' + html.escape(plain(s)) + '\u201d')
-        a = self.byLabel.get(label)
-        if a is not None and a.kind == 'table' and a.table:
-            return q(a.table.caption or a.name) + ' in the paper'
-        if a is not None and a.kind == 'figure':
-            return q(self.paper.figures[a.base]['caption']) + ' in the paper'
-        title, rel = self.paper.sections.get(label, (None, None))
-        if eq:
-            # no parentheses around words: "the cost of an equation in section 7 of the paper", never "of (...)"
-            where = self.paper.eqIn.get(label)
-            if where:
-                return 'an equation in {} {} of the paper'.format(*where)
-            sec = self.paper.fileTitle.get(rel, '') if rel else ''
-            kind = 'appendix' if rel and rel.startswith('Appendix/') else 'section'
-            return ('an equation in the paper' + ("'" if latex else '\u2019') + 's ' + kind + ' ' + q(sec)) \
-                if sec else 'an equation of the paper'
-        if title:
-            return q(title) + ' of the paper'
-        return 'the paper'
+    def ref(self, here):
+        def f(label, eq = False):
+            if label.startswith('oa:') and label[3:] in self.numbers:
+                return self._exhibit(label[3:], here)
+            if label in self.labels and self.labels[label] in self.numbers:
+                return self._exhibit(self.labels[label], here)
+            num = self.paper.numbers.get(label)
+            if num:
+                if eq:
+                    return ('equation ({}) of the paper' if eq == 'word' else '({}) of the paper').format(num)
+                return '{} of the paper'.format(num)
+            title = self.paper.sections.get(label, (None, None))[0]
+            return '\u201c{}\u201d of the paper'.format(html.escape(plain(title))) if title else 'the paper'
+        return f
 
-    def oaHtml(self, here):
-        r""" \oa{key} as a link to the section of this appendix, and \oahome to its front page. """
-        def oa(key):
+    def oa(self, here):
+        def f(key):
             if key is None:
                 return '<a href="index.html">{}</a>'.format(SITE_URL.split('//')[1])
-            h = self.heads.get(key)
-            if not h:
+            target, code = self.keys.get(OLDKEYS.get(key, key), (None, None))
+            if not target:
                 return '<strong>OA:{}??</strong>'.format(html.escape(key))
-            href = ('' if h['page'] == here + '.html' else h['page']) + ('#' + key if h['level'] > 1 else '')
-            if not h['number']:
-                return '<a href="{}">the front page</a>'.format(href or '#' + key)
-            return 'section <a href="{}">{}</a>'.format(href or '#' + key, h['number'])
-        return oa
-
-    def oaLatex(self, key):
-        if key is None:
-            return r'\url{' + SITE_URL + '}'
-        h = self.heads.get(key)
-        return 'section ' + h['number'] if h and h['number'] else 'OA:' + latexText(key) + '??'
-
-    def html(self, here):
-        def ref(label, eq = False):
-            a = self.byLabel.get(label)
-            if a is not None and a.scope == 'online' and a.number:
-                return '<a href="{}">{}</a>'.format(self.href(a, here), a.number)
-            text = self.paperText(label, eq, False)
-            if a is not None:                              # the paper's exhibit, also shown on this site
-                return '<a href="{}">{}</a>'.format(self.href(a, here), text)
-            return text
-        return ref
-
-    def latex(self, label, eq = False):
-        a = self.byLabel.get(label)
-        if a is not None and a.scope == 'online' and a.number:
-            return a.number
-        return self.paperText(label, eq, True)
-
-    def printTex(self, tex):
-        return collapseRuns(TT.printTex(tex, self.latex, self.oaLatex), latex = True)
-
-    def context(self, here):
-        return TT.Context(ref = self.html(here), cite = self.cite, oa = self.oaHtml(here))
+            href = target[len(here):] if target.startswith(here + '#') else target
+            return '<a href="{}">{}</a>'.format(href, code or 'the front page')
+        return f
 
     def cite(self, keys, textual = False):
         parts = []
         for k in keys:
             names, year = self.paper.bib.get(k, ([k], ''))
-            who = (names[0] if len(names) == 1 else ' and '.join(names) if len(names) == 2
-                   else names[0] + ' et al.') if names else k
+            who = (names[0] if len(names) == 1 else ' and '.join(names) if len(names) == 2 else names[0] + ' et al.')
             parts.append('{} ({})'.format(who, year) if textual else '{} {}'.format(who, year))
         s = '; '.join(parts)
         return html.escape(s if textual else '(' + s + ')')
 
+    def context(self, here):
+        return TT.Context(ref = self.ref(here), cite = self.cite, oa = self.oa(here))
+
 
 # ---------------------------------------------------------------------------------------------------
-# Rendering.
+# The blocks.
 
-def paperLabel(a, paper):
-    """ The paper's \\label of an exhibit it inputs: the table's own, or the figure environment's. """
-    if a.kind == 'table' and a.table:
-        return a.table.label
-    return paper.figures.get(a.base, {}).get('label') if a.name == a.base else None
-
-
-def badge(a, paper):
-    if a.scope == 'paper':
-        num = paper.numbers.get(paperLabel(a, paper) or '')
-        what = '{} {}, {}'.format(a.kind, num, paper.where(a.name)) if num else paper.where(a.name) or ''
-        return '<span class="oa-badge oa-badge--paper">In the paper \u00b7 {}</span> '.format(html.escape(what))
-    if a.number:
-        return '<span class="oa-badge">{} {}</span> '.format('Table' if a.kind == 'table' else 'Figure', a.number)
-    return ''
-
-
-def provenance(a, prov):
-    rows, downloads = [], []
-    for path, n in prov.sources(a.name, getattr(a.table, 'banner', None) if a.table else None):
-        if '*' in path or n:
-            link = '{}/tree/{}/{}'.format(REPO_URL, prov.commit, os.path.dirname(path))
-            rows.append('<li><code>{}</code>{} <a href="{}">folder</a></li>'.format(
-                html.escape(path), ' ({} files)'.format(n) if n else '', link))
-        else:
-            src = os.path.join(C.REPO, path)
-            dl = ''
-            if os.path.exists(src) and path.endswith('.csv'):
-                copy(src, os.path.join(GEN, 'data', path))
-                dl = ' <a href="_generated/data/{}" download>csv</a>'.format(path)
-            rows.append('<li><code>{}</code>{} <a href="{}/blob/{}/{}">on GitHub</a></li>'.format(
-                html.escape(path), dl, REPO_URL, prov.commit, path))
-    if a.kind == 'figure' and a.marks:
-        p = os.path.join(GEN, 'data', 'marks', a.name + '.csv')
-        lines = ['label,series,panel,value,text']
-        for m in a.marks:
-            lines.append(','.join('"{}"'.format(str(m.get(k, '')).replace('"', '""'))
-                                  for k in ('label', 'series', 'panel', 'value', 'text')))
-        write(p, '\n'.join(lines) + '\n')
-        rows.append('<li>The values drawn: <a href="_generated/data/marks/{}.csv" download>csv</a></li>'.format(a.name))
-    builder = prov.builder.get(a.name, '')
-    cmd = r'.venv\Scripts\python.exe python\paper\build.py --only ' + a.name
-    return ('<details class="oa-prov"><summary>Source</summary><ul>{}</ul><p>Built by <code>{}</code> from commit '
-            '<code>{}</code>{}. Rebuild: <code>{}</code>; on another system substitute <code>.venv/bin/python</code></p></details>').format(
-        ''.join(rows) or '<li>No traced inputs yet: run <code>build.py --map</code>.</li>',
-        html.escape(builder) or 'python/paper', prov.commit,
-        ' with uncommitted changes' if prov.dirty else '', html.escape(cmd))
-
-
-def cleanSvg(svg, name, keep):
-    """ The svg inlined: no prolog, scalable, and every id that is not a mark's prefixed with the figure's name so
-    two figures on one page never share an id. """
-    svg = re.sub(r'<\?xml[^>]*\?>|<!DOCTYPE[^>]*>|<!--.*?-->|<metadata>.*?</metadata>', '', svg, flags = re.S)
-    ids = set(re.findall(r'\bid="([^"]+)"', svg)) - set(keep)
-    pre = re.sub(r'[^A-Za-z0-9_-]', '_', name) + '-'
-    if ids:
-        pat = re.compile(r'(\bid="|url\(#|href="#)(' + '|'.join(re.escape(i) for i in sorted(ids, key = len,
-                                                                                              reverse = True)) + r')(?=["\)])')
-        svg = pat.sub(lambda m: m.group(1) + pre + m.group(2), svg)
-    svg = re.sub(r'<svg\b([^>]*?)\swidth="[^"]*"', r'<svg\1', svg, count = 1)
-    svg = re.sub(r'<svg\b([^>]*?)\sheight="[^"]*"', r'<svg\1', svg, count = 1)
-    return svg.replace('<svg', '<svg class="oa-svgroot" role="img" focusable="false"', 1).strip()
-
-
-def figureHtml(a, paper, refs, prov, here):
-    ctx = refs.context(here)
-    if a.base in paper.figures and a.name == a.base:
-        cap, note = paper.figures[a.base]['caption'], paper.figures[a.base]['note']
-    elif a.variant == 'vectorX' and a.base in paper.figures:
-        cap = paper.figures[a.base]['caption'] + r', vector-$X_i$ calibration'
-        note = TWINNOTE
-    else:
-        cap, note = a.ex.caption or a.name, a.ex.note or ''
-    if a.variant == 'vectorX' and a.ex.caption and a.base not in paper.figures:
-        cap = a.ex.caption + r', vector-$X_i$ calibration'
-    a.captionTex, a.noteTex = cap, note
-    if note and not note.lstrip().startswith(r'\textit{Note:}'):   # the paper's notes carry the label already
-        note = r'\textit{Note:} ' + note                            # the print edition adds its own (groupLatex)
-    if a.svg:
-        body = '<div class="oa-svg">{}</div>'.format(cleanSvg(read(a.svg), a.name, [m['id'] for m in a.marks]))
-    else:
-        copy(a.png, os.path.join(GEN, 'figs', a.name + '.png'))
-        body = '<div class="oa-img"><img src="_generated/figs/{}.png" alt="{}"></div>'.format(
-            a.name, html.escape(plain(cap)))
-    return ('<figure class="oa-figure" id="{}" data-name="{}" data-base="{}" data-variant="{}">'
-            '<figcaption>{}{}</figcaption>{}{}{}</figure>').format(
-        a.anchor, a.name, a.base, a.variant, badge(a, paper), TT.inline(cap, ctx), body,
-        '<div class="oa-fignote">{}</div>'.format(collapseRuns(TT.inline(note, ctx))) if note else '',
-        provenance(a, prov))
-
-
-_RUN_HTML = re.compile(r' of the paper(</a>)(?=(?:, | and )<a href="[^"]*">[^<]* of the paper</a>)')
-_RUN_TEX = re.compile(r' of the paper(?=(?:, | and )[\w.()]+ of the paper)')
-
-
-def collapseRuns(s, latex = False):
-    """ A run of the paper's references names the paper once, at its end: "tables 12, 13 and 16 of the
-    paper", where each resolved on its own reads "12 of the paper, 13 of the paper and ...". """
-    return _RUN_TEX.sub('', s) if latex else _RUN_HTML.sub(r'\1', s)
-
-
-def tableHtml(a, paper, refs, prov, here):
-    ctx = refs.context(here)
-    tab = collapseRuns(a.table.html(ctx, number = badge(a, paper), tableId = a.anchor))
-    return ('<div class="oa-panel" role="tabpanel" data-tab="{}" data-name="{}" data-variant="{}">'
-            '<div class="oa-scroll">{}</div>{}</div>').format(a.base, a.name, a.variant, tab, provenance(a, prov))
-
-
-def enrich(a, byName, report):
-    """ Each mark of figure `a` as the page script reads it: where its table lives, on this page or another. """
-    out, absent, rowless = [], {}, {}
-    for m in a.marks:
-        m = dict(m)
-        t = m.get('table')
-        if t:
-            tgt = byName.get(t)
-            if tgt is None or not tgt.ok:
-                absent[t] = absent.get(t, 0) + 1
-                m.pop('table', None)
-            else:
-                if m.get('row') and tgt.table and m['row'] not in tgt.table.keys:
-                    rowless[t] = rowless.get(t, 0) + 1
-                m['tab'], m['variant'] = tgt.base, tgt.variant
-                if tgt.group != a.group:
-                    q = 'g={}&variant={}&tab={}'.format(tgt.group, tgt.variant, tgt.base)
-                    if m.get('row'):
-                        q += '&row=' + m['row'].replace('@', '%40')
-                    m['href'] = '{}.html?{}#{}'.format(tgt.chapter, q, tgt.group)
-        out.append(m)
-    for t, n in absent.items():
-        report.append('{}: {} marks point to {}, which the site does not show (tooltips only)'.format(a.name, n, t))
-    for t, n in rowless.items():
-        report.append('{}: {} marks name rows {} does not key (table-level link)'.format(a.name, n, t))
-    return out
-
-
-def exhibitText(a):
-    """ The registry text an asset shows: `textAlt` for the vector-X twin when given, else `text`. """
-    return a.ex.textAlt if (a.variant == 'vectorX' and a.ex.textAlt) else a.ex.text
-
-
-def textHtml(a, refs, here):
-    t = exhibitText(a)
-    if not t:
+def paperBadge(name, table, paper):
+    """ ' Table 3 in the paper' for an output the paper inputs, '' otherwise. """
+    if name not in paper.uses:
         return ''
-    return '<div class="oa-text" data-kind="{}" data-tab="{}" data-variant="{}"><p>{}</p></div>'.format(
-        a.kind, a.base, a.variant, collapseRuns(TT.inline(t, refs.context(here))))
+    num = paper.numbers.get(paper.label(name, table) or '')
+    what = ('Table' if table is not None else 'Figure') + (' ' + num if num else '')
+    return ' <span class="oa-badge">{} in the paper</span>'.format(html.escape(what))
 
 
-def groupHtml(anchor, chapter, members, paper, refs, prov, byName, heads, report):
-    figs = [a for a in members if a.kind == 'figure' and a.ok]
-    tabs = [a for a in members if a.kind == 'table' and a.ok]
-    textsF = ''.join(textHtml(a, refs, chapter) for a in figs)
-    textsT = ''.join(textHtml(a, refs, chapter) for a in tabs)
-    variants = sorted({a.variant for a in figs + tabs}, key = lambda v: v != 'commonX')
-    out = ['<section class="oa-group" id="oagroup_{0}" data-group="{0}" data-variants="{1}">'.format(
-        anchor, ' '.join(variants))]
-    if len(variants) > 1:
-        btns = ''.join('<button type="button" data-variant="{}" aria-pressed="{}">{}{}</button>'.format(
-            v, 'true' if v == 'commonX' else 'false', VARIANT[v][0],
-            ' <span class="oa-muted">({})</span>'.format(VARIANT[v][1]) if VARIANT[v][1] else '') for v in variants)
-        out.append('<div class="oa-toolbar"><div class="oa-control" role="group" aria-label="Calibration">'
-                   '<span class="oa-control-label">Calibration</span>{}</div>'.format(btns)
-                   + ('<label class="oa-diff"><input type="checkbox"> Mark the cells that differ from the other '
-                      'calibration</label><span class="oa-diff-status" aria-live="polite"></span>' if tabs else '')
-                   + '</div>')
-    # figure and tables: each text above its own kind; one kind only: the texts above the exhibits (a block of
-    # their own, which the stylesheet stacks; RKB preferred this to a column beside the tables)
-    layout = 'pair' if figs and tabs else ('text' if textsF or textsT else 'single')
-    out.append('<div class="oa-layout oa-layout--{}">'.format(layout))
-    if layout == 'text':
-        out.append('<div class="oa-texts">' + textsF + textsT + '</div>')
-        textsF = textsT = ''
-    if figs:
-        out.append('<div class="oa-figures">' + textsF + ''.join(figureHtml(a, paper, refs, prov, chapter) for a in figs)
-                   + '</div>')
-    if tabs:
-        bases = []
-        for a in tabs:
-            if a.base not in bases:
-                bases.append(a.base)
-        label = {a.base: a.ex.tab or a.base for a in tabs}
-        tablist = ''
-        if len(bases) > 1:
-            tablist = '<div class="oa-tabs" role="tablist">' + ''.join(
-                '<button type="button" role="tab" data-tab="{}" aria-selected="{}">{}</button>'.format(
-                    b, 'true' if k == 0 else 'false', html.escape(label[b])) for k, b in enumerate(bases)) + '</div>'
-        out.append('<div class="oa-tables">' + textsT + tablist
-                   + ''.join(tableHtml(a, paper, refs, prov, chapter) for a in tabs) + '</div>')
-    out.append('</div>')
-    marks = {a.name: enrich(a, byName, report) for a in figs if a.marks and a.svg}
-    if marks:
-        out.append('<script type="application/json" class="oa-marks">{}</script>'.format(
-            json.dumps(marks, ensure_ascii = False).replace('</', '<\\/')))
-    out.append('</section>')
-    html_ = '\n'.join(out)
-    # A note that points at the section it is shown in ("whose levels are printed in Online Appendix OA.3.4", inside
-    # OA.3.4) reads "this section" here; the paper, which the note is written for, keeps the pointer.
-    return re.sub(r'section <a href="#{}">[^<]*</a>'.format(re.escape(anchor)), 'this section', html_)
+def links(ex, prov, files):
+    """ The exhibit's foot: its data as csv and, folded, where it comes from. `files`: (label, path under
+    _generated/data) pairs. """
+    data = ' \u00b7 '.join('<a href="_generated/data/{}" download>{}</a>'.format(p, html.escape(l)) for l, p in files)
+    reads = prov.reads.get(ex.output, [])
+    src = ''.join('<li><code>{}</code>{}</li>'.format(html.escape(p), ' ({} files)'.format(n) if n else '')
+                  for p, n in reads) or '<li>Not traced yet: run <code>build.py --map</code>.</li>'
+    cmd = r'.venv\Scripts\python.exe python\paper\build.py --only ' + ex.output
+    return ('<div class="oa-links">{}<details class="oa-source"><summary>Source</summary><p>Reads:</p><ul>{}</ul>'
+            '<p>Built by <code>{}</code> (<a href="{}/tree/{}/python/paper">python/paper</a>) at commit <code>{}</code>{}. '
+            'Rebuild: <code>{}</code>, then <code>build.py --site</code>.</p></details></div>').format(
+        ('Data: ' + data + ' \u00b7 ') if data else '', src, html.escape(prov.builder.get(ex.output, 'python/paper')),
+        REPO_URL, prov.commit, prov.commit, ' with uncommitted changes' if prov.dirty else '', html.escape(cmd))
 
 
-def groupLatex(anchor, members, paper, refs):
-    out, shown = [], []
-    own = refs.heads.get(anchor, {}).get('number')
-
-    def para(a):
-        t = exhibitText(a)
-        if not t:
-            return ''
-        t = refs.printTex(t)
-        return t.replace('section ' + own, 'this section') if own else t
-
-    for a in members:
-        if not a.ok:
-            continue
-        if a.scope == 'paper':
-            shown.append(a)
-            continue
-        if para(a):
-            out.append(r'\noindent ' + para(a) + r'\par\medskip')
-        if a.kind == 'table':
-            p = os.path.join(GEN, 'tex', a.name + '.tex')
-            write(p, refs.printTex(a.tex))
-            out.append(r'\setcounter{table}{' + str(int(a.number.split('.')[1]) - 1) + '}')
-            out.append(r'\input{_generated/tex/' + a.name + '}')
-        else:
-            src = a.pdf or a.png
-            ext = os.path.splitext(src)[1]
-            copy(src, os.path.join(GEN, 'figs', a.name + ext))
-            cap = getattr(a, 'captionTex', a.ex.caption or a.name)
-            note = getattr(a, 'noteTex', a.ex.note or '')
-            note, cap = refs.printTex(note), refs.printTex(cap)
-            own = refs.heads.get(anchor, {}).get('number')
-            if own:
-                note = note.replace('section ' + own, 'this section')
-            out += [r'\begin{figure}[!htbp]', r'\centering',
-                    r'\setcounter{figure}{' + str(int(a.number.split('.')[1]) - 1) + '}',
-                    r'\caption{' + cap + '}',
-                    r'\includegraphics[width=\linewidth]{_generated/figs/' + a.name + ext + '}']
-            if note:
-                out.append(r'\par\smallskip{\footnotesize\raggedright \textit{Note:} ' + note + r'\par}')
-            out.append(r'\end{figure}')
-    if shown:
-        names = []
-        for a in shown:
-            if a.kind == 'table' and a.table:
-                num = paper.numbers.get(a.table.label) if a.table.label else None
-                name = 'table ' + num if num else "table ``" + (a.table.caption or a.name).rstrip('.') + "''"
-            elif a.kind == 'figure':
-                fig = paper.figures.get(a.base, {})
-                num = paper.numbers.get(fig.get('label')) if fig.get('label') else None
-                name = 'figure ' + num if num else "figure ``" + fig.get('caption', a.name).rstrip('.') + "''"
-            else:
-                continue
-            try:
-                where = paper.where(a.name)
-            except Exception:
-                where = ''
-            names.append(name + (' (' + where + ')' if where else ''))
-        lead = 'Beside these, the site shows the paper' if out else 'The site shows here the paper'
-        head = [r'\noindent\textit{' + lead + "'" + r's ' + '; '.join(names)
-                + r', which this edition does not reprint.}\par\medskip']
-        for a, name in zip(shown, names):
-            if para(a):                                # a text that opens with its own reference needs no lead
-                lead = '' if para(a).lstrip().startswith(('Table', 'Figure')) else \
-                    r'\textit{' + name[0].upper() + name[1:] + '.} '
-                head.append(r'\noindent ' + lead + para(a) + r'\par\medskip')
-        out[0:0] = head
-    out.append(r'\FloatBarrier')
-    return '\n'.join(out)
-
-
-def include(html_, latex, wide = True):
-    """ One exhibit group as a Quarto include: the HTML for the site, the LaTeX for the print edition. A figure
-    beside its tables takes the page's width, anything else the body's and a little more. """
-    # The hidden [$\cdot$] is there for pandoc, which loads MathJax only on a page whose Markdown has math; the
-    # exhibits' math sits in raw HTML it does not read.
-    return ('::: {.content-visible when-format="html"}\n[$\\cdot$]{.hidden}\n\n:::: {.'
-            + ('column-page' if wide else 'column-body-outset') + '}\n```{=html}\n' + html_ + '\n```\n::::\n:::\n\n'
-            '::: {.content-visible when-format="pdf"}\n```{=latex}\n' + latex + '\n```\n:::\n')
-
-
-# ---------------------------------------------------------------------------------------------------
-# Generated pages: the comparison of the two calibrations, the replication map, the version stamp.
-
-def cellsOf(a):
-    """ The body cells of a table, by row, each as (plain text, its LaTeX source). """
-    ctx = TT.Context()
-    return [[(re.sub(r'\s+', ' ', re.sub('<[^>]+>', '', TT.inline(c.tex, ctx))).strip(), c.tex.strip())
-             for c in r.cells] for r in a.table.body]
-
-
-def blockLabels(table, cells):
-    """ A readable label for each body row: its own first cell, or, where that is empty (the CRRA and endogenous-
-    design tables name a block of rows once), the first label of its block, a block running between rules. """
-    starts = [k for k, row in enumerate(table.body)
-              if k == 0 or row.kind == 'group' or any(r in ('hline', 'midrule') for r in row.rulesBefore)]
-    bounds, out = starts + [len(cells)], []
-    for s, e in zip(bounds, bounds[1:]):
-        lab = next((cc[0] for cc in cells[s:e] if cc and cc[0][0]), ('', ''))
-        out += [c[0] if c and c[0][0] else lab for c in cells[s:e]]
+def dataFiles(ex, prov):
+    """ The csvs an exhibit offers, copied under _generated/data: an explorer's dataset; a static exhibit's traced
+    inputs that are single csv files. """
+    out = []
+    if ex.kind == 'explorer':
+        src = os.path.join(DATA, ex.output + '.csv')
+        if os.path.exists(src):
+            copy(src, os.path.join(GEN, 'data', ex.output + '.csv'))
+            out.append(('the figure\u2019s data (csv)', ex.output + '.csv'))
+        return out
+    for path, n in prov.reads.get(ex.output, []):
+        src = os.path.join(C.REPO, path)
+        if not n and '*' not in path and path.endswith('.csv') and os.path.exists(src):
+            copy(src, os.path.join(GEN, 'data', path))
+            out.append((os.path.basename(path), path.replace('\\', '/')))
     return out
 
 
-def variantDiff(assets, paper, refs):
-    """ For every table with a twin: how many body cells differ between the two calibrations, and in which rows. """
-    by = {a.name: a for a in assets if a.kind == 'table' and a.ok}
-    rows, lat = [], []
-    seen = set()
-    for a in assets:
-        if a.kind != 'table' or not a.ok or a.variant != 'commonX' or a.name + TWIN not in by or a.name in seen:
-            continue
-        seen.add(a.name)
-        b = by[a.name + TWIN]
-        ca, cb = cellsOf(a), cellsOf(b)
-        if len(ca) != len(cb):
-            diff, where = None, 'different rows'
-        else:
-            diff, labels = 0, []
-            texts = [[t for t, _ in r] for r in ca]
-            for ra, rb, lab in zip(texts, [[t for t, _ in r] for r in cb], blockLabels(a.table, ca)):
-                d = sum(x != y for x, y in zip(ra, rb)) + abs(len(ra) - len(rb))
-                if d:
-                    diff += d
-                    if lab[0] and lab not in labels:
-                        labels.append(lab)
-        total = sum(len(r) for r in ca)
-        count = '\u2013' if diff is None else '{} of {}'.format(diff, total)
-        ctx = TT.Context()
-        whereHtml = 'different rows' if diff is None else ', '.join(TT.inline(t, ctx) for _, t in labels) or 'none'
-        whereTex = 'different rows' if diff is None else ', '.join(t for _, t in labels) or 'none'
-        rows.append('<tr><td class="oa-l"><a href="{}">{}</a></td><td class="oa-c">{}</td><td class="oa-l">{}</td></tr>'
-                    .format(refs.href(a, 'oecd'), TT.inline(a.table.caption or a.name, ctx), count, whereHtml))
-        lat.append(r'{} & {} & {} \\'.format(a.table.caption or latexText(a.name), count.replace('\u2013', '--'),
-                                                whereTex))
-    h = ('<section class="oa-group" id="oagroup_oecd-vectorx" data-group="oecd-vectorx"><div class="oa-scroll">'
-         '<table class="oa-table oa-table--wide"><caption>The cells that differ between the two calibrations, '
-         'table by table</caption><thead><tr><th class="oa-l" scope="col">Table</th><th class="oa-c" scope="col">'
-         'Cells that differ</th><th class="oa-l" scope="col">Rows in which they do</th></tr></thead><tbody>'
-         + ''.join(rows) + '</tbody></table></div></section>')
-    l = (r'{\footnotesize\begin{longtable}{p{6.2cm}p{2cm}p{6.2cm}}' '\n'
-         r'\caption*{The cells that differ between the two calibrations, table by table}\\' '\n'
-         r'\toprule Table & Cells that differ & Rows in which they do \\ \midrule \endhead' '\n'
-         + '\n'.join(lat) + '\n' r'\bottomrule\end{longtable}}')
-    return include(h, l)
+def block(i, ex, num, paper, refs, prov, here, report):
+    """ {'whole': html} for a static exhibit, {'head': html, 'foot': html} for an explorer. """
+    word, n, _ = num
+    ctx = refs.context(here)
+    number = '<span class="oa-num">{} {}.</span> '.format(word.capitalize(), n)
+    files = dataFiles(ex, prov)
+    if ex.kind == 'table':
+        p = os.path.join(TABLES, ex.output + '.tex')
+        if not os.path.exists(p):
+            report.append('missing table {}'.format(ex.output))
+            return {'whole': '<p class="oa-missing">Table {} has not been built yet.</p>'.format(n)}
+        t = TT.parse(read(p))
+        body = t.html(ctx, number = number, tableId = anchor(i)).replace(
+            '</caption>', paperBadge(ex.output, t, paper) + '</caption>', 1)
+        report.extend('{}: LaTeX outside the converter\u2019s vocabulary: {}'.format(ex.output, u) for u in sorted(t.unknown))
+        return {'whole': '<div class="oa-exhibit oa-tablebox"><div class="oa-scroll">{}</div>{}</div>'.format(
+            body, links(ex, prov, files))}
+    if ex.kind == 'figure':
+        fig = paper.figures.get(ex.output) if ex.output in paper.uses else None
+        cap, note = (fig['caption'], fig['note']) if fig else (ex.caption or ex.output, ex.note or '')
+        svg = os.path.join(FIGS, ex.output + '.svg')
+        if not os.path.exists(svg):
+            report.append('missing figure {}'.format(ex.output))
+            return {'whole': '<p class="oa-missing">Figure {} has not been built yet.</p>'.format(n)}
+        copy(svg, os.path.join(GEN, 'figs', ex.output + '.svg'))
+        note = re.sub(r'^\\textit\{Note:\}\s*', '', note.strip())
+        return {'whole': ('<div class="oa-exhibit oa-figure" id="{}"><div class="oa-caption">{}{}{}</div>'
+                          '<img src="_generated/figs/{}.svg" alt="{}">{}{}</div>').format(
+            anchor(i), number, TT.inline(cap, ctx), paperBadge(ex.output, None, paper), ex.output,
+            html.escape(plain(cap)), '<div class="oa-note"><em>Note:</em> {}</div>'.format(TT.inline(note, ctx))
+            if note else '', links(ex, prov, files))}
+    if not os.path.exists(os.path.join(DATA, ex.output + '.csv')):
+        report.append('missing dataset {} for {}'.format(ex.output, i))
+    head = '<div class="oa-caption" id="{}">{}{}</div>'.format(anchor(i), number, TT.inline(ex.caption or i, ctx))
+    foot = (('<div class="oa-note"><em>Note:</em> {}</div>'.format(TT.inline(ex.note, ctx)) if ex.note else '')
+            + links(ex, prov, files))
+    return {'head': head, 'foot': foot}
 
 
-def replicationMap(assets, paper, prov, refs):
-    rows, lat = [], []
-    for a in assets:
-        if not a.ok:
-            continue
-        sec = refs.heads.get(a.group, {}).get('number', '')
-        where = (('in the paper, ' + (paper.where(a.name) or '')) if a.scope == 'paper'
-                 else '{} {}{}'.format('Table' if a.kind == 'table' else 'Figure', a.number, ', ' + sec if sec else ''))
-        reads = ', '.join(p + (' ({} files)'.format(n) if n else '')
-                          for p, n in prov.sources(a.name, getattr(a.table, 'banner', None) if a.table else None))
-        rows.append('<tr><td class="oa-l"><a href="{}"><code>{}</code></a></td><td class="oa-l">{}</td>'
-                    '<td class="oa-l">{}</td><td class="oa-l"><code>{}</code></td></tr>'.format(
-                        refs.href(a, 'replication'), a.name, html.escape(where), html.escape(reads),
-                        html.escape(prov.builder.get(a.name, ''))))
-        lat.append(r'\texttt{{{}}} & {} & \texttt{{{}}} \\'.format(
-            latexText(a.name).replace(r'\_', r'\_\allowbreak{}'), latexText(where), latexText(prov.builder.get(a.name, ''))))
-    h = ('<section class="oa-group" id="oagroup_rep-map" data-group="rep-map"><div class="oa-scroll">'
-         '<table class="oa-table oa-table--wide oa-table--map"><caption>Every exhibit, where it appears, what it reads, '
-         'which builder makes it</caption><thead><tr><th class="oa-l" scope="col">Output</th><th class="oa-l" scope="col">'
-         'Where</th><th class="oa-l" scope="col">Reads</th><th class="oa-l" scope="col">Builder</th></tr></thead><tbody>'
-         + ''.join(rows) + '</tbody></table></div></section>')
-    l = (r'{\footnotesize\begin{longtable}{p{5.2cm}p{4.4cm}p{5.4cm}}' '\n'
-         r'\toprule Output & Where & Builder \\ \midrule \endhead' '\n' + '\n'.join(lat) + '\n'
-         r'\bottomrule\end{longtable}}')
-    return include(h, l)
+_RUN = re.compile(r' of the paper(?=(?:, | and )[\w.]+ of the paper)')
+
+
+def collapseRuns(s):
+    """ A run of the paper's references names the paper once, at its end: "tables 5, 6 and 7 of the paper", where
+    each resolved on its own reads "5 of the paper, 6 of the paper and ...". """
+    return _RUN.sub('', s)
+
+
+def include(htmlText):
+    """ A block as a Quarto include: raw HTML for the site. The hidden math span is there for pandoc, which
+    loads MathJax only on a page whose Markdown has math. """
+    return '[$\\cdot$]{.hidden}\n\n```{=html}\n' + collapseRuns(htmlText) + '\n```\n'
+
+
+# ---------------------------------------------------------------------------------------------------
+# The replication map, the palette, the version stamp.
+
+def replicationMap(pgs, numbers, prov):
+    rows = []
+    for p in pgs:
+        for i in p['exhibits']:
+            if i not in numbers:
+                continue
+            ex, (word, n, page) = EXHIBITS[i], numbers[i]
+            reads = ', '.join(path + (' ({} files)'.format(k) if k else '') for path, k in prov.reads.get(ex.output, []))
+            rows.append('<tr><td class="oa-l"><a href="{}#{}">{} {}</a></td><td class="oa-l"><code>{}</code></td>'
+                        '<td class="oa-l"><code>{}</code></td><td class="oa-l">{}</td></tr>'.format(
+                            page, anchor(i), word.capitalize(), n, ex.output,
+                            html.escape(prov.builder.get(ex.output, '')), html.escape(reads) or '\u2013'))
+    return include('<div class="oa-scroll"><table class="oa-table oa-table--map"><caption>Every exhibit, the output '
+                   'that holds it, the builder that makes it and what it reads</caption><thead><tr>'
+                   '<th class="oa-l" scope="col">Exhibit</th><th class="oa-l" scope="col">Output</th>'
+                   '<th class="oa-l" scope="col">Builder</th><th class="oa-l" scope="col">Reads</th></tr></thead><tbody>'
+                   + ''.join(rows) + '</tbody></table></div>')
+
+
+def styleJs():
+    """ The palette of the paper's figures (figures.py), for assets/oa.js: one source for both. """
+    import figures as F
+    style = {'series': list(F.SERIES), 'ink': dict(F.INK), 'rhoColours': [F.SERIES[0], F.SERIES[1], F.INK['secondary']]}
+    return ('// GENERATED by python/paper/onlineAppendix.py from python/paper/figures.py -- do not edit by hand.\n'
+            'export const STYLE = ' + json.dumps(style, indent = 1) + ';\n')
+
+
+def variables(paper, numbers):
+    r""" _variables.yml, for the prose's {{< var >}}: p.<label> the paper's number of a figure, table, section or
+    appendix (main.aux; the label's ':' as '_'), x.<id> a site exhibit's number. """
+    key = lambda s: re.sub(r'[^A-Za-z0-9]', '_', s)
+    lines = ['# GENERATED by python/paper/onlineAppendix.py -- do not edit by hand.', 'p:']
+    for lab, num in sorted(paper.numbers.items()):
+        if lab.split(':')[0] in ('fig', 'table', 'sec', 'app') and '@' not in lab:
+            lines.append('  {}: "{}"'.format(key(lab), num))
+    lines.append('x:')
+    for i, (word, n, _) in sorted(numbers.items()):
+        lines.append('  {}: "{}"'.format(key(i), n))
+    return '\n'.join(lines) + '\n'
 
 
 def version(prov, paper):
-    dirty = ' with uncommitted changes in `results/paper` or `python/paper`' if prov.dirty else ''
-    nums = ('' if paper.fresh else ' The paper\u2019s section, table and figure numbers are counted from its '
-            'source, as LaTeX sets them; its equations, which are not counted, are referred to by their section.')
-    return ('Built on {} from commit [`{}`]({}/commit/{}){}.{}\n'.format(prov.date, prov.commit, REPO_URL, prov.commit,
-                                                                       dirty, nums))
+    dirty = ' with uncommitted changes in `results` or `python/paper`' if prov.dirty else ''
+    nums = '' if paper.fresh else ' The paper\u2019s numbers are those of its last compilation.'
+    return 'Built on {} from commit [`{}`]({}/commit/{}){}.{}\n'.format(prov.date, prov.commit, REPO_URL, prov.commit,
+                                                                       dirty, nums)
 
 
 # ---------------------------------------------------------------------------------------------------
 
 def build(verbose = True):
     report = []
-    for d in ('groups', 'figs', 'tex', 'data'):
+    for d in ('exhibits', 'figs', 'data'):
         os.makedirs(os.path.join(GEN, d), exist_ok = True)
-    paper, prov, heads = Paper(), Provenance(), headings()
-    assets = load(GROUPS, paper, report)
-    number(assets)
-    refs = Refs(assets, paper, heads)
-    byName = {a.name: a for a in assets}
-    for anchor, chapter, exs in GROUPS:
-        members = [a for a in assets if a.group == anchor]
-        if anchor == 'oecd-vectorx':
-            text = variantDiff(assets, paper, refs)
-        elif not any(a.ok for a in members):
-            text = ('::: {.callout-note}\nThis exhibit has not been built yet: run `build.py`, then `build.py --site`.\n'
-                    ':::\n')
-        else:
-            wide = any(a.ok and a.kind == 'figure' for a in members) and any(a.ok and a.kind == 'table' for a in members)
-            text = include(groupHtml(anchor, chapter, members, paper, refs, prov, byName, heads, report),
-                           groupLatex(anchor, members, paper, refs), wide)
-        write(os.path.join(GEN, 'groups', anchor + '.qmd'), text)
-    write(os.path.join(GEN, 'groups', 'rep-map.qmd'), replicationMap(assets, paper, prov, refs))
+    paper, prov, pgs = Paper(), Provenance(), pages()
+    numbers, labels, seen = {}, {}, set()
+    for p in pgs:
+        k = {'figure': 0, 'table': 0}
+        for i in p['exhibits']:
+            if i not in EXHIBITS:
+                report.append('{} includes {}, which the registry does not hold'.format(p['file'], i))
+                continue
+            if i in seen:
+                report.append('{} is included on more than one page'.format(i))
+            seen.add(i)
+            word = 'table' if EXHIBITS[i].kind == 'table' else 'figure'
+            k[word] += 1
+            numbers[i] = (word, '{}.{}'.format(p['code'], k[word]) if p['code'] else str(k[word]), p['page'])
+            if word == 'table':
+                tp = os.path.join(TABLES, EXHIBITS[i].output + '.tex')
+                if os.path.exists(tp):
+                    lab = TT.parse(read(tp)).label
+                    if lab:
+                        labels[lab] = i
+            elif EXHIBITS[i].output in paper.figures and paper.figures[EXHIBITS[i].output]['label']:
+                labels[paper.figures[EXHIBITS[i].output]['label']] = i
+    unused = sorted(set(EXHIBITS) - seen)
+    if unused:
+        report.append('registered but on no page: ' + ', '.join(unused))
+    refs = Refs(paper, pgs, numbers, labels)
+    for p in pgs:
+        for i in p['exhibits']:
+            if i not in EXHIBITS:
+                continue
+            b = block(i, EXHIBITS[i], numbers[i], paper, refs, prov, p['page'], report)
+            for part, text in b.items():
+                write(os.path.join(GEN, 'exhibits', i + ('' if part == 'whole' else '-' + part) + '.qmd'), include(text))
+    write(os.path.join(GEN, 'rep-map.qmd'), replicationMap(pgs, numbers, prov))
+    write(os.path.join(GEN, 'style.js'), styleJs())
     write(os.path.join(GEN, 'version.qmd'), version(prov, paper))
+    write(os.path.join(SITE, '_variables.yml'), variables(paper, numbers))
     bib = os.path.join(C.PAPERTEX, 'References.bib')
     if os.path.exists(bib):
         copy(bib, os.path.join(GEN, 'References.bib'))
-    if heads:
-        writeMacros(heads)
-    else:
-        report.append('no OA headings found in writing/OnlineAppendix: onlineAppendix.tex left as it is')
-    unknown = set()
-    for a in assets:
-        if a.table:
-            unknown |= a.table.unknown
-    if unknown:
-        report.append('LaTeX outside the converter\u2019s vocabulary: ' + ', '.join(sorted(unknown)))
-    shown = sum(a.ok for a in assets)
+    writeMacros(pgs)
     if verbose:
-        print('online appendix: {} of {} exhibits shown ({} online-only, numbered; {} the paper\u2019s), '
-              'commit {}{}, paper numbers {}'.format(shown, len(assets), sum(a.ok and a.scope == 'online' for a in assets),
-                                                       sum(a.ok and a.scope == 'paper' for a in assets), prov.commit,
-                                                       ' (dirty)' if prov.dirty else '',
-                                                       'from main.aux' if paper.fresh else 'counted from its source (main.aux stale)'))
+        print('online appendix: {} pages, {} exhibits ({} interactive), commit {}{}, paper numbers {}'.format(
+            len(pgs), len(numbers), sum(EXHIBITS[i].kind == 'explorer' for i in numbers), prov.commit,
+            ' (dirty)' if prov.dirty else '', 'from main.aux' if paper.fresh else 'from a main.aux older than the tex'))
         for line in report:
             print('  ' + line)
         print('next: quarto render ' + os.path.relpath(SITE, C.REPO))
-    return {'assets': assets, 'report': report, 'paper': paper, 'heads': heads}
+    return {'pages': pgs, 'numbers': numbers, 'report': report}
 
 
 if __name__ == '__main__':

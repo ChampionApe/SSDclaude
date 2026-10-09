@@ -1,16 +1,16 @@
-# OA.6 Replication {#rep}
+# D3. Replication {#rep}
 
-Every table and figure of the paper's quantitative sections and of this appendix, except the paper's figure 5.1 of
-Argentina's beneficiaries, is produced by the pipeline in `python/paper` of the
+Every table and figure of this appendix is produced by the pipeline in `python/paper` of the
 [repository](https://github.com/ChampionApe/SSDclaude), in three stages: the calibrations, the experiments, and a
-build that reads only their results and writes the exhibits in seconds. `REPLICATION.md` in the repository is the
-map from data and code to every output, with the commands and the time each stage takes; the technical
-documentation [@BergGE26doc] describes the model, its equilibria and the algorithms.
+build that reads only their results and writes the exhibits in seconds. `REPLICATION.md` in the repository maps the
+data and the code to every output, with the commands and the time each stage takes; the technical documentation
+[@BergGE26doc] describes the model, its equilibria and the algorithms. The interactive figures draw from csv files
+that the build writes from the same results, and each figure's *Data* link downloads its file.
 
-The table lists every exhibit shown here, where it appears and the builder that makes it[, with the files it
-reads; each exhibit's *Source* has the same, with downloads and the command that rebuilds it]{.content-visible when-format="html"}.
+The table lists every exhibit of this appendix, the output that holds it, the builder that makes it and the results
+files it reads; each exhibit's *Source* has the same, with the command that rebuilds it.
 
-{{< include _generated/groups/rep-map.qmd >}}
+{{< include _generated/rep-map.qmd >}}
 
 ::: {.oa-version}
 {{< include _generated/version.qmd >}}

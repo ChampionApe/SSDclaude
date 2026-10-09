@@ -332,7 +332,7 @@ def main():
     p.add_argument('--host', default = 'US', choices = tuple(HOSTS),
                    help = "'UK': calibrate the UK's OWN cost and impose France's characteristics (cut at the "
                           "UK's groups) on it; every csv name carries the host (escCalibrationCRRAUK.csv, "
-                          "escShocksCRRAUK.csv). Pass --scenarios without the ageing ones.")
+                          "escShocksCRRAUK.csv). Mild ageing is not run on the UK.")
     a = p.parse_args()
     os.makedirs(OUTDIR, exist_ok = True)
     hs = '' if a.host == 'US' else a.host
@@ -545,7 +545,10 @@ def main():
                                 print(f'  {name} pin={pin} FAILED {type(e).__name__}: {e}')
 
                     # France's own calibrated path at this rho -- the endpoint the French-characteristics
-                    # rows are read against (runESC.franceRow's CRRA counterpart, exogenous theta).
+                    # rows are read against (runESC.franceRow's CRRA counterpart, exogenous theta). Run with
+                    # the French scenarios only, so a run of other scenarios leaves the France rows on disk.
+                    if not any(n.startswith('fr') for n in a.scenarios):
+                        continue
                     try:
                         tic = time.time()
                         f = franceRowCRRA(m, ρ, spec, phi, pCal, hbarRef, commonX = a.commonX, gs = gs,

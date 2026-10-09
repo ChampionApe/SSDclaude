@@ -1,0 +1,72 @@
+# B2. Other countries {#oecd-countries}
+
+## What shapes pensions, savings and labor supply in the U.S. and the UK {#oecd-hosts}
+
+The figure repeats the paper's figure {{< var p.fig_US_overview >}} with the UK beside the U.S. Each host keeps its
+own calibration and changes one characteristic over the whole horizon. The characteristics are its design, moved to
+the two corners; its population growth, halved (mild ageing) or held at one (acute ageing); or France's income
+distribution, voting patterns or taste for leisure, with France's households cut at the host's income percentiles.
+On both hosts ageing and the design move the tax rate most. Ageing and France's voting patterns move the UK's tax
+rate by less than the U.S. one at every IES, and so does the design up to an IES of one. Two rows change sign
+between the hosts. France's income distribution raises the UK's tax rate where it lowers the U.S. one, because at
+the UK's income cuts France is the more unequal of the two (appendix {{< var p.app_US >}}). France's taste for
+leisure lengthens the UK's workweek where it shortens the U.S. one, since France's average taste for leisure lies
+between the two hosts'.
+
+::: {.oa-explorer .column-page}
+{{< include _generated/exhibits/OECD_Hosts-head.qmd >}}
+
+```{ojs}
+//| echo: false
+import {counterfactuals, control, ROWS_GIVEN, RHO, GIVEN_OUTCOMES} from "./assets/oa.js"
+oecd = FileAttachment("_generated/data/OECD_Counterfactuals.csv").csv({typed: true})
+oecdMain = oecd.filter(d => d.source === "main" && d.calibration === "commonX" && d.effect === "full")
+viewof b2Out = control("radio", GIVEN_OUTCOMES, {key: "hosts", label: "Outcome", value: "tau"})
+counterfactuals(oecdMain, {rows: ROWS_GIVEN, series: RHO, outcome: b2Out, width,
+  facets: [{label: "U.S.", filter: d => d.host === "US"}, {label: "UK", filter: d => d.host === "UK"}]})
+```
+
+{{< include _generated/exhibits/OECD_Hosts-foot.qmd >}}
+:::
+
+## The UK at U.S. income groups {#oecd-regroup}
+
+The paper cuts the UK's households at the UK's own income groups, which identify θ from the replacement rates at
+half-mean and mean income. It cuts France at the U.S. percentiles, so that its households replace the U.S. ones type
+by type, and regroups France at the UK's cuts for the UK as host. The table sets the groupings side by side.
+Regrouping changes what the calibration reads: θ is read off the replacement rates at other cuts, ω follows, and the
+productivity spread is that of other groups. At the U.S. cuts the UK's productivity spread is much narrower than at
+its own, while France's at the UK's cuts is wider than at the U.S. ones. The UK at the U.S. cuts is a linear fit of
+the UK's group means against cumulative population shares rather than a recount of the survey, so its spread is an
+approximation. The tabs give the two regroupings household by household.
+
+{{< include _generated/exhibits/OECD_Regroupings.qmd >}}
+
+::: {.panel-tabset}
+### The UK at U.S. income groups
+{{< include _generated/exhibits/UKUS_householdheterogeneity.qmd >}}
+
+### France at the UK's income groups
+{{< include _generated/exhibits/FRUK_householdheterogeneity.qmd >}}
+:::
+
+The figure imposes the counterfactuals of the first figure on the UK under the two groupings, France's households
+cut at the same groups as the host's. Ageing moves the two alike, since it does not depend on how households are
+grouped. The design and France's voting patterns move the regrouped UK much less: at the U.S. cuts its incomes are
+compressed, so a flat benefit redistributes little and the poor have little to gain from voting more. France's income
+distribution, conversely, raises the regrouped UK's tax rate by much more, because next to that compressed
+distribution France's is unequal.
+
+::: {.oa-explorer .column-page}
+{{< include _generated/exhibits/OECD_Groupings-head.qmd >}}
+
+```{ojs}
+//| echo: false
+viewof b2gOut = control("radio", GIVEN_OUTCOMES, {key: "groups", label: "Outcome", value: "tau"})
+counterfactuals(oecdMain, {rows: ROWS_GIVEN, series: RHO, outcome: b2gOut, width,
+  facets: [{label: "UK, its own income groups", filter: d => d.host === "UK"},
+           {label: "UK, U.S. income groups", filter: d => d.host === "UKUS"}]})
+```
+
+{{< include _generated/exhibits/OECD_Groupings-foot.qmd >}}
+:::

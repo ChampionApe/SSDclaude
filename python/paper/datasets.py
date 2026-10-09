@@ -297,6 +297,15 @@ def usBaseline(df, ρ):
     return usShockRow(df, ρ, 'Baseline', 'baseline')
 
 
+def usShocksXi():
+    """ python/US/runShocksXi.py's csv: usShocks' columns at rho = 1, common X, plus the Frisch elasticity
+    'ξ', the US and France recalibrated at each. """
+    path = os.path.join(C.SHOCKDIR, 'US_shocksXiCommonX.csv')
+    df = pd.read_csv(_need(path))
+    df.attrs['source'] = 'results/shocks/US_shocksXiCommonX.csv'
+    return _noDuplicates(df, ['ξ', 'ρ', 'scenario', 'effect'], path)
+
+
 def usSweep(country, commonX = None):
     """ One country's calibration sweep, deduplicated on rho keeping the last. """
     commonX = C.US['commonX'] if commonX is None else commonX
@@ -542,6 +551,19 @@ def escPath(ρ, commonX = None, spec = None):
     if df.empty:
         raise MissingInput('{} (ρ={}, {}, commonX={}, method={})'.format(path, ρ, spec, commonX, escMethod()))
     return _noDuplicates(df, ['pos'], path).sort_values('pos').reset_index(drop = True)
+
+
+def escPathHost(commonX = None, spec = None):
+    """ python/US/runESC.stagePathHost's csv: escPath's columns for France and the UK (log preferences), per
+    `country` and `wedgeFrom` ('US': the US-calibrated cost parameter; 'own': the country's own, which France
+    does not have), plus the country's θStar and ω. Headline variant and the paper's spec by default. """
+    commonX = C.US['commonX'] if commonX is None else commonX
+    spec = C.US['esc']['spec'] if spec is None else spec
+    path = os.path.join(C.ESCDIR, 'escPathHost.csv')
+    df = _escSelect(pd.read_csv(_need(path)), spec, commonX)
+    if df.empty:
+        raise MissingInput('{} ({}, commonX={})'.format(path, spec, commonX))
+    return _noDuplicates(df, ['country', 'wedgeFrom', 'pos'], path).sort_values(['country', 'wedgeFrom', 'pos'])
 
 
 def escXi(commonX = None, spec = None):

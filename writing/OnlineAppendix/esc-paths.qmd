@@ -1,0 +1,102 @@
+# C1. The path in levels {#esc-paths}
+
+The calibration targets the design of 2020 only; every other design along the path is an outcome of the model,
+chosen one period ahead by the electorate of the period before. The figures follow the three countries from 1990,
+whose electorate sets the design of 2020, to 2110, after which the demography is held constant. Each country keeps
+its own calibration and demography. Its cost parameter is either the one calibrated on the U.S., the cross-country
+test of appendix {{< var p.app_escResults >}} along the path, or its own, the parameter at which its electorate
+re-elects its observed design. France has no own parameter, since no value of it re-elects France's fully
+Bismarckian design.
+
+## By country {#esc-paths-countries}
+
+In every country the chosen design moves against the number of workers per retiree. As the population ages, the
+electorate ties benefits more closely to earnings, and the design levels off when the demography does. Under the
+U.S. cost parameter the three countries' designs keep their observed order in 2020: the UK's lowest, France's
+highest, the U.S. in between. By 2110 the U.S. design overtakes France's, since France's population is already old
+in 2020 and ages least afterwards. The UK's workers per retiree rise until 2020 before they fall, and its design
+falls and then rises with them. At its own parameter the UK's design starts from its observed value and follows the
+same pattern. The tax rate rises with ageing everywhere.
+
+::: {.oa-explorer .column-page}
+{{< include _generated/exhibits/ESC_PathsCountries-head.qmd >}}
+
+```{ojs}
+//| echo: false
+import {pathGrid, control, checkboxes, COUNTRIES, countryStyle, OUTCOMES} from "./assets/oa.js"
+escPaths = FileAttachment("_generated/data/ESC_Paths.csv").csv({typed: true})
+PATHVARS = [["Pension design θ", "theta"], ["Tax rate", "tau"], ["Savings over GDP", "sr"], ["Workweek", "workweek"]]
+COSTS = [["the U.S. one for all", "US"], ["each country's own", "own"]]
+NAME = ({US: "U.S.", UK: "UK", FR: "France"})
+// One country's baseline path at rho = 1 under the paper's cost and the selected parameter. France has no own
+// parameter: under "own" it is shown with its design pinned at its observed value, where the cost is zero.
+countryPath = (country, cost) => {
+  const pinnedOnly = cost === "own" && country === "FR";
+  const rows = escPaths.filter(d => (d.source === "main" || d.source === "host") && d.country === country
+    && d.spec === "size" && d.rho === 1 && d.wedgeFrom === (pinnedOnly ? "US" : cost));
+  return {rows, pinnedOnly};
+}
+series = (rows, variable, reading) => rows.filter(d => d.variable === variable)
+  .map(d => ({year: d.year, value: d[reading]})).sort((a, b) => a.year - b.year)
+viewof c1Countries = checkboxes(COUNTRIES, {key: "countries", label: "Countries"})
+viewof c1Var = control("select", PATHVARS, {key: "variable", label: "Beside workers per retiree", value: "theta"})
+viewof c1Cost = control("radio", COSTS, {key: "cost", label: "Cost parameter", value: "US"})
+{
+  const lines = v => c1Countries.map(c => {
+    const {rows, pinnedOnly} = countryPath(c, c1Cost);
+    const st = countryStyle(c);
+    return {label: NAME[c] + (pinnedOnly && v !== "nu" ? ", design pinned" : ""), colour: st.colour, symbol: st.symbol,
+            dashed: pinnedOnly && v !== "nu", records: series(rows, v, pinnedOnly || v === "nu" ? "pinned" : "chosen")};
+  });
+  const observed = c1Var === "theta" ? c1Countries.map(c => {
+    const r = countryPath(c, c1Cost).rows.find(d => d.variable === "theta" && d.year === 2020);
+    return r ? {year: 2020, value: r.pinned, colour: countryStyle(c).colour, text: `${NAME[c]}, observed design: ${r.pinned.toFixed(3)}`} : null;
+  }).filter(d => d) : [];
+  const items = c1Countries.map(c => ({label: NAME[c], colour: countryStyle(c).colour, shape: "line"}));
+  if (observed.length) items.push({label: "observed design", colour: "#52514e", shape: "open"});
+  return pathGrid([{title: "Workers per retiree ν", variable: "nu", lines: lines("nu"), rule: 2020, ruleLabel: "calibration"},
+                   {title: OUTCOMES[c1Var].level, variable: c1Var, lines: lines(c1Var), rule: 2020,
+                    ruleLabel: "calibration", observed}],
+                  items, {width});
+}
+```
+
+{{< include _generated/exhibits/ESC_PathsCountries-foot.qmd >}}
+:::
+
+## The design chosen and the design pinned {#esc-paths-readings}
+
+With the design pinned at its observed value, each country's path is that of section {{< var p.sec_oecd >}} with the
+cost in place. Choosing the design changes the tax rate little. In the U.S. and the UK the chosen design rises above
+the observed one as the population ages, and the tax rate with it lies slightly above the pinned path, since a more
+earnings-related system loses less of its revenue and is worth more to the electorate at the margin. In France the
+design chosen under the U.S. parameter stays below the observed corner throughout, and the tax rate with it lies above
+the pinned path.
+
+::: {.oa-explorer .column-page}
+{{< include _generated/exhibits/ESC_PathsReadings-head.qmd >}}
+
+```{ojs}
+//| echo: false
+viewof c1bCountry = control("radio", COUNTRIES, {key: "country", label: "Country", value: "US"})
+viewof c1bVar = control("select", PATHVARS, {key: "variable2", label: "Beside workers per retiree", value: "theta"})
+viewof c1bCost = control("radio", COSTS, {key: "cost2", label: "Cost parameter", value: "US"})
+{
+  const {rows, pinnedOnly} = countryPath(c1bCountry, c1bCost);
+  const st = countryStyle(c1bCountry);
+  const both = v => [
+    ...(pinnedOnly ? [] : [{label: NAME[c1bCountry] + ", design chosen", colour: st.colour, symbol: st.symbol,
+                            records: series(rows, v, "chosen")}]),
+    {label: NAME[c1bCountry] + ", design pinned", colour: st.colour, symbol: st.symbol, dashed: true,
+     records: series(rows, v, "pinned")}];
+  const items = [{label: "design chosen", colour: st.colour, shape: "line"},
+                 {label: "design pinned at the observed value", colour: st.colour, shape: "line", dashed: true}];
+  return pathGrid([{title: "Workers per retiree ν", variable: "nu", rule: 2020, ruleLabel: "calibration",
+                    lines: [{label: NAME[c1bCountry], colour: st.colour, symbol: st.symbol, records: series(rows, "nu", "chosen")}]},
+                   {title: OUTCOMES[c1bVar].level, variable: c1bVar, lines: both(c1bVar), rule: 2020, ruleLabel: "calibration"}],
+                  pinnedOnly ? items.slice(1) : items, {width});
+}
+```
+
+{{< include _generated/exhibits/ESC_PathsReadings-foot.qmd >}}
+:::

@@ -1,25 +1,22 @@
-# OA.5 Numerical checks {#num}
+# D2. Numerical checks {#num}
 
-Section 4 of the paper computes date-specific Markov policy functions by backward induction along the demographic
-transition, and selects among the candidate equilibria at each state; the technical documentation
-[@BergGE26doc] gives the algorithms and the code. This chapter reports two checks of that computation.
+Section {{< var p.sec_numerical >}} of the paper computes date-specific Markov policy functions by backward induction
+along the demographic transition, and tests every candidate equilibrium at each state; the technical documentation
+[@BergGE26doc] gives the algorithms. The first table compares the date-specific solution with a time-invariant policy
+function, the approximation of much of the quantitative politico-economic literature, at the same dates. The second
+counts, for every file of results behind an exhibit, the equilibria and the candidates found at any state, and the
+states at which no candidate passed the test and the solver fell back on the integral rule. A single equilibrium at
+every state means that the selection rule of section {{< var p.sec_numerical >}} never had to choose.
 
-## OA.5.1 Date-specific and stationary policies {#num-stationary}
+::: {.panel-tabset}
+### Date-specific and stationary policies
+{{< include _generated/exhibits/NUM_Stationary.qmd >}}
 
-The table prints the gap between the date-specific solution and a time-invariant policy function, the
-approximation of much of the quantitative politico-economic literature, at the same dates. Section 4 summarizes it in a footnote.
+### Equilibrium selection
+{{< include _generated/exhibits/NUM_Selection.qmd >}}
+:::
 
-{{< include _generated/groups/num-stationary.qmd >}}
+## References {.unnumbered}
 
-## OA.5.2 Equilibrium selection {#num-selection}
-
-The table prints, for every file of results behind an exhibit, the largest number of equilibria and of candidate
-solutions found at any state, and the number of states at which no candidate passed the equilibrium test and the
-solver fell back on the integral rule of the technical documentation. A single equilibrium at every state means
-that the selection rule of section 4 never had to choose. A file prints no count where its solve selects no tax,
-the economic-equilibrium paths, or where its driver did not record the count: the calibration grids of the U.S.,
-the UK and France, the Frisch-elasticity and timing files, and the tax layer of the CRRA endogenous-design
-calibration and path files, whose design layer is counted in the lower panel. The paper's statement in section 4
-rests on the files that record the count.
-
-{{< include _generated/groups/num-selection.qmd >}}
+::: {#refs}
+:::

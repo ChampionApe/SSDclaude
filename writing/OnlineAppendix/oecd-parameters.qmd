@@ -1,0 +1,30 @@
+# B3. Other parameters {#oecd-parameters}
+
+## The U.S. across the intertemporal and the Frisch elasticity {#oecd-frisch}
+
+The figure shows the counterfactuals of section {{< var p.sec_oecd >}} on the U.S. across the two elasticities that
+govern the households' responses. The intertemporal elasticity ρ varies at the paper's Frisch elasticity; the Frisch
+elasticity ξ varies under log preferences. At each ξ the U.S. and France are recalibrated to the same targets, so the
+discount factor, the political weight of the old and the taste for leisure take new values. The ranking of the
+determinants holds at every ξ of the grid: ageing and the design move the tax rate most, France's characteristics
+far less. A higher Frisch elasticity dampens the responses of the tax rate and of savings a little and enlarges every
+response of hours, the households' labor supply being the more elastic.
+
+::: {.oa-explorer .column-page}
+{{< include _generated/exhibits/OECD_Frisch-head.qmd >}}
+
+```{ojs}
+//| echo: false
+import {counterfactuals, control, ROWS_GIVEN, RHO, XI, GIVEN_OUTCOMES} from "./assets/oa.js"
+oecd = FileAttachment("_generated/data/OECD_Counterfactuals.csv").csv({typed: true})
+viewof b3Across = control("radio", [["the intertemporal elasticity ρ", "rho"], ["the Frisch elasticity ξ", "xi"]],
+                          {key: "across", label: "Compare across", value: "rho"})
+viewof b3Out = control("radio", GIVEN_OUTCOMES, {key: "outcome", label: "Outcome", value: "tau"})
+counterfactuals(oecd.filter(d => d.host === "US" && d.calibration === "commonX" && d.effect === "full"
+                                 && d.source === (b3Across === "rho" ? "main" : "xi")),
+  {rows: ROWS_GIVEN, series: b3Across === "rho" ? RHO : XI, outcome: b3Out, width: Math.min(width, 760),
+   facets: [{label: b3Across === "rho" ? "U.S., ξ = 0.3" : "U.S., ρ = 1", filter: d => true}]})
+```
+
+{{< include _generated/exhibits/OECD_Frisch-foot.qmd >}}
+:::

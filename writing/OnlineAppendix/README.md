@@ -1,62 +1,58 @@
 # The online appendix
 
-A Quarto book that holds every table and figure of the paper's pipeline (82 exhibits), the paper's own
-marked as such, beside the tables that print their numbers: hover a mark for its value, click it for its
-table and row, switch the calibration variant, host or ρ, mark the cells two variants differ in. The same
-pages render as a PDF print edition (`_book/OnlineAppendix.pdf`), which holds every exhibit the paper does not,
-numbered Table/Figure OA.k as on the site. Its design and decisions (2026-10-06) are archived:
-`archive/notes/paper_onlineAppendix.md`, with the build contract `archive/notes/brief_onlineAppendix_2026-10-06.md`.
+A Quarto book of short pages, one per subsection, that extends the paper's sections 5–7: four parts (A Argentina,
+B the rich economies with the design given, C the endogenous design, D data and computation), each a landing page
+and its subsection pages. Static figures and tables come from the paper's pipeline; the interactive figures are
+Observable JS cells that draw, in the reader's browser, from csv files the build writes from the same results.
+Nothing is solved on the site and no number is typed in its prose. The design and its decisions (2026-10-09):
+`notes/plan_onlineAppendix.md` §2. The previous site (one page per chapter, a print edition) is in git history
+before branch `oa-revision`.
 
 ## Build
 
 ```
-.venv\Scripts\python.exe python\paper\build.py           (the exhibits, if results/ moved)
-.venv\Scripts\python.exe python\paper\build.py --site    (_generated/ and writing/Paper/onlineAppendix.tex)
-quarto render writing\OnlineAppendix                      (_book/: the site and the PDF, about 45 s)
+.venv\Scripts\python.exe python\paper\build.py --only <outputs>   (the exhibits and datasets, if results/ moved)
+.venv\Scripts\python.exe python\paper\build.py --site           (_generated/, _variables.yml, writing/Paper/onlineAppendix.tex)
+quarto render writing\OnlineAppendix                             (_book/, about a minute)
 ```
 
-Preview: `quarto preview writing\OnlineAppendix`, or serve `_book/` with any static server. After a render, reload
-the page with the cache bypassed (Ctrl+F5): the browser keeps `assets/exhibits.js` and `.css`, which carry no
-version, and a plain reload can show the previous build's layout or behaviour. The paper's table
-and equation numbers come from `writing/Paper/main.aux` when it is newer than every `.tex` of the paper, and are
-counted from the source otherwise (equations then named by their section); compile the paper first for exact
-numbers.
+Preview: `quarto preview writing\OnlineAppendix`, or serve `_book/` with a static server that does not hold the folder
+open (`python -m http.server --directory <path to _book>`: one started inside `_book` stops the next render from
+replacing it). Reload with the cache bypassed (Ctrl+F5) after a render. A tab in a hidden or locked window does not
+run the interactive cells; check them in a visible window or in headless Chrome (`chrome --headless=new
+--virtual-time-budget=20000 --screenshot=<png> <url>`).
 
 ## Files
 
 | | |
 |---|---|
-| `_quarto.yml` | the book: chapters, theme, the PDF engine (`pdflatex`, no automatic LaTeX installs) |
-| `index.qmd`, `data.qmd`, `argentina.qmd`, `oecd.qmd`, `esc.qmd`, `numerical.qmd`, `replication.qmd` | the chapters: headings `OA.n.m Title {#anchor .unnumbered}` and short prose; the exhibits come in through `{{< include _generated/... >}}` |
-| `assets/` | `exhibits.js` (controls, tooltips, linking, diff, URL state; vendored, no framework), `exhibits.css`, `theme.scss`, `header.tex` (the print edition's table packages), `scripts.html` |
-| `_generated/`, `_book/`, `.quarto/` | written by the build and gitignored |
+| `_quarto.yml` | the book: parts and pages, theme; the resources the pages fetch (`assets/oa.js`, `_generated/**`) |
+| `index.qmd` | the front page: the map of A–D and how to read the figures |
+| `argentina.qmd`, `oecd.qmd`, `esc.qmd`, `checks.qmd` | the four landing pages (A–D) |
+| `arg-*.qmd`, `oecd-*.qmd`, `esc-*.qmd`, `data.qmd`, `numerical.qmd`, `replication.qmd` | the pages: heading `# B4. Title {#key}`, prose, an include per exhibit, the OJS cells of the interactive figures |
+| `assets/oa.js` | the interactive figures (the counterfactual chart and the path chart), the controls and the view in the address; Observable Plot 0.6.16, d3 7.9.0 and Inputs 0.12.0 pinned from jsDelivr |
+| `assets/theme.scss`, `assets/oa.css` | the look: serif prose, sans interface, booktabs tables, the exhibit blocks |
+| `assets/header.tex` | kept for the PDF edition (not built yet) |
+| `_generated/`, `_variables.yml`, `_book/`, `.quarto/` | written by the build and gitignored |
 
 ## Rules
 
+- Each exhibit is an include of its generated block: `_generated/exhibits/<id>.qmd` (a static figure or table), or
+  `<id>-head.qmd` and `<id>-foot.qmd` around an interactive figure's OJS cells. `<id>` is a key of `EXHIBITS` in
+  `python/paper/onlineAppendix.py`, which names the output shown and, for an interactive figure, the dataset
+  (`python/paper/siteData.py`, a `data` output of `build.py`). Exhibits are numbered per page in the order the page
+  includes them (Figure B2.1); an exhibit the paper inputs also carries its number there (from `main.aux`).
 - The headings are the source of the paper's `\oa{key}` macros: `build.py --site` rewrites
-  `writing/Paper/onlineAppendix.tex` from them, and `writing/checkPaper.py` fails on a key the paper uses that
-  no heading defines. Renumbering a section therefore renumbers the paper's references; renaming an anchor
-  breaks them.
-- No number is typed in the prose: every number is in an exhibit built from `results/`. The prose says what an
-  exhibit is and how to read it; mechanisms stay in the paper.
-- Which group shows which exhibit is the registry in `python/paper/onlineAppendix.py`; an exhibit the paper
-  inputs is detected from the paper's tex, never declared.
-- A sentence that only makes sense on the site (point at, click, the browser's address, the sidebar's download)
-  is wrapped in `[...]{.content-visible when-format="html"}` (a `:::` div for a paragraph); the print edition has
-  its own reading guide in `index.qmd` under `when-format="pdf"`.
-- An exhibit's own paragraph is the registry's `text` (the notes' LaTeX vocabulary, no typed number): on the site it
-  sits above the exhibit (above the tabs when the group has tables) and follows the tab and the calibration switch;
-  in the print edition it precedes the exhibit, and the paper's own exhibits keep it
-  after the stand-in line. `textAlt` replaces it for the vector-$X_i$ twin (the Argentine twins say "identical").
-  Nine exhibits carry no text on purpose, their chapter paragraph, caption and note saying everything (the
-  three data tables, `ArgentinaCalibration`, `ARG_LOG_FourInOne`, the calibration-by-IES and path tables,
-  `NUM_Selection`).
-- An exhibit the paper no longer inputs needs a `caption` and a `note` in the registry (its tex no longer supplies
-  them); the site adds the "Note:" label to a registry note, the print edition adds its own. A note that points at
-  the section it is shown in ("Online Appendix OA.3.4" inside OA.3.4) renders as "this section" in both editions;
-  the paper keeps the pointer.
-- Published at `https://championape.github.io/SSDclaude` since 2026-10-07: GitHub Pages serves the root of the
-  `gh-pages` branch, which `quarto publish gh-pages --no-prompt --no-browser` (run from this folder, after
-  `build.py --site`) renders and pushes; the branch holds the rendered site only and is never edited by hand.
-  Publish on RKB's go, after the paper's compile so the stand-in lines carry the paper's current numbers. MathJax
-  loads from its CDN, so an offline archive would need it vendored.
+  `writing/Paper/onlineAppendix.tex` from them, with every key of the site before 2026-10-09 defined as an alias of
+  its new page (`OLDKEYS`), and `writing/checkPaper.py` fails on a key the paper uses that is not defined. Renaming a
+  heading's key breaks the paper's references to it unless the old key joins `OLDKEYS`.
+- No number is typed in the prose. The paper's and the site's exhibit, section and appendix numbers come from
+  `{{< var p.<label> >}}` and `{{< var x.<id> >}}` (`_variables.yml`, the label's `:` written `_`). The prose says
+  what an exhibit shows and how to read it; every sign and ranking it states is checked against the dataset.
+- An interactive figure opens at the paper's reading (ρ = 1, common X, the paper's cost, the U.S.), and its
+  controls keep their state in the address (`#outcome=tau&...`), each under a key unique on its page.
+- `python/paper/test_onlineAppendix.py` checks the pages, keys and registry, converts every table, and ties each
+  dataset to the paper's own figure (5.2, 6.1, 7.1, G.1) through that figure's marks.
+- Published at `https://championape.github.io/SSDclaude` (the previous site until the next publish): GitHub Pages
+  serves the `gh-pages` branch, which `quarto publish gh-pages --no-prompt --no-browser` (from this folder, after
+  `build.py --site`) renders and pushes. Publish on RKB's go. Plot, d3, Inputs and MathJax load from their CDNs.

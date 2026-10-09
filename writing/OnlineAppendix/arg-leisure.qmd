@@ -1,0 +1,32 @@
+# A3. Identification of X {#arg-leisure}
+
+The paper takes the taste for leisure $X$ common to the four formal income quartiles and pins its level by the
+average formal workweek, so that relative hours across the quartiles are a prediction. The alternative takes the
+survey's relative hours as data and identifies one $X_i$ per quartile, which leaves the level of hours
+unidentified. The two calibrations share their targets, $\beta$, $\omega$ and every equilibrium outcome of section
+{{< var p.sec_argentina >}}: the tax rate, savings, hours in efficiency units and the reform at every ρ. The reason
+is that the productivity distribution reaches the aggregates only through
+$\sum_{i>0}\gamma_i\eta_i^{1+\xi}/X_i^{\xi}$, which both calibrations normalise to one (appendix
+{{< var p.app_EPH >}}). The tables below therefore show only what differs.
+
+## The calibration {#arg-leisure-calibration}
+
+Four rows of the paper's calibration table differ. Under the vector $X_i$ the taste for leisure rises with income:
+the richer quartiles work fewer hours relative to the average than the common $X$ predicts, as section
+{{< var p.sec_argentina >}} notes for the top quartile. To reproduce the same relative incomes with less work at the
+top, the productivities spread further apart. The informal productivity and taste for leisure are measured against
+the formal average and move with it.
+
+{{< include _generated/exhibits/ARG_LeisureCalibration.qmd >}}
+
+## Why the level of $X$ differs {#arg-leisure-level}
+
+The level of the taste for leisure is not comparable across the two calibrations. Under the common $X$ it is the
+unit in which hours are measured: it is set so that average formal hours in the model equal the observed workweek,
+and every productivity scales with it. Under the vector $X_i$ the survey's relative hours fix only the ratios of the
+$X_i$, and the unit of hours is a normalisation, which sets the level of every $X_i$, of the productivities and of
+the informal taste for leisure. Since that level enters no aggregate, nothing else moves. Across the IES, the
+common $X$ falls a little as ρ rises, because average hours are matched against a slightly different equilibrium
+at each ρ, while the informal parameters barely move under either calibration.
+
+{{< include _generated/exhibits/ARG_LeisureRho.qmd >}}

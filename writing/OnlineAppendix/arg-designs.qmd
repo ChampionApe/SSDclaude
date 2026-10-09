@@ -1,0 +1,13 @@
+# A1. How pension designs shape the equilibria {#arg-designs}
+
+Each point of the figure is an economy that has always had the pension design on the horizontal axis, the universal
+pension ε, and in the colour, the Bismarckian index θ, read in 2010 under log preferences; every other parameter is
+the paper's calibration. A higher universal pension raises the equilibrium tax rate and lowers the savings rate, the
+workweek and the savings of informal relative to formal households. A more Bismarckian design lowers the tax rate
+and raises the savings rate and the workweek. The black line is the calibrated θ, and its two markers are the
+pre-reform ε and the universal level the reform installs. Between them the tax rate rises by more than the reform
+raises it on impact in section {{< var p.sec_argentina >}}: here the informal households' savings have always been
+those of the universal system, while on impact they still reflect the old one. The difference is close to the
+reform's effect a period later, once those savings have adjusted.
+
+{{< include _generated/exhibits/ARG_LOG_FourInOne.qmd >}}

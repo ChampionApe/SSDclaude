@@ -7,3 +7,4 @@ OnlineAppendix.tex
 
 /.quarto/
 **/*.quarto_ipynb
+_variables.yml

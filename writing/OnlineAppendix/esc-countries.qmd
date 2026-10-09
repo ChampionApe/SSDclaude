@@ -1,0 +1,29 @@
+# C2. Other countries {#esc-countries}
+
+## What shapes the pension design in the U.S. and the UK {#esc-hosts}
+
+The figure takes the counterfactuals of the paper's figure {{< var p.fig_US_ESC_overview >}} to the UK, at the UK's
+own cost parameter, beside the U.S. Each counterfactual is read twice, with the design pinned at the host's observed
+value and with it chosen. Acute ageing ties both designs more closely to earnings, the UK's by a little more.
+France's voting patterns move both toward flat benefits, the UK's by about as much at the lowest IES and by less
+at the higher ones, since its own voting profile is already flatter than the U.S. one. France's income distribution moves the two designs in opposite
+directions at every IES: on the U.S. it compresses relative incomes, on the UK it spreads them. On the UK, choosing
+the design leaves the tax rate, the savings rate and the workweek close to the readings with the design pinned.
+
+::: {.oa-explorer .column-page}
+{{< include _generated/exhibits/ESC_Hosts-head.qmd >}}
+
+```{ojs}
+//| echo: false
+import {counterfactuals, control, ROWS_CHOSEN, RHO, CHOSEN_OUTCOMES} from "./assets/oa.js"
+esc = FileAttachment("_generated/data/ESC_Counterfactuals.csv").csv({typed: true})
+escMain = esc.filter(d => d.source === "main" && d.spec === "size")
+OBSERVED = ({"U.S.": esc.find(d => d.host === "US" && d.outcome === "theta" && d.reading === "pinned").baseline,
+             "UK": esc.find(d => d.host === "UK" && d.outcome === "theta" && d.reading === "pinned").baseline})
+viewof c2Out = control("radio", CHOSEN_OUTCOMES, {key: "outcome", label: "Outcome", value: "theta"})
+counterfactuals(escMain, {rows: ROWS_CHOSEN, series: RHO, outcome: c2Out, mode: "chosen", width, observed: OBSERVED,
+  facets: [{label: "U.S.", filter: d => d.host === "US"}, {label: "UK", filter: d => d.host === "UK"}]})
+```
+
+{{< include _generated/exhibits/ESC_Hosts-foot.qmd >}}
+:::

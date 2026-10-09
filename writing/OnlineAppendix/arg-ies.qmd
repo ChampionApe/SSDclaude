@@ -1,0 +1,55 @@
+# A2. The intertemporal elasticity of substitution {#arg-ies}
+
+The paper's benchmark is log preferences, and figure {{< var p.fig_ARG_EffectOfCRRA >}} reports the reform across
+the IES ρ. Each ρ is calibrated anew to the same targets, so a change of ρ moves the calibrated parameters as well
+as the curvature of utility. This page shows both.
+
+## Argentina's calibration across the intertemporal elasticity {#arg-ies-calibration}
+
+Four panels are parameters solved jointly with the equilibrium path at each ρ, and two are predictions of the
+calibration, the savings rate and the informal savings ratio in 2010. The discount factor and the political weight
+of the old both fall as the IES rises. The second falls because the young resist taxation less, so a lighter
+weight of the old reproduces the observed tax rate. At the lowest elasticities of the grid the thirty-year
+discount factor exceeds one. The savings rate falls with the IES and the informal savings ratio rises, while the
+informal productivity and taste for leisure barely move.
+
+{{< include _generated/exhibits/ARG_RhoGrid.qmd >}}
+
+## Short- and long-run effects of the reform across the intertemporal elasticity {#arg-ies-reform}
+
+The paper's figure, first, plots the reform's effect in 2010 and in 2040 against ρ. The second figure shows, for
+the ρ chosen with the slider, the two paths behind those effects in levels, from the reform year to 2100. Every ρ
+starts from the same tax rate and workweek in 2010, which are a target and a normalisation, but not from the same
+savings: the lower the IES, the more the pre-reform economy saves and the less its informal households save
+relative to formal ones. On both paths the tax rate rises over the first decades as the population ages. Below an
+IES of one the reform's gap in the tax rate is small in 2010, and negative at the lowest elasticities, before it
+opens up by 2040; above one the paths, and with them the two points of the paper's figure, change little with ρ.
+
+::: {.column-page}
+:::: {.oa-pair}
+
+::: {}
+{{< include _generated/exhibits/ARG_CRRA_LOG.qmd >}}
+:::
+
+::: {.oa-explorer}
+{{< include _generated/exhibits/ARG_ReformPaths-head.qmd >}}
+
+```{ojs}
+//| echo: false
+import {reformPaths, Inputs, readState, writeState} from "./assets/oa.js"
+argPaths = FileAttachment("_generated/data/ARG_ReformPaths.csv").csv({typed: true})
+viewof argRho = {
+  const i = Inputs.range([0.5, 2], {step: 0.1, value: +readState("rho", 1), label: "Intertemporal elasticity ρ"});
+  i.classList.add("oa-control");
+  i.addEventListener("input", () => writeState({rho: (+i.value).toFixed(1)}));
+  return i;
+}
+reformPaths(argPaths, Math.round(argRho * 10) / 10, {width: Math.min(width, 640)})
+```
+
+{{< include _generated/exhibits/ARG_ReformPaths-foot.qmd >}}
+:::
+
+::::
+:::

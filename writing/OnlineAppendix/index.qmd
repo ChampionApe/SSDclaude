@@ -1,33 +1,65 @@
-# About this appendix {.unnumbered}
+# The online appendix {#home .unnumbered}
 
 This online appendix accompanies *Social Security Design and Its Political Support* by Rasmus K. S. Berg and
-Martín Gonzalez-Eiras. It holds the tables and figures behind the paper's quantitative sections, the robustness checks
-and the numerical checks behind its results, with each figure set beside the tables that print its numbers. Every exhibit is built by the paper's own pipeline from the model's results, so the
-numbers are the paper's to the last printed digit; [replication](replication.qmd) lists where each one comes from.
+Martín Gonzalez-Eiras. It extends the paper's three quantitative sections, on Argentina's pension reform, on the
+rich economies with the pension design given and on the endogenous design. It shows the results across the
+intertemporal and the Frisch elasticity, the UK beside the U.S., the alternative calibration of the taste for
+leisure, a second cost of redistribution, and the paths behind the paper's readings in a single year. Every number
+is built by the paper's own pipeline from the model's results; none is typed.
 
-::: {.content-visible when-format="html"}
-**Reading an exhibit.** Point at a marker of a figure to read its value; click it to bring up the table that prints
-it, with its row highlighted. Point at a table row to find its markers in the figure. Where an exhibit exists under
-both calibrations of the households' taste for leisure, a switch moves between the paper's calibration, common
-$X$, and the alternative, vector $X_i$ ([OA.3.2](oecd.qmd#oecd-vectorx)), and *mark the cells that differ* shows
-which numbers the choice moves. The address in the browser keeps the selection, so a link opens the same table
-and row. Under *Source*, each exhibit lists the files it reads, with downloads, the builder that makes it and the
-command that rebuilds it. A grey badge marks an exhibit of the paper itself; every other exhibit is numbered here,
-Table or Figure OA.*k*.
+::: {.oa-map}
 
-The print edition, a PDF under the download link of the sidebar, holds every table and figure that is not in the
-paper, with the same numbers.
+::: {.oa-card}
+### [A. Argentina](argentina.qmd) {.unlisted}
+
+The coverage reform of section {{< var p.sec_argentina >}}.
+
+- [A1. How pension designs shape the equilibria](arg-designs.qmd) <span>· every design (ε, θ)</span>
+- [A2. The intertemporal elasticity of substitution](arg-ies.qmd) <span>· the calibration and the reform's paths</span>
+- [A3. Identification of X](arg-leisure.qmd) <span>· the two treatments of leisure</span>
 :::
 
-::: {.content-visible when-format="pdf"}
-**Reading this edition.** This is the print edition of the online appendix. It holds every table and figure that is
-not in the paper, numbered Table or Figure OA.*k*; where the site shows one of the paper's own exhibits beside them,
-a line names it and the section of the paper that carries it. Where an exhibit exists under both calibrations of
-the households' taste for leisure, the paper's calibration, common $X$, comes first and the alternative, vector
-$X_i$ (OA.3.2), follows it. The site adds, for every exhibit, the value under the pointer, the link from a marker
-of a figure to the table row that prints it, the switch between the two calibrations with the cells they differ
-in marked, and the download of the files each exhibit reads.
+::: {.oa-card}
+### [B. Rich OECD countries with the design given](oecd.qmd) {.unlisted}
+
+The counterfactuals of section {{< var p.sec_oecd >}}.
+
+- [B1. Calibration](oecd-ies.qmd) <span>· across the intertemporal elasticity</span>
+- [B2. Other countries](oecd-countries.qmd) <span>· the UK beside the U.S., and at U.S. income groups</span>
+- [B3. Other parameters](oecd-parameters.qmd) <span>· across ρ and the Frisch elasticity ξ</span>
+- [B4. Identification of X](oecd-leisure.qmd) <span>· the two treatments of leisure</span>
 :::
+
+::: {.oa-card}
+### [C. Endogenous design](esc.qmd) {.unlisted}
+
+The design chosen by the electorate, section {{< var p.sec_esc >}}.
+
+- [C1. The path in levels](esc-paths.qmd) <span>· the U.S., the UK and France as they age</span>
+- [C2. Other countries](esc-countries.qmd) <span>· the UK beside the U.S.</span>
+- [C3. Other cost specifications](esc-costs.qmd) <span>· a cost on the design</span>
+- [C4. Other parameters](esc-parameters.qmd) <span>· across ρ and ξ</span>
+- [C5. The timing of the choice](esc-timing.qmd) <span>· the corner without the cost</span>
+:::
+
+::: {.oa-card}
+### [D. Data and computation](checks.qmd) {.unlisted}
+
+Figure {{< var p.fig_US_OECDdata >}}'s data, the numerical checks, replication.
+
+- [D1. The cross-section of figure {{< var p.fig_US_OECDdata >}}](data.qmd) <span>· countries, sources, correlations</span>
+- [D2. Numerical checks](numerical.qmd) <span>· policies and equilibrium selection</span>
+- [D3. Replication](replication.qmd) <span>· every exhibit's code and data</span>
+:::
+
+:::
+
+**Reading the figures.** An interactive figure opens at the paper's own reading: log preferences, the common
+taste for leisure, the paper's cost of redistribution and the U.S. Point at a bar, a marker or a point to read its
+value. The controls above a figure change what it shows, and the address in the browser keeps the selection, so
+a link opens the same view. Under every exhibit, *Data* downloads the numbers it shows and *Source* names the
+results files it reads, the code that builds it and the command that rebuilds it. A blue label marks an exhibit
+that is also in the paper, with its number there.
 
 ::: {.oa-version}
 {{< include _generated/version.qmd >}}

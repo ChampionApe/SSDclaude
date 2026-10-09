@@ -668,3 +668,187 @@ def numSelection():
                   r'>{\raggedright\arraybackslash}p{5.4cm}YYYYY',
                   [r'\textbf{File}', r'\textbf{Rows}', r'\textbf{Counted}', r'\textbf{Equilibria, max}',
                    r'\textbf{Candidates, max}', r'\textbf{Fallbacks}'], _body(lines), note, width = r'\textwidth')
+
+
+# ---------------------------------------------------------------------------------------------------
+# The two calibrations of the taste for leisure side by side (pages A3, B4), the regroupings (B2) and the two
+# cost specifications (C3). Only what differs across the columns compared is printed; each builder checks that
+# what it leaves out is the same, and the note says so.
+# ---------------------------------------------------------------------------------------------------
+VARIANTHEAD = (r'\textbf{Common} $\bm{X}$', r'\textbf{Vector} $\bm{X_i}$')
+
+
+def argLeisureCalibration():
+    r""" A3.1: the rows of table \ref{table:Arg:Calib} that differ between the common-X and the vector-X_i
+    calibration (rho = 1), with what identifies each. A row expected to differ that does not raises, and so
+    does a row left out that differs. """
+    c, v = D.calibrationSummary(True), D.calibrationSummary(False)
+    ww = C.num(C.calendar()['workweek'], 1)
+    rows = [(r'$X$, $X_i$', '$' + C.num(c['Xi'][0], 2) + '$', '$' + C.vec(v['Xi'], 2) + '$',
+             'Average formal workweek of ' + ww + r' hours (common); relative hours (vector)', 'X'),
+            (r'$\eta_i$', '$' + C.vec(c['ηi'], 2) + '$', '$' + C.vec(v['ηi'], 2) + '$', 'Income distribution', 'eta'),
+            (r'$\eta_0$', '$' + C.num(c['η0'], 3) + '$', '$' + C.num(v['η0'], 3) + '$', 'Informal relative income',
+             'eta0'),
+            (r'$X_0$', '$' + C.num(c['X0'], 3) + '$', '$' + C.num(v['X0'], 3) + '$', 'Informal relative hours', 'X0')]
+    for _, a, b, _, k in rows:
+        if a == b:
+            raise ValueError('ARG_LeisureCalibration: {} is the same under the two calibrations'.format(k))
+    differ = [k for k in ('ε', 'θ', 'α', 'ξ', 'β', 'γ0', 'ω')
+              if not np.isclose(float(c[k]), float(v[k]), rtol = 1e-9, atol = 0)]
+    if differ:
+        raise ValueError('ARG_LeisureCalibration: {} differ between the calibrations'.format(differ))
+    note = (r'\textit{Note:} $\rho = ' + C.num(c['ρ'], 0) + r'$. The other parameters of table '
+            r'\ref{table:Arg:Calib} ($\epsilon$, $\theta$, $\alpha$, $\nu_t$, $\xi$, $\beta$, $\gamma_0$, '
+            r'$\omega$) are the same under the two calibrations. Under the common $X$ its level is the unit of '
+            r'hours, fixed by the observed formal workweek; under the vector $X_i$ relative hours are data and '
+            r'the unit is a normalisation.')
+    return _xwrap('ARG_LeisureCalibration', 'results/paper/calibrationSummary.csv',
+                  'The Argentine calibration under the two treatments of the taste for leisure',
+                  _label('ARG_LeisureCalibration'), r'lcc>{\raggedright\arraybackslash}X',
+                  [r'\textbf{Parameter}', VARIANTHEAD[0], VARIANTHEAD[1], r'\textbf{Identified by}'],
+                  _body([_row([lab, a, b, t], k) for lab, a, b, t, k in rows]), note, width = r'\textwidth')
+
+
+def argLeisureRho():
+    r""" A3.2: the parameters solved with the equilibrium path that differ between the two calibrations, at the
+    rho of the paper's figures (config.ARG['ρTable']): X under the common X, eta_0 and X_0 under both. The
+    vector-X_i X_i are data, the same at every rho; beta and omega are the same under the two at every rho,
+    which this builder checks rather than prints. """
+    gc, gv = D.rhoGrid(True), D.rhoGrid(False)
+    lines = []
+    for ρ in C.ARG['ρTable']:
+        a, b = gc[np.isclose(gc['ρ'], ρ)].iloc[-1], gv[np.isclose(gv['ρ'], ρ)].iloc[-1]
+        for k in ('β', 'ω'):
+            if not np.isclose(float(a[k]), float(b[k]), rtol = 1e-8, atol = 0):
+                raise ValueError('ARG_LeisureRho: {} differs between the calibrations at ρ = {}'.format(k, ρ))
+        lines.append(_row([C.num(ρ, 1), C.num(float(a['X']), 3), C.num(float(a['η0']), 3), C.num(float(b['η0']), 3),
+                           C.num(float(a['X0']), 3), C.num(float(b['X0']), 3)], 'rho@' + _rhoKey(ρ)))
+    v = D.calibrationSummary(False)
+    header = (r' & \textbf{Common} & \multicolumn{2}{c}{$\bm{\eta_0}$} & \multicolumn{2}{c}{$\bm{X_0}$} \\' + '\n'
+              r'\cmidrule(lr){3-4}\cmidrule(lr){5-6}' + '\n'
+              r'\textbf{CRRA} ($\rho$) & $\bm{X}$ & ' + ' & '.join([VARIANTHEAD[0], VARIANTHEAD[1]]*2))
+    note = (r'\textit{Note:} Each $\rho$ is calibrated to the same targets. Under the vector $X_i$ the formal $X_i$ '
+            r'are identified from the survey\textquotesingle s relative hours and are the same at every $\rho$, '
+            '$' + C.vec(v['Xi'], 2) + r'$; $\beta$ and $\omega$ are the same under the two calibrations at every '
+            r'$\rho$.')
+    return _xwrap('ARG_LeisureRho', 'results/calibration/informalSavings_rhoGrid{,CommonX}.csv',
+                  r'The leisure and productivity parameters across $\rho$, Argentina', _label('ARG_LeisureRho'),
+                  'YYYYYY', header, _body(lines), note, width = r'.85\textwidth')
+
+
+OECDCOLS = ('US', 'UK', 'FR')       # table 3's countries, in its order
+
+
+def oecdLeisureCalibration():
+    r""" B4.1: the rows of table \ref{table:US:Calib} that differ between the two calibrations: X (the common
+    value; under vector X_i the population-weighted mean of X_i) and the productivity spread. The other rows
+    are checked to be the same. """
+    c, v = D.usCalibrationSummary(True), D.usCalibrationSummary(False)
+    for k in OECDCOLS:
+        for col in ('θ', 'ω', 'ν2020', 'β', 'ρ', 'ξ', 'α'):
+            if not np.isclose(float(c[k][col]), float(v[k][col]), rtol = 1e-8, atol = 0):
+                raise ValueError('OECD_LeisureCalibration: {} of {} differs between the calibrations'.format(col, k))
+    cells = lambda col: [C.num(float(r[k][col]), 2) for k in OECDCOLS for r in (c, v)]
+    lines = [_row([r'$X$'] + cells('Xbar'), 'X'), _row([r'$\eta_H/\eta_L$'] + cells('ηHηL'), 'etaratio')]
+    header = (' & ' + ' & '.join(r'\multicolumn{2}{c}{\textbf{' + COUNTRYNAME[k] + '}}' for k in OECDCOLS) + r' \\'
+              + '\n' + ''.join(r'\cmidrule(lr){%d-%d}' % (2 + 2*i, 3 + 2*i) for i in range(len(OECDCOLS))) + '\n'
+              + r'\textbf{Parameter} & ' + ' & '.join([r'\textbf{Common}', r'\textbf{Vector}']*len(OECDCOLS)))
+    note = (r'\textit{Note:} $\rho = 1$. Under the vector $X_i$, $X$ is the population-weighted mean of the $X_i$. '
+            r'The other parameters of table \ref{table:US:Calib} are the same under the two calibrations.')
+    return _xwrap('OECD_LeisureCalibration', 'results/paper/usCalibrationSummary.csv',
+                  'The U.S., the UK and France under the two treatments of the taste for leisure',
+                  _label('OECD_LeisureCalibration'), 'l' + 'Y'*(2*len(OECDCOLS)), header, _body(lines), note,
+                  width = r'.9\textwidth')
+
+
+def oecdLeisureGroups():
+    r""" B4.2: the taste for leisure X_i and the productivity eta_i by income group in the three countries under
+    the two calibrations (rho = 1). The population shares and the propensities to vote are data and the same
+    under both, which this builder checks. """
+    c, v = D.usCalibrationSummary(True), D.usCalibrationSummary(False)
+    lines = []
+    for k in OECDCOLS:
+        for col in ('γi', 'μi'):
+            if not np.allclose(np.asarray(c[k][col], float), np.asarray(v[k][col], float), rtol = 0, atol = 1e-12):
+                raise ValueError('OECD_LeisureGroups: {} of {} differs between the calibrations'.format(col, k))
+        lines.append(_title(COUNTRYNAME[k], 7))
+        for col, lab, key in (('Xi', r'$X_i$', 'X'), ('ηi', r'$\eta_i$', 'eta')):
+            lines.append(_row([lab] + [C.num(float(x), 2) for r in (c, v) for x in r[k][col]],
+                              '{}@{}'.format(key, k.lower())))
+    header = (' & ' + ' & '.join(r'\multicolumn{3}{c}{' + h + '}' for h in VARIANTHEAD) + r' \\' + '\n'
+              + r'\cmidrule(lr){2-4}\cmidrule(lr){5-7}' + '\n'
+              + r'\textbf{Parameter} & ' + ' & '.join([r'\textbf{Low}', r'\textbf{Medium}', r'\textbf{High}']*2))
+    note = (r'\textit{Note:} $\rho = 1$. The income groups are those of tables \ref{table:a_US:CalibUS}, '
+            r'\ref{table:a_US:CalibFR} and \ref{table:a_US:CalibUK}; the population shares $\gamma_i$ and the '
+            r'propensities to vote $\mu_i$ are data and the same under the two calibrations.')
+    return _xwrap('OECD_LeisureGroups', 'results/paper/usCalibrationSummary.csv',
+                  'Leisure and productivity by income group under the two calibrations',
+                  _label('OECD_LeisureGroups'), 'lYYYYYY', header, _body(lines), note, width = r'.9\textwidth')
+
+
+# B2.1's economies in print order: the U.S., the UK at its own and at the U.S. groups, France at the U.S. groups
+# (table 3's) and at the UK's.
+REGROUPED = (('US', r'\textbf{U.S.}'), ('UK', r'\textbf{UK}'), ('UKUS', r'\textbf{UK, U.S.\ groups}'),
+             ('FR', r'\textbf{France}'), ('FRUK', r'\textbf{France, UK groups}'))
+
+
+def oecdRegroupings():
+    r""" B2.1: table \ref{table:US:Calib}'s country parameters for the U.S., the UK at its own income groups and
+    at the U.S. ones, and France at the U.S. groups (table 3's) and at the UK's (rho = 1, common X), with the tax
+    rate each targets. """
+    c = D.usCalibrationSummary(True)
+    keys = [k for k, _ in REGROUPED]
+    miss = [k for k in keys if k not in c]
+    if miss:
+        raise D.MissingInput('results/paper/usCalibrationSummary.csv (no {} row)'.format(', '.join(miss)))
+    year0 = C.usCalendar()['year0']
+    rows = [('theta', r'$\theta$', lambda r: C.num(r['θ'])),
+            ('omega', r'$\omega$', lambda r: C.num(r['ω'])),
+            ('X', '$X$', lambda r: C.num(r['Xbar'], 2)),
+            ('nu', r'$\nu_{%d}$' % year0, lambda r: C.num(r['ν2020'])),
+            ('etaratio', r'$\eta_H/\eta_L$', lambda r: C.num(r['ηHηL'])),
+            ('tau', r'$\tau_{%d}$' % year0, lambda r: C.pct(r['τ0'], 1))]
+    lines = [_row([lab] + [f(c[k]) for k in keys], key) for key, lab, f in rows]
+    note = (r'\textit{Note:} $\rho = 1$, common $X$. The U.S., UK and France columns are those of table '
+            r'\ref{table:US:Calib}, France grouped at the U.S.\ income percentiles. The UK at the U.S.\ groups is a '
+            r'linear fit of the UK\textquotesingle s group means against cumulative population shares, not a '
+            r'recount of the survey. $\theta$ is read off the replacement rates at each grouping\textquotesingle s '
+            r'cuts, and France\textquotesingle s is one at any cuts; the tax rate is a target.')
+    return _xwrap('OECD_Regroupings', 'results/paper/usCalibrationSummary.csv',
+                  r'The UK and France at their own and at each other\textquotesingle s income groups',
+                  _label('OECD_Regroupings'), 'l' + 'Y'*len(keys),
+                  [r'\textbf{Parameter}'] + [h for _, h in REGROUPED], _body(lines), note, width = r'\textwidth')
+
+
+def escCostCalibration():
+    r""" C3.1: the two cost specifications as calibrated per rho (config.US['esc']['ρTable']): the paper's
+    f = exp(-lambda tau Vtilde (1-theta)^2 / 2) and the cost on the design f = phi + (1-phi) theta^p, each with
+    its parameter and the shares of revenue lost in 2020 at the observed design and at theta = 0. """
+    cal = D.escCalibration()
+    spec, alt = C.US['esc']['spec'], C.US['esc']['comparisonSpec']
+    lines, phis = [], set()
+    for ρ in C.US['esc']['ρTable']:
+        cells = [C.num(ρ, 1)]
+        for s in (spec, alt):
+            if (ρ, s) not in cal:
+                raise D.MissingInput('escCalibration ({}, {})'.format(ρ, s))
+            r = cal[(ρ, s)]
+            w = D.escWedge(r, s)
+            if s == alt:
+                phis.add(round(float(r['phi']), 6))
+            cells += [C.num(float(r['p']), 3), C.pct(1 - w['fStar'], 1), C.pct(1 - w['f0'], 1)]
+        lines.append(_row(cells, 'rho@' + _rhoKey(ρ)))
+    if len(phis) != 1:
+        raise ValueError('ESC_CostCalibration: phi differs across rho: {}'.format(sorted(phis)))
+    share = [r'$1-f(\theta^{\ast})$', r'$1-f(0)$']
+    header = (r' & \multicolumn{3}{c}{\textbf{The paper\textquotesingle s cost}} & '
+              r'\multicolumn{3}{c}{\textbf{The cost on the design}} \\' + '\n'
+              r'\cmidrule(lr){2-4}\cmidrule(lr){5-7}' + '\n'
+              r'\textbf{CRRA} ($\rho$) & $\lambda$ & ' + ' & '.join(share) + ' & $p$ & ' + ' & '.join(share))
+    note = (r'\textit{Note:} The paper\textquotesingle s cost is that of equation \eqref{eq:esc:budget}; the cost on '
+            r'the design is $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = ' + C.num(phis.pop(), 1)
+            + r'$ imposed. Each parameter is calibrated so that the U.S.\ electorate re-elects its observed design '
+            r'in 2020. The shares of revenue lost are those of 2020, at the observed design and at a flat benefit.')
+    return _xwrap('ESC_CostCalibration', 'results/esc/escCalibration{,CRRA}.csv',
+                  'The two cost specifications, calibrated', _label('ESC_CostCalibration'), 'YYYYYYY', header,
+                  _body(lines), note, width = r'.9\textwidth')

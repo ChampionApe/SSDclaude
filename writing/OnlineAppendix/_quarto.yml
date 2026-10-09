@@ -1,11 +1,12 @@
 project:
   type: book
   output-dir: _book
-  render:                       # the chapters only: README.md documents the folder and is not a page
+  render:                       # the pages only: README.md documents the folder and is not a page
     - "*.qmd"
   resources:
-    - assets/exhibits.js
-    - _generated/figs/*.png
+    - assets/oa.js
+    - _generated/style.js
+    - _generated/figs/**
     - _generated/data/**
 
 book:
@@ -18,18 +19,35 @@ book:
       affiliation: University of Bologna
   chapters:
     - index.qmd
-    - data.qmd
-    - argentina.qmd
-    - oecd.qmd
-    - esc.qmd
-    - numerical.qmd
-    - replication.qmd
-  output-file: OnlineAppendix
+    - part: argentina.qmd
+      chapters:
+        - arg-designs.qmd
+        - arg-ies.qmd
+        - arg-leisure.qmd
+    - part: oecd.qmd
+      chapters:
+        - oecd-ies.qmd
+        - oecd-countries.qmd
+        - oecd-parameters.qmd
+        - oecd-leisure.qmd
+    - part: esc.qmd
+      chapters:
+        - esc-paths.qmd
+        - esc-countries.qmd
+        - esc-costs.qmd
+        - esc-parameters.qmd
+        - esc-timing.qmd
+    - part: checks.qmd
+      chapters:
+        - data.qmd
+        - numerical.qmd
+        - replication.qmd
   repo-url: https://github.com/ChampionApe/SSDclaude
   site-url: https://championape.github.io/SSDclaude
-  downloads: [pdf]
   search: true
   page-navigation: true
+  sidebar:
+    collapse-level: 1
 
 bibliography: _generated/References.bib
 lang: en
@@ -37,8 +55,7 @@ lang: en
 format:
   html:
     theme: [cosmo, assets/theme.scss]
-    css: assets/exhibits.css
-    include-after-body: assets/scripts.html
+    css: assets/oa.css
     toc: true
     toc-depth: 2
     toc-title: "On this page"
@@ -48,17 +65,3 @@ format:
     link-external-newwindow: true
     anchor-sections: true
     smooth-scroll: false
-  pdf:
-    # pdflatex, as the paper: the generated tables use \bm, which unicode-math under LuaLaTeX rejects.
-    # No auto-install: a failed run must not update the machine's TeX distribution.
-    pdf-engine: pdflatex
-    latex-auto-install: false
-    documentclass: scrreprt
-    classoption: [oneside, 11pt]
-    papersize: a4
-    geometry: [margin=1in]
-    number-sections: false
-    toc: true
-    toc-depth: 2
-    colorlinks: true
-    include-in-header: assets/header.tex

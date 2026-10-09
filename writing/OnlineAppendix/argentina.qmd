@@ -1,52 +1,13 @@
-# OA.2 Argentina {#arg}
+# A. Argentina {#arg}
 
-Section 5 of the paper calibrates the model with informal households to Argentina before the coverage reforms and
-reads the reforms as a rise of the universal pension $\epsilon$; appendix E gives the survey, the identifying
-formulas and the sources. This chapter holds the calibration under both treatments of the taste for leisure, the
-reform at every intertemporal elasticity of the model's grid, the equilibrium over pension designs, and the
-calibration at every IES.
+Section {{< var p.sec_argentina >}} of the paper calibrates the model with informal households to Argentina before
+its coverage reforms and reads the reforms as a rise of the universal pension ε; appendix {{< var p.app_EPH >}}
+gives the household survey and the identification. This part shows how the equilibrium depends on the whole
+pension design, how the reform and the calibration depend on the intertemporal elasticity of substitution (IES),
+and what changes when the taste for leisure is identified quartile by quartile.
 
-## OA.2.1 Calibration {#arg-calibration}
-
-The paper takes the taste for leisure common to the four formal quartiles and pins its level by the average formal
-workweek, so relative hours are a prediction. The alternative identifies one $X_i$ per quartile from the survey's
-relative hours. Only the productivity and leisure parameters differ between the two: the aggregate targets, and
-every result of section 5, are the same under both.
-
-{{< include _generated/groups/arg-calibration.qmd >}}
-
-## OA.2.2 The reform {#arg-reform}
-
-The first table is the paper's: the effect in 2010 of raising $\epsilon$ to the universal level, with the tax rate
-held at its pre-reform path and chosen politically. The second prints the paths of the tax rate, the savings rate
-and the workweek before and after the reform.
-
-{{< include _generated/groups/arg-reform.qmd >}}
-
-## OA.2.3 The reform across the intertemporal elasticity {#arg-rho}
-
-Section 5 reads the reform across the intertemporal elasticity of substitution (IES) $\rho$ from the figure, which
-is the paper's; the model is solved on a grid of sixteen values. The table prints the reform at every point of the
-grid. [Click a point of the figure for its row.]{.content-visible when-format="html"}
-
-{{< include _generated/groups/arg-rho.qmd >}}
-
-## OA.2.4 The equilibrium over pension designs {#arg-designs}
-
-The equilibrium in 2010 over a grid of designs $(\epsilon, \theta)$, each point an economy that has always had that
-design, with the pre-reform calibration and the universal system at the calibrated $\theta$ marked. The tax rate
-rises with $\epsilon$ and falls with $\theta$, the savings rate and the workweek fall with $\epsilon$ and rise with
-$\theta$, and the savings of informal relative to formal households fall with $\epsilon$. Between the two markers
-the tax rate rises by more than it does on impact in section 5 of the paper, because the savings of informal
-households have adjusted to the universal system; the difference is close to the reform's effect by 2040 (OA.2.2).
-[The grid itself can be downloaded from the figure's source.]{.content-visible when-format="html"}
-
-{{< include _generated/groups/arg-designs.qmd >}}
-
-## OA.2.5 The calibration across the intertemporal elasticity {#arg-rhogrid}
-
-The table and the figure print the parameters solved jointly with the equilibrium path at every IES of the grid,
-which show how the calibration absorbs a change in $\rho$: matching the targets at an IES of 0.6 or below takes a
-thirty-year discount factor above one.
-
-{{< include _generated/groups/arg-rhogrid.qmd >}}
+- [A1. How pension designs shape the equilibria](arg-designs.qmd): the equilibrium in 2010 over every design
+  (ε, θ), with the reform as a move across it.
+- [A2. The intertemporal elasticity of substitution](arg-ies.qmd): the calibration at every IES of the grid, and
+  the reform's paths in levels at the IES you choose.
+- [A3. Identification of X](arg-leisure.qmd): the paper's common taste for leisure against one per quartile.

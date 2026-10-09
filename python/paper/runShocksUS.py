@@ -136,6 +136,34 @@ EXPERIMENTS = {
         'requires': lambda: [C.usSweepCsv(C.US['ukHost'], True), C.usSweepCsv('FRUK', True)],
         'note':    'the same on the UK under common X (the headline)',
     },
+    # The UK regrouped at the US income groups as host, France at its own (the US) groups: the online
+    # appendix's comparison of the UK under the two groupings (siteData.oecdCounterfactuals).
+    'shocksUKUS': {
+        'part':    'main',
+        'script':  'runShocksUS.py',
+        'args':    RHOFLAGS + GRIDFLAGS + ['--host', 'UKUS'],
+        'outputs': lambda: [C.usShockCsv('UKUS', False)],
+        'requires': lambda: [C.usSweepCsv('UKUS', False), C.usSweepCsv('FR', False)],
+        'note':    'the counterfactuals on the UK at US income groups',
+    },
+    'shocksUKUSCommonX': {
+        'part':    'main',
+        'script':  'runShocksUS.py',
+        'args':    RHOFLAGS + GRIDFLAGS + ['--host', 'UKUS', '--commonX'],
+        'outputs': lambda: [C.usShockCsv('UKUS', True)],
+        'requires': lambda: [C.usSweepCsv('UKUS', True), C.usSweepCsv('FR', True)],
+        'note':    'the same under common X',
+    },
+    # The US counterfactuals at other Frisch elasticities, rho = 1, common X: the US and France recalibrated at
+    # each xi inside the script (python/US/runShocksXi.py, whose first xi reproduces US_shocksCommonX.csv).
+    'shocksXi': {
+        'part':    'main',
+        'script':  'runShocksXi.py',
+        'args':    [],
+        'outputs': lambda: [os.path.join(C.SHOCKDIR, 'US_shocksXiCommonX.csv')],
+        'requires': lambda: [os.path.join(C.SHOCKDIR, 'US_shocksCommonX.csv')],
+        'note':    'the US counterfactuals at xi = 0.2, 0.3, 0.4 (LOG, common X)',
+    },
     # --- Endogenous system characteristics (sec:esc), the LOG leg (rho = 1), the paper's spec and the
     # comparison spec (ESCSPEC_LOG). Requires the LOG cost calibrations of both from stage (i)
     # (runCalibrationUS.py's escMissing step). All cheap.
@@ -165,6 +193,16 @@ EXPERIMENTS = {
         'args':    ['--stage', 'country'] + ESCSPEC_LOG + ESCVARIANT,
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escCountry.csv')],
         'note':    'the UK and France under the ESC cost, LOG (rho = 1)',
+    },
+    # The same path for France and the UK under the US-calibrated cost and their own (escCountry.csv): the
+    # online appendix's paths by country (runESC.stagePathHost).
+    'escPathHost': {
+        'part':    'main',
+        'script':  'runESC.py',
+        'args':    ['--stage', 'pathHost'] + ESCSPEC + ESCVARIANT,
+        'outputs': lambda: [os.path.join(C.ESCDIR, 'escPathHost.csv')],
+        'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibration.csv'), os.path.join(C.ESCDIR, 'escCountry.csv')],
+        'note':    'endogenous-theta design path of France and the UK, LOG (rho = 1)',
     },
     # The timing checks. Permanent: the anticipated-vote fixed point under LOG at three phi and
     # both specs (its reference numbers are also test_esc.py's), and under CRRA traced in rho (a corner
@@ -245,7 +283,7 @@ EXPERIMENTS = {
         'args':    ['--stage', 'shocks', '--host', 'UK'] + ESCSPEC + ESCVARIANT,
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksUK.csv')],
         'requires': lambda: [os.path.join(C.ESCDIR, 'escCountry.csv')],
-        'note':    'French characteristics on the UK, endogenous theta, LOG',
+        'note':    'acute ageing and French characteristics on the UK, endogenous theta, LOG',
     },
     'escShocksCRRAUK': {
         'part':    'prepub',
@@ -256,7 +294,7 @@ EXPERIMENTS = {
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksCRRAUK.csv')],
         'complete': lambda: _hasExactRows(os.path.join(C.ESCDIR, 'escShocksCRRAUK.csv')),
         'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibrationCRRAUK.csv')],
-        'note':    'French characteristics on the UK, endogenous theta, CRRA, EXACT',
+        'note':    'acute ageing and French characteristics on the UK, endogenous theta, CRRA, EXACT',
     },
     'escExperimentsUK': {
         'part':    'both',

@@ -1,0 +1,35 @@
+# C3. Other cost specifications {#esc-costs}
+
+## A cost on the design {#esc-costs-design}
+
+The paper's cost of redistribution scales with the size of the system and with the dispersion of relative incomes,
+so it vanishes when the design redistributes nothing (appendix {{< var p.app_esc >}}). The alternative attaches the
+cost to the design itself, $f(\theta) = \phi + (1-\phi)\theta^{p}$, with $\phi$ imposed and $p$ calibrated, as λ is,
+so that the U.S. electorate re-elects its observed design. It charges a flat benefit whatever that benefit
+redistributes. The table gives the two calibrations.
+
+{{< include _generated/exhibits/ESC_CostCalibration.qmd >}}
+
+Under the cost on the design, acute ageing raises the chosen design by less at every IES: that cost does not grow
+with the tax rate that ageing raises, the channel the paper credits with about half of the response. France's voting
+patterns move the design further toward flat benefits. France's income distribution compresses the redistributive
+stakes but leaves the cost in place, and it takes the design to the Bismarckian corner at every IES.
+
+::: {.oa-explorer .column-page}
+{{< include _generated/exhibits/ESC_Costs-head.qmd >}}
+
+```{ojs}
+//| echo: false
+import {counterfactuals, control, ROWS_CHOSEN, RHO, CHOSEN_OUTCOMES} from "./assets/oa.js"
+esc = FileAttachment("_generated/data/ESC_Counterfactuals.csv").csv({typed: true})
+usObserved = esc.find(d => d.host === "US" && d.outcome === "theta" && d.reading === "pinned").baseline
+viewof c3Out = control("radio", CHOSEN_OUTCOMES, {key: "outcome", label: "Outcome", value: "theta"})
+counterfactuals(esc.filter(d => d.source === "main" && d.host === "US"),
+  {rows: ROWS_CHOSEN, series: RHO, outcome: c3Out, mode: "chosen", width,
+   observed: {"The paper's cost": usObserved, "A cost on the design": usObserved},
+   facets: [{label: "The paper's cost", filter: d => d.spec === "size"},
+            {label: "A cost on the design", filter: d => d.spec === "scale"}]})
+```
+
+{{< include _generated/exhibits/ESC_Costs-foot.qmd >}}
+:::

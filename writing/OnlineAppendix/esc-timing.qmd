@@ -1,0 +1,12 @@
+# C5. The timing of the choice {#esc-timing}
+
+Appendix {{< var p.app_esc >}} of the paper shows that, without the cost of redistribution, every timing of the
+choice puts the design at a corner. A design chosen together with the tax rate re-splits benefits that current
+retirees have already earned. A design chosen one period ahead weighs the young's stake in redistribution against the
+forward-looking gain of a more earnings-related system. A design chosen once and for all enters every channel at once.
+The table reports the numerical checks, one block per timing. Chosen with the tax or one period ahead, the design is
+the Beveridgean corner at every IES checked. Chosen once and for all, it is the Beveridgean corner at the lower
+elasticities shown and the Bismarckian corner at the higher ones; near the switch the electorate is close to
+indifferent between the two, so the switch is not sharply located.
+
+{{< include _generated/exhibits/ESC_Timing.qmd >}}

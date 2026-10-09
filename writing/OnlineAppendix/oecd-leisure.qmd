@@ -1,0 +1,54 @@
+# B4. Identification of X {#oecd-leisure}
+
+As for Argentina ([A3](arg-leisure.qmd)), the paper takes the taste for leisure $X$ common to the income groups and
+pins its level by each country's average workweek; the alternative identifies one $X_i$ per group from the observed
+relative hours. In every country the two calibrations share the discount factor, the political weight of the old,
+the tax rate, savings and aggregate hours. They also share every counterfactual that changes neither the
+productivities nor the taste for leisure: the design, ageing and France's voting patterns. The tables and the figure
+show only what differs.
+
+## The calibration {#oecd-leisure-calibration}
+
+Two rows of the paper's calibration table differ, the taste for leisure and the productivity spread. Under the
+vector $X_i$ the taste for leisure rises with income in all three countries, because the richer groups' relative
+hours, which are now data, are lower than the common $X$ predicts. To reproduce the same relative incomes with those
+hours, the productivity spread widens.
+
+{{< include _generated/exhibits/OECD_LeisureCalibration.qmd >}}
+
+Group by group, the vector $X_i$ are a fraction of the common $X$, and their level carries no information of its own.
+Under the common $X$ the level is the unit of hours: it is set so that the model's average workweek is the observed
+one, relative to the U.S. for the UK and France, and the productivities scale with it. Under the vector $X_i$ the
+relative hours fix only the ratios of the $X_i$, and the unit is a normalisation. That is why the level differs so
+much between the two while every aggregate is the same.
+
+{{< include _generated/exhibits/OECD_LeisureGroups.qmd >}}
+
+## The counterfactuals that differ {#oecd-leisure-rows}
+
+France's income distribution is imposed through the productivities and its leisure preferences through the taste
+for leisure, so these are the rows the treatment of leisure moves. On the U.S. the vector $X_i$ strengthens the
+effect of France's income distribution at every IES and makes that of its leisure preferences on hours a little
+smaller. On the UK the effect of France's income distribution on the tax rate changes sign: it lowers the UK's tax
+rate under the vector $X_i$, which reads part of the observed income dispersion off relative hours, and these are
+much flatter in the UK than in France.
+
+::: {.oa-explorer .column-page}
+{{< include _generated/exhibits/OECD_LeisureRows-head.qmd >}}
+
+```{ojs}
+//| echo: false
+import {counterfactuals, control, RHO, GIVEN_OUTCOMES} from "./assets/oa.js"
+oecd = FileAttachment("_generated/data/OECD_Counterfactuals.csv").csv({typed: true})
+viewof b4Host = control("radio", [["U.S.", "US"], ["UK", "UK"]], {key: "host", label: "Host", value: "US"})
+viewof b4Out = control("radio", GIVEN_OUTCOMES, {key: "outcome", label: "Outcome", value: "tau"})
+counterfactuals(oecd.filter(d => d.source === "main" && d.effect === "full" && d.host === b4Host),
+  {rows: [{label: "French income distr.", scenario: "income"}, {label: "French leisure", scenario: "leisure"},
+          {label: "All French characteristics", scenario: "frall"}],
+   series: RHO, outcome: b4Out, width,
+   facets: [{label: "Common X, the paper's", filter: d => d.calibration === "commonX"},
+            {label: "Vector Xᵢ", filter: d => d.calibration === "vectorX"}]})
+```
+
+{{< include _generated/exhibits/OECD_LeisureRows-foot.qmd >}}
+:::

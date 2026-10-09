@@ -32,9 +32,15 @@ python\US\calibrateRhoGridEU.py --country FR|UK [--grouping US|UK] [--commonX]  
 python\US\runShocksUS.py        [--commonX] [--family theta] [--rho 1] [--host US|UK|UKUS]
 python\US\runESC.py | runESCcrra.py    [--commonX]           # endogenous theta
 python\US\collectESCexperiments.py                           # merge -> results/esc/escExperiments.csv
-python\US\runESC.py --stage shocks --host UK | runESCcrra.py --exact --host UK   # French shocks on the UK, own λ
+python\US\runESC.py --stage shocks --host UK | runESCcrra.py --exact --host UK   # acute ageing and French shocks on the UK, own λ
 python\US\collectESCexperiments.py --host UK                 # -> escExperimentsUK.csv
+python\US\runESC.py --stage pathHost --spec size --phi 0.5 --commonX   # the design path of France and the UK -> escPathHost.csv
+python\US\runShocksXi.py [--xi 0.2 0.4]                      # the US shocks at other ξ (LOG, common X) -> US_shocksXiCommonX.csv
 ```
+
+`--scenarios` limits the ESC shocks stage of either driver to some scenarios (the rows of the others on disk are
+kept); France's own row runs with a French scenario only. `runShocksXi.py` recalibrates the US and France at each
+ξ and checks its workbook-ξ rows against `US_shocksCommonX.csv` before any other ξ.
 
 `python/paper/` drives all of this. Sweeps write their csv after every point and resume from it; instance
 directories are per sweep (pickle names are the `ρ` alone); EU sweeps need the complete US sweep of the *same

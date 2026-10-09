@@ -1,0 +1,13 @@
+# B1. Calibration {#oecd-ies}
+
+## The calibrations across the intertemporal elasticity {#oecd-ies-calibration}
+
+Each country is calibrated at every ρ of the grid against its own targets. The discount factor is calibrated on the
+U.S. and imposed on the UK and France, so their interest factors are predictions. The political weight of the old
+falls as the IES rises in every country, since the young resist taxation less, and it keeps its ranking: highest
+in the U.S., close behind in France, lowest in the UK. The savings rate falls with the IES in every country, and the
+UK's and France's interest factors rise toward the U.S. target. The taste for leisure, pinned by each country's
+average workweek, falls a little with the IES in the UK and France and is nearly flat in the U.S. At the lowest
+elasticities of the grid the thirty-year discount factor exceeds one, which the UK and France inherit.
+
+{{< include _generated/exhibits/OECD_RhoGrid.qmd >}}
