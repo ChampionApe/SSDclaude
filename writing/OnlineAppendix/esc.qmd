@@ -3,8 +3,8 @@
 Section {{< var p.sec_esc >}} of the paper lets the electorate choose the design θ as well as the tax rate, under a
 deadweight cost of redistribution whose parameter λ is calibrated so that the U.S. electorate re-elects its observed
 design. Appendix {{< var p.app_esc >}} derives the cost and appendix {{< var p.app_escResults >}} holds further
-results. This part follows the design along each country's projected demography, sets the UK beside the U.S., puts
-a second cost specification beside the paper's, varies the elasticities, and reports the checks of the timing of
+results. This part follows the design along each country's projected demography, compares the UK with the U.S.,
+sets a second cost specification against the paper's, varies the elasticities, and reports the checks of the timing of
 the choice.
 
 - [C1. The path in levels](esc-paths.qmd): the design, the tax rate, savings and hours as the U.S., the UK and

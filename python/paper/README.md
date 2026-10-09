@@ -79,7 +79,7 @@ marks to tie each dataset of the site to the paper's figure. The paper inputs 15
 household tables, `ArgentinaUniversal`, `ARG_CRRA_LOG`, `US_overview`, `US_ESC_Calibration`, `US_ESC_overview`,
 `OECDdata`, and appendix G's `UK_ESC_Calibration`, `US_ESC_Country` and `US_ESC_Path`); the 35 `ONLINE_ONLY`
 outputs, the four `data` ones among them, are never copied into `writing/Paper`. Since 2026-10-09 the online
-appendix shows 30 exhibits (`onlineAppendix.EXHIBITS`); the outputs it no longer shows and the paper does not
+appendix shows 29 exhibits (`onlineAppendix.EXHIBITS`); the outputs it no longer shows and the paper does not
 input are still built, pending their retirement (`notes/plan_onlineAppendix.md` §2, D5). `US_ESC_Results` and `US_ESC_Summary` are still built and copied, like
 `US_ESC_Ageing`, but input by nothing: `REPLICATION.md`'s map says which tex inputs each. The robustness map
 (appendix G until 2026-10-09) is gone from the paper, the online appendix and the registry.

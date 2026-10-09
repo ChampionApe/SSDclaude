@@ -16,7 +16,7 @@ much less at the lowest IES and by almost as much at the highest. France's votin
 patterns move the design further toward flat benefits. France's income distribution compresses the redistributive
 stakes but leaves the cost in place, and it takes the design to the Bismarckian corner at every IES.
 
-::: {.oa-explorer .column-page}
+::: {.oa-explorer}
 {{< include _generated/exhibits/ESC_Costs-head.qmd >}}
 
 ```{ojs}

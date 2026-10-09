@@ -49,6 +49,9 @@ run the interactive cells; check them in a visible window or in headless Chrome 
 - No number is typed in the prose. The paper's and the site's exhibit, section and appendix numbers come from
   `{{< var p.<label> >}}` and `{{< var x.<id> >}}` (`_variables.yml`, the label's `:` written `_`). The prose says
   what an exhibit shows and how to read it; every sign and ranking it states is checked against the dataset.
+- A counterfactual chart stacks what it compares (U.S. over UK, one cost over the other) on one x axis, drawn once
+  under the last. Every chart draws at the width of its own box (`fitted` in `oa.js`): OJS's `width` is `main`'s,
+  which spans the page once the page holds a `.column-page` block. Only C1's and C4's path figures are page-wide.
 - An interactive figure opens at the paper's reading (ρ = 1, common X, the paper's cost, the U.S.), and its
   controls keep their state in the address (`#outcome=tau&...`), each under a key unique on its page.
 - `python/paper/test_onlineAppendix.py` checks the pages, keys and registry, converts every table, and ties each

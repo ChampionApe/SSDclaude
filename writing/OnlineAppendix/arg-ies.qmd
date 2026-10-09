@@ -17,21 +17,14 @@ informal productivity and taste for leisure barely move.
 
 ## Short- and long-run effects of the reform across the intertemporal elasticity {#arg-ies-reform}
 
-The paper's figure, first, plots the reform's effect in 2010 and in 2040 against ρ. The second figure shows, for
-the ρ chosen with the slider, the two paths behind those effects in levels, from the reform year to 2100. Every ρ
-starts from the same tax rate and workweek in 2010, which are a target and a normalization, but not from the same
-savings: the lower the IES, the more the pre-reform economy saves and the less its informal households save
-relative to formal ones. On both paths the tax rate rises over the first decades as the population ages. As ρ falls
+Figure {{< var p.fig_ARG_EffectOfCRRA >}} of the paper plots the reform's effect in 2010 and in 2040 against ρ. The
+figure below shows, for the ρ chosen with the slider, the two paths behind those effects in levels, from the reform
+year to 2100. Every ρ starts from the same tax rate and workweek in 2010, which are a target and a normalization,
+but not from the same savings: the lower the IES, the more the pre-reform economy saves and the less its informal
+households save relative to formal ones. On both paths the tax rate rises over the first decades as the population ages. As ρ falls
 below one, the reform's gap in the tax rate in 2010 shrinks and turns negative at the lowest ρ of the grid, before it
 opens up by 2040. Above one both paths shift down together as ρ rises, so the two points of the paper's figure
 change little.
-
-::: {.column-page}
-:::: {.oa-pair}
-
-::: {}
-{{< include _generated/exhibits/ARG_CRRA_LOG.qmd >}}
-:::
 
 ::: {.oa-explorer}
 {{< include _generated/exhibits/ARG_ReformPaths-head.qmd >}}
@@ -46,11 +39,8 @@ viewof argRho = {
   i.addEventListener("input", () => writeState({rho: (+i.value).toFixed(1)}));
   return i;
 }
-reformPaths(argPaths, Math.round(argRho * 10) / 10, {width: Math.min(width, 640)})
+reformPaths(argPaths, Math.round(argRho * 10) / 10, {width})
 ```
 
 {{< include _generated/exhibits/ARG_ReformPaths-foot.qmd >}}
-:::
-
-::::
 :::

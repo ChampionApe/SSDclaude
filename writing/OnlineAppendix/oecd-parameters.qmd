@@ -10,7 +10,7 @@ determinants holds at every ξ of the grid: ageing and the design move the tax r
 far less. A higher Frisch elasticity dampens the responses of the tax rate a little and some responses of savings by more,
 and it enlarges every response of hours, since labor supply is more elastic.
 
-::: {.oa-explorer .column-page}
+::: {.oa-explorer}
 {{< include _generated/exhibits/OECD_Frisch-head.qmd >}}
 
 ```{ojs}
@@ -22,7 +22,7 @@ viewof b3Across = control("radio", [["the intertemporal elasticity ρ", "rho"], 
 viewof b3Out = control("radio", GIVEN_OUTCOMES, {key: "outcome", label: "Outcome", value: "tau"})
 counterfactuals(oecd.filter(d => d.host === "US" && d.calibration === "commonX" && d.effect === "full"
                                  && d.source === (b3Across === "rho" ? "main" : "xi")),
-  {rows: ROWS_GIVEN, series: b3Across === "rho" ? RHO : XI, outcome: b3Out, width: Math.min(width, 760),
+  {rows: ROWS_GIVEN, series: b3Across === "rho" ? RHO : XI, outcome: b3Out, width,
    facets: [{label: b3Across === "rho" ? "U.S., ξ = 0.3" : "U.S., ρ = 1", filter: d => true}]})
 ```
 

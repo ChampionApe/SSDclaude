@@ -63,7 +63,6 @@ EXHIBITS = {
         note = r'The parameters solved jointly with the equilibrium path at each $\rho$ of the grid, against the '
                r'same targets, and two predictions of the calibration, the savings rate and the informal savings '
                r'ratio in 2010. $\rho = 1$ is the paper\textquotesingle s calibration.'),
-    'ARG_CRRA_LOG': E('figure', 'ARG_CRRA_LOG'),
     'ARG_ReformPaths': E('explorer', 'ARG_ReformPaths',
         caption = r'The reform along the path at one intertemporal elasticity',
         note = r'Levels on the pre-reform path and on the reform path, each economy calibrated at its $\rho$. The '

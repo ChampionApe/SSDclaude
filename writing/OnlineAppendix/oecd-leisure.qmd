@@ -34,7 +34,7 @@ smaller. On the UK the effect of France's income distribution on the tax rate ch
 of the observed income dispersion off relative hours, which are much flatter in the UK than in France, so at the UK's
 income cuts France's productivity spread falls below the UK's, where under the common $X$ it lies above.
 
-::: {.oa-explorer .column-page}
+::: {.oa-explorer}
 {{< include _generated/exhibits/OECD_LeisureRows-head.qmd >}}
 
 ```{ojs}

@@ -10,7 +10,7 @@ Frisch elasticity rises. Across the IES the figure holds every counterfactual of
 electorate to choose is the same at every ξ, while the tax rate rises by less at a higher Frisch elasticity, whether
 the design is pinned or chosen.
 
-::: {.oa-explorer .column-page}
+::: {.oa-explorer}
 {{< include _generated/exhibits/ESC_Frisch-head.qmd >}}
 
 ```{ojs}
@@ -26,7 +26,7 @@ viewof c4Out = control("radio", CHOSEN_OUTCOMES, {key: "outcome", label: "Outcom
   const label = c4Across === "rho" ? "U.S., ξ = 0.3" : "U.S., ρ = 1";
   return counterfactuals(esc.filter(d => d.host === "US" && d.spec === "size" && d.source === (c4Across === "rho" ? "main" : "xi")),
     {rows: ROWS_CHOSEN, series: c4Across === "rho" ? RHO : XI, outcome: c4Out, mode: "chosen",
-     width: Math.min(width, 760), observed: {[label]: usObserved}, facets: [{label, filter: d => true}]});
+     width, observed: {[label]: usObserved}, facets: [{label, filter: d => true}]});
 }
 ```
 

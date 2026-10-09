@@ -2,7 +2,8 @@
 
 ## What shapes pensions, savings and labor supply in the U.S. and the UK {#oecd-hosts}
 
-The figure repeats the paper's figure {{< var p.fig_US_overview >}} with the UK beside the U.S. Each host keeps its
+The figure repeats the paper's figure {{< var p.fig_US_overview >}} for the U.S. and, below it on the same axis, for
+the UK. Each host keeps its
 own calibration and changes one characteristic over the whole horizon. The characteristics are its design, moved to
 the two corners; its population growth, halved (mild ageing) or set to zero (acute ageing); or France's income
 distribution, voting patterns or taste for leisure, with France's households cut at the host's income percentiles.
@@ -15,7 +16,7 @@ the UK's income cuts France is the more unequal of the two (appendix {{< var p.a
 leisure lengthens the UK's workweek where it shortens the U.S. one, since France's average taste for leisure lies
 between the two hosts'.
 
-::: {.oa-explorer .column-page}
+::: {.oa-explorer}
 {{< include _generated/exhibits/OECD_Hosts-head.qmd >}}
 
 ```{ojs}
@@ -52,7 +53,7 @@ approximation. The tabs give the two regroupings group by group.
 {{< include _generated/exhibits/FRUK_householdheterogeneity.qmd >}}
 :::
 
-The figure imposes the counterfactuals of the first figure on the UK under the two groupings, France's households
+The figure imposes the counterfactuals of the first figure on the UK under the two groupings, one above the other, France's households
 cut at the same groups as the host's. Ageing moves the two alike, since it does not depend on how households are
 grouped. The design and France's voting patterns move the regrouped UK much less. At the U.S. cuts its incomes are
 compressed, so a flat benefit redistributes little, and its own turnout varies less across the groups than at its
@@ -60,7 +61,7 @@ own cuts, so France's flat turnout changes less. France's income
 distribution, conversely, raises the regrouped UK's tax rate by much more, because next to that compressed
 distribution France's is unequal.
 
-::: {.oa-explorer .column-page}
+::: {.oa-explorer}
 {{< include _generated/exhibits/OECD_Groupings-head.qmd >}}
 
 ```{ojs}

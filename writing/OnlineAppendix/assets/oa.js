@@ -99,6 +99,22 @@ export function legend(items) {
   return div;
 }
 
+// A box drawn at the width of its container and redrawn when that changes. OJS's width is main's, which spans
+// the page once the page holds a .column-page block, so it serves only as the first guess. draw(w) returns a node
+// or an array of nodes.
+function fitted(draw, width) {
+  const box = document.createElement("div");
+  let drawn = Math.floor(width);
+  box.replaceChildren(...[draw(drawn)].flat());
+  const ro = new ResizeObserver(() => {
+    if (!box.isConnected) return ro.disconnect();
+    const w = Math.floor(box.clientWidth);
+    if (w > 0 && Math.abs(w - drawn) > 1) { drawn = w; box.replaceChildren(...[draw(w)].flat()); }
+  });
+  ro.observe(box);
+  return box;
+}
+
 // ---------------------------------------------------------------------------------------------------------
 // The counterfactual figure: rows of counterfactuals, two facets side by side on one axis, colour the series
 // (rho or xi). mode "given": figure 6.1's bars of the change, the design row in two tones (theta = 0 full,
@@ -178,26 +194,31 @@ export function counterfactuals(data, {rows, facets, series, outcome, mode = "gi
                              title: "text", tip: true}));
   marks.push(Plot.text(unchanged, {fx: "facet", fy: "row", frameAnchor: "left", textAnchor: "start", dx: 6,
                                    text: d => d.text ?? "unchanged", fill: INK.muted, fontStyle: "italic", fontSize: 12}));
-  // One chart with the facets side by side; on a narrow screen one chart per facet, stacked, on the same axis.
-  const plotFor = labels => Plot.plot({
-    width, height: rows.length * (nS * 15 + 30) + 74, marginLeft: 150, marginRight: 14, marginTop: 26, marginBottom: 48,
-    style: {fontSize: "12px"},
-    x: {label: o.axis, labelAnchor: "center", labelOffset: 38, grid: true, nice: true,
-        domain: d3.extent(xs), insetLeft: 4, insetRight: 4},
-    y: {domain: series.values, axis: null, padding: 0.12},
-    fx: {domain: labels, label: null, padding: 0.08},
-    fy: {domain: rows.map(r => r.label), label: null, padding: 0.18},
-    color: {type: "identity"},
-    marks
+  // One chart per facet, stacked, on one x scale, so the facets compare by position: the grid runs through every
+  // chart and the axis is drawn once, under the last.
+  const charts = w => facets.flatMap((f, k) => {
+    const last = k === facets.length - 1;
+    const title = document.createElement("div");
+    title.className = "oa-facet-title";
+    title.textContent = f.label;
+    return [title, Plot.plot({
+      width: w, height: rows.length * (nS * 15 + 30) + (last ? 50 : 8), marginLeft: 150, marginRight: 14, marginTop: 4,
+      marginBottom: last ? 46 : 4, style: {fontSize: "12px"},
+      x: {domain: d3.extent(xs), nice: true, insetLeft: 4, insetRight: 4, axis: null},
+      y: {domain: series.values, axis: null, padding: 0.12},
+      fx: {domain: [f.label], axis: null},
+      fy: {domain: rows.map(r => r.label), label: null, padding: 0.18},
+      color: {type: "identity"},
+      marks: [Plot.gridX(), ...(last ? [Plot.axisX({label: o.axis, labelAnchor: "center", labelOffset: 36})] : []),
+              ...marks]
+    })];
   });
-  const charts = width < 640 && facets.length > 1 ? facets.map(f => plotFor([f.label]))
-                                                   : [plotFor(facets.map(f => f.label))];
   const wrap = document.createElement("div");
   wrap.className = "oa-chart";
   const items = series.values.map((v, i) => ({label: series.labels[i], colour: colours.get(v)}));
   if (mode === "chosen") items.push({label: "pinned", colour: INK.secondary, shape: "open"},
                                     {label: "chosen", colour: INK.secondary, shape: "dot"});
-  wrap.append(legend(items), ...charts);
+  wrap.append(legend(items), fitted(charts, width));
   if (note) { const p = document.createElement("div"); p.className = "oa-chartnote"; p.textContent = note; wrap.append(p); }
   return wrap;
 }
@@ -235,25 +256,28 @@ export function pathPanel(variable, lines, {width = 320, height = 250, rule = nu
   });
 }
 
-// Two or more path panels in a row, each titled, with one legend above.
+// Two or more path panels in a row, each titled, with one legend above; one column in a box narrower than 560px.
 export function pathGrid(panels, items, {width = 640, columns = 2, height = 250} = {}) {
   const wrap = document.createElement("div");
   wrap.className = "oa-chart";
-  wrap.append(legend(items));
-  const grid = document.createElement("div");
-  grid.className = "oa-grid oa-grid--" + columns;
-  const w = Math.max(240, Math.floor((width - 24*(columns - 1)) / columns));
-  for (const p of panels) {
-    const box = document.createElement("div");
-    const h = document.createElement("div");
-    h.className = "oa-panel-title";
-    h.textContent = p.title;
-    box.append(h, pathPanel(p.variable, p.lines, {width: w, height, rule: p.rule, ruleLabel: p.ruleLabel,
-                                                  observed: p.observed ?? []}));
-    if (p.readout) { const r = document.createElement("div"); r.className = "oa-readout"; r.textContent = p.readout; box.append(r); }
-    grid.append(box);
-  }
-  wrap.append(grid);
+  wrap.append(legend(items), fitted(width => {
+    const n = width < 560 ? 1 : columns;
+    const grid = document.createElement("div");
+    grid.className = "oa-grid";
+    grid.style.gridTemplateColumns = `repeat(${n}, minmax(0, 1fr))`;
+    const w = Math.max(240, Math.floor((width - 24*(n - 1)) / n));
+    for (const p of panels) {
+      const box = document.createElement("div");
+      const h = document.createElement("div");
+      h.className = "oa-panel-title";
+      h.textContent = p.title;
+      box.append(h, pathPanel(p.variable, p.lines, {width: w, height, rule: p.rule, ruleLabel: p.ruleLabel,
+                                                    observed: p.observed ?? []}));
+      if (p.readout) { const r = document.createElement("div"); r.className = "oa-readout"; r.textContent = p.readout; box.append(r); }
+      grid.append(box);
+    }
+    return grid;
+  }, width));
   return wrap;
 }
 

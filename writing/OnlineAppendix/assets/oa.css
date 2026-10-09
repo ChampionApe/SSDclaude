@@ -58,15 +58,12 @@ form.oa-control input[type=number] { width: 4.2rem; }
 .oa-legend { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; font-size: .82rem; color: var(--oa-ink2); margin: .2rem 0 .4rem; }
 .oa-legend > span { display: inline-flex; align-items: center; gap: .35rem; }
 .oa-grid { display: grid; gap: .6rem 1.5rem; }
-.oa-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.oa-grid--1 { grid-template-columns: minmax(0, 1fr); }
-@media (max-width: 760px) { .oa-grid--2 { grid-template-columns: minmax(0, 1fr); } }
 .oa-panel-title { font-weight: 600; font-size: .9rem; margin: .2rem 0 0; }
 .oa-readout { font-size: .8rem; color: var(--oa-ink2); margin: .1rem 0 .4rem; }
 
-/* Two exhibits side by side on a wide screen (A2), stacked otherwise. */
-.oa-pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
-@media (min-width: 1200px) { .oa-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
+/* The facets of a counterfactual chart, stacked on one x axis. */
+.oa-facet-title { font-weight: 600; font-size: .9rem; margin: .9rem 0 0; }
+.oa-facet-title:first-child { margin-top: .3rem; }
 
 /* The front page's map. */
 .oa-map { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin: 1.2rem 0 1.6rem; }

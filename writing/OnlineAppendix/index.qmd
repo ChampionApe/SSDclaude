@@ -3,7 +3,7 @@
 This online appendix accompanies *Social Security Design and Its Political Support* by Rasmus K. S. Berg and
 Martín Gonzalez-Eiras. It extends the paper's three quantitative sections, on Argentina's pension reform, on the
 rich economies with the pension design given and on the endogenous design. It shows the results across the
-intertemporal and the Frisch elasticity, the UK beside the U.S., the alternative calibration of the taste for
+intertemporal and the Frisch elasticity, the UK compared with the U.S., the alternative calibration of the taste for
 leisure, a second cost of redistribution, and the paths behind the paper's readings in a single year. Every number
 is built by the paper's own pipeline from the model's results; none is typed.
 
@@ -25,7 +25,7 @@ The coverage reform of section {{< var p.sec_argentina >}}.
 The counterfactuals of section {{< var p.sec_oecd >}}.
 
 - [B1. Calibration](oecd-ies.qmd) <span>· across the intertemporal elasticity</span>
-- [B2. Other countries](oecd-countries.qmd) <span>· the UK beside the U.S., and at U.S. income groups</span>
+- [B2. Other countries](oecd-countries.qmd) <span>· the UK against the U.S., and at U.S. income groups</span>
 - [B3. Other parameters](oecd-parameters.qmd) <span>· across ρ and the Frisch elasticity ξ</span>
 - [B4. Identification of X](oecd-leisure.qmd) <span>· the two treatments of leisure</span>
 :::
@@ -36,7 +36,7 @@ The counterfactuals of section {{< var p.sec_oecd >}}.
 The design chosen by the electorate, section {{< var p.sec_esc >}}.
 
 - [C1. The path in levels](esc-paths.qmd) <span>· the U.S., the UK and France as they age</span>
-- [C2. Other countries](esc-countries.qmd) <span>· the UK beside the U.S.</span>
+- [C2. Other countries](esc-countries.qmd) <span>· the UK against the U.S.</span>
 - [C3. Other cost specifications](esc-costs.qmd) <span>· a cost on the design</span>
 - [C4. Other parameters](esc-parameters.qmd) <span>· across ρ and ξ</span>
 - [C5. The timing of the choice](esc-timing.qmd) <span>· the corner without the cost</span>

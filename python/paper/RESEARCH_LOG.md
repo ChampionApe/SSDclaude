@@ -56,4 +56,6 @@ calibrations of Argentina and the OECD economies, the regroupings, the two costs
 `onlineAppendix.py` rewritten small (registry `EXHIBITS`, per-page numbers, `_variables.yml`, retired `\oa` keys
 aliased), stage (ii) entries `shocksUKUS*`, `shocksXi`, `escPathHost`. 94 outputs; `test_onlineAppendix.py` 10/10, four of
 them tying the datasets to figures 5.2, 6.1, 7.1 and G.1. The site reads the ESC readings against the same-reading
-baseline, as the paper session's uncommitted `figuresUS`/`tablesUS` change does. Open: D5, merge, publish (plan §2.11).
+baseline, as the paper session's uncommitted `figuresUS`/`tablesUS` change does. On RKB's layout comments A2 no longer
+shows figure 5.2, compared facets stack on one x axis, and every chart draws at its own box's width (`fitted` in
+`oa.js`; OJS's `width` spans the page on a page with a `.column-page` block). Open: D5, merge, publish (plan §2.11).

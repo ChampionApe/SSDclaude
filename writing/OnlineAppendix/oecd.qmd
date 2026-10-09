@@ -4,7 +4,7 @@ Section {{< var p.sec_oecd >}} of the paper calibrates the model without informa
 France and changes the U.S. calibration one characteristic at a time: its pension design, its demography, and the
 income distribution, voting patterns and taste for leisure that set France apart. Appendix {{< var p.app_US >}} gives
 the data and the household heterogeneity. This part shows the calibrations across the IES, the counterfactuals with
-the UK beside the U.S. and with the UK regrouped at the U.S. income groups, the U.S. counterfactuals across the
+the UK compared with the U.S. and with the UK regrouped at the U.S. income groups, the U.S. counterfactuals across the
 Frisch elasticity, and what changes when the taste for leisure is identified group by group.
 
 - [B1. Calibration](oecd-ies.qmd): the three calibrations at every IES of the grid.
