@@ -61,9 +61,11 @@ TINT, SURFACE = 0.6, '#ffffff'
 # and in the series colour where it does not, so it never vanishes against the surface.
 MARKLW = 2.0
 # A row every one of whose bars rounds to zero at the paper's precision (one decimal, style guide §3) says
-# so in words: an empty bar group reads as a missing run. Only the leisure rows of the tax and savings
-# panels qualify.
+# so in words: an empty bar group reads as a missing run. Only the leisure rows qualify: in the tax and
+# savings panels of section 6's figure, in the design and tax panels of section 7's (THETAZERO, half the
+# design's last printed digit, for its level).
 ZEROROW = 0.05
+THETAZERO = 5e-4
 
 # The three reported quantities, as (csv column, panel title, axis label, how to scale a deviation).
 # tau and srOverY are fractions on the csv and are read in percentage points; the workweek is already
@@ -258,17 +260,14 @@ def usOverview(commonX = None):
 # ---------------------------------------------------------------------------------------------------
 # Endogenous system characteristics (app:ESC)
 # ---------------------------------------------------------------------------------------------------
-# The counterfactual set the appendix runs, in the same order as the main-text figure where the two
-# overlap. 'mild' is absent: runESCcrra.py's scenario set does not include it, so it exists at rho = 1
-# only and a row of it would be a hole at two thirds of the grid. The composite, 'French characteristics',
-# is 'frBoth' (France's income distribution and voting patterns at once), the pair whose two halves move the
-# DESIGN in opposite directions. By scale invariance it carries the design, tax and savings of 'frAll', the
-# tables' all-French row, which also imposes France's level of X and so differs in hours alone (the leisure
-# rescaling; 'frLeisure' is run but not drawn).
+# The rows of section 7's figure: the categories of section 6's figure (OVERVIEW) that have a counterpart
+# when the design is chosen. No pension-design row, since the design is the outcome; no mild ageing, which
+# runESCcrra.py does not run (it exists at rho = 1 only). France's taste for leisure leaves the design, the
+# tax and savings where they are and moves hours alone.
 ESCSCENARIOS = [('Acute ageing',           'acute'),
-                ('French voting',          'frVoting'),
                 ('French income distr.',   'frIncome'),
-                ('French characteristics', 'frBoth')]
+                ('French voting',          'frVoting'),
+                ('French leisure',         'frLeisure')]
 # The table printing each ESC scenario, per host; 'frBoth' through the all-French rows.
 ESCTABLE = {'US': {'acute': 'US_ESC_Ageing', 'frIncome': 'US_ESC_IncomeDistr', 'frVoting': 'US_ESC_Voting',
                    'frBoth': 'US_ESC_FrenchAll'},
@@ -329,14 +328,17 @@ def _escPairs(name, df, spec, ρs, scen, col, title, scale, level, host = 'US', 
     return pairs, gids, marks
 
 
-def _dumbbellPanel(ax, title, xlabel, labels, pairs, colours, ref = 0., extraRefs = (), gids = None):
+def _dumbbellPanel(ax, title, xlabel, labels, pairs, colours, ref = 0., extraRefs = (), gids = None,
+                   zero = ZEROROW):
     r""" One horizontal dumbbell panel. `pairs` is a list over series (rho values) of
     (label, [(x_pinned, x_chosen) per scenario]); each pair is drawn as an open marker at the pinned
     reading, a filled marker at the chosen one and a connector in the series colour, so the DISTANCE
     between the two readings -- the design response -- is the mark itself rather than a gap the reader
     has to measure between a bar end and a marker. `ref` is the ink reference line (0 for a deviation
     panel, the US design for the level panel); `extraRefs` are muted lines (the corners of theta).
-    `gids[k][j]`: the (pinned, chosen) ids of series k's pair for scenario j. """
+    `gids[k][j]`: the (pinned, chosen) ids of series k's pair for scenario j. `zero`: the distance from
+    `ref` within which a whole row is labelled 'unchanged' (ZEROROW for p.p. and hours, THETAZERO for the
+    design's level). """
     y = np.arange(len(labels))
     off = np.linspace(-0.27, 0.27, len(pairs)) if len(pairs) > 1 else [0.]
     _panel(ax, title, '', titlesize = 12, labelsize = 10)
@@ -364,6 +366,11 @@ def _dumbbellPanel(ax, title, xlabel, labels, pairs, colours, ref = 0., extraRef
                 sc.set_gid(gids[k][j][1])
     for yk in y[:-1]:
         ax.axhline(yk + 0.5, color = INK['grid'], linewidth = 0.8, zorder = 1)
+    # As _barPanel: a row whose every marker rounds to the reference is labelled 'unchanged'.
+    for j in range(len(labels)):
+        if all(abs(x - ref) < zero for _, vals in pairs for x in vals[j]):
+            ax.annotate('unchanged', xy = (ref, y[j]), xytext = (7, 0), textcoords = 'offset points',
+                        ha = 'left', va = 'center', fontsize = 10, style = 'italic', color = INK['muted'])
     ax.set_yticks(y)
     ax.set_yticklabels(labels, fontsize = 11, color = INK['primary'])
     ax.set_xlabel(xlabel, color = INK['secondary'], fontsize = 10)
@@ -379,8 +386,10 @@ def escOverview():
     the US design, so its length is the design response and the muted lines at 0 and 1 are the corners
     the text refers to. Then the tax rate, savings over GDP and the average workweek as deviations from
     the endogenous-theta baseline, so the pinned end is the main-text reading and the dumbbell is what
-    endogenising the design adds. A dumbbell that collapses to a dot IS the finding for that row (ageing
-    in the tax panel).
+    endogenising the design adds. A row whose markers all round to the reference says 'unchanged' (France's
+    taste for leisure in the design and tax panels). In the savings and workweek panels that row's pinned
+    markers sit off zero by the baseline's own gap between the readings: savings and hours in 2020 respond
+    to the design chosen for 2050, which the chosen baseline raises above theta*.
 
     2 x 2 rather than one row of four: at \linewidth a row of four narrow panels shrinks the type below
     legibility and squeezes the tax panel's 12-point range into an inch. The grid keeps every panel at
@@ -420,7 +429,8 @@ def escOverview():
         pairs, gids, mk = _escPairs('US_ESC_overview', df, spec, ρs, scen, col, title, scale, level)
         marks += mk
         _dumbbellPanel(ax, title, xlabel, labels, pairs, colours,
-                       ref = θstar if level else 0., extraRefs = (0., 1.) if level else (), gids = gids)
+                       ref = θstar if level else 0., extraRefs = (0., 1.) if level else (), gids = gids,
+                       zero = THETAZERO if level else ZEROROW)
     axes[0].set_xlim(-0.04, 1.06)
     _topDown(axes)
     # sharey hides the inner columns' tick labels; the second ROW's left panel keeps its own, which is
@@ -530,7 +540,8 @@ def ukusEscFrench():
                                         scale, level, host = h, idHost = (h,))
             marks += mk
             _dumbbellPanel(ax, title, xlabel if i == len(HOSTS) - 1 else '', labels, pairs, colours,
-                           ref = θstar if level else 0., extraRefs = (0., 1.) if level else (), gids = gids)
+                           ref = θstar if level else 0., extraRefs = (0., 1.) if level else (), gids = gids,
+                       zero = THETAZERO if level else ZEROROW)
         row[0].set_xlim(-0.04, 1.06)
         _hostRowLabel(row[0], hostLabel)
     _topDown(grid.ravel())
@@ -546,188 +557,3 @@ def ukusEscFrench():
                        label = '$\\theta$ chosen by the electorate')]
     _figLegend(fig, handles, [h.get_label() for h in handles], bottom = 0.12, ncol = 2)
     return _save(fig, 'UKUS_ESC_French', marks)
-
-
-# ---------------------------------------------------------------------------------------------------
-# The robustness map (appendix app:robustness, the online appendix's front page)
-# ---------------------------------------------------------------------------------------------------
-# Design given: (id part, panel title). 'theta' is tau(theta = 0) - tau(theta = 1); the others are the
-# change against the host's own baseline at the same rho.
-MAPGIVEN = [('theta', r'$\theta = 0$ against $\theta = 1$'), ('acute', 'Acute ageing'),
-            ('income', 'French income distr.'), ('voting', 'French voting')]
-MAPGIVENSCEN = {'acute': 'Acute ageing', 'income': 'Income distribution', 'voting': 'Voting'}
-MAPGIVENTABLE = {'US': {'theta': 'US_CRRA_PensChars', 'acute': 'US_CRRA_Ageing',
-                        'income': 'US_CRRA_OtherShocks', 'voting': 'US_CRRA_OtherShocks'},
-                 'UK': {'theta': 'UK_CRRA_PensChars', 'acute': 'UK_CRRA_Ageing',
-                        'income': 'UK_CRRA_OtherShocks', 'voting': 'UK_CRRA_OtherShocks'}}
-# Design chosen: (escExperiments scenario, panel title), and the specification rows, (kind, key, label):
-# a host at the paper's cost, the U.S. at the comparison cost, the Frisch elasticity at rho = 1.
-MAPCHOSEN = [('acute', 'Acute ageing'), ('frIncome', 'French income distr.'), ('frVoting', 'French voting')]
-MAPSPECS = [('host', 'US', 'U.S.'), ('scale', 'US', 'U.S., cost on\nthe design'), ('host', 'UK', 'UK'),
-            ('xi', 0.2, r'U.S., $\xi = 0.2$'), ('xi', 0.4, r'U.S., $\xi = 0.4$')]
-XIROW = 'xi{:.1f}'       # ESC_Xi's row key of one Frisch elasticity (tablesOA)
-MAPMS, MAPRING = 4.6, 9.5
-
-
-def _mapGiven(host, commonX, ρ, part):
-    """ (change in the tax rate in p.p., table, row) of one design-given marker. """
-    df = D.usShocks(commonX = commonX, host = host)
-    tau = lambda s, e = 'full': float(D.usShockRow(df, ρ, s, e)['τ'])
-    if part == 'theta':
-        v, block = tau(r'$\theta = 0$') - tau(r'$\theta = 1$'), 'theta0'
-    else:
-        v, block = tau(MAPGIVENSCEN[part]) - tau('Baseline', 'baseline'), ROWKEY[MAPGIVENSCEN[part]]
-    return 100*v, MAPGIVENTABLE[host][part] + C.variantSuffix(commonX), rowKey(block, ρ)
-
-
-def _mapChosen(kind, key, ρ, scen):
-    """ (change in the design in force in 2020 against the same specification's baseline, table, row) of
-    one design-chosen marker. """
-    spec = C.US['esc']['spec']
-    if kind == 'xi':
-        xi = D.escXi()
-        xi = xi[np.isclose(xi['xi'], key)]
-        year0 = C.usCalendar()['year0']
-        base = xi[(xi['kind'] == 'path') & (xi['date'] == year0)]
-        cho = xi[xi['kind'] == 'acute chosen']
-        if base.empty or cho.empty:
-            raise D.MissingInput('the baseline in {} and acute chosen at xi = {} in results/esc/escXiRobustness.csv'
-                                 .format(year0, key))
-        return float(cho['θ'].iloc[0]) - float(base['θ'].iloc[0]), 'ESC_Xi', XIROW.format(key)
-    host, spec = (key, spec) if kind == 'host' else ('US', C.US['esc']['comparisonSpec'])
-    df = D.escExperiments(host)
-    v = float(D.escRow(df, ρ, spec, scen, False)['θ_t0']) - float(D.escRow(df, ρ, spec, 'baseline', False)['θ_t0'])
-    if kind == 'scale':
-        return v, 'US_ESC_ScaleWedge', rowKey('scale', ρ)
-    return v, ESCTABLE[host][scen], rowKey('chosen', ρ)
-
-
-def _mapRun(kind, key, scen):
-    """ Does the specification row exist for this scenario by design? The UK's chosen-design runs are
-    France's characteristics (config.US['esc']['uk']['scenarios']); the xi check is acute ageing alone. A
-    run that should exist and does not is MissingInput, never a blank. """
-    if kind == 'host' and key == 'UK':
-        return scen in C.US['esc']['uk']['scenarios']
-    if kind == 'xi':
-        return scen == 'acute'
-    return True
-
-
-def _mapRows(groups, gap = 0.18):
-    """ Row-group layout from the top: per group of n slots (one per rho, or one), its slot positions,
-    its centre and the boundary below it. A three-slot group is one unit high, a one-slot group 0.45. """
-    out, top = [], 0.
-    for n in groups:
-        h = 1.0 if n > 1 else 0.45
-        slots = [top + h/2] if n == 1 else list(top + h/2 + 0.3*(np.arange(n) - (n - 1)/2))
-        out.append((slots, top + h/2, top + h + gap/2))
-        top += h + gap
-    return out, top - gap
-
-
-def _mapPanel(ax, title, labels, rows, extent, size = 7):
-    """ House axes for one map panel: rows top-down, zero as the reference, groups ruled apart. """
-    _panel(ax, title, '', titlesize = 8, labelsize = size - 0.5)
-    ax.axvline(0, color = INK['primary'], linewidth = 0.8, zorder = 2)
-    for _, _, edge in rows[:-1]:
-        ax.axhline(edge, color = INK['grid'], linewidth = 0.8, zorder = 1)
-    ax.set_yticks([c for _, c, _ in rows])
-    ax.set_yticklabels(labels, fontsize = size, color = INK['primary'])
-    ax.set_ylim(extent + 0.12, -0.12)
-    ax.grid(axis = 'y', visible = False)
-    ax.xaxis.set_major_locator(MaxNLocator(4))
-
-
-def _mapEmpty(ax, y, text):
-    ax.text(0.5, y, text, transform = ax.get_yaxis_transform(), ha = 'center', va = 'center',
-            fontsize = 6.5, style = 'italic', color = INK['muted'])
-
-
-def robustnessMap():
-    r""" Figure \ref{fig:robustness}: every headline result against the host's own baseline at the same
-    rho, one marker per specification, in two blocks of small multiples. Design given: the change in the
-    tax rate (p.p.) under theta = 0 against theta = 1, acute ageing and France's income distribution and
-    voting patterns, rows the U.S. and the UK as hosts. Design chosen: the change in the design in force in
-    2020 under acute ageing and France's income distribution and voting patterns, rows the U.S. at the
-    paper's cost, at the comparison cost (config.US['esc']['comparisonSpec']), the UK at its own cost, and
-    the U.S. at xi = 0.2, 0.4 (rho = 1). rho by colour (RHOCOLOURS), the calibration variant by marker
-    (filled circle the headline, open diamond the twin, so where the two agree the circle sits inside the
-    diamond), the paper's own reading (U.S., headline variant, rho = 1, the paper's cost) ringed in ink.
-    Every marker is a mark linked to the table row that prints it; a specification that is not run (or a
-    host MAPGIVENTABLE has no table for) is said so in its cell. The xi markers read datasets.escXi and link to ESC_Xi rows
-    XIROW. Sized at the 5.91in measure. """
-    ρs = C.US['ρTable']
-    colour = dict(zip(ρs, RHOCOLOURS))
-    head = C.US['commonX']
-    variants = [(head, 'o', True), (not head, 'D', False)]       # (commonX, marker, filled)
-    varName = lambda cx: 'common X' if cx else 'vector Xᵢ'
-    paperρ = C.US['ρBaseline']
-    name, marks = 'RobustnessMap', []
-
-    givenRows, givenExt = _mapRows([len(ρs)]*len(HOSTS))
-    chosenRows, chosenExt = _mapRows([1 if kind == 'xi' else len(ρs) for kind, _, _ in MAPSPECS])
-    unit = 0.36                                                   # inches per row unit
-    hGiven, hChosen = givenExt*unit + 0.75, chosenExt*unit + 0.75
-    fig = plt.figure(figsize = (5.91, hGiven + hChosen + 0.55), layout = 'constrained')
-    sfGiven, sfChosen = fig.subfigures(2, 1, height_ratios = [hGiven, hChosen + 0.55])
-    for sf, text in ((sfGiven, 'Design given: change in the tax rate, percentage points'),
-                     (sfChosen, r'Design chosen: change in the design $\theta_{2020}$')):
-        sf.suptitle(text, x = 0.01, ha = 'left', fontsize = 9, color = INK['primary'])
-
-    def point(ax, x, y, c, marker, filled, gid, ring):
-        if ring:
-            ax.plot(x, y, linestyle = 'none', marker = 'o', markersize = MAPRING, markerfacecolor = 'none',
-                    markeredgecolor = INK['primary'], markeredgewidth = 0.9, zorder = 6)
-        kw = (dict(markerfacecolor = c, markeredgecolor = '#fcfcfb', markeredgewidth = 0.5, markersize = MAPMS)
-              if filled else
-              dict(markerfacecolor = 'none', markeredgecolor = c, markeredgewidth = 1.0, markersize = MAPMS + 1.6))
-        pt, = ax.plot(x, y, linestyle = 'none', marker = marker, zorder = 4 if filled else 3, **kw)
-        pt.set_gid(gid)
-
-    axes = sfGiven.subplots(1, len(MAPGIVEN), sharey = True)
-    for ax, (part, title) in zip(axes, MAPGIVEN):
-        _mapPanel(ax, title, [lab for _, lab in HOSTS], givenRows, givenExt)
-        for (h, hostLabel), (slots, centre, _) in zip(HOSTS, givenRows):
-            if part not in MAPGIVENTABLE[h]:
-                _mapEmpty(ax, centre, 'not reported')
-                continue
-            for ρ, y in zip(ρs, slots):
-                for cx, marker, filled in variants:
-                    v, tab, rk = _mapGiven(h, cx, ρ, part)
-                    gid = markId(name, 'given', part, h, 'commonX' if cx else 'vectorX', _rhoPart(ρ))
-                    point(ax, v, y, colour[ρ], marker, filled, gid,
-                          ring = h == 'US' and cx == head and np.isclose(ρ, paperρ))
-                    marks.append(mark(gid, hostLabel, v, signed(v, unit = 'p.p.'),
-                                      series = 'ρ = {}, {}'.format(C.num(ρ, 1), varName(cx)),
-                                      panel = 'Design given: ' + plain(title), table = tab, row = rk))
-
-    axes = sfChosen.subplots(1, len(MAPCHOSEN), sharey = True)
-    for ax, (scen, title) in zip(axes, MAPCHOSEN):
-        _mapPanel(ax, title, [lab for _, _, lab in MAPSPECS], chosenRows, chosenExt)
-        for (kind, key, lab), (slots, centre, _) in zip(MAPSPECS, chosenRows):
-            if not _mapRun(kind, key, scen):
-                _mapEmpty(ax, centre, 'not run')
-                continue
-            for ρ, y in zip([paperρ] if kind == 'xi' else ρs, slots):
-                v, tab, rk = _mapChosen(kind, key, ρ, scen)
-                gid = markId(name, 'chosen', scen, kind, key, _rhoPart(ρ))
-                point(ax, v, y, colour[ρ], 'o', True, gid,
-                      ring = kind == 'host' and key == 'US' and np.isclose(ρ, paperρ))
-                marks.append(mark(gid, plain(lab), v, signed(v, digits = 3),
-                                  series = 'ρ = ' + C.num(ρ, 1), panel = 'Design chosen: ' + plain(title),
-                                  table = tab, row = rk))
-
-    # The headline variant is the paper's and goes unnamed (config.variantNote); only the twin's open
-    # diamond is keyed. A filled grey key for it would read as rho = 2.
-    ink = lambda **kw: Line2D([], [], linestyle = 'none', **kw)
-    handles = ([ink(marker = 'o', markersize = MAPMS, markerfacecolor = colour[ρ], markeredgecolor = '#fcfcfb',
-                    markeredgewidth = 0.5) for ρ in ρs]
-               + [ink(marker = 'D', markersize = MAPMS + 1.6, markerfacecolor = 'none',
-                      markeredgecolor = INK['secondary'], markeredgewidth = 1.0),
-                  ink(marker = 'o', markersize = MAPRING, markerfacecolor = 'none',
-                      markeredgecolor = INK['primary'], markeredgewidth = 0.9)])
-    labels = ([r'$\rho = ' + C.num(ρ, 1) + '$' for ρ in ρs]
-              + [r'vector $X_i$ calibration', "the paper's reading"])
-    sfChosen.legend(handles, labels, loc = 'outside lower center', ncol = len(handles), frameon = False,
-                    fontsize = 7, labelcolor = INK['secondary'], columnspacing = 1.4, handletextpad = 0.3)
-    return _save(fig, name, marks)

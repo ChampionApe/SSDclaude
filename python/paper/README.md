@@ -56,7 +56,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `config.py` | paths, the `ARG` and `US` specifications, calendars, unit conversions; imports nothing from the models |
 | `datasets.py` | the only module that knows the `results/` layout and column names, both arms |
 | `tables.py`, `figures.py` | Argentina builders, one function per output; `figures` owns the house style |
-| `tablesUS.py`, `figuresUS.py` | US/France/UK builders, including `escResults` (`US_ESC_Results`, the paper's ρ = 1 table of section 7), `escSummary` (`US_ESC_Summary`, the same across ρ, online) and `robustnessMap` (appendix G) |
+| `tablesUS.py`, `figuresUS.py` | US/France/UK builders, including section 7's `escCalibrationTable` (`US_ESC_Calibration`) and `escOverview` (`US_ESC_overview`), appendix G.1's `ukEscCalibrationTable` (`UK_ESC_Calibration`) and `escCountryTable` (`US_ESC_Country`), and the online `escResults` (`US_ESC_Results`, ρ = 1) and `escSummary` (`US_ESC_Summary`, across ρ) |
 | `build.py` | stage (iii): the output registry for both arms, and the copy into `writing/Paper` (not for `ONLINE_ONLY`) |
 | `tablesOA.py`, `figuresOA.py` | the online appendix's own exhibits: figure 1's data, the calibrations across ρ, the endogenous design's path, ξ and timing, the numerical checks; `figuresOA.escPathPaper` is the paper's path figure (`US_ESC_Path`), kept beside the online one it is cut from |
 | `onlineAppendix.py`, `texTable.py` | `build.py --site`: the registry of the online appendix's sections and exhibits (each with its `text`), the generated tables as HTML, the print edition, the `\oa` macros; reads `results/paper` and the paper's tex only. `test_onlineAppendix.py` checks them (a fast suite of `python/runTests.py`) |
@@ -69,11 +69,12 @@ Every generated `.tex` carries a `%% Source:` banner with the csv it was read fr
 buildable now. Every US and Argentina output is registered twice (headline and `_vectorX`), the ESC outputs
 once. Every table row ends in a `% row: <key>` comment (`tables.rowKey`) and every figure also writes `.svg` and
 `.marks.json` (`figures._save`, `figures.mark`), the online appendix's handles from a mark to its table row.
-The paper inputs 14 outputs (the calibration and household tables, `ArgentinaUniversal`, `ARG_CRRA_LOG`,
-`US_overview`, `US_ESC_Country`, `US_ESC_Results`, `US_ESC_Path`, `OECDdata`, `RobustnessMap`); everything else
-is the online appendix's, the 25 `ONLINE_ONLY` outputs never copied into `writing/Paper`. `US_ESC_Calibration`,
-`US_ESC_overview` and `US_ESC_Summary` left the paper on 2026-10-07 (section 7 presents ρ = 1 alone) and are still
-built and copied, like `US_ESC_Ageing`, but input by nothing: `REPLICATION.md`'s map says which tex inputs each.
+The paper inputs 15 outputs (the calibration and household tables, `ArgentinaUniversal`, `ARG_CRRA_LOG`,
+`US_overview`, `US_ESC_Calibration`, `US_ESC_overview`, `OECDdata`, and appendix G's `UK_ESC_Calibration`,
+`US_ESC_Country` and `US_ESC_Path`); everything else is the online appendix's, the 25 `ONLINE_ONLY` outputs never
+copied into `writing/Paper`. `US_ESC_Results` and `US_ESC_Summary` are still built and copied, like
+`US_ESC_Ageing`, but input by nothing: `REPLICATION.md`'s map says which tex inputs each. The robustness map
+(appendix G until 2026-10-09) is gone from the paper, the online appendix and the registry.
 Every US counterfactual is a new equilibrium path read at 2020 (`python/US/shocks.py`).
 
 ## Traps

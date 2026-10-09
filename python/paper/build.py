@@ -91,13 +91,13 @@ OUTPUTS = {
     'US_ESC_Voting':          ('table', tablesUS.escVoting,           'Tables/US_ESC_Voting.tex'),
     'US_ESC_FrenchAll':       ('table', tablesUS.escFrenchAll,        'Tables/US_ESC_FrenchAll.tex'),
     'US_ESC_Summary':         ('table', tablesUS.escSummary,          'Tables/US_ESC_Summary.tex'),
-    # The paper's own exhibits of sec:esc (2026-10-07): the rho = 1 rows of the summary, and the projection
-    # from 2020 of the baseline path (ESC_Path holds the full path, every rho and the Frisch elasticities).
+    # The rho = 1 rows of the summary, and the projection from 2020 of the baseline path (appendix G.2;
+    # ESC_Path holds the full path, every rho and the Frisch elasticities).
     'US_ESC_Results':         ('table', tablesUS.escResults,          'Tables/US_ESC_Results.tex'),
     'US_ESC_Path':            ('figure', figuresOA.escPathPaper,      'Figs/US_ESC_Path.pdf'),
-    # The cross-country test (app:US:ukESC): the UK, France and the UK at US income groups under the US
-    # parameter, and their own. tablesUS.ukEscCalibrationTable, the UK-only table it replaces, stays
-    # callable on the comparison arm's rows but is not an output.
+    # Appendix G.1 (app:escResults:calibration): the UK's own cost per rho at its own income groups, and the
+    # cross-country test -- the UK, France and the UK at US income groups under the US parameter, and their own.
+    'UK_ESC_Calibration':     ('table', tablesUS.ukEscCalibrationTable, 'Tables/UK_ESC_Calibration.tex'),
     'US_ESC_Country':         ('table', tablesUS.escCountryTable,     'Tables/US_ESC_Country.tex'),
     # The previous cost specification (config.US['esc']['comparisonSpec']) as one appendix table.
     'US_ESC_ScaleWedge':      ('table', tablesUS.escScaleWedge,       'Tables/US_ESC_ScaleWedge.tex'),
@@ -108,8 +108,6 @@ OUTPUTS = {
     'UKUS_ESC_French':        ('figure', figuresUS.ukusEscFrench,     'Figs/UKUS_ESC_French.pdf'),
     # Figure 1 (fig:US:OECDdata) from stage (0)'s data/oecdFigure1.csv; also writes oecdCorrelations.csv.
     'OECDdata':               ('figure', oecdFigure1.figure,          'Figs/OECDdata.pdf'),
-    # The robustness map (app:robustness, and the online appendix's front page).
-    'RobustnessMap':          ('figure', figuresUS.robustnessMap,     'Figs/RobustnessMap.pdf'),
     # --- The online appendix's own exhibits (tablesOA, figuresOA), all in ONLINE_ONLY. OECD_Correlations
     # after OECDdata, whose build writes its input. ---
     'OECD_Countries':         ('table', tablesOA.oecdCountries,       'Tables/OECD_Countries.tex'),

@@ -33,3 +33,16 @@ benefit, the fall in the informal savings ratio as figure 5.2 prints it (ι defi
 (one in the code and the appendices) and got the type-0 conditions right; appendix D's β_j, B^i and p, appendix E's
 tense and notation (Law 24,347 dated 1994), five control spaces. Checks: `checkPaper.py` OK, latexmk clean at 60
 pages, `test_onlineAppendix.py` 6/6; the site rendered locally, not republished. Open: TODO W10, D3, W11; W12, C10.
+
+## 2026-10-09 — section 7 rewritten on RKB's outline; appendix G replaces the robustness map
+
+RKB's outline (`notes/plan_endogenousDesign.md`) and RKB's comments on a 16-item review set the rewrite, written fresh
+rather than rearranged: 7.1 the deadweight cost (the corner and the weak hours cost, Disney and Kumler et al., Summers'
+implicit tax, the Harberger principle as a reasonable start rather than a microfoundation), 7.2 calibration and the
+determinants on `US_ESC_overview` (acute ageing, French income, voting, leisure; mild ageing dropped). New appendix G: G.1
+the UK's own cost (`UK_ESC_Calibration`, `tablesUS.ukEscCalibrationTable`) and the country test, G.2 the path figure; the
+robustness map left the paper, the online appendix and the registry (84 outputs). Pushed to Overleaf (`0624e14`); RKB's
+review edits pulled back (`cb01426`), the two table edits (the cost table's caption, the country table without its tax
+column) now built by `tablesUS.py`, three typos fixed. `test_onlineAppendix.py` 0 failed, latexmk 61 pages; `checkPaper.py`
+fails on the online edits: G.1 comments out `US_ESC_Country`, which G.1 and `CalibrationOECD.tex` still cite, and
+`eq:esc:implicitTax` is defined in 7.1 and C.2. Open: those two; abstract, conclusion, `paper_costLiterature.md` §4–5; `--map`.

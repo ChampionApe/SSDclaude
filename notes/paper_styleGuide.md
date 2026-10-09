@@ -24,7 +24,7 @@ under `writing/<model>/` follow their own conventions and are not covered.
 **Headings.** `\section` and `\subsection` only for the paper's skeleton; inside a section use
 `\smalltitle{Name.}` — bold run-in heading, sentence case, ending in a period. The endogenous-θ section
 is the one section that uses `\subsection` within itself; that is acceptable there because it has
-three distinct parts, but do not add further subsections elsewhere.
+two distinct parts, the cost and the results, but do not add further subsections elsewhere.
 
 ## 3. Numbers, units and precision
 

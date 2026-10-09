@@ -76,17 +76,6 @@ HOUSEHOLDSVECTORX = (r'Under the vector-$X_i$ calibration the taste for leisure 
 
 # (anchor, chapter file stem, exhibits). The anchors are the book's headings and the paper's \oa keys.
 GROUPS = [
-    ('robustness', 'index', [
-        F('RobustnessMap', caption = r'The paper\textquotesingle s results across specifications',
-          note = r'Each marker opens the table that prints it.',
-          text = r'Figure \ref{fig:robustness}: a marker across the zero line from the highlighted one reverses the '
-                 r'paper\textquotesingle s sign. With the design given, the Beveridgean corner against the Bismarckian '
-                 r'one, acute ageing and France\textquotesingle s voting patterns raise the tax rate in every '
-                 r'specification; France\textquotesingle s income distribution lowers it on the U.S., and on the UK raises '
-                 r'it under a common $X$ and lowers it under the vector $X_i$. With the design chosen, acute ageing makes '
-                 r'the design more Bismarckian and France\textquotesingle s voting patterns less so throughout, while '
-                 r'France\textquotesingle s income distribution moves it in a direction that changes with the IES and the '
-                 r'host, and to the Bismarckian corner under the cost on the design.')]),
     ('data-countries', 'data', [
         F('OECDdata',
           text = r'Figure \ref{fig:US:OECDdata}: one marker per country, with the three economies the paper calibrates '
@@ -734,9 +723,6 @@ def headings():
         for m in HEADING.finditer(read(p)):
             out[m.group(4)] = {'number': m.group(2), 'title': m.group(3), 'page': ch + '.html',
                                'level': len(m.group(1))}
-        if ch == 'index':
-            out.setdefault('robustness', {'number': '', 'title': 'Robustness at a glance', 'page': 'index.html',
-                                          'level': 2})
     return out
 
 

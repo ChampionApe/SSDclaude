@@ -4,21 +4,21 @@
 \begin{table}[!htb]
 \centering
 \begin{threeparttable}
-\caption{The calibrated cost of redistribution}
+\caption{The calibrated cost of redistribution for the U.S.}
 \label{table:US_ESC:calibration}
 \renewcommand{\arraystretch}{1.25}
-\begin{tabularx}{.9\textwidth}{YYYYYY}
+\begin{tabularx}{.8\textwidth}{YYYYY}
 \toprule
-\textbf{CRRA} ($\rho$) & $\lambda$ & $\theta^{\ast}$ & $f(\theta^{\ast})$ & $f(0)$ & $\tilde V$ \\
+$\rho$ & $\lambda$ & $\omega$ & $1 - f(\theta^{\ast})$ & $1 - f(0)$ \\
 \midrule 
-0.5 & 18.267 & 0.738 & 0.961 & 0.563 & 0.436 \\ % row: rho@0.5
-1.0 & 8.643 & 0.738 & 0.982 & 0.762 & 0.436 \\ % row: rho@1.0
-2.0 & 1.724 & 0.738 & 0.996 & 0.947 & 0.436 \\ % row: rho@2.0
+0.5 & 18.267 & 2.50 & 3.9\% & 43.7\% \\ % row: rho@0.5
+1.0 & 8.643 & 1.51 & 1.8\% & 23.8\% \\ % row: rho@1.0
+2.0 & 1.724 & 1.20 & 0.4\% & 5.3\% \\ % row: rho@2.0
 \bottomrule
 \end{tabularx}
 \begin{tablenotes}[flushleft]
 \footnotesize
-\item[] \textit{Note:} $f(\theta, \tau) = \exp\{-\tfrac12 \lambda \tau \tilde V (1-\theta)^2\}$ with $\tilde V = \sum_i \gamma_i (y_i - 1)^2 / y_i$ the dispersion of relative labor incomes; $f(\theta^{\ast})$ and $f(0)$ are read at the 2020 tax rate, so $1 - f$ is the share of revenue lost at the observed design and at a flat benefit; $\lambda$ is calibrated so that $\theta_{2020}$, the design chosen in 1990, is the observed one, with $(\beta, \omega)$ recalibrated at each trial value. The cost is proportional, so it cancels from the replacement-rate ratio and $\theta^{\ast}$ is the data\textquotesingle s own. Without the cost the choice would be in the corner $\theta = 0$ for every $\rho$.
+\item[] \textit{Note:} The cost is that of equation \eqref{eq:esc:budget}, with $\theta^{\ast} = 0.738$ and $\tilde V = 0.436$ at every $\rho$. $1 - f(\theta^{\ast})$ and $1 - f(0)$ are the shares of revenue lost in 2020 at the observed design and at a flat benefit, both at the 2020 tax rate. $\beta$ and $\omega$ are recalibrated with $\lambda$.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
