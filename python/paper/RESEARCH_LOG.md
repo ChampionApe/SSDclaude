@@ -46,3 +46,14 @@ review edits pulled back (`cb01426`), the two table edits (the cost table's capt
 column) now built by `tablesUS.py`, three typos fixed. `test_onlineAppendix.py` 0 failed, latexmk 61 pages; `checkPaper.py`
 fails on the online edits: G.1 comments out `US_ESC_Country`, which G.1 and `CalibrationOECD.tex` still cite, and
 `eq:esc:implicitTax` is defined in 7.1 and C.2. Open: those two; abstract, conclusion, `paper_costLiterature.md` §4–5; `--map`.
+
+## 2026-10-09 (evening) — the online appendix rebuilt on RKB's outline (branch `oa-revision`)
+
+RKB's outline (`notes/plan_onlineAppendix.md` §1) and the execution plan (§2, decisions D1–D6, taken as recommended)
+replace the site of 2026-10-06: 20 short pages in four parts, static exhibits from the pipeline beside Observable JS
+explorers. New `siteData.py` (four `data` outputs in `results/paper/Data`), six tables in `tablesOA.py` (the two leisure
+calibrations of Argentina and the OECD economies, the regroupings, the two costs), `datasets.usShocksXi`/`escPathHost`,
+`onlineAppendix.py` rewritten small (registry `EXHIBITS`, per-page numbers, `_variables.yml`, retired `\oa` keys
+aliased), stage (ii) entries `shocksUKUS*`, `shocksXi`, `escPathHost`. 94 outputs; `test_onlineAppendix.py` 10/10, four of
+them tying the datasets to figures 5.2, 6.1, 7.1 and G.1. The site reads the ESC readings against the same-reading
+baseline, as the paper session's uncommitted `figuresUS`/`tablesUS` change does. Open: D5, merge, publish (plan §2.11).

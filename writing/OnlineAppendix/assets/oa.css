@@ -40,6 +40,7 @@ table.oa-table tr.oa-sep td { border-top: .6px solid var(--oa-grid); }
 table.oa-table tr.oa-grouprow th { font-weight: 400; font-style: italic; text-align: left; padding-top: .6rem; }
 table.oa-table--map { font-size: .8rem; }
 table.oa-table--map code { font-size: .78rem; background: none; }
+table.oa-table--map td { overflow-wrap: anywhere; }
 
 /* Interactive figures. */
 .oa-controls { display: flex; flex-wrap: wrap; gap: .4rem 1.6rem; align-items: center; margin: .3rem 0 .6rem;

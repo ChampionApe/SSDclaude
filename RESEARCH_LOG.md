@@ -17,3 +17,12 @@ archived (nothing calls the US model copies), T2's pre-split copy cut, `test_eu.
 load, `paper/test_onlineAppendix.py` registered; the permanent-timing and FOC-layer checks stay (the technical note
 quotes them). OA.2 and OA.3 cite appendices E and F; site republished (gh-pages `3d60368`). C9 closed: the two
 `informalAnalytical` failures since C8 were a solver stopping rule, fixed in that module (its log); fast suites 24 of 24.
+
+## 2026-10-09 (evening) — the online appendix on a branch in its own worktree
+
+While another session drafts the paper on `main`, the online appendix is rebuilt on branch `oa-revision` in the worktree
+`../SSDclaude-oa` (`.venv` a junction to the main checkout's), so neither session's commits interleave with the other's.
+The only shared file is the generated `writing/Paper/onlineAppendix.tex`, which defines every key the paper cites.
+Plan, decisions and status: `notes/plan_onlineAppendix.md` (untracked in the main checkout); module logs: python/paper,
+python/US. Headless Chrome (`--headless=new --virtual-time-budget`) checks the OJS pages when the desktop session is
+locked and the browser extension's tab is hidden.

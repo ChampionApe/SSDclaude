@@ -4,7 +4,7 @@ The data behind the paper's figure {{< var p.fig_US_OECDdata >}}, the numerical 
 section {{< var p.sec_numerical >}}, and the map from every exhibit of this appendix to the code and the results
 that build it.
 
-- [D1. The cross-section of figure {{< var p.fig_US_OECDdata >}}](data.qmd): the values behind each country's
-  marker, their sources and the correlations.
+- [D1. The OECD cross-section](data.qmd): the values behind each country's marker in figure
+  {{< var p.fig_US_OECDdata >}}, their sources and the correlations.
 - [D2. Numerical checks](numerical.qmd): date-specific against stationary policies, and the number of equilibria.
 - [D3. Replication](replication.qmd): every exhibit with its output, its builder and what it reads.

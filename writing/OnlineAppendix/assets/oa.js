@@ -176,25 +176,28 @@ export function counterfactuals(data, {rows, facets, series, outcome, mode = "gi
                              stroke: "stroke", strokeWidth: 1.6}));
   marks.push(Plot.dot(pins, {x: "chosen", y: "series", fx: "facet", fy: "row", r: 4.4, fill: "stroke",
                              title: "text", tip: true}));
-  marks.push(Plot.text(unchanged, {fx: "facet", fy: "row", frameAnchor: "middle", text: d => d.text ?? "unchanged",
-                                   fill: INK.muted, fontStyle: "italic", fontSize: 12}));
-  const chart = Plot.plot({
+  marks.push(Plot.text(unchanged, {fx: "facet", fy: "row", frameAnchor: "left", textAnchor: "start", dx: 6,
+                                   text: d => d.text ?? "unchanged", fill: INK.muted, fontStyle: "italic", fontSize: 12}));
+  // One chart with the facets side by side; on a narrow screen one chart per facet, stacked, on the same axis.
+  const plotFor = labels => Plot.plot({
     width, height: rows.length * (nS * 15 + 30) + 74, marginLeft: 150, marginRight: 14, marginTop: 26, marginBottom: 48,
     style: {fontSize: "12px"},
     x: {label: o.axis, labelAnchor: "center", labelOffset: 38, grid: true, nice: true,
         domain: d3.extent(xs), insetLeft: 4, insetRight: 4},
     y: {domain: series.values, axis: null, padding: 0.12},
-    fx: {domain: facets.map(f => f.label), label: null, padding: 0.08},
+    fx: {domain: labels, label: null, padding: 0.08},
     fy: {domain: rows.map(r => r.label), label: null, padding: 0.18},
     color: {type: "identity"},
     marks
   });
+  const charts = width < 640 && facets.length > 1 ? facets.map(f => plotFor([f.label]))
+                                                   : [plotFor(facets.map(f => f.label))];
   const wrap = document.createElement("div");
   wrap.className = "oa-chart";
   const items = series.values.map((v, i) => ({label: series.labels[i], colour: colours.get(v)}));
   if (mode === "chosen") items.push({label: "pinned", colour: INK.secondary, shape: "open"},
                                     {label: "chosen", colour: INK.secondary, shape: "dot"});
-  wrap.append(legend(items), chart);
+  wrap.append(legend(items), ...charts);
   if (note) { const p = document.createElement("div"); p.className = "oa-chartnote"; p.textContent = note; wrap.append(p); }
   return wrap;
 }

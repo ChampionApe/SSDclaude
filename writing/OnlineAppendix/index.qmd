@@ -47,7 +47,7 @@ The design chosen by the electorate, section {{< var p.sec_esc >}}.
 
 Figure {{< var p.fig_US_OECDdata >}}'s data, the numerical checks, replication.
 
-- [D1. The cross-section of figure {{< var p.fig_US_OECDdata >}}](data.qmd) <span>· countries, sources, correlations</span>
+- [D1. The OECD cross-section](data.qmd) <span>· countries, sources, correlations</span>
 - [D2. Numerical checks](numerical.qmd) <span>· policies and equilibrium selection</span>
 - [D3. Replication](replication.qmd) <span>· every exhibit's code and data</span>
 :::

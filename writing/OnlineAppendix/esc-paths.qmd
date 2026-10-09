@@ -52,7 +52,8 @@ viewof c1Cost = control("radio", COSTS, {key: "cost", label: "Cost parameter", v
     const r = countryPath(c, c1Cost).rows.find(d => d.variable === "theta" && d.year === 2020);
     return r ? {year: 2020, value: r.pinned, colour: countryStyle(c).colour, text: `${NAME[c]}, observed design: ${r.pinned.toFixed(3)}`} : null;
   }).filter(d => d) : [];
-  const items = c1Countries.map(c => ({label: NAME[c], colour: countryStyle(c).colour, shape: "line"}));
+  const items = c1Countries.map(c => ({label: NAME[c] + (countryPath(c, c1Cost).pinnedOnly ? ", design pinned (no own parameter)" : ""),
+                                       colour: countryStyle(c).colour, shape: "line", dashed: countryPath(c, c1Cost).pinnedOnly}));
   if (observed.length) items.push({label: "observed design", colour: "#52514e", shape: "open"});
   return pathGrid([{title: "Workers per retiree ν", variable: "nu", lines: lines("nu"), rule: 2020, ruleLabel: "calibration"},
                    {title: OUTCOMES[c1Var].level, variable: c1Var, lines: lines(c1Var), rule: 2020,

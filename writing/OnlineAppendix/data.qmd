@@ -1,4 +1,4 @@
-# D1. The cross-section of figure {{< var p.fig_US_OECDdata >}} {#data}
+# D1. The OECD cross-section {#data}
 
 Figure {{< var p.fig_US_OECDdata >}} of the paper sets pension spending and the Bismarckian–Beveridgean index of the
 OECD countries against their population growth and their income inequality. The tabs below the figure give the values
