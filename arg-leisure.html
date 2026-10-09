@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>B. Rich OECD countries with the design given – Social Security Design and Its Political Support</title>
+<title>A3. Identification of X – Social Security Design and Its Political Support</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -36,8 +36,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./oecd-ies.html" rel="next">
-<link href="./arg-leisure.html" rel="prev">
+<link href="./oecd.html" rel="next">
+<link href="./arg-ies.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -76,6 +76,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="assets/oa.css">
 </head>
@@ -89,7 +118,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./argentina.html">A. Argentina</a></li><li class="breadcrumb-item"><a href="./arg-leisure.html"><span class="chapter-title">A3. Identification of X</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -127,11 +156,11 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="./argentina.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">A. Argentina</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./arg-designs.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">A1. How pension designs shape the equilibria</span></a>
@@ -144,20 +173,20 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./arg-leisure.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">A3. Identification of X</span></a>
+  <a href="./arg-leisure.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">A3. Identification of X</span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./oecd.html" class="sidebar-item-text sidebar-link active">
+            <a href="./oecd.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">B. Rich OECD countries with the design given</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./oecd-ies.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B1. Calibration</span></a>
@@ -247,15 +276,22 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#arg-leisure-calibration" id="toc-arg-leisure-calibration" class="nav-link active" data-scroll-target="#arg-leisure-calibration">The calibration</a></li>
+  <li><a href="#arg-leisure-level" id="toc-arg-leisure-level" class="nav-link" data-scroll-target="#arg-leisure-level">Why the level of <span class="math inline">\(X\)</span> differs</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./argentina.html">A. Argentina</a></li><li class="breadcrumb-item"><a href="./arg-leisure.html"><span class="chapter-title">A3. Identification of X</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="oecd" class="quarto-section-identifier">B. Rich OECD countries with the design given</span></h1>
+<h1 class="title"><span id="arg-leisure" class="quarto-section-identifier"><span class="chapter-title">A3. Identification of X</span></span></h1>
 </div>
 
 
@@ -272,15 +308,47 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Section 6 of the paper calibrates the model without informal households to the U.S., the UK and France and changes the U.S. calibration one characteristic at a time: its pension design, its demography, and the income distribution, voting patterns and taste for leisure that set France apart. Appendix F gives the data and the household heterogeneity. This part shows the calibrations across the IES, the counterfactuals with the UK compared with the U.S. and with the UK regrouped at the U.S. income groups, the U.S. counterfactuals across the Frisch elasticity, and what changes when the taste for leisure is identified group by group.</p>
-<ul>
-<li><a href="./oecd-ies.html">B1. Calibration</a>: the three calibrations at every IES of the grid.</li>
-<li><a href="./oecd-countries.html">B2. Other countries</a>: what shapes pensions, savings and labor supply in the U.S. and the UK, and the UK at the U.S. income groups.</li>
-<li><a href="./oecd-parameters.html">B3. Other parameters</a>: the U.S. counterfactuals across the intertemporal and the Frisch elasticity.</li>
-<li><a href="./oecd-leisure.html">B4. Identification of X</a>: the common taste for leisure against one per income group.</li>
-</ul>
+<p>The paper takes the taste for leisure <span class="math inline">\(X\)</span> common to the four formal income quartiles and pins its level by the average formal workweek, so that relative hours across the quartiles are a prediction. The alternative takes the survey’s relative hours as data and identifies one <span class="math inline">\(X_i\)</span> per quartile, which leaves the level of hours unidentified. The two calibrations share their targets, <span class="math inline">\(\beta\)</span>, <span class="math inline">\(\omega\)</span> and every equilibrium outcome of section 5: the tax rate, savings, hours in efficiency units and the reform at every ρ. The reason is that the productivity distribution reaches the aggregates only through <span class="math inline">\(\sum_{i&gt;0}\gamma_i\eta_i^{1+\xi}/X_i^{\xi}\)</span>, which both calibrations normalize to one (appendix E). The tables below therefore show only what differs.</p>
+<section id="arg-leisure-calibration" class="level2">
+<h2 class="anchored" data-anchor-id="arg-leisure-calibration">The calibration</h2>
+<p>Four rows of the paper’s calibration table differ. In the survey, hours rise less with income than the common <span class="math inline">\(X\)</span> predicts: the top quartile works fewer hours than predicted, as section 5 notes, and the others a little more. The vector <span class="math inline">\(X_i\)</span> take those hours as data, so the taste for leisure rises with income, and the productivities spread further apart to reproduce the same relative incomes. The informal productivity and taste for leisure are measured against the formal average and move with it.</p>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-exhibit oa-tablebox"><div class="oa-scroll"><table class="oa-table" id="ex-ARG_LeisureCalibration">
+<caption><span class="oa-num">Table A3.1.</span> The Argentine calibration under the two treatments of the taste for leisure</caption>
+<thead>
+<tr><th class="oa-l" scope="col"><strong>Parameter</strong></th><th class="oa-c" scope="col"><strong>Common</strong> <span class="math inline">\(\boldsymbol{X}\)</span></th><th class="oa-c" scope="col"><strong>Vector</strong> <span class="math inline">\(\boldsymbol{X_i}\)</span></th><th class="oa-l" scope="col"><strong>Identified by</strong></th></tr>
+</thead>
+<tbody>
+<tr data-row="X"><td class="oa-l"><span class="math inline">\(X\)</span>, <span class="math inline">\(X_i\)</span></td><td class="oa-c">1.94</td><td class="oa-c">[0.74, 0.77, 0.88, 1.24]</td><td class="oa-l">Average formal workweek of 42.5 hours (common); relative hours (vector)</td></tr>
+<tr data-row="eta"><td class="oa-l"><span class="math inline">\(\eta_i\)</span></td><td class="oa-c">[0.64, 0.90, 1.14, 1.87]</td><td class="oa-c">[0.51, 0.72, 0.95, 1.69]</td><td class="oa-l">Income distribution</td></tr>
+<tr data-row="eta0"><td class="oa-l"><span class="math inline">\(\eta_0\)</span></td><td class="oa-c">0.344</td><td class="oa-c">0.288</td><td class="oa-l">Informal relative income</td></tr>
+<tr data-row="X0"><td class="oa-l"><span class="math inline">\(X_0\)</span></td><td class="oa-c">0.804</td><td class="oa-c">0.375</td><td class="oa-l">Informal relative hours</td></tr>
+</tbody></table>
+<div class="oa-notes">
+<p><em>Note:</em> <span class="math inline">\(\rho = 1\)</span>. The other parameters of table 1 of the paper (<span class="math inline">\(\epsilon\)</span>, <span class="math inline">\(\theta\)</span>, <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\nu_t\)</span>, <span class="math inline">\(\xi\)</span>, <span class="math inline">\(\beta\)</span>, <span class="math inline">\(\gamma_0\)</span>, <span class="math inline">\(\omega\)</span>) are the same under the two calibrations. Under the common <span class="math inline">\(X\)</span> its level is the unit of hours, fixed by the observed formal workweek; under the vector <span class="math inline">\(X_i\)</span> relative hours are data and the unit is a normalization.</p>
+</div></div><div class="oa-links">Data: <a href="_generated/data/results/paper/calibrationSummary.csv" download="">calibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/calibrationSummary.csv</code></li></ul><p>Built by <code>tablesOA.argLeisureCalibration</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only ARG_LeisureCalibration</code>, then <code>build.py --site</code>.</p></details></div></div>
+</section>
+<section id="arg-leisure-level" class="level2">
+<h2 class="anchored" data-anchor-id="arg-leisure-level">Why the level of <span class="math inline">\(X\)</span> differs</h2>
+<p>The level of the taste for leisure is not comparable across the two calibrations. Under the common <span class="math inline">\(X\)</span> it is the unit in which hours are measured: it is set so that average formal hours in the model equal the observed workweek, and every productivity scales with it. Under the vector <span class="math inline">\(X_i\)</span> the survey’s relative hours fix only the ratios of the <span class="math inline">\(X_i\)</span>, and the unit of hours is a normalization, which sets the level of every <span class="math inline">\(X_i\)</span>, of the productivities and of the informal taste for leisure. Since that level enters no aggregate, nothing else moves. Across the IES, the common <span class="math inline">\(X\)</span> falls a little as ρ rises, because average hours are matched against a slightly different equilibrium at each ρ, while the informal parameters barely move under either calibration.</p>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-exhibit oa-tablebox"><div class="oa-scroll"><table class="oa-table" id="ex-ARG_LeisureRho">
+<caption><span class="oa-num">Table A3.2.</span> The leisure and productivity parameters across <span class="math inline">\(\rho\)</span>, Argentina</caption>
+<thead>
+<tr><th class="oa-c" scope="col"></th><th class="oa-c" scope="col"><strong>Common</strong></th><th class="oa-c" colspan="2" scope="col"><span class="math inline">\(\boldsymbol{\eta_0}\)</span></th><th class="oa-c" colspan="2" scope="col"><span class="math inline">\(\boldsymbol{X_0}\)</span></th></tr>
+<tr><th class="oa-c" scope="col"><strong>CRRA</strong> (<span class="math inline">\(\rho\)</span>)</th><th class="oa-c" scope="col"><span class="math inline">\(\boldsymbol{X}\)</span></th><th class="oa-c" scope="col"><strong>Common</strong> <span class="math inline">\(\boldsymbol{X}\)</span></th><th class="oa-c" scope="col"><strong>Vector</strong> <span class="math inline">\(\boldsymbol{X_i}\)</span></th><th class="oa-c" scope="col"><strong>Common</strong> <span class="math inline">\(\boldsymbol{X}\)</span></th><th class="oa-c" scope="col"><strong>Vector</strong> <span class="math inline">\(\boldsymbol{X_i}\)</span></th></tr>
+</thead>
+<tbody>
+<tr data-row="rho@0.5"><td class="oa-c">0.5</td><td class="oa-c">1.943</td><td class="oa-c">0.344</td><td class="oa-c">0.288</td><td class="oa-c">0.805</td><td class="oa-c">0.374</td></tr>
+<tr data-row="rho@1.0"><td class="oa-c">1.0</td><td class="oa-c">1.936</td><td class="oa-c">0.344</td><td class="oa-c">0.288</td><td class="oa-c">0.804</td><td class="oa-c">0.375</td></tr>
+<tr data-row="rho@2.0"><td class="oa-c">2.0</td><td class="oa-c">1.923</td><td class="oa-c">0.343</td><td class="oa-c">0.288</td><td class="oa-c">0.803</td><td class="oa-c">0.377</td></tr>
+</tbody></table>
+<div class="oa-notes">
+<p><em>Note:</em> Each <span class="math inline">\(\rho\)</span> is calibrated to the same targets. Under the vector <span class="math inline">\(X_i\)</span> the formal <span class="math inline">\(X_i\)</span> are identified from the survey’s relative hours and are the same at every <span class="math inline">\(\rho\)</span>, [0.74, 0.77, 0.88, 1.24]; <span class="math inline">\(\beta\)</span> and <span class="math inline">\(\omega\)</span> are the same under the two calibrations at every <span class="math inline">\(\rho\)</span>.</p>
+</div></div><div class="oa-links">Data: <a href="_generated/data/results/calibration/informalSavings_rhoGrid.csv" download="">informalSavings_rhoGrid.csv</a> · <a href="_generated/data/results/calibration/informalSavings_rhoGridCommonX.csv" download="">informalSavings_rhoGridCommonX.csv</a> · <a href="_generated/data/results/paper/calibrationSummary.csv" download="">calibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/calibration/informalSavings_rhoGrid.csv</code></li><li><code>results/calibration/informalSavings_rhoGridCommonX.csv</code></li><li><code>results/paper/calibrationSummary.csv</code></li></ul><p>Built by <code>tablesOA.argLeisureRho</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only ARG_LeisureRho</code>, then <code>build.py --site</code>.</p></details></div></div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -690,13 +758,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./arg-leisure.html" class="pagination-link" aria-label="A3. Identification of X">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">A3. Identification of X</span></span>
+      <a href="./arg-ies.html" class="pagination-link" aria-label="A2. The intertemporal elasticity of substitution">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">A2. The intertemporal elasticity of substitution</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./oecd-ies.html" class="pagination-link" aria-label="B1. Calibration">
-        <span class="nav-page-text"><span class="chapter-title">B1. Calibration</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./oecd.html" class="pagination-link" aria-label="B. Rich OECD countries with the design given">
+        <span class="nav-page-text">B. Rich OECD countries with the design given</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

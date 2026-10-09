@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>B. Rich OECD countries with the design given – Social Security Design and Its Political Support</title>
+<title>B4. Identification of X – Social Security Design and Its Political Support</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,6 +26,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -36,8 +71,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./oecd-ies.html" rel="next">
-<link href="./arg-leisure.html" rel="prev">
+<link href="./esc.html" rel="next">
+<link href="./oecd-parameters.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -75,7 +110,38 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="assets/oa.css">
 </head>
@@ -89,7 +155,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li><li class="breadcrumb-item"><a href="./oecd-leisure.html"><span class="chapter-title">B4. Identification of X</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -151,7 +217,7 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./oecd.html" class="sidebar-item-text sidebar-link active">
+            <a href="./oecd.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">B. Rich OECD countries with the design given</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -175,7 +241,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./oecd-leisure.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B4. Identification of X</span></a>
+  <a href="./oecd-leisure.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">B4. Identification of X</span></a>
   </div>
 </li>
       </ul>
@@ -247,15 +313,22 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#oecd-leisure-calibration" id="toc-oecd-leisure-calibration" class="nav-link active" data-scroll-target="#oecd-leisure-calibration">The calibration</a></li>
+  <li><a href="#oecd-leisure-rows" id="toc-oecd-leisure-rows" class="nav-link" data-scroll-target="#oecd-leisure-rows">The counterfactuals that differ</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li><li class="breadcrumb-item"><a href="./oecd-leisure.html"><span class="chapter-title">B4. Identification of X</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="oecd" class="quarto-section-identifier">B. Rich OECD countries with the design given</span></h1>
+<h1 class="title"><span id="oecd-leisure" class="quarto-section-identifier"><span class="chapter-title">B4. Identification of X</span></span></h1>
 </div>
 
 
@@ -272,17 +345,119 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Section 6 of the paper calibrates the model without informal households to the U.S., the UK and France and changes the U.S. calibration one characteristic at a time: its pension design, its demography, and the income distribution, voting patterns and taste for leisure that set France apart. Appendix F gives the data and the household heterogeneity. This part shows the calibrations across the IES, the counterfactuals with the UK compared with the U.S. and with the UK regrouped at the U.S. income groups, the U.S. counterfactuals across the Frisch elasticity, and what changes when the taste for leisure is identified group by group.</p>
-<ul>
-<li><a href="./oecd-ies.html">B1. Calibration</a>: the three calibrations at every IES of the grid.</li>
-<li><a href="./oecd-countries.html">B2. Other countries</a>: what shapes pensions, savings and labor supply in the U.S. and the UK, and the UK at the U.S. income groups.</li>
-<li><a href="./oecd-parameters.html">B3. Other parameters</a>: the U.S. counterfactuals across the intertemporal and the Frisch elasticity.</li>
-<li><a href="./oecd-leisure.html">B4. Identification of X</a>: the common taste for leisure against one per income group.</li>
-</ul>
+<p>As for Argentina (<a href="./arg-leisure.html">A3</a>), the paper takes the taste for leisure <span class="math inline">\(X\)</span> common to the income groups and pins its level by each country’s average workweek; the alternative identifies one <span class="math inline">\(X_i\)</span> per group from the observed relative hours. In every country the two calibrations share the discount factor, the political weight of the old, the tax rate, savings and aggregate hours. They also share every counterfactual that changes neither the productivities nor the taste for leisure: the design, ageing and France’s voting patterns. The tables and the figure show only what differs.</p>
+<section id="oecd-leisure-calibration" class="level2">
+<h2 class="anchored" data-anchor-id="oecd-leisure-calibration">The calibration</h2>
+<p>Two rows of the paper’s calibration table differ, the taste for leisure and the productivity spread. Under the vector <span class="math inline">\(X_i\)</span> the taste for leisure rises with income in all three countries: observed hours rise less with income than the common <span class="math inline">\(X\)</span> predicts, the high group working fewer hours than predicted. To reproduce the same relative incomes with those hours, the productivity spread widens.</p>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-exhibit oa-tablebox"><div class="oa-scroll"><table class="oa-table" id="ex-OECD_LeisureCalibration">
+<caption><span class="oa-num">Table B4.1.</span> The U.S., the UK and France under the two treatments of the taste for leisure</caption>
+<thead>
+<tr><th class="oa-l" scope="col"></th><th class="oa-c" colspan="2" scope="col"><strong>U.S.</strong></th><th class="oa-c" colspan="2" scope="col"><strong>UK</strong></th><th class="oa-c" colspan="2" scope="col"><strong>France</strong></th></tr>
+<tr><th class="oa-l" scope="col"><strong>Parameter</strong></th><th class="oa-c" scope="col"><strong>Common</strong></th><th class="oa-c" scope="col"><strong>Vector</strong></th><th class="oa-c" scope="col"><strong>Common</strong></th><th class="oa-c" scope="col"><strong>Vector</strong></th><th class="oa-c" scope="col"><strong>Common</strong></th><th class="oa-c" scope="col"><strong>Vector</strong></th></tr>
+</thead>
+<tbody>
+<tr data-row="X"><td class="oa-l"><span class="math inline">\(X\)</span></td><td class="oa-c">4.03</td><td class="oa-c">0.88</td><td class="oa-c">8.26</td><td class="oa-c">1.55</td><td class="oa-c">7.27</td><td class="oa-c">1.36</td></tr>
+<tr data-row="etaratio"><td class="oa-l"><span class="math inline">\(\eta_H/\eta_L\)</span></td><td class="oa-c">3.08</td><td class="oa-c">3.73</td><td class="oa-c">3.06</td><td class="oa-c">3.87</td><td class="oa-c">2.29</td><td class="oa-c">2.41</td></tr>
+</tbody></table>
+<div class="oa-notes">
+<p><em>Note:</em> <span class="math inline">\(\rho = 1\)</span>. Under the vector <span class="math inline">\(X_i\)</span>, <span class="math inline">\(X\)</span> is the population-weighted mean of the <span class="math inline">\(X_i\)</span>. The other parameters of table 3 of the paper are the same under the two calibrations.</p>
+</div></div><div class="oa-links">Data: <a href="_generated/data/results/paper/usCalibrationSummary.csv" download="">usCalibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>tablesOA.oecdLeisureCalibration</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_LeisureCalibration</code>, then <code>build.py --site</code>.</p></details></div></div>
+<p>Group by group, the vector <span class="math inline">\(X_i\)</span> are a fraction of the common <span class="math inline">\(X\)</span>, and their level carries no information of its own. Under the common <span class="math inline">\(X\)</span> the level is the unit of hours: it is set so that the model’s average workweek is the observed one, relative to the U.S. for the UK and France, and the productivities scale with it. Under the vector <span class="math inline">\(X_i\)</span> the relative hours fix only the ratios of the <span class="math inline">\(X_i\)</span>, and the unit is a normalization. That is why the level differs so much between the two while every aggregate is the same.</p>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-exhibit oa-tablebox"><div class="oa-scroll"><table class="oa-table" id="ex-OECD_LeisureGroups">
+<caption><span class="oa-num">Table B4.2.</span> Leisure and productivity by income group under the two calibrations</caption>
+<thead>
+<tr><th class="oa-l" scope="col"></th><th class="oa-c" colspan="3" scope="col"><strong>Common</strong> <span class="math inline">\(\boldsymbol{X}\)</span></th><th class="oa-c" colspan="3" scope="col"><strong>Vector</strong> <span class="math inline">\(\boldsymbol{X_i}\)</span></th></tr>
+<tr><th class="oa-l" scope="col"><strong>Parameter</strong></th><th class="oa-c" scope="col"><strong>Low</strong></th><th class="oa-c" scope="col"><strong>Medium</strong></th><th class="oa-c" scope="col"><strong>High</strong></th><th class="oa-c" scope="col"><strong>Low</strong></th><th class="oa-c" scope="col"><strong>Medium</strong></th><th class="oa-c" scope="col"><strong>High</strong></th></tr>
+</thead>
+<tbody>
+<tr class="oa-grouprow"><th class="oa-l" colspan="7"><em>U.S.</em></th></tr>
+<tr data-row="X@us"><td class="oa-l"><span class="math inline">\(X_i\)</span></td><td class="oa-c">4.03</td><td class="oa-c">4.03</td><td class="oa-c">4.03</td><td class="oa-c">0.65</td><td class="oa-c">0.80</td><td class="oa-c">1.49</td></tr>
+<tr data-row="eta@us"><td class="oa-l"><span class="math inline">\(\eta_i\)</span></td><td class="oa-c">0.82</td><td class="oa-c">1.38</td><td class="oa-c">2.52</td><td class="oa-c">0.54</td><td class="oa-c">0.95</td><td class="oa-c">2.00</td></tr>
+<tr class="oa-grouprow"><th class="oa-l" colspan="7"><em>UK</em></th></tr>
+<tr data-row="X@uk"><td class="oa-l"><span class="math inline">\(X_i\)</span></td><td class="oa-c">8.26</td><td class="oa-c">8.26</td><td class="oa-c">8.26</td><td class="oa-c">1.08</td><td class="oa-c">1.48</td><td class="oa-c">2.97</td></tr>
+<tr data-row="eta@uk"><td class="oa-l"><span class="math inline">\(\eta_i\)</span></td><td class="oa-c">0.96</td><td class="oa-c">1.63</td><td class="oa-c">2.92</td><td class="oa-c">0.53</td><td class="oa-c">0.98</td><td class="oa-c">2.06</td></tr>
+<tr class="oa-grouprow"><th class="oa-l" colspan="7"><em>France</em></th></tr>
+<tr data-row="X@fr"><td class="oa-l"><span class="math inline">\(X_i\)</span></td><td class="oa-c">7.27</td><td class="oa-c">7.27</td><td class="oa-c">7.27</td><td class="oa-c">1.27</td><td class="oa-c">1.34</td><td class="oa-c">1.59</td></tr>
+<tr data-row="eta@fr"><td class="oa-l"><span class="math inline">\(\eta_i\)</span></td><td class="oa-c">1.12</td><td class="oa-c">1.58</td><td class="oa-c">2.56</td><td class="oa-c">0.68</td><td class="oa-c">0.98</td><td class="oa-c">1.64</td></tr>
+</tbody></table>
+<div class="oa-notes">
+<p><em>Note:</em> <span class="math inline">\(\rho = 1\)</span>. The income groups are those of tables 5, 6 and 7 of the paper; the population shares <span class="math inline">\(\gamma_i\)</span> and the propensities to vote <span class="math inline">\(\mu_i\)</span> are data and the same under the two calibrations.</p>
+</div></div><div class="oa-links">Data: <a href="_generated/data/results/paper/usCalibrationSummary.csv" download="">usCalibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>tablesOA.oecdLeisureGroups</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_LeisureGroups</code>, then <code>build.py --site</code>.</p></details></div></div>
+</section>
+<section id="oecd-leisure-rows" class="level2">
+<h2 class="anchored" data-anchor-id="oecd-leisure-rows">The counterfactuals that differ</h2>
+<p>France’s income distribution is imposed through the productivities and its leisure preferences through the taste for leisure, so these are the rows the treatment of leisure moves, with the row that imposes all of France’s characteristics at once. On the U.S. the vector <span class="math inline">\(X_i\)</span> strengthens the effect of France’s income distribution at every IES and makes that of its leisure preferences on hours a little smaller. On the UK the effect of France’s income distribution on the tax rate changes sign. The vector <span class="math inline">\(X_i\)</span> read part of the observed income dispersion off relative hours, which are much flatter in the UK than in France, so at the UK’s income cuts France’s productivity spread falls below the UK’s, where under the common <span class="math inline">\(X\)</span> it lies above.</p>
+<div class="oa-explorer">
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-caption" id="ex-OECD_LeisureRows"><span class="oa-num">Figure B4.1.</span> The counterfactuals the treatment of the taste for leisure moves</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb1" data-startfrom="42" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 41;"><span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> {counterfactuals<span class="op">,</span> control<span class="op">,</span> RHO<span class="op">,</span> GIVEN_OUTCOMES} <span class="im">from</span> <span class="st">"./assets/oa.js"</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>oecd <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">"_generated/data/OECD_Counterfactuals.csv"</span>)<span class="op">.</span><span class="fu">csv</span>({<span class="dt">typed</span><span class="op">:</span> <span class="kw">true</span>})</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>viewof b4Host <span class="op">=</span> <span class="fu">control</span>(<span class="st">"radio"</span><span class="op">,</span> [[<span class="st">"U.S."</span><span class="op">,</span> <span class="st">"US"</span>]<span class="op">,</span> [<span class="st">"UK"</span><span class="op">,</span> <span class="st">"UK"</span>]]<span class="op">,</span> {<span class="dt">key</span><span class="op">:</span> <span class="st">"host"</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Host"</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="st">"US"</span>})</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>viewof b4Out <span class="op">=</span> <span class="fu">control</span>(<span class="st">"radio"</span><span class="op">,</span> GIVEN_OUTCOMES<span class="op">,</span> {<span class="dt">key</span><span class="op">:</span> <span class="st">"outcome"</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Outcome"</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="st">"tau"</span>})</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="fu">counterfactuals</span>(oecd<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">source</span> <span class="op">===</span> <span class="st">"main"</span> <span class="op">&amp;&amp;</span> d<span class="op">.</span><span class="at">effect</span> <span class="op">===</span> <span class="st">"full"</span> <span class="op">&amp;&amp;</span> d<span class="op">.</span><span class="at">host</span> <span class="op">===</span> b4Host)<span class="op">,</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">rows</span><span class="op">:</span> [{<span class="dt">label</span><span class="op">:</span> <span class="st">"French income distr."</span><span class="op">,</span> <span class="dt">scenario</span><span class="op">:</span> <span class="st">"income"</span>}<span class="op">,</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"French leisure"</span><span class="op">,</span> <span class="dt">scenario</span><span class="op">:</span> <span class="st">"leisure"</span>}<span class="op">,</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>          {<span class="dt">label</span><span class="op">:</span> <span class="st">"All French characteristics"</span><span class="op">,</span> <span class="dt">scenario</span><span class="op">:</span> <span class="st">"frall"</span>}]<span class="op">,</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>   <span class="dt">series</span><span class="op">:</span> RHO<span class="op">,</span> <span class="dt">outcome</span><span class="op">:</span> b4Out<span class="op">,</span> width<span class="op">,</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>   <span class="dt">facets</span><span class="op">:</span> [{<span class="dt">label</span><span class="op">:</span> <span class="st">"Common X, the paper's"</span><span class="op">,</span> <span class="dt">filter</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">calibration</span> <span class="op">===</span> <span class="st">"commonX"</span>}<span class="op">,</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>            {<span class="dt">label</span><span class="op">:</span> <span class="st">"Vector Xᵢ"</span><span class="op">,</span> <span class="dt">filter</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">calibration</span> <span class="op">===</span> <span class="st">"vectorX"</span>}]})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-4" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-note"><em>Note:</em> France’s income distribution and leisure preferences under the common <span class="math inline">\(X\)</span> and the vector <span class="math inline">\(X_i\)</span>, each the change against the baseline of the same calibration and <span class="math inline">\(\rho\)</span>. The design, ageing and voting rows are the same under the two. All French characteristics imposes France’s income distribution, leisure preferences and voting patterns at once.</div><div class="oa-links">Data: <a href="_generated/data/OECD_Counterfactuals.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li><li><code>results/shocks/UKUS_shocks.csv</code></li><li><code>results/shocks/UKUS_shocksCommonX.csv</code></li><li><code>results/shocks/UK_shocks.csv</code></li><li><code>results/shocks/UK_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocks.csv</code></li><li><code>results/shocks/US_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocksXiCommonX.csv</code></li></ul><p>Built by <code>siteData.oecdCounterfactuals</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Counterfactuals</code>, then <code>build.py --site</code>.</p></details></div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImltcG9ydCB7Y291bnRlcmZhY3R1YWxzLCBjb250cm9sLCBSSE8sIEdJVkVOX09VVENPTUVTfSBmcm9tIFwiLi9hc3NldHMvb2EuanNcIlxub2VjZCA9IEZpbGVBdHRhY2htZW50KFwiX2dlbmVyYXRlZC9kYXRhL09FQ0RfQ291bnRlcmZhY3R1YWxzLmNzdlwiKS5jc3Yoe3R5cGVkOiB0cnVlfSlcbnZpZXdvZiBiNEhvc3QgPSBjb250cm9sKFwicmFkaW9cIiwgW1tcIlUuUy5cIiwgXCJVU1wiXSwgW1wiVUtcIiwgXCJVS1wiXV0sIHtrZXk6IFwiaG9zdFwiLCBsYWJlbDogXCJIb3N0XCIsIHZhbHVlOiBcIlVTXCJ9KVxudmlld29mIGI0T3V0ID0gY29udHJvbChcInJhZGlvXCIsIEdJVkVOX09VVENPTUVTLCB7a2V5OiBcIm91dGNvbWVcIiwgbGFiZWw6IFwiT3V0Y29tZVwiLCB2YWx1ZTogXCJ0YXVcIn0pXG5jb3VudGVyZmFjdHVhbHMob2VjZC5maWx0ZXIoZCA9PiBkLnNvdXJjZSA9PT0gXCJtYWluXCIgJiYgZC5lZmZlY3QgPT09IFwiZnVsbFwiICYmIGQuaG9zdCA9PT0gYjRIb3N0KSxcbiAge3Jvd3M6IFt7bGFiZWw6IFwiRnJlbmNoIGluY29tZSBkaXN0ci5cIiwgc2NlbmFyaW86IFwiaW5jb21lXCJ9LCB7bGFiZWw6IFwiRnJlbmNoIGxlaXN1cmVcIiwgc2NlbmFyaW86IFwibGVpc3VyZVwifSxcbiAgICAgICAgICB7bGFiZWw6IFwiQWxsIEZyZW5jaCBjaGFyYWN0ZXJpc3RpY3NcIiwgc2NlbmFyaW86IFwiZnJhbGxcIn1dLFxuICAgc2VyaWVzOiBSSE8sIG91dGNvbWU6IGI0T3V0LCB3aWR0aCxcbiAgIGZhY2V0czogW3tsYWJlbDogXCJDb21tb24gWCwgdGhlIHBhcGVyJ3NcIiwgZmlsdGVyOiBkID0+IGQuY2FsaWJyYXRpb24gPT09IFwiY29tbW9uWFwifSxcbiAgICAgICAgICAgIHtsYWJlbDogXCJWZWN0b3IgWOG1olwiLCBmaWx0ZXI6IGQgPT4gZC5jYWxpYnJhdGlvbiA9PT0gXCJ2ZWN0b3JYXCJ9XX0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6InNoaW55SW5wdXQoJ2I0SG9zdCcpIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJzaGlueUlucHV0KCdiNE91dCcpIn1dfQ==
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../..";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -690,13 +865,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./arg-leisure.html" class="pagination-link" aria-label="A3. Identification of X">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">A3. Identification of X</span></span>
+      <a href="./oecd-parameters.html" class="pagination-link" aria-label="B3. Other parameters">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">B3. Other parameters</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./oecd-ies.html" class="pagination-link" aria-label="B1. Calibration">
-        <span class="nav-page-text"><span class="chapter-title">B1. Calibration</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./esc.html" class="pagination-link" aria-label="C. Endogenous design">
+        <span class="nav-page-text">C. Endogenous design</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>B. Rich OECD countries with the design given – Social Security Design and Its Political Support</title>
+<title>B3. Other parameters – Social Security Design and Its Political Support</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,6 +26,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -36,8 +71,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./oecd-ies.html" rel="next">
-<link href="./arg-leisure.html" rel="prev">
+<link href="./oecd-leisure.html" rel="next">
+<link href="./oecd-countries.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -75,7 +110,38 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="assets/oa.css">
 </head>
@@ -89,7 +155,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li><li class="breadcrumb-item"><a href="./oecd-parameters.html"><span class="chapter-title">B3. Other parameters</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -151,7 +217,7 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./oecd.html" class="sidebar-item-text sidebar-link active">
+            <a href="./oecd.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">B. Rich OECD countries with the design given</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -170,7 +236,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./oecd-parameters.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B3. Other parameters</span></a>
+  <a href="./oecd-parameters.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">B3. Other parameters</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -247,15 +313,21 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#oecd-frisch" id="toc-oecd-frisch" class="nav-link active" data-scroll-target="#oecd-frisch">The U.S. across the intertemporal and the Frisch elasticity</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li><li class="breadcrumb-item"><a href="./oecd-parameters.html"><span class="chapter-title">B3. Other parameters</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="oecd" class="quarto-section-identifier">B. Rich OECD countries with the design given</span></h1>
+<h1 class="title"><span id="oecd-parameters" class="quarto-section-identifier"><span class="chapter-title">B3. Other parameters</span></span></h1>
 </div>
 
 
@@ -272,17 +344,77 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Section 6 of the paper calibrates the model without informal households to the U.S., the UK and France and changes the U.S. calibration one characteristic at a time: its pension design, its demography, and the income distribution, voting patterns and taste for leisure that set France apart. Appendix F gives the data and the household heterogeneity. This part shows the calibrations across the IES, the counterfactuals with the UK compared with the U.S. and with the UK regrouped at the U.S. income groups, the U.S. counterfactuals across the Frisch elasticity, and what changes when the taste for leisure is identified group by group.</p>
-<ul>
-<li><a href="./oecd-ies.html">B1. Calibration</a>: the three calibrations at every IES of the grid.</li>
-<li><a href="./oecd-countries.html">B2. Other countries</a>: what shapes pensions, savings and labor supply in the U.S. and the UK, and the UK at the U.S. income groups.</li>
-<li><a href="./oecd-parameters.html">B3. Other parameters</a>: the U.S. counterfactuals across the intertemporal and the Frisch elasticity.</li>
-<li><a href="./oecd-leisure.html">B4. Identification of X</a>: the common taste for leisure against one per income group.</li>
-</ul>
+<section id="oecd-frisch" class="level2">
+<h2 class="anchored" data-anchor-id="oecd-frisch">The U.S. across the intertemporal and the Frisch elasticity</h2>
+<p>The figure shows the counterfactuals of section 6 on the U.S. across the two elasticities that govern the households’ responses. The intertemporal elasticity ρ varies at the paper’s Frisch elasticity; the Frisch elasticity ξ varies under log preferences. At each ξ the U.S. and France are recalibrated to the same targets, so the discount factor, the political weight of the old and the taste for leisure take new values. The ranking of the determinants holds at every ξ of the grid: ageing and the design move the tax rate most, France’s characteristics far less. A higher Frisch elasticity dampens the responses of the tax rate a little and some responses of savings by more, and it enlarges every response of hours, since labor supply is more elastic.</p>
+<div class="oa-explorer">
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-caption" id="ex-OECD_Frisch"><span class="oa-num">Figure B3.1.</span> The counterfactuals of the U.S. across the intertemporal and the Frisch elasticity</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb1" data-startfrom="18" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 17;"><span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> {counterfactuals<span class="op">,</span> control<span class="op">,</span> ROWS_GIVEN<span class="op">,</span> RHO<span class="op">,</span> XI<span class="op">,</span> GIVEN_OUTCOMES} <span class="im">from</span> <span class="st">"./assets/oa.js"</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>oecd <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">"_generated/data/OECD_Counterfactuals.csv"</span>)<span class="op">.</span><span class="fu">csv</span>({<span class="dt">typed</span><span class="op">:</span> <span class="kw">true</span>})</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>viewof b3Across <span class="op">=</span> <span class="fu">control</span>(<span class="st">"radio"</span><span class="op">,</span> [[<span class="st">"the intertemporal elasticity ρ"</span><span class="op">,</span> <span class="st">"rho"</span>]<span class="op">,</span> [<span class="st">"the Frisch elasticity ξ"</span><span class="op">,</span> <span class="st">"xi"</span>]]<span class="op">,</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>                          {<span class="dt">key</span><span class="op">:</span> <span class="st">"across"</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Compare across"</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="st">"rho"</span>})</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>viewof b3Out <span class="op">=</span> <span class="fu">control</span>(<span class="st">"radio"</span><span class="op">,</span> GIVEN_OUTCOMES<span class="op">,</span> {<span class="dt">key</span><span class="op">:</span> <span class="st">"outcome"</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Outcome"</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="st">"tau"</span>})</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="fu">counterfactuals</span>(oecd<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">host</span> <span class="op">===</span> <span class="st">"US"</span> <span class="op">&amp;&amp;</span> d<span class="op">.</span><span class="at">calibration</span> <span class="op">===</span> <span class="st">"commonX"</span> <span class="op">&amp;&amp;</span> d<span class="op">.</span><span class="at">effect</span> <span class="op">===</span> <span class="st">"full"</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>                                 <span class="op">&amp;&amp;</span> d<span class="op">.</span><span class="at">source</span> <span class="op">===</span> (b3Across <span class="op">===</span> <span class="st">"rho"</span> <span class="op">?</span> <span class="st">"main"</span> <span class="op">:</span> <span class="st">"xi"</span>))<span class="op">,</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">rows</span><span class="op">:</span> ROWS_GIVEN<span class="op">,</span> <span class="dt">series</span><span class="op">:</span> b3Across <span class="op">===</span> <span class="st">"rho"</span> <span class="op">?</span> RHO <span class="op">:</span> XI<span class="op">,</span> <span class="dt">outcome</span><span class="op">:</span> b3Out<span class="op">,</span> width<span class="op">,</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>   <span class="dt">facets</span><span class="op">:</span> [{<span class="dt">label</span><span class="op">:</span> b3Across <span class="op">===</span> <span class="st">"rho"</span> <span class="op">?</span> <span class="st">"U.S., ξ = 0.3"</span> <span class="op">:</span> <span class="st">"U.S., ρ = 1"</span><span class="op">,</span> <span class="dt">filter</span><span class="op">:</span> d <span class="kw">=&gt;</span> <span class="kw">true</span>}]})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-4" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-note"><em>Note:</em> As figure <a href="oecd-countries.html#ex-OECD_Hosts">B2.1</a>, for the U.S. Across <span class="math inline">\(\xi\)</span> the U.S. and France are recalibrated at each value under log preferences (<span class="math inline">\(\rho = 1\)</span>), the targets unchanged.</div><div class="oa-links">Data: <a href="_generated/data/OECD_Counterfactuals.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li><li><code>results/shocks/UKUS_shocks.csv</code></li><li><code>results/shocks/UKUS_shocksCommonX.csv</code></li><li><code>results/shocks/UK_shocks.csv</code></li><li><code>results/shocks/UK_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocks.csv</code></li><li><code>results/shocks/US_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocksXiCommonX.csv</code></li></ul><p>Built by <code>siteData.oecdCounterfactuals</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Counterfactuals</code>, then <code>build.py --site</code>.</p></details></div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImltcG9ydCB7Y291bnRlcmZhY3R1YWxzLCBjb250cm9sLCBST1dTX0dJVkVOLCBSSE8sIFhJLCBHSVZFTl9PVVRDT01FU30gZnJvbSBcIi4vYXNzZXRzL29hLmpzXCJcbm9lY2QgPSBGaWxlQXR0YWNobWVudChcIl9nZW5lcmF0ZWQvZGF0YS9PRUNEX0NvdW50ZXJmYWN0dWFscy5jc3ZcIikuY3N2KHt0eXBlZDogdHJ1ZX0pXG52aWV3b2YgYjNBY3Jvc3MgPSBjb250cm9sKFwicmFkaW9cIiwgW1tcInRoZSBpbnRlcnRlbXBvcmFsIGVsYXN0aWNpdHkgz4FcIiwgXCJyaG9cIl0sIFtcInRoZSBGcmlzY2ggZWxhc3RpY2l0eSDOvlwiLCBcInhpXCJdXSxcbiAgICAgICAgICAgICAgICAgICAgICAgICAge2tleTogXCJhY3Jvc3NcIiwgbGFiZWw6IFwiQ29tcGFyZSBhY3Jvc3NcIiwgdmFsdWU6IFwicmhvXCJ9KVxudmlld29mIGIzT3V0ID0gY29udHJvbChcInJhZGlvXCIsIEdJVkVOX09VVENPTUVTLCB7a2V5OiBcIm91dGNvbWVcIiwgbGFiZWw6IFwiT3V0Y29tZVwiLCB2YWx1ZTogXCJ0YXVcIn0pXG5jb3VudGVyZmFjdHVhbHMob2VjZC5maWx0ZXIoZCA9PiBkLmhvc3QgPT09IFwiVVNcIiAmJiBkLmNhbGlicmF0aW9uID09PSBcImNvbW1vblhcIiAmJiBkLmVmZmVjdCA9PT0gXCJmdWxsXCJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICYmIGQuc291cmNlID09PSAoYjNBY3Jvc3MgPT09IFwicmhvXCIgPyBcIm1haW5cIiA6IFwieGlcIikpLFxuICB7cm93czogUk9XU19HSVZFTiwgc2VyaWVzOiBiM0Fjcm9zcyA9PT0gXCJyaG9cIiA/IFJITyA6IFhJLCBvdXRjb21lOiBiM091dCwgd2lkdGgsXG4gICBmYWNldHM6IFt7bGFiZWw6IGIzQWNyb3NzID09PSBcInJob1wiID8gXCJVLlMuLCDOviA9IDAuM1wiIDogXCJVLlMuLCDPgSA9IDFcIiwgZmlsdGVyOiBkID0+IHRydWV9XX0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6InNoaW55SW5wdXQoJ2IzQWNyb3NzJykifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6InNoaW55SW5wdXQoJ2IzT3V0JykifV19
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../..";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -690,13 +822,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./arg-leisure.html" class="pagination-link" aria-label="A3. Identification of X">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">A3. Identification of X</span></span>
+      <a href="./oecd-countries.html" class="pagination-link" aria-label="B2. Other countries">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">B2. Other countries</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./oecd-ies.html" class="pagination-link" aria-label="B1. Calibration">
-        <span class="nav-page-text"><span class="chapter-title">B1. Calibration</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./oecd-leisure.html" class="pagination-link" aria-label="B4. Identification of X">
+        <span class="nav-page-text"><span class="chapter-title">B4. Identification of X</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

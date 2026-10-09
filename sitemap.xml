@@ -2,34 +2,82 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://championape.github.io/SSDclaude/index.html</loc>
-    <lastmod>2026-10-07T09:52:13.146Z</lastmod>
-  </url>
-  <url>
-    <loc>https://championape.github.io/SSDclaude/data.html</loc>
-    <lastmod>2026-10-07T09:52:13.143Z</lastmod>
+    <lastmod>2026-10-09T16:23:22.983Z</lastmod>
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/argentina.html</loc>
-    <lastmod>2026-10-07T12:20:36.517Z</lastmod>
+    <lastmod>2026-10-09T15:53:35.131Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/arg-designs.html</loc>
+    <lastmod>2026-10-09T15:53:35.131Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/arg-ies.html</loc>
+    <lastmod>2026-10-09T16:27:49.554Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/arg-leisure.html</loc>
+    <lastmod>2026-10-09T15:53:35.131Z</lastmod>
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/oecd.html</loc>
-    <lastmod>2026-10-07T12:20:37.643Z</lastmod>
+    <lastmod>2026-10-09T16:23:22.983Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/oecd-ies.html</loc>
+    <lastmod>2026-10-09T15:09:14.082Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/oecd-countries.html</loc>
+    <lastmod>2026-10-09T16:23:22.981Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/oecd-parameters.html</loc>
+    <lastmod>2026-10-09T16:23:22.981Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/oecd-leisure.html</loc>
+    <lastmod>2026-10-09T16:23:22.983Z</lastmod>
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/esc.html</loc>
-    <lastmod>2026-10-07T12:47:26.225Z</lastmod>
+    <lastmod>2026-10-09T16:23:22.983Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/esc-paths.html</loc>
+    <lastmod>2026-10-09T15:53:35.140Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/esc-countries.html</loc>
+    <lastmod>2026-10-09T16:23:22.983Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/esc-costs.html</loc>
+    <lastmod>2026-10-09T16:23:22.983Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/esc-parameters.html</loc>
+    <lastmod>2026-10-09T16:23:22.983Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/esc-timing.html</loc>
+    <lastmod>2026-10-09T15:53:35.140Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/checks.html</loc>
+    <lastmod>2026-10-09T15:37:04.866Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/data.html</loc>
+    <lastmod>2026-10-09T15:37:04.866Z</lastmod>
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/numerical.html</loc>
-    <lastmod>2026-10-07T09:52:13.162Z</lastmod>
+    <lastmod>2026-10-09T15:53:35.140Z</lastmod>
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/replication.html</loc>
-    <lastmod>2026-10-07T09:52:13.162Z</lastmod>
-  </url>
-  <url>
-    <loc>https://championape.github.io/SSDclaude/OnlineAppendix.pdf</loc>
-    <lastmod>2026-10-07T14:13:16.516Z</lastmod>
+    <lastmod>2026-10-09T15:11:43.766Z</lastmod>
   </url>
 </urlset>

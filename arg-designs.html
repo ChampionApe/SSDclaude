@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>B. Rich OECD countries with the design given – Social Security Design and Its Political Support</title>
+<title>A1. How pension designs shape the equilibria – Social Security Design and Its Political Support</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -36,8 +36,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./oecd-ies.html" rel="next">
-<link href="./arg-leisure.html" rel="prev">
+<link href="./arg-ies.html" rel="next">
+<link href="./argentina.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -76,6 +76,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="assets/oa.css">
 </head>
@@ -89,7 +118,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./argentina.html">A. Argentina</a></li><li class="breadcrumb-item"><a href="./arg-designs.html"><span class="chapter-title">A1. How pension designs shape the equilibria</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -127,14 +156,14 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="./argentina.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">A. Argentina</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./arg-designs.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">A1. How pension designs shape the equilibria</span></a>
+  <a href="./arg-designs.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">A1. How pension designs shape the equilibria</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -151,13 +180,13 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./oecd.html" class="sidebar-item-text sidebar-link active">
+            <a href="./oecd.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">B. Rich OECD countries with the design given</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./oecd-ies.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B1. Calibration</span></a>
@@ -253,9 +282,9 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./argentina.html">A. Argentina</a></li><li class="breadcrumb-item"><a href="./arg-designs.html"><span class="chapter-title">A1. How pension designs shape the equilibria</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="oecd" class="quarto-section-identifier">B. Rich OECD countries with the design given</span></h1>
+<h1 class="title"><span id="arg-designs" class="quarto-section-identifier"><span class="chapter-title">A1. How pension designs shape the equilibria</span></span></h1>
 </div>
 
 
@@ -272,13 +301,9 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Section 6 of the paper calibrates the model without informal households to the U.S., the UK and France and changes the U.S. calibration one characteristic at a time: its pension design, its demography, and the income distribution, voting patterns and taste for leisure that set France apart. Appendix F gives the data and the household heterogeneity. This part shows the calibrations across the IES, the counterfactuals with the UK compared with the U.S. and with the UK regrouped at the U.S. income groups, the U.S. counterfactuals across the Frisch elasticity, and what changes when the taste for leisure is identified group by group.</p>
-<ul>
-<li><a href="./oecd-ies.html">B1. Calibration</a>: the three calibrations at every IES of the grid.</li>
-<li><a href="./oecd-countries.html">B2. Other countries</a>: what shapes pensions, savings and labor supply in the U.S. and the UK, and the UK at the U.S. income groups.</li>
-<li><a href="./oecd-parameters.html">B3. Other parameters</a>: the U.S. counterfactuals across the intertemporal and the Frisch elasticity.</li>
-<li><a href="./oecd-leisure.html">B4. Identification of X</a>: the common taste for leisure against one per income group.</li>
-</ul>
+<p>Each point of the figure is an economy that has always had one pension design, the universal pension ε on the horizontal axis and the Bismarckian index θ in the color, read in 2010 under log preferences; every other parameter is the paper’s calibration. A higher universal pension raises the equilibrium tax rate and lowers the savings rate, the workweek and the savings of informal relative to formal households. A more Bismarckian design lowers the tax rate and raises the savings rate and the workweek. The black line is the calibrated θ, and its two markers are the pre-reform ε and the universal level the reform installs. Between them the tax rate rises by more than the reform raises it on impact in section 5: here informal households have always saved under the universal system, while on impact the retirees of 2010 hold savings made under the old one. The rise between the markers is close to the reform’s effect in 2040, once those savings have adjusted.</p>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-exhibit oa-figure" id="ex-ARG_LOG_FourInOne"><div class="oa-caption"><span class="oa-num">Figure A1.1.</span> The equilibrium in 2010 over pension designs <span class="math inline">\((\epsilon, \theta)\)</span>, Argentina</div><img src="_generated/figs/ARG_LOG_FourInOne.svg" alt="The equilibrium in 2010 over pension designs \((\epsilon, \theta)\), Argentina"><div class="oa-note"><em>Note:</em> Each point is an economy that has always had that design, at <span class="math inline">\(\rho = 1\)</span>. The line is the calibrated <span class="math inline">\(\theta\)</span>; the markers are the pre-reform <span class="math inline">\(\epsilon\)</span> and the universal level of the reform. The savings rate is savings relative to GDP.</div><div class="oa-links">Data: <a href="_generated/data/results/paper/calibrationSummary.csv" download="">calibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/calibrationSummary.csv</code></li><li><code>results/sweeps/epsThetaGrid_rho*_commonX.csv</code></li></ul><p>Built by <code>figures.argLogFourInOne</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only ARG_LOG_FourInOne</code>, then <code>build.py --site</code>.</p></details></div></div>
 
 
 
@@ -690,13 +715,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./arg-leisure.html" class="pagination-link" aria-label="A3. Identification of X">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">A3. Identification of X</span></span>
+      <a href="./argentina.html" class="pagination-link" aria-label="A. Argentina">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">A. Argentina</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./oecd-ies.html" class="pagination-link" aria-label="B1. Calibration">
-        <span class="nav-page-text"><span class="chapter-title">B1. Calibration</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./arg-ies.html" class="pagination-link" aria-label="A2. The intertemporal elasticity of substitution">
+        <span class="nav-page-text"><span class="chapter-title">A2. The intertemporal elasticity of substitution</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

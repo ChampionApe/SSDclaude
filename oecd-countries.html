@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>D2. Numerical checks – Social Security Design and Its Political Support</title>
+<title>B2. Other countries – Social Security Design and Its Political Support</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,26 +26,42 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
 }
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -55,8 +71,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./replication.html" rel="next">
-<link href="./data.html" rel="prev">
+<link href="./oecd-parameters.html" rel="next">
+<link href="./oecd-ies.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -94,6 +110,8 @@ div.csl-indent {
     "search-label": "Search"
   }
 }</script>
+<script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -137,7 +155,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./checks.html">D. Data and computation</a></li><li class="breadcrumb-item"><a href="./numerical.html"><span class="chapter-title">D2. Numerical checks</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li><li class="breadcrumb-item"><a href="./oecd-countries.html"><span class="chapter-title">B2. Other countries</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -201,11 +219,11 @@ window.Quarto = {
       <div class="sidebar-item-container"> 
             <a href="./oecd.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">B. Rich OECD countries with the design given</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./oecd-ies.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B1. Calibration</span></a>
@@ -213,7 +231,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./oecd-countries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B2. Other countries</span></a>
+  <a href="./oecd-countries.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">B2. Other countries</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -268,11 +286,11 @@ window.Quarto = {
       <div class="sidebar-item-container"> 
             <a href="./checks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">D. Data and computation</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./data.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">D1. The OECD cross-section</span></a>
@@ -280,7 +298,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./numerical.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">D2. Numerical checks</span></a>
+  <a href="./numerical.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">D2. Numerical checks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -300,16 +318,17 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul class="collapse">
-  <li><a href="#references" id="toc-references" class="nav-link active" data-scroll-target="#references">References</a></li>
+  <li><a href="#oecd-hosts" id="toc-oecd-hosts" class="nav-link active" data-scroll-target="#oecd-hosts">What shapes pensions, savings and labor supply in the U.S. and the UK</a></li>
+  <li><a href="#oecd-regroup" id="toc-oecd-regroup" class="nav-link" data-scroll-target="#oecd-regroup">The UK at U.S. income groups</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./checks.html">D. Data and computation</a></li><li class="breadcrumb-item"><a href="./numerical.html"><span class="chapter-title">D2. Numerical checks</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li><li class="breadcrumb-item"><a href="./oecd-countries.html"><span class="chapter-title">B2. Other countries</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="num" class="quarto-section-identifier"><span class="chapter-title">D2. Numerical checks</span></span></h1>
+<h1 class="title"><span id="oecd-countries" class="quarto-section-identifier"><span class="chapter-title">B2. Other countries</span></span></h1>
 </div>
 
 
@@ -326,110 +345,157 @@ window.Quarto = {
 </header>
 
 
-<p>Section 4 of the paper computes date-specific Markov policy functions by backward induction along the demographic transition, and tests every candidate equilibrium at each state; the technical documentation <span class="citation" data-cites="BergGE26doc">(<a href="numerical.html#ref-BergGE26doc" role="doc-biblioref">Berg and Gonzalez-Eiras 2026</a>)</span> gives the algorithms. The first table compares the date-specific solution with a time-invariant policy function, the approximation of much of the quantitative politico-economic literature, at the same dates. The second counts, for every file of results that records them, the equilibria and the candidates found at any state, and the states at which no candidate passed the test and the solver fell back on ranking the candidates by the integral of the first order condition, the fallback rule of the technical documentation. A single equilibrium at every state means that the selection rule of section 4 never had to choose.</p>
+<section id="oecd-hosts" class="level2">
+<h2 class="anchored" data-anchor-id="oecd-hosts">What shapes pensions, savings and labor supply in the U.S. and the UK</h2>
+<p>The figure repeats the paper’s figure 6.1 for the U.S. and, below it on the same axis, for the UK. Each host keeps its own calibration and changes one characteristic over the whole horizon. The characteristics are its design, moved to the two corners; its population growth, halved (mild ageing) or set to zero (acute ageing); or France’s income distribution, voting patterns or taste for leisure, with France’s households cut at the host’s income percentiles. On both hosts ageing and the design move the tax rate most, except on the U.S. at an IES of two, where France’s voting patterns move it by more than either corner of the design. Ageing and France’s voting patterns move the UK’s tax rate by less than the U.S. one at every IES. Flat benefits raise it by less up to an IES of one, while fully earnings-related ones lower it by more at every IES. Two rows change sign between the hosts. France’s income distribution raises the UK’s tax rate where it lowers the U.S. one, because at the UK’s income cuts France is the more unequal of the two (appendix F). France’s taste for leisure lengthens the UK’s workweek where it shortens the U.S. one, since France’s average taste for leisure lies between the two hosts’.</p>
+<div class="oa-explorer">
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-caption" id="ex-OECD_Hosts"><span class="oa-num">Figure B2.1.</span> What shapes pensions, savings and labor supply in the U.S. and the UK</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb1" data-startfrom="24" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 23;"><span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> {counterfactuals<span class="op">,</span> control<span class="op">,</span> ROWS_GIVEN<span class="op">,</span> RHO<span class="op">,</span> GIVEN_OUTCOMES} <span class="im">from</span> <span class="st">"./assets/oa.js"</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>oecd <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">"_generated/data/OECD_Counterfactuals.csv"</span>)<span class="op">.</span><span class="fu">csv</span>({<span class="dt">typed</span><span class="op">:</span> <span class="kw">true</span>})</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>oecdMain <span class="op">=</span> oecd<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">source</span> <span class="op">===</span> <span class="st">"main"</span> <span class="op">&amp;&amp;</span> d<span class="op">.</span><span class="at">calibration</span> <span class="op">===</span> <span class="st">"commonX"</span> <span class="op">&amp;&amp;</span> d<span class="op">.</span><span class="at">effect</span> <span class="op">===</span> <span class="st">"full"</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>viewof b2Out <span class="op">=</span> <span class="fu">control</span>(<span class="st">"radio"</span><span class="op">,</span> GIVEN_OUTCOMES<span class="op">,</span> {<span class="dt">key</span><span class="op">:</span> <span class="st">"hosts"</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Outcome"</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="st">"tau"</span>})</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="fu">counterfactuals</span>(oecdMain<span class="op">,</span> {<span class="dt">rows</span><span class="op">:</span> ROWS_GIVEN<span class="op">,</span> <span class="dt">series</span><span class="op">:</span> RHO<span class="op">,</span> <span class="dt">outcome</span><span class="op">:</span> b2Out<span class="op">,</span> width<span class="op">,</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="dt">facets</span><span class="op">:</span> [{<span class="dt">label</span><span class="op">:</span> <span class="st">"U.S."</span><span class="op">,</span> <span class="dt">filter</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">host</span> <span class="op">===</span> <span class="st">"US"</span>}<span class="op">,</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"UK"</span><span class="op">,</span> <span class="dt">filter</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">host</span> <span class="op">===</span> <span class="st">"UK"</span>}]})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-4" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-note"><em>Note:</em> Each bar is the change against the host’s own baseline at the same <span class="math inline">\(\rho\)</span>, in 2020. In the design row the full color is <span class="math inline">\(\theta = 0\)</span> and the light tone <span class="math inline">\(\theta = 1\)</span>; in the ageing row the bar is acute ageing and the tick mild ageing. France’s income groups are cut at the host’s income percentiles. Log preferences at <span class="math inline">\(\rho = 1\)</span>, CRRA otherwise.</div><div class="oa-links">Data: <a href="_generated/data/OECD_Counterfactuals.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li><li><code>results/shocks/UKUS_shocks.csv</code></li><li><code>results/shocks/UKUS_shocksCommonX.csv</code></li><li><code>results/shocks/UK_shocks.csv</code></li><li><code>results/shocks/UK_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocks.csv</code></li><li><code>results/shocks/US_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocksXiCommonX.csv</code></li></ul><p>Built by <code>siteData.oecdCounterfactuals</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Counterfactuals</code>, then <code>build.py --site</code>.</p></details></div>
+</div>
+</section>
+<section id="oecd-regroup" class="level2">
+<h2 class="anchored" data-anchor-id="oecd-regroup">The UK at U.S. income groups</h2>
+<p>The paper cuts the UK’s households at the UK’s own income groups, which identify θ from the replacement rates at half-mean and mean income. It cuts France at the U.S. percentiles, so that its households replace the U.S. ones type by type, and regroups France at the UK’s cuts for the UK as host. The table sets the groupings side by side. Regrouping changes what the calibration reads: θ is read off the replacement rates at other cuts, ω follows, and the productivity spread is that of other groups. At the U.S. cuts the UK’s productivity spread is much narrower than at its own, while France’s at the UK’s cuts is wider than at the U.S. ones. The UK at the U.S. cuts is a linear fit of the UK’s group means against cumulative population shares rather than a recount of the survey, so its spread is an approximation. The tabs give the two regroupings group by group.</p>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-exhibit oa-tablebox"><div class="oa-scroll"><table class="oa-table" id="ex-OECD_Regroupings">
+<caption><span class="oa-num">Table B2.1.</span> The UK and France at their own and at each other’s income groups</caption>
+<thead>
+<tr><th class="oa-l" scope="col"><strong>Parameter</strong></th><th class="oa-c" scope="col"><strong>U.S.</strong></th><th class="oa-c" scope="col"><strong>UK</strong></th><th class="oa-c" scope="col"><strong>UK, U.S. groups</strong></th><th class="oa-c" scope="col"><strong>France</strong></th><th class="oa-c" scope="col"><strong>France, UK groups</strong></th></tr>
+</thead>
+<tbody>
+<tr data-row="theta"><td class="oa-l"><span class="math inline">\(\theta\)</span></td><td class="oa-c">0.74</td><td class="oa-c">0.56</td><td class="oa-c">0.54</td><td class="oa-c">1.00</td><td class="oa-c">1.00</td></tr>
+<tr data-row="omega"><td class="oa-l"><span class="math inline">\(\omega\)</span></td><td class="oa-c">1.45</td><td class="oa-c">1.16</td><td class="oa-c">1.23</td><td class="oa-c">1.42</td><td class="oa-c">1.42</td></tr>
+<tr data-row="X"><td class="oa-l"><span class="math inline">\(X\)</span></td><td class="oa-c">4.03</td><td class="oa-c">8.26</td><td class="oa-c">8.77</td><td class="oa-c">7.27</td><td class="oa-c">7.20</td></tr>
+<tr data-row="nu"><td class="oa-l"><span class="math inline">\(\nu_{2020}\)</span></td><td class="oa-c">1.34</td><td class="oa-c">1.17</td><td class="oa-c">1.17</td><td class="oa-c">0.97</td><td class="oa-c">0.97</td></tr>
+<tr data-row="etaratio"><td class="oa-l"><span class="math inline">\(\eta_H/\eta_L\)</span></td><td class="oa-c">3.08</td><td class="oa-c">3.06</td><td class="oa-c">1.58</td><td class="oa-c">2.29</td><td class="oa-c">3.30</td></tr>
+<tr data-row="tau"><td class="oa-l"><span class="math inline">\(\tau_{2020}\)</span></td><td class="oa-c">14.4%</td><td class="oa-c">11.9%</td><td class="oa-c">11.9%</td><td class="oa-c">21.3%</td><td class="oa-c">21.3%</td></tr>
+</tbody></table>
+<div class="oa-notes">
+<p><em>Note:</em> <span class="math inline">\(\rho = 1\)</span>, common <span class="math inline">\(X\)</span>. The U.S., UK and France columns are those of table 3 of the paper, France grouped at the U.S. income percentiles. The UK at the U.S. groups is a linear fit of the UK’s group means against cumulative population shares, not a recount of the survey. <span class="math inline">\(\theta\)</span> is read off the replacement rates at each grouping’s cuts, and France’s is one at any cuts; the tax rate is a target.</p>
+</div></div><div class="oa-links">Data: <a href="_generated/data/results/paper/usCalibrationSummary.csv" download="">usCalibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>tablesOA.oecdRegroupings</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Regroupings</code>, then <code>build.py --site</code>.</p></details></div></div>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Date-specific and stationary policies</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Equilibrium selection</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">The UK at U.S. income groups</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">France at the UK’s income groups</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
-<div class="oa-exhibit oa-tablebox"><div class="oa-scroll"><table class="oa-table" id="ex-NUM_Stationary">
-<caption><span class="oa-num">Table D2.1.</span> Stationary against date-specific policy functions</caption>
+<div class="oa-exhibit oa-tablebox"><div class="oa-scroll"><table class="oa-table" id="ex-UKUS_householdheterogeneity">
+<caption><span class="oa-num">Table B2.2.</span> Household heterogeneity – UK, U.S. income groups</caption>
 <thead>
-<tr><th class="oa-l" scope="col"><strong>Policy</strong></th><th class="oa-c" scope="col"><span class="math inline">\(\rho\)</span></th><th class="oa-c" colspan="9" scope="col"><strong>Stationary minus date-specific</strong></th></tr>
+<tr><th class="oa-c" scope="col"></th><th class="oa-c" colspan="3" scope="col"><strong>Income group</strong></th><th class="oa-l" scope="col"></th></tr>
+<tr><th class="oa-c" scope="col"><strong>Parameter</strong></th><th class="oa-c" scope="col"><strong>Low</strong></th><th class="oa-c" scope="col"><strong>Medium</strong></th><th class="oa-c" scope="col"><strong>High</strong></th><th class="oa-l" scope="col"><strong>Target</strong></th></tr>
 </thead>
 <tbody>
-<tr><td class="oa-l" colspan="2"><em>United States</em></td><td class="oa-c">1960</td><td class="oa-c">1990</td><td class="oa-c">2020</td><td class="oa-c">2050</td><td class="oa-c">2080</td><td class="oa-c">2110</td><td class="oa-c">2140</td><td class="oa-c">2170</td><td class="oa-c"></td></tr>
-<tr data-row="us@0.5"><td class="oa-l">Tax rate, design given (p.p.)</td><td class="oa-c">0.5</td><td class="oa-c">+0.01</td><td class="oa-c">+0.04</td><td class="oa-c">+0.17</td><td class="oa-c">+0.01</td><td class="oa-c">−0.03</td><td class="oa-c">−0.01</td><td class="oa-c">−0.02</td><td class="oa-c">−0.26</td><td class="oa-c"></td></tr>
-<tr data-row="us@0.7"><td class="oa-l"></td><td class="oa-c">0.7</td><td class="oa-c">0.00</td><td class="oa-c">+0.02</td><td class="oa-c">+0.08</td><td class="oa-c">0.00</td><td class="oa-c">−0.02</td><td class="oa-c">−0.01</td><td class="oa-c">−0.01</td><td class="oa-c">−0.07</td><td class="oa-c"></td></tr>
-<tr data-row="us@1.3"><td class="oa-l"></td><td class="oa-c">1.3</td><td class="oa-c">0.00</td><td class="oa-c">−0.01</td><td class="oa-c">−0.04</td><td class="oa-c">+0.01</td><td class="oa-c">+0.02</td><td class="oa-c">0.00</td><td class="oa-c">0.00</td><td class="oa-c">0.00</td><td class="oa-c"></td></tr>
-<tr data-row="us@1.5"><td class="oa-l"></td><td class="oa-c">1.5</td><td class="oa-c">0.00</td><td class="oa-c">−0.01</td><td class="oa-c">−0.06</td><td class="oa-c">+0.02</td><td class="oa-c">+0.02</td><td class="oa-c">+0.01</td><td class="oa-c">0.00</td><td class="oa-c">−0.01</td><td class="oa-c"></td></tr>
-<tr data-row="us@2.0"><td class="oa-l"></td><td class="oa-c">2.0</td><td class="oa-c">0.00</td><td class="oa-c">−0.01</td><td class="oa-c">−0.07</td><td class="oa-c">+0.03</td><td class="oa-c">+0.03</td><td class="oa-c">+0.01</td><td class="oa-c">0.00</td><td class="oa-c">−0.06</td><td class="oa-c"></td></tr>
-<tr data-row="esctax@0.5"><td class="oa-l">Tax rate, design chosen (p.p.)</td><td class="oa-c">0.5</td><td class="oa-c">+0.01</td><td class="oa-c">+0.06</td><td class="oa-c">+0.13</td><td class="oa-c">−0.02</td><td class="oa-c">−0.08</td><td class="oa-c">−0.01</td><td class="oa-c">−0.03</td><td class="oa-c">−0.19</td><td class="oa-c"></td></tr>
-<tr data-row="esctax@1.0"><td class="oa-l"></td><td class="oa-c">1.0</td><td class="oa-c">0.00</td><td class="oa-c">0.00</td><td class="oa-c">−0.02</td><td class="oa-c">−0.12</td><td class="oa-c">−0.01</td><td class="oa-c">0.00</td><td class="oa-c">0.00</td><td class="oa-c">0.00</td><td class="oa-c"></td></tr>
-<tr data-row="esctax@2.0"><td class="oa-l"></td><td class="oa-c">2.0</td><td class="oa-c">0.00</td><td class="oa-c">−0.05</td><td class="oa-c">−0.10</td><td class="oa-c">−0.03</td><td class="oa-c">+0.02</td><td class="oa-c">+0.01</td><td class="oa-c">0.00</td><td class="oa-c">−0.08</td><td class="oa-c"></td></tr>
-<tr data-row="escdesign@0.5"><td class="oa-l">Design chosen (<span class="math inline">\(\theta\)</span>)</td><td class="oa-c">0.5</td><td class="oa-c">0.000</td><td class="oa-c">+0.003</td><td class="oa-c">−0.042</td><td class="oa-c">−0.022</td><td class="oa-c">−0.022</td><td class="oa-c">0.000</td><td class="oa-c">0.000</td><td class="oa-c">−0.002</td><td class="oa-c"></td></tr>
-<tr data-row="escdesign@1.0"><td class="oa-l"></td><td class="oa-c">1.0</td><td class="oa-c">0.000</td><td class="oa-c">0.000</td><td class="oa-c">−0.017</td><td class="oa-c">−0.053</td><td class="oa-c">−0.004</td><td class="oa-c">0.000</td><td class="oa-c">0.000</td><td class="oa-c">0.000</td><td class="oa-c"></td></tr>
-<tr data-row="escdesign@2.0"><td class="oa-l"></td><td class="oa-c">2.0</td><td class="oa-c">0.000</td><td class="oa-c">−0.001</td><td class="oa-c">−0.059</td><td class="oa-c">−0.020</td><td class="oa-c">−0.041</td><td class="oa-c">0.000</td><td class="oa-c">0.000</td><td class="oa-c">0.000</td><td class="oa-c"></td></tr>
-<tr><td class="oa-l" colspan="2"><em>Argentina</em></td><td class="oa-c">1920</td><td class="oa-c">1950</td><td class="oa-c">1980</td><td class="oa-c">2010</td><td class="oa-c">2040</td><td class="oa-c">2070</td><td class="oa-c">2100</td><td class="oa-c">2130</td><td class="oa-c">2160</td></tr>
-<tr data-row="arg@0.5"><td class="oa-l">Tax rate (p.p.)</td><td class="oa-c">0.5</td><td class="oa-c">+0.15</td><td class="oa-c">+0.49</td><td class="oa-c">+0.48</td><td class="oa-c">−0.20</td><td class="oa-c">+0.34</td><td class="oa-c">+0.16</td><td class="oa-c">−0.08</td><td class="oa-c">−0.04</td><td class="oa-c">−0.63</td></tr>
-<tr data-row="arg@1.0"><td class="oa-l"></td><td class="oa-c">1.0</td><td class="oa-c">−0.01</td><td class="oa-c">0.00</td><td class="oa-c">−0.08</td><td class="oa-c">−0.06</td><td class="oa-c">+0.16</td><td class="oa-c">+0.19</td><td class="oa-c">−0.02</td><td class="oa-c">−0.01</td><td class="oa-c">−0.20</td></tr>
-<tr data-row="arg@2.0"><td class="oa-l"></td><td class="oa-c">2.0</td><td class="oa-c">+0.01</td><td class="oa-c">+0.01</td><td class="oa-c">−0.11</td><td class="oa-c">−0.16</td><td class="oa-c">+0.04</td><td class="oa-c">+0.21</td><td class="oa-c">0.00</td><td class="oa-c">0.00</td><td class="oa-c">−0.15</td></tr>
-</tbody></table>
-<div class="oa-notes">
-<p><em>Note:</em> Each cell is the policy on the path walked by time-invariant policy functions, each solved at its own date's <span class="math inline">\(\nu_t\)</span> and applied from the same initial state, minus the date-specific policy of the paper's solution: the tax rate in percentage points, the chosen design in units of <span class="math inline">\(\theta\)</span>. Under log preferences (<span class="math inline">\(\rho = 1\)</span>) with the design given the two coincide and the U.S. block has no row. The design chosen is at the paper's cost specification. The terminal period of the finite horizon is not shown; the last period shown carries the date-specific solution’s approach to it (appendix D of the paper) rather than the demographic transition.</p>
-</div></div><div class="oa-links">Data: <a href="_generated/data/results/numerical/ARG_stationaryApprox_commonX.csv" download="">ARG_stationaryApprox_commonX.csv</a> · <a href="_generated/data/results/numerical/US_ESC_stationaryApprox.csv" download="">US_ESC_stationaryApprox.csv</a> · <a href="_generated/data/results/numerical/US_stationaryApprox.csv" download="">US_stationaryApprox.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/numerical/ARG_stationaryApprox_commonX.csv</code></li><li><code>results/numerical/US_ESC_stationaryApprox.csv</code></li><li><code>results/numerical/US_stationaryApprox.csv</code></li></ul><p>Built by <code>tablesOA.numStationary</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only NUM_Stationary</code>, then <code>build.py --site</code>.</p></details></div></div>
+<tr data-row="gamma"><td class="oa-c"><span class="math inline">\(\gamma_i\)</span></td><td class="oa-c">0.58</td><td class="oa-c">0.18</td><td class="oa-c">0.24</td><td class="oa-l">Income percentiles.</td></tr>
+<tr data-row="X"><td class="oa-c"><span class="math inline">\(X_i\)</span></td><td class="oa-c">8.77</td><td class="oa-c">8.77</td><td class="oa-c">8.77</td><td class="oa-l">Average hours worked.</td></tr>
+<tr data-row="eta"><td class="oa-c"><span class="math inline">\(\eta_i\)</span></td><td class="oa-c">1.38</td><td class="oa-c">1.74</td><td class="oa-c">2.19</td><td class="oa-l">Income distribution.</td></tr>
+<tr data-row="mu"><td class="oa-c"><span class="math inline">\(\mu_i\)</span></td><td class="oa-c">0.66</td><td class="oa-c">0.69</td><td class="oa-c">0.73</td><td class="oa-l">Voting propensity.</td></tr>
+</tbody></table></div><div class="oa-links">Data: <a href="_generated/data/results/paper/usCalibrationSummary.csv" download="">usCalibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>tablesUS.ukusHouseholdHeterogeneity</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only UKUS_householdheterogeneity</code>, then <code>build.py --site</code>.</p></details></div></div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
-<div class="oa-exhibit oa-tablebox"><div class="oa-scroll"><table class="oa-table" id="ex-NUM_Selection">
-<caption><span class="oa-num">Table D2.2.</span> Equilibrium counts in the results the exhibits read</caption>
+<div class="oa-exhibit oa-tablebox"><div class="oa-scroll"><table class="oa-table" id="ex-FRUK_householdheterogeneity">
+<caption><span class="oa-num">Table B2.3.</span> Household heterogeneity – France, UK income groups <span class="oa-badge">Table 8 in the paper</span></caption>
 <thead>
-<tr><th class="oa-l" scope="col"><strong>File</strong></th><th class="oa-c" scope="col"><strong>Rows</strong></th><th class="oa-c" scope="col"><strong>Counted</strong></th><th class="oa-c" scope="col"><strong>Equilibria, max</strong></th><th class="oa-c" scope="col"><strong>Candidates, max</strong></th><th class="oa-c" scope="col"><strong>Fallbacks</strong></th></tr>
+<tr><th class="oa-c" scope="col"></th><th class="oa-c" colspan="3" scope="col"><strong>Income group</strong></th><th class="oa-l" scope="col"></th></tr>
+<tr><th class="oa-c" scope="col"><strong>Parameter</strong></th><th class="oa-c" scope="col"><strong>Low</strong></th><th class="oa-c" scope="col"><strong>Medium</strong></th><th class="oa-c" scope="col"><strong>High</strong></th><th class="oa-l" scope="col"><strong>Target</strong></th></tr>
 </thead>
 <tbody>
-<tr class="oa-grouprow"><th class="oa-l" colspan="6"><em>Tax rule: Argentina</em></th></tr>
-<tr data-row="tax_informalsavings_rhogridcommonx"><td class="oa-l">informalSavings_rhoGridCommonX.csv</td><td class="oa-c">16</td><td class="oa-c">16</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_universal_match_rho_commonx"><td class="oa-l">universal_match_rho*_commonX.csv (16 files)</td><td class="oa-c">112</td><td class="oa-c">112</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_eeonly_match_rho_commonx"><td class="oa-l">eeOnly_match_rho*_commonX.csv (16 files)</td><td class="oa-c">112</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_epsthetagrid_rho1_0000_commonx"><td class="oa-l">epsThetaGrid_rho1.0000_commonX.csv</td><td class="oa-c">378</td><td class="oa-c">378</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_informalsavings_rhogrid"><td class="oa-l">informalSavings_rhoGrid.csv</td><td class="oa-c">16</td><td class="oa-c">16</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_universal_match_rho"><td class="oa-l">universal_match_rho*.csv (16 files)</td><td class="oa-c">112</td><td class="oa-c">112</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_eeonly_match_rho"><td class="oa-l">eeOnly_match_rho*.csv (16 files)</td><td class="oa-c">112</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_epsthetagrid_rho1_0000"><td class="oa-l">epsThetaGrid_rho1.0000.csv</td><td class="oa-c">378</td><td class="oa-c">378</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_arg_stationaryapprox_commonx"><td class="oa-l">ARG_stationaryApprox_commonX.csv</td><td class="oa-c">30</td><td class="oa-c">30</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr class="oa-grouprow"><th class="oa-l" colspan="6"><em>Tax rule: the U.S., the UK and France</em></th></tr>
-<tr data-row="tax_us_rhogridcommonx"><td class="oa-l">US_rhoGridCommonX.csv</td><td class="oa-c">16</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_uk_rhogridcommonx"><td class="oa-l">UK_rhoGridCommonX.csv</td><td class="oa-c">16</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_fr_rhogridcommonx"><td class="oa-l">FR_rhoGridCommonX.csv</td><td class="oa-c">16</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_us_shockscommonx"><td class="oa-l">US_shocksCommonX.csv</td><td class="oa-c">54</td><td class="oa-c">6</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_uk_shockscommonx"><td class="oa-l">UK_shocksCommonX.csv</td><td class="oa-c">54</td><td class="oa-c">6</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_us_rhogrid"><td class="oa-l">US_rhoGrid.csv</td><td class="oa-c">16</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_uk_rhogrid"><td class="oa-l">UK_rhoGrid.csv</td><td class="oa-c">16</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_fr_rhogrid"><td class="oa-l">FR_rhoGrid.csv</td><td class="oa-c">16</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_us_shocks"><td class="oa-l">US_shocks.csv</td><td class="oa-c">54</td><td class="oa-c">6</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_uk_shocks"><td class="oa-l">UK_shocks.csv</td><td class="oa-c">54</td><td class="oa-c">6</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_esccalibration"><td class="oa-l">escCalibration.csv</td><td class="oa-c">5</td><td class="oa-c">3</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_esccalibrationcrra"><td class="oa-l">escCalibrationCRRA.csv</td><td class="oa-c">8</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_esccalibrationcrrauk"><td class="oa-l">escCalibrationCRRAUK.csv</td><td class="oa-c">2</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_esccountry"><td class="oa-l">escCountry.csv</td><td class="oa-c">12</td><td class="oa-c">9</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_escshocks"><td class="oa-l">escShocks.csv</td><td class="oa-c">34</td><td class="oa-c">34</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_escshockscrra"><td class="oa-l">escShocksCRRA.csv</td><td class="oa-c">120</td><td class="oa-c">16</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_escshocksuk"><td class="oa-l">escShocksUK.csv</td><td class="oa-c">15</td><td class="oa-c">15</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_escshockscrrauk"><td class="oa-l">escShocksCRRAUK.csv</td><td class="oa-c">30</td><td class="oa-c">16</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_escpath"><td class="oa-l">escPath.csv</td><td class="oa-c">16</td><td class="oa-c">16</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_escpathcrra"><td class="oa-l">escPathCRRA.csv</td><td class="oa-c">48</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_escxirobustness"><td class="oa-l">escXiRobustness.csv</td><td class="oa-c">33</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_escpermanent"><td class="oa-l">escPermanent.csv</td><td class="oa-c">7</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_escpermanentcrra"><td class="oa-l">escPermanentCRRA.csv</td><td class="oa-c">6</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_escsequentialcrra"><td class="oa-l">escSequentialCRRA.csv</td><td class="oa-c">14</td><td class="oa-c">0</td><td class="oa-c">–</td><td class="oa-c">–</td><td class="oa-c">–</td></tr>
-<tr data-row="tax_us_stationaryapprox"><td class="oa-l">US_stationaryApprox.csv</td><td class="oa-c">45</td><td class="oa-c">45</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr data-row="tax_us_esc_stationaryapprox"><td class="oa-l">US_ESC_stationaryApprox.csv</td><td class="oa-c">27</td><td class="oa-c">9</td><td class="oa-c">1</td><td class="oa-c">3</td><td class="oa-c">0</td></tr>
-<tr class="oa-grouprow"><th class="oa-l" colspan="6"><em>Design layer of the exact CRRA recursion: brackets as candidates</em></th></tr>
-<tr data-row="design_esccalibrationcrra"><td class="oa-l">escCalibrationCRRA.csv</td><td class="oa-c">8</td><td class="oa-c">2</td><td class="oa-c">1</td><td class="oa-c">1</td><td class="oa-c">0</td></tr>
-<tr data-row="design_esccalibrationcrrauk"><td class="oa-l">escCalibrationCRRAUK.csv</td><td class="oa-c">2</td><td class="oa-c">2</td><td class="oa-c">1</td><td class="oa-c">1</td><td class="oa-c">0</td></tr>
-<tr data-row="design_escshockscrra"><td class="oa-l">escShocksCRRA.csv</td><td class="oa-c">120</td><td class="oa-c">14</td><td class="oa-c">1</td><td class="oa-c">1</td><td class="oa-c">0</td></tr>
-<tr data-row="design_escshockscrrauk"><td class="oa-l">escShocksCRRAUK.csv</td><td class="oa-c">30</td><td class="oa-c">14</td><td class="oa-c">1</td><td class="oa-c">1</td><td class="oa-c">0</td></tr>
-<tr data-row="design_escpathcrra"><td class="oa-l">escPathCRRA.csv</td><td class="oa-c">48</td><td class="oa-c">16</td><td class="oa-c">1</td><td class="oa-c">1</td><td class="oa-c">0</td></tr>
-</tbody></table>
-<div class="oa-notes">
-<p><em>Note:</em> Per csv, the rows, the rows that record the counts, and over those the largest number of equilibria at any state and period, the largest number of candidates and the total number of states at which the solver fell back. The tax rule is the selection of the technical documentation, which falls back on the tax that maximizes its integral criterion where no candidate passes the equilibrium test; a solve that does not select a tax (the economic-equilibrium paths, with taxes held at the baseline path) or did not record its counts leaves them out. The design layer is that of the exact recursion under CRRA preferences, which compares the candidate designs with the retirees’ savings shares held fixed and then makes the shares consistent: its candidates are the brackets of that consistency residual, and where none closes to an equilibrium it falls back on comparing each design at its own consistent shares. escExperiments.csv and escExperimentsUK.csv, which the endogenous-design exhibits read, merge the escShocks* files, whose counts are the rows above.</p>
-</div></div><div class="oa-links">Data: <a href="_generated/data/results/calibration/FR_rhoGrid.csv" download="">FR_rhoGrid.csv</a> · <a href="_generated/data/results/calibration/FR_rhoGridCommonX.csv" download="">FR_rhoGridCommonX.csv</a> · <a href="_generated/data/results/calibration/UK_rhoGrid.csv" download="">UK_rhoGrid.csv</a> · <a href="_generated/data/results/calibration/UK_rhoGridCommonX.csv" download="">UK_rhoGridCommonX.csv</a> · <a href="_generated/data/results/calibration/US_rhoGrid.csv" download="">US_rhoGrid.csv</a> · <a href="_generated/data/results/calibration/US_rhoGridCommonX.csv" download="">US_rhoGridCommonX.csv</a> · <a href="_generated/data/results/calibration/informalSavings_rhoGrid.csv" download="">informalSavings_rhoGrid.csv</a> · <a href="_generated/data/results/calibration/informalSavings_rhoGridCommonX.csv" download="">informalSavings_rhoGridCommonX.csv</a> · <a href="_generated/data/results/esc/escCalibration.csv" download="">escCalibration.csv</a> · <a href="_generated/data/results/esc/escCalibrationCRRA.csv" download="">escCalibrationCRRA.csv</a> · <a href="_generated/data/results/esc/escCalibrationCRRAUK.csv" download="">escCalibrationCRRAUK.csv</a> · <a href="_generated/data/results/esc/escCountry.csv" download="">escCountry.csv</a> · <a href="_generated/data/results/esc/escPath.csv" download="">escPath.csv</a> · <a href="_generated/data/results/esc/escPathCRRA.csv" download="">escPathCRRA.csv</a> · <a href="_generated/data/results/esc/escPermanent.csv" download="">escPermanent.csv</a> · <a href="_generated/data/results/esc/escPermanentCRRA.csv" download="">escPermanentCRRA.csv</a> · <a href="_generated/data/results/esc/escSequentialCRRA.csv" download="">escSequentialCRRA.csv</a> · <a href="_generated/data/results/esc/escShocks.csv" download="">escShocks.csv</a> · <a href="_generated/data/results/esc/escShocksCRRA.csv" download="">escShocksCRRA.csv</a> · <a href="_generated/data/results/esc/escShocksCRRAUK.csv" download="">escShocksCRRAUK.csv</a> · <a href="_generated/data/results/esc/escShocksUK.csv" download="">escShocksUK.csv</a> · <a href="_generated/data/results/esc/escXiRobustness.csv" download="">escXiRobustness.csv</a> · <a href="_generated/data/results/numerical/ARG_stationaryApprox_commonX.csv" download="">ARG_stationaryApprox_commonX.csv</a> · <a href="_generated/data/results/numerical/US_ESC_stationaryApprox.csv" download="">US_ESC_stationaryApprox.csv</a> · <a href="_generated/data/results/numerical/US_stationaryApprox.csv" download="">US_stationaryApprox.csv</a> · <a href="_generated/data/results/shocks/UK_shocks.csv" download="">UK_shocks.csv</a> · <a href="_generated/data/results/shocks/UK_shocksCommonX.csv" download="">UK_shocksCommonX.csv</a> · <a href="_generated/data/results/shocks/US_shocks.csv" download="">US_shocks.csv</a> · <a href="_generated/data/results/shocks/US_shocksCommonX.csv" download="">US_shocksCommonX.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/calibration/FR_rhoGrid.csv</code></li><li><code>results/calibration/FR_rhoGridCommonX.csv</code></li><li><code>results/calibration/UK_rhoGrid.csv</code></li><li><code>results/calibration/UK_rhoGridCommonX.csv</code></li><li><code>results/calibration/US_rhoGrid.csv</code></li><li><code>results/calibration/US_rhoGridCommonX.csv</code></li><li><code>results/calibration/informalSavings_rhoGrid.csv</code></li><li><code>results/calibration/informalSavings_rhoGridCommonX.csv</code></li><li><code>results/esc/escCalibration.csv</code></li><li><code>results/esc/escCalibrationCRRA.csv</code></li><li><code>results/esc/escCalibrationCRRAUK.csv</code></li><li><code>results/esc/escCountry.csv</code></li><li><code>results/esc/escPath.csv</code></li><li><code>results/esc/escPathCRRA.csv</code></li><li><code>results/esc/escPermanent.csv</code></li><li><code>results/esc/escPermanentCRRA.csv</code></li><li><code>results/esc/escSequentialCRRA.csv</code></li><li><code>results/esc/escShocks.csv</code></li><li><code>results/esc/escShocksCRRA.csv</code></li><li><code>results/esc/escShocksCRRAUK.csv</code></li><li><code>results/esc/escShocksUK.csv</code></li><li><code>results/esc/escXiRobustness.csv</code></li><li><code>results/numerical/ARG_stationaryApprox_commonX.csv</code></li><li><code>results/numerical/US_ESC_stationaryApprox.csv</code></li><li><code>results/numerical/US_stationaryApprox.csv</code></li><li><code>results/shocks/UK_shocks.csv</code></li><li><code>results/shocks/UK_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocks.csv</code></li><li><code>results/shocks/US_shocksCommonX.csv</code></li><li><code>results/shocks/eeOnly_match_rho*.csv</code> (16 files)</li><li><code>results/shocks/eeOnly_match_rho*_commonX.csv</code> (16 files)</li><li><code>results/shocks/universal_match_rho*.csv</code> (16 files)</li><li><code>results/shocks/universal_match_rho*_commonX.csv</code> (16 files)</li><li><code>results/sweeps/epsThetaGrid_rho*.csv</code></li><li><code>results/sweeps/epsThetaGrid_rho*_commonX.csv</code></li></ul><p>Built by <code>tablesOA.numSelection</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only NUM_Selection</code>, then <code>build.py --site</code>.</p></details></div></div>
+<tr data-row="gamma"><td class="oa-c"><span class="math inline">\(\gamma_i\)</span></td><td class="oa-c">0.29</td><td class="oa-c">0.58</td><td class="oa-c">0.13</td><td class="oa-l">Income percentiles.</td></tr>
+<tr data-row="X"><td class="oa-c"><span class="math inline">\(X_i\)</span></td><td class="oa-c">7.20</td><td class="oa-c">7.20</td><td class="oa-c">7.20</td><td class="oa-l">Average hours worked.</td></tr>
+<tr data-row="eta"><td class="oa-c"><span class="math inline">\(\eta_i\)</span></td><td class="oa-c">0.94</td><td class="oa-c">1.51</td><td class="oa-c">3.09</td><td class="oa-l">Income distribution.</td></tr>
+<tr data-row="mu"><td class="oa-c"><span class="math inline">\(\mu_i\)</span></td><td class="oa-c">0.81</td><td class="oa-c">0.83</td><td class="oa-c">0.85</td><td class="oa-l">Voting propensity.</td></tr>
+</tbody></table></div><div class="oa-links">Data: <a href="_generated/data/results/paper/usCalibrationSummary.csv" download="">usCalibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>tablesUS.frukHouseholdHeterogeneity</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only FRUK_householdheterogeneity</code>, then <code>build.py --site</code>.</p></details></div></div>
 </div>
 </div>
 </div>
-<section id="references" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
-<div id="refs" class="references csl-bib-body hanging-indent" role="list">
-<div id="ref-BergGE26doc" class="csl-entry" role="listitem">
-Berg, R. K., and M. Gonzalez-Eiras. 2026. <span>“Social Security Design
-and Its Political Support: Technical Documentation.”</span>
+<p>The figure imposes the counterfactuals of the first figure on the UK under the two groupings, one above the other, France’s households cut at the same groups as the host’s. Ageing moves the two alike, since it does not depend on how households are grouped. The design and France’s voting patterns move the regrouped UK much less. At the U.S. cuts its incomes are compressed, so a flat benefit redistributes little, and its own turnout varies less across the groups than at its own cuts, so France’s flat turnout changes less. France’s income distribution, conversely, raises the regrouped UK’s tax rate by much more, because next to that compressed distribution France’s is unequal.</p>
+<div class="oa-explorer">
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-caption" id="ex-OECD_Groupings"><span class="oa-num">Figure B2.2.</span> The UK at its own and at the U.S. income groups</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb2" data-startfrom="69" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 68;"><span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>viewof b2gOut <span class="op">=</span> <span class="fu">control</span>(<span class="st">"radio"</span><span class="op">,</span> GIVEN_OUTCOMES<span class="op">,</span> {<span class="dt">key</span><span class="op">:</span> <span class="st">"groups"</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Outcome"</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="st">"tau"</span>})</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a><span class="fu">counterfactuals</span>(oecdMain<span class="op">,</span> {<span class="dt">rows</span><span class="op">:</span> ROWS_GIVEN<span class="op">,</span> <span class="dt">series</span><span class="op">:</span> RHO<span class="op">,</span> <span class="dt">outcome</span><span class="op">:</span> b2gOut<span class="op">,</span> width<span class="op">,</span></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>  <span class="dt">facets</span><span class="op">:</span> [{<span class="dt">label</span><span class="op">:</span> <span class="st">"UK, its own income groups"</span><span class="op">,</span> <span class="dt">filter</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">host</span> <span class="op">===</span> <span class="st">"UK"</span>}<span class="op">,</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>           {<span class="dt">label</span><span class="op">:</span> <span class="st">"UK, U.S. income groups"</span><span class="op">,</span> <span class="dt">filter</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">host</span> <span class="op">===</span> <span class="st">"UKUS"</span>}]})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-1" data-nodetype="declaration">
+
 </div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-2-2" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-note"><em>Note:</em> As figure <a href="#ex-OECD_Hosts">B2.1</a>, for the UK at its own income groups, France cut at the same groups, and for the UK regrouped at the U.S. income groups, France at the U.S. groups as in the paper. Each bar is the change against that economy’s own baseline.</div><div class="oa-links">Data: <a href="_generated/data/OECD_Counterfactuals.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li><li><code>results/shocks/UKUS_shocks.csv</code></li><li><code>results/shocks/UKUS_shocksCommonX.csv</code></li><li><code>results/shocks/UK_shocks.csv</code></li><li><code>results/shocks/UK_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocks.csv</code></li><li><code>results/shocks/US_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocksXiCommonX.csv</code></li></ul><p>Built by <code>siteData.oecdCounterfactuals</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Counterfactuals</code>, then <code>build.py --site</code>.</p></details></div>
 </div>
 
 
 </section>
 
 </main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImltcG9ydCB7Y291bnRlcmZhY3R1YWxzLCBjb250cm9sLCBST1dTX0dJVkVOLCBSSE8sIEdJVkVOX09VVENPTUVTfSBmcm9tIFwiLi9hc3NldHMvb2EuanNcIlxub2VjZCA9IEZpbGVBdHRhY2htZW50KFwiX2dlbmVyYXRlZC9kYXRhL09FQ0RfQ291bnRlcmZhY3R1YWxzLmNzdlwiKS5jc3Yoe3R5cGVkOiB0cnVlfSlcbm9lY2RNYWluID0gb2VjZC5maWx0ZXIoZCA9PiBkLnNvdXJjZSA9PT0gXCJtYWluXCIgJiYgZC5jYWxpYnJhdGlvbiA9PT0gXCJjb21tb25YXCIgJiYgZC5lZmZlY3QgPT09IFwiZnVsbFwiKVxudmlld29mIGIyT3V0ID0gY29udHJvbChcInJhZGlvXCIsIEdJVkVOX09VVENPTUVTLCB7a2V5OiBcImhvc3RzXCIsIGxhYmVsOiBcIk91dGNvbWVcIiwgdmFsdWU6IFwidGF1XCJ9KVxuY291bnRlcmZhY3R1YWxzKG9lY2RNYWluLCB7cm93czogUk9XU19HSVZFTiwgc2VyaWVzOiBSSE8sIG91dGNvbWU6IGIyT3V0LCB3aWR0aCxcbiAgZmFjZXRzOiBbe2xhYmVsOiBcIlUuUy5cIiwgZmlsdGVyOiBkID0+IGQuaG9zdCA9PT0gXCJVU1wifSwge2xhYmVsOiBcIlVLXCIsIGZpbHRlcjogZCA9PiBkLmhvc3QgPT09IFwiVUtcIn1dfSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6InZpZXdvZiBiMmdPdXQgPSBjb250cm9sKFwicmFkaW9cIiwgR0lWRU5fT1VUQ09NRVMsIHtrZXk6IFwiZ3JvdXBzXCIsIGxhYmVsOiBcIk91dGNvbWVcIiwgdmFsdWU6IFwidGF1XCJ9KVxuY291bnRlcmZhY3R1YWxzKG9lY2RNYWluLCB7cm93czogUk9XU19HSVZFTiwgc2VyaWVzOiBSSE8sIG91dGNvbWU6IGIyZ091dCwgd2lkdGgsXG4gIGZhY2V0czogW3tsYWJlbDogXCJVSywgaXRzIG93biBpbmNvbWUgZ3JvdXBzXCIsIGZpbHRlcjogZCA9PiBkLmhvc3QgPT09IFwiVUtcIn0sXG4gICAgICAgICAgIHtsYWJlbDogXCJVSywgVS5TLiBpbmNvbWUgZ3JvdXBzXCIsIGZpbHRlcjogZCA9PiBkLmhvc3QgPT09IFwiVUtVU1wifV19KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJzaGlueUlucHV0KCdiMk91dCcpIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJzaGlueUlucHV0KCdiMmdPdXQnKSJ9XX0=
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../..";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -837,13 +903,13 @@ and Its Political Support: Technical Documentation.”</span>
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./data.html" class="pagination-link" aria-label="D1. The OECD cross-section">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">D1. The OECD cross-section</span></span>
+      <a href="./oecd-ies.html" class="pagination-link" aria-label="B1. Calibration">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">B1. Calibration</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./replication.html" class="pagination-link" aria-label="D3. Replication">
-        <span class="nav-page-text"><span class="chapter-title">D3. Replication</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./oecd-parameters.html" class="pagination-link" aria-label="B3. Other parameters">
+        <span class="nav-page-text"><span class="chapter-title">B3. Other parameters</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

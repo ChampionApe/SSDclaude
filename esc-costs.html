@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>B. Rich OECD countries with the design given – Social Security Design and Its Political Support</title>
+<title>C3. Other cost specifications – Social Security Design and Its Political Support</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,6 +26,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -36,8 +71,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./oecd-ies.html" rel="next">
-<link href="./arg-leisure.html" rel="prev">
+<link href="./esc-parameters.html" rel="next">
+<link href="./esc-countries.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -75,7 +110,38 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="assets/oa.css">
 </head>
@@ -89,7 +155,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./esc.html">C. Endogenous design</a></li><li class="breadcrumb-item"><a href="./esc-costs.html"><span class="chapter-title">C3. Other cost specifications</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -151,13 +217,13 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./oecd.html" class="sidebar-item-text sidebar-link active">
+            <a href="./oecd.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">B. Rich OECD countries with the design given</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./oecd-ies.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B1. Calibration</span></a>
@@ -184,11 +250,11 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="./esc.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">C. Endogenous design</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./esc-paths.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C1. The path in levels</span></a>
@@ -201,7 +267,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./esc-costs.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C3. Other cost specifications</span></a>
+  <a href="./esc-costs.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">C3. Other cost specifications</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -247,15 +313,21 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#esc-costs-design" id="toc-esc-costs-design" class="nav-link active" data-scroll-target="#esc-costs-design">A cost on the design</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./esc.html">C. Endogenous design</a></li><li class="breadcrumb-item"><a href="./esc-costs.html"><span class="chapter-title">C3. Other cost specifications</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="oecd" class="quarto-section-identifier">B. Rich OECD countries with the design given</span></h1>
+<h1 class="title"><span id="esc-costs" class="quarto-section-identifier"><span class="chapter-title">C3. Other cost specifications</span></span></h1>
 </div>
 
 
@@ -272,17 +344,93 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Section 6 of the paper calibrates the model without informal households to the U.S., the UK and France and changes the U.S. calibration one characteristic at a time: its pension design, its demography, and the income distribution, voting patterns and taste for leisure that set France apart. Appendix F gives the data and the household heterogeneity. This part shows the calibrations across the IES, the counterfactuals with the UK compared with the U.S. and with the UK regrouped at the U.S. income groups, the U.S. counterfactuals across the Frisch elasticity, and what changes when the taste for leisure is identified group by group.</p>
-<ul>
-<li><a href="./oecd-ies.html">B1. Calibration</a>: the three calibrations at every IES of the grid.</li>
-<li><a href="./oecd-countries.html">B2. Other countries</a>: what shapes pensions, savings and labor supply in the U.S. and the UK, and the UK at the U.S. income groups.</li>
-<li><a href="./oecd-parameters.html">B3. Other parameters</a>: the U.S. counterfactuals across the intertemporal and the Frisch elasticity.</li>
-<li><a href="./oecd-leisure.html">B4. Identification of X</a>: the common taste for leisure against one per income group.</li>
-</ul>
+<section id="esc-costs-design" class="level2">
+<h2 class="anchored" data-anchor-id="esc-costs-design">A cost on the design</h2>
+<p>The paper’s cost of redistribution scales with the size of the system and with the dispersion of relative incomes, so it vanishes when the design redistributes nothing (appendix C). The alternative attaches the cost to the design itself, <span class="math inline">\(f(\theta) = \phi + (1-\phi)\theta^{p}\)</span>, with <span class="math inline">\(\phi\)</span> imposed and <span class="math inline">\(p\)</span> calibrated, as λ is, so that the U.S. electorate re-elects its observed design. It charges a flat benefit whatever that benefit redistributes. The table gives the two calibrations.</p>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-exhibit oa-tablebox"><div class="oa-scroll"><table class="oa-table" id="ex-ESC_CostCalibration">
+<caption><span class="oa-num">Table C3.1.</span> The two cost specifications, calibrated</caption>
+<thead>
+<tr><th class="oa-c" scope="col"></th><th class="oa-c" colspan="3" scope="col"><strong>The paper’s cost</strong></th><th class="oa-c" colspan="3" scope="col"><strong>The cost on the design</strong></th></tr>
+<tr><th class="oa-c" scope="col"><strong>CRRA</strong> (<span class="math inline">\(\rho\)</span>)</th><th class="oa-c" scope="col"><span class="math inline">\(\lambda\)</span></th><th class="oa-c" scope="col"><span class="math inline">\(1-f(\theta^{\ast})\)</span></th><th class="oa-c" scope="col"><span class="math inline">\(1-f(0)\)</span></th><th class="oa-c" scope="col"><span class="math inline">\(p\)</span></th><th class="oa-c" scope="col"><span class="math inline">\(1-f(\theta^{\ast})\)</span></th><th class="oa-c" scope="col"><span class="math inline">\(1-f(0)\)</span></th></tr>
+</thead>
+<tbody>
+<tr data-row="rho@0.5"><td class="oa-c">0.5</td><td class="oa-c">18.267</td><td class="oa-c">3.9%</td><td class="oa-c">43.7%</td><td class="oa-c">0.935</td><td class="oa-c">12.4%</td><td class="oa-c">50.0%</td></tr>
+<tr data-row="rho@1.0"><td class="oa-c">1.0</td><td class="oa-c">8.643</td><td class="oa-c">1.8%</td><td class="oa-c">23.8%</td><td class="oa-c">0.408</td><td class="oa-c">5.8%</td><td class="oa-c">50.0%</td></tr>
+<tr data-row="rho@2.0"><td class="oa-c">2.0</td><td class="oa-c">1.724</td><td class="oa-c">0.4%</td><td class="oa-c">5.3%</td><td class="oa-c">0.085</td><td class="oa-c">1.3%</td><td class="oa-c">50.0%</td></tr>
+</tbody></table>
+<div class="oa-notes">
+<p><em>Note:</em> The paper’s cost is that of equation (16) of the paper; the cost on the design is <span class="math inline">\(f(\theta) = \phi + (1-\phi)\theta^{p}\)</span> with <span class="math inline">\(\phi = 0.5\)</span> imposed. Each parameter is calibrated so that the U.S. electorate re-elects its observed design in 2020. The shares of revenue lost are those of 2020, at the observed design and at a flat benefit.</p>
+</div></div><div class="oa-links">Data: <a href="_generated/data/results/esc/escCalibration.csv" download="">escCalibration.csv</a> · <a href="_generated/data/results/esc/escCalibrationCRRA.csv" download="">escCalibrationCRRA.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/esc/escCalibration.csv</code></li><li><code>results/esc/escCalibrationCRRA.csv</code></li></ul><p>Built by <code>tablesOA.escCostCalibration</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only ESC_CostCalibration</code>, then <code>build.py --site</code>.</p></details></div></div>
+<p>Under the cost on the design, acute ageing raises the chosen design by less at every IES, since that cost does not grow with the tax rate that ageing raises: by about half as much at an IES of one, the comparison the paper draws, by much less at the lowest IES and by almost as much at the highest. France’s voting patterns move the design further toward flat benefits. France’s income distribution compresses the redistributive stakes but leaves the cost in place, and it takes the design to the Bismarckian corner at every IES.</p>
+<div class="oa-explorer">
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-caption" id="ex-ESC_Costs"><span class="oa-num">Figure C3.1.</span> The counterfactuals under the two cost specifications, U.S.</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb1" data-startfrom="24" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 23;"><span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> {counterfactuals<span class="op">,</span> control<span class="op">,</span> ROWS_CHOSEN<span class="op">,</span> RHO<span class="op">,</span> CHOSEN_OUTCOMES} <span class="im">from</span> <span class="st">"./assets/oa.js"</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>esc <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">"_generated/data/ESC_Counterfactuals.csv"</span>)<span class="op">.</span><span class="fu">csv</span>({<span class="dt">typed</span><span class="op">:</span> <span class="kw">true</span>})</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>usObserved <span class="op">=</span> esc<span class="op">.</span><span class="fu">find</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">host</span> <span class="op">===</span> <span class="st">"US"</span> <span class="op">&amp;&amp;</span> d<span class="op">.</span><span class="at">outcome</span> <span class="op">===</span> <span class="st">"theta"</span> <span class="op">&amp;&amp;</span> d<span class="op">.</span><span class="at">reading</span> <span class="op">===</span> <span class="st">"pinned"</span>)<span class="op">.</span><span class="at">baseline</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>viewof c3Out <span class="op">=</span> <span class="fu">control</span>(<span class="st">"radio"</span><span class="op">,</span> CHOSEN_OUTCOMES<span class="op">,</span> {<span class="dt">key</span><span class="op">:</span> <span class="st">"outcome"</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Outcome"</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> <span class="st">"theta"</span>})</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="fu">counterfactuals</span>(esc<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">source</span> <span class="op">===</span> <span class="st">"main"</span> <span class="op">&amp;&amp;</span> d<span class="op">.</span><span class="at">host</span> <span class="op">===</span> <span class="st">"US"</span>)<span class="op">,</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  {<span class="dt">rows</span><span class="op">:</span> ROWS_CHOSEN<span class="op">,</span> <span class="dt">series</span><span class="op">:</span> RHO<span class="op">,</span> <span class="dt">outcome</span><span class="op">:</span> c3Out<span class="op">,</span> <span class="dt">mode</span><span class="op">:</span> <span class="st">"chosen"</span><span class="op">,</span> width<span class="op">,</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>   <span class="dt">observed</span><span class="op">:</span> {<span class="st">"The paper's cost"</span><span class="op">:</span> usObserved<span class="op">,</span> <span class="st">"A cost on the design"</span><span class="op">:</span> usObserved}<span class="op">,</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>   <span class="dt">facets</span><span class="op">:</span> [{<span class="dt">label</span><span class="op">:</span> <span class="st">"The paper's cost"</span><span class="op">,</span> <span class="dt">filter</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">spec</span> <span class="op">===</span> <span class="st">"size"</span>}<span class="op">,</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>            {<span class="dt">label</span><span class="op">:</span> <span class="st">"A cost on the design"</span><span class="op">,</span> <span class="dt">filter</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">spec</span> <span class="op">===</span> <span class="st">"scale"</span>}]})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-4" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-1-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-note"><em>Note:</em> As figure <a href="esc-countries.html#ex-ESC_Hosts">C2.1</a>, for the U.S. under the paper’s cost and under a cost on the design, each calibrated at each <span class="math inline">\(\rho\)</span> (table <a href="#ex-ESC_CostCalibration">C3.1</a>).</div><div class="oa-links">Data: <a href="_generated/data/ESC_Counterfactuals.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>data/USMain_test.xlsx</code></li><li><code>results/esc/escExperiments.csv</code></li><li><code>results/esc/escExperimentsUK.csv</code></li><li><code>results/esc/escXiRobustness.csv</code></li><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>siteData.escCounterfactuals</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only ESC_Counterfactuals</code>, then <code>build.py --site</code>.</p></details></div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImltcG9ydCB7Y291bnRlcmZhY3R1YWxzLCBjb250cm9sLCBST1dTX0NIT1NFTiwgUkhPLCBDSE9TRU5fT1VUQ09NRVN9IGZyb20gXCIuL2Fzc2V0cy9vYS5qc1wiXG5lc2MgPSBGaWxlQXR0YWNobWVudChcIl9nZW5lcmF0ZWQvZGF0YS9FU0NfQ291bnRlcmZhY3R1YWxzLmNzdlwiKS5jc3Yoe3R5cGVkOiB0cnVlfSlcbnVzT2JzZXJ2ZWQgPSBlc2MuZmluZChkID0+IGQuaG9zdCA9PT0gXCJVU1wiICYmIGQub3V0Y29tZSA9PT0gXCJ0aGV0YVwiICYmIGQucmVhZGluZyA9PT0gXCJwaW5uZWRcIikuYmFzZWxpbmVcbnZpZXdvZiBjM091dCA9IGNvbnRyb2woXCJyYWRpb1wiLCBDSE9TRU5fT1VUQ09NRVMsIHtrZXk6IFwib3V0Y29tZVwiLCBsYWJlbDogXCJPdXRjb21lXCIsIHZhbHVlOiBcInRoZXRhXCJ9KVxuY291bnRlcmZhY3R1YWxzKGVzYy5maWx0ZXIoZCA9PiBkLnNvdXJjZSA9PT0gXCJtYWluXCIgJiYgZC5ob3N0ID09PSBcIlVTXCIpLFxuICB7cm93czogUk9XU19DSE9TRU4sIHNlcmllczogUkhPLCBvdXRjb21lOiBjM091dCwgbW9kZTogXCJjaG9zZW5cIiwgd2lkdGgsXG4gICBvYnNlcnZlZDoge1wiVGhlIHBhcGVyJ3MgY29zdFwiOiB1c09ic2VydmVkLCBcIkEgY29zdCBvbiB0aGUgZGVzaWduXCI6IHVzT2JzZXJ2ZWR9LFxuICAgZmFjZXRzOiBbe2xhYmVsOiBcIlRoZSBwYXBlcidzIGNvc3RcIiwgZmlsdGVyOiBkID0+IGQuc3BlYyA9PT0gXCJzaXplXCJ9LFxuICAgICAgICAgICAge2xhYmVsOiBcIkEgY29zdCBvbiB0aGUgZGVzaWduXCIsIGZpbHRlcjogZCA9PiBkLnNwZWMgPT09IFwic2NhbGVcIn1dfSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoic2hpbnlJbnB1dCgnYzNPdXQnKSJ9XX0=
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../..";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -690,13 +838,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./arg-leisure.html" class="pagination-link" aria-label="A3. Identification of X">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">A3. Identification of X</span></span>
+      <a href="./esc-countries.html" class="pagination-link" aria-label="C2. Other countries">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">C2. Other countries</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./oecd-ies.html" class="pagination-link" aria-label="B1. Calibration">
-        <span class="nav-page-text"><span class="chapter-title">B1. Calibration</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./esc-parameters.html" class="pagination-link" aria-label="C4. Other parameters">
+        <span class="nav-page-text"><span class="chapter-title">C4. Other parameters</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

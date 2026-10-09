@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>B. Rich OECD countries with the design given – Social Security Design and Its Political Support</title>
+<title>B1. Calibration – Social Security Design and Its Political Support</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -36,8 +36,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./oecd-ies.html" rel="next">
-<link href="./arg-leisure.html" rel="prev">
+<link href="./oecd-countries.html" rel="next">
+<link href="./oecd.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -76,6 +76,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="assets/oa.css">
 </head>
@@ -89,7 +118,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li><li class="breadcrumb-item"><a href="./oecd-ies.html"><span class="chapter-title">B1. Calibration</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -151,7 +180,7 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./oecd.html" class="sidebar-item-text sidebar-link active">
+            <a href="./oecd.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">B. Rich OECD countries with the design given</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -160,7 +189,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./oecd-ies.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B1. Calibration</span></a>
+  <a href="./oecd-ies.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">B1. Calibration</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -247,15 +276,21 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#oecd-ies-calibration" id="toc-oecd-ies-calibration" class="nav-link active" data-scroll-target="#oecd-ies-calibration">The calibrations across the intertemporal elasticity</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./oecd.html">B. Rich OECD countries with the design given</a></li><li class="breadcrumb-item"><a href="./oecd-ies.html"><span class="chapter-title">B1. Calibration</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="oecd" class="quarto-section-identifier">B. Rich OECD countries with the design given</span></h1>
+<h1 class="title"><span id="oecd-ies" class="quarto-section-identifier"><span class="chapter-title">B1. Calibration</span></span></h1>
 </div>
 
 
@@ -272,15 +307,14 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Section 6 of the paper calibrates the model without informal households to the U.S., the UK and France and changes the U.S. calibration one characteristic at a time: its pension design, its demography, and the income distribution, voting patterns and taste for leisure that set France apart. Appendix F gives the data and the household heterogeneity. This part shows the calibrations across the IES, the counterfactuals with the UK compared with the U.S. and with the UK regrouped at the U.S. income groups, the U.S. counterfactuals across the Frisch elasticity, and what changes when the taste for leisure is identified group by group.</p>
-<ul>
-<li><a href="./oecd-ies.html">B1. Calibration</a>: the three calibrations at every IES of the grid.</li>
-<li><a href="./oecd-countries.html">B2. Other countries</a>: what shapes pensions, savings and labor supply in the U.S. and the UK, and the UK at the U.S. income groups.</li>
-<li><a href="./oecd-parameters.html">B3. Other parameters</a>: the U.S. counterfactuals across the intertemporal and the Frisch elasticity.</li>
-<li><a href="./oecd-leisure.html">B4. Identification of X</a>: the common taste for leisure against one per income group.</li>
-</ul>
+<section id="oecd-ies-calibration" class="level2">
+<h2 class="anchored" data-anchor-id="oecd-ies-calibration">The calibrations across the intertemporal elasticity</h2>
+<p>Each country is calibrated at every ρ of the grid against its own targets. The discount factor is calibrated on the U.S. and imposed on the UK and France, so their interest factors are predictions. The political weight of the old falls as the IES rises in every country, since the young resist taxation less, and it keeps its ranking: highest in the U.S., close behind in France, lowest in the UK. The savings rate falls with the IES in every country, and the UK’s and France’s interest factors rise toward the U.S. target. The taste for leisure, pinned by each country’s average workweek, falls a little with the IES in the UK and France and is nearly flat in the U.S. At the lowest elasticities of the grid the thirty-year discount factor exceeds one, which the UK and France inherit.</p>
+<p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
+<div class="oa-exhibit oa-figure" id="ex-OECD_RhoGrid"><div class="oa-caption"><span class="oa-num">Figure B1.1.</span> The calibrations of the U.S., the UK and France across the intertemporal elasticity</div><img src="_generated/figs/OECD_RhoGrid.svg" alt="The calibrations of the U.S., the UK and France across the intertemporal elasticity"><div class="oa-note"><em>Note:</em> <span class="math inline">\(\beta\)</span>, <span class="math inline">\(\omega\)</span> and <span class="math inline">\(X\)</span> are solved jointly with the equilibrium path at each <span class="math inline">\(\rho\)</span> of the grid, against the same targets, <span class="math inline">\(\beta\)</span> calibrated for the U.S. and imposed on the UK and France; the savings rate, and the interest factor of the UK and France, are predictions. <span class="math inline">\(\rho = 1\)</span> is the paper’s calibration.</div><div class="oa-links">Data: <a href="_generated/data/results/calibration/FR_rhoGridCommonX.csv" download="">FR_rhoGridCommonX.csv</a> · <a href="_generated/data/results/calibration/UK_rhoGridCommonX.csv" download="">UK_rhoGridCommonX.csv</a> · <a href="_generated/data/results/calibration/US_rhoGridCommonX.csv" download="">US_rhoGridCommonX.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/calibration/FR_rhoGridCommonX.csv</code></li><li><code>results/calibration/UK_rhoGridCommonX.csv</code></li><li><code>results/calibration/US_rhoGridCommonX.csv</code></li></ul><p>Built by <code>figuresOA.oecdRhoGrid</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_RhoGrid</code>, then <code>build.py --site</code>.</p></details></div></div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -690,13 +724,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./arg-leisure.html" class="pagination-link" aria-label="A3. Identification of X">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">A3. Identification of X</span></span>
+      <a href="./oecd.html" class="pagination-link" aria-label="B. Rich OECD countries with the design given">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">B. Rich OECD countries with the design given</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./oecd-ies.html" class="pagination-link" aria-label="B1. Calibration">
-        <span class="nav-page-text"><span class="chapter-title">B1. Calibration</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./oecd-countries.html" class="pagination-link" aria-label="B2. Other countries">
+        <span class="nav-page-text"><span class="chapter-title">B2. Other countries</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
