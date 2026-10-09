@@ -1,8 +1,8 @@
 # C1. The path in levels {#esc-paths}
 
 The calibration targets the design of 2020 only; every other design along the path is an outcome of the model,
-chosen one period ahead by the electorate of the period before. The figures follow the three countries from 1990,
-whose electorate sets the design of 2020, to 2110, after which the demography is held constant. Each country keeps
+chosen one period ahead. The figures follow the three countries from 1990,
+whose electorate sets the design of 2020, to 2110; the demography is constant from 2080. Each country keeps
 its own calibration and demography. Its cost parameter is either the one calibrated on the U.S., the cross-country
 test of appendix {{< var p.app_escResults >}} along the path, or its own, the parameter at which its electorate
 re-elects its observed design. France has no own parameter, since no value of it re-elects France's fully
@@ -13,10 +13,10 @@ Bismarckian design.
 In every country the chosen design moves against the number of workers per retiree. As the population ages, the
 electorate ties benefits more closely to earnings, and the design levels off when the demography does. Under the
 U.S. cost parameter the three countries' designs keep their observed order in 2020: the UK's lowest, France's
-highest, the U.S. in between. By 2110 the U.S. design overtakes France's, since France's population is already old
+highest, the U.S. in between. From 2050 the U.S. design lies above France's, since France's population is already old
 in 2020 and ages least afterwards. The UK's workers per retiree rise until 2020 before they fall, and its design
-falls and then rises with them. At its own parameter the UK's design starts from its observed value and follows the
-same pattern. The tax rate rises with ageing everywhere.
+moves against them, falling and then rising. At its own parameter the UK's design passes through its observed value in 2020 and
+follows the same pattern. The tax rate rises with ageing everywhere.
 
 ::: {.oa-explorer .column-page}
 {{< include _generated/exhibits/ESC_PathsCountries-head.qmd >}}
@@ -68,11 +68,12 @@ viewof c1Cost = control("radio", COSTS, {key: "cost", label: "Cost parameter", v
 ## The design chosen and the design pinned {#esc-paths-readings}
 
 With the design pinned at its observed value, each country's path is that of section {{< var p.sec_oecd >}} with the
-cost in place. Choosing the design changes the tax rate little. In the U.S. and the UK the chosen design rises above
-the observed one as the population ages, and the tax rate with it lies slightly above the pinned path, since a more
-earnings-related system loses less of its revenue and is worth more to the electorate at the margin. In France the
-design chosen under the U.S. parameter stays below the observed corner throughout, and the tax rate with it lies above
-the pinned path.
+cost in place. Choosing the design changes the tax rate little. In the U.S., and in the UK at its own parameter, the chosen design
+rises above the observed one after 2020 as the population ages, and the tax rate with it lies slightly above the
+pinned path, since a more earnings-related system loses less of its revenue. Under the U.S. parameter the UK's chosen
+design lies above its observed one throughout. In France the design chosen under the U.S. parameter stays below the
+observed corner, and the tax rate with it lies above the pinned path for the reason of section
+{{< var p.sec_oecd >}}: flatter benefits raise the tax rate.
 
 ::: {.oa-explorer .column-page}
 {{< include _generated/exhibits/ESC_PathsReadings-head.qmd >}}

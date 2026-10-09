@@ -6,8 +6,8 @@ gives the household survey and the identification. This part shows how the equil
 pension design, how the reform and the calibration depend on the intertemporal elasticity of substitution (IES),
 and what changes when the taste for leisure is identified quartile by quartile.
 
-- [A1. How pension designs shape the equilibria](arg-designs.qmd): the equilibrium in 2010 over every design
+- [A1. How pension designs shape the equilibria](arg-designs.qmd): the equilibrium in 2010 over a grid of designs
   (ε, θ), with the reform as a move across it.
-- [A2. The intertemporal elasticity of substitution](arg-ies.qmd): the calibration at every IES of the grid, and
-  the reform's paths in levels at the IES you choose.
+- [A2. The intertemporal elasticity of substitution](arg-ies.qmd): the calibration and the reform's paths in levels
+  at each IES of the grid.
 - [A3. Identification of X](arg-leisure.qmd): the paper's common taste for leisure against one per quartile.

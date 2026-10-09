@@ -701,7 +701,7 @@ def argLeisureCalibration():
             r'\ref{table:Arg:Calib} ($\epsilon$, $\theta$, $\alpha$, $\nu_t$, $\xi$, $\beta$, $\gamma_0$, '
             r'$\omega$) are the same under the two calibrations. Under the common $X$ its level is the unit of '
             r'hours, fixed by the observed formal workweek; under the vector $X_i$ relative hours are data and '
-            r'the unit is a normalisation.')
+            r'the unit is a normalization.')
     return _xwrap('ARG_LeisureCalibration', 'results/paper/calibrationSummary.csv',
                   'The Argentine calibration under the two treatments of the taste for leisure',
                   _label('ARG_LeisureCalibration'), r'lcc>{\raggedright\arraybackslash}X',

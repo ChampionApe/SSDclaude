@@ -7,8 +7,8 @@ govern the households' responses. The intertemporal elasticity ρ varies at the 
 elasticity ξ varies under log preferences. At each ξ the U.S. and France are recalibrated to the same targets, so the
 discount factor, the political weight of the old and the taste for leisure take new values. The ranking of the
 determinants holds at every ξ of the grid: ageing and the design move the tax rate most, France's characteristics
-far less. A higher Frisch elasticity dampens the responses of the tax rate and of savings a little and enlarges every
-response of hours, the households' labor supply being the more elastic.
+far less. A higher Frisch elasticity dampens the responses of the tax rate a little and some responses of savings by more,
+and it enlarges every response of hours, since labor supply is more elastic.
 
 ::: {.oa-explorer .column-page}
 {{< include _generated/exhibits/OECD_Frisch-head.qmd >}}

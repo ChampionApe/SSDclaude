@@ -19,11 +19,12 @@ informal productivity and taste for leisure barely move.
 
 The paper's figure, first, plots the reform's effect in 2010 and in 2040 against ρ. The second figure shows, for
 the ρ chosen with the slider, the two paths behind those effects in levels, from the reform year to 2100. Every ρ
-starts from the same tax rate and workweek in 2010, which are a target and a normalisation, but not from the same
+starts from the same tax rate and workweek in 2010, which are a target and a normalization, but not from the same
 savings: the lower the IES, the more the pre-reform economy saves and the less its informal households save
-relative to formal ones. On both paths the tax rate rises over the first decades as the population ages. Below an
-IES of one the reform's gap in the tax rate is small in 2010, and negative at the lowest elasticities, before it
-opens up by 2040; above one the paths, and with them the two points of the paper's figure, change little with ρ.
+relative to formal ones. On both paths the tax rate rises over the first decades as the population ages. As ρ falls
+below one, the reform's gap in the tax rate in 2010 shrinks and turns negative at the lowest ρ of the grid, before it
+opens up by 2040. Above one both paths shift down together as ρ rises, so the two points of the paper's figure
+change little.
 
 ::: {.column-page}
 :::: {.oa-pair}

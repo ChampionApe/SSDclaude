@@ -10,16 +10,16 @@ show only what differs.
 ## The calibration {#oecd-leisure-calibration}
 
 Two rows of the paper's calibration table differ, the taste for leisure and the productivity spread. Under the
-vector $X_i$ the taste for leisure rises with income in all three countries, because the richer groups' relative
-hours, which are now data, are lower than the common $X$ predicts. To reproduce the same relative incomes with those
-hours, the productivity spread widens.
+vector $X_i$ the taste for leisure rises with income in all three countries: observed hours rise less with income
+than the common $X$ predicts, the high group working fewer hours than predicted. To reproduce the same relative
+incomes with those hours, the productivity spread widens.
 
 {{< include _generated/exhibits/OECD_LeisureCalibration.qmd >}}
 
 Group by group, the vector $X_i$ are a fraction of the common $X$, and their level carries no information of its own.
 Under the common $X$ the level is the unit of hours: it is set so that the model's average workweek is the observed
 one, relative to the U.S. for the UK and France, and the productivities scale with it. Under the vector $X_i$ the
-relative hours fix only the ratios of the $X_i$, and the unit is a normalisation. That is why the level differs so
+relative hours fix only the ratios of the $X_i$, and the unit is a normalization. That is why the level differs so
 much between the two while every aggregate is the same.
 
 {{< include _generated/exhibits/OECD_LeisureGroups.qmd >}}
@@ -27,11 +27,12 @@ much between the two while every aggregate is the same.
 ## The counterfactuals that differ {#oecd-leisure-rows}
 
 France's income distribution is imposed through the productivities and its leisure preferences through the taste
-for leisure, so these are the rows the treatment of leisure moves. On the U.S. the vector $X_i$ strengthens the
+for leisure, so these are the rows the treatment of leisure moves, with the row that imposes all of France's
+characteristics at once. On the U.S. the vector $X_i$ strengthens the
 effect of France's income distribution at every IES and makes that of its leisure preferences on hours a little
-smaller. On the UK the effect of France's income distribution on the tax rate changes sign: it lowers the UK's tax
-rate under the vector $X_i$, which reads part of the observed income dispersion off relative hours, and these are
-much flatter in the UK than in France.
+smaller. On the UK the effect of France's income distribution on the tax rate changes sign. The vector $X_i$ read part
+of the observed income dispersion off relative hours, which are much flatter in the UK than in France, so at the UK's
+income cuts France's productivity spread falls below the UK's, where under the common $X$ it lies above.
 
 ::: {.oa-explorer .column-page}
 {{< include _generated/exhibits/OECD_LeisureRows-head.qmd >}}

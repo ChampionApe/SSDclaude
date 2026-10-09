@@ -4,8 +4,9 @@ Section {{< var p.sec_numerical >}} of the paper computes date-specific Markov p
 along the demographic transition, and tests every candidate equilibrium at each state; the technical documentation
 [@BergGE26doc] gives the algorithms. The first table compares the date-specific solution with a time-invariant policy
 function, the approximation of much of the quantitative politico-economic literature, at the same dates. The second
-counts, for every file of results behind an exhibit, the equilibria and the candidates found at any state, and the
-states at which no candidate passed the test and the solver fell back on the integral rule. A single equilibrium at
+counts, for every file of results that records them, the equilibria and the candidates found at any state, and the
+states at which no candidate passed the test and the solver fell back on ranking the candidates by the integral of
+the first order condition, the fallback rule of the technical documentation. A single equilibrium at
 every state means that the selection rule of section {{< var p.sec_numerical >}} never had to choose.
 
 ::: {.panel-tabset}

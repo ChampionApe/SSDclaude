@@ -4,10 +4,12 @@
 
 The figure repeats the paper's figure {{< var p.fig_US_overview >}} with the UK beside the U.S. Each host keeps its
 own calibration and changes one characteristic over the whole horizon. The characteristics are its design, moved to
-the two corners; its population growth, halved (mild ageing) or held at one (acute ageing); or France's income
+the two corners; its population growth, halved (mild ageing) or set to zero (acute ageing); or France's income
 distribution, voting patterns or taste for leisure, with France's households cut at the host's income percentiles.
-On both hosts ageing and the design move the tax rate most. Ageing and France's voting patterns move the UK's tax
-rate by less than the U.S. one at every IES, and so does the design up to an IES of one. Two rows change sign
+On both hosts ageing and the design move the tax rate most, except on the U.S. at an IES of two, where France's
+voting patterns move it by more than either corner of the design. Ageing and France's voting patterns move the UK's
+tax rate by less than the U.S. one at every IES. Flat benefits raise it by less up to an IES of one, while fully
+earnings-related ones lower it by more at every IES. Two rows change sign
 between the hosts. France's income distribution raises the UK's tax rate where it lowers the U.S. one, because at
 the UK's income cuts France is the more unequal of the two (appendix {{< var p.app_US >}}). France's taste for
 leisure lengthens the UK's workweek where it shortens the U.S. one, since France's average taste for leisure lies
@@ -38,7 +40,7 @@ Regrouping changes what the calibration reads: θ is read off the replacement ra
 productivity spread is that of other groups. At the U.S. cuts the UK's productivity spread is much narrower than at
 its own, while France's at the UK's cuts is wider than at the U.S. ones. The UK at the U.S. cuts is a linear fit of
 the UK's group means against cumulative population shares rather than a recount of the survey, so its spread is an
-approximation. The tabs give the two regroupings household by household.
+approximation. The tabs give the two regroupings group by group.
 
 {{< include _generated/exhibits/OECD_Regroupings.qmd >}}
 
@@ -52,8 +54,9 @@ approximation. The tabs give the two regroupings household by household.
 
 The figure imposes the counterfactuals of the first figure on the UK under the two groupings, France's households
 cut at the same groups as the host's. Ageing moves the two alike, since it does not depend on how households are
-grouped. The design and France's voting patterns move the regrouped UK much less: at the U.S. cuts its incomes are
-compressed, so a flat benefit redistributes little and the poor have little to gain from voting more. France's income
+grouped. The design and France's voting patterns move the regrouped UK much less. At the U.S. cuts its incomes are
+compressed, so a flat benefit redistributes little, and its own turnout varies less across the groups than at its
+own cuts, so France's flat turnout changes less. France's income
 distribution, conversely, raises the regrouped UK's tax rate by much more, because next to that compressed
 distribution France's is unequal.
 

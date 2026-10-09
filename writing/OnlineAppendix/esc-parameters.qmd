@@ -2,11 +2,11 @@
 
 ## The counterfactuals across the intertemporal and the Frisch elasticity {#esc-frisch}
 
-The endogenous design of the U.S. across the intertemporal elasticity ρ, at the paper's Frisch elasticity, and across
-the Frisch elasticity ξ, under log preferences. Each value is a separate calibration with its own cost parameter,
+The figure shows the endogenous design of the U.S. across the intertemporal elasticity ρ, at the paper's Frisch
+elasticity, and across the Frisch elasticity ξ, under log preferences. Each value is a separate calibration with its own cost parameter,
 which falls steeply as the IES rises (table {{< var p.table_US_ESC_calibration >}} of the paper) and a little as the
 Frisch elasticity rises. Across the IES the figure holds every counterfactual of the paper's figure
-{{< var p.fig_US_ESC_overview >}}. Across the Frisch elasticity only acute ageing was run: the design it leads the
+{{< var p.fig_US_ESC_overview >}}. Across the Frisch elasticity only acute ageing is computed: the design it leads the
 electorate to choose is the same at every ξ, while the tax rate rises by less at a higher Frisch elasticity, whether
 the design is pinned or chosen.
 

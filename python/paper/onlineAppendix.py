@@ -67,7 +67,7 @@ EXHIBITS = {
     'ARG_ReformPaths': E('explorer', 'ARG_ReformPaths',
         caption = r'The reform along the path at one intertemporal elasticity',
         note = r'Levels on the pre-reform path and on the reform path, each economy calibrated at its $\rho$. The '
-               r'workweek is normalised so that the pre-reform path reads the observed average workweek in 2010. '
+               r'workweek is normalized so that the pre-reform path reads the observed average workweek in 2010. '
                r'The changes printed under the panels are the two points of figure \ref{fig:ARG:EffectOfCRRA} at '
                r'the chosen $\rho$. The faint lines are $\rho = 1$, the paper\textquotesingle s calibration.'),
     # A3
@@ -76,14 +76,15 @@ EXHIBITS = {
     # B1
     'OECD_RhoGrid': E('figure', 'OECD_RhoGrid',
         caption = r'The calibrations of the U.S., the UK and France across the intertemporal elasticity',
-        note = r'The parameters solved jointly with the equilibrium path at each $\rho$ of the grid, against the '
-               r'same targets, with $\beta$ calibrated for the U.S.\ and imposed on the UK and France. $\rho = 1$ '
-               r'is the paper\textquotesingle s calibration.'),
+        note = r'$\beta$, $\omega$ and $X$ are solved jointly with the equilibrium path at each $\rho$ of the grid, '
+               r'against the same targets, $\beta$ calibrated for the U.S.\ and imposed on the UK and France; the '
+               r'savings rate, and the interest factor of the UK and France, are predictions. $\rho = 1$ is the '
+               r'paper\textquotesingle s calibration.'),
     # B2
     'OECD_Hosts': E('explorer', 'OECD_Counterfactuals',
         caption = r'What shapes pensions, savings and labor supply in the U.S.\ and the UK',
         note = r'Each bar is the change against the host\textquotesingle s own baseline at the same $\rho$, in 2020. '
-               r'In the design row the full colour is $\theta = 0$ and the light tone $\theta = 1$; in the ageing '
+               r'In the design row the full color is $\theta = 0$ and the light tone $\theta = 1$; in the ageing '
                r'row the bar is acute ageing and the tick mild ageing. France\textquotesingle s income groups are cut '
                r'at the host\textquotesingle s income percentiles. Log preferences at $\rho = 1$, CRRA otherwise.'),
     'OECD_Regroupings': E('table', 'OECD_Regroupings'),
@@ -92,7 +93,7 @@ EXHIBITS = {
     'OECD_Groupings': E('explorer', 'OECD_Counterfactuals',
         caption = r'The UK at its own and at the U.S.\ income groups',
         note = r'As figure \ref{oa:OECD_Hosts}, for the UK at its own income groups, France cut at the same groups, '
-               r'and for the UK regrouped at the U.S.\ income groups, France at its own (the U.S.) groups. Each '
+               r'and for the UK regrouped at the U.S.\ income groups, France at the U.S.\ groups as in the paper. Each '
                r'bar is the change against that economy\textquotesingle s own baseline.'),
     # B3
     'OECD_Frisch': E('explorer', 'OECD_Counterfactuals',
@@ -106,7 +107,8 @@ EXHIBITS = {
         caption = r'The counterfactuals the treatment of the taste for leisure moves',
         note = r'France\textquotesingle s income distribution and leisure preferences under the common $X$ and '
                r'the vector $X_i$, each the change against the baseline of the same calibration and $\rho$. The '
-               r'design, ageing and voting rows are the same under the two.'),
+               r'design, ageing and voting rows are the same under the two. All French characteristics imposes France\textquotesingle s '
+               r'income distribution, leisure preferences and voting patterns at once.'),
     # C1
     'ESC_PathsCountries': E('explorer', 'ESC_Paths',
         caption = r'The baseline path with the design chosen, by country',
@@ -135,7 +137,7 @@ EXHIBITS = {
     'ESC_Frisch': E('explorer', 'ESC_Counterfactuals',
         caption = r'The endogenous design across the intertemporal and the Frisch elasticity, U.S.',
         note = r'As figure \ref{oa:ESC_Hosts}, for the U.S. Across $\xi$ the model is recalibrated at each value '
-               r'under log preferences ($\rho = 1$), the cost parameter included; only acute ageing was run there.'),
+               r'under log preferences ($\rho = 1$), the cost parameter included; only acute ageing is computed there.'),
     'ESC_PathsParameters': E('explorer', 'ESC_Paths',
         caption = r'The baseline path across the intertemporal and the Frisch elasticity, U.S.',
         note = r'The paper\textquotesingle s cost, recalibrated at each value. Under CRRA preferences the workweek with '

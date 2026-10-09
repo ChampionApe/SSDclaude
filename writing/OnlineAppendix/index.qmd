@@ -14,7 +14,7 @@ is built by the paper's own pipeline from the model's results; none is typed.
 
 The coverage reform of section {{< var p.sec_argentina >}}.
 
-- [A1. How pension designs shape the equilibria](arg-designs.qmd) <span>· every design (ε, θ)</span>
+- [A1. How pension designs shape the equilibria](arg-designs.qmd) <span>· the equilibrium over designs (ε, θ)</span>
 - [A2. The intertemporal elasticity of substitution](arg-ies.qmd) <span>· the calibration and the reform's paths</span>
 - [A3. Identification of X](arg-leisure.qmd) <span>· the two treatments of leisure</span>
 :::
@@ -54,9 +54,8 @@ Figure {{< var p.fig_US_OECDdata >}}'s data, the numerical checks, replication.
 
 :::
 
-**Reading the figures.** An interactive figure opens at the paper's own reading: log preferences, the common
-taste for leisure, the paper's cost of redistribution and the U.S. Point at a bar, a marker or a point to read its
-value. The controls above a figure change what it shows, and the address in the browser keeps the selection, so
+**Reading the figures.** An interactive figure opens on the paper's specification, and its legend marks the paper's
+values. Point at a bar, a marker or a point to read its value. The controls above a figure change what it shows, and the address in the browser keeps the selection, so
 a link opens the same view. Under every exhibit, *Data* downloads the numbers it shows and *Source* names the
 results files it reads, the code that builds it and the command that rebuilds it. A blue label marks an exhibit
 that is also in the paper, with its number there.

@@ -10,8 +10,9 @@ redistributes. The table gives the two calibrations.
 
 {{< include _generated/exhibits/ESC_CostCalibration.qmd >}}
 
-Under the cost on the design, acute ageing raises the chosen design by less at every IES: that cost does not grow
-with the tax rate that ageing raises, the channel the paper credits with about half of the response. France's voting
+Under the cost on the design, acute ageing raises the chosen design by less at every IES, since that cost does not
+grow with the tax rate that ageing raises: by about half as much at an IES of one, the comparison the paper draws, by
+much less at the lowest IES and by almost as much at the highest. France's voting
 patterns move the design further toward flat benefits. France's income distribution compresses the redistributive
 stakes but leaves the cost in place, and it takes the design to the Bismarckian corner at every IES.
 
