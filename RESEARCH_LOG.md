@@ -26,3 +26,14 @@ The only shared file is the generated `writing/Paper/onlineAppendix.tex`, which 
 Plan, decisions and status: `notes/plan_onlineAppendix.md` (untracked in the main checkout); module logs: python/paper,
 python/US. Headless Chrome (`--headless=new --virtual-time-budget`) checks the OJS pages when the desktop session is
 locked and the browser extension's tab is hidden.
+
+## 2026-10-09 (night) — the online appendix merged, published, and the unused outputs retired
+
+On RKB's go `oa-revision` went into `main` by fast-forward (`ea52b8e`). The idle paper session had uncommitted edits
+in four files the branch changes: all its uncommitted work was first stored as a stash ("paper session's uncommitted
+work at 58b53fb"), then three-way merged and left uncommitted on the new HEAD. `_escPairs`'s same-reading baseline
+and its README line carry over; its edits to code the branch retired (`_escTable`, the old site registry) and the
+retired tables' rebuilt files live only in that stash. D5 done: 94 outputs down to 35 (python/paper log). The site
+was published from the clean worktree (gh-pages `e3810ba`); worktree and branch removed, run logs kept in `logs/oa`.
+The plan is archived (`archive/notes/plan_onlineAppendix.md`); open: TODO W13 (the paper's pointers to the site), C12.
+Bash-tool heredocs collapse a double backslash to one: edit scripts with TeX in them go through a file written by Write.

@@ -5,8 +5,8 @@ B the rich economies with the design given, C the endogenous design, D data and 
 and its subsection pages. Static figures and tables come from the paper's pipeline; the interactive figures are
 Observable JS cells that draw, in the reader's browser, from csv files the build writes from the same results.
 Nothing is solved on the site and no number is typed in its prose. The design and its decisions (2026-10-09):
-`notes/plan_onlineAppendix.md` §2. The previous site (one page per chapter, a print edition) is in git history
-before branch `oa-revision`.
+`archive/notes/plan_onlineAppendix.md` §2. The previous site (one page per chapter, a print edition) is in git
+history before `9d82382`.
 
 ## Build
 
@@ -56,6 +56,7 @@ run the interactive cells; check them in a visible window or in headless Chrome 
   controls keep their state in the address (`#outcome=tau&...`), each under a key unique on its page.
 - `python/paper/test_onlineAppendix.py` checks the pages, keys and registry, converts every table, and ties each
   dataset to the paper's own figure (5.2, 6.1, 7.1, G.1) through that figure's marks.
-- Published at `https://championape.github.io/SSDclaude` (the previous site until the next publish): GitHub Pages
-  serves the `gh-pages` branch, which `quarto publish gh-pages --no-prompt --no-browser` (from this folder, after
-  `build.py --site`) renders and pushes. Publish on RKB's go. Plot, d3, Inputs and MathJax load from their CDNs.
+- Published at `https://championape.github.io/SSDclaude` (2026-10-09, from `ea52b8e`): GitHub Pages serves the
+  `gh-pages` branch, which `quarto publish gh-pages --no-prompt --no-browser` (from this folder, after
+  `build.py --site` on a clean tree, or the footer says "with uncommitted changes") renders and pushes. Publish on
+  RKB's go. Plot, d3, Inputs and MathJax load from their CDNs.

@@ -38,7 +38,23 @@ a referee may ask to reconcile: in section 5 a low IES needs a larger ω and the
 section 6 a high IES needs a lower ω and the design's effect is smaller. Appendix A keeps `\label{here1}`,
 `\label{here2}` and a `\smalltitle` without its period; the abstract's opening participle dangles ("Employing an
 overlapping generations model…, our analysis aligns…"); `Argentina.tex` keeps a commented-out
-`\input{Tables/Argentina_funcOfRho}`.
+`\input{Tables/Argentina_funcOfRho}`, whose table was retired on 2026-10-09.
+
+**W13. The paper's pointers to the online appendix**, rebuilt and published on 2026-10-09
+(`archive/notes/plan_onlineAppendix.md`). Every `\oa` key resolves, the retired ones as aliases
+(`onlineAppendix.OLDKEYS`; `oecd-us` is now `oecd`, `arg-calibration` `arg-leisure`, `esc-path` `esc-paths`). Four
+sentences describe the old site: section 6's footnote ("holds every table behind the figures of this section",
+`OECD.tex:4`) and figure 6.1's note ("Full tables with results are printed in the", `OECD.tex:23`), where each
+figure now offers its data as csv instead; appendix E's "the reform at every $\rho$ under both, are reported"
+(`HouseholdSurveyArg.tex:39`), where A3 shows the calibration under both and says the reform is identical; and
+figure G.1's note, "the paths from the first period" (`EndogenousDesignResults.tex:24`), where C1 starts in 1990.
+The site also has results the paper may cite: the UK's acute ageing with the design chosen (C2), the UK's and
+France's design paths (C1), and section 6's ranking at $\xi = 0.2$ and $0.4$ (B3).
+
+**C12. The online appendix's PDF edition** (RKB postponed it on 2026-10-09). The tables' tex stays in
+`results/paper/Tables` and `texTable.printTex` resolves the paper's references for print; the format left
+`_quarto.yml` and comes back with `pdf-engine: pdflatex` and `latex-auto-install: false` (`python/paper/README.md`,
+Traps).
 
 **C10. Figure PDFs are not byte-reproducible.** `figures._save` writes the PDF without
 `metadata = {'CreationDate': None}`, while the SVG drops its date, so a rebuild changes every PDF by its timestamp

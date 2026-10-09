@@ -70,6 +70,8 @@ Where the reasoning behind each choice the paper rests on is written down.
   `notes/paper_presentationPlan.md` and `notes/paper_gate1.md` to `paper_gate3.md` (retired 2026-10-07).
 - The appendix split and the online appendix (options, form, decisions O1 to O8, the open items as of
   2026-10-07): `notes/paper_onlineAppendix.md`; the build contract `notes/brief_onlineAppendix_2026-10-06.md`.
+- The online appendix rebuilt on RKB's outline (decisions D1 to D6, the page-by-page design, the outputs retired)
+  and published on 2026-10-09: `notes/plan_onlineAppendix.md`.
 - Figure 1 rebuilt from its sources: paper log 2026-09-30.
 
 ## Session logs
@@ -289,10 +291,16 @@ Archived 2026-10-07 (the cut to the paper as it stands):
 - `informalSavings_resolvedIssues.md`: the ρ ≈ 0.7 pocket and the ρ = 1 boundary, with the measurements behind
   the live smoother, grid and interpolant settings; cited from code.
 - `paper_onlineAppendix.md`, `brief_onlineAppendix_2026-10-06.md`: the online appendix's design and build
-  contract (output names, mark and row-key formats, sections and anchors); cited from `tablesOA.py`, `figuresOA.py`.
+  contract (output names, mark and row-key formats, sections and anchors) of the site before 2026-10-09; cited
+  from `tablesOA.py`.
 - `brief_designChoicePilot_2026-10-02.md`, `brief_designChoiceProduction_2026-10-02.md`,
   `brief_equilibriumTestCell_2026-10-02.md`, `brief_informalFrozenSelection_2026-10-02.md`: the `model-coder`
   briefs of 2026-10-02 (their test and measurement labels T1 to T11 and M1 to M8 are the ones the code uses).
+
+Archived 2026-10-09:
+- `plan_onlineAppendix.md`: RKB's outline of the online appendix (parts A to D) and its execution plan (decisions
+  D1 to D6, data, site map, design, page by page, status, the handover to the paper), closed when the site was
+  published and the unused outputs retired.
 
 ## Code
 

@@ -59,3 +59,14 @@ them tying the datasets to figures 5.2, 6.1, 7.1 and G.1. The site reads the ESC
 baseline, as the paper session's uncommitted `figuresUS`/`tablesUS` change does. On RKB's layout comments A2 no longer
 shows figure 5.2, compared facets stack on one x axis, and every chart draws at its own box's width (`fitted` in
 `oa.js`; OJS's `width` spans the page on a page with a `.column-page` block). Open: D5, merge, publish (plan §2.11).
+
+## 2026-10-09 (night) — D5: 59 outputs retired; the site merged and published
+
+The registry keeps the 35 outputs the paper inputs (15) or the site shows (20). Gone with their builders: `build._variants`
+and every `_vectorX` twin (builders keep `commonX`), the shock, CRRA and ESC experiment tables, `US_ESC_Summary`,
+`US_ESC_Results`, `US_ESC_ScaleWedge`, the two UK-US figures, the ρ-grid, path and ξ tables and `ESC_Path` (128 files in
+`results/paper` and `writing/Paper`). Marks no longer name table rows (OECDdata's alone remain); the workbook-ξ path check
+moved to `siteData.escPaths`; `build._usedIn` skips commented-out inputs; `NUM_Selection` rebuilt for the UK acute rows.
+Live outputs rebuild identical but for the marks' link fields (PDFs by date). Thinner chart rows (44 px a row). Merged
+(`ea52b8e`) and published (gh-pages `e3810ba`). `US_ESC_overview.marks.json` was rebuilt on the merged code without links and
+stays uncommitted with the paper session's same-reading outputs. Open: TODO W13, C12.
