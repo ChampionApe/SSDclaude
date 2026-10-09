@@ -12,10 +12,12 @@ Three families. Each scenario is a NEW EQUILIBRIUM PATH -- the shocked parameter
 reported as a full effect (tau re-optimised) and an economic-equilibrium-only effect (tau held at the
 baseline path):
 
-    theta    theta = 0 and theta = 1                              -> writing/Paper/Tables/US_PensChars.tex
-    ageing   mild (nu -> (1+nu)/2) and acute (nu -> 1), throughout -> US_Ageing.tex
+    theta    theta = 0 and theta = 1
+    ageing   mild (nu -> (1+nu)/2) and acute (nu -> 1), throughout
     french   France's income distribution, leisure preferences, voting, and all three at once
-                                                                  -> US_OtherShocks.tex
+
+Read by the paper's figure 6.1 (python/paper/figuresUS.usOverview) and the online appendix's counterfactuals
+(python/paper/siteData.oecdCounterfactuals), which also carries the economic-equilibrium effect.
 
 The income-distribution scenario holds theta at the US design (--freeTheta re-derives it from RR0 under
 France's eta instead), so that row is about inequality alone and the theta family carries pension design.
@@ -168,8 +170,8 @@ def franceReference(ρ, preferences, gs = None, commonX = False, workweekData = 
                     grouping = None):
     """ France's own calibrated equilibrium at 2020, in the same three columns the host rows carry.
 
-    The endpoint of the "mostly US, partly France" scale: US_OtherShocks reads its French-characteristics
-    rows against this. It is NOT a shock on the US model -- France has its own eta, X, mu, nu AND its own
+    The endpoint of the "mostly US, partly France" scale: the online appendix reads the French-characteristics
+    rows against this (scenario 'france' of siteData.oecdCounterfactuals). It is NOT a shock on the US model -- France has its own eta, X, mu, nu AND its own
     calibrated omega (ModelFR imposes the US beta and searches omega alone), so the gap between the
     all-characteristics row and this one is exactly what the observable characteristics fail to explain.
 

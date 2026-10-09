@@ -53,7 +53,7 @@ ESC = C.US['esc']
 # The paper's cost specification, for the CRRA legs and the stationary check (one spec each; the
 # stationary check follows the paper's spec so sec:numerical's footnote quotes the paper's own design).
 ESCSPEC = ['--spec', ESC['spec'], '--phi', str(ESC['phi'])]
-# The LOG leg runs the comparison arm too: it costs seconds, the appendix table US_ESC_ScaleWedge reads
+# The LOG leg runs the comparison arm too: it costs seconds, the online appendix's second cost reads
 # its rows, and runESC.stagePath and stageCountry OVERWRITE escPath.csv and escCountry.csv with the specs
 # of the run rather than merging (stageCalib and stageShocks merge), so a single-spec LOG run would drop
 # the other spec's path and country rows.

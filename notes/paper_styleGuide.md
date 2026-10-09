@@ -104,7 +104,7 @@ These rules are indicative, adjust if the context warrants it:
    its own `\par`, so without it the graphic's paragraph is set flush left and `\centering` is lost.
 - **Table and figure notes**. A single note is `\begin{tablenotes}[flushleft]` + `\item[]`,
   set as a paragraph with no list indent; the list form with `\item` is only for notes carrying labelled
-  markers keyed to cells (`US_Ageing`'s a/b). A note carries what the main text does not — it never
+  markers keyed to cells. A note carries what the main text does not — it never
   restates the section's own description of the exercise — and where several tables share a preamble,
   one anchors it and the rest say "the cost specification and the units are those of table X"
   (`tablesUS.ESCANCHOR`). Figure notes live in the `.tex` beside the `\includegraphics`, not drawn

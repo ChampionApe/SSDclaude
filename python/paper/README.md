@@ -31,11 +31,10 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 - Stages (i)/(ii) are declarations: the model folders' scripts do the work, and `config.py` records the
   settings the published numbers were produced at. **Change a paper number there first.**
 - Both arms carry two calibration variants, `config.US['commonX']` and `config.ARG['commonX']` (both True)
-  naming the headline. Every US and Argentina builder takes `commonX`: the plain name and tex label are the
-  headline, the `_vectorX` twin follows (`config.variantSuffix`, `build._variants`); only the twin names its
-  calibration (`config.variantNote`). Argentina's variant has its own sweep csv, instance directory and
-  suffixed shock/sweep csvs (`runCalibration.py`/`runShocks.py --commonX`). The ESC leg runs under the US
-  headline only.
+  naming the headline. Every builder takes `commonX` (the headline by default) and `build.py` registers the
+  headline only; the vector-X calibration reaches the online appendix through its own tables and datasets.
+  Argentina's variant has its own sweep csv, instance directory and suffixed shock/sweep csvs
+  (`runCalibration.py`/`runShocks.py --commonX`). The ESC leg runs under the US headline only.
 - Stage (0) is the only network access (Penn World Table via FRED; OECD, PaG 2021, World Bank, WIID and WID for
   figure 1); it writes inputs to `data/` and skips existing output. `oecdFigure1.PLOT = NAMED` plots the
   concepts figure 1's note names.
@@ -44,13 +43,14 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 - **The UK as host** (`config.US['ukHost']`, the UK's own λ in `config.US['esc']['uk']`): stage (i) sweeps
   `FRUK` and, with `--prepub`, calibrates the UK's λ under CRRA; stage (ii) runs `runShocksUS.py --host UK`
   and `--host UKUS` (the UK at US income groups), `escShocksUK`, `escShocksCRRAUK` (prepub; both with acute
-  ageing since 2026-10-09) and the `escExperimentsUK` merge; outputs `UK_*`, `FRUK_*`, `UKUS_*`.
+  ageing since 2026-10-09) and the `escExperimentsUK` merge; outputs `UK_*`, `FRUK_*`, `UKUS_*` and the site's
+  counterfactuals.
 - **The online appendix's runs** (2026-10-09): `shocksXi` (`python/US/runShocksXi.py`: the US counterfactuals at
   ξ = 0.2, 0.3, 0.4, LOG, common X, the US and France recalibrated at each ξ; its ξ = 0.3 block is checked against
   `US_shocksCommonX.csv`) and `escPathHost` (`runESC.py --stage pathHost`: the design path of France and the UK
   under the US λ and their own). The site's datasets (`siteData.py`) read them.
 - **The ESC cost**: `config.US['esc']['spec'] = 'size'` is the paper's, `comparisonSpec = 'scale'` the earlier
-  wedge that `US_ESC_ScaleWedge` sets beside it; under `'size'` `phi` is a dummy key and the `p` column holds λ.
+  wedge, the online appendix's second cost (C3); under `'size'` `phi` is a dummy key and the `p` column holds λ.
   Stage (i) calibrates both under LOG and the paper's under CRRA (`config.escBracket`); stage (ii)'s LOG
   entries run both specs, the CRRA and stationary ones the paper's.
 
@@ -61,29 +61,26 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `config.py` | paths, the `ARG` and `US` specifications, calendars, unit conversions; imports nothing from the models |
 | `datasets.py` | the only module that knows the `results/` layout and column names, both arms |
 | `tables.py`, `figures.py` | Argentina builders, one function per output; `figures` owns the house style |
-| `tablesUS.py`, `figuresUS.py` | US/France/UK builders, including section 7's `escCalibrationTable` (`US_ESC_Calibration`) and `escOverview` (`US_ESC_overview`), appendix G.1's `ukEscCalibrationTable` (`UK_ESC_Calibration`) and `escCountryTable` (`US_ESC_Country`), and the online `escResults` (`US_ESC_Results`, ρ = 1) and `escSummary` (`US_ESC_Summary`, across ρ) |
+| `tablesUS.py`, `figuresUS.py` | US/France/UK builders, including section 7's `escCalibrationTable` (`US_ESC_Calibration`) and `escOverview` (`US_ESC_overview`), appendix G.1's `ukEscCalibrationTable` (`UK_ESC_Calibration`) and `escCountryTable` (`US_ESC_Country`) |
 | `build.py` | stage (iii): the output registry for both arms, and the copy into `writing/Paper` (not for `ONLINE_ONLY`) |
-| `tablesOA.py`, `figuresOA.py` | the online appendix's own exhibits: figure 1's data, the calibrations across ρ and under the two treatments of leisure, the regroupings, the two costs, the endogenous design's path, ξ and timing, the numerical checks; `figuresOA.escPathPaper` is the paper's path figure (`US_ESC_Path`), kept beside the online one it is cut from |
+| `tablesOA.py`, `figuresOA.py` | the online appendix's own exhibits: figure 1's data, the calibrations across ρ and under the two treatments of leisure, the regroupings, the two costs, the timing of the design choice, the numerical checks; `figuresOA.escPathPaper` is the paper's path figure (`US_ESC_Path`) |
 | `siteData.py` | the datasets of the online appendix's interactive figures (kind `data`, `results/paper/Data/*.csv`): Argentina's reform paths, the design-given and the design-chosen counterfactuals, the endogenous-design paths; each in the paper's units and checked against the file it duplicates |
 | `onlineAppendix.py`, `texTable.py` | `build.py --site`: the registry of the online appendix's exhibits (`EXHIBITS`), their blocks (tables as HTML, figures as svg, an interactive figure's caption and note), the datasets, the palette, `_variables.yml` and the `\oa` macros with the retired keys aliased; reads `results/paper` and the paper's tex only. `test_onlineAppendix.py` checks them and ties each dataset to the paper's figure (a fast suite of `python/runTests.py`) |
 | `compareResults.py` | reading a run: every changed csv under `results/` against a commit, rows aligned on the file's keys, the largest difference per column and the columns added (writes nothing) |
 | `dataTargets.py`, `oecdFigure1.py` | stage (0) |
 
-## Outputs wired (94)
+## Outputs wired (35)
 
 Every generated `.tex` carries a `%% Source:` banner with the csv it was read from; `--list` reports what is
-buildable now. Every US and Argentina output is registered twice (headline and `_vectorX`), the ESC outputs
-once. Every table row ends in a `% row: <key>` comment (`tables.rowKey`) and every figure also writes `.svg` and
-`.marks.json` (`figures._save`, `figures.mark`): the site shows the svg, and `test_onlineAppendix.py` reads the
-marks to tie each dataset of the site to the paper's figure. The paper inputs 15 outputs (the calibration and
-household tables, `ArgentinaUniversal`, `ARG_CRRA_LOG`, `US_overview`, `US_ESC_Calibration`, `US_ESC_overview`,
-`OECDdata`, and appendix G's `UK_ESC_Calibration`, `US_ESC_Country` and `US_ESC_Path`); the 35 `ONLINE_ONLY`
-outputs, the four `data` ones among them, are never copied into `writing/Paper`. Since 2026-10-09 the online
-appendix shows 29 exhibits (`onlineAppendix.EXHIBITS`); the outputs it no longer shows and the paper does not
-input are still built, pending their retirement (`notes/plan_onlineAppendix.md` §2, D5). `US_ESC_Results` and `US_ESC_Summary` are still built and copied, like
-`US_ESC_Ageing`, but input by nothing: `REPLICATION.md`'s map says which tex inputs each. The robustness map
-(appendix G until 2026-10-09) is gone from the paper, the online appendix and the registry.
-Every US counterfactual is a new equilibrium path read at 2020 (`python/US/shocks.py`).
+buildable now. Every table row ends in a `% row: <key>` comment (`tables.rowKey`) and every figure also writes
+`.svg` and `.marks.json` (`figures._save`, `figures.mark`): the site shows the svg, and `test_onlineAppendix.py`
+reads the marks to tie each dataset of the site to the paper's figure. The paper inputs 15 outputs (the
+calibration and household tables, `ArgentinaUniversal`, `ARG_CRRA_LOG`, `US_overview`, `US_ESC_Calibration`,
+`US_ESC_overview`, `OECDdata`, and appendix G's `UK_ESC_Calibration`, `US_ESC_Country` and `US_ESC_Path`); the
+online appendix's 29 exhibits (`onlineAppendix.EXHIBITS`) read 20 more, of which the 18 `ONLINE_ONLY` (the four
+`data` outputs among them) are never copied into `writing/Paper`. The 59 outputs neither input nor shown (the
+`_vectorX` twins, the counterfactual and ESC tables, the ρ-grid, path and ξ tables) were retired with their
+builders on 2026-10-09. Every US counterfactual is a new equilibrium path read at 2020 (`python/US/shocks.py`).
 
 ## Traps
 
@@ -93,7 +90,6 @@ One line each; measurements in `archive/readmes/paper_README_2026-09-11.md`.
 - `build.py` backs up a hand-written file once, to `results/paper/superseded/`; re-runs detect their banner.
 - The workweek is a normalisation: `config.workweekHours(h, hRef)` = `42.54·h/hRef`, per ρ. Never `h·7·12`.
 - The pre-reform savings rate is per ρ in both arms; difference against that ρ's own baseline.
-  `Argentina_funcOfRho` raises if the pre-reform τ is not common.
 - The Argentina ρ march is seeded at its anchor (`config.ARG['anchorGuess']` → `--x0`); retune if α or the
   K/Y target moves.
 - `datasets.seedSavings` derives `s_{t0-1}` two ways and raises if they disagree. Keep the guard.
@@ -106,10 +102,10 @@ One line each; measurements in `archive/readmes/paper_README_2026-09-11.md`.
   and pass `titlesize`/`labelsize` to `figures._panel`; check the rendered page, not the png.
 - A `% row:` key is the LAST thing on its line (`tables.keyed`); a tagged mark is one artist (a scatter
   collection carries one gid for all its points), and `_save` raises if an id is not exactly once in the svg.
-- `--map` re-saves every figure and the PDFs carry a creation date: `git checkout` the ~17 that differ by bytes.
-- The online appendix renders with `pdf-engine: pdflatex` and `latex-auto-install: false`: a failed LuaLaTeX
-  run once made Quarto update the machine's TeX Live. Render HTML and PDF together; `--to pdf` alone empties
-  `_book` of the HTML.
+- `--map` and `--list` re-save every figure and the PDFs carry a creation date: `git checkout` the ones that
+  differ by bytes alone.
+- The online appendix's PDF edition (not built now) must render with `pdf-engine: pdflatex` and
+  `latex-auto-install: false`: a failed LuaLaTeX run once made Quarto update the machine's TeX Live.
 
 US arm:
 

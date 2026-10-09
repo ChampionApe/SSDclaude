@@ -31,27 +31,24 @@ from matplotlib.ticker import MaxNLocator
 import config as C
 import datasets as D
 from figures import SERIES, INK, LW, _panel, _save, markId, mark, signed, plain
-from tables import rowKey
 from tablesUS import ROWKEY
 
 
 # The rows of the overview, in the order the paper's discussion moves in: pension design, then ageing (the
-# two it identifies as the main determinants), then France's characteristics in UKUS_French's order.
+# two it identifies as the main determinants), then France's characteristics.
 # Reading the finished figure top-to-bottom should reproduce that ranking, so the order is fixed here
 # rather than sorted by effect size: a figure whose ordering changes with the data cannot be referred to
-# in prose. Each row is (row label, [(csv scenario, mark label), ...], shock family, how a second scenario
-# is drawn). A row with two scenarios is one bar per rho (_barPanel): 'tone' draws both from the baseline,
+# in prose. Each row is (row label, [(csv scenario, mark label), ...], how a second scenario is drawn). A row with two scenarios is one bar per rho (_barPanel): 'tone' draws both from the baseline,
 # the FIRST in the series colour and the second in its light tone (theta = 0 and theta = 1, on either side
 # of the US design); 'line' draws the first as the bar and marks the second by a line across it (mild
 # ageing inside acute ageing). The figure carries no key for either: the paper's note explains them. The
-# composite rows (all three French characteristics, France's own path) are the tables' business.
+# composite rows (all three French characteristics, France's own path) are not drawn.
 OVERVIEW = [('Pension design',       [(r'$\theta = 0$', r'$\theta = 0$'), (r'$\theta = 1$', r'$\theta = 1$')],
-             'design', 'tone'),
-            ('Ageing',               [('Acute ageing', 'Acute ageing'), ('Mild ageing', 'Mild ageing')], 'ageing',
-             'line'),
-            ('French income distr.', [('Income distribution', 'French income distr.')], 'french', None),
-            ('French voting',        [('Voting', 'French voting')], 'french', None),
-            ('French leisure',       [('Leisure preferences', 'French leisure')], 'french', None)]
+             'tone'),
+            ('Ageing',               [('Acute ageing', 'Acute ageing'), ('Mild ageing', 'Mild ageing')], 'line'),
+            ('French income distr.', [('Income distribution', 'French income distr.')], None),
+            ('French voting',        [('Voting', 'French voting')], None),
+            ('French leisure',       [('Leisure preferences', 'French leisure')], None)]
 
 # The light tone of a 'tone' bar: the series colour at this share over the surface, which keeps the
 # lightest of the three (orange) at about 2:1 against the surface, the floor at which it still reads as a
@@ -85,9 +82,6 @@ RHOCOLOURS = [SERIES[0], SERIES[1], INK['secondary']]
 MARKUNIT = {'τ': ('tau', 'p.p.'), 'srOverY': ('sr', 'p.p. of GDP'), 'workweek': ('ww', 'hours'),
             'θ_t0': ('theta', None), 'τ_t0': ('tau', 'p.p.'), 'sr_t0': ('sr', 'p.p. of GDP'),
             'ww_t0': ('ww', 'hours')}
-# The CRRA table printing each shock family of OVERVIEW at every rho of config.US['ρTable'], after the
-# host's name (_shockTable).
-CRRATABLE = {'design': '_CRRA_PensChars', 'ageing': '_CRRA_Ageing', 'french': '_CRRA_OtherShocks'}
 
 
 def _rhoPart(ρ):
@@ -96,12 +90,6 @@ def _rhoPart(ρ):
 
 def _markText(v, unit):
     return '{:.3f}'.format(v) if unit is None else signed(v, unit = unit)
-
-
-def _shockTable(host, fam, scenario, ρ, sfx):
-    r""" (table, row key) of the table printing `scenario` of family `fam` on `host` at `ρ`: the host's CRRA
-    table of the family, which prints every scenario of OVERVIEW and FRENCH at every rho. """
-    return host + CRRATABLE[fam] + sfx, rowKey(ROWKEY[scenario], ρ)
 
 
 def _tint(colour):
@@ -228,8 +216,8 @@ def usOverview(commonX = None):
     df = D.usShocks(commonX = commonX)
     ρs = C.US['ρTable']
     rows = _rowsPresent(df, ρs, OVERVIEW)
-    labels = [lab for lab, _, _, _ in rows]
-    kinds = [kind for _, _, _, kind in rows]
+    labels = [lab for lab, _, _ in rows]
+    kinds = [kind for _, _, kind in rows]
     colours = RHOCOLOURS[:len(ρs)]
 
     fig, axes = plt.subplots(1, len(PANELS), figsize = (8.4, 0.46*len(labels) + 2.2), sharey = True)
@@ -239,13 +227,12 @@ def usOverview(commonX = None):
         for ρ in ρs:
             base = D.usBaseline(df, ρ)[col]
             vals, ids = [], []
-            for _, scen, fam, _ in rows:
+            for _, scen, _ in rows:
                 vs = [scale*(D.usShockRow(df, ρ, s, 'full')[col] - base) for s, _ in scen]
                 gs = [markId(name, ROWKEY[s], _rhoPart(ρ), part) for s, _ in scen]
                 for (s, lab), v, g in zip(scen, vs, gs):
-                    tab, rk = _shockTable('US', fam, s, ρ, sfx)
                     marks.append(mark(g, plain(lab), v, _markText(v, unit),
-                                      series = 'ρ = ' + C.num(ρ, 1), panel = title, table = tab, row = rk))
+                                      series = 'ρ = ' + C.num(ρ, 1), panel = title))
                 vals.append(tuple(vs) if len(vs) > 1 else vs[0])
                 ids.append(tuple(gs) if len(gs) > 1 else gs[0])
             series.append((r'$\rho = ' + C.num(ρ, 1) + '$', vals))
@@ -268,14 +255,6 @@ ESCSCENARIOS = [('Acute ageing',           'acute'),
                 ('French income distr.',   'frIncome'),
                 ('French voting',          'frVoting'),
                 ('French leisure',         'frLeisure')]
-# The table printing each ESC scenario, per host; 'frBoth' through the all-French rows.
-ESCTABLE = {'US': {'acute': 'US_ESC_Ageing', 'frIncome': 'US_ESC_IncomeDistr', 'frVoting': 'US_ESC_Voting',
-                   'frBoth': 'US_ESC_FrenchAll'},
-            'UK': {'frIncome': 'UK_ESC_IncomeDistr', 'frVoting': 'UK_ESC_Voting', 'frBoth': 'UK_ESC_FrenchAll'}}
-# (scenario, column) a mark must not link to its ESCTABLE row, and the tooltip that says why.
-ESCUNPRINTED = {('frBoth', 'ww_t0'): ' (no table prints this workweek: the all-French rows also impose '
-                                     "France's level of X)"}
-NOTABLE = ' (no table prints this value)'
 
 
 def _capitalShare():
@@ -303,10 +282,10 @@ def _escRowsPresent(df, spec, ρs, scenarios):
     return out
 
 
-def _escPairs(name, df, spec, ρs, scen, col, title, scale, level, host = 'US', idHost = ()):
+def _escPairs(name, df, spec, ρs, scen, col, title, scale, level, idHost = ()):
     r""" One dumbbell panel's data: `pairs` for _dumbbellPanel (both readings against the ENDOGENOUS
-    baseline at each rho, or the level for `level`), their `gids` and the `marks`, each linked to the
-    pinned/chosen row of the host's ESC table (ESCTABLE). `idHost`: extra id parts naming the host. """
+    baseline at each rho, or the level for `level`), their `gids` and the `marks`. `idHost`: extra id parts
+    naming the host. """
     part, unit = MARKUNIT[col]
     pairs, gids, marks = [], [], []
     for ρ in ρs:
@@ -317,13 +296,10 @@ def _escPairs(name, df, spec, ρs, scen, col, title, scale, level, host = 'US', 
         pairs.append((r'$\rho = ' + C.num(ρ, 1) + '$', vals))
         gids.append([])
         for (lab, s), pv in zip(scen, vals):
-            tab = None if (s, col) in ESCUNPRINTED else ESCTABLE[host].get(s)
             ids = [markId(name, *idHost, s, _rhoPart(ρ), part, reading) for reading in ('pinned', 'chosen')]
             gids[-1].append(ids)
-            marks += [mark(g, plain(lab) + ('' if tab else ESCUNPRINTED.get((s, col), NOTABLE)), v,
-                           _markText(v, unit),
-                           series = 'ρ = {}, θ {}'.format(C.num(ρ, 1), reading), panel = title,
-                           table = tab, row = rowKey(reading, ρ) if tab else None)
+            marks += [mark(g, plain(lab), v, _markText(v, unit),
+                           series = 'ρ = {}, θ {}'.format(C.num(ρ, 1), reading), panel = title)
                       for g, v, reading in zip(ids, pv, ('pinned', 'chosen'))]
     return pairs, gids, marks
 
@@ -448,112 +424,3 @@ def escOverview():
                        label = '$\\theta$ chosen by the electorate')]
     _figLegend(fig, handles, [h.get_label() for h in handles], bottom = 0.12, ncol = 2)
     return _save(fig, 'US_ESC_overview', marks)
-
-
-# ---------------------------------------------------------------------------------------------------
-# France's characteristics on two hosts, the US and the UK (appendix app:UKUS). One row of panels per
-# host on shared axes per column, so the two hosts are compared by position rather than across figures.
-# ---------------------------------------------------------------------------------------------------
-HOSTS = [('US', 'U.S.'), ('UK', 'UK')]    # (host key, row label)
-FRENCH = [('French income distr.', 'Income distribution'),
-          ('French voting',        'Voting'),
-          ('French leisure',       'Leisure preferences'),
-          ('French characteristics', 'All French characteristics')]
-
-
-def _hostRowLabel(ax, text):
-    """ The host's name, set above the row's first panel and left of its title. """
-    ax.annotate(text, xy = (0, 1), xycoords = 'axes fraction', xytext = (0, 24), textcoords = 'offset points',
-                fontsize = 13, fontweight = 'bold', color = INK['primary'], ha = 'left', va = 'bottom')
-
-
-def ukusFrench(commonX = None):
-    r""" Figure \ref{fig:UKUS:french}: France's characteristics imposed on the US and on the UK at a given
-    pension design, in deviations from each host's own baseline, at each rho. Rows are hosts; columns the
-    tax rate, savings over GDP and the workweek, sharing each column's axis. Every scenario must be present
-    at every rho for both hosts (_rowsPresent), since a hole would read as a zero. """
-    commonX = C.US['commonX'] if commonX is None else commonX
-    sfx = C.variantSuffix(commonX)
-    name, marks = 'UKUS_French' + sfx, []
-    ρs = C.US['ρTable']
-    dfs = {h: D.usShocks(commonX = commonX, host = h) for h, _ in HOSTS}
-    scen = [s for s in FRENCH if all(s in _rowsPresent(dfs[h], ρs, FRENCH) for h, _ in HOSTS)]
-    if not scen:
-        raise D.MissingInput('the French scenarios in results/shocks/{US,UK}_shocks*.csv')
-    labels = [lab for lab, _ in scen]
-    colours = RHOCOLOURS[:len(ρs)]
-    fig, grid = plt.subplots(len(HOSTS), len(PANELS), figsize = (8.4, 2*(0.46*len(labels) + 1.5) + 0.8),
-                             sharey = True, sharex = 'col')
-    for i, (row, (h, hostLabel)) in enumerate(zip(grid, HOSTS)):
-        df = dfs[h]
-        for ax, (col, title, xlabel, scale) in zip(row, PANELS):
-            part, unit = MARKUNIT[col]
-            series, gids = [], []
-            for ρ in ρs:
-                base = D.usBaseline(df, ρ)[col]
-                vals = [scale*(D.usShockRow(df, ρ, s, 'full')[col] - base) for _, s in scen]
-                series.append((r'$\rho = ' + C.num(ρ, 1) + '$', vals))
-                gids.append([markId(name, h, ROWKEY[s], _rhoPart(ρ), part) for _, s in scen])
-                for (lab, s), v, g in zip(scen, vals, gids[-1]):
-                    tab, rk = _shockTable(h, 'french', s, ρ, sfx)
-                    marks.append(mark(g, plain(lab), v,
-                                      _markText(v, unit), series = 'ρ = ' + C.num(ρ, 1),
-                                      panel = hostLabel + ': ' + title, table = tab, row = rk))
-            _barPanel(ax, title, xlabel if i == len(HOSTS) - 1 else '', labels, series, colours, gids)
-        _hostRowLabel(row[0], hostLabel)
-    _topDown(grid.ravel())
-    for ax in grid[:, 0]:
-        ax.tick_params(axis = 'y', labelleft = True)
-    handles, labs = grid[0, 0].get_legend_handles_labels()
-    _figLegend(fig, handles, labs, bottom = 0.06)
-    return _save(fig, name, marks)
-
-
-ESCFRENCH = [('French income distr.',    'frIncome'),
-             ('French voting',           'frVoting'),
-             ('French characteristics', 'frBoth')]
-
-
-def ukusEscFrench():
-    r""" Figure \ref{fig:UKUS:escFrench}: France's characteristics on the US and on the UK when the design
-    is chosen, each host at its own cost parameter. Rows are hosts; the design in force in 2020 as a level
-    (the reference line is the host's own observed design) and the tax rate as a deviation from the
-    host's endogenous-theta baseline, as dumbbells from the pinned reading to the chosen one
-    (escOverview's encoding). 'frAll' is left out for the reason ESCSCENARIOS gives. """
-    spec, ρs = C.US['esc']['spec'], C.US['esc']['ρTable']
-    colours = RHOCOLOURS[:len(ρs)]
-    dfs = {h: D.escExperiments(h) for h, _ in HOSTS}
-    scen = [s for s in ESCFRENCH if all(s in _escRowsPresent(dfs[h], spec, ρs, ESCFRENCH) for h, _ in HOSTS)]
-    if not scen:
-        raise D.MissingInput('the French scenarios at every rho in results/esc/escExperiments{,UK}.csv')
-    labels = [lab for lab, _ in scen]
-    panels = [('θ_t0', 'Pension design in 2020', '$\\theta_{2020}$', 1., True),
-              ('τ_t0', 'Equilibrium tax rate', 'Percentage points', 100., False)]
-    fig, grid = plt.subplots(len(HOSTS), len(panels), figsize = (8.0, 2*(0.5*len(labels) + 1.4) + 0.9),
-                             sharey = True, sharex = 'col')
-    marks = []
-    for i, (row, (h, hostLabel)) in enumerate(zip(grid, HOSTS)):
-        df = dfs[h]
-        θstar = float(D.escRow(df, C.US['ρBaseline'], spec, 'baseline', False)['θ_t0'])
-        for ax, (col, title, xlabel, scale, level) in zip(row, panels):
-            pairs, gids, mk = _escPairs('UKUS_ESC_French', df, spec, ρs, scen, col, hostLabel + ': ' + title,
-                                        scale, level, host = h, idHost = (h,))
-            marks += mk
-            _dumbbellPanel(ax, title, xlabel if i == len(HOSTS) - 1 else '', labels, pairs, colours,
-                           ref = θstar if level else 0., extraRefs = (0., 1.) if level else (), gids = gids,
-                       zero = THETAZERO if level else ZEROROW)
-        row[0].set_xlim(-0.04, 1.06)
-        _hostRowLabel(row[0], hostLabel)
-    _topDown(grid.ravel())
-    for ax in grid[:, 0]:
-        ax.tick_params(axis = 'y', labelleft = True)
-    handles = [Line2D([], [], color = c, linewidth = 1.8, label = r'$\rho = ' + C.num(ρ, 1) + '$')
-               for c, ρ in zip(colours, ρs)]
-    handles += [Line2D([], [], marker = 'o', linestyle = 'none', markerfacecolor = 'white',
-                       markeredgecolor = INK['primary'], markersize = 6,
-                       label = "$\\theta$ pinned at the host's design"),
-                Line2D([], [], marker = 'o', linestyle = 'none', markerfacecolor = INK['primary'],
-                       markeredgecolor = 'white', markersize = 6,
-                       label = '$\\theta$ chosen by the electorate')]
-    _figLegend(fig, handles, [h.get_label() for h in handles], bottom = 0.12, ncol = 2)
-    return _save(fig, 'UKUS_ESC_French', marks)

@@ -1,15 +1,15 @@
 r""" Table builders for the online appendix (writing/OnlineAppendix; archive/notes/brief_onlineAppendix_2026-10-06.md,
 section 2.3). Each returns the complete tex body of one file in results/paper/Tables/, which is not copied
-into writing/Paper. Layout as tablesUS: tables.BANNER and tablesUS._xwrap, label `table:OA:<Name>` (plus
-config.variantSuffix on a twin), a note in the house form.
+into writing/Paper. Layout as tablesUS: tables.BANNER and tablesUS._xwrap, label `table:OA:<Name>`, a note
+in the house form.
 
 Every body row ends with ` % row: <key>`, the last thing on its line; block titles, sub-headers and rules
 carry none (brief section 2.2). `_body` refuses a duplicate key.
 
 Units are the paper tables': savings over GDP throughout (the ESC csvs carry s/(w h) and go through
 datasets.escSavingsOverY), tax and savings rates in percent to two decimals, their changes in p.p.
-(config.pp), the design theta to three decimals. The cell formatters a figure reuses for its marks' text
-(ARGRHOCOLS, OECDRHOCOLS, the ESC path cells) live here, so a mark and its table row print the same string.
+(config.pp), the design theta to three decimals. The cell formatters the figures reuse for their marks' text
+(ARGRHOCOLS, OECDRHOCOLS, escPathCells) live here.
 """
 import os, re
 import numpy as np
@@ -207,54 +207,8 @@ def oecdCorrelations():
 # ---------------------------------------------------------------------------------------------------
 # Argentina (argentina.qmd)
 # ---------------------------------------------------------------------------------------------------
-def argPeriods(commonX = None):
-    """ The reform path's dated periods at the baseline rho, terminal period excluded (s_T = 0): a list of
-    (offset from t0, year). Years past the workbook's dated part continue its period length. """
-    cal = C.calendar()
-    years = [cal['dates'][k] for k in sorted(cal['dates'])]
-    step = years[1] - years[0]
-    n = len(D.shockPath(C.ARG['ρBaseline'], 'reform', commonX = commonX)) - 1
-    return [(k, cal['year0'] + step*k) for k in range(n)]
-
-
-def argentinaReformPath(commonX = None):
-    r""" The reform of table \ref{table:Argentina:Universal} (full effect) at the baseline rho along its path:
-    the tax rate, savings over GDP and the average workweek per period, pre-reform (the path without the
-    reform) against reform. Levels throughout, as ArgentinaUniversal. The terminal period is not printed (its
-    savings are zero by construction). Rows keyed `y<year>@<rho>`. """
-    commonX = C.ARG['commonX'] if commonX is None else commonX
-    sfx = C.variantSuffix(commonX, 'ARG')
-    ρ = C.ARG['ρBaseline']
-    path = D.shockPath(ρ, 'reform', commonX = commonX)
-    srB = D.savingsRatePath(ρ, 'base', commonX = commonX)
-    srR = D.savingsRatePath(ρ, 'reform', commonX = commonX)
-    hRef = D.baselineHours(ρ, commonX = commonX)
-    lines = []
-    for k, year in argPeriods(commonX):
-        r = path.iloc[k]
-        lines.append(_row([str(year), C.pct(r['τ_base']), C.pct(r['τ_reform']),
-                           C.pct(srB.iloc[k]), C.pct(srR.iloc[k]),
-                           C.num(C.workweekHours(r['h_base'], hRef)), C.num(C.workweekHours(r['h_reform'], hRef))],
-                          'y{}@{}'.format(year, _rhoKey(ρ))))
-    sub = r'\textbf{Pre-reform} & \textbf{Reform}'
-    header = (r' & \multicolumn{2}{c}{\textbf{Tax rate}} & \multicolumn{2}{c}{\textbf{Savings rate}} & '
-              r'\multicolumn{2}{c}{\textbf{Avg. workweek (hours)}} \\' + '\n'
-              r'\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}' + '\n'
-              r'\textbf{Year} & ' + ' & '.join([sub]*3))
-    note = (r'\textit{Note:} The reform of table \ref{table:Argentina:Universal' + sfx + r'}, with taxes '
-            r'determined by the politico-economic equilibrium, at $\rho = ' + C.num(ρ, 0) + r'$. The '
-            r'pre-reform columns are the equilibrium path without the reform. The savings rate is savings '
-            r'relative to GDP. The workweek is normalised so that the pre-reform path reads the observed average '
-            r'workweek in ' + str(C.calendar()['year0']) + r'. The terminal period of the finite horizon, where '
-            r'savings are zero, is not shown.' + C.variantNote(commonX, arm = 'ARG'))
-    return _xwrap('ArgentinaReformPath' + sfx,
-                  'results/shocks/universal_match_rho%.4f%s.csv' % (ρ, C.argVariantTag(commonX)),
-                  'Pension system reform along the path, Argentina' + C.variantCaption(commonX, 'ARG'),
-                  _label('ArgentinaReformPath' + sfx), 'lYYYYYY', header, _body(lines), note)
-
-
-# (csv column, header, formatter) of the Argentine calibration across rho. ARG_RhoGrid's marks print with
-# the same formatters, so a hovered value reads as its table cell.
+# (csv column, header, formatter) of the Argentine calibration across rho; ARG_RhoGrid's marks print with
+# the formatters.
 ARGRHOCOLS = [('β',  r'$\beta$',    lambda v: C.num(v, 3)),
               ('ω',  r'$\omega$',   lambda v: C.num(v, 3)),
               ('η0', r'$\eta_0$',   lambda v: C.num(v, 3)),
@@ -278,40 +232,10 @@ def _onGrid(g, grid, path):
     return g[g['ρ'].apply(lambda r: any(np.isclose(r, v) for v in grid))].reset_index(drop = True)
 
 
-def argRhoGridTable(commonX = None):
-    r""" The Argentine calibration at every rho of the grid (results/calibration/informalSavings_rhoGrid*):
-    beta, omega, eta_0, X_0, the common X (the vector-X sweep records none: '--'), and the two untargeted
-    moments of the calibration year, the savings rate over GDP and the informal savings ratio iota. Rows
-    keyed `rho@<rho>`. The targets (K/Y and tau) are common to every row and go into the note, read from the
-    csv and checked to be common. """
-    commonX = C.ARG['commonX'] if commonX is None else commonX
-    sfx = C.variantSuffix(commonX, 'ARG')
-    g = argRhoGrid(commonX)
-    for col in ('KY', 'τ'):
-        if np.ptp(g[col].astype(float)) > 1e-6:
-            raise ValueError('{} differs across rho in the Argentine sweep (spread {:.2e}); it is a target'
-                             .format(col, np.ptp(g[col].astype(float))))
-    lines = [_row([C.num(r['ρ'], 1)] + [_dash(r[c], f) for c, _, f in ARGRHOCOLS], 'rho@' + _rhoKey(r['ρ']))
-             for _, r in g.iterrows()]
-    year = C.calendar()['year0']
-    note = (r'\textit{Note:} Each $\rho$ is calibrated to the same targets, a capital--output ratio of $'
-            + C.num(float(g['KY'].iloc[0]), 2) + r'$ and a tax rate of ' + C.pct(float(g['τ'].iloc[0])) + r' in '
-            + str(year) + r'; the calibration at $\rho = ' + C.num(C.ARG['ρBaseline'], 0) + r'$ is table '
-            r'\ref{table:Arg:Calib' + sfx + r'}. The savings rate (savings relative to GDP) and the informal '
-            r'savings ratio $\iota = s^0/s$ are those of ' + str(year) + r', predictions rather than targets.'
-            + ('' if commonX else r' The vector-$X_i$ calibration has no common $X$.')
-            + C.variantNote(commonX, arm = 'ARG'))
-    return _xwrap('ARG_RhoGridTable' + sfx, os.path.relpath(C.argSweepCsv(commonX), C.REPO).replace(os.sep, '/'),
-                  r'The calibration across $\rho$, Argentina' + C.variantCaption(commonX, 'ARG'),
-                  _label('ARG_RhoGridTable' + sfx), 'Y'*(1 + len(ARGRHOCOLS)),
-                  [r'\textbf{CRRA} ($\rho$)'] + [h for _, h, _ in ARGRHOCOLS], _body(lines), note,
-                  width = r'\textwidth')
-
-
 # ---------------------------------------------------------------------------------------------------
 # The rich economies with the design given (oecd.qmd)
 # ---------------------------------------------------------------------------------------------------
-OECDHOSTS = (('US', 'usa'), ('UK', 'gbr'), ('FR', 'fra'))      # (sweep key, row-key block), the paper's order
+OECDHOSTS = (('US', 'usa'), ('UK', 'gbr'), ('FR', 'fra'))      # (sweep key, mark-id part), the paper's order
 OECDRHOCOLS = [('β',  r'$\beta$',  lambda v: C.num(v, 3)),
                ('ω',  r'$\omega$', lambda v: C.num(v, 3)),
                ('X',  r'$X$',      lambda v: C.num(v, 2)),
@@ -326,176 +250,13 @@ def oecdSweeps(commonX = None):
     return {c: _onGrid(D.usSweep(c, cx), C.US['ρGrid'], C.usSweepCsv(c, cx)) for c, _ in OECDHOSTS}
 
 
-def oecdRhoGridTable(commonX = None):
-    r""" The U.S., UK and French calibrations at every rho of the grid (results/calibration/{US,UK,FR}_rhoGrid*),
-    one block per country: beta, omega, the common X (the vector-X sweeps record none: '--'), the 30-year
-    gross interest factor R and the savings rate over GDP in the calibration year. Rows keyed
-    `<iso3>@<rho>`. """
-    commonX = C.US['commonX'] if commonX is None else commonX
-    sfx = C.variantSuffix(commonX)
-    sw = oecdSweeps(commonX)
-    lines = []
-    for c, key in OECDHOSTS:
-        lines.append(_title(COUNTRYNAME[c], 1 + len(OECDRHOCOLS)))
-        for _, r in sw[c].iterrows():
-            lines.append(_row([C.num(r['ρ'], 1)] + [_dash(r[k], f) for k, _, f in OECDRHOCOLS],
-                              key + '@' + _rhoKey(r['ρ'])))
-        lines[-1] = lines[-1].replace(r' \\ % row:', r' \\[.5em] % row:')
-    year = C.usCalendar()['year0']
-    note = (r'\textit{Note:} $\beta$ is calibrated for the U.S., to its interest factor $R$, and imposed on the '
-            r'UK and France at the same $\rho$; their $R$ is a prediction. $\omega$ is calibrated to each '
-            r'country\textquotesingle s tax rate in ' + str(year) + r'. '
-            + (r'$X$ is pinned by the U.S.\ average workweek and by average hours relative to the U.S. ' if commonX
-               else r'The vector-$X_i$ calibration has no common $X$. ')
-            + r'The savings rate is savings relative to GDP in ' + str(year) + r', a prediction. The calibration '
-            r'at $\rho = ' + C.num(C.US['ρBaseline'], 0) + r'$ is table \ref{table:US:Calib' + sfx + '}.'
-            + C.variantNote(commonX))
-    return _xwrap('OECD_RhoGridTable' + sfx, 'results/calibration/{US,UK,FR}_rhoGrid%s.csv' % ('CommonX' if commonX else ''),
-                  r'The calibration across $\rho$: the U.S., the UK and France' + C.variantCaption(commonX),
-                  _label('OECD_RhoGridTable' + sfx), 'Y'*(1 + len(OECDRHOCOLS)),
-                  [r'\textbf{CRRA} ($\rho$)'] + [h for _, h, _ in OECDRHOCOLS], _body(lines), note)
-
-
 # ---------------------------------------------------------------------------------------------------
 # The endogenous design (esc.qmd)
 # ---------------------------------------------------------------------------------------------------
-def escXiValues():
-    """ (the workbook xi, [the other xi with a converged calibration]) of escXiRobustness.csv. The workbook
-    xi is the US calibration's, read from the summary. """
-    ξ0 = float(D.usCalibrationSummary()['US']['ξ'])
-    xi = D.escXi()
-    cal = xi[(xi['kind'] == 'calibration') & xi['converged'].astype(str).isin(['True', 'true', '1', '1.0'])]
-    others = sorted(float(x) for x in cal['xi'].unique() if not np.isclose(float(x), ξ0))
-    return ξ0, others
-
-
-def escXiPath(ξ):
-    """ The baseline path at Frisch elasticity `xi` (rho = 1), the columns of datasets.escPath. """
-    xi = D.escXi()
-    df = xi[np.isclose(xi['xi'].astype(float), ξ) & (xi['kind'] == 'path')]
-    if df.empty:
-        raise D.MissingInput('results/esc/escXiRobustness.csv (path, ξ = {})'.format(ξ))
-    return df.sort_values('pos').reset_index(drop = True)
-
-
-def escPathSpecs():
-    r""" The specifications ESC_Path and ESC_PathTable print, in order: [(block title, path frame, key
-    suffix, series label, rho, xi)], the rhos of config.US['esc']['ρTable'] at the workbook xi, then the
-    other xi at the baseline rho. Refuses a workbook-xi path in escXiRobustness.csv that does not reproduce
-    escPath.csv (a stale row, crossCuttingFindings #13). """
-    ξ0, others = escXiValues()
-    ρ1 = C.US['ρBaseline']
-    base = D.escPath(ρ1)
-    try:
-        own = escXiPath(ξ0)
-    except D.MissingInput:
-        own = None
-    if own is not None:
-        for c in ('θ', 'τ', 'τExo'):
-            if len(own) != len(base) or np.max(np.abs(own[c].values - base[c].values)) > 1e-8:
-                raise ValueError('escXiRobustness.csv at the workbook ξ = {} does not reproduce escPath.csv ({}); '
-                                 're-run python/US/runESCxi.py'.format(ξ0, c))
-    out = []
-    for ρ in C.US['esc']['ρTable']:
-        out.append((r'$\rho = ' + C.num(ρ, 1) + '$', D.escPath(ρ), '@' + _rhoKey(ρ),
-                    r'$\rho = ' + C.num(ρ, 1) + '$', ρ, ξ0))
-    for ξ in others:
-        out.append((r'$\rho = ' + C.num(ρ1, 1) + r'$, $\xi = ' + C.num(ξ, 1) + '$', escXiPath(ξ),
-                    'xi' + C.num(ξ, 1) + '@' + _rhoKey(ρ1), r'$\xi = ' + C.num(ξ, 1) + '$', ρ1, ξ))
-    return out
-
-
-def escPathKey(year, suffix):
-    """ ESC_PathTable's row key for `year` in the specification whose key suffix is `suffix` ('@1.0',
-    'xi0.2@1.0'): 'y2050@1.0', 'y2050xi0.2@1.0'. """
-    return 'y{}{}'.format(int(year), suffix)
-
-
 def escPathCells(r):
-    """ ESC_PathTable's cells for one path row: the design chosen, the tax chosen and pinned, their
-    difference. ESC_Path's marks print the first and the last. """
+    """ One baseline-path row as the tables print it: the design chosen, the tax chosen and pinned, their
+    difference. US_ESC_Path's marks print the first three. """
     return [C.num(r['θ'], 3), C.pct(r['τ']), C.pct(r['τExo']), C.pp(r['τ'] - r['τExo'])]
-
-
-def escPathTable():
-    r""" The design and the tax along the baseline path, chosen against pinned: per specification (each rho of
-    config.US['esc']['ρTable'] at the workbook xi, the other xi at rho = 1) and date, the design in force with
-    the choice binding from the first period, the tax on that path, the tax with the design held at theta*
-    throughout, and their difference. results/esc/escPath.csv (rho = 1), escPathCRRA.csv (the published
-    method), escXiRobustness.csv. Rows keyed `y<year>@<rho>` and `y<year>xi<xi>@<rho>`. """
-    specs = escPathSpecs()
-    θstar = float(D.escCalibration()[(C.US['ρBaseline'], C.US['esc']['spec'])]['θStar'])
-    lines = []
-    for title, df, suffix, _, _, _ in specs:
-        lines.append(_title(title, 5))
-        for _, r in df.iterrows():
-            lines.append(_row([str(int(r['date']))] + escPathCells(r), escPathKey(r['date'], suffix)))
-        lines[-1] = lines[-1].replace(r' \\ % row:', r' \\[.5em] % row:')
-    ξ0 = specs[0][5]
-    note = (r'\textit{Note:} Chosen: the design is chosen one period in advance from the first period on, '
-            r'at the cost parameter calibrated for each specification (table \ref{table:US_ESC:calibration} and '
-            r'table \ref{' + _label('ESC_Xi') + r'}); its first value is the initial condition. Pinned: the same '
-            r'model with the design held at $\theta^{\ast} = ' + C.num(θstar, 3) + r'$ throughout. The '
-            r'$\rho$ blocks are at $\xi = ' + C.num(ξ0, 1) + r'$, and $\rho \neq 1$ is solved by the exact '
-            r'two-dimensional recursion. The last period shown precedes the terminal period of the finite '
-            r'horizon.')
-    return _xwrap('ESC_PathTable', 'results/esc/escPath.csv, escPathCRRA.csv, escXiRobustness.csv',
-                  'The design and the tax along the baseline path, chosen and pinned', _label('ESC_PathTable'),
-                  'YYYYY', [r'\textbf{Year}', r'$\theta_t$ \textbf{chosen}', r'\textbf{Tax rate, chosen}',
-                            r'\textbf{Tax rate, pinned}', r'\textbf{Difference}'], _body(lines), note)
-
-
-def escXi():
-    r""" The endogenous design at other Frisch elasticities (log preferences, results/esc/escXiRobustness.csv):
-    per xi the calibrated cost parameter lambda, the design in force in the three periods after 2020 on the
-    baseline path, and acute ageing at 2020 with the design pinned at theta* and chosen (the design chosen,
-    and the tax rate under each reading). Rows keyed `xi<xi>`. The workbook xi's acute-ageing rows are
-    checked against escExperiments.csv (US_ESC_Ageing at rho = 1) and a mismatch raises. """
-    ξ0, others = escXiValues()
-    xi = D.escXi()
-    t0 = C.usCalendar()['year0']
-    acute = D.escExperiments()
-    lines, years = [], None
-    for ξ in sorted([ξ0] + others):
-        sub = xi[np.isclose(xi['xi'].astype(float), ξ)]
-        cal = sub[sub['kind'] == 'calibration']
-        if cal.empty:
-            raise D.MissingInput('results/esc/escXiRobustness.csv (calibration, ξ = {})'.format(ξ))
-        path = escXiPath(ξ)
-        after = path[path['date'] > t0].sort_values('date').head(3)
-        if years is None:
-            years = [int(y) for y in after['date']]
-        elif [int(y) for y in after['date']] != years:
-            raise ValueError('escXiRobustness.csv: the path dates differ across ξ')
-        get = lambda kind: sub[sub['kind'] == kind]
-        pin, cho = get('acute pinned'), get('acute chosen')
-        if pin.empty or cho.empty:
-            raise D.MissingInput('results/esc/escXiRobustness.csv (acute ageing, ξ = {})'.format(ξ))
-        pin, cho = pin.iloc[0], cho.iloc[0]
-        if np.isclose(ξ, ξ0):
-            for reading, row in ((True, pin), (False, cho)):
-                pub = D.escRow(acute, C.US['ρBaseline'], C.US['esc']['spec'], 'acute', reading)
-                if abs(pub['θ_t0'] - row['θ']) > 1e-8 or abs(pub['τ_t0'] - row['τ']) > 1e-8:
-                    raise ValueError('escXiRobustness.csv at the workbook ξ does not reproduce escExperiments.csv '
-                                     '(acute, pinned={}); re-run python/US/runESCxi.py'.format(reading))
-        lines.append(_row([C.num(ξ, 1), C.num(float(cal.iloc[0]['p']), 3)]
-                          + [C.num(v, 3) for v in after['θ']]
-                          + [C.num(cho['θ'], 3), C.pct(pin['τ']), C.pct(cho['τ'])], 'xi' + C.num(ξ, 1)))
-    header = (r' & & \multicolumn{3}{c}{\textbf{Design on the baseline path}} & '
-              r'\multicolumn{3}{c}{\textbf{Acute ageing, ' + str(t0) + r'}} \\' + '\n'
-              r'\cmidrule(lr){3-5}\cmidrule(lr){6-8}' + '\n'
-              r'$\xi$ & $\lambda$ & ' + ' & '.join(r'$\theta_{' + str(y) + '}$' for y in years)
-              + r' & $\theta$ \textbf{chosen} & \textbf{Tax, pinned} & \textbf{Tax, chosen}')
-    θstar = float(D.escCalibration()[(C.US['ρBaseline'], C.US['esc']['spec'])]['θStar'])
-    note = (r'\textit{Note:} Log preferences ($\rho = 1$). At each Frisch elasticity $\xi$ the model is '
-            r'recalibrated, $(\beta, \omega, X)$ to their targets and $\lambda$ so that $\theta_{'
-            + str(t0) + r'} = \theta^{\ast} = ' + C.num(θstar, 3) + r'$. The design columns follow the '
-            r'baseline path of table \ref{' + _label('ESC_PathTable') + r'}. Acute ageing sets $\nu_t = 1$ '
-            r'throughout, a new equilibrium path read at ' + str(t0) + r', with the design pinned at '
-            r'$\theta^{\ast}$ or chosen; at $\xi = ' + C.num(ξ0, 1) + r'$ it is the row of table '
-            r'\ref{table:US_ESC:ageing} at $\rho = 1$.')
-    return _xwrap('ESC_Xi', 'results/esc/escXiRobustness.csv', r'The endogenous design across the Frisch elasticity $\xi$',
-                  _label('ESC_Xi'), 'Y'*8, header, _body(lines), note, width = r'\textwidth')
 
 
 def escTiming():

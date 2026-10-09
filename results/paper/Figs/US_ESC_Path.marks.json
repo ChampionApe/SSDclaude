@@ -8,8 +8,8 @@
    "panel": "Workers per retiree ν_t",
    "value": 1.339667762739423,
    "text": "1.34",
-   "table": "ESC_PathTable",
-   "row": "y2020@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--nu--data--2050",
@@ -18,8 +18,8 @@
    "panel": "Workers per retiree ν_t",
    "value": 1.1219986438186136,
    "text": "1.12",
-   "table": "ESC_PathTable",
-   "row": "y2050@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--nu--data--2080",
@@ -28,8 +28,8 @@
    "panel": "Workers per retiree ν_t",
    "value": 1.0688804499803877,
    "text": "1.07",
-   "table": "ESC_PathTable",
-   "row": "y2080@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--nu--data--2110",
@@ -38,8 +38,8 @@
    "panel": "Workers per retiree ν_t",
    "value": 1.0688804499803877,
    "text": "1.07",
-   "table": "ESC_PathTable",
-   "row": "y2110@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--nu--data--2140",
@@ -48,8 +48,8 @@
    "panel": "Workers per retiree ν_t",
    "value": 1.0688804499803877,
    "text": "1.07",
-   "table": "ESC_PathTable",
-   "row": "y2140@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--nu--data--2170",
@@ -58,8 +58,8 @@
    "panel": "Workers per retiree ν_t",
    "value": 1.0688804499803877,
    "text": "1.07",
-   "table": "ESC_PathTable",
-   "row": "y2170@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--theta--chosen--2020",
@@ -68,8 +68,8 @@
    "panel": "Pension design θ_t",
    "value": 0.738226379401147,
    "text": "0.738",
-   "table": "ESC_PathTable",
-   "row": "y2020@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--theta--chosen--2050",
@@ -78,8 +78,8 @@
    "panel": "Pension design θ_t",
    "value": 0.797328434018981,
    "text": "0.797",
-   "table": "ESC_PathTable",
-   "row": "y2050@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--theta--chosen--2080",
@@ -88,8 +88,8 @@
    "panel": "Pension design θ_t",
    "value": 0.8040217663614139,
    "text": "0.804",
-   "table": "ESC_PathTable",
-   "row": "y2080@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--theta--chosen--2110",
@@ -98,8 +98,8 @@
    "panel": "Pension design θ_t",
    "value": 0.8086228529539058,
    "text": "0.809",
-   "table": "ESC_PathTable",
-   "row": "y2110@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--theta--chosen--2140",
@@ -108,8 +108,8 @@
    "panel": "Pension design θ_t",
    "value": 0.8086228529530396,
    "text": "0.809",
-   "table": "ESC_PathTable",
-   "row": "y2140@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--theta--chosen--2170",
@@ -118,8 +118,8 @@
    "panel": "Pension design θ_t",
    "value": 0.8086228529535724,
    "text": "0.809",
-   "table": "ESC_PathTable",
-   "row": "y2170@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--tau--pinned--2020",
@@ -128,8 +128,8 @@
    "panel": "Tax rate τ_t",
    "value": 14.428571428571392,
    "text": "14.43%",
-   "table": "ESC_PathTable",
-   "row": "y2020@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--tau--pinned--2050",
@@ -138,8 +138,8 @@
    "panel": "Tax rate τ_t",
    "value": 19.33212352238321,
    "text": "19.33%",
-   "table": "ESC_PathTable",
-   "row": "y2050@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--tau--pinned--2080",
@@ -148,8 +148,8 @@
    "panel": "Tax rate τ_t",
    "value": 20.67314077474437,
    "text": "20.67%",
-   "table": "ESC_PathTable",
-   "row": "y2080@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--tau--pinned--2110",
@@ -158,8 +158,8 @@
    "panel": "Tax rate τ_t",
    "value": 20.67314077474437,
    "text": "20.67%",
-   "table": "ESC_PathTable",
-   "row": "y2110@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--tau--pinned--2140",
@@ -168,8 +168,8 @@
    "panel": "Tax rate τ_t",
    "value": 20.67314077474437,
    "text": "20.67%",
-   "table": "ESC_PathTable",
-   "row": "y2140@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--tau--pinned--2170",
@@ -178,8 +178,8 @@
    "panel": "Tax rate τ_t",
    "value": 20.67314077474437,
    "text": "20.67%",
-   "table": "ESC_PathTable",
-   "row": "y2170@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--tau--chosen--2020",
@@ -188,8 +188,8 @@
    "panel": "Tax rate τ_t",
    "value": 14.42857144180204,
    "text": "14.43%",
-   "table": "ESC_PathTable",
-   "row": "y2020@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--tau--chosen--2050",
@@ -198,8 +198,8 @@
    "panel": "Tax rate τ_t",
    "value": 19.47719318871744,
    "text": "19.48%",
-   "table": "ESC_PathTable",
-   "row": "y2050@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--tau--chosen--2080",
@@ -208,8 +208,8 @@
    "panel": "Tax rate τ_t",
    "value": 20.86975382540735,
    "text": "20.87%",
-   "table": "ESC_PathTable",
-   "row": "y2080@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--tau--chosen--2110",
@@ -218,8 +218,8 @@
    "panel": "Tax rate τ_t",
    "value": 20.8757120498718,
    "text": "20.88%",
-   "table": "ESC_PathTable",
-   "row": "y2110@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--tau--chosen--2140",
@@ -228,8 +228,8 @@
    "panel": "Tax rate τ_t",
    "value": 20.87571204987081,
    "text": "20.88%",
-   "table": "ESC_PathTable",
-   "row": "y2140@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "US_ESC_Path--tau--chosen--2170",
@@ -238,8 +238,8 @@
    "panel": "Tax rate τ_t",
    "value": 20.87571204987142,
    "text": "20.88%",
-   "table": "ESC_PathTable",
-   "row": "y2170@1.0"
+   "table": null,
+   "row": null
   }
  ]
 }

@@ -19,7 +19,6 @@ import matplotlib.patheffects as pe
 
 import config as C
 import datasets as D
-from tables import rowKey
 
 SERIES = ('#2a78d6', '#eb6834')     # categorical slots 1 and 2, in fixed order
 INK    = {'primary': '#0b0b0b', 'secondary': '#52514e', 'muted': '#898781', 'grid': '#e1e0d9'}
@@ -221,8 +220,7 @@ def argCrraLog(longRun = 1, commonX = None):
     before it already carries the terminal boundary's influence.
 
     Each panel is a CHANGE in the natural unit of its variable -- percentage points for the three rates
-    and hours for the workweek -- rather than a common percent scale, because the table beside it
-    reports levels in exactly those units. """
+    and hours for the workweek -- rather than a common percent scale. """
     commonX = C.ARG['commonX'] if commonX is None else commonX
     nPeriods = len(D.shockPath(C.ARG['ρBaseline'], 'reform', commonX = commonX))
     if longRun >= nPeriods - 1:
@@ -267,13 +265,8 @@ def argCrraLog(longRun = 1, commonX = None):
                 pt, = ax.plot(ρ, v, color = colour, marker = 'o', markersize = MS, linestyle = 'none',
                               zorder = 3)
                 pt.set_gid(markId(name, part, run, 'rho{:.1f}'.format(ρ)))
-                # ArgentinaReformByRho prints the short run's tax, savings and workweek; nothing prints
-                # the informal savings ratio or the long run.
-                tab = run == 'short' and part != 'iota'
                 marks.append(mark(pt.get_gid(), 'ρ = {:.1f}'.format(ρ), v, signed(v, unit = unit),
-                                  series = label, panel = plain(title),
-                                  table = 'ArgentinaReformByRho' + sfx if tab else None,
-                                  row = rowKey('rho', ρ) if tab else None))
+                                  series = label, panel = plain(title)))
         ax.axhline(0, color = INK['grid'], linewidth = 1, zorder = 0)
         ax.set_xlabel('$\\rho$', color = INK['secondary'], fontsize = 9)
 

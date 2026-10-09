@@ -213,6 +213,14 @@ def escPaths():
             θStar = float(calib[(float(ρ), spec)]['θStar'])
             rows += _pathRows(D.escPath(ρ, spec = spec), 'main', 'US', ('US', 'own'), spec, ρ, ξ0, θStar, years)
     xi = D.escXi()
+    # A stale row (crossCuttingFindings #13): the workbook-xi path must be escPath.csv's rho = 1 path.
+    own = xi[np.isclose(xi['xi'], ξ0) & (xi['kind'] == 'path')].sort_values('pos')
+    if not own.empty:
+        base = D.escPath(1.0)
+        for c in ('θ', 'τ', 'τExo'):
+            if len(own) != len(base) or np.max(np.abs(own[c].values - base[c].values)) > 1e-8:
+                raise ValueError('escXiRobustness.csv at the workbook ξ = {} does not reproduce escPath.csv ({}); '
+                                 're-run python/US/runESCxi.py'.format(ξ0, c))
     for ξ in sorted(xi['xi'].unique()):
         sub = xi[np.isclose(xi['xi'], ξ)]
         θStar = float(sub[sub['kind'] == 'calibration'].iloc[0]['θStar'])

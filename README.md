@@ -70,9 +70,9 @@ READMEs. `.rgignore` keeps it out of default searches; read it by path when a li
 
 ## Status
 
-All three model variants solve, calibrate and run their counterfactuals, and all 94 outputs are wired end to
-end (`python/paper/build.py --list`): the paper inputs 14, the online appendix shows 23 tables and figures and
-draws its interactive figures from the four `data` outputs, and the rest await retirement. The endogenous-`θ`
+All three model variants solve, calibrate and run their counterfactuals, and all 35 outputs are wired end to
+end (`python/paper/build.py --list`): the paper inputs 15, and the online appendix shows the other 20, among
+them the four `data` outputs its interactive figures draw from. The endogenous-`θ`
 layer (leaded and permanent timings, LOG and CRRA) is implemented and calibrated; only the *sequential* timing
 is not. Every count in the committed results reads one equilibrium and no fallback. Open items:
 `notes/TODO.md` and the module READMEs.

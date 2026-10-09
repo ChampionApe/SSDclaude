@@ -135,10 +135,9 @@ US = {
     'extraSweeps': ('UKUS', 'FRUK'),
     # THE UK EXERCISE (2026-09-22): the French-characteristics counterfactuals of sec:oecd repeated with
     # the UK as the host economy -- its own calibration, France cut at its income groups (FRUK).
-    # python/US/runShocksUS.py --host UK writes results/shocks/UK_shocks{,CommonX}.csv, which the
-    # UK_OtherShocks tables read. The other pairing, --host UKUS (the UK at US percentiles with France
-    # as is), runs on data already in the repo and is the check the machinery was proven on; no paper
-    # output reads it.
+    # python/US/runShocksUS.py --host UK writes results/shocks/UK_shocks{,CommonX}.csv, which the online
+    # appendix's counterfactuals read (siteData.oecdCounterfactuals). The other pairing, --host UKUS (the
+    # UK at US percentiles with France as is), is the online appendix's regrouped UK.
     'ukHost': 'UK',
     # WHICH CALIBRATION VARIANT THE PAPER LEADS WITH. True = the common scalar X of the docs' variant B,
     # where the hours unit is a calibration target and relative hours become a prediction; False = the
@@ -162,7 +161,7 @@ US = {
     #           quadratic in the implicit tax the flat component levies on each type, scaled by the size of
     #           the system; Vtilde = sum_i gamma_i (y_i-1)^2/y_i. Nothing is lost when nothing is
     #           redistributed. lambda lives in the csvs' `p` column (the paper prints it as lambda).
-    #   'scale' (the previous wedge, the appendix comparison arm US_ESC_ScaleWedge): f(theta) =
+    #   'scale' (the previous wedge, the online appendix's second cost specification): f(theta) =
     #           phi + (1-phi) theta^p, the cost attached to the design label rather than to the transfer.
     #   'flat'  (only the flat component carries the cost) runs only in the permanent stage's comparison
     #           rows of escPermanent.csv, which no output prints.
@@ -172,7 +171,7 @@ US = {
     'ρStationary': [0.5, 0.7, 1.3, 1.5, 2.0],
     'esc': {
         'spec':           'size',      # the paper's cost specification
-        'comparisonSpec': 'scale',     # the previous wedge, kept as one appendix table (US_ESC_ScaleWedge)
+        'comparisonSpec': 'scale',     # the previous wedge, the online appendix's second cost (page C3)
         # phi is a DUMMY KEY under 'size': f does not use it, but every ESC csv is merge-keyed on
         # (spec, phi, commonX) and the readers (runESC.pickCalib, datasets.escRow/escCalibration) filter on
         # it, so the 'size' rows are written and read at 0.5. Under 'scale' it is the imposed floor f(0).

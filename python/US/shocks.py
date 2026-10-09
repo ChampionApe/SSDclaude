@@ -17,7 +17,7 @@ Two readings, as before:
     Full effect            the shocked model, tau re-optimised politically   solvePEE_*
     Economic equilibrium   the shocked model, tau held at the BASELINE path  EE_*_solve
 
-The decomposition is the point of the tables (writing/Paper/Tables/US_PensChars.tex, US_Ageing.tex): for
+The decomposition (the online appendix's counterfactuals, effect 'ee' against 'full'): for
 theta the two effects work against each other on savings, for ageing the EE-only tax path is fixed by
 construction so its whole content is the capital-deepening channel.
 
@@ -113,7 +113,7 @@ def shockAgeing(mt0, kind):
     """ 'mild': nu_t -> (1+nu_t)/2.   'acute': nu_t -> 1.   Over the WHOLE horizon, 1960 included: the
     counterfactual is a country whose demography has always been this, so the capital stock it brings
     into 2020 is the shocked one too. (Under the old copy-from-2020 convention the same call reached
-    only 2020 onward -- US_Ageing.tex's note has to say "throughout", not "from 2020 and onward".) """
+    only 2020 onward -- a note on ageing says "throughout", not "from 2020 and onward".) """
     ν = mt0.db['ν'].values.astype(float)
     new = (1+ν)/2 if kind == 'mild' else np.ones_like(ν)
     mt0.db.update(mt0.adjPar('ν', new))
@@ -162,7 +162,7 @@ def shockIncomeDistribution(mt0, ηFR, pinTheta = True, θPin = None):
     tau = 13.79%. Only holding X_i fixed while eta moves is a different one, because then
     y^eta_i = eta_i^{1+xi}/X_i^xi is no longer proportional to either country's z^eta.
 
-    That also makes the decomposition in US_OtherShocks.tex coherent: eta carries "income distribution",
+    That also makes the French counterfactuals coherent: eta carries "income distribution",
     the LEVEL of X carries "leisure preferences" (shockLeisure), and the two do not overlap. Changing both
     at once would just be the France calibration.
 

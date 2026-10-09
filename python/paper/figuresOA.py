@@ -1,11 +1,9 @@
-r""" Figure builders for the online appendix (archive/notes/brief_onlineAppendix_2026-10-06.md, section 2.3), and
-one of the paper's, escPathPaper (US_ESC_Path), which is the online path figure cut to the paper's reading. House
-style from figures.py (_panel, SERIES, INK) and figuresUS.RHOCOLOURS; drawn at the measure (5.91 in).
+r""" Figure builders for the online appendix, the calibrations across rho, and one of the paper's, escPathPaper
+(US_ESC_Path). House style from figures.py (_panel, SERIES, INK); drawn at the measure (5.91 in).
 
 Each writes results/paper/Figs/<name>.{pdf,png,svg} and <name>.marks.json through figures._save. Every data
-point is its own artist, tagged with figures.markId, and its mark names the table and row that print it;
-the text of a mark is the cell of that row (tablesOA's formatters), with tex escapes removed. Lines are drawn
-untagged beneath the points.
+point is its own artist, tagged with figures.markId; the text of its mark is the value as the tables print it
+(tablesOA's formatters), with tex escapes removed. Lines are drawn untagged beneath the points.
 """
 import numpy as np
 
@@ -19,7 +17,6 @@ import datasets as D
 import tablesOA as T
 from tablesUS import COUNTRYNAME
 from figures import SERIES, INK, _panel, _save, markId
-from figuresUS import RHOCOLOURS
 
 MARKERS = ('o', 's', '^')
 SURFACE = '#fcfcfb'
@@ -39,9 +36,9 @@ def _point(ax, x, y, gid, colour, marker = 'o', ms = 3.6, z = 4):
     return pt
 
 
-def _mark(gid, label, series, panel, value, text, table, row):
+def _mark(gid, label, series, panel, value, text):
     return {'id': gid, 'label': label, 'series': series, 'panel': panel, 'value': float(value),
-            'text': text, 'table': table, 'row': row}
+            'text': text, 'table': None, 'row': None}
 
 
 def _style(ax, title, ylabel = '', xlabel = None):
@@ -81,11 +78,11 @@ ARGASCII = {'β': 'beta', 'ω': 'omega', 'sr': 'sr', 'ι': 'iota', 'η0': 'eta0'
 def argRhoGrid(commonX = None):
     r""" The Argentine calibration across the rho grid (results/calibration/informalSavings_rhoGrid*): beta,
     omega, the savings rate and the informal savings ratio of the calibration year, eta_0 and X_0, one panel
-    each against rho, the paper's rho in ink. Marks link to ARG_RhoGridTable's `rho@<rho>` rows. The common X,
-    which the vector-X sweep does not record, is in the table only, so the two twins draw the same panels. """
+    each against rho, the paper's rho in ink. The common X is not drawn: the vector-X sweep does not record
+    it. """
     commonX = C.ARG['commonX'] if commonX is None else commonX
     sfx = C.variantSuffix(commonX, 'ARG')
-    name, table = 'ARG_RhoGrid' + sfx, 'ARG_RhoGridTable' + sfx
+    name = 'ARG_RhoGrid' + sfx
     g = T.argRhoGrid(commonX)
     fmt = {c: f for c, _, f in T.ARGRHOCOLS}
     year = C.calendar()['year0']
@@ -99,7 +96,7 @@ def argRhoGrid(commonX = None):
         _rhoPanel(ax, xs, ys, gids, SERIES[0], 'o', highlight = ρ1)
         for x, v, gid in zip(xs, g[col].values.astype(float), gids):
             marks.append(_mark(gid, 'ρ = ' + C.num(x, 1), '', plainTitle.format(year = year), scale*v,
-                               _plain(fmt[col](v)), table, 'rho@' + T._rhoKey(x)))
+                               _plain(fmt[col](v))))
     dot = lambda c, ms: Line2D([], [], linestyle = 'none', marker = 'o', markersize = ms, color = c,
                                markeredgecolor = SURFACE, markeredgewidth = 0.5)
     fig.legend([dot(SERIES[0], 3.4), dot(INK['primary'], 4.2)],
@@ -121,10 +118,10 @@ def oecdRhoGrid(commonX = None):
     beta (calibrated for the U.S. and imposed on the other two, so drawn once), omega, the common X, the
     30-year interest factor R and the savings rate of the calibration year, one panel each against rho, a
     series per country, the paper's rho in ink. Under vector X the sweeps record no X and its panel is left
-    out. Marks link to OECD_RhoGridTable's `<iso3>@<rho>` rows. """
+    out. """
     commonX = C.US['commonX'] if commonX is None else commonX
     sfx = C.variantSuffix(commonX)
-    name, table = 'OECD_RhoGrid' + sfx, 'OECD_RhoGridTable' + sfx
+    name = 'OECD_RhoGrid' + sfx
     sw = T.oecdSweeps(commonX)
     fmt = {c: f for c, _, f in T.OECDRHOCOLS}
     year = C.usCalendar()['year0']
@@ -148,7 +145,7 @@ def oecdRhoGrid(commonX = None):
             _rhoPanel(ax, xs, scale*vs, gids, colours[c], markers[c], highlight = ρ1)
             for x, v, gid in zip(xs, vs, gids):
                 marks.append(_mark(gid, 'ρ = ' + C.num(x, 1), COUNTRYNAME[c], plainTitle.format(year = year),
-                                   scale*v, _plain(fmt[col](v)), table, key + '@' + T._rhoKey(x)))
+                                   scale*v, _plain(fmt[col](v))))
     for ax in slots[len(panels):]:
         ax.axis('off')
     handles = [Line2D([], [], color = colours[c], marker = markers[c], markersize = 3.4, linewidth = 1.2,
@@ -163,81 +160,18 @@ def oecdRhoGrid(commonX = None):
 # ---------------------------------------------------------------------------------------------------
 # The endogenous design's baseline path
 # ---------------------------------------------------------------------------------------------------
-def escPath():
-    r""" The design and the tax along the baseline path, chosen against pinned (tablesOA.escPathSpecs:
-    escPath.csv, escPathCRRA.csv at the published method, escXiRobustness.csv). Columns: across rho at the
-    workbook xi, and across xi at rho = 1 (whose workbook-xi series is the rho = 1 path of the left column,
-    in the same colour). Rows: the design in force, as a level with theta* as the ink reference, and the tax
-    chosen minus pinned in p.p. Marks link to ESC_PathTable's rows. """
-    name, table = 'ESC_Path', 'ESC_PathTable'
-    specs = T.escPathSpecs()
-    ξ0, ρ1 = specs[0][5], C.US['ρBaseline']
-    θstar = float(D.escCalibration()[(ρ1, C.US['esc']['spec'])]['θStar'])
-    left = [s for s in specs if np.isclose(s[5], ξ0)]
-    base = [s for s in left if np.isclose(s[4], ρ1)][0]
-    right = sorted([(base[0], base[1], base[2], r'$\xi = ' + C.num(ξ0, 1) + '$', ρ1, ξ0)]
-                   + [s for s in specs if not np.isclose(s[5], ξ0)], key = lambda s: s[5])
-    colLeft = {id(s): (RHOCOLOURS[k], MARKERS[k]) for k, s in enumerate(left)}
-    # the workbook-xi series on the right is the rho = 1 path on the left: same colour and marker
-    refStyle = colLeft[id(base)]
-    others = iter([(RHOCOLOURS[k], MARKERS[k]) for k in range(3) if (RHOCOLOURS[k], MARKERS[k]) != refStyle])
-    colRight = {id(s): (refStyle if np.isclose(s[5], ξ0) else next(others)) for s in right}
-
-    fig, axes = plt.subplots(2, 2, figsize = (WIDTH, 4.6), constrained_layout = True, sharex = True)
-    panels = [('theta', r'Pension design $\theta_t$', 'Pension design θ_t', '', ),
-              ('dtau', 'Tax rate, chosen minus pinned', 'Tax rate, chosen minus pinned', 'percentage points')]
-    marks = []
-    columns = ((left, colLeft, r'across $\rho$ ($\xi = ' + C.num(ξ0, 1) + '$)', 'rho'),
-               (right, colRight, r'across $\xi$ ($\rho = ' + C.num(ρ1, 0) + '$)', 'xi'))
-    for j, (specList, styles, by, tag) in enumerate(columns):
-        for i, (pid, title, plainTitle, ylabel) in enumerate(panels):
-            ax = axes[i, j]
-            # the top panel names what its column varies, so the two columns read apart without the key
-            _style(ax, title + (', ' + by if i == 0 else ''), ylabel if j == 0 else '', 'year' if i == 1 else None)
-            ax.axhline(θstar if pid == 'theta' else 0., color = INK['primary'], linewidth = 0.9, zorder = 2)
-            for s in specList:
-                _, df, suffix, series, ρ, ξ = s
-                colour, marker = styles[id(s)]
-                xs = df['date'].values.astype(int)
-                vs = (df['θ'].values.astype(float) if pid == 'theta'
-                      else 100.*(df['τ'].values.astype(float) - df['τExo'].values.astype(float)))
-                ax.plot(xs, vs, color = colour, linewidth = 1.2, zorder = 3)
-                sid = (tag + C.num(ρ, 1)) if tag == 'rho' else (tag + C.num(ξ, 1))
-                for (_, r), x, v in zip(df.iterrows(), xs, vs):
-                    gid = markId(name, pid, sid, x)
-                    _point(ax, x, v, gid, colour, marker)
-                    cells = T.escPathCells(r)
-                    marks.append(_mark(gid, str(x), _plain(series).replace('\\rho', 'ρ').replace('\\xi', 'ξ'),
-                                       plainTitle, v, _plain(cells[0] if pid == 'theta' else cells[3]),
-                                       table, T.escPathKey(x, suffix)))
-        handles = [Line2D([], [], color = styles[id(s)][0], marker = styles[id(s)][1], markersize = 3.6,
-                          linewidth = 1.2, markeredgecolor = SURFACE, markeredgewidth = 0.5) for s in specList]
-        # The ink reference is labelled where it runs (theta* in the design panel; zero in the tax panel is
-        # the pinned reading by the panel's title), so the key holds the three series alone and stays narrow
-        # enough for the tax panel's upper left, which is empty in both columns until the gap opens after 2020.
-        axes[0, j].annotate(r'pinned, $\theta^{\ast} = ' + C.num(θstar, 3) + '$', xy = (1., θstar),
-                            xycoords = ('axes fraction', 'data'), xytext = (-2, 2), textcoords = 'offset points',
-                            ha = 'right', va = 'bottom', fontsize = 7, color = INK['secondary'])
-        leg = axes[1, j].legend(handles, [s[3] for s in specList], loc = 'upper left', fontsize = 7,
-                                labelcolor = INK['secondary'], frameon = False)
-        leg.set_zorder(6)
-    return _save(fig, name, marks)
-
-
 def escPathPaper():
     r""" The paper's figure of the baseline path (sec:esc, fig:US_ESC:path), at the baseline rho (log
     preferences) and from the calibration year on, where the calibration pins the design and everything after
     is the model's: workers per retiree, the design chosen against theta* pinned, and the tax rate with the
-    design chosen and with it pinned (datasets.escPath). The full path from the first period, the other rhos
-    and the Frisch elasticities are ESC_Path. Marks link to ESC_PathTable's `y<year>@<rho>` rows; the
-    nu panel's carry the value alone, which no table prints. """
-    name, table = 'US_ESC_Path', 'ESC_PathTable'
+    design chosen and with it pinned (datasets.escPath). The path from 1990, the other rhos and the Frisch
+    elasticities are the online appendix's (siteData.escPaths). """
+    name = 'US_ESC_Path'
     ρ1, spec = C.US['ρBaseline'], C.US['esc']['spec']
     year0 = C.usCalendar()['year0']
     df = D.escPath(ρ1)
     df = df[df['date'].astype(int) >= year0].reset_index(drop = True)
     θstar = float(D.escCalibration()[(ρ1, spec)]['θStar'])
-    suffix = '@' + T._rhoKey(ρ1)
     xs = df['date'].values.astype(int)
     chosen, pinned = SERIES[0], SERIES[1]
     dashed = (0, (4, 2))
@@ -265,8 +199,7 @@ def escPathPaper():
             for (_, r), x, v in zip(df.iterrows(), xs, vs):
                 gid = markId(name, pid, label or 'data', x)
                 _point(ax, x, v, gid, colour, marker)
-                marks.append(_mark(gid, str(x), label, plainTitle, v, text(r, v / scale), table,
-                                   T.escPathKey(x, suffix)))
+                marks.append(_mark(gid, str(x), label, plainTitle, v, text(r, v / scale)))
     # room under the pinned line, and its label above it at the right, where the chosen path has left it
     lo, hi = axes[1].get_ylim()
     axes[1].set_ylim(min(lo, θstar - 0.012), hi)

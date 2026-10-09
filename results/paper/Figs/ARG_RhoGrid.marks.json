@@ -8,8 +8,8 @@
    "panel": "Discount factor β",
    "value": 1.3746695198106689,
    "text": "1.375",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.5"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho0.6",
@@ -18,8 +18,8 @@
    "panel": "Discount factor β",
    "value": 1.0637077778557535,
    "text": "1.064",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.6"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho0.7",
@@ -28,8 +28,8 @@
    "panel": "Discount factor β",
    "value": 0.8952553054128065,
    "text": "0.895",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.7"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho0.8",
@@ -38,8 +38,8 @@
    "panel": "Discount factor β",
    "value": 0.7836297157831552,
    "text": "0.784",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.8"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho0.9",
@@ -48,8 +48,8 @@
    "panel": "Discount factor β",
    "value": 0.7057133269974467,
    "text": "0.706",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.9"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho1.0",
@@ -58,8 +58,8 @@
    "panel": "Discount factor β",
    "value": 0.6495266435671512,
    "text": "0.650",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho1.1",
@@ -68,8 +68,8 @@
    "panel": "Discount factor β",
    "value": 0.606518254611255,
    "text": "0.607",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.1"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho1.2",
@@ -78,8 +78,8 @@
    "panel": "Discount factor β",
    "value": 0.5729865769977497,
    "text": "0.573",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.2"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho1.3",
@@ -88,8 +88,8 @@
    "panel": "Discount factor β",
    "value": 0.5461049220026792,
    "text": "0.546",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.3"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho1.4",
@@ -98,8 +98,8 @@
    "panel": "Discount factor β",
    "value": 0.5240662333198699,
    "text": "0.524",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.4"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho1.5",
@@ -108,8 +108,8 @@
    "panel": "Discount factor β",
    "value": 0.5057348530546105,
    "text": "0.506",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.5"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho1.6",
@@ -118,8 +118,8 @@
    "panel": "Discount factor β",
    "value": 0.4901880877145922,
    "text": "0.490",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.6"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho1.7",
@@ -128,8 +128,8 @@
    "panel": "Discount factor β",
    "value": 0.4769361690681624,
    "text": "0.477",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.7"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho1.8",
@@ -138,8 +138,8 @@
    "panel": "Discount factor β",
    "value": 0.4653949310608695,
    "text": "0.465",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.8"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho1.9",
@@ -148,8 +148,8 @@
    "panel": "Discount factor β",
    "value": 0.4553996261172269,
    "text": "0.455",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.9"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--beta--rho2.0",
@@ -158,8 +158,8 @@
    "panel": "Discount factor β",
    "value": 0.4464641231845815,
    "text": "0.446",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@2.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho0.5",
@@ -168,8 +168,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.8632038501764572,
    "text": "1.863",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.5"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho0.6",
@@ -178,8 +178,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.732186761922223,
    "text": "1.732",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.6"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho0.7",
@@ -188,8 +188,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.6386969878590183,
    "text": "1.639",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.7"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho0.8",
@@ -198,8 +198,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.5622161724595116,
    "text": "1.562",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.8"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho0.9",
@@ -208,8 +208,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.5000706076700183,
    "text": "1.500",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.9"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho1.0",
@@ -218,8 +218,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.4501091090119764,
    "text": "1.450",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho1.1",
@@ -228,8 +228,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.4081955375319553,
    "text": "1.408",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.1"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho1.2",
@@ -238,8 +238,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.3734678553615638,
    "text": "1.373",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.2"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho1.3",
@@ -248,8 +248,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.3442249204940795,
    "text": "1.344",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.3"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho1.4",
@@ -258,8 +258,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.319269796278368,
    "text": "1.319",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.4"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho1.5",
@@ -268,8 +268,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.297856358564645,
    "text": "1.298",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.5"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho1.6",
@@ -278,8 +278,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.2792205619671977,
    "text": "1.279",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.6"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho1.7",
@@ -288,8 +288,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.2630275242030902,
    "text": "1.263",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.7"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho1.8",
@@ -298,8 +298,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.2488400466808622,
    "text": "1.249",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.8"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho1.9",
@@ -308,8 +308,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.2361271853687608,
    "text": "1.236",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.9"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--omega--rho2.0",
@@ -318,8 +318,8 @@
    "panel": "Political weight of the old ω",
    "value": 1.224744642841735,
    "text": "1.225",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@2.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho0.5",
@@ -328,8 +328,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 14.999302941580039,
    "text": "15.00%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.5"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho0.6",
@@ -338,8 +338,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 14.798154911300879,
    "text": "14.80%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.6"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho0.7",
@@ -348,8 +348,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 14.7054816471863,
    "text": "14.71%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.7"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho0.8",
@@ -358,8 +358,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 14.595849654192069,
    "text": "14.60%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.8"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho0.9",
@@ -368,8 +368,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 14.48930453710689,
    "text": "14.49%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.9"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho1.0",
@@ -378,8 +378,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 14.39952646979539,
    "text": "14.40%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho1.1",
@@ -388,8 +388,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 14.314006161845299,
    "text": "14.31%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.1"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho1.2",
@@ -398,8 +398,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 14.237104320509768,
    "text": "14.24%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.2"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho1.3",
@@ -408,8 +408,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 14.16723517582823,
    "text": "14.17%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.3"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho1.4",
@@ -418,8 +418,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 14.10282371883565,
    "text": "14.10%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.4"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho1.5",
@@ -428,8 +428,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 14.04423770154602,
    "text": "14.04%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.5"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho1.6",
@@ -438,8 +438,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 13.989107381442919,
    "text": "13.99%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.6"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho1.7",
@@ -448,8 +448,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 13.93922964633321,
    "text": "13.94%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.7"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho1.8",
@@ -458,8 +458,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 13.89068417883983,
    "text": "13.89%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.8"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho1.9",
@@ -468,8 +468,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 13.848349649480149,
    "text": "13.85%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.9"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--sr--rho2.0",
@@ -478,8 +478,8 @@
    "panel": "Savings rate 2010, % of GDP",
    "value": 13.805312134377429,
    "text": "13.81%",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@2.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho0.5",
@@ -488,8 +488,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.319070176900862,
    "text": "0.319",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.5"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho0.6",
@@ -498,8 +498,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3220479308095462,
    "text": "0.322",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.6"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho0.7",
@@ -508,8 +508,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3239381363747227,
    "text": "0.324",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.7"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho0.8",
@@ -518,8 +518,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3253110413604032,
    "text": "0.325",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.8"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho0.9",
@@ -528,8 +528,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3263267958365303,
    "text": "0.326",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.9"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho1.0",
@@ -538,8 +538,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3270991867623001,
    "text": "0.327",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho1.1",
@@ -548,8 +548,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3276819109385537,
    "text": "0.328",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.1"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho1.2",
@@ -558,8 +558,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3281433597653945,
    "text": "0.328",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.2"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho1.3",
@@ -568,8 +568,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3285065866756942,
    "text": "0.329",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.3"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho1.4",
@@ -578,8 +578,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3287933898900933,
    "text": "0.329",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.4"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho1.5",
@@ -588,8 +588,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3290204951287033,
    "text": "0.329",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.5"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho1.6",
@@ -598,8 +598,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3291998933812346,
    "text": "0.329",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.6"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho1.7",
@@ -608,8 +608,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3293429065152318,
    "text": "0.329",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.7"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho1.8",
@@ -618,8 +618,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3294597667094533,
    "text": "0.329",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.8"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho1.9",
@@ -628,8 +628,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3295418959391152,
    "text": "0.330",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.9"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--iota--rho2.0",
@@ -638,8 +638,8 @@
    "panel": "Informal savings ratio ι",
    "value": 0.3296015506046192,
    "text": "0.330",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@2.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho0.5",
@@ -648,8 +648,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3439123848746087,
    "text": "0.344",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.5"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho0.6",
@@ -658,8 +658,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3438716436366992,
    "text": "0.344",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.6"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho0.7",
@@ -668,8 +668,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3438498882067727,
    "text": "0.344",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.7"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho0.8",
@@ -678,8 +678,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3438116497524175,
    "text": "0.344",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.8"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho0.9",
@@ -688,8 +688,8 @@
    "panel": "Informal productivity η0",
    "value": 0.343767663628049,
    "text": "0.344",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.9"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho1.0",
@@ -698,8 +698,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3437283999962426,
    "text": "0.344",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho1.1",
@@ -708,8 +708,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3436845364644605,
    "text": "0.344",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.1"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho1.2",
@@ -718,8 +718,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3436439659127801,
    "text": "0.344",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.2"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho1.3",
@@ -728,8 +728,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3436047796065311,
    "text": "0.344",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.3"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho1.4",
@@ -738,8 +738,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3435665697710013,
    "text": "0.344",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.4"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho1.5",
@@ -748,8 +748,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3435299904742193,
    "text": "0.344",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.5"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho1.6",
@@ -758,8 +758,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3434941355087051,
    "text": "0.343",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.6"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho1.7",
@@ -768,8 +768,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3434604614681869,
    "text": "0.343",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.7"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho1.8",
@@ -778,8 +778,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3434277520487686,
    "text": "0.343",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.8"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho1.9",
@@ -788,8 +788,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3433961573458197,
    "text": "0.343",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.9"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--eta0--rho2.0",
@@ -798,8 +798,8 @@
    "panel": "Informal productivity η0",
    "value": 0.3433638368907236,
    "text": "0.343",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@2.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho0.5",
@@ -808,8 +808,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8049481590864379,
    "text": "0.805",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.5"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho0.6",
@@ -818,8 +818,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8048086001288388,
    "text": "0.805",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.6"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho0.7",
@@ -828,8 +828,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8047340801243841,
    "text": "0.805",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.7"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho0.8",
@@ -838,8 +838,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8046031052571374,
    "text": "0.805",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.8"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho0.9",
@@ -848,8 +848,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8044524517447595,
    "text": "0.804",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@0.9"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho1.0",
@@ -858,8 +858,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8043179804423269,
    "text": "0.804",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.0"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho1.1",
@@ -868,8 +868,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8041677636532084,
    "text": "0.804",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.1"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho1.2",
@@ -878,8 +878,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8040288320569182,
    "text": "0.804",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.2"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho1.3",
@@ -888,8 +888,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8038946479514232,
    "text": "0.804",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.3"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho1.4",
@@ -898,8 +898,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8037638143666989,
    "text": "0.804",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.4"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho1.5",
@@ -908,8 +908,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8036385701986674,
    "text": "0.804",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.5"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho1.6",
@@ -918,8 +918,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8035158120737211,
    "text": "0.804",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.6"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho1.7",
@@ -928,8 +928,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8034005262823958,
    "text": "0.803",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.7"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho1.8",
@@ -938,8 +938,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8032885479647528,
    "text": "0.803",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.8"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho1.9",
@@ -948,8 +948,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8031803904921441,
    "text": "0.803",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@1.9"
+   "table": null,
+   "row": null
   },
   {
    "id": "ARG_RhoGrid--X0--rho2.0",
@@ -958,8 +958,8 @@
    "panel": "Informal taste for leisure X0",
    "value": 0.8030697533447841,
    "text": "0.803",
-   "table": "ARG_RhoGridTable",
-   "row": "rho@2.0"
+   "table": null,
+   "row": null
   }
  ]
 }
