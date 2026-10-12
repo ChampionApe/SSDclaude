@@ -212,13 +212,16 @@ lacks, on which the average wedge is the relevant one.
 
 ## 4. Strategy for the paper
 
-**Revised 2026-10-07.** RKB found the tax-component explanation unconvincing in the main text (derived by
-citation, the average-versus-marginal detour, a shape micro-founded by a mechanism whose magnitude the
-calibration rejects, a welfare triangle read as revenue). Section 7 now leads with Okun's leaky bucket in words:
-the transfer the flat component carries, a leak convex in the amount carried, the three properties as
-consequences; points 1 to 3 below are what appendix C.2 does, not the main text. The main text's one sentence on
-margins names participation, formality and reporting (Summers, Disney, Kumler et al.) and the administrative
-and political costs; the magnitude sits in appendix C.2 alone.
+**Revised 2026-10-09.** Section 7.1 follows RKB's outline (`notes/plan_endogenousDesign.md`) and RKB's own
+Overleaf edits. It opens with the diagnosis (the Beveridgean corner, and the hours cost of flat benefits, too
+weak at U.S. inequality), then the evidence that loosely tied benefits erode the contribution base (Disney;
+Kumler et al.), then Summers' tax component with the implicit tax $t_i$ derived in the main text
+(`eq:esc:implicitTax`, which appendix C.2 now cites rather than re-derives), then the Harberger principle applied
+to each type's implicit tax, the form offered as "a reasonable place to start rather than an exact account of
+participation and reporting". Okun's leaky bucket, the framing of 2026-10-07, has left section 7 and is still in
+the introduction's cost paragraph, which the front-matter pass will align. Appendix C.2 keeps points 2, 3, 5 and
+6 below (the margin, the Harberger aggregation, the soft spots, the magnitude); points 1 and 7 are superseded,
+since the main text now carries the implicit tax as a formula.
 
 1. **Lead with the concept, not the formula.** The flat component is a tax (Summers's tax component); the
    cost is the deadweight loss of that tax. One sentence, two citations (Summers, Disney).
@@ -247,10 +250,10 @@ and political costs; the magnitude sits in appendix C.2 alone.
 
 ## 5. In the paper
 
-Cited (section 7 and appendix C): Okun (1975, since 2026-10-07, in section 7 and the introduction), Harberger
-(1964), Summers (1989), Disney (2004), Saez (2002), Kleven and Kreiner (2006), Chetty et al. (2011), Saez,
-Slemrod and Giertz (2012), Kumler, Verhoogen and Frías (2020), and, for the size–design link, Conde-Ruiz and
-Profeta (2007) and Koethenbuerger, Poutvaara and Profeta (2008).
+Cited: Harberger (1964), Summers (1989), Disney (2004) and Kumler, Verhoogen and Frías (2020) in section 7.1
+and appendix C.2; Saez (2002), Kleven and Kreiner (2006), Chetty et al. (2011) and Saez, Slemrod and Giertz
+(2012) in appendix C.2 alone; Okun (1975) in the introduction alone since 2026-10-09; and, for the size–design
+link, Conde-Ruiz and Profeta (2007) and Koethenbuerger, Poutvaara and Profeta (2008) in the introduction.
 Not cited and not in `References.bib`: Browning and Johnson (1984), Feldstein and Samwick (1992),
 Immervoll et al. (2007), Gruber and Wise (1999), Liebman, Luttmer and Seif (2009), Bergolo and Cruces (2014)
 and Feldstein (1999); the last two are the first candidates if the argument needs more support, next to Kumler

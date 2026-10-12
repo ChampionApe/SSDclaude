@@ -111,8 +111,9 @@ US arm:
 
 - Stage (i) is order-dependent: the full US sweep before any EU sweep (`runCalibrationUS.py` enforces).
 - One savings unit, `s/Y`, everywhere: `datasets.US_SR` = `srOverY`; the ESC csvs are converted by
-  `(1-α)` (`escSavingsOverY`). Counterfactual tables print the change against that ρ's own baseline; the
-  ESC tables against the *endogenous* baseline.
+  `(1-α)` (`escSavingsOverY`). A counterfactual is the change against that ρ's own baseline; an ESC
+  reading (figure 7.1, `siteData`) against the baseline of the *same reading*, θ pinned or chosen (one common baseline
+  would put the gap between the two into every pinned reading).
 - `workweek` in the shock csv is already in hours; `config.pct` escapes `%` for tex, never into a figure.
 - A `createCopyFromt0` copy's `db['dates']` is stale; `config.usCalendar()` reads the workbook instead.
 - The income-distribution row holds `θ` (the `freeTheta` entry keeps the other reading).

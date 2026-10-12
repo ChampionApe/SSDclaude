@@ -283,15 +283,16 @@ def _escRowsPresent(df, spec, ρs, scenarios):
 
 
 def _escPairs(name, df, spec, ρs, scen, col, title, scale, level, idHost = ()):
-    r""" One dumbbell panel's data: `pairs` for _dumbbellPanel (both readings against the ENDOGENOUS
-    baseline at each rho, or the level for `level`), their `gids` and the `marks`. `idHost`: extra id parts
-    naming the host. """
+    r""" One dumbbell panel's data: `pairs` for _dumbbellPanel (each reading against the baseline of the
+    SAME reading at each rho, pinned against pinned and chosen against chosen, or the level for `level`),
+    their `gids` and the `marks`. `idHost`: extra id parts naming the host. """
     part, unit = MARKUNIT[col]
     pairs, gids, marks = [], [], []
     for ρ in ρs:
-        base = 0. if level else float(D.escRow(df, ρ, spec, 'baseline', False)[col])
-        vals = [(scale*(float(D.escRow(df, ρ, spec, s, True)[col]) - base),
-                 scale*(float(D.escRow(df, ρ, spec, s, False)[col]) - base))
+        base = {pinned: 0. if level else float(D.escRow(df, ρ, spec, 'baseline', pinned)[col])
+                for pinned in (True, False)}
+        vals = [(scale*(float(D.escRow(df, ρ, spec, s, True)[col]) - base[True]),
+                 scale*(float(D.escRow(df, ρ, spec, s, False)[col]) - base[False]))
                 for _, s in scen]
         pairs.append((r'$\rho = ' + C.num(ρ, 1) + '$', vals))
         gids.append([])
@@ -361,11 +362,12 @@ def escOverview():
     Four panels in a 2 x 2 grid. The design itself first, as a LEVEL: every dumbbell there starts at
     the US design, so its length is the design response and the muted lines at 0 and 1 are the corners
     the text refers to. Then the tax rate, savings over GDP and the average workweek as deviations from
-    the endogenous-theta baseline, so the pinned end is the main-text reading and the dumbbell is what
-    endogenising the design adds. A row whose markers all round to the reference says 'unchanged' (France's
-    taste for leisure in the design and tax panels). In the savings and workweek panels that row's pinned
-    markers sit off zero by the baseline's own gap between the readings: savings and hours in 2020 respond
-    to the design chosen for 2050, which the chosen baseline raises above theta*.
+    the baseline of the same reading (_escPairs), so each marker is the counterfactual's effect in its own
+    economy and the dumbbell is what choosing the design adds to it. Do not difference both readings
+    against one baseline: savings and hours in 2020 respond to the design chosen for 2050, which the chosen
+    baseline raises above theta*, so the two baselines differ and every pinned marker would carry the gap
+    (France's taste for leisure, which leaves every rate unchanged, would read off zero). A row whose
+    markers all round to the reference says 'unchanged'.
 
     2 x 2 rather than one row of four: at \linewidth a row of four narrow panels shrinks the type below
     legibility and squeezes the tax panel's 12-point range into an inch. The grid keeps every panel at
@@ -399,9 +401,6 @@ def escOverview():
     axes = grid.ravel()
     marks = []
     for ax, (col, title, xlabel, scale, level) in zip(axes, panels):
-        # Both readings are measured against the ENDOGENOUS baseline, so the two are on one scale and
-        # the dumbbell length is the design response and nothing else. Reading the pinned rows against a
-        # pinned baseline instead would fold the baseline's own design response into it.
         pairs, gids, mk = _escPairs('US_ESC_overview', df, spec, ρs, scen, col, title, scale, level)
         marks += mk
         _dumbbellPanel(ax, title, xlabel, labels, pairs, colours,
