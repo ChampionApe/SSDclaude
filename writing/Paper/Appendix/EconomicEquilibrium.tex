@@ -1,7 +1,7 @@
 \section{Economic Equilibrium}\label{app:EE}\setcounter{equation}{0}
 The appendix derives results for the economic equilibrium with CRRA-GHH and log-GHH preferences and where informal workers' endowment is tied to wages in the formal sector absent taxes. 
 \subsection{With CRRA-GHH preferences}\label{app:EE:CRRA}
-\smalltitle{Household solutions}
+\smalltitle{Household solutions.}
 With CRRA-GHH preferences, the first order conditions in \eqref{eq:model:formalFOCs} can be written as
 \begin{align*}
     h_{t,i} &= \left(\dfrac{\eta_iw_t(1-\tau_t)+\frac{\theta \overline{b}_{t+1} \eta_i}{R_{t+1}}}{X_i}\right)^{\xi} \\
@@ -16,18 +16,14 @@ where we have used the shorthand notation $B_{t+1} \equiv \left(\beta \right)^{\
 
 When informal households save using informal technology, similar conditions apply:\footnote{Note that given our assumption on universal pensions, informal workers do not perceive a link between their work effort and the benefits they might receive.}
 \begin{align}
-    h_{t,0} &= \left(\dfrac{\eta_{0}w_t^0}{X_{0}}\right)^{\xi}\label{here1} \\
+    h_{t,0} &= \left(\dfrac{\eta_{0}w_t^0}{X_{0}}\right)^{\xi}\label{eq:EE:h0} \\
     c_{2,t+1}^0 &= \tilde{c}_{1,t}^0\left(\beta R_{t+1}^0\right)^{\rho}. 
 \end{align}
-As for formal household we can derive the following for informal savings:
+As for formal households, we can derive the following for informal savings:
 \begin{align*}
     s_{t,0} = \dfrac{B_{t+1}^0}{1+B_{t+1}^0}\left[w_t^0h_{t,0}\eta_{0}-\dfrac{X_{0}\xi}{1+\xi}\left(h_{t,0}\right)^{\frac{1+\xi}{\xi}}\right]-\dfrac{b_{t+1}^0/R_{t+1}^0}{1+B_{t+1}^0},
 \end{align*}
-where we have used $B_{t+1}^0 \equiv \left(\beta \right)^{\rho}(R_{t+1}^0)^{\rho-1}$. When informal households are hand-to-mouth and receive an endowment when old, the solution for labor supply is given by (\ref{here1}).
-%\begin{align*}
- %   h_{t,0} = \left(\dfrac{\eta_{0}w_t^0}{X_{0}}\right)^{\xi} %\\
-  %  h_{t+1,0}^r &= \left(\dfrac{\chi \eta_{0}w_{t+1}^0}{X_{0}}\right)^{\xi}
-%\end{align*}
+where we have used $B_{t+1}^0 \equiv \left(\beta \right)^{\rho}(R_{t+1}^0)^{\rho-1}$. When informal households are hand-to-mouth and receive an endowment when old, the solution for labor supply is given by \eqref{eq:EE:h0}.
 
 
 
@@ -51,13 +47,13 @@ Next, we can use the individual labor decision and wage rates to write
 Using this and the discounted pension benefits in equilibrium, we have that
 \begin{align}
     s_{t,i} =& \dfrac{1}{1+B_{t+1}}\left[B_{t+1}\frac{\eta_{i}^{1+\xi}}{X_{i}^{\xi}}\left(\frac{h_t}{\Gamma_{h}}\right)^{\frac{1+\xi}{\xi}}\frac{1}{1+\xi}-\frac{1-\alpha}{\alpha}\frac{1-\theta}{1+\gamma_0\epsilon}s_t\tau_{t+1}\right] \nonumber \\
-    -&\frac{\eta_{i}^{1+\xi}}{X_{i}^{\xi}\Gamma_{h}}\frac{1-\alpha}{\alpha}\frac{\theta}{1+\gamma_0\epsilon}s_t\tau_{t+1} \label{here2}
+    -&\frac{\eta_{i}^{1+\xi}}{X_{i}^{\xi}\Gamma_{h}}\frac{1-\alpha}{\alpha}\frac{\theta}{1+\gamma_0\epsilon}s_t\tau_{t+1} \label{eq:EE:si}
 \end{align}
 Using the definition of the aggregate state \eqref{eq:model:aggStates} and rearranging, we then have:
 \begin{align}\label{eq:s}
     s_t = \left(\frac{h_t}{\Gamma_{h}}\right)^{\frac{1+\xi}{\xi}} \Gamma_{s,t}, \qquad \Gamma_{s,t} \equiv \frac{1}{1+\xi}\frac{\Gamma_h B_{t+1} }{1+B_{t+1}+\frac{1-\alpha}{\alpha}\frac{\tau_{t+1}}{1+\gamma_0\epsilon}\left(1+\theta B_{t+1}\right)}
 \end{align}
-Furthermore, note that we can combine equations for $s_t, h_t$ to yield a closed form expressions \textit{given} values of $B_{t+1}$. From the definition of $h_t$ we use that $s_t$ is proportional to $h_t^{(1+\xi)/\xi}$ to derive:
+Furthermore, note that we can combine equations for $s_t, h_t$ to yield closed-form expressions \textit{given} values of $B_{t+1}$. From the definition of $h_t$ we use that $s_t$ is proportional to $h_t^{(1+\xi)/\xi}$ to derive:
 \begin{align}\label{eq:h}
     h_t = \Theta_{h,t} \left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}}, \qquad \Theta_{h,t} \equiv \left(\Gamma_{h}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{(1-\alpha)(1-\tau_t)}{\Gamma_{h}-\frac{1-\alpha}{\alpha}\frac{\theta\tau_{t+1}}{1+\gamma_0\epsilon}\Gamma_{s,t}}\right)^{\frac{\xi}{1+\alpha\xi}}
 \end{align}
@@ -65,7 +61,7 @@ Using this, an alternative expression for $s_t$ is:
 \begin{align}
     s_t &= \Theta_{s,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}, \qquad \Theta_{s,t} \equiv \left(\frac{\Theta_{h,t}}{\Gamma_{h}}\right)^{\frac{1+\xi}{\xi}}\Gamma_{s,t}. 
 \end{align}
-Using the relation between $s_t$ and $h_t^{\frac{1+\xi}{\xi}}$ in (\ref{eq:h}), the ratio of individual (\ref{here2}) to aggregate savings satisfies:
+Using the relation between $s_t$ and $h_t^{\frac{1+\xi}{\xi}}$ in \eqref{eq:s}, the ratio of individual \eqref{eq:EE:si} to aggregate savings satisfies:
 \begin{align}\label{eq:si_s}
     \frac{s_{t,i}}{s_t} = \frac{\eta_i^{1+\xi}}{X_i^{\xi}} \frac{1}{\Gamma_h} + \frac{1-\alpha}{\alpha} \frac{\tau_{t+1}}{1+\gamma_0\epsilon}\frac{1-\theta}{1+B_{t+1}}\left(\frac{\eta_i^{1+\xi}}{X_i^{\xi}\Gamma_h}-1\right).
 \end{align}
@@ -111,13 +107,13 @@ When informal households are hand-to-mouth, relevant equilibrium consumption fun
 
 
 \subsection{With log-GHH preferences}\label{app:EE:LOG}
-With log-preferences, the economic equilibrium is identical to the CRRA equations outlined in appendix \ref{app:EE:CRRA}, except for the discount function $B_t =B^0_t= \beta$. All relevant variables $x_t\in \lbrace s_t, h_t, s_t^i, h_t^j, \tilde{c}_{1,t}^j, c_{2,t}^i, \tilde{c}_{2,t}^0, c_{2,t+1}^i, \tilde{c}_{2,t+1}^0\rbrace$ can be written on the form $x_t = \Theta_{x,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\sigma_x}$ where $\sigma_x$ are parameter functions
+With log-preferences, the economic equilibrium is identical to the CRRA equations outlined in appendix \ref{app:EE:CRRA}, except for the discount function $B_t =B^0_t= \beta$. All relevant variables $x_t\in \lbrace s_t, h_t, s_{t,i}, h_{t,j}, \tilde{c}_{1,t}^j, c_{2,t}^i, \tilde{c}_{2,t}^0, c_{2,t+1}^i, \tilde{c}_{2,t+1}^0\rbrace$ can be written on the form $x_t = \Theta_{x,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\sigma_x}$ where $\sigma_x$ are parameter functions
 \begin{align*}
     \sigma_{h} &= \sigma_{h}^j = \dfrac{\alpha \xi}{1+\alpha \xi} \\ 
     \sigma_{\tilde{c}_1,t}^j &= \sigma_{c_2,t}^i = \sigma_{\tilde{c}_2,t}^0 = \sigma_{s,t} = \sigma_{s,t}^i =\dfrac{\alpha(1+\xi)}{1+\alpha\xi} \\
     \sigma_{c_2,t+1}^i &= \sigma_{\tilde{c}_2,t+1}^0 = \left(\dfrac{\alpha(1+\xi)}{1+\alpha\xi}\right)^2,
 \end{align*}
-and where functions $\Theta_{x,t}$ only depends on parameters and policy. 
+and where the functions $\Theta_{x,t}$ depend only on parameters and policy.
 
 \smalltitle{Proof of proposition \ref{prop:LOG:EE}.} Part \emph{i.} outlines the marginal effect on $s_t, h_t$ from policy and pension characteristics. Given the solution structure, the effect on $s_t, h_t$ can be found by differentiating equations \eqref{eq:s} and \eqref{eq:h} with respect to the relevant variable. For $\tau_t$ the effect is straightforward:
 \begin{align*}
@@ -169,16 +165,16 @@ Proceeding as before we find that this is unambiguously negative.\footnote{The t
  \end{align*}
  }
 
-Part \emph{ii.} follows from earlier derivations, specifically equation \eqref{eq:hi_h}. Part \emph{iii.} similarly follows from equation \eqref{eq:si_s} with $B_{t+1} = \beta$ in the log case. Finally, part \emph{iv.} follows straightforwardly, comparing \eqref{eq:si_s} and \eqref{eq:hi_h}: An average type $i$ household has $\eta_i^{1+\xi}/X_i^{\xi} = \Gamma_h$. Thus, for $\tau_{t+1}=0$ or $\theta = 1$, we simply have $s_{t,i} / s_t = \eta_ih_{t,i}/h_t$. The spread in savings rates increase in $\tau_{t+1}$ and decrease in $\theta$ in the sense that these parameter changes increase $s_{t,i}/s_t$ for $s_{t,i}/s_t>1$ and decrease for $s_{t,i}/s_t<1$.  
+Part \emph{ii.} follows from earlier derivations, specifically equation \eqref{eq:hi_h}. Part \emph{iii.} similarly follows from equation \eqref{eq:si_s} with $B_{t+1} = \beta$ in the log case. Finally, part \emph{iv.} follows straightforwardly, comparing \eqref{eq:si_s} and \eqref{eq:hi_h}: An average type $i$ household has $\eta_i^{1+\xi}/X_i^{\xi} = \Gamma_h$. Thus, for $\tau_{t+1}=0$ or $\theta = 1$, we simply have $s_{t,i} / s_t = \eta_ih_{t,i}/h_t$. The spread in savings increases in $\tau_{t+1}$ and decreases in $\theta$ in the sense that these parameter changes increase $s_{t,i}/s_t$ for $s_{t,i}/s_t>1$ and decrease for $s_{t,i}/s_t<1$.  
 
-Part \emph{v.} The effects on $s_{t,0}$ and $s_{t,0}/s_t$ from various parameters come from differentiation of \eqref{eq:s0_s} with $B_{t+1}^0 = \beta$. Note that $s_{t,0}$ only depends on $\tau_t$ though the effect of taxes on $s_t$. Thus, it is straightforward to show that both $s_{t,0}$ and $s_{t,0}/s_t$ are increasing in $\tau_t$.
+Part \emph{v.} The effects on $s_{t,0}$ and $s_{t,0}/s_t$ from various parameters come from differentiation of \eqref{eq:s0_s} with $B_{t+1}^0 = \beta$. Note that $s_{t,0}$ depends on $\tau_t$ only through the effect of taxes on $s_t$. Thus, it is straightforward to show that both $s_{t,0}$ and $s_{t,0}/s_t$ are increasing in $\tau_t$.
 
 The effects from $\tau_{t+1}$ and $\epsilon$ are given by:
 \begin{align*}
     \frac{\partial s_{t,0}}{\partial \tau_{t+1}} &= -\frac{1}{1+\beta}\frac{1-\alpha}{r_0\alpha} \frac{s_t\epsilon}{1+\gamma_0\epsilon}\left(1+ \tau_{t+1}\frac{\partial \ln(s_t)}{\partial \tau_{t+1}}\right) \leq 0, \\
     \frac{\partial s_{t,0}}{\partial \epsilon} &= -\frac{1}{1+\beta}\frac{1-\alpha}{r_0\alpha} \frac{s_t\tau_{t+1}}{1+\gamma_0\epsilon}\left(\frac{1}{1+\gamma_0\epsilon}+ \epsilon \frac{\partial \ln(s_t)}{\partial \epsilon}\right)  \leq 0.  
 \end{align*}
-Where the first derivative can be signed since $\tau_{t+1}\frac{\partial \ln(s_t)}{\partial \tau_{t+1}} \geq -1$. It is straightforward to show that an increase in $\theta$ increases $s_{t,0}$.
+The first derivative can be signed since $\tau_{t+1}\frac{\partial \ln(s_t)}{\partial \tau_{t+1}} \geq -1$. It is straightforward to show that an increase in $\theta$ increases $s_{t,0}$.
 
 To see the effect of $\tau_{t+1}$ on the ratio $s_{t,0}/s_t$ we have that:
 \begin{align*}

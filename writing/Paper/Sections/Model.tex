@@ -34,20 +34,20 @@ Informal households produce with a linear technology, so the informal wage $w_t^
 
 \subsection{Preferences and Household Choices}
 
-Households value consumption and leisure, and discount the future at factor $\beta \in(0,1)$. Representing utility by function $u(c,h)$ with $u'_c\geq 0, u'_h\leq 0, u''_{cc}\leq 0, u''_{hh}\geq0$, the welfare of a young household of type $i$ born in period $t$ is defined by
+Households value consumption and leisure, and discount the future at factor $\beta \in(0,1)$. Representing utility by function $u(c,h)$ with $u'_c\geq 0, u'_h\leq 0, u''_{cc}\leq 0, u''_{hh}\leq0$, the welfare of a young household of type $i$ born in period $t$ is defined by
 \begin{align}
     u \left(c_{1,t}^i, h_{t,i} \right) +\beta u \left(c_{2,t+1}^i, 0\right).
 \end{align}
 
 \begin{subequations}\label{eq:model:BC} The budget constraints for formal and informal workers are given by:
 \begin{align}
-    c_{1,t}^i &= w_t\eta_i h_{t,i}(1-\tau_t)-s_t^i, \ \ \ \ i>0, \\
-    c_{1,t}^0 &= w_t^0\eta_0h_{t,0} -s^0_t,
+    c_{1,t}^i &= w_t\eta_i h_{t,i}(1-\tau_t)-s_{t,i}, \ \ \ \ i>0, \\
+    c_{1,t}^0 &= w_t^0\eta_0h_{t,0} -s_{t,0},
 \end{align}
-where $\tau_t$ is the social security tax rate. As retirees, households receive a pension $b_{t+1}^i$ that may depend on the individual household's contribution, and thus on their labor supply, $h^i_t$:
+where $\tau_t$ is the social security tax rate. As retirees, households receive a pension $b_{t+1}^i$ that may depend on the individual household's contribution, and thus on their labor supply, $h_{t,i}$:
 \begin{align}
-    c_{2,t+1}^i &= s_t^iR_{t+1} + b_{t+1}^i(h_{t,i}), \ \ \ \ \ i>0 , \\
-     c_{2,t+1}^0 &= s_t^0 R^0_{t+1} + b_{t+1}^0(h_{t,0}) .
+    c_{2,t+1}^i &= s_{t,i}R_{t+1} + b_{t+1}^i(h_{t,i}), \ \ \ \ \ i>0 , \\
+     c_{2,t+1}^0 &= s_{t,0} R^0_{t+1} + b_{t+1}^0(h_{t,0}) .
 \end{align}
 \end{subequations}
 
@@ -66,8 +66,8 @@ Optimization yields the first order conditions that represent a leisure/consumpt
 Optimal savings and labor supply decisions can, in general, be written as
 \begin{subequations}\label{eq:householdChoices}
 \begin{align}
-    h_t^i &= h_t^i\left(s_{t-1}, s_t, h_t, h_{t+1}, \tau_t, \tau_{t+1}\right) \\
-    s_t^i &= s_t^i\left(s_{t-1}, s_t, h_t, h_{t+1}, \tau_t, \tau_{t+1}\right),
+    h_{t,i} &= h_{t,i}\left(s_{t-1}, s_t, h_t, h_{t+1}, \tau_t, \tau_{t+1}\right) \\
+    s_{t,i} &= s_{t,i}\left(s_{t-1}, s_t, h_t, h_{t+1}, \tau_t, \tau_{t+1}\right),
 \end{align}
 \end{subequations}
 where the dependence on $h_{t+1}, \tau_{t+1}$ comes from the pension system.

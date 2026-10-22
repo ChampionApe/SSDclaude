@@ -86,7 +86,7 @@ def argentinaCalibration(commonX = None):
           'Average formal workweek of ' + C.num(C.calendar()['workweek'], 1) + ' hours'] if commonX else
          [r'$X_i$',      '$' + C.vec(c['Xi'], 2) + '$', 'Relative working hours']),
         [r'$\eta_i$',   '$' + C.vec(c['ηi'], 2) + '$', 'Income distribution'],
-        [r'$\gamma_0$', '$' + C.num(c['γ0']) + '$', r'Elderly without a pension, 32\% of all households'],
+        [r'$\gamma_0$', '$' + C.num(c['γ0']) + '$', r'Elderly without a pension, 32\% of households'],
         [r'$\omega$',   '$' + C.num(c['ω']) + '$', 'Social security tax of $' + C.pct(c['τ'], 1) + '$'],
         [r'$\eta_0$',   '$' + C.num(c['η0'], 3) + '$',
          r'Informal relative income, eq.\ \eqref{eq:calibration_eta}'],
@@ -98,7 +98,7 @@ def argentinaCalibration(commonX = None):
     note += C.variantNote(commonX, full = True, arm = 'ARG')
     keys = ['epsilon', 'theta', 'alpha', 'nu', 'xi', 'beta', 'X', 'eta', 'gamma0', 'omega', 'eta0', 'X0']
     return _wrap('ArgentinaCalibration' + sfx, 'results/paper/calibrationSummary.csv',
-                 'Calibration, Argentina' + C.variantCaption(commonX, 'ARG'), 'table:Arg:Calib' + sfx, 'lll',
+                 'Calibration, Argentina' + C.variantCaption(commonX, 'ARG'), 'table:Arg:Calib' + sfx, '@{}lll@{}',
                  [r'\textbf{Parameter}', r'\textbf{Value}', r'\textbf{Target}'], rows, note, keys)
 
 
@@ -126,8 +126,8 @@ def argentinaUniversal(commonX = None):
     rows = [['Baseline',             C.pct(ee['τ_base']),    C.pct(srBase), C.num(C.workweekHours(ee['h_base'], hRef))],
             ['Economic Equilibrium', C.pct(ee['τ_ee']),      C.pct(srEE),   C.num(C.workweekHours(ee['h_ee'], hRef))],
             ['Full effect',          C.pct(ref['τ_reform']), C.pct(srRef),  C.num(C.workweekHours(ref['h_reform'], hRef))]]
-    note = (r'\textit{Note:} The reform permanently shifts $\epsilon = 1-\theta + \theta \eta_1 h_1/h$ '
-            r'at the calibration year, unanticipated. The ' + LQ + 'Economic Equilibrium' + RQ +
+    note = (r'\textit{Note:} The reform permanently raises $\epsilon$ to $1-\theta + \theta \eta_1 h_1/h$ '
+            r'in the calibration year, unanticipated. The ' + LQ + 'Economic Equilibrium' + RQ +
             r' scenario solves for the new economic equilibrium path with taxes as in the Baseline '
             r'scenario, but with the new permanent $\epsilon$; the ' + LQ + 'Full effect' + RQ +
             r' scenario lets taxes be determined by the politico-economic equilibrium. $\rho=' +

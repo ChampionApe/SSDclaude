@@ -568,6 +568,9 @@ INPUT ./abstract.tex
 INPUT abstract.tex
 INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmr10.tfm
 INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
+INPUT c:/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map
+INPUT c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc
+INPUT c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc
 INPUT ./Sections/Introduction.tex
 INPUT ./Sections/Introduction.tex
 INPUT ./Sections/Introduction.tex
@@ -588,9 +591,6 @@ INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam7.tfm
 INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmr8.tfm
-INPUT c:/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map
-INPUT c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc
-INPUT c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc
 INPUT ./Figs/OECDdata.pdf
 INPUT ./Figs/OECDdata.pdf
 INPUT ./Figs/OECDdata.pdf

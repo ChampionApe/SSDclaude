@@ -218,8 +218,8 @@ weak at U.S. inequality), then the evidence that loosely tied benefits erode the
 Kumler et al.), then Summers' tax component with the implicit tax $t_i$ derived in the main text
 (`eq:esc:implicitTax`, which appendix C.2 now cites rather than re-derives), then the Harberger principle applied
 to each type's implicit tax, the form offered as "a reasonable place to start rather than an exact account of
-participation and reporting". Okun's leaky bucket, the framing of 2026-10-07, has left section 7 and is still in
-the introduction's cost paragraph, which the front-matter pass will align. Appendix C.2 keeps points 2, 3, 5 and
+participation and reporting". Okun's leaky bucket, the framing of 2026-10-07, has left the paper: since 2026-10-22 the
+introduction's cost paragraph also reads the cost as the Harberger loss of Summers' implicit tax. Appendix C.2 keeps points 2, 3, 5 and
 6 below (the margin, the Harberger aggregation, the soft spots, the magnitude); points 1 and 7 are superseded,
 since the main text now carries the implicit tax as a formula.
 
@@ -250,10 +250,12 @@ since the main text now carries the implicit tax as a formula.
 
 ## 5. In the paper
 
-Cited: Harberger (1964), Summers (1989), Disney (2004) and Kumler, Verhoogen and Frías (2020) in section 7.1
-and appendix C.2; Saez (2002), Kleven and Kreiner (2006), Chetty et al. (2011) and Saez, Slemrod and Giertz
-(2012) in appendix C.2 alone; Okun (1975) in the introduction alone since 2026-10-09; and, for the size–design
-link, Conde-Ruiz and Profeta (2007) and Koethenbuerger, Poutvaara and Profeta (2008) in the introduction.
+Cited: Harberger (1964) and Summers (1989) in the introduction, section 7.1 and appendix C.2; Disney (2004)
+and Kumler, Verhoogen and Frías (2020) in section 7.1, which appendix C.2 points back to; Saez (2002), Kleven
+and Kreiner (2006), Chetty et al. (2011) and Saez, Slemrod and Giertz (2012) in appendix C.2 alone; and, for the
+size–design link, Conde-Ruiz and Profeta (2007) and Koethenbuerger, Poutvaara and Profeta (2008) in the
+introduction. Okun (1975) left the introduction on 2026-10-22 and is no longer cited; its entry stays in
+`References.bib`. Point 6's magnitude has one sentence in section 7.2 as well (2026-10-22).
 Not cited and not in `References.bib`: Browning and Johnson (1984), Feldstein and Samwick (1992),
 Immervoll et al. (2007), Gruber and Wise (1999), Liebman, Luttmer and Seif (2009), Bergolo and Cruces (2014)
 and Feldstein (1999); the last two are the first candidates if the argument needs more support, next to Kumler

@@ -120,10 +120,10 @@ These rules are indicative, adjust if the context warrants it:
   caption or note names it; only a vector-`X_i` twin in the online appendix says what it is
   (`config.variantNote`, `variantCaption`). The alternative is pointed at once per arm: Argentina in a
   footnote to its calibration paragraph (`app:EPH:vectorX`, a stub in the Argentine calibration appendix
-  that sends the reader on to `\oa{arg-calibration}`), the rich economies in their calibration appendix
-  (`app:US`, pointing at `\oa{oecd-vectorx}`). Sections 6 and 7 carry no pointer.
+  that sends the reader on to `\oa{arg-leisure}`), the rich economies in their calibration appendix
+  (`app:US`, pointing at `\oa{oecd-leisure}`). Sections 6 and 7 carry no pointer.
 - **The online appendix** is cited with `\oa{key}`, which prints "online appendix" linked to the key's
-  page, so the text reads "the \oa{esc-uk}"; never "Online Appendix OA.4.3" (`\oanum{key}` gives the number
+  page, so the text reads "the \oa{esc-countries}"; never "Online Appendix OA.4.3" (`\oanum{key}` gives the number
   where one is needed), and never inside a caption or heading, since it is a link. The keys are the
   anchors of `writing/OnlineAppendix/*.qmd`, written to `writing/Paper/onlineAppendix.tex` by
   `build.py --site`; `writing/checkPaper.py` fails on an unknown key.

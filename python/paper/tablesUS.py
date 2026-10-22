@@ -293,7 +293,7 @@ def escCountryTable(spec = None):
         gap = r' No finite $\lambda$ makes France re-elect its observed design: it is the corner $\theta = 1$.'
     else:
         gap = (r' No finite $p$ makes France re-elect its observed design, the corner $\theta = 1$.')
-    note = (r'\textit{Note:} Each economy is its own calibration at $\rho = 1$ with U.S. $' + sym + ' = '
+    note = (r'\textit{Note:} Each economy is its own calibration at $\rho = 1$ with U.S.\ $' + sym + ' = '
             + C.num(pUS, 3) + '$. ' + LQ + 'Chosen' + RQ
             + r' is the design in 2020 on the economy\textquotesingle s own freely simulated path under the '
             r'U.S.\ parameter, to be read against the observed one; ' + LQ + 'own' + RQ + r' is the value at '

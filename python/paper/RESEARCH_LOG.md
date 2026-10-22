@@ -70,3 +70,16 @@ moved to `siteData.escPaths`; `build._usedIn` skips commented-out inputs; `NUM_S
 Live outputs rebuild identical but for the marks' link fields (PDFs by date). Thinner chart rows (44 px a row). Merged
 (`ea52b8e`) and published (gh-pages `e3810ba`). `US_ESC_overview.marks.json` was rebuilt on the merged code without links and
 stays uncommitted with the paper session's same-reading outputs. Open: TODO W13, C12.
+
+## 2026-10-22 — pre-review pass: front matter aligned with section 7, W12 and W13 closed
+
+On RKB's list after a full read-through. D3 stays open with a caveat in G.1 (the bound Ṽ ≥ 0.10, France at the UK's cuts
+0.246) and F.3. Substantive: u''_hh ≤ 0 (section 2); proposition 2's inequality and θ results stated for equal propensities
+to vote, appendix B.1 says so and gives μ_H/μ_L < (c_H/c_L)² for inequality; the CRRA-GHH utility written out (section 3);
+y_i defined in 7.1. Abstract, conclusion and (minimally) the introduction now say what 7.2 finds: Summers/Harberger instead
+of Okun, re-election rather than "the 2020 electorate", the design one period ahead, inequality's effect on the design
+signed by the IES, the UK test without "orders as observed". Referee points in 7.2: λ's size against participation
+elasticities, and the return factor λ absorbs. W12: section 6's IES reason is curvature, section 5's drops ω (W15 left; W14, `BergGEwp`'s title, is RKB's);
+W13: every `\oa` key current, five pointer sentences rewritten. Editorial fixes, notation (h_{t,i}, s_{t,i}, τ^{+1}_t, k_t),
+three table notes via `tables.py`/`tablesUS.py`. latexmk 61 pages, one 0.5pt overfull; checkPaper OK; test_onlineAppendix 10/10.
+Committed and pushed to Overleaf and GitHub on RKB's go, for the full review.
