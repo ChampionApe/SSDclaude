@@ -23,6 +23,8 @@ first-pass verdicts. Drafted and settled with RKB on 2026-10-23 (decisions at th
    `data/README.md` rows for anything new.
 8. **Checked, not trusted.** The orchestrating session reads each package's diff and reruns its checks before the
    next phase builds on it.
+9. **Paper text by Opus 5.5** (RKB, 2026-10-23). Fable writes theory notes and read-only reviews only. W3, W6 and
+   W7 run paper-writer-lead with `model: "opus"`, which keeps its line-by-line derivation checks.
 
 ## Phases and checkpoints
 
@@ -131,11 +133,11 @@ new count columns.
 |---|---|---|---|
 | W1 | abstract, Introduction, Conclusion | paper-writer | A1 (Conde-Ruiz and Profeta), A9, #24, the 26-country result in a sentence each, the conclusion's "changes only the size" |
 | W2 | Model, Numerical | paper-writer | #12, #15, #25; A6's sentence and footnote 12 |
-| W3 | Log, appendix B | paper-writer-lead | A5 (Proposition 2 changed slightly, B.1's proof rewritten), A6's uniqueness proof, A11, A12, #10 |
+| W3 | Log, appendix B | paper-writer-lead (Opus) | A5 (Proposition 2 changed slightly, B.1's proof rewritten), A6's uniqueness proof, A11, A12, #10 |
 | W4 | Argentina, appendix E | paper-writer | A7, A10, #2, #3, #4, #19, W15 |
 | W5 | OECD, appendix F | paper-writer | A2, #18, #23, ν from WPP 2024 (not "census data"), France's ν |
-| W6 | EndogenousTheta, appendix G, new appendix for the 26 | paper-writer-lead | A8, A14 (new subsection at the end of section 7; layer 2 and the data in the appendix), #5, #7, #13, #16, #17, #20, #21, #22 |
-| W7 | appendix C | paper-writer-lead | A1 (C.1), #6, #8, #9, #11, #22 |
+| W6 | EndogenousTheta, appendix G, new appendix for the 26 | paper-writer-lead (Opus) | A8, A14 (new subsection at the end of section 7; layer 2 and the data in the appendix), #5, #7, #13, #16, #17, #20, #21, #22 |
+| W7 | appendix C | paper-writer-lead (Opus) | A1 (C.1), #6, #8, #9, #11, #22 |
 | W8 | appendix D | paper-writer | A6: counts, horizon table, residuals |
 | W9 | online appendix pages | paper-compute | Medicare variant, all 29 and own turnout, A13, horizon detail |
 
@@ -162,7 +164,7 @@ The defaults are the definitions in `.claude/agents/`. The two packages raised t
 | C3 | paper-compute | Opus, max |
 | C4, C5, W9 | paper-compute | Opus, xhigh |
 | W1, W2, W4, W5, W8 | paper-writer | Opus, max |
-| W3, W6, W7 | paper-writer-lead | Fable, max |
+| W3, W6, W7 | paper-writer-lead with `model: "opus"` (principle 9) | Opus, max |
 | V | paper-reviewer (the audit), paper-reviewer-lead (the referee pass) | Opus, max; Fable, max |
 
 About 22 agents in all. model-coder works from a brief file under `notes/` (`brief_C0.md`, `brief_C2.md`) written

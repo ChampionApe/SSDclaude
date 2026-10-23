@@ -212,7 +212,7 @@ lacks, on which the average wedge is the relevant one.
 
 ## 4. Strategy for the paper
 
-**Revised 2026-10-09.** Section 7.1 follows RKB's outline (`notes/plan_endogenousDesign.md`) and RKB's own
+**Revised 2026-10-09.** Section 7.1 follows RKB's outline (`notes/plan_endogenousDesign.md`, deleted 2026-10-23; a version is in commit 39a47fb) and RKB's own
 Overleaf edits. It opens with the diagnosis (the Beveridgean corner, and the hours cost of flat benefits, too
 weak at U.S. inequality), then the evidence that loosely tied benefits erode the contribution base (Disney;
 Kumler et al.), then Summers' tax component with the implicit tax $t_i$ derived in the main text

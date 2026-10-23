@@ -1,1 +1,4 @@
-{"worktree": {"baseRef": "head"}}
+{
+    "worktree": {"baseRef": "head"},
+    "autoMemoryEnabled": false
+}
