@@ -37,3 +37,14 @@ retired tables' rebuilt files live only in that stash. D5 done: 94 outputs down 
 was published from the clean worktree (gh-pages `e3810ba`); worktree and branch removed, run logs kept in `logs/oa`.
 The plan is archived (`archive/notes/plan_onlineAppendix.md`); open: TODO W13 (the paper's pointers to the site), C12.
 Bash-tool heredocs collapse a double backslash to one: edit scripts with TeX in them go through a file written by Write.
+
+## 2026-10-23 — the AI review reconciled and the response planned
+
+The review of 2026-10-22 (`coarse-output/`) was read critically and reconciled comment by comment with RKB:
+`notes/paper_reviewResponse.md` holds the agreed actions A1–A14 and the detailed comments at their first-pass
+verdicts; `notes/plan_reviewResponse.md` turns them into agent packages, with a checkpoint before any writing (TODO
+W16). Found on the way: the U.S. design target is pension-only (39.2/49.2; PaG 2021 has 49.6) while τ includes
+Medicare, against the text (decided: pensions only in all three countries, Medicare in the OA); appendix B.1 prints
+the young term with 1+β; ν_t is UN WPP 2024 total population growth, not census data. An agent assembled the
+29-country inputs (`data/oecd29*.csv` by `python/paper/oecd29Data.py`, `notes/data_oecd29.md`). Python run with
+`-I` ignores PYTHONIOENCODING: Greek letters print with `-X utf8`.

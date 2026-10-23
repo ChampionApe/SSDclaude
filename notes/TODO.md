@@ -13,6 +13,11 @@ some of them; new items continue the numbering.
 (`data/README.md`): relative incomes (0.79, 1.07, 1.45) at shares 58/18/24%. The UK's own groups, (0.50, 1.00,
 2.13) at 29/58/13%, bound any exact regrouping: the top 24% average at least 1.61 and the bottom 58% at most 0.75, so $\tilde V \geq 0.10$ (0.104) against the 0.065 of `US_ESC_Country`'s last row, read in appendix G.1 (with the re-read design 0.543), appendix F.3 and online B2. That the regrouping moves the UK's choice little probably survives. A recount of the survey at the U.S. cuts, then stage (i) for `UKUS` and the ESC stages. On RKB's call of 2026-10-22 the paper carries a caveat until then: G.1 states the bound and calls the row an approximation, F.3 says the fit understates the dispersion, and G.1's comparison of the UK at its own cuts (0.223) with France at the U.S. cuts (0.218) gives France at the UK's cuts (0.246) in parentheses. Remove the caveats when the row is recomputed.
 
+**W16. Response to the AI review of 2026-10-22** (`coarse-output/coarse_review_22102026.md`). Comments are
+reconciled one at a time in `notes/paper_reviewResponse.md`, which holds the agreed actions (implemented together
+once all are reconciled) and the first-pass verdicts on the rest; the 29-country data for O6 are in
+`notes/data_oecd29.md`. The execution plan (packages, agents, checkpoints) is `notes/plan_reviewResponse.md`.
+
 ## Candidates, not scheduled
 
 **W14. `BergGEwp`**, the reference the conclusion gives for the health-risk environment, carries this paper's own

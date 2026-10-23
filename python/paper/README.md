@@ -68,6 +68,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `onlineAppendix.py`, `texTable.py` | `build.py --site`: the registry of the online appendix's exhibits (`EXHIBITS`), their blocks (tables as HTML, figures as svg, an interactive figure's caption and note), the datasets, the palette, `_variables.yml` and the `\oa` macros with the retired keys aliased; reads `results/paper` and the paper's tex only. `test_onlineAppendix.py` checks them and ties each dataset to the paper's figure (a fast suite of `python/runTests.py`) |
 | `compareResults.py` | reading a run: every changed csv under `results/` against a commit, rows aligned on the file's keys, the largest difference per column and the columns added (writes nothing) |
 | `dataTargets.py`, `oecdFigure1.py` | stage (0) |
+| `oecd29Data.py` | stage (0), not wired: the 29 countries' $\nu_t$, income groups and secondary inputs for calibrating the log model to each (`data/oecd29*.csv`, `notes/data_oecd29.md`) |
 
 ## Outputs wired (35)
 
