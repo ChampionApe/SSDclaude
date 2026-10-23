@@ -1,7 +1,7 @@
 ---
 name: paper-writer-lead
-description: Rewrites or drafts a main section or a derivation-heavy appendix of the paper in writing/Paper where the economics has to be right as well as the prose; same contract as paper-writer, run on Fable at max. One file set per agent.
-model: claude-fable-5-1
+description: Rewrites or drafts a main section or a derivation-heavy appendix of the paper in writing/Paper where the economics has to be right as well as the prose; same contract as paper-writer, plus a line-by-line check of every derivation it states; run on Opus 5.5 at max (paper text is never written by Fable). One file set per agent.
+model: claude-opus-5-5
 effort: max
 tools: Read, Edit, Write, Glob, Grep, Bash, PowerShell
 disallowedTools: Agent
