@@ -6,6 +6,8 @@ Run:  .venv\Scripts\python.exe python\US\runShocksUS.py                      # r
       ... --commonX                              the common-X calibration variant
       ... --host UK                              the UK as the host economy (France cut at the UK's groups)
       ... --host UKUS                            the UK regrouped at US percentiles as host (France as is)
+      ... --medicare 0.029                       the US under the 'transfers to the old' reading (test.reading),
+                                                 from USMedicare_rhoGrid*.csv, France referenced to it
 
 Three families. Each scenario is a NEW EQUILIBRIUM PATH -- the shocked parameters hold over the whole
 1960-2200 horizon and the economy starts at its own steady state, not the US's -- read at 2020, and
@@ -46,9 +48,14 @@ which are at US percentiles already. Both France and the host are calibrated aga
 the same rho, so France's workweek on the host's scale is France's observed one whichever the host. The
 theta family on a UK host is the UK's own design moved to the corners; ageing halves the UK's nu_t.
 
+THE READING. --medicare M (host US only) runs the same families on the US calibrated with Medicare spending M
+(share of GDP) in tau0 and as a flat share of theta (test.reading, sweep USMedicare), and calibrates France
+against that US (testEU.usReference's variant), so France's imposed beta and hours reference are those of the
+host the characteristics are imposed on. Writes USMedicare_shocks{,CommonX}.csv.
+
 Writes results/shocks/<host>_shocks{,CommonX}.csv -- one row per (rho, family, scenario, effect), each with the
-tax counts of its solve (nEqMax, nCandMax, nFallback; policy.multiplicityColumns): the baseline's and France's;
--1 on the scenario rows (shocks.runOne returns no counts) and the 'ee' rows (no tax solve).
+tax counts of its solve (nEqMax, nCandMax, nFallback; policy.multiplicityColumns): the baseline's, France's and
+each scenario's full effect (shocks.runOne's 'multiplicity'); -1 on the 'ee' rows, which select no tax.
 """
 import os, sys, argparse, time
 import numpy as np, pandas as pd
@@ -93,17 +100,18 @@ def usRow(ρ, commonX):
     return hostRow(ρ, commonX, 'US')
 
 
-def hostModel(host, ρ, commonX, row, gs):
+def hostModel(host, ρ, commonX, row, gs, medicare = None):
     """ The host's calibrated model at rho, rebuilt from its sweep row rather than unpickled: the csv is the
     record of the calibration. US: ModelUS with (beta, omega) and, under common X, the calibrated X. UK /
     UKUS: ModelFR with omega from the row, beta installed from the US reference (setUSRef, which must agree
     with the row's beta), and the hours unit reinstalled as calibrate left it -- X under common X, the
     proportional rescaling lambda of the Gamma_h = 1 baseline under vector X (modelFR._calPostRoot). The
-    baseline solve that follows is the check: tau must come back at the workbook target. """
+    baseline solve that follows is the check: tau must come back at the workbook target. medicare: the US
+    reading (test.reading), host US only. """
     base, grouping, _ = HOSTS[host]
     preferences = 'LOG' if ρ == 1 else 'CRRA'
     if host == 'US':
-        m = ModelUS(pars = testmod.pars | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])},
+        m = ModelUS(pars = testmod.reading(medicare) | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])},
                     commonX = commonX, **testmod.kwargs)
         m.db['dates'] = testmod.dates
         getattr(m, preferences).initGS(gs)
@@ -126,9 +134,10 @@ def hostModel(host, ρ, commonX, row, gs):
     return m
 
 
-def frenchData(m, ρ, preferences, gs = None, commonX = False, grouping = None):
+def frenchData(m, ρ, preferences, gs = None, commonX = False, grouping = None, usVariant = ''):
     """ France's characteristics, in the form the shocks want, plus the host quantities they are relative to.
     `grouping` selects France's sheet pair (testEU.load): None for the US percentiles, 'UK' for the UK's cuts.
+    usVariant: the US reading France is referenced to (testEU.usReference), '' or 'Medicare'.
 
     zetaFR and muFR are data and do not depend on rho. xbarRatio does: France's X_i carry the calibrated
     hours-unit level lambda, which moves across rho (0.8835 -> 0.9020 over the sweep), so France is
@@ -144,7 +153,7 @@ def frenchData(m, ρ, preferences, gs = None, commonX = False, grouping = None):
     # commonX must match the host model being shocked. Under commonX, France's X_i is a single scalar and
     # its eta_i inverts z^eta directly, so both characteristics differ from the vector-X calibration --
     # taking them from the wrong variant would impose a France that does not exist in this run's units.
-    mFR = testEU.model('FR', grouping = grouping, ρ = float(ρ), commonX = commonX)
+    mFR = testEU.model('FR', grouping = grouping, ρ = float(ρ), commonX = commonX, usVariant = usVariant)
     if gs:
         getattr(mFR, preferences).initGS(gs)
     mFR.calibrate(preferences = preferences)
@@ -166,8 +175,16 @@ def frenchData(m, ρ, preferences, gs = None, commonX = False, grouping = None):
             'θUS': float(m.db['θ'].xs(t0))}
 
 
+def effectRows(r, ids):
+    """ The two csv rows of one shocks.runOne result: `ids` (the row's identifiers) plus the readout of
+    each effect, with the full effect's tax counts (r['multiplicity'], policy.multiplicityColumns) and -1
+    on the 'ee' row, whose taxes are held at the baseline path. """
+    return [{**ids, 'effect': eff, **r[eff]} | multiplicityColumns(r['multiplicity'] if eff == 'full' else None)
+            for eff in ('full', 'ee')]
+
+
 def franceReference(ρ, preferences, gs = None, commonX = False, workweekData = None, hbarRef = None,
-                    grouping = None):
+                    grouping = None, usVariant = ''):
     """ France's own calibrated equilibrium at 2020, in the same three columns the host rows carry.
 
     The endpoint of the "mostly US, partly France" scale: the online appendix reads the French-characteristics
@@ -179,8 +196,9 @@ def franceReference(ρ, preferences, gs = None, commonX = False, workweekData = 
     number is France's hours on the US scale. That is the comparable object under vector X, where the
     LEVEL of hbar is not identified -- and it is also ModelFR's own hours target, so this cell reproduces
     France's observed workweek by construction rather than predicting it. Say so wherever it is printed.
+    usVariant: the US reading France is referenced to, as frenchData.
     """
-    mFR = testEU.model('FR', grouping = grouping, ρ = float(ρ), commonX = commonX)
+    mFR = testEU.model('FR', grouping = grouping, ρ = float(ρ), commonX = commonX, usVariant = usVariant)
     if gs:
         getattr(mFR, preferences).initGS(gs)
     mFR.calibrate(preferences = preferences)
@@ -209,28 +227,37 @@ def main():
     p.add_argument('--noFrance', action = 'store_true',
                    help = "skip France's own calibrated path, the reference row the French-characteristics "
                           'counterfactuals are read against. See franceReference.')
+    p.add_argument('--medicare', type = float, default = None,
+                   help = "host US only: Medicare spending as a share of GDP, the 'transfers to the old' "
+                          'reading (test.reading); reads USMedicare_rhoGrid*.csv, writes USMedicare_shocks*.csv')
     p.add_argument('--out', default = None)
     a = p.parse_args()
+    if a.medicare is not None and a.host != 'US':
+        raise SystemExit('--medicare is a reading of the US workbook: --host US only')
+    usVariant = '' if a.medicare is None else 'Medicare'
+    sweep = a.host + usVariant                     # the host's sweep and the csv's stem
 
     names = sum((list(FAMILIES[f]) for f in (FAMILIES if a.family == 'all' else [a.family])), [])
     famOf = {n: f for f, ns in FAMILIES.items() for n in ns}
-    out = a.out or os.path.join(OUTDIR, a.host + '_shocks' + ('CommonX' if a.commonX else '') + '.csv')
+    out = a.out or os.path.join(OUTDIR, sweep + '_shocks' + ('CommonX' if a.commonX else '') + '.csv')
     os.makedirs(OUTDIR, exist_ok = True)
     frGrouping = HOSTS[a.host][2]
 
     workweek = (float(testmod.workweek) if a.host == 'US'
                 else float(testEU.load(HOSTS[a.host][0], grouping = HOSTS[a.host][1])[3]))
     rows = []
-    print('host: {}   France cut at {} percentiles'.format(a.host, frGrouping or 'US'))
+    print('host: {}{}   France cut at {} percentiles'.format(
+        a.host, '' if a.medicare is None else ' (Medicare {} of GDP in tau0 and theta)'.format(a.medicare),
+        frGrouping or 'US'))
     print('scenarios: {}'.format(', '.join(names)))
     print('workweek (data, {}): {:.5f}'.format(testmod.dfc['Calibration year'], workweek))
 
     for ρ in a.rho:
-        row = hostRow(ρ, a.commonX, a.host)
+        row = hostRow(ρ, a.commonX, sweep)
         preferences = 'LOG' if ρ == 1 else 'CRRA'
         wp = {'smoothKnots': a.smoothKnots or None, 'interpKind': a.interpKind}
         gs = ({'n': a.n, 'ns': a.ns} if preferences == 'CRRA' else {'n': a.n}) | wp
-        m = hostModel(a.host, ρ, a.commonX, row, gs)
+        m = hostModel(a.host, ρ, a.commonX, row, gs, medicare = a.medicare)
 
         t0 = m.db['t'][m.db['t0']]
         tic = time.time()
@@ -251,7 +278,7 @@ def main():
                      'effect': 'baseline', **b} | multiplicityColumns(base.get('multiplicity')))
 
         gsFR = gs
-        data = (frenchData(m, ρ, preferences, gsFR, a.commonX, grouping = frGrouping)
+        data = (frenchData(m, ρ, preferences, gsFR, a.commonX, grouping = frGrouping, usVariant = usVariant)
                 if any(famOf[n] == 'french' for n in names) else {})
         if data:
             data['pinTheta'] = not a.freeTheta
@@ -263,9 +290,8 @@ def main():
         for name in names:
             tic = time.time()
             r = sh.runOne(m, base, name, data, preferences, workweek, hbarRef)
-            for eff in ('full', 'ee'):
-                rows.append({'ρ': ρ, 'preferences': preferences, 'family': famOf[name],
-                             'scenario': r['label'], 'effect': eff, **r[eff]} | multiplicityColumns(None))
+            rows += effectRows(r, {'ρ': ρ, 'preferences': preferences, 'family': famOf[name],
+                                   'scenario': r['label']})
             print('  {:<22} full: tau={:.4f} sr={:.4f} ww={:.2f}   |   EE-only: tau={:.4f} sr={:.4f} '
                   'ww={:.2f}   {:.0f}s'.format(
                       name, r['full']['τ'], r['full']['sr'], r['full']['workweek'],
@@ -275,7 +301,8 @@ def main():
         if not a.noFrance:
             tic = time.time()
             try:
-                f = franceReference(ρ, preferences, gsFR, a.commonX, workweek, hbarRef, grouping = frGrouping)
+                f = franceReference(ρ, preferences, gsFR, a.commonX, workweek, hbarRef, grouping = frGrouping,
+                                    usVariant = usVariant)
                 rows.append({'ρ': ρ, 'preferences': preferences, 'family': 'french',
                              'scenario': 'France (own calibration)', 'effect': 'full', **f})
                 print('  {:<22} full: tau={:.4f} sr={:.4f} ww={:.2f}   |   theta={:.4f} omega={:.4f}'

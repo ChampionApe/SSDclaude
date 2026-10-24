@@ -1,6 +1,6 @@
 r""" Table builders for the online appendix (writing/OnlineAppendix; archive/notes/brief_onlineAppendix_2026-10-06.md,
 section 2.3). Each returns the complete tex body of one file in results/paper/Tables/, which is not copied
-into writing/Paper. Layout as tablesUS: tables.BANNER and tablesUS._xwrap, label `table:OA:<Name>`, a note
+into writing/Paper, except numSelection (NUM_Selection), which appendix D shares. Layout as tablesUS: tables.BANNER and tablesUS._xwrap, label `table:OA:<Name>`, a note
 in the house form.
 
 Every body row ends with ` % row: <key>`, the last thing on its line; block titles, sub-headers and rules
@@ -383,52 +383,96 @@ def numStationary():
                   + r'}{c}{\textbf{Stationary minus date-specific}}', _body(lines), note, width = r'\textwidth')
 
 
+COUNTWORDS = {'spec': {'size': 'the paper' + "'" + 's cost', 'scale': 'the cost on the design',
+                        'sizePiR': r'the $\Pi$-inclusive cost'},
+              'method': {'exact': 'exact recursion', 'path': 'path iteration'}}
+
+
+def _exceptionText(f, ids, nEq, fb, layer):
+    """ One counted row with several equilibria or a fallback, in words: its file and identifying columns. """
+    parts = []
+    for k in ('ρ', 'spec', 'scenario', 'θpinned', 'method', 'effect', 'terminal', 'date'):
+        if k not in ids:
+            continue
+        v = ids[k]
+        if k == 'θpinned':
+            parts.append('design pinned' if bool(v) else 'design chosen')
+        elif k == 'scenario':
+            parts.append(_tex(C.US['esc']['scenarios'].get(v, v)))
+        elif k == 'ρ':
+            parts.append(r'$\rho = ' + C.num(float(v), 1) + '$')
+        else:
+            parts.append(COUNTWORDS.get(k, {}).get(v, _tex(v)))
+    where = 'the tax rule' if layer == 'tax' else 'the design layer'
+    what = ('the solver fell back at {} state{} of {}'.format(fb, '' if fb == 1 else 's', where) if fb
+            else '{} equilibria passed in {}'.format(nEq, where))
+    what = what.replace(' at 1 state ', ' at one state ')
+    return r'{} in {} ({})'.format(what, _tex(f), ', '.join(parts))
+
+
 def numSelection():
-    r""" The equilibrium counts per results csv behind the outputs (datasets.selectionCsvs): rows, rows that
-    record counts, and over those the largest number of equilibria, the largest number of candidates and the
-    total of fallbacks; first for the tax rule of writing/US/num_robustroot.tex (nEqMax, nCandMax,
-    nFallback), then for the design layer of the exact CRRA recursion of writing/US/num_esc.tex (nEqθMax,
-    nBrθMax, nFallbackθ), whose candidates are brackets. A csv that records no count of a layer prints '--'
-    in its statistics; the design block lists only the csvs that record that layer. Rows keyed
-    `<layer>_<file>`. """
+    r""" The equilibrium counts per results csv behind the outputs (datasets.selectionCsvs, the horizon runs of
+    appendix D among them): rows; rows that record counts, rows whose solve selects nothing at that layer
+    (-1), rows written before the counts existed (blank); over the counted rows the largest number of
+    equilibria, the largest number of candidates and the total of fallbacks. First for the tax rule of
+    writing/US/num_robustroot.tex (nEqMax, nCandMax, nFallback), then for the design layer of the exact CRRA
+    recursion of writing/US/num_esc.tex (nEqθMax, nBrθMax, nFallbackθ), whose candidates are brackets. A csv
+    that records no count of a layer prints '--' in its statistics; the design block lists only the csvs that
+    record that layer. The note names every counted row with more than one equilibrium or a fallback
+    (datasets.countExceptions). Rows keyed `<layer>_<file>`. Appendix D's table and the online appendix's. """
     entries = D.selectionCsvs()
     stats = {(lab, layer): D.countSummary(ps, layer) for _, lab, ps in entries for layer in ('tax', 'design')}
     num = lambda v: '--' if v is None else str(v)
     fname = lambda lab, n: _tex(lab) + ('' if n == 1 else r' (' + str(n) + ' files)')
+    cells = lambda s: [str(s['rows']), str(s['counted']), str(s['uncounted']), str(s['unrecorded']),
+                       num(s['eqMax']), num(s['candMax']), num(s['fallbacks'])]
     lines = []
     for arm, title in (('ARG', 'Tax rule: Argentina'), ('US', 'Tax rule: the U.S., the UK and France')):
-        lines.append(_title(title, 6))
+        lines.append(_title(title, 8))
         for a, lab, ps in entries:
-            if a != arm:
-                continue
-            s = stats[(lab, 'tax')]
-            lines.append(_row([fname(lab, s['files']), str(s['rows']), str(s['counted']), num(s['eqMax']),
-                               num(s['candMax']), num(s['fallbacks'])], 'tax_' + _fileKey(lab)))
+            if a == arm:
+                lines.append(_row([fname(lab, stats[(lab, 'tax')]['files'])] + cells(stats[(lab, 'tax')]),
+                                  'tax_' + _fileKey(lab)))
     lines[-1] = lines[-1].replace(r' \\ % row:', r' \\[.5em] % row:')
-    lines.append(_title('Design layer of the exact CRRA recursion: brackets as candidates', 6))
+    lines.append(_title('Design layer of the exact CRRA recursion: brackets as candidates', 8))
     for a, lab, ps in entries:
         s = stats[(lab, 'design')]
         if s['counted'] == 0:
             continue
-        lines.append(_row([fname(lab, s['files']), str(s['rows']), str(s['counted']), num(s['eqMax']),
-                           num(s['candMax']), num(s['fallbacks'])], 'design_' + _fileKey(lab)))
-    note = (r'\textit{Note:} Per csv, the rows, the rows that record the counts, and over those the largest '
-            r'number of equilibria at any state and period, the largest number of candidates and the total number '
-            r'of states at which the solver fell back. The tax rule is the selection of the technical '
-            r'documentation, which falls back on the tax that maximizes its integral criterion where no '
-            r'candidate passes the equilibrium test; a solve that does not select a tax (the '
-            r'economic-equilibrium paths, with taxes held at the baseline path) or did not record its counts '
-            r'leaves them out. The design layer is that of the exact recursion under CRRA preferences, which '
-            r'compares the candidate designs with the retirees\textquotesingle{} savings shares held fixed and '
-            r'then makes the shares consistent: its candidates are the brackets of that consistency residual, and '
-            r'where none closes to an equilibrium it falls back on comparing each design at its own consistent '
-            r'shares. escExperiments.csv and escExperimentsUK.csv, which the endogenous-design exhibits read, '
-            r'merge the escShocks* files, whose counts are the rows above.')
+        lines.append(_row([fname(lab, s['files'])] + cells(s), 'design_' + _fileKey(lab)))
+    exc = [_exceptionText(*e, layer) for _, _, ps in entries for layer in ('tax', 'design')
+           for e in D.countExceptions(ps, layer)]
+    eqMax = max(s['eqMax'] for s in stats.values() if s['eqMax'] is not None)
+    if eqMax == 1:
+        last = r'Every counted row has one equilibrium at every state and period' + (
+            '; ' + '; '.join(exc) + '.' if exc else ', and no fallback.')
+    else:
+        last = r'The largest number of equilibria at any state is ' + str(eqMax) + ': ' + '; '.join(exc) + '.'
+    note = (r'\textit{Note:} Per csv, the rows; the rows that record the counts; the rows whose solve selects '
+            r'nothing at that layer and records $-1$ (no selection); the rows written before the counts were '
+            r'recorded (not recorded); and over the counted rows the largest number of equilibria at any state and '
+            r'period, the largest number of candidates and the total number of states at which the solver fell '
+            r'back. The tax rule is the selection of the technical documentation, which falls back on the tax '
+            r'that maximizes its integral criterion where no candidate passes the equilibrium test. No selection '
+            r'in the tax rule: the economic-equilibrium rows, with taxes held at the baseline path; the rows of '
+            r'the exact recursion under CRRA preferences with the design chosen, whose tax is selected inside the '
+            r'design layer and counted there; and cost calibrations that failed, France\textquotesingle{}s and '
+            r'the regrouped UK\textquotesingle{}s observed designs being out of the cost\textquotesingle{}s '
+            r'reach. The design layer is that of the exact recursion, which compares the candidate designs with '
+            r'the retirees\textquotesingle{} savings shares held fixed and then makes the shares consistent: its '
+            r'candidates are the brackets of that consistency residual, and where none closes to an equilibrium it '
+            r'falls back on comparing each design at its own consistent shares; no selection there are the rows '
+            r'with the design pinned, and the log rows of the stationary check. Not recorded: the rows of the '
+            r'earlier cost on the design and of the path iteration under CRRA preferences, the cross-check the '
+            r'exhibits do not read, written before the counts existed and not rerun at the current calibration. '
+            r'escExperiments.csv and escExperimentsUK.csv, which the endogenous-design exhibits read, merge the '
+            r'escShocks* files, whose counts are the rows above. ' + last)
     return _xwrap('NUM_Selection', 'results/{calibration,shocks,sweeps,esc,numerical}/*.csv',
                   'Equilibrium counts in the results the exhibits read', _label('NUM_Selection'),
-                  r'>{\raggedright\arraybackslash}p{5.4cm}YYYYY',
-                  [r'\textbf{File}', r'\textbf{Rows}', r'\textbf{Counted}', r'\textbf{Equilibria, max}',
-                   r'\textbf{Candidates, max}', r'\textbf{Fallbacks}'], _body(lines), note, width = r'\textwidth')
+                  r'>{\raggedright\arraybackslash}p{4.6cm}YYYYYYY',
+                  [r'\textbf{File}', r'\textbf{Rows}', r'\textbf{Counted}', r'\textbf{No selection}',
+                   r'\textbf{Not recorded}', r'\textbf{Equilibria, max}', r'\textbf{Candidates, max}',
+                   r'\textbf{Fallbacks}'], _body(lines), note, width = r'\textwidth', size = r'\small')
 
 
 # ---------------------------------------------------------------------------------------------------

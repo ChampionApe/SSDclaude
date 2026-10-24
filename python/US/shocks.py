@@ -296,8 +296,10 @@ def shockedCopy(m, name, data, registry = None):
 def runOne(m, base, name, data, preferences, workweekData, hbarRef, solveKwargs = None):
     """ One shock, both readings, each on its own new-path model.
 
-    Returns {'full': readout, 'ee': readout, 'extra': ...}. The two readings share one shock step, so
-    they differ ONLY in whether tau is re-optimised -- which is what makes the decomposition a
+    Returns {'label', 'full': readout, 'ee': readout, 'extra': ..., 'multiplicity': ...}, 'multiplicity'
+    the tax candidates' counts of the full-effect solve (solvePEE_*'s own, policy.multiplicitySummary;
+    num_robustroot.tex). The EE-only reading selects no tax and has none. The two readings share one shock
+    step, so they differ ONLY in whether tau is re-optimised -- which is what makes the decomposition a
     decomposition rather than two loosely related runs.
 
     Both start the economy at its OWN steady state, not at the baseline's state: solvePEE_*'s s0 default
@@ -318,6 +320,7 @@ def runOne(m, base, name, data, preferences, workweekData, hbarRef, solveKwargs 
     mFull, extra = shockedCopy(m, name, data)
     full = getattr(mFull, f'solvePEE_{preferences}')(**(solveKwargs or {}))
     out['full'] = readout(mFull, full['τ'], full['report'], workweekData, hbarRef, pos = pos)
+    out['multiplicity'] = full.get('multiplicity')
     out['extra'] = extra if np.isscalar(extra) else None
 
     # --- economic-equilibrium-only: same shock, baseline taxes

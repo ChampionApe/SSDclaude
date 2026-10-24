@@ -6,7 +6,8 @@ What is checked:
 
   1. Bounded<->unbounded reparameterization round-trips; _calSetPars writes where it claims to.
   2. calibration_report's four target quantities against a rebuild from the solved path's primitives.
-  3. LOG calibration converges and hits all four eq:calibration targets at db['t0'].
+  3. LOG calibration converges and hits all four eq:calibration targets at db['t0'], and the tax target's
+     datum, pension spending over formal plus informal output, on the solved path.
   4. The doc's step 2: the state grids are rebuilt at every residual evaluation, never carried over.
   5. The doc's main numerical hazard -- the outer finite-difference step. Measured, not assumed; the
      measurement does NOT reproduce the doc's prediction, so it is pinned here (see the note at 5).
@@ -135,6 +136,16 @@ check('solved informal hours / average formal hours == z_0^x', np.isclose(relHou
       '-> {:.6f} vs {:.6f}'.format(relHours, zx0))
 check('solved informal income / average formal income == z_0^η', np.isclose(relIncome, zη0, rtol = 1e-7),
       '-> {:.6f} vs {:.6f}'.format(relIncome, zη0))
+# The tax target's datum on the solved path (finding #12): pension spending over GDP, GDP formal plus
+# informal output rebuilt here from the solved w, h, w0, h0 (model.taxTarget), is the workbook's spending.
+YC = wC*float(sol['h'].xs(t0))/(1-α)
+Y0C = m.db['γ0'].xs(t0)*w0C*cal['pars']['η0']*h0C
+check('solved pension spending / (formal + informal output) == the workbook datum (taxTarget)',
+      np.isclose(calRep['τ']*(1-α)*YC/(YC+Y0C), m.db['pensionSpending0'], rtol = 1e-6)
+      and np.isclose(calRep['spendGDP'], m.db['pensionSpending0'], rtol = 1e-6),
+      '-> {:.8f} (report {:.8f}) vs {:.8f}; informal share {:.6f} vs taxTarget {:.6f}'.format(
+          calRep['τ']*(1-α)*YC/(YC+Y0C), calRep['spendGDP'], m.db['pensionSpending0'], Y0C/(YC+Y0C),
+          m.db['yInformal0']))
 check('db holds the converged parameters afterwards',
       all(np.isclose(m.calibrationPars[k], cal['pars'][k], rtol = 1e-10) for k in m._calPars),
       '-> ' + ', '.join('{}={:.5f}'.format(k, cal['pars'][k]) for k in m._calPars))

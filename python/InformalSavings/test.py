@@ -32,10 +32,7 @@ formalMean = lambda x: np.average(x[1:].astype(float), weights = dfj['Population
 # Create objects to parse to model initialization:
 kwargs = {'T': TLog+t_ss, 'nj':dfj.shape[0]}
 pars = {'α': dfc['Capital income share'], 'ξ': dfc['Labor supply elasticity'], 'ν': np.hstack([νLog, np.full(kwargs['T']-TLog, νLog[-1])]),
-        # The tax target is DERIVED: spending of 7.1% of GDP is tau*(1-alpha) of formal output, so the
-        # workbook carries the spending share and tau0 = spending/(1-alpha) follows the capital share
-        # (0.125 at alpha = 0.43, 0.109 at 0.35). A literal tau0 would silently go stale with alpha.
-        'τ0': dfc['Pension spending']/(1-dfc['Capital income share']), 'RR0': dfc['Replacement rate'], 'RRGroups': tuple(eval(dfc['Replacement rate groups'])), 't0': dates.get_loc(dfc['Calibration year']),
+        'RR0': dfc['Replacement rate'], 'RRGroups': tuple(eval(dfc['Replacement rate groups'])), 't0': dates.get_loc(dfc['Calibration year']),
         'γj': dfj['Population shares'].values.astype(float), 
         'μj': dfj['Voting shares'].values.astype(float), 
         'Xj': 1,
@@ -43,6 +40,13 @@ pars = {'α': dfc['Capital income share'], 'ξ': dfc['Labor supply elasticity'],
         'zηj': (dfj['Income'].values/formalMean(dfj['Income'].values)).astype(float)}
 pars['h0'] = workweek / (7*12) # estimate of share of time spend on labor
 pars['s0'] = dfc['Savings rate']   # reported only; the target that identifies beta is KY0 below
+
+# The tax target is DERIVED from pension spending over GDP (the workbook's datum), with GDP formal plus
+# informal output and the informal share y the model's own at the calibration (ModelInformalSavings.
+# taxTarget): it follows alpha, gamma_0 and z_0^eta. A literal tau0 would silently go stale with any of them.
+pars['pensionSpending0'] = float(dfc['Pension spending'])
+pars['τ0'], pars['yInformal0'] = ModelInformalSavings.taxTarget(
+    pars['pensionSpending0'], float(dfc['Capital income share']), float(pars['γj'][0]), float(pars['zηj'][0]))
 
 # The capital-output target does NOT live in the workbook: it is a window mean over an external series,
 # so python/paper/dataTargets.py derives it and this csv is the record (target, window, source, date).

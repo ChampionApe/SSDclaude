@@ -83,26 +83,28 @@ def load(country, grouping = None, t_ss = t_ss):
     return pars, kwargs, dates, workweek
 
 
-def usReference(commonX = False, h0US = None):
+def usReference(commonX = False, h0US = None, variant = ''):
     """ ModelFR's US reference as a callable of rho, read off the US rho sweep. h0US defaults to the US
-    workbook's own average-hours input, loaded from test.py. """
+    workbook's own average-hours input, loaded from test.py. variant: the US reading the sweep belongs to,
+    '' (the workbook) or 'Medicare' (test.reading's, results/calibration/USMedicare_rhoGrid*.csv). """
     from modelFR import usRefFromCsv
     if h0US is None:
         import test as testmod
         h0US = testmod.pars['h0']
     csv = os.path.join(DIR, '..', '..', 'results', 'calibration',
-                       'US_rhoGridCommonX.csv' if commonX else 'US_rhoGrid.csv')
+                       'US' + variant + '_rhoGrid' + ('CommonX' if commonX else '') + '.csv')
     return usRefFromCsv(csv, h0US = h0US)
 
 
-def model(country, grouping = None, commonX = False, ρ = 1., ω = 2., **over):
+def model(country, grouping = None, commonX = False, ρ = 1., ω = 2., usVariant = '', **over):
     """ A ready ModelFR on `country`'s workbook, with the US reference wired to the sweep of the matching
-    variant. beta is NOT set here: setUSRef installs it from the reference at db's rho when calibrate runs.
+    variant (and US reading, usVariant; see usReference). beta is NOT set here: setUSRef installs it from
+    the reference at db's rho when calibrate runs.
     """
     from modelFR import ModelFR
     pars, kwargs, dates, workweek = load(country, grouping = grouping)
     pars.update({'ρ': ρ, 'ω': ω})
     m = ModelFR(pars = pars | over, commonX = commonX,
-                usRef = usReference(commonX = commonX), **kwargs)
+                usRef = usReference(commonX = commonX, variant = usVariant), **kwargs)
     m.db['dates'], m.db['workweek'], m.db['country'] = dates, workweek, country+(grouping or '')
     return m

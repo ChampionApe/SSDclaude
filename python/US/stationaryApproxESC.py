@@ -18,8 +18,9 @@ stat   for each distinct nu_t, the same recursion on a deep copy with nu frozen 
        stationary functions from the exact initial state (theta*, and s_0 under CRRA).
 Also: the stationary function evaluated at the exact path's own states (the error in the function alone).
 
-Writes results/numerical/US_ESC_stationaryApprox.csv, one row per (rho, t), each with the exact solve's tax
-counts (nEqMax, nCandMax, nFallback; policy.multiplicityColumns).
+Writes results/numerical/US_ESC_stationaryApprox.csv, one row per (rho, t), each with the exact solve's counts
+(policy.multiplicityColumns): the tax rule's (nEqMax, nCandMax, nFallback) and the root design layer's of the
+2-D recursion (nEqθMax, nBrθMax, nFallbackθ; -1 under LOG, whose design is a grid argmax).
 """
 import os, sys, argparse, time
 from copy import deepcopy
@@ -61,7 +62,7 @@ def rows(ρ, method, m, ν, θE, θA, θAatE, τE, τA, τAatE, sE_, sA_, conv, 
                     'gapτ_pp': 100*(τA[pos] - τE[pos]), 'gapτAtExactState_pp': 100*(τAatE[pos] - τE[pos]),
                     's_exact': sE_[pos] if sE_ is not None else np.nan,
                     's_stat': sA_[pos] if sA_ is not None else np.nan,
-                    'statConvθ': conv[νt][0], 'statConvτ': conv[νt][1]} | multiplicityColumns(mult))
+                    'statConvθ': conv[νt][0], 'statConvτ': conv[νt][1]} | multiplicityColumns(mult, design = True))
     return out
 
 

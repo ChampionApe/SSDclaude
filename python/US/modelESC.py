@@ -14,6 +14,10 @@ THREE SPECS, and they differ in more than a formula (Base.wedgeA/wedgeB, Eq esc:
               (Vtilde = sum_i gamma_i (y_i-1)^2/y_i, Base.Vtilde) and with the size of the system (tau).
               lambda lives in the 'p' slot (db['wedgeP']); 'phi' stays in the db as a dummy (0.5) because
               every csv key carries it, and f never reads it.
+    'sizePiR' as 'size' with lambda*pi_t in place of lambda, pi_t = Pi_t/R_t (Base.wedgeΠR): the Harberger loss
+              of the implicit tax discounted at the market return, which keeps the return factor the paper's
+              cost absorbs into lambda. pi_t is the equilibrium Pi_t/R_t of the path being solved, taken as
+              given by households and voters: every solve under it iterates pi to a fixed point (_ΠRFixedPoint)
     'scale'   b^i = f(theta)[theta*eta_i*h_i + (1-theta)h]*bbar,  f = phi+(1-phi)theta^p   the previous spec
     'flat'    b^i = [theta*eta_i*h_i + (1-theta)f(theta)h]*bbar                              MGE's variant
 
@@ -48,16 +52,24 @@ held at this parameter point, and it costs nothing.
 import numpy as np, pandas as pd
 from scipy import optimize
 from model import ModelUS
-from policy import multiplicitySummary
+from policy import multiplicitySummary, mergeMultiplicity
 from policyESC import LeadedLOG, LeadedCRRA, LeadedCRRA2D, PermanentLOG, PermanentCRRA
 
-WEDGE_SPECS = (None, 'scale', 'flat', 'size')
+WEDGE_SPECS = (None, 'scale', 'flat', 'size', 'sizePiR')
 # calibrateWedge's default scan bracket per spec (a log grid): p in [0.05, 3] for the theta^p forms; lambda
 # in [0.5, 200] for 'size' at rho = 1 under LOG, where the calibrated lambda is about 8.6 (test_esc.py,
 # vector X) and the residual runs from the theta -> 0 corner at small lambda to the theta -> 1 corner at
 # large, with one sign change. The CRRA driver has its own defaults (runESCcrra.BRACKET_CRRA, --bracket):
-# the required cost falls steeply in rho.
-WEDGE_BRACKET = {'scale': (0.05, 3.0), 'flat': (0.05, 3.0), 'size': (0.5, 200.)}
+# the required cost falls steeply in rho. The 'sizePiR' lambda is the 'size' one over pi_t0 (about 0.55),
+# so its bracket is doubled.
+WEDGE_BRACKET = {'scale': (0.05, 3.0), 'flat': (0.05, 3.0), 'size': (0.5, 200.), 'sizePiR': (1.0, 400.)}
+# The pi = Pi/R path a 'sizePiR' solve starts from when it has no earlier one (U.S. 2020,
+# notes/theory_closedForm.md 3.4), the fixed point's tolerance (max |Δpi| over the path; the map contracts by
+# about 0.03 per iteration at the U.S. calibration) and iteration cap. The exact 2-D recursion (~6 min per
+# iteration at ns = 150) stops at ΠR_TOL2D: a pi error of 1e-5 moves the design by ~4e-6. A CRRA tax solve
+# stops at ΠR_TOLCRRA; a pi error of 1e-8 moves tau by ~1e-11. A fixed point that stalls on a jump of the
+# CRRA solve (_ΠRFixedPoint) is accepted below ΠR_STALLTOL, 2e-4 in pi (~1e-4 in the 2020 tax).
+ΠR_START, ΠR_TOL, ΠR_TOLCRRA, ΠR_TOL2D, ΠR_STALLTOL, ΠR_MAXITER = 0.55, 1e-10, 1e-8, 1e-5, 2e-4, 40
 
 
 class ModelESC(ModelUS):
@@ -90,6 +102,115 @@ class ModelESC(ModelUS):
     @property
     def wedge(self):
         return {'spec': self.db['wedgeSpec'], 'phi': self.db['wedgePhi'], 'p': self.db['wedgeP']}
+
+    # ------------------------------------------------------------------ 'sizePiR': pi_t = Pi_t/R_t
+    def _hasΠR(self):
+        return self.db.get('wedgeSpec') == 'sizePiR'
+
+    def setΠR(self, π):
+        """ Install pi_t (T,) as db['wedgeΠR'] with its lead and lag, which Base.wedgeΠR reads. """
+        s = pd.Series(np.broadcast_to(np.asarray(π, dtype = float), (self.T,)).copy(), index = self.db['t'])
+        self.db.update(self.addLeadAndLags('wedgeΠR', s))
+
+    def ΠRPath(self, report, τ, θ):
+        """ Pi_t/R_t on a solved path, (T,): Pi_t = nu_t w_t h_t/(w_{t-1} h_{t-1}), the pay-as-you-go return
+        factor, and R_t = alpha (s_{t-1}/(nu_t h_t))^(alpha-1) (report['R']). The period before the horizon is
+        the steady state the path starts from: s_{-2} = s_{-1} = s0 and h_{-1} as EE_report backs it out.
+        τ, θ: the path's (T,) policy (its first-period values fix that steady state). """
+        tF = self.B.tFirst
+        τ, θ = np.asarray(τ, dtype = float), np.asarray(θ, dtype = float)
+        s0 = float(report['s_'].values[0])
+        init = self.initialState_solve(τ[tF], θ[tF])
+        h_ = float(self.B.hFromS(s0, init['Γs'], tF))
+        w_ = float(self.B.w(s0, h_, tF))
+        wh = report['w'].values.astype(float)*report['h'].values.astype(float)
+        Π = self.db['ν'].values.astype(float)*wh/np.append(w_*h_, wh[:-1])
+        return Π/report['R'].values.astype(float)
+
+    def _ΠRFixedPoint(self, solve, θOf, what, tol = ΠR_TOL):
+        """ `solve()` under 'sizePiR' iterated to pi = ΠRPath(its own path): solve at a starting pi, recompute
+        pi, until max|Δpi| < tol. The start is the fixed point the last solve of the same kind (`what`)
+        reached on this instance or the one it was copied from, else db's pi, else ΠR_START: only the
+        iteration count depends on it. θOf(out) -> the solve's (T,) design path. Returns the last solve,
+        whose pi is within tol of its own path's, with 'ΠRiter' and 'ΠRgap'; db holds that path's pi.
+        Under every other spec, and inside calibrate's root (_ΠRfrozen), solve() once at db's pi.
+
+        A CRRA solve can jump (by ~1e-4 in tau) as pi crosses a point where its selection changes, and the
+        map then has no fixed point but a 2-cycle across the jump. When the gap stops halving, the update is
+        damped (pi <- (pi + Pi/R)/2), which converges to the jump; if the gap then stalls below ΠR_STALLTOL
+        the solve is returned as it stands, its 'ΠRgap' saying how far it is from consistent. """
+        if not self._hasΠR() or getattr(self, '_ΠRfrozen', False):
+            return solve()
+        start = getattr(self, '_ΠRstart', {}).get(what)
+        if start is not None and len(start) == self.T:
+            self.setΠR(start)
+        elif 'wedgeΠR' not in self.db:
+            self.setΠR(ΠR_START)
+        gaps, damp = [], False
+        for k in range(1, ΠR_MAXITER + 1):
+            out = solve()
+            πIn = self.db['wedgeΠR'].values.astype(float)
+            π = self.ΠRPath(out['report'], np.asarray(out['τ'], dtype = float), θOf(out))
+            gap = float(np.max(np.abs(π - πIn)))
+            gaps.append(gap)
+            if gap < tol or (damp and len(gaps) > 6 and gap < ΠR_STALLTOL and gap > 0.9*min(gaps[-6:-1])):
+                self.setΠR(π)
+                self._ΠRstart = dict(getattr(self, '_ΠRstart', {})) | {what: π.copy()}
+                return out | {'ΠRiter': k, 'ΠRgap': gap}
+            if not damp and len(gaps) > 2 and gaps[-1] > 0.5*gaps[-2] and gaps[-2] > 0.5*gaps[-3]:
+                damp = True
+            self.setΠR(0.5*(πIn + π) if damp else π)
+        raise RuntimeError(f'{what}: pi = Pi/R did not converge in {ΠR_MAXITER} iterations (last gap {gap:.2e}).')
+
+    def calibrate(self, *args, **kwargs):
+        """ ModelUS.calibrate; under 'sizePiR' an outer loop around it: (beta, omega) are calibrated at a
+        fixed pi (_ΠRfrozen, so the root sees no feedback), pi is recomputed from the calibrated equilibrium,
+        and the two alternate until max|Δpi| < ΠR_TOLCRRA (damped and accepted below ΠR_STALLTOL as in
+        _ΠRFixedPoint). Returns the last calibration, with 'ΠRiter' and 'ΠRgap'. """
+        if not self._hasΠR():
+            return super().calibrate(*args, **kwargs)
+        start = getattr(self, '_ΠRstart', {}).get('calibrate')
+        if start is not None and len(start) == self.T:
+            self.setΠR(start)
+        elif 'wedgeΠR' not in self.db:
+            self.setΠR(ΠR_START)
+        gaps, damp = [], False
+        for k in range(1, ΠR_MAXITER + 1):
+            self._ΠRfrozen = True
+            try:
+                cal = super().calibrate(*args, **kwargs)
+            finally:
+                self._ΠRfrozen = False
+            pee = cal['report']['PEE']
+            πIn = self.db['wedgeΠR'].values.astype(float)
+            π = self.ΠRPath(pee['report'], np.asarray(pee['τ'], dtype = float), self.db['θ'].values)
+            gap = float(np.max(np.abs(π - πIn)))
+            gaps.append(gap)
+            if gap < ΠR_TOLCRRA or (damp and len(gaps) > 6 and gap < ΠR_STALLTOL and gap > 0.9*min(gaps[-6:-1])):
+                # db keeps the pi the calibration was solved at, so db and the calibrated equilibrium agree
+                self._ΠRstart = dict(getattr(self, '_ΠRstart', {})) | {'calibrate': πIn.copy()}
+                return cal | {'ΠRiter': k, 'ΠRgap': gap}
+            if not damp and len(gaps) > 2 and gaps[-1] > 0.5*gaps[-2] and gaps[-2] > 0.5*gaps[-3]:
+                damp = True
+            self.setΠR(0.5*(πIn + π) if damp else π)
+        raise RuntimeError(f'calibrate: pi = Pi/R did not converge in {ΠR_MAXITER} iterations (last gap {gap:.2e}).')
+
+    def _refuseΠR(self, what):
+        if self._hasΠR():
+            raise NotImplementedError(f"{what} does not iterate pi = Pi/R; 'sizePiR' runs through solvePEE_*, "
+                                      'solveLeaded, leadedDesignAtT0 and solveLeaded2D only.')
+
+    def solvePEE_LOG(self, θ = None, ε = None, s0 = None, solver = 'Robust', **kwargs):
+        """ ModelUS.solvePEE_LOG; under 'sizePiR' at the fixed point in pi (_ΠRFixedPoint). """
+        parent, θp = super().solvePEE_LOG, (self.db['θ'].values if θ is None else θ)
+        return self._ΠRFixedPoint(lambda: parent(θ, ε, s0, solver, **kwargs), lambda out: θp, 'solvePEE_LOG')
+
+    def solvePEE_CRRA(self, θ = None, ε = None, s0 = None, warmStart = True, backwardKwargs = None,
+                      solveKwargs = None):
+        """ ModelUS.solvePEE_CRRA; under 'sizePiR' at the fixed point in pi (_ΠRFixedPoint). """
+        parent, θp = super().solvePEE_CRRA, (self.db['θ'].values if θ is None else θ)
+        return self._ΠRFixedPoint(lambda: parent(θ, ε, s0, warmStart, backwardKwargs, solveKwargs),
+                                  lambda out: θp, 'solvePEE_CRRA', tol = ΠR_TOLCRRA)
 
     def setWedge(self, spec = None, phi = None, p = None, update = True):
         """ Install wedge parameters and refresh the auxiliary ones. `update` re-derives theta (and Γh,
@@ -151,7 +272,16 @@ class ModelESC(ModelUS):
         the datum, and is only what you want for a diagnostic.
 
         Returns {'sols', 'θ', 'τ', 'sol', 'report', 'targetDrift'} -- the same keys solvePEE_LOG returns
-        plus the design path and the fixed-point diagnostic (see the module docstring). """
+        plus the design path and the fixed-point diagnostic (see the module docstring). Under 'sizePiR' the
+        whole solve iterates pi = Pi/R (_ΠRFixedPoint), so `sols` cannot be passed in. """
+        if self._hasΠR():
+            if sols is not None:
+                raise ValueError("solveLeaded: under 'sizePiR' the policies depend on pi; do not pass sols.")
+            return self._ΠRFixedPoint(lambda: self._solveLeaded(s0, pinAtT0, None, ε),
+                                      lambda out: out['θ'].values, f'solveLeaded{pinAtT0}')
+        return self._solveLeaded(s0, pinAtT0, sols, ε)
+
+    def _solveLeaded(self, s0, pinAtT0, sols, ε):
         sols = self.ESC.solveBackward() if sols is None else sols
         t0 = self.t0Year
         θ0 = float(self.db['θ'].xs(t0))
@@ -190,7 +320,12 @@ class ModelESC(ModelUS):
         Under LOG this is exactly thetaPolicy_{t0-1} evaluated anywhere: the policy has no state at all
         (test_esc.py measures it), so the inherited theta_{t0-1} drops out and simulate's forward sweep is
         a formality. It is written through simulate anyway, because that identity is a LOG fact and this
-        method must stay right if it stops holding. """
+        method must stay right if it stops holding. Under 'sizePiR' the free path's own pi is needed, so it
+        is solveLeaded(pinAtT0 = False) at its fixed point. """
+        if self._hasΠR():
+            if sols is not None:
+                raise ValueError("leadedDesignAtT0: under 'sizePiR' the policies depend on pi; do not pass sols.")
+            return float(self.solveLeaded(pinAtT0 = False)['θ'].xs(self.t0Year))
         sols = self.ESC.solveBackward() if sols is None else sols
         θPath, _ = self.ESC.simulate(sols, float(self.db['θ'].xs(self.t0Year)), tPin = None)
         return float(θPath.xs(self.t0Year))
@@ -215,6 +350,7 @@ class ModelESC(ModelUS):
 
         13 candidate solves rather than a full path iteration, which is what makes calibrating p under
         CRRA affordable at all. """
+        self._refuseΠR('_leadedGridChoice_CRRA')
         θStar = float(self.db['θ'].xs(self.t0Year))
         Ws = np.empty(self.ESCC.nθCand)
         for k, cand in enumerate(self.ESCC.θCand):
@@ -253,7 +389,16 @@ class ModelESC(ModelUS):
         including t0 -- and here the pinning has to reach the RECURSION, not just the simulation, because
         τ_t responds to θ_{t+1} under CRRA (see LeadedCRRA2D's docstring). 'multiplicity': the tax rule's
         and the design layer's counts over the recursion (LeadedCRRA2D.multiplicity; -1 for a set no period
-        counted). """
+        counted). Under 'sizePiR' the recursion iterates pi = Pi/R (_ΠRFixedPoint), so `sols` cannot be
+        passed in. """
+        if self._hasΠR():
+            if sols is not None:
+                raise ValueError("solveLeaded2D: under 'sizePiR' the policies depend on pi; do not pass sols.")
+            return self._ΠRFixedPoint(lambda: self._solveLeaded2D(s0, pinAtT0, None, verbose),
+                                      lambda out: out['θ'].values, f'solveLeaded2D{pinAtT0}', tol = ΠR_TOL2D)
+        return self._solveLeaded2D(s0, pinAtT0, sols, verbose)
+
+    def _solveLeaded2D(self, s0, pinAtT0, sols, verbose):
         θStar = float(self.db['θ'].xs(self.t0Year))
         pinPos = int(self.db['t0']) if pinAtT0 else None
         if sols is None:
@@ -301,6 +446,7 @@ class ModelESC(ModelUS):
         outcome and can be read at 2020. True holds it at theta* through t0 -- the unanticipated-reform
         reading, kept as a diagnostic and as the object leadedChoiceAtT0_CRRA is the one-shot version of.
         """
+        self._refuseΠR('solveLeadedCRRA')
         θStar = float(self.db['θ'].xs(self.t0Year))
         rec = self.ESCC.solvePath(θStar, pinPos = self.db['t0'] if pinAtT0 else 0, maxIter = maxIter,
                                   tol = tol, s0 = s0, verbose = verbose, solveKwargs = solveKwargs)
@@ -395,7 +541,10 @@ class ModelESC(ModelUS):
 
         diagnostics: also report the choice under the other two readings ('θIncumbent', 'θMoving').
 
-        Returns {'θ', 'atBound', 'τ', 'sol', 'report', 'W', 'θCand', 'converged', ...}. """
+        Returns {'θ', 'atBound', 'τ', 'sol', 'report', 'W', 'θCand', 'converged', 'multiplicity', ...},
+        'multiplicity' the tax candidates' counts over the choice's tax selections (every candidate design)
+        and the equilibrium at the chosen design (policy.mergeMultiplicity; num_robustroot.tex). """
+        self._refuseΠR('solvePermanent')
         t0 = self.t0Year
         if base is None:
             base = getattr(self, f'solvePEE_{preferences}')()
@@ -430,14 +579,18 @@ class ModelESC(ModelUS):
         θSave = self.db['θ'].values.astype(float).copy()
         try:
             self.db.update(self.adjPar('θ', θ))
-            τ = (self.ESCP.τPath(θ) if preferences == 'LOG'
-                 else self.solvePEE_CRRA(θ = θ, ε = ε)['τ'].values.astype(float))
+            if preferences == 'LOG':
+                τ, multPath = self.ESCP.τPath(θ, withMultiplicity = True)
+            else:
+                outC = self.solvePEE_CRRA(θ = θ, ε = ε)
+                τ, multPath = outC['τ'].values.astype(float), outC.get('multiplicity')
             s0e = self.steadyState_LOG_solve(τ[self.B.tFirst], θ[self.B.tFirst], t = self.B.tFirst)['s']                   if preferences == 'LOG' else None
             sol = getattr(self, f'EE_{preferences}_solve')(τ, θ, ε, s0e)
             report = self.EE_report(sol, τ, θ, ε, s0e if s0e is not None else float(sol['s'].iloc[0]))
         finally:
             self.db.update(self.adjPar('θ', θSave))
-        return rec | {'τ': pd.Series(τ, index = self.db['t']), 'sol': sol, 'report': report, 'θPath': θ}
+        return rec | {'τ': pd.Series(τ, index = self.db['t']), 'sol': sol, 'report': report, 'θPath': θ,
+                      'multiplicity': mergeMultiplicity([rec.get('multiplicity'), multPath])}
 
     def permanentChoiceAtT0(self, preferences = 'LOG', base = None, verbose = False):
         """ The permanent choice evaluated at the INCUMBENT ratio -- what calibrateWedge's residual is
@@ -514,17 +667,20 @@ class ModelESC(ModelUS):
             if verbose and np.isfinite(r):
                 print(f"    p={p:.4f}: θ*={scan[-1]['θ']:.4f}  choice-θ* = {r:+.5f}")
         v = np.array([s['residual'] for s in scan])
-        ok = np.isfinite(v)
-        idx = [k for k in range(len(v)-1) if ok[k] and ok[k+1] and v[k]*v[k+1] < 0]
+        # A node whose inner calibration failed is skipped, not a wall: the sign change is looked for between
+        # finite neighbours (on the scan grid the CRRA tax solve can jump by ~1e-5 and stop the (beta, omega)
+        # root at a node the refine grid solves).
+        fin = [k for k in range(len(v)) if np.isfinite(v[k])]
+        idx = [(fin[j], fin[j+1]) for j in range(len(fin)-1) if v[fin[j]]*v[fin[j+1]] < 0]
         if not idx:
             return {'p': np.nan, 'residual': np.nan, 'scan': scan, 'converged': False,
                     'wedge': self.wedge, 'θ': np.nan,
                     'message': 'no sign change in the scanned bracket -- the choice never crosses θ*'}
-        k = idx[0]
+        k0, k1 = idx[0]
         if beforeRefine is not None:
             beforeRefine()
         f = lambda p: self.wedgeResidual(p, spec, phi, calKwargs, preferences)
-        p = optimize.brentq(f, grid[k], grid[k+1], xtol = xtol)
+        p = optimize.brentq(f, grid[k0], grid[k1], xtol = xtol)
         res = self.wedgeResidual(p, spec, phi, calKwargs, preferences)  # leaves db at the calibrated point
         return {'p': float(p), 'residual': float(res), 'scan': scan, 'converged': abs(res) < 1e-4,
                 'wedge': self.wedge, 'θ': float(self.db['θ'].xs(self.t0Year)),

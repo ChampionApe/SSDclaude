@@ -4,6 +4,9 @@ Run:  .venv\Scripts\python.exe python\US\calibrateRhoGrid.py [options]
       ... --lo 0.5 --hi 2.0 --step 0.1        the default sweep
       ... --commonX                           the common-X variant (its own csv and pickle directory)
       ... --force                             re-solve points already in the csv
+      ... --medicare 0.029                    the 'transfers to the old' reading (test.reading): Medicare
+                                              spending, share of GDP, in tau0 and as a flat share of theta;
+                                              its own csv and pickle directory (USMedicare_rhoGrid*)
 
 The march is anchored at rho=1, where the LOG solver applies and no warm start is needed, and walks
 outward in both directions (gridsearch.continuation.marchGrid). Each CRRA point is a full backward
@@ -83,8 +86,8 @@ def gitCommit():
 
 
 def toRow(rec, requested, commit):
-    """ calibratePoint's record -> one flat csv row, with the tax counts of its solve (nEqMax, nCandMax,
-    nFallback; policy.multiplicityColumns), -1 while calibratePoint's record carries none. """
+    """ calibratePoint's record -> one flat csv row, with the tax counts of the PEE solve at the calibrated
+    point (the record's 'multiplicity' as nEqMax, nCandMax, nFallback; policy.multiplicityColumns). """
     g = rec['gridSettings']
     row = {k: rec.get(k) for k in ('ρ', 'preferences', 'residual', 'verifyResidual', 'β', 'ω', 'X',
                                    'R', 'τ', 'sr', 'h', 'hbar', 'nfev', 'time')}
@@ -135,13 +138,18 @@ def main():
     p.add_argument('--degree', type = int, default = 1, help = 'extrapolation degree for the warm start')
     p.add_argument('--maxHalvings', type = int, default = 2)
     p.add_argument('--force', action = 'store_true', help = 're-solve points already present in the csv')
+    p.add_argument('--medicare', type = float, default = None,
+                   help = "Medicare spending as a share of GDP: the 'transfers to the old' reading "
+                          '(test.reading), written to USMedicare_rhoGrid*.csv and instancesUSMedicare*')
     p.add_argument('--out', default = None)
     p.add_argument('--pkldir', default = None, help = 'where the per-point pickled instances go')
     a = p.parse_args()
 
-    tag = 'US_rhoGridCommonX' if a.commonX else 'US_rhoGrid'
+    country = 'US' if a.medicare is None else 'USMedicare'
+    tag = country + ('_rhoGridCommonX' if a.commonX else '_rhoGrid')
     out = a.out or os.path.join(OUTDIR, tag + '.csv')
-    pkldir = a.pkldir or os.path.join(OUTDIR, 'instancesUS' + ('CommonX' if a.commonX else ''))
+    pkldir = a.pkldir or os.path.join(OUTDIR, 'instances' + country + ('CommonX' if a.commonX else ''))
+    pars = testmod.reading(a.medicare)
     os.makedirs(OUTDIR, exist_ok = True)
     os.makedirs(pkldir, exist_ok = True)
 
@@ -166,12 +174,15 @@ def main():
     print('grid: {} points, {} to {} step {}'.format(len(grid), grid[0], grid[-1], a.step))
     print('variant: {},  anchor rho={},  tau nodes {},  state nodes {},  verify at {}/{}'.format(
         'common X' if a.commonX else 'vector X_i', a.anchor, a.n, a.ns, a.verifyN, a.verify or 'off'))
+    print('targets: tau0={:.6f}  RR0={:.6f}  Ushare0={:.6f}{}'.format(
+        pars['τ0'], pars['RR0'], pars['Ushare0'],
+        '' if a.medicare is None else '   (Medicare {} of GDP)'.format(a.medicare)))
     print('out: {}'.format(os.path.relpath(out, REPO)))
     if done:
         print('resuming: {} of {} points already present'.format(
             sum(round(float(v), 6) in done for v in grid), len(grid)))
 
-    m = ModelUS(pars = testmod.pars | {'ρ': float(a.anchor)}, commonX = a.commonX, **testmod.kwargs)
+    m = ModelUS(pars = pars | {'ρ': float(a.anchor)}, commonX = a.commonX, **testmod.kwargs)
 
     def write():
         (pd.DataFrame(list(rows.values())).reindex(columns = COLUMNS).sort_values('ρ')

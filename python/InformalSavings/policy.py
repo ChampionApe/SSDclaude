@@ -60,6 +60,15 @@ def _retireeLevel(w, c2, p):
     return (w*np.log(c2)).sum(axis = -1) if p == 0 else (w*c2**p).sum(axis = -1)/p
 
 
+def _heldShares(si_s_, τ):
+    """ Inherited formal savings shares s_{t-1,i}/s_{t-1} (ni,), repeated over the candidate taxes τ: shape
+    np.shape(τ) + (ni,). The first period of a model copy (eq:shockState, with model.stateAtT0's
+    'inherited'): the generation old there saved under the baseline's system, so its shares are the
+    baseline path's and do not move with the candidate tax. """
+    si_s_ = np.asarray(si_s_, dtype = float)
+    return np.broadcast_to(si_s_, np.shape(τ) + si_s_.shape).copy()
+
+
 class LOG:
     """
     Identify Sequence of Policy Functions.
@@ -250,12 +259,13 @@ class LOG:
         dv2i = BG.dlnc2i_dτ(parts['dlnh'], τ, θ, si_s_, t)
         return BG.FOC(parts['dv1i'], parts['dv10'], dv2i, (1-BG.get('α', t))*parts['dlnh'], t)
 
-    def objectiveFrozen(self, cand, parts, θ, ε, ιGrid, t, tLag):
+    def objectiveFrozen(self, cand, parts, θ, ε, ιGrid, t, tLag, si_s_ = None):
         """ W_t(τ; D) on 𝒯 at the formal savings shares D frozen at each candidate tax, per state ι_{t-1},
         up to a constant common to a column -- the callback of roots1d.selectMaxFrozen
         (eq:objectiveProfile). cand: (K, M_ι) candidate taxes, NaN-padded; parts: the period's
         zbarParts_T/zbarParts_t on the full 𝒯 (NaN at infeasible nodes); θ: the design in force (scalar).
-        Returns (K, M, M_ι).
+        si_s_: inherited shares (ni,), the first period of a model copy (_heldShares), which D then is
+        for every candidate. Returns (K, M, M_ι).
 
         It is z_t re-evaluated along 𝒯 with the shares frozen -- _zState(zbarAtShares(...)), the shares
         now per column -- and integrated in τ (roots1d.cumtrapzColumns), plus the formal retirees' level
@@ -273,9 +283,12 @@ class LOG:
         ok = np.isfinite(cF)
         D = np.full((K*N, self.ni), np.nan)
         if ok.any():
-            βi_ = BG.get('βi', tLag)
-            Γs_ = BG.Γs(βi_, cF[ok], θ, tLag)
-            D[ok] = BG.si_s(βi_, cF[ok], θ, Γs_, tLag)
+            if si_s_ is None:
+                βi_ = BG.get('βi', tLag)
+                Γs_ = BG.Γs(βi_, cF[ok], θ, tLag)
+                D[ok] = BG.si_s(βi_, cF[ok], θ, Γs_, tLag)
+            else:
+                D[ok] = _heldShares(si_s_, cF[ok])
         rep = {k: np.repeat(np.asarray(v), N, axis = 0) for k, v in parts.items()}   # C-order over (τ, ι_)
         oldW = self._oldFormalWeights(t)
         n = np.arange(N)
@@ -409,13 +422,17 @@ class LOG:
     # object entering z_T is closed form in (τ_T, ι_{T-1}) (docs eq:terminalPEELOG). The whole period is one
     # pass over 𝒯, _zState's broadcast, and one selection per state.
 
-    def stateGrid_T(self, τ, θ, t, tLag):
+    def stateGrid_T(self, τ, θ, t, tLag, si_s_ = None):
         """ Terminal-period economic objects over the grid of candidate τ_T. Shapes: (M,), except si_s_
         which is (M,ni). Θ_{h,T}/dln(h_T) use T's own primitives; Γ_{s,T-1} and s_{T-1,i}/s_{T-1} -- the
         generation OLD at T -- are evaluated at the previous period's vintage, hence the explicit tLag
         (db['t'] need not be a literal integer range, so it is passed rather than computed as t-1). Neither
-        ε nor ι_{T-1} appears here: both enter only through _zState. """
+        ε nor ι_{T-1} appears here: both enter only through _zState. si_s_: inherited shares (ni,) held at
+        every candidate (_heldShares); Γ_{s,T-1} is then not formed (NaN). """
         BG = self.BG
+        if si_s_ is not None:
+            return {'τ': τ, 'Θh': BG.ΘhTerminal(τ, t), 'dlnh': BG.dlnΘhTerminal_dτ(τ, t),
+                    'Γs_': np.full(np.shape(τ), np.nan), 'si_s_': _heldShares(si_s_, τ)}
         βi_ = BG.get('βi', tLag)
         Γs_ = BG.Γs(βi_, τ, θ, tLag)
         return {'τ': τ, 'Θh': BG.ΘhTerminal(τ, t), 'dlnh': BG.dlnΘhTerminal_dτ(τ, t),
@@ -434,9 +451,10 @@ class LOG:
         _zState adds the rest. zbarAtShares at the consistent shares d['si_s_']. Returns (M,). """
         return self.zbarAtShares(θ, t, d['si_s_'], self.zbarParts_T(d, t))
 
-    def solveTerminal(self, θ, ε, t = None, tol = 0.0, ιGrid = None):
+    def solveTerminal(self, θ, ε, t = None, tol = 0.0, ιGrid = None, si_s_ = None):
         """ Terminal-period policy function τ_T(ι_{T-1}) over the state grid 𝒮_0, in one pass over 𝒯.
-        θ, ε: scalars, period T's own pension characteristics.
+        θ, ε: scalars, period T's own pension characteristics. si_s_: inherited shares of the generation
+        old at T (ni,), only when T is a model copy's first period (solveBackward's si_s0).
 
         Corner/multiplicity handling is the selection rule of num_robustroot.tex (eq:candidates,
         eq:equilibriumTest): both ends of 𝒯 and every crossing of ẑ_T are candidates, each tested and
@@ -453,17 +471,17 @@ class LOG:
         τGrid = self.GS['PEE']['solGrids']['τ']
         ιGrid = self._ιGrid(ιGrid, θ, ε, t)
         with self.BG.cacheParams():
-            d = self.stateGrid_T(τGrid, θ, t, tLag)
+            d = self.stateGrid_T(τGrid, θ, t, tLag, si_s_)
             parts = self.zbarParts_T(d, t)
             z = self._zState(self.zbarAtShares(θ, t, d['si_s_'], parts), τGrid, ε, ιGrid, t)
-            frozen = lambda cand: self.objectiveFrozen(cand, parts, θ, ε, ιGrid, t, tLag)
+            frozen = lambda cand: self.objectiveFrozen(cand, parts, θ, ε, ιGrid, t, tLag, si_s_)
             sel = self._select(τGrid, z, frozen, tol = tol)
-            report = self.report_T(ιGrid, sel['x'], θ, t, tLag)
+            report = self.report_T(ιGrid, sel['x'], θ, t, tLag, si_s_)
         report['z'], report['nMax'], report['atBound'] = z, sel['nMax'], sel['atBound']
         report['nCand'], report['nEq'], report['fallback'] = sel['nCand'], sel['nEq'], sel['fallback']
         return report
 
-    def report_T(self, ιGrid, τ, θ, t, tLag):
+    def report_T(self, ιGrid, τ, θ, t, tLag, si_s_ = None):
         """ Expand a solved τ_T(ι_{T-1}) into the full terminal solution: stateGrid_T re-evaluated along
         the SOLVED path (it assumes nothing about where τ came from, only that its shape matches ιGrid's),
         plus the two interpolants period T-1 calls.
@@ -472,7 +490,7 @@ class LOG:
         on s_{T-1} and so is not a function of the state (docs §PEELOG). griddedInterp1D extrapolates
         rather than clamps: t=T-1 evaluates these at whatever endogenous ι_T a candidate τ_{T-1} implies,
         which need not land on 𝒮_0's own nodes. There is no ιPolicy at T -- s_T = 0, so there is no ι_T. """
-        d = self.stateGrid_T(τ, θ, t, tLag)
+        d = self.stateGrid_T(τ, θ, t, tLag, si_s_)
         kind = self.GS['PEE']['gridSettings']['interpKind']
         d['ι_'] = ιGrid
         d['τPolicy'] = griddedInterp1D(ιGrid, τ, kind)
@@ -537,17 +555,21 @@ class LOG:
         resid = self._residualIota(d, g.flat['ι'], t, ε1)
         return self._rootIota(g.asColumns(resid, 'ι'), ιCandGrid)
 
-    def stateGrid_t(self, τ, ι, t, tLag, θ, θ1, ε1, solp):
+    def stateGrid_t(self, τ, ι, t, tLag, θ, θ1, ε1, solp, si_s_ = None):
         """ Step 2: every object the t<T first order condition needs, given the already-resolved ι_t.
         Shapes (M,), except si_s_/v1i which are (M,ni). The t/tLag split is the terminal period's: only
         the generation OLD at t (Γ_{s,t-1}, s_{t-1,i}/s_{t-1}) uses tLag, everything else t's own vintage.
         The two young profiles are known only up to an additive constant along τ_t -- see base.py's
-        v1iProfile_LOG/v10Profile_LOG, which is also why no s_{t-1} appears anywhere here. """
+        v1iProfile_LOG/v10Profile_LOG, which is also why no s_{t-1} appears anywhere here. si_s_:
+        inherited shares (ni,) held at every candidate (_heldShares); Γ_{s,t-1} is then NaN. """
         BG = self.BG
         d = self.stateApprox_t(τ, ι, t, θ1, solp)
         d['τ'], d['ι'] = τ, ι
         d['v1i'] = BG.v1iProfile_LOG(d['Θh'], d['Θs'], d['Θh1'], BG.get('βi', t), d['τ1'], θ1, d['Γs'], t)
         d['v10'] = BG.v10Profile_LOG(d['Θs'], d['Θh1'], BG.get('β0', t), d['τ1'], ε1, t)
+        if si_s_ is not None:
+            d['Γs_'], d['si_s_'] = np.full(np.shape(τ), np.nan), _heldShares(si_s_, τ)
+            return d
         βi_ = BG.get('βi', tLag)
         d['Γs_'] = BG.Γs(βi_, τ, θ, tLag)
         d['si_s_'] = BG.si_s(βi_, τ, θ, d['Γs_'], tLag)
@@ -601,7 +623,7 @@ class LOG:
         return self.zbarAtShares(θ, t, d['si_s_'], self.zbarParts_t(d, s))
 
     def solveBackward_t(self, solp, t, tLag, θ, θ1, ε, ε1, ιGrid, ιCandGrid,
-                        tol = 0.0, sGrad = 0.0, smooth = 1e-5, minFeasible = 2):
+                        tol = 0.0, sGrad = 0.0, smooth = 1e-5, minFeasible = 2, si_s_ = None):
         """ One period of the backward recursion (steps 1-4 of docs alg:LOG:gridsearch), returning the same
         kind of dict as solveTerminal.
 
@@ -611,7 +633,7 @@ class LOG:
         the same zbarParts_t as z_t. smooth: griddedSmooth1D on the selected τ_t(ι_{t-1}) before
         interpolation (the profile inherits small kinks from the continuation interpolants, which the next
         period's numerical derivatives amplify); applied in log ι, since 𝒮_0 is geometrically spaced. Pass
-        0 to disable. """
+        0 to disable. si_s_: inherited shares of the generation old at t (ni,), solveBackward's si_s0. """
         settings = self.GS['PEE']['gridSettings']
         τGrid = self.GS['PEE']['solGrids']['τ']
         with self.BG.cacheParams():
@@ -622,10 +644,10 @@ class LOG:
                                    f"{int(feasible.sum())} of {τGrid.size} nodes of 𝒯 (need {minFeasible}). "
                                    "Widen 𝒮_0' or narrow 𝒯 -- the implied ι_t leaves the grid, it is not "
                                    "clipped back onto it.")
-            d = self.stateGrid_t(τGrid, ι, t, tLag, θ, θ1, ε1, solp)
+            d = self.stateGrid_t(τGrid, ι, t, tLag, θ, θ1, ε1, solp, si_s_)
             parts = self.zbarParts_t(d, s = sGrad)
             z = self._zState(self.zbarAtShares(θ, t, d['si_s_'], parts), τGrid, ε, ιGrid, t)
-            frozen = lambda cand: self.objectiveFrozen(cand, parts, θ, ε, ιGrid, t, tLag)
+            frozen = lambda cand: self.objectiveFrozen(cand, parts, θ, ε, ιGrid, t, tLag, si_s_)
             sel = self._select(τGrid, z, frozen, tol = tol)
             τ = sel['x']
             if smooth:
@@ -633,13 +655,13 @@ class LOG:
                 τ = np.where(good, griddedSmooth1D(np.log(ιGrid), np.where(good, τ, np.nan), s = smooth,
                                                    knots = settings['smoothKnots']), np.nan)
                 τ = np.clip(τ, settings['l'], settings['u'])   # a denoise must not leave the admissible set
-            report = self.report_t(ιGrid, τ, ιCandGrid, t, tLag, θ, θ1, ε1, solp)
+            report = self.report_t(ιGrid, τ, ιCandGrid, t, tLag, θ, θ1, ε1, solp, si_s_)
         report['z'], report['nMax'], report['atBound'] = z, sel['nMax'], sel['atBound']
         report['nCand'], report['nEq'], report['fallback'] = sel['nCand'], sel['nEq'], sel['fallback']
         report['feasible'], report['nRoots'], report['ιOfτ'] = feasible, nRoots, ι
         return report
 
-    def report_t(self, ιGrid, τ, ιCandGrid, t, tLag, θ, θ1, ε1, solp):
+    def report_t(self, ιGrid, τ, ιCandGrid, t, tLag, θ, θ1, ε1, solp, si_s_ = None):
         """ Step 4, t<T counterpart of report_T: re-solve the state fixed point at the SELECTED τ_t(ι_{t-1})
         (which generally falls between nodes of 𝒯, so its ι_t must be re-solved rather than read off step
         1's grid -- cheap, one M_ι'×M_ι pass), expand into the full solution dict, and build the
@@ -654,7 +676,7 @@ class LOG:
         dd = self.stateApprox_t(τ2, ι2, t, θ1, solp)
         ι, nRoots = self._rootIota(self._residualIota(dd, ι2, t, ε1).reshape(nC, nS), ιCandGrid)
 
-        d = self.stateGrid_t(τ, ι, t, tLag, θ, θ1, ε1, solp)
+        d = self.stateGrid_t(τ, ι, t, tLag, θ, θ1, ε1, solp, si_s_)
         good = ~np.isnan(τ) & ~np.isnan(ι)
         d['ι_'], d['nRootsSol'], d['ιCand'] = ιGrid, nRoots, ιCandGrid  # 𝒮_0' recorded so the path
         # solve re-solves the transition on the grid this period used, rather than a re-resolved default
@@ -669,7 +691,7 @@ class LOG:
         return d
 
     def solveBackward(self, θ, ε, ιGrid = None, ιCandGrid = None, tol = 0.0,
-                      sGrad = 0.0, smooth = 1e-5, minFeasible = 2):
+                      sGrad = 0.0, smooth = 1e-5, minFeasible = 2, si_s0 = None):
         """ The full LOG politico-economic equilibrium: the sequence of policy functions τ_t(ι_{t-1}),
         solved backwards from the terminal period (docs alg:LOG:gridsearch). Returns {t: solution dict},
         one entry per db['t'], each carrying the per-state 'nCand'/'nEq'/'fallback'; their
@@ -681,6 +703,11 @@ class LOG:
         at the terminal period's (θ,ε). ιCandGrid: 𝒮_0', the candidate grid searched over; defaults to
         solGrids['ι'] else 𝒮_0 itself.
 
+        si_s0: the formal savings shares s_{-1,i}/s_{-1} (ni,) the generation old at db['t'][0] inherits
+        from a solved path (a model copy, eq:shockState; model.stateAtT0's 'inherited'). The first period
+        then holds them at every candidate tax and state; None keeps the steady-state assumption there,
+        shares consistent with each candidate at db['t'][0]'s own vintage. Every later period is unchanged.
+
         Cost is O(T·M·M_ι') closed-form evaluations: the state grid 𝒮_0 enters only through the selection
         step, not the evaluations, which is the practical content of eq:zdecomposition. """
         tIdx = self.db['t']
@@ -690,13 +717,15 @@ class LOG:
             ιCandGrid = self.GS['PEE']['solGrids']['ι']
         ιCandGrid = ιGrid if ιCandGrid is None else np.asarray(ιCandGrid)
 
-        sols = {tIdx[-1]: self.solveTerminal(θ[posT], ε[posT], t = tIdx[-1], tol = tol, ιGrid = ιGrid)}
+        sols = {tIdx[-1]: self.solveTerminal(θ[posT], ε[posT], t = tIdx[-1], tol = tol, ιGrid = ιGrid,
+                                             si_s_ = si_s0 if posT == 0 else None)}
         for t in tIdx[-2::-1]:
             pos = tIdx.get_loc(t)
             tLag = tIdx[pos - 1] if pos > 0 else self.B.tFirst
             sols[t] = self.solveBackward_t(sols[tIdx[pos + 1]], t, tLag, θ[pos], θ[pos + 1],
                                            ε[pos], ε[pos + 1], ιGrid, ιCandGrid, tol = tol,
-                                           sGrad = sGrad, smooth = smooth, minFeasible = minFeasible)
+                                           sGrad = sGrad, smooth = smooth, minFeasible = minFeasible,
+                                           si_s_ = si_s0 if pos == 0 else None)
         self.lastMultiplicity = multiplicitySummary(sols)
         return sols
 
@@ -947,12 +976,13 @@ class CRRA(LOG):
         dv2i = c2i**parts['p'] * BG.dlnc2i_dτ(parts['dlnh'], τ, θ, si_s_, t)
         return BG.FOC(parts['dv1i'], parts['dv10'], dv2i, np.zeros_like(τ), t)
 
-    def objectiveFrozen(self, cand, g, d, parts, zι, z, θ, ιGrid, t, tLag):
+    def objectiveFrozen(self, cand, g, d, parts, zι, z, θ, ιGrid, t, tLag, si_s_ = None):
         """ W_t(τ; D) over 𝒯 at the formal shares frozen at each candidate tax, per state (s_{t-1},
         ι_{t-1}), up to a column constant -- the callback of roots1d.selectMaxFrozenND along 'τ' of
         CartesianGrid(τ, s_, ι_) (eq:objectiveProfile). g: CartesianGrid(τ, s_), over which d and parts
         are flat; zι: _stateTermCRRA, (M, M_s, M_ι); z: the consistent z_t, (M, M_s, M_ι), whose NaN cells
-        (infeasible, _positiveLevels included) stay NaN; cand: (K, M_s·M_ι). Returns (K, M, M_s·M_ι).
+        (infeasible, _positiveLevels included) stay NaN; cand: (K, M_s·M_ι); si_s_: inherited shares
+        (ni,), D at every candidate (a model copy's first period, _heldShares). Returns (K, M, M_s·M_ι).
 
         It is z_t re-evaluated with the formal shares frozen (zbarAtShares, the shares now per (s_, ι_)
         column, plus zι) and integrated in τ (roots1d.cumtrapzColumns), plus Σ_i w_i (c_{2,t}^i)^{1-1/ρ}/
@@ -976,7 +1006,9 @@ class CRRA(LOG):
         scF = np.broadcast_to(np.repeat(sGrid, Mι)[None, :], (K, N)).reshape(-1)
         ok = np.isfinite(cF) & np.isfinite(hcF)
         D = np.full((K*N, self.ni), np.nan)
-        if ok.any():
+        if ok.any() and si_s_ is not None:
+            D[ok] = _heldShares(si_s_, cF[ok])
+        elif ok.any():
             with np.errstate(divide = 'ignore', invalid = 'ignore'):
                 Bc = BG.B(scF[ok], hcF[ok], tLag)
                 Γc = BG.Γs(Bc, cF[ok], θ, tLag)
@@ -1005,18 +1037,23 @@ class CRRA(LOG):
     # there is no state approximation to perform: every object is closed form in (τ_T, s_{T-1}, ι_{T-1}),
     # so it is one vectorized pass rather than a root-finding problem per cell.
 
-    def stateGrid_T(self, τ, s_, θ, t, tLag):
+    def stateGrid_T(self, τ, s_, θ, t, tLag, si_s_ = None):
         """ Terminal-period objects over flat (τ_T, s_{T-1}) points; (P,) except Bi/si_s_/tc1i, (P,ni).
         Only B_T^i (the generation OLD at T) and what depends on it (Γ_{s,T-1}, s_{T-1,i}/s_{T-1}) use
         tLag. Unlike the LOG case this genuinely needs h_T as a level: B_T^i = Base.B(s_{T-1}, h_T) is what
         makes s_{T-1} a state at all. c_{2,T}^0 is not built here -- it needs ι_{T-1}, so it belongs to the
-        broadcast. """
+        broadcast. si_s_: inherited shares (ni,) held at every point (_heldShares); B_T^i and Γ_{s,T-1}
+        are then not formed (NaN). """
         BG = self.BG
         Θh = BG.ΘhTerminal(τ, t)
         h = BG.h(Θh, s_, t)
-        Bi = BG.B(s_, h, tLag)
-        Γs_ = BG.Γs(Bi, τ, θ, tLag)
-        si_s_ = BG.si_s(Bi, τ, θ, Γs_, tLag)
+        if si_s_ is None:
+            Bi = BG.B(s_, h, tLag)
+            Γs_ = BG.Γs(Bi, τ, θ, tLag)
+            si_s_ = BG.si_s(Bi, τ, θ, Γs_, tLag)
+        else:
+            si_s_ = _heldShares(si_s_, τ)
+            Bi, Γs_ = np.full(si_s_.shape, np.nan), np.full(np.shape(τ), np.nan)
         zB, zΓs = np.zeros_like(Bi), np.zeros_like(Γs_)      # terminal collapse, as FH_tildec1i does
         return {'τ': τ, 's_': s_, 'Θh': Θh, 'h': h, 'dlnh': BG.dlnΘhTerminal_dτ(τ, t),
                 'Bi': Bi, 'Γs_': Γs_, 'si_s_': si_s_,
@@ -1037,12 +1074,13 @@ class CRRA(LOG):
         consistent shares d['si_s_']. The dv20 slot is left at zero -- _zStateCRRA supplies it. """
         return self.zbarAtShares(θ, t, d['si_s_'], self.zbarParts_T(d, t))
 
-    def solveTerminal(self, θ, ε, t = None, tol = 0.0, ιGrid = None, sGrid = None):
+    def solveTerminal(self, θ, ε, t = None, tol = 0.0, ιGrid = None, sGrid = None, si_s_ = None):
         """ Terminal-period τ_T(s_{T-1}, ι_{T-1}) over the state grid 𝒮×𝒮_0, in one vectorized pass.
         Feasibility condition 3 (positive consumption levels) is the only one that can bite at T, and only
         through c_{2,T}^i; infeasible cells are NaN and the selection (LOG's rule, per state, with the
         3-D objectiveFrozen) treats each state over its own surviving sub-grid. Returns report_T's dict
-        plus z and the per-state 'nMax'/'atBound'/'nCand'/'nEq'/'fallback' diagnostics.
+        plus z and the per-state 'nMax'/'atBound'/'nCand'/'nEq'/'fallback' diagnostics. si_s_: as
+        LOG.solveTerminal.
 
         Deliberately NOT guarded by _requireCRRA. The terminal period never forms ĉ_1, so it stays
         well-defined at ρ=1, where every level factor collapses to c^0=1 and B_T^i to the primitive β_i --
@@ -1056,15 +1094,15 @@ class CRRA(LOG):
         ιGrid, sGrid = self._ιGrid(ιGrid, θ, ε, t), self._sGrid(sGrid, θ, t)
         g = CartesianGrid(τ = τGrid, s_ = sGrid)
         with self.BG.cacheParams():
-            d = self.stateGrid_T(g.flat['τ'], g.flat['s_'], θ, t, tLag)
+            d = self.stateGrid_T(g.flat['τ'], g.flat['s_'], θ, t, tLag, si_s_)
             parts = self.zbarParts_T(d, t)
             zbar = np.where(self._positiveLevels(d), self.zbarAtShares(θ, t, d['si_s_'], parts), np.nan)
             zι = self._stateTermCRRA(d, ε, ιGrid, t, g)
             z = self._zStateCRRA(zbar, d, ε, ιGrid, t, g, zι = zι)
             g3 = CartesianGrid(τ = τGrid, s_ = sGrid, ι_ = ιGrid)
-            frozen = lambda cand: self.objectiveFrozen(cand, g, d, parts, zι, z, θ, ιGrid, t, tLag)
+            frozen = lambda cand: self.objectiveFrozen(cand, g, d, parts, zι, z, θ, ιGrid, t, tLag, si_s_)
             sel = self._selectND(g3, z.reshape(-1), 'τ', frozen, tol = tol)
-            report = self.report_T(sGrid, ιGrid, sel['x'], θ, t, tLag)
+            report = self.report_T(sGrid, ιGrid, sel['x'], θ, t, tLag, si_s_)
         report['z'], report['nMax'], report['atBound'] = z, sel['nMax'], sel['atBound']
         report['nCand'], report['nEq'], report['fallback'] = sel['nCand'], sel['nEq'], sel['fallback']
         report['feasible'] = g.reshape(~np.isnan(zbar))
@@ -1083,7 +1121,7 @@ class CRRA(LOG):
             ok &= np.all(np.asarray(v) > 0, axis = -1) if np.ndim(v) > np.ndim(d['τ']) else (v > 0)
         return ok
 
-    def report_T(self, sGrid, ιGrid, τ, θ, t, tLag):
+    def report_T(self, sGrid, ιGrid, τ, θ, t, tLag, si_s_ = None):
         """ Expand a solved τ_T(s_{T-1},ι_{T-1}) into the full terminal solution, evaluated along the
         SOLVED path, plus the two 2-D interpolants period T-1 calls. h_T, not Θ_{h,T}: with s_{T-1} a
         state the level is a function of the state, and B_T needs it as a level (docs §PEE).
@@ -1091,7 +1129,7 @@ class CRRA(LOG):
         τ arrives shaped (M_s, M_ι) from the selection; stateGrid_T is called on the flattened pair, so the
         state grids are meshed here rather than crossed by CartesianGrid. """
         s2, ι2 = np.meshgrid(sGrid, ιGrid, indexing = 'ij')
-        d = self.stateGrid_T(τ.reshape(-1), s2.reshape(-1), θ, t, tLag)
+        d = self.stateGrid_T(τ.reshape(-1), s2.reshape(-1), θ, t, tLag, si_s_)
         shape = (len(sGrid), len(ιGrid))
         d = {k: (v.reshape(shape + v.shape[1:]) if np.ndim(v) else v) for k, v in d.items()}
         kind = self.GS['PEE']['gridSettings']['interpKind']
@@ -1196,18 +1234,23 @@ class CRRA(LOG):
         ιSol, nι = self._iotaOfTauS(np.repeat(τGrid, nS), sSol.reshape(-1), t, θ1, ε1, solp, ιCandGrid)
         return sSol, ιSol.reshape(nT, nS), nS_.reshape(nT, nS), nι.reshape(nT, nS)
 
-    def stateGrid_t(self, τ, s, ι, s_, t, tLag, θ, θ1, ε1, solp):
+    def stateGrid_t(self, τ, s, ι, s_, t, tLag, θ, θ1, ε1, solp, si_s_ = None):
         """ Step 2 of docs alg:CRRA:grid: every object the t<T first order condition needs, given the
         already-resolved (s_t, ι_t). Flat over (τ_t, s_{t-1}) points. The t/tLag split is the terminal
         period's. ĉ_1 is carried as its (1-1/ρ) power and its log, never as a level (base.py's
-        hatc1iPow/lnhatc1i and their informal twins -- the literal level overflows as ρ→1). """
+        hatc1iPow/lnhatc1i and their informal twins -- the literal level overflows as ρ→1). si_s_:
+        inherited shares (ni,) held at every point (_heldShares); B_t^i and Γ_{s,t-1} are then NaN. """
         BG = self.BG
         d = self.stateApprox_t(τ, s, ι, t, θ1, solp)
         d['τ'], d['s'], d['ι'], d['s_'] = τ, s, ι, s_
         d['h'] = BG.h(d['Θh'], s_, t)
-        d['B'] = BG.B(s_, d['h'], tLag)                      # B_t^i, generation old at t
-        d['Γs_'] = BG.Γs(d['B'], τ, θ, tLag)
-        d['si_s_'] = BG.si_s(d['B'], τ, θ, d['Γs_'], tLag)
+        if si_s_ is None:
+            d['B'] = BG.B(s_, d['h'], tLag)                  # B_t^i, generation old at t
+            d['Γs_'] = BG.Γs(d['B'], τ, θ, tLag)
+            d['si_s_'] = BG.si_s(d['B'], τ, θ, d['Γs_'], tLag)
+        else:
+            d['si_s_'] = _heldShares(si_s_, τ)
+            d['B'], d['Γs_'] = np.full(d['si_s_'].shape, np.nan), np.full(np.shape(τ), np.nan)
         d['hatc1iPow'] = BG.hatc1iPow(d['h'], d['B1'], d['τ1'], θ1, d['Γs'], t)
         d['lnhatc1i'] = BG.lnhatc1i(d['h'], d['B1'], d['τ1'], θ1, d['Γs'], t)
         d['hatc10Pow'] = BG.hatc10Pow(s_, s, d['B01'], d['τ1'], ε1, t)
@@ -1240,12 +1283,13 @@ class CRRA(LOG):
         return self.zbarAtShares(θ, t, d['si_s_'], self.zbarParts_t(d, g, t, s))
 
     def solveBackward_t(self, solp, t, tLag, θ, θ1, ε, ε1, sGrid, ιGrid, sCandGrid, ιCandGrid,
-                        tol = 0.0, sGrad = 0.0, smooth = 1e-5, minFeasible = 2):
+                        tol = 0.0, sGrad = 0.0, smooth = 1e-5, minFeasible = 2, si_s_ = None):
         """ One period of the backward recursion (steps 1-4 of docs alg:CRRA:grid), returning the same kind
         of dict as solveTerminal. The feasibility mask is 2-dimensional -- conditions 1-3 all live on
         𝒯×𝒮 and none depends on ι_{t-1} -- so the selection step is not repeated per ι-node with a
         different feasible sub-grid each time. The selection is solveTerminal's, the frozen objective
-        built from the same zbarParts_t and informal retirees' term as z_t. """
+        built from the same zbarParts_t and informal retirees' term as z_t. si_s_: as LOG.solveBackward_t;
+        the shares are those of the seed state s_{t-1}, so only that state's policy is meaningful there. """
         self._requireCRRA(t)
         τGrid = self.GS['PEE']['solGrids']['τ']
         g = CartesianGrid(τ = τGrid, s_ = sGrid)
@@ -1253,7 +1297,7 @@ class CRRA(LOG):
             sSol, ιSol, nRootsS, nRootsι = self.solveStateApprox_t(τGrid, sGrid, sCandGrid, ιCandGrid,
                                                                    t, θ1, ε1, solp)
             d = self.stateGrid_t(g.flat['τ'], sSol.reshape(-1), ιSol.reshape(-1), g.flat['s_'],
-                                 t, tLag, θ, θ1, ε1, solp)
+                                 t, tLag, θ, θ1, ε1, solp, si_s_)
             feasible = g.reshape(self._positiveLevels(d)) & ~np.isnan(sSol) & ~np.isnan(ιSol)
             if feasible.sum(axis = 0).min() < minFeasible:
                 raise RuntimeError(f"t={t}: only {int(feasible.sum(axis = 0).min())} of {τGrid.size} nodes "
@@ -1264,10 +1308,10 @@ class CRRA(LOG):
             zι = self._stateTermCRRA(d, ε, ιGrid, t, g)
             z = self._zStateCRRA(zbar, d, ε, ιGrid, t, g, zι = zι)
             g3 = CartesianGrid(τ = τGrid, s_ = sGrid, ι_ = ιGrid)
-            frozen = lambda cand: self.objectiveFrozen(cand, g, d, parts, zι, z, θ, ιGrid, t, tLag)
+            frozen = lambda cand: self.objectiveFrozen(cand, g, d, parts, zι, z, θ, ιGrid, t, tLag, si_s_)
             sel = self._selectND(g3, z.reshape(-1), 'τ', frozen, tol = tol)
             τ = self._smooth2D(sel['x'], sGrid, ιGrid, smooth)
-            report = self.report_t(sGrid, ιGrid, τ, sCandGrid, ιCandGrid, t, tLag, θ, θ1, ε1, solp)
+            report = self.report_t(sGrid, ιGrid, τ, sCandGrid, ιCandGrid, t, tLag, θ, θ1, ε1, solp, si_s_)
         report['z'], report['nMax'], report['atBound'] = z, sel['nMax'], sel['atBound']
         report['nCand'], report['nEq'], report['fallback'] = sel['nCand'], sel['nEq'], sel['fallback']
         report['feasible'], report['nRootsS'], report['nRootsι'] = feasible, nRootsS, nRootsι
@@ -1296,7 +1340,7 @@ class CRRA(LOG):
             out = np.moveaxis(np.where(np.moveaxis(ok, axis, 0), sm, np.nan), 0, axis)
         return np.clip(out, settings['l'], settings['u'])
 
-    def report_t(self, sGrid, ιGrid, τ, sCandGrid, ιCandGrid, t, tLag, θ, θ1, ε1, solp):
+    def report_t(self, sGrid, ιGrid, τ, sCandGrid, ιCandGrid, t, tLag, θ, θ1, ε1, solp, si_s_ = None):
         """ Step 4 of docs alg:CRRA:grid: re-solve step 1 at the SELECTED τ_t(s_{t-1},ι_{t-1}) (which falls
         between nodes of 𝒯, so its (s_t,ι_t) must be re-solved rather than read off the grid), expand into
         the full solution dict, and build the interpolants period t-1 will call. ΓsPolicy is the one
@@ -1318,7 +1362,7 @@ class CRRA(LOG):
         s, nRootsS = self._rootS(Θs, sCandGrid, s_flat, t)
         ι, nRootsι = self._iotaOfTauS(τflat, s, t, θ1, ε1, solp, ιCandGrid)
 
-        d = self.stateGrid_t(τflat, s, ι, s_flat, t, tLag, θ, θ1, ε1, solp)
+        d = self.stateGrid_t(τflat, s, ι, s_flat, t, tLag, θ, θ1, ε1, solp, si_s_)
         d = {k: (v.reshape(shape + v.shape[1:]) if np.ndim(v) else v) for k, v in d.items()}
         ok = ~np.isnan(τ) & ~np.isnan(d['s']) & ~np.isnan(d['ι'])
         d['s_'], d['ι_'] = sGrid, ιGrid
@@ -1339,7 +1383,7 @@ class CRRA(LOG):
         return d
 
     def solveBackward(self, θ, ε, sGrid = None, ιGrid = None, sCandGrid = None, ιCandGrid = None,
-                      tol = 0.0, sGrad = 0.0, smooth = 1e-5, minFeasible = 2):
+                      tol = 0.0, sGrad = 0.0, smooth = 1e-5, minFeasible = 2, si_s0 = None):
         """ The full CRRA politico-economic equilibrium: the sequence of policy functions
         τ_t(s_{t-1}, ι_{t-1}), solved backwards from the terminal period (docs alg:CRRA:grid). Returns
         {t: solution dict}, one entry per db['t'], each carrying the per-state 'nCand'/'nEq'/'fallback';
@@ -1350,7 +1394,7 @@ class CRRA(LOG):
         defaultIotaGrid at the terminal period's (θ,ε); 𝒮' defaults to the solGrids slot else
         defaultSCandGrid (finer than 𝒮), while 𝒮_0' defaults to 𝒮_0 itself -- see defaultSCandGrid for
         why the two candidate grids are treated asymmetrically. Requires ρ != 1, checked up front so it
-        fails before doing the terminal period's work. """
+        fails before doing the terminal period's work. si_s0: as LOG.solveBackward. """
         tIdx = self.db['t']
         posT = tIdx.get_loc(tIdx[-1])
         self._requireCRRA(tIdx[0])
@@ -1362,14 +1406,16 @@ class CRRA(LOG):
         ιCandGrid = ιGrid if ιCandGrid is None else np.asarray(ιCandGrid)
 
         sols = {tIdx[-1]: self.solveTerminal(θ[posT], ε[posT], t = tIdx[-1], tol = tol,
-                                             ιGrid = ιGrid, sGrid = sGrid)}
+                                             ιGrid = ιGrid, sGrid = sGrid,
+                                             si_s_ = si_s0 if posT == 0 else None)}
         for t in tIdx[-2::-1]:
             pos = tIdx.get_loc(t)
             tLag = tIdx[pos - 1] if pos > 0 else self.B.tFirst
             sols[t] = self.solveBackward_t(sols[tIdx[pos + 1]], t, tLag, θ[pos], θ[pos + 1],
                                            ε[pos], ε[pos + 1], sGrid, ιGrid, sCandGrid, ιCandGrid,
                                            tol = tol, sGrad = sGrad, smooth = smooth,
-                                           minFeasible = minFeasible)
+                                           minFeasible = minFeasible,
+                                           si_s_ = si_s0 if pos == 0 else None)
         self.lastMultiplicity = multiplicitySummary(sols)
         return sols
 

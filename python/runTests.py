@@ -39,6 +39,7 @@ SUITES = [
     ('InformalSavings/test_peeCRRA.py',           False, 'CRRA recursion over (s, ι)'),
     ('InformalSavings/test_peePath.py',           False, 'initial fixed point + forward walk'),
     ('InformalSavings/test_createCopyFromt0.py',  False, 'model copies, both states'),
+    ('InformalSavings/test_reformVintage.py',     False, '~12 s: the reform period inherits the baseline lags; GDP tax target; epsPre0'),
     ('US/test_ee.py',                             False, 'zero-mass informal slot, κ=p, FOC decoupling'),
     ('US/test_invariance.py',                     False, 'the scale (λ) and hours-unit (μ) invariances'),
     ('US/test_crra.py',                           False, 'Γs bracket vs the Θh feasibility cap'),
@@ -48,12 +49,16 @@ SUITES = [
     ('US/test_esc.py',                            False, '~235 s: the θ wedge (scale, size), leaded/permanent structure, sequential FOC sign, ESC method column'),
     ('US/test_frozenSelection.py',                False, '~1-2 min: tax candidates at frozen shares -- objective vs FOC, rule vs the earlier criterion, counts'),
     ('US/test_designChoicePilot.py',              False, "~25 s: LeadedCRRA2D's root design layer (secant, cell-local crossing) and the FOC layer, the split period, the design counts through solvePolicies and runESCcrra's rows"),
+    ('US/test_counts.py',                         False, "~30 s: every PEE solve's candidate counts reach its driver's row -- calibration point, shock (full, ee), permanent timing (LOG, CRRA), sequential stage, stationaryApproxESC"),
+    ('US/test_oecd26.py',                         False, '~2 min: the cross-country loader against data/oecd29*.csv, the sample, eq (1.4) at θ = 1 for the 29, the 2026-10-03 LOG numbers at their inputs, the layers and their keys'),
     ('paper/test_onlineAppendix.py',              False, "the online appendix: every built table converts to HTML, the print copies resolve every reference, the paper's online-appendix keys are defined"),
+    ('paper/test_oecd26.py',                      False, 'seconds: the cross-country builders and readers on synthetic csvs (exact slopes, staleness, strict HTML)'),
     ('informalAnalytical/test_calibration.py',    True,  'nested-fixed-point calibration'),
     ('US/test_escTiming.py',                      True,  '~75 s: the permanent timing\'s LOG reference numbers and calibrated p'),
     ('InformalSavings/test_calibration.py',       True,  '~15 min: five LOG calibrations (one common X) and one CRRA'),
     ('InformalSavings/test_calibrationGrid.py',   True,  '~45 min: three real calibrations over a ρ grid'),
     ('US/test_escCRRA.py',                        True,  '~7 min: LeadedCRRA vs its LOG limit; the 2-D solver vs both'),
+    ('US/test_oecd26Anchor.py',                   True,  '~5 min: the cross-country anchor -- λ = 8.643 at the 2026-10-03 inputs, the anchor stage end to end'),
 ]
 
 

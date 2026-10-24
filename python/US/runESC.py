@@ -35,6 +35,10 @@ Four stages, each writing its own csv under results/esc/:
   pathHost the path stage on France and the UK, under the US-calibrated p and under their own
            (escCountry.csv) -> escPathHost.csv.
 
+Spec 'sizePiR' (ModelESC: the 'size' cost with lambda*Pi_t/R_t, pi solved to the path's own) runs the calib,
+path and shocks stages; its rows carry 'ΠR', pi at the row's date (t0 for calib and shocks). Run it with a
+--tag: it is an experiment beside the paper's cost, not a row of the paper's csvs.
+
 Everything is LOG (rho = 1). The CRRA case needs a two-dimensional (s, theta) state and is not this file.
 """
 import os, sys, argparse, time, json
@@ -104,8 +108,9 @@ def _keyOf(d, key):
 
 
 # Every row also carries the tax rule's counts of the solve behind it, nEqMax, nCandMax, nFallback, as
-# non-key columns (policy.multiplicityColumns; -1 where that solve returns none: the permanent timing, a
-# calibration that did not converge).
+# non-key columns (policy.multiplicityColumns; the permanent timing's over its candidate designs and the
+# equilibrium at the choice, modelESC.solvePermanent; -1 where there is no solve: a calibration that did not
+# converge).
 
 # The row-identity keys of the merged csvs, one per stage. spec and commonX are in every one -- see
 # mergeWrite -- so the 'size' rows coexist with the 'scale' rows (the comparison arm) in one file and a
@@ -195,12 +200,22 @@ def wedgeReadout(m, τ0):
     """ The wedge read at t0 on a calibrated model, as four csv columns: Vtilde (the young's vintage at t0),
     fStar = f(theta*, tau0), f0 = f(0, tau0) and tau0 -- tau_{t0} on the calibrated path, which the
     calibration's own target db['tau0'] reproduces to tauDrift. Under 'scale'/'flat' f ignores tau (and
-    under no wedge f = 1); tau0 is written regardless so the column means one thing in every row. """
+    under no wedge f = 1); tau0 is written regardless so the column means one thing in every row. f is
+    that of the t0 retirees (lag '[t-1]': their Vtilde, equal to the young's in every calibration here, and
+    under 'sizePiR' pi_t0, written as a fifth column 'ΠR'). """
     t0 = m.t0Year
     θStar = float(m.db['θ'].xs(t0))
     with m.B.cacheParams():
-        return {'Vtilde': float(m.B.Vtilde(t0)), 'fStar': float(m.B.fWedge(θStar, τ0, t0)),
-                'f0': float(m.B.fWedge(0., τ0, t0)), 'τ0': float(τ0)}
+        out = {'Vtilde': float(m.B.Vtilde(t0)), 'fStar': float(m.B.fWedge(θStar, τ0, t0, '[t-1]')),
+               'f0': float(m.B.fWedge(0., τ0, t0, '[t-1]')), 'τ0': float(τ0)}
+        if m.db.get('wedgeSpec') == 'sizePiR':
+            out['ΠR'] = float(m.B.wedgeΠR(t0, '[t-1]'))
+    return out
+
+
+def piColumn(m, t):
+    """ {'ΠR': pi_t} under 'sizePiR', {} otherwise: the return-factor ratio of a path row. """
+    return {'ΠR': float(m.db['wedgeΠR'].xs(t))} if m.db.get('wedgeSpec') == 'sizePiR' else {}
 
 
 def baselineRefs(m):
@@ -288,7 +303,7 @@ def stagePath(specs, phis, calib, out, ρ = 1.0, commonX = False):
                              'θ': float(led['θ'].xs(t)), 'τ': r['τ'], 'sr': r['sr'],
                              'workweek': r['workweek'], 'R': r['R'],
                              'τExo': rb['τ'], 'srExo': rb['sr'], 'workweekExo': rb['workweek']}
-                            | multiplicityColumns(led['multiplicity']))
+                            | piColumn(m, t) | multiplicityColumns(led['multiplicity']))
             mergeWrite(out, rows, KEYPATH)
             print('[{}, φ={}] θ path: {}'.format(spec, phi,
                   '  '.join('{:.3f}'.format(x) for x in led['θ'].values[:8])))
@@ -407,7 +422,7 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, host = 'US',
                                  'θpinned': pin, 'θ_tm1': r['θ_'], 'θ_t0': r['θ0'], 'θ_t1': r['θ1'],
                                  'τ_t0': r['t0']['τ'], 'sr_t0': r['t0']['sr'], 'ww_t0': r['t0']['workweek'],
                                  'τ_t1': r['t1']['τ'], 'sr_t1': r['t1']['sr'], 'ww_t1': r['t1']['workweek']}
-                                | multiplicityColumns(r['multiplicity']))
+                                | piColumn(r['m'], r['m'].t0Year) | multiplicityColumns(r['multiplicity']))
                     print('  {:<10} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}'
                           '  (θ_t1={:.4f}, {:.0f}s)'
                           .format(name, str(pin), r['θ0'], r['t0']['τ'], r['t0']['sr'],
@@ -599,7 +614,7 @@ def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None, commonX = False):
                  'converged': r['converged'], 'θPermIncumbent': r['θIncumbent'],
                  'θPermMovingSi': r['θMoving'],
                  'θLeaded': m.leadedDesignAtT0(m.ESC.solveBackward()),
-                 'τAtChoice': r['τAtChoice']} | multiplicityColumns(None))
+                 'τAtChoice': r['τAtChoice']} | multiplicityColumns(r.get('multiplicity')))
     print('no wedge: θ_perm={:.4f} (corner={}, turns={})'.format(r['θ'], r['atBound'], r['nTurning']))
     mergeWrite(out, rows, KEYPERM)
 
@@ -620,7 +635,7 @@ def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None, commonX = False):
                              'nTurning': r['nTurning'], 'converged': r['converged'],
                              'θPermIncumbent': r['θIncumbent'], 'θPermMovingSi': r['θMoving'],
                              'θLeaded': m.leadedDesignAtT0(m.ESC.solveBackward()),
-                             'τAtChoice': r['τAtChoice']} | multiplicityColumns(None))
+                             'τAtChoice': r['τAtChoice']} | multiplicityColumns(r.get('multiplicity')))
                 print('  own p={:.4f}: θ_perm={:.4f} (target {:.4f}), leaded at the same wedge={:.4f}'.format(
                     rec['p'], r['θ'], rec['θ'], rows[-1]['θLeaded']))
             mergeWrite(out, rows, KEYPERM)
@@ -703,9 +718,11 @@ def main():
     p.add_argument('--scenarios', nargs = '*', default = None,
                    help = 'the shocks stage runs these scenarios only (default: all of the host); rows of '
                           'the others on disk are kept')
-    p.add_argument('--spec', nargs = '*', default = ['scale', 'flat'], choices = ('scale', 'flat', 'size'),
+    p.add_argument('--spec', nargs = '*', default = ['scale', 'flat'],
+                   choices = ('scale', 'flat', 'size', 'sizePiR'),
                    help = "'size' is the paper's wedge (f(theta, tau), lambda in the p slot); 'scale' the "
-                          "previous one and the comparison arm; 'flat' MGE's variant")
+                          "previous one and the comparison arm; 'flat' MGE's variant; 'sizePiR' the paper's "
+                          "with lambda*Pi_t/R_t (A8's Pi-inclusive cost)")
     p.add_argument('--phi', type = float, nargs = '*', default = [0.5, 0.25, 0.75])
     p.add_argument('--rho', type = float, default = 1.0)
     p.add_argument('--commonX', action = 'store_true',

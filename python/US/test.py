@@ -38,6 +38,20 @@ pars['R0'] = dfc['30y interest']
 pars['Ushare0'] = dfc['Universal share']
 
 
+def reading(medicare = None, base = None):
+    """ The workbook's parameters under a reading of the transfers to the old. medicare None: the workbook
+    as it is, pensions only (the paper's). medicare = M, Medicare spending as a share of GDP: the online
+    appendix's 'transfers to the old', Medicare added to pension spending S = τ0(1-α) and paid as a flat
+    benefit, so τ0 = (S + M)/(1-α) and Ushare0 = M/(S + M), the flat share that scales θ (ModelUS.getθ).
+    base: the parameter dict to start from (this module's `pars` by default). Returns a new dict. """
+    base = pars if base is None else base
+    if medicare is None:
+        return dict(base)
+    α = float(base['α'])
+    S, M = float(base['τ0'])*(1-α), float(medicare)
+    return dict(base) | {'τ0': (S + M)/(1-α), 'Ushare0': M/(S + M)}
+
+
 # Initialize LOG model with some parameter values:
 pars.update({'ρ': 1, 'ω': 2, 'β': .6})
 mLOG = ModelUS(pars = pars, **kwargs)

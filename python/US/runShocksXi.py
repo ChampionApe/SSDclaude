@@ -37,7 +37,7 @@ import shocks as sh
 from policy import multiplicityColumns
 from model import ModelUS
 from modelFR import ModelFR, USReference
-from runShocksUS import FAMILIES, hostRow
+from runShocksUS import FAMILIES, hostRow, effectRows
 
 OUT = os.path.join(REPO, 'results', 'shocks', 'US_shocksXiCommonX.csv')
 XI0 = float(testmod.pars['ξ'])        # the workbook's value
@@ -114,9 +114,8 @@ def runXi(ξ, workweek):
     for name in sum((list(ns) for ns in FAMILIES.values()), []):
         tic = time.time()
         r = sh.runOne(m, base, name, data, 'LOG', workweek, hbarRef)
-        for eff in ('full', 'ee'):
-            rows.append({'ξ': ξ, 'ρ': 1.0, 'preferences': 'LOG', 'family': famOf[name], 'scenario': r['label'],
-                         'effect': eff, **r[eff]} | multiplicityColumns(None))
+        rows += effectRows(r, {'ξ': ξ, 'ρ': 1.0, 'preferences': 'LOG', 'family': famOf[name],
+                               'scenario': r['label']})
         print('  {:<14} full: tau={:.4f} ww={:.2f}   EE-only: tau={:.4f} ww={:.2f}   {:.0f}s'.format(
             name, r['full']['τ'], r['full']['workweek'], r['ee']['τ'], r['ee']['workweek'], time.time()-tic))
     out = mFR.solvePEE_LOG()

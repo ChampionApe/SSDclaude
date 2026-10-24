@@ -8,11 +8,14 @@ has a pickled instance. The other readings are reached through --rule/--refType/
 The experiment (docs §9's model-copy mechanism, README "Model copies for shock experiments"):
 
   1. Solve the baseline PEE over the full horizon at the calibrated parameters, with db's own eps.
-  2. Read the state (s_{t0-1}, iota_{t0-1}) entering t0 off that solved path (stateAtT0).
+  2. Read the state entering t0 off that solved path (stateAtT0, eq:shockState): (s_{t0-1}, iota_{t0-1})
+     and the retirees' inherited formal savings shares s_{t0-1,i}/s_{t0-1} and hours h_{t0-1}.
   3. Build the model copy whose horizon starts at t0 (createCopyFromt0). The copy's agents solve their
      whole problem knowing only the reformed system, which is what makes the reform UNEXPECTED: the
      baseline path that produced the seed state was solved under the old eps and is not revised.
-  4. Replace eps on the copy by the universal value and re-solve the PEE from the seed state.
+  4. Replace eps on the copy by the universal value and re-solve the PEE from the seed state. In 2010 the
+     retirees enter with their pre-reform distribution: the tax condition holds their formal shares at
+     the baseline's (solvePEE_LOG's `inherited`), and the consistency step applies from t0+1 on.
 
 UNIVERSAL has two readings, both supported (--rule; see universalEps). Both are read off
 eq:governmentBudget, where the level bbar_t and the aggregate h_{t-1} are common to b^0 and b^i and so
@@ -47,6 +50,15 @@ TWO THINGS THE COPY NEEDS BEYOND A NEW eps ARRAY, both from README "Known limita
 --control re-solves the copy with eps UNCHANGED and checks it reproduces the baseline's own tail. That is
 test_createCopyFromt0.py's round trip, run here as a precondition rather than as a test: it validates the
 seed state, the slicing and the re-solve on THIS rho's instance before any reform number is read off.
+
+READOUTS beyond SERIES (frame with the model): the formal benefits per type b_t^i (bi1..biJ) and their
+average over the formal retirees, sum_i gamma_{t-1,i} b_t^i = h_{t-1} bbar_t (biAvg). Y and Y0 are formal
+and informal output (base.outputFormal/outputInformal), so GDP = Y + Y0 per row: the savings rate over GDP
+is s/(Y+Y0) and pension spending over GDP tau(1-alpha)Y/(Y+Y0), the concept the tax target uses
+(model.taxTarget).
+
+--epsPre0 runs the epsPre0 calibration variant (pre-reform eps = 0, model.__init__): its own csv,
+instance directory and output names unless given explicitly, and the loaded instances must carry it.
 """
 import os, sys, argparse, pickle, time
 import numpy as np, pandas as pd
@@ -62,9 +74,20 @@ from policy import multiplicityColumns
 CSV    = os.path.join(REPO, 'results', 'calibration', 'informalSavings_rhoGrid.csv')
 PKLDIR = os.path.join(REPO, 'results', 'calibration', 'instances')
 OUTDIR = os.path.join(REPO, 'results', 'shocks')
+OUT    = 'universal_{rule}_rho{ρ:.4f}.csv'
 # Series compared baseline vs reform. Aggregates and prices first, then the two type-0 consumption
-# levels, which are what the reform is about.
-SERIES = ('τ', 's', 'h', 'ι', 'R', 'w', 'bbar', 'b0', 'bi', 'c10', 'c20')
+# levels, which are what the reform is about, then formal and informal output (GDP = Y + Y0).
+SERIES = ('τ', 's', 'h', 'ι', 'R', 'w', 'bbar', 'b0', 'bi', 'c10', 'c20', 'Y', 'Y0')
+
+
+def variantPaths(epsPre0 = False, csv = None, pkldir = None, out = None):
+    """ (csv, pkldir, out) of a calibration variant: the explicit arguments where given, else the vector-X
+    defaults, which the epsPre0 variant suffixes as calibrateRhoGrid.py does ('EpsPre0' on the csv and the
+    instance directory, '_epsPre0' on the output). The common-X variant is reached through explicit paths
+    (python/paper/runShocks.py). """
+    tag = 'EpsPre0' if epsPre0 else ''
+    return (csv or CSV.replace('.csv', tag + '.csv'), pkldir or PKLDIR + tag,
+            out if out is not None else OUT.replace('.csv', ('_epsPre0' if epsPre0 else '') + '.csv'))
 
 
 def relBenefit(m, refType = 1):
@@ -111,9 +134,11 @@ def solvePEE(m, preferences, **kwargs):
     return (m.solvePEE_LOG(**kwargs) if preferences == 'LOG' else m.solvePEE_CRRA(**kwargs))
 
 
-def loadCalibrated(ρ, settings, commonSettings = False, pkldir = None):
+def loadCalibrated(ρ, settings, commonSettings = False, pkldir = None, epsPre0 = None):
     """ The pickled instance at its own converged parameters, with the grid settings installed on the
     solver that rho selects. The pickle is the calibrated solution -- nothing is recalibrated here.
+    epsPre0: when not None, the instance's own variant flag must equal it (a directory of the other
+    variant's instances would otherwise run silently).
 
     An instance MUST be re-solved on the settings it was calibrated at. calibrateRhoGrid.py gives both
     solvers interpKind/smoothKnots and only the grid SIZES to CRRA, so that split is mirrored here: LOG
@@ -129,6 +154,8 @@ def loadCalibrated(ρ, settings, commonSettings = False, pkldir = None):
     path = os.path.join(pkldir or PKLDIR, 'rho_{:.4f}.pkl'.format(ρ))
     with open(path, 'rb') as f:
         m = pickle.load(f)
+    if epsPre0 is not None and m.epsPre0 != bool(epsPre0):
+        raise ValueError('{} has epsPre0={}, the run asked for {}'.format(path, m.epsPre0, bool(epsPre0)))
     preferences = m._calPreferences()
     if preferences == 'CRRA' or commonSettings:
         getattr(m, preferences).initGS(settings)
@@ -137,36 +164,49 @@ def loadCalibrated(ρ, settings, commonSettings = False, pkldir = None):
     return m, preferences
 
 
-def frame(report, refType = 1, names = SERIES, τ = None):
+def frame(report, refType = 1, names = SERIES, τ = None, m = None):
     """ Named series out of an EE_report (plus tau, which the report does not carry), aligned on the
     reporting index each one uses -- ι/Γs live on txE and are one period shorter (README, "Reporting
     domains"), so this must be a join rather than a column stack. Type-indexed entries (bi) are reduced
-    to the reform's reference type, so the reported b^i is the one b^0 is being equalised to. """
+    to the reform's reference type, so the reported b^i is the one b^0 is being equalised to.
+
+    m: the model the report was solved on. Given, the formal benefits are added per type, 'bi<j>' for
+    each label j of db['i'], and as their average over the formal retirees 'biAvg' = Σ_i γ_{t-1,i} b_t^i
+    (eq:governmentBudget; = h_{t-1} bbar_t, since Σ_i γ_{t-1,i} hηRatio_{t-1,i} = 1). """
     cols = {} if τ is None else {'τ': pd.Series(np.asarray(τ), index = report['s'].index)}
     for k in names:
         if k in report:
             v = report[k]
             cols[k] = v if isinstance(v, pd.Series) else v.loc[:, refType]
+    if m is not None:
+        bi = report['bi']
+        for j in bi.columns:
+            cols['bi{}'.format(j)] = bi[j]
+        γ_ = m.db['γi[t-1]'].loc[bi.index, bi.columns]
+        cols['biAvg'] = (γ_ * bi).sum(axis = 1)
     return pd.DataFrame(cols)
 
 
-def runShock(ρ, settings, rule, refType, scale, control, out, commonSettings = False, pkldir = None):
+def runShock(ρ, settings, rule, refType, scale, control, out, commonSettings = False, pkldir = None,
+             epsPre0 = None):
     print('\n' + '='*94)
     print('rho={}   universal pensions at t0: rule={} ({})   scale={}'.format(
         ρ, rule, 'b^0 = b^{}'.format(refType) if rule == 'match' else 'eps = 1-theta', scale))
     print('='*94)
-    m, preferences = loadCalibrated(ρ, settings, commonSettings, pkldir)
+    m, preferences = loadCalibrated(ρ, settings, commonSettings, pkldir, epsPre0)
     t0 = m.db['t'][m.db['t0']]
-    print('{} solver, T={}, t0 = db index {} (calibration year), grid {}'.format(
+    print('{} solver, T={}, t0 = db index {} (calibration year), grid {}, epsPre0={}'.format(
         preferences, m.T, t0,
         settings if (preferences == 'CRRA' or commonSettings)
-        else {k: settings[k] for k in ('interpKind', 'smoothKnots') if k in settings}))
+        else {k: settings[k] for k in ('interpKind', 'smoothKnots') if k in settings}, m.epsPre0))
 
     tStart = time.time()
     base = solvePEE(m, preferences)
     seed = m.stateAtT0(base['report'], t0, init = base['init'])
-    print('baseline solved ({:.0f}s).  state entering t0:  s={:.6f}  ι={:.6f}'.format(
-        time.time()-tStart, seed['s0'], seed['ι0']))
+    inh = seed['inherited']
+    print('baseline solved ({:.0f}s).  state entering t0:  s={:.6f}  ι={:.6f}  {}'.format(
+        time.time()-tStart, seed['s0'], seed['ι0'], 'h={:.6f}  s_i/s={}'.format(
+            inh['h'], np.array2string(inh['si_s'], precision = 6)) if inh else '(steady-state lags)'))
 
     if control:
         mc, _ = loadCalibrated(ρ, settings, commonSettings, pkldir)
@@ -174,7 +214,8 @@ def runShock(ρ, settings, rule, refType, scale, control, out, commonSettings = 
         ctrl = solvePEE(mc, preferences, **seed)
         dev = {k: float(np.max(np.abs(np.asarray(ctrl['report'][k])
                                       - np.asarray(base['report'][k].loc[t0:]))))
-               for k in ('s', 'h', 'ι')}
+               for k in ('s', 'h', 'ι', 'c2i', 'c20', 'bbar')}
+        dev['τ'] = float(np.max(np.abs(ctrl['τ'].values - base['τ'].loc[t0:].values)))
         print('control (copy, eps unchanged) reproduces the baseline tail:  ' +
               '  '.join('max|Δ{}|={:.2e}'.format(k, v) for k, v in dev.items()))
 
@@ -182,8 +223,9 @@ def runShock(ρ, settings, rule, refType, scale, control, out, commonSettings = 
     εOld = float(m.db['eps'].iloc[0])
     εU = universalEps(mt0, rule = rule, refType = refType, scale = scale)
     installEps(mt0, εU)
-    print('eps: {:.6f} -> {:.6f} ({:+.1f}%)   kappa: {:.6f} -> {:.6f}'.format(
-        εOld, εU[0], 100*(εU[0]/εOld-1), float(m.db['κ'].iloc[0]), float(mt0.db['κ'].iloc[0])))
+    print('eps: {:.6f} -> {:.6f} ({})   kappa: {:.6f} -> {:.6f}'.format(
+        εOld, εU[0], '{:+.1f}%'.format(100*(εU[0]/εOld-1)) if εOld else 'from zero',
+        float(m.db['κ'].iloc[0]), float(mt0.db['κ'].iloc[0])))
 
     tStart = time.time()
     shock = solvePEE(mt0, preferences, **seed)
@@ -199,12 +241,11 @@ def runShock(ρ, settings, rule, refType, scale, control, out, commonSettings = 
                                      np.max(np.abs(ratio-target))))
 
     # Both frames are on the copy's 0-based index; shift the reform's back onto the baseline's calendar.
-    b = frame(base['report'], refType, τ = base['τ']).loc[t0:]
-    r = frame(shock['report'], refType, τ = shock['τ']).set_index(b.index[:len(shock['report']['s'])])
+    b = frame(base['report'], refType, τ = base['τ'], m = m).loc[t0:]
+    r = frame(shock['report'], refType, τ = shock['τ'], m = mt0).set_index(b.index[:len(shock['report']['s'])])
     df = b.join(r, lsuffix = '_base', rsuffix = '_reform')
-    for k in SERIES:
-        if k+'_base' in df:
-            df['d_'+k] = df[k+'_reform']/df[k+'_base'] - 1
+    for k in b.columns:                         # τ, SERIES, then the formal-benefit readouts
+        df['d_'+k] = df[k+'_reform']/df[k+'_base'] - 1
     df.insert(0, 'ρ', ρ)
     df.index.name = 't'
     # The tax candidates' counts (num_robustroot.tex) over the two political solves behind every row,
@@ -214,7 +255,7 @@ def runShock(ρ, settings, rule, refType, scale, control, out, commonSettings = 
         df[k] = v
     print('tax candidates (baseline and reform): ' + ', '.join('{}={}'.format(k, v) for k, v in counts.items()))
 
-    show = ['τ_base', 'τ_reform', 'd_τ', 'd_s', 'd_h', 'd_ι', 'd_c10', 'd_c20']
+    show = ['τ_base', 'τ_reform', 'd_τ', 'd_s', 'd_h', 'd_ι', 'd_c10', 'd_c20', 'd_biAvg']
     print('\nrelative change (reform/baseline - 1), tau in levels:')
     print(df[[c for c in show if c in df]].to_string(float_format = lambda v: '{:9.5f}'.format(v)))
 
@@ -230,7 +271,11 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser()
     p.add_argument('--rho', type = float, nargs = '+', default = None,
                    help = 'default: every rho in --csv that has a pickled instance')
-    p.add_argument('--csv', default = CSV)
+    p.add_argument('--csv', default = None, help = "default: the variant's own calibration csv")
+    p.add_argument('--epsPre0', action = 'store_true',
+                   help = 'the pre-reform eps = 0 calibration variant: informalSavings_rhoGridEpsPre0.csv, '
+                          'instancesEpsPre0/, *_epsPre0.csv unless --csv/--pkldir/--out are given; the '
+                          'instances must carry the flag')
     p.add_argument('--rule', default = 'match', choices = ('match', 'flat'),
                    help = "'match' (default): b^0 = b^refType, the whole benefit.  'flat': eps = "
                           "1-theta, the non-contributive component only -- see universalEps")
@@ -246,9 +291,12 @@ if __name__ == '__main__':
     p.add_argument('--commonSettings', action = 'store_true',
                    help = 'also give LOG the grid SIZES (--nι/--ns). Diagnostic only -- interpKind and '
                           'smoothKnots already go to both solvers, matching calibrateRhoGrid.py')
-    p.add_argument('--pkldir', default = PKLDIR, help = 'directory of pickled calibrated instances')
-    p.add_argument('--out', default = 'universal_{rule}_rho{ρ:.4f}.csv', help = "'' to skip writing")
+    p.add_argument('--pkldir', default = None, help = 'directory of pickled calibrated instances '
+                                                       "(default: the variant's own)")
+    p.add_argument('--out', default = None, help = "default {}, '_epsPre0' before .csv under --epsPre0; "
+                                                    "'' to skip writing".format(OUT))
     a = p.parse_args()
+    a.csv, a.pkldir, a.out = variantPaths(a.epsPre0, a.csv, a.pkldir, a.out)
     settings = {'nι': a.nι, 'ns': a.ns, 'interpKind': a.interpKind, 'smoothKnots': a.smoothKnots}
     ρs = a.rho
     if ρs is None:
@@ -256,4 +304,5 @@ if __name__ == '__main__':
         ρs = [float(v) for v in df['ρ']
               if os.path.exists(os.path.join(a.pkldir, 'rho_{:.4f}.pkl'.format(float(v))))]
     for ρ in ρs:
-        runShock(ρ, settings, a.rule, a.refType, a.scale, a.control, a.out, a.commonSettings, a.pkldir)
+        runShock(ρ, settings, a.rule, a.refType, a.scale, a.control, a.out, a.commonSettings, a.pkldir,
+                 epsPre0 = a.epsPre0)

@@ -30,8 +30,9 @@ Two things happen, and only the first is expensive:
   2. The endogenous-theta (sec:esc) cost calibrations: the cost parameter per (rho, spec) such that the
      leaded choice at 2020 reproduces the observed design, at config.US['esc']'s phi. Delegated to
      python/US/runESC.py (LOG, rho = 1 -- the paper's spec AND the comparison spec, also the no-wedge
-     corner row) and python/US/runESCcrra.py (CRRA, the other rho in the esc table grid, the paper's spec
-     only, with config.escBracket's scan bracket per rho). EXPENSIVE where missing (~45 min per CRRA
+     corner row) and python/US/runESCcrra.py (CRRA, the other rho in the esc table grid, both specs, with
+     config.escBracket's scan bracket per rho and spec), and the same for the cost variant of section 7
+     (config.US['esc']['costVariants'], the Pi-inclusive cost, into its --tag csvs). EXPENSIVE where missing (~45 min per CRRA
      (rho, spec): each trial value recalibrates (beta, omega) and runs the exact recursion), which is why
      the check is per-(rho, spec) and the drivers merge into their csvs rather than overwriting them.
 
@@ -50,7 +51,8 @@ import numpy as np, pandas as pd
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import config as C
 
-SWEEPS = ('US',) + C.US['countries'][1:] + C.US['extraSweeps']    # US first -- see the docstring
+# US first -- see the docstring; the readings (config.US['readings']) are US calibrations of their own
+SWEEPS = ('US',) + tuple(C.US['readings']) + C.US['countries'][1:] + C.US['extraSweeps']
 
 
 def sweepCmd(country, commonX = False, force = False):
@@ -63,6 +65,9 @@ def sweepCmd(country, commonX = False, force = False):
               '--interpKind', g['interpKind'], '--smoothKnots', str(g['smoothKnots'])]
     if country == 'US':
         cmd = [C.PYTHON, os.path.join(C.USDIR, 'calibrateRhoGrid.py')] + common
+    elif country in C.US['readings']:
+        cmd = ([C.PYTHON, os.path.join(C.USDIR, 'calibrateRhoGrid.py')] + common
+               + ['--medicare', str(C.US['readings'][country]['medicare'])])
     else:
         # A regrouped country is its workbook plus the grouping suffix: 'UKUS', 'FRUK' (config.usCalendar).
         base, grouping = country[:2], country[2:]
@@ -84,9 +89,9 @@ def missing(country, commonX = False):
 PHIROBUST = [0.25, 0.75]      # the phi footnote in sec:esc: LOG wedge calibrations at phi != esc['phi']
 
 
-def _escLogRows(phis):
-    """ {(spec, phi)} of converged LOG wedge calibrations on file, under the headline variant. """
-    path = os.path.join(C.ESCDIR, 'escCalibration.csv')
+def _escLogRows(phis, name = 'escCalibration.csv'):
+    """ {(spec, phi)} of converged LOG wedge calibrations in results/esc/`name`, under the headline variant. """
+    path = os.path.join(C.ESCDIR, name)
     if not os.path.exists(path):
         return set()
     df = pd.read_csv(path)
@@ -97,20 +102,36 @@ def _escLogRows(phis):
             if p == p}
 
 
+def _exactRows(path, phi):
+    """ {(rho, spec)} of converged exact CRRA cost calibrations in `path` at `phi`, headline variant. """
+    if not os.path.exists(path):
+        return set()
+    df = pd.read_csv(path)
+    if 'method' not in df.columns:
+        df['method'] = 'path'
+    ok = df[df['converged'].astype(bool) & np.isclose(df['phi'], phi) & (df['method'].fillna('path') == 'exact')]
+    if 'commonX' in ok.columns:
+        ok = ok[ok['commonX'].astype(bool) == bool(C.US['commonX'])]
+    return {(round(float(r), 6), s) for r, s in zip(ok['ρ'], ok['spec'])}
+
+
 def escMissing(part = 'main', force = False, strict = True):
     """ The ESC cost-calibration commands whose rows results/esc does not already carry (converged, at
     config.US['esc']'s phi, headline variant). One command per missing combination -- the drivers merge
     into their csvs (runESC.mergeWrite), so partial re-runs are safe.
 
     'main': the LOG calibrations at esc['phi'] under the paper's spec and the comparison spec (about 80 s
-    each; also the no-wedge row). 'prepub': the EXACT CRRA calibrations at every rho the ESC tables print
-    under the paper's spec (method = 'exact' rows -- the path iteration's rows in the same csv do not
-    count), one command per rho with its own scan bracket from config.escBracket, and the LOG
-    calibrations at PHIROBUST. `force` lists them all. A placeholder bracket raises unless `strict` is
-    False (the --dry listing), which prints it as `--bracket <unset> <unset>` instead. """
+    each; also the no-wedge row), and the cost variant's (esc['costVariants'], its own --tag csvs).
+    'prepub': the EXACT CRRA calibrations at every rho the ESC tables print under the paper's spec and the
+    comparison spec (method = 'exact' rows -- the path iteration's rows in the same csv do not count), one
+    command per (rho, spec) with its own scan bracket from config.escBracket, the cost variant's in its
+    tagged csv, the UK's own, and the LOG calibrations at PHIROBUST. `force` lists them all. A placeholder
+    bracket raises unless `strict` is False (the --dry listing), which prints it as `--bracket <unset>
+    <unset>` instead. """
     esc = C.US['esc']
     spec, phi = esc['spec'], esc['phi']
     specsL = [spec] + ([esc['comparisonSpec']] if esc.get('comparisonSpec') else [])
+    cv = esc['costVariants']
     # The ESC leg runs under the headline calibration variant only -- see paper/runShocksUS.ESCVARIANT.
     variant = ['--commonX'] if C.US['commonX'] else []
     cmds = []
@@ -119,40 +140,41 @@ def escMissing(part = 'main', force = False, strict = True):
     if part in ('main', 'all') and lackL:
         cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESC.py'), '--stage', 'calib',
                      '--spec'] + lackL + ['--phi', str(phi)] + variant)
+    if part in ('main', 'all') and (force or (cv['spec'], round(phi, 6)) not in
+                                    _escLogRows([phi], 'escCalibration' + cv['tag'] + '.csv')):
+        cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESC.py'), '--stage', 'calib', '--spec', cv['spec'],
+                     '--phi', str(phi), '--tag', cv['tag']] + variant)
     if part in ('prepub', 'all'):
-        pathC = os.path.join(C.ESCDIR, 'escCalibrationCRRA.csv')
-        haveC = set()
-        if os.path.exists(pathC) and not force:
-            df = pd.read_csv(pathC)
-            if 'method' not in df.columns:
-                df['method'] = 'path'
-            ok = df[df['converged'].astype(bool) & np.isclose(df['phi'], phi)
-                    & (df['method'].fillna('path') == 'exact')]
-            if 'commonX' in ok.columns:
-                ok = ok[ok['commonX'].astype(bool) == bool(C.US['commonX'])]
-            haveC = {(round(float(r), 6), s) for r, s in zip(ok['ρ'], ok['spec'])}
-        lackρ = [ρ for ρ in esc['ρTable'] if ρ != C.US['ρAnchor'] and (round(ρ, 6), spec) not in haveC]
         exact = [C.PYTHON, os.path.join(C.USDIR, 'runESCcrra.py'), '--exact', '--stage', 'calib']
         # the exact recursion's design layer (config.US['esc']), on every runESCcrra.py command below
         layer = ['--designRule', esc['designRule'], '--Ma', str(esc['Ma'])]
-        opts = ['--spec', spec, '--phi', str(phi), '--ns', str(esc['ns2D']),
-                '--nsScan', str(esc['nsScan']), '--nCand2D', str(esc['nCand2D'])] + variant + layer
-        # A rho with its own bracket gets its own command (the bracket is one pair); the rest share one
-        # command and runESCcrra.py's own default scan for the spec.
-        brackets = {}
-        for ρ in lackρ:
-            try:
-                brackets[ρ] = C.escBracket(ρ, spec)
-            except ValueError:
-                if strict:
-                    raise
-                brackets[ρ] = ('<unset>', '<unset>')
-        shared = [ρ for ρ in lackρ if brackets[ρ] is None]
-        if shared:
-            cmds.append(exact + ['--rho'] + [str(r) for r in shared] + opts)
-        for ρ in lackρ:
-            if brackets[ρ] is not None:
-                cmds.append(exact + ['--rho', str(ρ), '--bracket'] + [str(b) for b in brackets[ρ]] + opts)
+        # (spec, tag): the paper's and the comparison spec into escCalibrationCRRA.csv, the cost variant
+        # into its tagged csv.
+        for sp, tag in [(s, '') for s in specsL] + [(cv['spec'], cv['tag'])]:
+            have = set() if force else _exactRows(os.path.join(C.ESCDIR, 'escCalibrationCRRA' + tag + '.csv'), phi)
+            lackρ = [ρ for ρ in esc['ρTable'] if ρ != C.US['ρAnchor'] and (round(ρ, 6), sp) not in have]
+            scan = (['--nsScan', str(cv['nsScan']), '--nScan', str(cv['nScan']), '--xtol', str(cv['xtol'])] if tag
+                    else ['--nsScan', str(esc['nsScan'])])
+            opts = (['--spec', sp, '--phi', str(phi), '--ns', str(esc['ns2D'])] + scan
+                    + ['--nCand2D', str(esc['nCand2D'])] + (['--tag', tag] if tag else []) + variant + layer)
+            # A rho with its own bracket gets its own command (the bracket is one pair); the rest share one
+            # command and runESCcrra.py's own default scan for the spec.
+            brackets = {}
+            for ρ in lackρ:
+                try:
+                    brackets[ρ] = C.escBracket(ρ, sp)
+                except ValueError:
+                    if strict:
+                        raise
+                    brackets[ρ] = ('<unset>', '<unset>')
+            shared = [ρ for ρ in lackρ if brackets[ρ] is None]
+            if shared:
+                cmds.append(exact + ['--rho'] + [str(r) for r in shared] + opts)
+            for ρ in lackρ:
+                if brackets[ρ] is not None:
+                    xt = [v for k, v in esc.get('xtol', {}).get(sp, {}).items() if np.isclose(float(k), ρ)]
+                    cmds.append(exact + ['--rho', str(ρ), '--bracket'] + [str(b) for b in brackets[ρ]] + opts
+                                + (['--xtol', str(xt[0])] if xt and not tag else []))
         # The UK's own exact CRRA cost (appendix app:UKUS), one command per missing rho, its bracket and
         # scan grid from esc['uk'].
         uk = esc['uk']

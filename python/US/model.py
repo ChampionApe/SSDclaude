@@ -139,14 +139,18 @@ class ModelUS:
                     models' savings-rate target 's0'; the savings rate is still reported, just not targeted.
         - 'h0'      the average workweek as a share of discretionary time (docs eq:calibration:Xsolve).
                     Only a target when commonX=True; ignored otherwise. Set by test.py, not defaulted here.
-        - 'RR0'     the OECD ratio of replacement rates at mean vs half-mean income, which identifies θ.
-        - 'Ushare0' the universal (non-earnings-related) share of transfers -- see getEps.
+        - 'RR0'     the OECD ratio of replacement rates at mean vs half-mean income, which identifies θ_P,
+                    the design of the pension formula.
+        - 'Ushare0' the share of transfers to the old paid as a flat benefit outside the pension formula
+                    (Medicare in the online appendix's 'transfers to the old' reading, test.reading): θ =
+                    (1 - Ushare0)·θ_P (getθ). 0 in every workbook. Also the inert ε (getEps).
+        The defaults are USMain_test.xlsx's (pension cash spending 7.366% of GDP over 1-α = 0.7; 39.2/49.6).
 
         NOTE 't0' here is the *index into db['t'] of the calibration baseline year* (2020 for the US;
         defaults to 2, an arbitrary early index) -- NOT self.B.tFirst (=db['t'][0], the model's first
         active/endogenous period, docs' t=1) and NOT the pre-determined period before the horizon (docs'
         t=0). All three are genuinely different things; see README's "Timing convention". """
-        return {'τ0': .144286, 'RR0': 0.796748, 'R0': 2.443, 'Ushare0': 0., 'RRGroups': (1,2), 't0': 2}
+        return {'τ0': .105229, 'RR0': 0.790323, 'R0': 2.443, 'Ushare0': 0., 'RRGroups': (1,2), 't0': 2}
 
     @property
     def default1Dparams(self):
@@ -317,11 +321,15 @@ class ModelUS:
     #######################################################################
 
     def getθ(self):
-        """ Target relative replacement ratios for θ """
+        """ θ from the replacement-rate ratio RR0 of the groups RRGroups (calibration:theta): θ_P, the design
+        of the pension formula, times 1 - Ushare0. A flat benefit paid outside the formula, a share m of all
+        transfers to the old, makes the transfers' design (1 - m)θ_P exactly under the benefit formula
+        (eq:governmentBudget). Ushare0 = 0 returns θ_P bit for bit. """
         i,ii = self.db['RRGroups'][0], self.db['RRGroups'][1]
         ξ= self.db['ξ'].xs(self.db['t0'])
         h1,h2 = (self.db['Γh']*self.db['Xi'][i]**ξ/self.db['ηi'][i]**(1+ξ)).xs(self.db['t0']), (self.db['Γh']*self.db['Xi'][ii]**ξ/self.db['ηi'][ii]**(1+ξ)).xs(self.db['t0'])
-        return (self.db['RR0']*h1-h2)/(1-h2-self.db['RR0']*(1-h1))
+        θP = (self.db['RR0']*h1-h2)/(1-h2-self.db['RR0']*(1-h1))
+        return (1-self.db['Ushare0'])*θP
     def getEps(self):
         """ ε, the universal-pension parameter of the (zero-mass) informal type.
 
@@ -332,7 +340,7 @@ class ModelUS:
         zero would be indistinguishable from "not yet decided" if the type were ever given mass.
 
         Which is the case this guards against: db['Ushare0'] is the universal (non-earnings-related) share
-        of US transfers, and it is NOT the same object as the Argentina models' ε (a coverage-adjusted,
+        of US transfers to the old (it scales θ, getθ), and it is NOT the same object as the Argentina models' ε (a coverage-adjusted,
         discounted benefit ratio for a group that actually receives pensions). If γ_0 is ever made
         positive -- the platform-work extension the paper flags -- ε has to be derived properly first,
         so fail loudly here rather than let a plausible-looking number in through the back door. """
@@ -972,7 +980,8 @@ class ModelUS:
         """ Set db[par] = value, then calibrate there. Returns one flat record: the calibrated parameters,
         the unbounded x (which seeds the next point), max|residual|, the target quantities, and the
         diagnostics a sweep has to be readable by afterwards (wall time, scipy's nfev, the inner grid
-        actually used).
+        actually used, and 'multiplicity': the tax candidates' counts of the PEE solve at the calibrated
+        parameters, policy.multiplicitySummary, num_robustroot.tex eq:equilibriumTest).
 
         x0 is the *unbounded* vector, not a parameter dict. db is left holding the converged point, which
         is deliberate: it is the next point's inner warm start. """
@@ -990,7 +999,8 @@ class ModelUS:
                'R': float(rep['R']), 'τ': float(rep['τ']), 'sr': float(rep['sr']),
                'h': float(rep['h']), 'hbar': float(rep['hbar']),
                'nfev': int(getattr(cal['scipyRes'], 'nfev', -1)),
-               'gridSettings': dict(policy.GS['PEE']['gridSettings'])}
+               'gridSettings': dict(policy.GS['PEE']['gridSettings']),
+               'multiplicity': rep['PEE'].get('multiplicity')}
         rec.update({k: float(v) for k, v in cal['pars'].items()})
         verifySettings = self._calGridSettings(verify, preferences) if verify else None
         if verifySettings:

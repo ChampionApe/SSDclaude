@@ -55,8 +55,19 @@ i1, i2 = m.db['RRGroups']
 check('z^eta at the RR groups sits at half-mean and mean',
       np.isclose(zη[i1-1], 0.5, atol = 0.02) and np.isclose(zη[i2-1], 1.0, atol = 0.02),
       '-> z1={:.4f}, z2={:.4f}'.format(zη[i1-1], zη[i2-1]))
-check('theta matches the paper (0.738)', np.isclose(m.db['θ'].xs(t0), 0.738, atol = 5e-4),
+check('theta matches the calibration (0.728: PaG 2021, 39.2/49.6)', np.isclose(m.db['θ'].xs(t0), 0.7278, atol = 5e-4),
       '-> theta={:.5f}'.format(m.db['θ'].xs(t0)))
+# The 'transfers to the old' reading (test.reading): Medicare M in tau0 and a flat share m of transfers,
+# theta = (1 - m) theta_P; at M = 0 the workbook's theta (to an ulp: two builds can differ there, finding #1).
+mM = ModelUS(pars = testmod.reading(0.029) | {'ρ': 1, 'ω': 2, 'β': .6}, **testmod.kwargs)
+m0 = ModelUS(pars = testmod.reading(None) | {'ρ': 1, 'ω': 2, 'β': .6}, **testmod.kwargs)
+S = float(testmod.pars['τ0'])*(1-float(testmod.pars['α']))
+check('Medicare reading: tau0 = (S + M)/(1-alpha) and theta = (1 - M/(S+M)) theta_P',
+      np.isclose(float(mM.db['τ0']), (S + 0.029)/(1-float(testmod.pars['α'])), rtol = 1e-14)
+      and np.isclose(float(mM.db['θ'].xs(t0)), (1 - 0.029/(S + 0.029))*float(m0.db['θ'].xs(t0)), rtol = 1e-14)
+      and np.isclose(float(m0.db['θ'].xs(t0)), float(m.db['θ'].xs(t0)), rtol = 1e-14),
+      '-> m={:.6f} theta={:.6f} vs theta_P={:.6f}'.format(0.029/(S + 0.029), float(mM.db['θ'].xs(t0)),
+                                                          float(m0.db['θ'].xs(t0))))
 # The idealised closed form theta = 2 - 1/RR is close but NOT what we use -- the group cuts land near,
 # not on, half-mean/mean. Guards against someone "simplifying" getTheta to the two-line version.
 check('theta differs from the idealised 2-1/RR, as the docs warn',

@@ -72,7 +72,10 @@ OUTDIR = os.path.join(REPO, 'results', 'sweeps')
 # nFallback are the tax candidates' counts of the row's solve (num_robustroot.tex): non-key (#13), and
 # NaN on a row resumed from a csv written before they existed.
 COLUMNS = ['eps', 'theta', 'ρ', 'statusQuo', 'universalEps',
-           'τ', 'sr', 'h', 'ι', 's', 's_', 'c10', 'c20', 'nRoots', 'nEqMax', 'nCandMax', 'nFallback', 'time']
+           'τ', 'sr', 'srGDP', 'h', 'ι', 's', 's_', 'Y', 'Y0', 'c10', 'c20', 'nRoots', 'nEqMax', 'nCandMax',
+           'nFallback', 'time']
+# sr is savings over formal output (Base.savingsRate); srGDP is savings over GDP, s/(Y+Y0), with Y and Y0
+# formal and informal output (EE_report), the concept of the tax target (model.taxTarget).
 
 
 def installTheta(m, θ):
@@ -90,9 +93,9 @@ def atT0(m, sol, t0):
     db['t'] and iota on db['txE'] (README, "Reporting domains"), so both are looked up by label at t0
     rather than positionally. The tax candidates' counts cover the whole recursion, not t0 alone. """
     r = sol['report']
-    s, s_, h = (float(r[k].xs(t0)) for k in ('s', 's_', 'h'))
-    return {'τ': float(sol['τ'].xs(t0)), 'sr': float(m.B.savingsRate(s, s_, h, t0)), 'h': h,
-            'ι': float(r['ι'].xs(t0)), 's': s, 's_': s_,
+    s, s_, h, Y, Y0 = (float(r[k].xs(t0)) for k in ('s', 's_', 'h', 'Y', 'Y0'))
+    return {'τ': float(sol['τ'].xs(t0)), 'sr': float(m.B.savingsRate(s, s_, h, t0)), 'srGDP': s/(Y+Y0),
+            'h': h, 'ι': float(r['ι'].xs(t0)), 's': s, 's_': s_, 'Y': Y, 'Y0': Y0,
             'c10': float(r['c10'].xs(t0)), 'c20': float(r['c20'].xs(t0)),
             'nRoots': (sol['init'] or {}).get('nRoots')} | multiplicityColumns(sol.get('multiplicity'))
 

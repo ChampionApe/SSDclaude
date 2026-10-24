@@ -48,13 +48,25 @@ def calibrationSummary(commonX = None):
     for k in ('ν', 'ηi', 'Xi', 'γi', 'zxi', 'zxPredicted'):
         if isinstance(rec.get(k), str):
             rec[k] = json.loads(rec[k])
+    # The calibrated tax hits the workbook's derived target (config.argTaxTarget, model.taxTarget) to the
+    # calibration's tolerance; a summary at another target is a calibration of another economy.
+    if not abs(float(rec['τ']) - C.calendar()['τ0']) < 1e-6:
+        raise MissingInput(os.path.join(C.PAPERDIR, 'calibrationSummary.csv')
+                           + ' (tau {:.7f} is not the workbook target {:.7f}: a stale calibration; rerun '
+                             'stage (i))'.format(float(rec['τ']), C.calendar()['τ0']))
     return rec
 
 
 def rhoGrid(commonX = None):
     """ The calibration sweep of one variant, one row per rho, deduplicated on rho keeping the last (the
-    file is appended to across resumed marches). """
-    df = pd.read_csv(_need(C.argSweepCsv(_argCX(commonX))))
+    file is appended to across resumed marches). 'sr' is savings over GDP (the sweep's srGDP, GDP = formal
+    plus informal output, model.taxTarget's concept); the sweep's own 'sr', savings over formal output, is
+    returned as 'srFormal'. A sweep without srGDP predates that concept and is MissingInput. """
+    path = _need(C.argSweepCsv(_argCX(commonX)))
+    df = pd.read_csv(path)
+    if 'srGDP' not in df.columns:
+        raise MissingInput(path + ' (no srGDP column: the sweep predates the GDP concept; rerun stage (i))')
+    df = df.rename(columns = {'sr': 'srFormal'}).assign(sr = lambda d: d['srGDP'])
     return df.drop_duplicates('ρ', keep = 'last').sort_values('ρ').reset_index(drop = True)
 
 
@@ -104,10 +116,16 @@ def epsThetaGrid(ρ = None, commonX = None):
     calibrated column and keeps every row solved at the old parameters. The rectangle check cannot see
     that -- staleness adds a column rather than leaving a hole -- but the csv then carries two rows
     flagged statusQuo, and a wholly stale csv carries one that does not match calibrationSummary. Both
-    are caught here. This was live: 378 of 392 rows survived the 2026-08-24 K/Y retarget. """
+    are caught here. This was live: 378 of 392 rows survived the 2026-08-24 K/Y retarget.
+
+    'sr' is savings over GDP (the csv's srGDP), the csv's own 'sr' (over formal output) 'srFormal', as
+    rhoGrid. """
     ρ = C.ARG['ρBaseline'] if ρ is None else ρ
     path = _need(C.argEpsThetaCsv(ρ, _argCX(commonX)))
     df = pd.read_csv(path)
+    if 'srGDP' not in df.columns:
+        raise MissingInput(path + ' (no srGDP column: the sweep predates the GDP concept; rerun it with --force)')
+    df = df.rename(columns = {'sr': 'srFormal'}).assign(sr = lambda d: d['srGDP'])
     nε, nθ = df['eps'].nunique(), df['theta'].nunique()
     if len(df) != nε * nθ:
         raise MissingInput('{} (incomplete grid: {} rows for {} eps x {} theta)'.format(
@@ -130,13 +148,6 @@ def epsThetaGrid(ρ = None, commonX = None):
 # ---------------------------------------------------------------------------------------------------
 # Derived quantities the csvs do not carry
 # ---------------------------------------------------------------------------------------------------
-def savingsRate(s, s_, h, α, ν):
-    """ Eq (calibration): s_t / ((s_{t-1}/nu_t)^alpha h_t^(1-alpha)). The same expression as
-    base.py's Base.savingsRate, restated here so stage (iii) needs no model import -- if that
-    equation ever changes, both must move. """
-    return s / ((s_/ν)**α * h**(1-α))
-
-
 def seedSavings(ρ, rule = None, tol = 1e-6, commonX = None):
     """ s_{t0-1}, the savings level entering the reform year. Common to every scenario, because the
     reform is unanticipated: the seed state is the baseline's in all of them.
@@ -145,10 +156,10 @@ def seedSavings(ρ, rule = None, tol = 1e-6, commonX = None):
     each other:
 
       * from the eeOnly csv's `s__base`, which reports the seed directly, when that file exists;
-      * by inverting eq (calibration) at t0, where the baseline savings rate is a CALIBRATION TARGET
-        and so is known exactly: sr = s/((s_/nu)^alpha h^(1-alpha)) solved for s_. The achieved sr is
-        read off the sweep csv rather than assumed to be 0.184, so this stays exact at the solver's own
-        precision rather than at the target's.
+      * by inverting eq (calibration) at t0, where the baseline savings rate over formal output is
+        reported by the calibration: sr = s/((s_/nu)^alpha h^(1-alpha)) solved for s_. The achieved
+        rate is read off the sweep csv (rhoGrid's srFormal), so this stays exact at the solver's own
+        precision.
 
     The inversion is what keeps every figure buildable before the eeOnly experiment has been run; the
     agreement check is what keeps it honest once it has. """
@@ -159,7 +170,7 @@ def seedSavings(ρ, rule = None, tol = 1e-6, commonX = None):
         raise MissingInput('rho={} absent from {}'.format(ρ, os.path.basename(C.argSweepCsv(_argCX(commonX)))))
     cal  = calibrationSummary(commonX)
     α, ν = cal['α'], np.asarray(cal['ν'], dtype = float)[C.calendar()['t0']]
-    sr, s, h = float(row['sr'].iloc[-1]), float(ref['s_base'].iloc[0]), float(ref['h_base'].iloc[0])
+    sr, s, h = float(row['srFormal'].iloc[-1]), float(ref['s_base'].iloc[0]), float(ref['h_base'].iloc[0])
     inverted = ν * (s / (sr * h**(1-α)))**(1/α)
 
     path = _shockCsv(ρ, 'ee', rule, commonX)
@@ -182,29 +193,71 @@ def baselineHours(ρ, rule = None, commonX = None):
     return float(shockPath(ρ, 'reform', rule, commonX)['h_base'].iloc[0])
 
 
-def savingsRatePath(ρ, which = 'reform', rule = None, commonX = None):
-    """ The savings rate over the whole reported path. `which` is a column suffix: 'base', 'reform'
-    (shockUniversal's csv) or 'ee' (shockEEOnly's).
-
-    The lag is the previous row of the same path, except at t0 where it is the seed state -- see
-    seedSavings. The terminal period is NaN by construction (s_T = 0), and is left NaN rather than
-    zero-filled: a zero there would plot as a real collapse. """
-    df   = shockPath(ρ, 'ee' if which == 'ee' else 'reform', rule, commonX)
+def _gdpPath(ρ, which, rule, commonX, tol = 1e-8):
+    """ (path frame, Y, Y0) of one scenario: formal and informal output per formal young household, the
+    csv's own Y_<which>/Y0_<which> (EE_report), so GDP = Y + Y0 (model.taxTarget's concept). The formal
+    output is checked against the technology (s_{t-1}/nu_t)^alpha h_t^(1-alpha) at the path's own lag, the
+    seed state at t0 (seedSavings): the check ties the csv's columns to the state the reform starts from.
+    A csv without the columns predates the GDP concept and is MissingInput. """
+    path = _need(_shockCsv(ρ, 'ee' if which == 'ee' else 'reform', rule, commonX))
+    df   = pd.read_csv(path, index_col = 0)
+    if 'Y_' + which not in df.columns or 'Y0_' + which not in df.columns:
+        raise MissingInput(path + ' (no Y/Y0 columns: the run predates the GDP concept; rerun stage (ii))')
     cal  = calibrationSummary(commonX)
     α, ν = cal['α'], np.asarray(cal['ν'], dtype = float)
     t0i  = C.calendar()['t0']
-    s = df['s_' + which].values.astype(float)
-    h = df['h_' + which].values.astype(float)
+    s, h = df['s_' + which].values.astype(float), df['h_' + which].values.astype(float)
+    Y, Y0 = df['Y_' + which].values.astype(float), df['Y0_' + which].values.astype(float)
     s_ = np.concatenate([[seedSavings(ρ, rule, commonX = commonX)], s[:-1]])
+    dev = np.max(np.abs((s_/ν[t0i:t0i+len(s)])**α * h**(1-α)/Y - 1))
+    if not dev <= tol:
+        raise ValueError('{}: formal output Y_{} disagrees with the technology at the seed state by {:.2e} '
+                         'relative; the csv and the calibration are from different runs.'.format(path, which, dev))
+    return df, Y, Y0
+
+
+def savingsRatePath(ρ, which = 'reform', rule = None, commonX = None):
+    """ Savings over GDP, s_t/(Y_t + Y0_t), over the whole reported path (_gdpPath). `which` is a column
+    suffix: 'base', 'reform' (shockUniversal's csv) or 'ee' (shockEEOnly's). The terminal period is NaN by
+    construction (s_T = 0), and is left NaN rather than zero-filled: a zero there would plot as a real
+    collapse. """
+    df, Y, Y0 = _gdpPath(ρ, which, rule, commonX)
+    s = df['s_' + which].values.astype(float)
     with np.errstate(divide = 'ignore', invalid = 'ignore'):
-        sr = savingsRate(s, s_, h, α, ν[t0i:t0i+len(s)])
+        sr = s/(Y + Y0)
     sr[s <= 0] = np.nan                       # terminal period: s_T = 0 is degenerate, not a datum
     return pd.Series(sr, index = df.index)
 
 
 def reformSavingsRate(ρ, period = 0, rule = None, commonX = None):
-    """ The savings rate on the full-effect path at `period` periods after t0. """
+    """ Savings over GDP on the full-effect path at `period` periods after t0. """
     return float(savingsRatePath(ρ, 'reform', rule, commonX).iloc[period])
+
+
+def spendingPath(ρ, which = 'reform', rule = None, commonX = None):
+    """ Pension spending over GDP, tau_t (1-alpha) Y_t/(Y_t + Y0_t), over the whole reported path: the tax
+    is levied on formal labour income (1-alpha) Y_t, GDP includes informal output (model.taxTarget). """
+    df, Y, Y0 = _gdpPath(ρ, which, rule, commonX)
+    α = calibrationSummary(commonX)['α']
+    return pd.Series(df['τ_' + which].values.astype(float)*(1-α)*Y/(Y + Y0), index = df.index)
+
+
+def formalBenefitChange(ρ, which = 'reform', period = 0, rule = None, commonX = None, tol = 1e-10):
+    """ The change in formal benefits against the baseline, b_t^i(which)/b_t^i(base) - 1, at `period`
+    periods after t0. The same for every formal type (eq:governmentBudget: b_t^i is a type-specific
+    parameter bracket times h_{t-1} bbar_t), so it is also the change in their average biAvg: the
+    shockUniversal csv's d_biAvg, checked against its reference type's d_bi; shockEEOnly's csv carries d_bi
+    only (its EE_report has no lagged state at t0, which b^i does not depend on). """
+    path = _need(_shockCsv(ρ, 'ee' if which == 'ee' else 'reform', rule, commonX))
+    r = pd.read_csv(path, index_col = 0).iloc[period]
+    if 'd_biAvg' in r.index:
+        if abs(r['d_biAvg'] - r['d_bi']) > tol:
+            raise ValueError('{}: d_biAvg {} and d_bi {} differ at period {}; formal benefits did not move '
+                             'uniformly'.format(path, r['d_biAvg'], r['d_bi'], period))
+        return float(r['d_biAvg'])
+    if which == 'reform':
+        raise MissingInput(path + ' (no d_biAvg column: the run predates the formal-benefit readout)')
+    return float(r['d_bi'])
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -508,6 +561,63 @@ def oecdCorrelations():
     return pd.read_csv(_need(OECDCORR))
 
 
+# The cross-country test: python/US/runOECD26.py writes results/oecd26/, stage (0)'s oecd26Sample.py the sample.
+OECD26DIR    = os.path.join(C.RESULTS, 'oecd26')
+OECD26SAMPLE = os.path.join(C.DATA, 'oecd26_sample.csv')
+
+
+def oecd26Sample():
+    """ One row per country of figure 1, indexed on ISO3: `sample26` (the sample rule, applied in stage (0) and
+    nowhere else) and the informality datum behind it. """
+    return pd.read_csv(_need(OECD26SAMPLE), index_col = 'iso3')
+
+
+def oecd26Path(layer):
+    """ results/oecd26/anchor.csv (layer 0) or layer<1|2>.csv. """
+    return os.path.join(OECD26DIR, 'anchor.csv' if layer == 0 else 'layer{}.csv'.format(layer))
+
+
+def _oecd26Rows(layer, turnout):
+    path = oecd26Path(layer)
+    df = pd.read_csv(_need(path), dtype = {'inputsKey': str, 'anchorKey': str})
+    sel = ((df['turnout'] == turnout) & (df['spec'] == C.US['esc']['spec'])
+           & np.isclose(df['phi'].astype(float), C.US['esc']['phi'])
+           & (df['commonX'].astype(bool) == bool(C.US['commonX'])))
+    return _noDuplicates(df[sel], ['turnout'] + ([] if layer == 0 else ['iso3']), path), path
+
+
+def oecd26Anchor(turnout = 'cps'):
+    """ The calibrated anchor (the U.S. at the OECD inputs) of one turnout reading at the paper's cost and variant,
+    as a dict: β, ω, `p` (λ), its readouts, `inputsKey` and `grid`. Refused unless it was solved on the fine grid
+    and at the β the U.S. calibration without the cost has now at ρ = 1 (usSweep): an anchor computed before a
+    recalibration of the U.S. is stale, and so is everything layered on it (#13). """
+    df, path = _oecd26Rows(0, turnout)
+    ok = df[df['status'] == 'ok']
+    if ok.empty:
+        raise MissingInput(path + ' (no calibrated {} anchor)'.format(turnout))
+    a = ok.iloc[0].to_dict()
+    sweep = usSweep('US')
+    β = float(sweep.loc[np.isclose(sweep['ρ'], 1.0), 'β'].iloc[0])
+    if a['grid'] != 'fine' or not np.isclose(float(a['β']), β, rtol = 1e-12, atol = 0):
+        raise ValueError('{}: the {} anchor was solved at β = {!r} on the {} grid; the U.S. calibration has β = {!r}: '
+                         'rerun python/US/runOECD26.py'.format(os.path.relpath(path, C.REPO), turnout, a['β'],
+                                                               a['grid'], β))
+    return a
+
+
+def oecd26Layer(layer, turnout = 'cps'):
+    """ Layer 1 or 2 of one turnout reading, indexed on ISO3. Every row must have been computed against the anchor
+    on disk (its `anchorKey` is the anchor's `inputsKey`) on the anchor's grid: a row of an earlier anchor is an
+    error, never mixed in (crossCuttingFindings #13). """
+    a = oecd26Anchor(turnout)
+    df, path = _oecd26Rows(layer, turnout)
+    stale = (df['anchorKey'] != a['inputsKey']) | (df['grid'] != a['grid'])
+    if stale.any():
+        raise ValueError('{}: rows computed against another anchor or grid: {}'.format(
+            os.path.relpath(path, C.REPO), ', '.join(df.loc[stale, 'iso3'])))
+    return df.set_index('iso3')
+
+
 def _escSelect(df, spec, commonX, method = False):
     """ The rows of an ESC csv at the calibration variant (_escVariant), `spec` and config phi, and at the
     published CRRA method when `method`. A column the csv does not carry does not filter. """
@@ -624,6 +734,52 @@ def stationaryApprox(which):
     return _noDuplicates(pd.read_csv(_need(path)), ['ρ', 't'], path).sort_values(['ρ', 't']).reset_index(drop = True)
 
 
+HORIZONCSVS = {'US': ('US_horizon.csv', 'US_horizonDesign.csv'),
+               'ARG': ('ARG_horizon' + C.argVariantTag(C.ARG['commonX']) + '.csv',)}
+RESIDUALCSVS = {'US': 'US_residuals.csv', 'ARG': 'ARG_residuals' + C.argVariantTag(C.ARG['commonX']) + '.csv'}
+
+
+def horizon(arm):
+    """ The horizon and terminal-condition runs of appendix D (python/US/runHorizon.py stages log, horizon,
+    design; python/InformalSavings/runHorizon.py), at the calibrated parameters of the headline variant. One
+    row per (block, preferences, rho, terminal, tss, date), dates 1960-2110 (U.S.) or 1920-2100 (Argentina):
+    `terminal` 'finite' with `tss` periods after the last projection date (`T` the last year; tss 3 is the
+    paper's horizon) or 'steadyState'; `block` 'tax' (the design given) or 'design' (chosen; U.S. only);
+    Argentina's rows are block 'tax' and carry the universal reform (`τ_reform`, `dτ`, `srGDP_reform`, `dsrGDP`).
+    Savings: `srOverY` s/Y (U.S.), `srGDP` s/(Y + Y0) (Argentina). """
+    frames = []
+    for f in HORIZONCSVS[arm]:
+        d = pd.read_csv(_need(os.path.join(C.NUMDIR, f)))
+        if arm == 'ARG':
+            d = d.assign(block = 'tax')
+        frames.append(d)
+    df = pd.concat(frames, ignore_index = True)
+    path = os.path.join(C.NUMDIR, HORIZONCSVS[arm][0])
+    return _noDuplicates(df, ['block', 'preferences', 'ρ', 'terminal', 'tss', 'date'], path)
+
+
+def residuals(arm):
+    """ The first-order-condition residuals of appendix D at states off the policy functions' grids (the
+    runHorizon.py stage residuals), summary statistics of |tau_FOC - tau_hat| in units of the tax: per (rho,
+    ns [U.S.], date, set, region), `date` 'all' pooling the periods; `max`, `p99`, `median`, `n` against the
+    condition as the solver evaluates it, the same with suffix `Ref` against the condition with converged tax
+    derivatives. `set`: 'node', 'cell', 'edge' (Argentina's 2-D grid), 'path'; `region`: 'all', 'visited'. """
+    path = os.path.join(C.NUMDIR, RESIDUALCSVS[arm])
+    df = pd.read_csv(_need(path))
+    if 'ns' not in df.columns:
+        df['ns'] = np.nan
+    df['date'] = df['date'].astype(str)
+    return _noDuplicates(df, ['ρ', 'ns', 'date', 'set', 'region'], path)
+
+
+def derivativeScheme():
+    """ The U.S. CRRA solve at its calibrated parameters under the published tax derivatives and under the
+    converged ones (python/US/runHorizon.py stage scheme): per (rho, scheme, scenario, date), scenario
+    'baseline', 'theta0', 'theta1', dates 2020 and 2050. """
+    path = os.path.join(C.NUMDIR, 'US_derivativeScheme.csv')
+    return _noDuplicates(pd.read_csv(_need(path)), ['ρ', 'scheme', 'scenario', 'date'], path)
+
+
 def selectionCsvs():
     """ The results csvs the registered outputs read that a politico-economic solve wrote, for the
     equilibrium counts (NUM_Selection): [(arm, label, [paths])], one entry per file or per rho-grid family.
@@ -640,6 +796,8 @@ def selectionCsvs():
                     [C.argEpsThetaCsv(C.ARG['ρBaseline'], cx)]))
     arg.append(('ARG', 'ARG_stationaryApprox' + C.argVariantTag(C.ARG['commonX']) + '.csv',
                 [os.path.join(C.NUMDIR, 'ARG_stationaryApprox' + C.argVariantTag(C.ARG['commonX']) + '.csv')]))
+    for f in HORIZONCSVS['ARG']:
+        arg.append(('ARG', f, [os.path.join(C.NUMDIR, f)]))
     for cx in (C.US['commonX'], not C.US['commonX']):
         for country in ('US', 'UK', 'FR'):
             us.append(('US', os.path.basename(C.usSweepCsv(country, cx)), [C.usSweepCsv(country, cx)]))
@@ -651,7 +809,7 @@ def selectionCsvs():
               'escPath.csv', 'escPathCRRA.csv', 'escXiRobustness.csv', 'escPermanent.csv',
               'escPermanentCRRA.csv', 'escSequentialCRRA.csv'):
         us.append(('US', f, [os.path.join(C.ESCDIR, f)]))
-    for f in ('US_stationaryApprox.csv', 'US_ESC_stationaryApprox.csv'):
+    for f in ('US_stationaryApprox.csv', 'US_ESC_stationaryApprox.csv') + HORIZONCSVS['US'] + ('US_derivativeScheme.csv',):
         us.append(('US', f, [os.path.join(C.NUMDIR, f)]))
     return arg + us
 
@@ -661,25 +819,50 @@ COUNTCOLUMNS = {'tax':    ('nEqMax', 'nCandMax', 'nFallback'),
 
 
 def countSummary(paths, layer = 'tax'):
-    """ The equilibrium counts over the csvs `paths`: {'files', 'rows', 'counted', 'eqMax', 'candMax',
-    'fallbacks'} for the tax rule (layer 'tax': nEqMax, nCandMax, nFallback, writing/US/num_robustroot.tex)
-    or the design layer of the exact CRRA recursion (layer 'design': nEqθMax, nBrθMax, nFallbackθ,
-    writing/US/num_esc.tex). A row is counted where its three columns are present and non-negative: -1 is
-    what a solve that counted nothing writes (python/US/policy.multiplicityColumns), blank a row written
-    before the columns existed. With nothing counted the three statistics are None, not zero. """
+    """ The equilibrium counts over the csvs `paths`: {'files', 'rows', 'counted', 'uncounted', 'unrecorded',
+    'eqMax', 'candMax', 'fallbacks'} for the tax rule (layer 'tax': nEqMax, nCandMax, nFallback,
+    writing/US/num_robustroot.tex) or the design layer of the exact CRRA recursion (layer 'design': nEqθMax,
+    nBrθMax, nFallbackθ, writing/US/num_esc.tex). A row is counted where its three columns are present and
+    non-negative; 'uncounted' rows carry -1, what a solve that selected nothing at that layer writes
+    (python/US/policy.multiplicityColumns); 'unrecorded' rows are blank, written before the columns existed.
+    With nothing counted the three statistics are None, not zero. """
     lack = [p for p in paths if not os.path.exists(p)]
     if lack:
         raise MissingInput(lack)
-    cols, rows, parts = COUNTCOLUMNS[layer], 0, []
+    cols, rows, parts, neg, blank = COUNTCOLUMNS[layer], 0, [], 0, 0
     for p in paths:
         d = pd.read_csv(p)
         rows += len(d)
         if all(c in d.columns for c in cols):
             sub = d[list(cols)].apply(pd.to_numeric, errors = 'coerce')
-            parts.append(sub[sub.notna().all(axis = 1) & (sub >= 0).all(axis = 1)])
+            isBlank = sub.isna().any(axis = 1)
+            isNeg = ~isBlank & (sub < 0).any(axis = 1)
+            neg, blank = neg + int(isNeg.sum()), blank + int(isBlank.sum())
+            parts.append(sub[~isBlank & ~isNeg])
+        else:
+            blank += len(d)
     sub = pd.concat(parts) if parts else pd.DataFrame(columns = list(cols))
     none = sub.empty
-    return {'files': len(paths), 'rows': rows, 'counted': len(sub),
+    return {'files': len(paths), 'rows': rows, 'counted': len(sub), 'uncounted': neg, 'unrecorded': blank,
             'eqMax': None if none else int(sub[cols[0]].max()),
             'candMax': None if none else int(sub[cols[1]].max()),
             'fallbacks': None if none else int(sub[cols[2]].sum())}
+
+
+COUNTIDS = ('ρ', 'spec', 'scenario', 'θpinned', 'method', 'family', 'effect', 'terminal', 'tss', 'date')
+
+
+def countExceptions(paths, layer = 'tax'):
+    """ The counted rows of `paths` with more than one equilibrium or a fallback at `layer`: [(file, {its
+    identifying columns among COUNTIDS}, nEq max, fallbacks)]. """
+    cols, out = COUNTCOLUMNS[layer], []
+    for p in paths:
+        d = pd.read_csv(_need(p))
+        if not all(c in d.columns for c in cols):
+            continue
+        sub = d[list(cols)].apply(pd.to_numeric, errors = 'coerce')
+        hit = sub.notna().all(axis = 1) & (sub >= 0).all(axis = 1) & ((sub[cols[0]] > 1) | (sub[cols[2]] > 0))
+        for i in d.index[hit]:
+            ids = {k: d.at[i, k] for k in COUNTIDS if k in d.columns and pd.notna(d.at[i, k])}
+            out.append((os.path.basename(p), ids, int(sub.at[i, cols[0]]), int(sub.at[i, cols[2]])))
+    return out

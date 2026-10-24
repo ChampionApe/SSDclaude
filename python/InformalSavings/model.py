@@ -59,7 +59,7 @@ class ModelInformalSavings:
     _PolicyLogClass = LOG
     _PolicyCRRAClass = CRRA
 
-    def __init__(self, nj = 4, T = 10, pars = None, commonX = False, **kwargs):
+    def __init__(self, nj = 4, T = 10, pars = None, commonX = False, epsPre0 = False, **kwargs):
         """ Model with informal households.
 
         Parameters
@@ -73,6 +73,9 @@ class ModelInformalSavings:
             (as the US arm's variant B); relative formal hours are then a prediction. The informal
             (η_0, X_0) are calibrated under both, with the hours-unit ratio M carried through
             Base.calibrationη0/X0.
+        epsPre0: bool - the pre-reform ε variant (getEps). False: the basic pension of the Argentine
+            calibration. True: ε = 0, the informal type (γ_0, the elderly without a pension) receives
+            nothing before the reform.
 
         db : dict
             Keys = Variable names (string).
@@ -81,6 +84,7 @@ class ModelInformalSavings:
         self.nj, self.T = nj, T
         self.ni = self.nj-1
         self.commonX = bool(commonX)
+        self.epsPre0 = bool(epsPre0)
         self.db = {} # dictionary database
         self.x0 = {} # cache of last-used/default initial guesses for numerical problems, keyed by problem name
         self.addProperty('paramsFromFuncs', ['Γh','θ','eps','κ']) # list of auxiliary parameters to be recalculated when deep parameters are updated
@@ -195,6 +199,8 @@ class ModelInformalSavings:
             self.addProperty('paramsFromFuncs', value)
         if 'commonX' not in self.__dict__:      # an instance pickled before the variant existed: vector X
             self.commonX = False
+        if 'epsPre0' not in self.__dict__:      # likewise: the basic-pension ε
+            self.epsPre0 = False
 
     def initIdxs(self):
         self.db['t'] = pd.Index(range(self.T), name = 't')
@@ -331,12 +337,31 @@ class ModelInformalSavings:
         quartile), relative to h_{t-1} bbar_t and discounted because it starts five (men) or ten (women) years
         after the formal retirement age. `auxProd` is positional and the formal types are labelled 1..J
         (db['i']), so the type is looked up by label, as getθ and shockUniversal.relBenefit do; a positional
-        [1] here would read the second quartile. """
+        [1] here would read the second quartile. 0 under the epsPre0 variant (__init__). """
+        if self.epsPre0:
+            return 0.0
         θ = self.db['θ'].xs(self.db['t0'])
         col = list(self.db['i']).index(refType)
         relBenefit = 1 - θ + θ * self.B.auxProd(self.db['t0'])[col]
         discount = (self.simpleβinv()**(5/30)*9.45/14.45 + self.simpleβinv()**(10/30)*12.55/22.55)/2
         return coverageRate * relBenefit * discount
+
+    @staticmethod
+    def taxTarget(spending, α, γ0, z0η):
+        """ Eq (calibration:tau)'s target from pension spending over GDP, with GDP formal plus informal
+        output (Base.outputFormal/outputInformal; informal output w^0 η_0 h_0 per informal household, as
+        num_calibration.tex's capital-output paragraph defines it). Spending is τ(1-α) of formal output, and
+        at the calibration the η_0/X_0 targets put informal income at z_0^η times the formal average
+        w(1-τ)h, so informal over formal output is a(1-τ) with a = γ_0 z_0^η (1-α), and
+        τ(1-α)(1-y) = spending with y = a(1-τ)/(1+a(1-τ)) solves in closed form:
+
+            τ_0 = spending (1+a) / ((1-α) + spending·a).
+
+        Returns (τ_0, y), y the informal share of GDP at the calibration. a = 0 gives spending/(1-α). The
+        identity holds on the solved path only where the η_0/X_0 targets are met (test_reformVintage.py). """
+        a = γ0 * z0η * (1-α)
+        τ0 = spending * (1+a) / ((1-α) + spending*a)
+        return τ0, a*(1-τ0) / (1 + a*(1-τ0))
 
     # Initialize productivity distribution:
     def initProductivity(self):
@@ -434,7 +459,7 @@ class ModelInformalSavings:
 
     # Which pandas index a symbol reports over -- a fixed, once-per-model mapping.
     _t2vars = ('s', 'h', 's_', 'R', 'R0', 'w', 'w0', 'hi', 'h0', 'bbar', 'bi', 'b0',
-               'c1i', 'tildec1i', 'c2i', 'tildec2i', 'c10', 'tildec10', 'c20', 'tildec20')
+               'c1i', 'tildec1i', 'c2i', 'tildec2i', 'c10', 'tildec10', 'c20', 'tildec20', 'Y', 'Y0')
     _txE2vars = ('Γs', 'B', 'B0', 'si_s', 'ι')
 
     def _wrapEE(self, x, idx):
@@ -551,12 +576,18 @@ class ModelInformalSavings:
             B_full = self.BT.B(s, h_lead)
         return self._wrapVars({'s': s, 'h': h, 'Γs': Γs_u, 'B': B_full[:-1]})
 
-    def EE_report(self, sol, τ, θ, ε, s0):
+    def EE_report(self, sol, τ, θ, ε, s0, lagged = None):
         """ Expand a solved {'s','h','Γs','B'} dict (from either solver) into the full set of equilibrium
         objects via base.py, vectorized over the whole time path (self.BT) -- shared by both since
         everything downstream of (s,h,Γs,B) is identical regardless of origin. Γs/B/B0/si_s/ι come back at
-        length T-1; everything else (incl. 's_'=s_{t-1} and 'h_', backed out via §5's
-        initialState_solve) is length T.
+        length T-1; everything else (incl. 's_'=s_{t-1}) is length T. 'Y'/'Y0' are formal and informal
+        output per formal young household (Base.outputFormal/outputInformal); GDP is their sum.
+
+        lagged: the first period's vintage-(t-1) objects {'si_s': (ni,), 'ι': float, 'h': float} --
+        s_{-1,i}/s_{-1}, ι_{-1}, h_{-1} -- when the generation old there carries them in from a solved path
+        (a model copy, eq:shockState; solvePEE_* builds it from stateAtT0's seed). None: §5's
+        initialState_solve proxies at db['t'][0]'s own policy, the steady-state assumption. They reach only
+        the first period's c2i/tildec2i (si_s), c20/tildec20 (ι) and bbar (h; b0/bi do not depend on it).
 
         B0/ι are computed here rather than returned by the solvers: informal savings never enter the
         formal capital stock, so ι_t is a closed-form read-off of the solved core (s,h,Γs,B), not part of
@@ -564,8 +595,13 @@ class ModelInformalSavings:
         s, h, Γs, B = sol['s'].values, sol['h'].values, sol['Γs'].values, sol['B'].values
         s_ = np.append(s0, s[:-1])
         τ1, θ1, ε1 = self.leadSym(τ), self.leadSym(θ), self.leadSym(ε)
-        init = self.initialState_solve(τ[self.B.tFirst], θ[self.B.tFirst], ε[self.B.tFirst])
-        h_ = np.append(self.B.hFromS(s0, init['Γs'], self.B.tFirst), h[:-1])
+        if lagged is None:
+            init = self.initialState_solve(τ[self.B.tFirst], θ[self.B.tFirst], ε[self.B.tFirst])
+            init['h'] = self.B.hFromS(s0, init['Γs'], self.B.tFirst)
+        else:
+            init = {'si_s': np.asarray(lagged['si_s'], dtype = float), 'ι': float(lagged['ι']),
+                    'h': float(lagged['h'])}
+        h_ = np.append(init['h'], h[:-1])
 
         R, R0 = self.BT.R(s_, h), self.BT.R0(s_, h)
         w, w0 = self.BT.w(s_, h), self.BT.w0(s_)
@@ -601,6 +637,7 @@ class ModelInformalSavings:
                                 'bbar': bbar, 'bi': bi, 'b0': b0,
                                 'c1i': c1i, 'tildec1i': tc1i, 'c2i': c2i, 'tildec2i': tc2i,
                                 'c10': c10, 'tildec10': tc10, 'c20': c20, 'tildec20': tc20,
+                                'Y': self.BT.outputFormal(s_, h), 'Y0': self.BT.outputInformal(s_),
                                 'Γs': Γs, 'B': B, 'B0': B0, 'si_s': si_s, 'ι': ι})
 
     #######################################################################
@@ -785,7 +822,18 @@ class ModelInformalSavings:
     # "The simulated path is never reported directly"). Both return the same keys, so §8's calibration
     # drives either interchangeably.
 
-    def solvePEE_LOG(self, θ = None, ε = None, s0 = None, ι0 = None,
+    @staticmethod
+    def _laggedState(inherited, s0, ι0):
+        """ EE_report's `lagged` and LOG/CRRA.solveBackward's si_s0 from solvePEE_*'s `inherited`, or
+        (None, None). inherited needs the seed (s0, ι0) it was read off with, stateAtT0's own dict. """
+        if inherited is None:
+            return None, None
+        if s0 is None or ι0 is None:
+            raise ValueError("inherited (the lagged state of a model copy, stateAtT0) needs the seed s0 and "
+                             "ι0 it was read off with.")
+        return {'si_s': inherited['si_s'], 'ι': ι0, 'h': inherited['h']}, inherited['si_s']
+
+    def solvePEE_LOG(self, θ = None, ε = None, s0 = None, ι0 = None, inherited = None,
                      backwardKwargs = None, pathKwargs = None):
         """ Solve the LOG politico-economic equilibrium end to end. θ, ε: full length-T paths; default to
         db['θ']/db['eps']. ι0: the political state entering db['t'][0]; defaults to §6's fixed point. s0:
@@ -793,6 +841,12 @@ class ModelInformalSavings:
         walked τ_1 even when ι0 is given. backwardKwargs -> LOG.solveBackward, pathKwargs ->
         LOG.approximatePEE (strict=False to inspect a path that leaves 𝒮_0 instead of raising;
         exact=False to walk the reported state interpolants rather than re-solving the transition).
+
+        inherited: {'si_s': (ni,), 'h': float}, the vintage-(t-1) objects the generation old at db['t'][0]
+        carries in from a solved path -- a model copy's reform period (eq:shockState), stateAtT0's
+        'inherited', given with its s0/ι0. The first period's political problem then holds the formal
+        savings shares at si_s (no consistency step there; it applies from the second period on), and
+        EE_report takes si_s, ι0 and h as the first period's lags. None: the steady-state assumption.
 
         Returns {'sols','path','init','τ','sol','report','multiplicity'}; 'multiplicity' is the tax
         candidates' counts over every period and state (policy.multiplicitySummary, num_robustroot.tex).
@@ -804,7 +858,9 @@ class ModelInformalSavings:
         discontinuous outer residual rather than as an error. """
         θ = self.db['θ'].values if θ is None else θ
         ε = self.db['eps'].values if ε is None else ε
-        sols = self.LOG.solveBackward(θ, ε, **(backwardKwargs or {}))
+        lagged, si_s0 = self._laggedState(inherited, s0, ι0)
+        sols = self.LOG.solveBackward(θ, ε, **({} if si_s0 is None else {'si_s0': si_s0}),
+                                      **(backwardKwargs or {}))
         init = None
         if ι0 is None:
             init = self.initialStatePEE(sols, θ, ε, 'LOG')
@@ -815,22 +871,26 @@ class ModelInformalSavings:
         if s0 is None:
             s0 = self.steadyState_LOG_solve(τ[self.B.tFirst], θ[self.B.tFirst], t = self.B.tFirst)['s']
         sol = self.EE_LOG_solve(τ, θ, ε, s0)
-        report = self.EE_report(sol, τ, θ, ε, s0)
+        report = self.EE_report(sol, τ, θ, ε, s0, lagged = lagged)
         return {'sols': sols, 'path': path, 'init': init, 'τ': path['τ'], 'sol': sol, 'report': report,
                 'multiplicity': path.get('multiplicity')}
 
-    def solvePEE_CRRA(self, θ = None, ε = None, s0 = None, ι0 = None, warmStart = True,
+    def solvePEE_CRRA(self, θ = None, ε = None, s0 = None, ι0 = None, inherited = None, warmStart = True,
                       backwardKwargs = None, pathKwargs = None, solveKwargs = None):
         """ Solve the CRRA politico-economic equilibrium end to end. As solvePEE_LOG, with both states
         walked forward and the exact step a root-find rather than a closed form. s0/ι0 default jointly to
         §6's fixed point -- unlike the LOG case s_0 IS a political state here, so it enters the residual.
+        inherited: as solvePEE_LOG; under CRRA the shares are those of the seed s0, so the first period's
+        policy function is meaningful at that savings state only, which is the one the walk starts from.
 
         warmStart: build EE_CRRA_solve's x0 from the simulated (Γ_{s,t}, h_t, s_t) rather than its own
         default (the LOG closed form, exact only at ρ=1) -- scoped to this call, and overridden by
         solveKwargs={'x0': ...}. 'init' and 'multiplicity' are reported as in solvePEE_LOG. """
         θ = self.db['θ'].values if θ is None else θ
         ε = self.db['eps'].values if ε is None else ε
-        sols = self.CRRA.solveBackward(θ, ε, **(backwardKwargs or {}))
+        lagged, si_s0 = self._laggedState(inherited, s0, ι0)
+        sols = self.CRRA.solveBackward(θ, ε, **({} if si_s0 is None else {'si_s0': si_s0}),
+                                       **(backwardKwargs or {}))
         init = None
         if s0 is None or ι0 is None:
             init = self.initialStatePEE(sols, θ, ε, 'CRRA')
@@ -842,7 +902,7 @@ class ModelInformalSavings:
         if warmStart and 'x0' not in kwargs:
             kwargs['x0'] = np.concatenate([path['Γs'], path['h'], path['s']])
         sol = self.EE_CRRA_solve(τ, θ, ε, s0, **kwargs)
-        report = self.EE_report(sol, τ, θ, ε, s0)
+        report = self.EE_report(sol, τ, θ, ε, s0, lagged = lagged)
         return {'sols': sols, 'path': path, 'init': init, 'τ': path['τ'], 'sol': sol, 'report': report,
                 'multiplicity': path.get('multiplicity')}
 
@@ -927,10 +987,14 @@ class ModelInformalSavings:
         Θh = self.B.ΘhFromH(h, s_, t0)
         η0 = self.B.calibrationη0(Θh, τ, t0)
         # h and hbar are reported, not targeted, by the root: hbar (average FORMAL hours) is what the
-        # common-X post-root step points solveCommonX at.
+        # common-X post-root step points solveCommonX at. The GDP readouts (formal plus informal output,
+        # taxTarget's concept) are reported too: spendGDP is the datum τ0 was derived from.
+        Y, Y0 = float(rep['Y'].xs(t0)), float(rep['Y0'].xs(t0))
         return {'KY': self.B.capitalOutputRatio(s_, h, t0), 'τ': τ, 'Θh': Θh, 'h': float(h),
                 'hbar': float(self.B.avgHoursFormal(h, t0)),
                 'sr': self.B.savingsRate(s, s_, h, t0),
+                'yInf': Y0/(Y+Y0), 'spendGDP': float(τ)*(1-self.B.get('α', t0))*Y/(Y+Y0),
+                'srGDP': float(s)/(Y+Y0),
                 'η0': η0, 'X0': self.B.calibrationX0(η0, Θh, t0), 'PEE': out}
 
     def _calResidual(self, report, pars):
@@ -1106,7 +1170,8 @@ class ModelInformalSavings:
                        calKwargs = None):
         """ Set db[par] = value, then calibrate there. Returns one flat record: the calibrated parameters,
         the unbounded x (which is what seeds the next point -- see calibrateGrid), max|residual|, the four
-        target quantities, and the diagnostics a sweep has to be readable by afterwards (ι at t0, the
+        target quantities, the GDP readouts yInf/spendGDP/srGDP at t0 (calibration_report), the variant
+        flags, and the diagnostics a sweep has to be readable by afterwards (ι at t0, the
         initial fixed point's nRoots, scipy's nfev, wall time, the inner grid actually used, and the tax
         candidates' counts nEqMax/nCandMax/nFallback of the final solve, policy.multiplicityColumns).
 
@@ -1133,7 +1198,8 @@ class ModelInformalSavings:
                'gridSettings': dict(policy.GS['PEE']['gridSettings'])}
         rec.update({k: float(v) for k, v in cal['pars'].items()})
         rec['hbar'] = float(rep['hbar'])
-        rec['commonX'] = self.commonX
+        rec.update({k: float(rep[k]) for k in ('yInf', 'spendGDP', 'srGDP')})
+        rec['commonX'], rec['epsPre0'] = self.commonX, self.epsPre0
         rec.update(multiplicityColumns(cal['report']['PEE'].get('multiplicity')))
         rec.update(self._calOccupancy(policy, cal['report']['PEE']))
         verifySettings = self._calGridSettings(verify, preferences) if verify else None
@@ -1171,13 +1237,13 @@ class ModelInformalSavings:
     #######################################################################
     # createCopyFromt0 produces a new, independent model instance whose horizon is restricted to
     # db['t'] >= t0 -- for "unexpected shock" experiments: solve the baseline PEE over the full horizon,
-    # build the copy, then re-solve PEE on it with (s0, ι0) (stateAtT0) read off the baseline's own
-    # report at t0. The copy's own db['t'] is renumbered to start at 0 again (see _sliceDb's docstring
+    # build the copy, then re-solve PEE on it with (s0, ι0, inherited) (stateAtT0) read off the baseline's
+    # own report at t0. The copy's own db['t'] is renumbered to start at 0 again (see _sliceDb's docstring
     # for why -- model.py's own EE_LOG_solve/EE_CRRA_solve/EE_report/initialState_solve index a caller's
     # τ/θ/ε ndarrays positionally via self.B.tFirst, which only works when tFirst is 0), so
     # self.B.tFirst on the copy is 0, not t0 -- the original calendar year t0 is not retained anywhere
-    # on the copy. State seeding is deliberately NOT done here -- s0/ι0 stay explicit arguments to
-    # solvePEE_LOG/solvePEE_CRRA on the copy, exactly as for any other instance; see stateAtT0.
+    # on the copy. State seeding is deliberately NOT done here -- s0/ι0/inherited stay explicit arguments
+    # to solvePEE_LOG/solvePEE_CRRA on the copy, exactly as for any other instance; see stateAtT0.
     def createCopyFromt0(self, t0):
         """ Return an independent copy of this model with its time horizon restricted to db['t'] >= t0
         and renumbered to start at 0 (db['t'] runs 0..T-t0-1 on the copy, not t0..T-1).
@@ -1201,13 +1267,22 @@ class ModelInformalSavings:
         return mt0
 
     def stateAtT0(self, report, t0, init = None):
-        """ The state (s0, ι0) entering t0 in an already-solved report (solvePEE_LOG/solvePEE_CRRA's
-        'report'), for seeding createCopyFromt0(t0)'s own solvePEE_LOG(s0=,ι0=)/solvePEE_CRRA(s0=,ι0=).
+        """ The predetermined state entering t0 in an already-solved report (solvePEE_LOG/solvePEE_CRRA's
+        'report'), eq:shockState, for seeding createCopyFromt0(t0)'s own solvePEE_*(**seed):
+        {'s0': s_{t0-1}, 'ι0': ι_{t0-1}, 'inherited': {'si_s': s_{t0-1,i}/s_{t0-1} (ni,), 'h': h_{t0-1}}}.
+        The generation old at t0 saved at t0-1 under the baseline's system, so on a reform copy its shares
+        and hours are the baseline path's, not rebuilt under the copy's parameters (solvePEE_LOG).
 
-        ι is reported on the txE domain as ι_t for t=0..T-2 (_txE2vars), NOT lagged like s_ -- so the
-        state entering t0 is report['ι'].xs(t0-1), except at t0 == db['t'][0] itself, where t0-1 has no
-        entry and the value is instead the model's own initial-state proxy, init['ι'] (pass the 'init'
-        key already returned by solvePEE_LOG/CRRA rather than recomputing it). """
+        ι and si_s are reported on the txE domain as ι_t, s_{t,i}/s_t for t=0..T-2 (_txE2vars), NOT lagged
+        like s_ -- so the values entering t0 are their entries at the period before t0, except at
+        t0 == db['t'][0] itself, where that period has no entry: ι0 is then the model's own initial-state
+        proxy, init['ι'] (pass the 'init' key already returned by solvePEE_LOG/CRRA rather than
+        recomputing it), and 'inherited' is None, the copy keeping the steady-state assumption the
+        baseline made there. """
         s0 = report['s_'].xs(t0)
-        ι0 = init['ι'] if t0 == self.db['t'][0] else report['ι'].xs(t0 - 1)
-        return {'s0': s0, 'ι0': ι0}
+        if t0 == self.db['t'][0]:
+            return {'s0': s0, 'ι0': init['ι'], 'inherited': None}
+        tPrev = self.db['t'][self.db['t'].get_loc(t0) - 1]
+        return {'s0': s0, 'ι0': report['ι'].xs(tPrev),
+                'inherited': {'si_s': np.asarray(report['si_s'].xs(tPrev), dtype = float),
+                              'h': float(report['h'].xs(tPrev))}}

@@ -23,7 +23,7 @@ from gridsearch import CartesianGrid
 
 from gridsearch.testing import check, report
 
-PARS = testmod.pars | {'ρ': 1.0, 'β': 0.7606187875476447, 'ω': 1.4536273947550569}
+PARS = testmod.pars | {'ρ': 1.0, 'β': 0.655483014875856, 'ω': 1.2308601504079868}
 GS = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}
 
 
@@ -158,7 +158,7 @@ for ρ in (2.0, 0.5):
 
 # ==== 4. ESC, LOG: the tax policy over the design state, both rules ====================================
 tic = time.time()
-mE = build(ModelESC, wedge = {'spec': 'size', 'phi': 0.5, 'p': 8.643})
+mE = build(ModelESC, wedge = {'spec': 'size', 'phi': 0.5, 'p': 11.564})
 mE.LOG.selection = 'frozen'
 τF, abF, nmF, exF = mE.ESC.τOfθ(t0, mE.ESC.θGrid, tLag0, terminal = False)
 mE.LOG.selection = 'legacy'

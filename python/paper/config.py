@@ -42,10 +42,11 @@ ARG = {
     # The anchor's starting (beta, omega, eta0, X0). The march seeds every other point from its history,
     # but the anchor starts from test.py's defaults (beta = 0.6, omega = 2), and at alpha = 0.35 those put
     # the informal steady state outside the net-saver region, so the iota state grid is degenerate before
-    # the root takes a step. This is the alpha = 0.35, K/Y = 3.23, tau0 = 0.071/0.65 solution at rho = 1,
-    # with z_0 relative to the formal average (2026-09-11); retune it if the capital share, the spending
-    # share, the K/Y target or the household-survey targets move.
-    'anchorGuess': {'β': 0.649, 'ω': 1.487, 'η0': 0.288, 'X0': 0.375},
+    # the root takes a step. This is the vector-X solution at rho = 1 for alpha = 0.35, K/Y = 3.23 and the
+    # GDP-based tax target (model.taxTarget, tau0 = 0.1181), z_0 relative to the formal average
+    # (test_calibrationGrid.py, 2026-10-23); retune it if the capital share, the spending share, the K/Y
+    # target or the household-survey targets move.
+    'anchorGuess': {'β': 0.668641, 'ω': 1.496254, 'η0': 0.285587, 'X0': 0.373999},
     # Grid settings. calibrateRhoGrid.py gives BOTH solvers interpKind/smoothKnots and only the grid
     # SIZES to CRRA; LOG keeps its own documented nι=50. Anything re-solving a calibrated instance must
     # mirror that split or it solves under a different interpolant than it was fitted under
@@ -105,15 +106,35 @@ def calendar():
     dates = pd.DataFrame(dft.iloc[1:, ].values, columns = dft.iloc[0, :]).set_index('t').index
     dfc = pd.DataFrame(wb['calibration'].values)
     dfc = pd.Series(dfc.iloc[1, :].values, index = dfc.iloc[0, :].values)
+    τ0, y = argTaxTarget(wb)
     return {'dates': {i: int(d) for i, d in enumerate(dates)},
             't0': int(list(dates).index(dfc['Calibration year'])),
             'year0': int(dfc['Calibration year']),
             'workweek': float(dfc['Average workweek']),
-            # Derived as in test.py: spending/(1-alpha), never a literal tax rate.
-            'τ0': float(dfc['Pension spending'])/(1-float(dfc['Capital income share'])),
+            # Derived as in test.py (model.taxTarget), never a literal tax rate.
+            'τ0': τ0, 'yInformal': y,
             'α': float(dfc['Capital income share']),
             'spending': float(dfc['Pension spending']),
             's0': float(dfc['Savings rate'])}
+
+
+def argTaxTarget(wb):
+    """ (tau0, y) from the workbook `wb` (pd.read_excel's dict of sheets): eq (calibration:tau)'s target, pension
+    spending over GDP with GDP formal plus informal output and y the informal share of GDP. The closed form of
+    python/InformalSavings/model.py's taxTarget, restated because this module imports nothing from the model,
+    on test.py's inputs: a = gamma_0 z_0^eta (1-alpha), z_0^eta the informal income over the population-weighted
+    formal mean, tau0 = spending (1+a)/((1-alpha) + spending a), y = a(1-tau0)/(1+a(1-tau0)).
+    datasets.calibrationSummary checks tau0 against the calibrated tax. """
+    dfc = pd.DataFrame(wb['calibration'].values)
+    dfc = pd.Series(dfc.iloc[1, :].values, index = dfc.iloc[0, :].values)
+    dfj = pd.DataFrame(wb['heterogeneity'].values)
+    dfj = pd.DataFrame(dfj.iloc[1:, ].values, columns = dfj.iloc[0, :])
+    γ, inc = dfj['Population shares'].values.astype(float), dfj['Income'].values.astype(float)
+    z0η = inc[0]/np.average(inc[1:], weights = γ[1:])
+    S, α = float(dfc['Pension spending']), float(dfc['Capital income share'])
+    a = γ[0]*z0η*(1-α)
+    τ0 = S*(1+a)/((1-α) + S*a)
+    return τ0, a*(1-τ0)/(1 + a*(1-τ0))
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -139,6 +160,13 @@ US = {
     # appendix's counterfactuals read (siteData.oecdCounterfactuals). The other pairing, --host UKUS (the
     # UK at US percentiles with France as is), is the online appendix's regrouped UK.
     'ukHost': 'UK',
+    # READINGS of the U.S. workbook that are a switch rather than a sheet: name -> the driver flags of
+    # python/US/calibrateRhoGrid.py and runShocksUS.py. 'USMedicare' is the online appendix's 'transfers to
+    # the old': Medicare spending, 2.9% of GDP (MedPAC 2020 Data Book, data/README.md; the workbook's
+    # pre-2026-10-23 value), added to pension spending in tau0 and paid as a flat benefit, so theta =
+    # (1 - m) theta_P with m = 2.9/(7.366 + 2.9) (python/US/test.reading). Swept and shocked like the US,
+    # with France referenced to it; usCalendar derives its tau0 from the workbook's.
+    'readings': {'USMedicare': {'medicare': 0.029}},
     # WHICH CALIBRATION VARIANT THE PAPER LEADS WITH. True = the common scalar X of the docs' variant B,
     # where the hours unit is a calibration target and relative hours become a prediction; False = the
     # vector X_i of variant A, where relative hours are data and the LEVEL of hbar is not identified.
@@ -183,9 +211,20 @@ US = {
         # None is a PLACEHOLDER and stage (i) refuses to run it (config.escBracket). 'scale' keeps the
         # child's default (its wide scan narrowed around a path-iteration p on file). 'size': set from the
         # LOG lambda after WP4 -- [lambda/20, 3 lambda] at rho = 2, [lambda/3, 5 lambda] at rho = 0.5.
-        'bracket':        {'scale': {},
-                           # from the LOG lambda 8.643207 (2026-09-24): [lambda/3, 5 lambda] and [lambda/20, 3 lambda]
-                           'size':  {0.5: (2.881, 43.22), 2.0: (0.4322, 25.93)}},
+        # 'sizePiR' (costVariants) the same way from its own LOG lambda; 'scale' from its LOG p, [p, 6p] at
+        # rho = 0.5 and [p/20, p] at rho = 2 (the exact p was 2.3 and 0.21 times the LOG one on 2026-09-24).
+        # Set 2026-10-23 from the LOG calibration at the pension-only workbook: lambda 11.563954 ('size'),
+        # p 0.414608 ('scale'), lambda 20.838898 ('sizePiR').
+        # 'scale' at rho = 2: narrowed to the sign change of the 2026-10-23 scan, whose node 0.0687 does not solve
+        # on the ns = 50 grid, and brentq to 1e-6 (xtol): p is ~0.09 there, so 2e-5 left the design 1.8e-4 off.
+        'bracket':        {'scale':   {0.5: (0.4146, 2.488), 2.0: (0.0377, 0.1251)},
+                           'size':    {0.5: (3.855, 57.82), 2.0: (0.5782, 34.69)},
+                           # 'sizePiR': lambda_size,CRRA/pi_2020 within a factor of 1.4 (the LOG ratio is
+                           # 0.999), scanned at ns2D (costVariants' nsScan: the ns = 50 tax solve has jumps of
+                           # ~1e-5 in tau at rho = 2 that stop the (beta, omega) root and the pi iteration)
+                           'sizePiR': {0.5: (30.0, 70.0), 2.0: (3.2, 8.0)}},
+        # brentq's xtol on the cost parameter where runESCcrra.py's default (2e-5) is too coarse, per spec and rho.
+        'xtol':           {'scale': {2.0: 1e-6}},
         # THE PUBLISHED CRRA METHOD. True: every CRRA ESC output is built from rows with method = 'exact'
         # (LeadedCRRA2D, python/US/runESCcrra.py --exact, the pre-publication part of stages (i)/(ii))
         # and a missing exact row is MissingInput -- never a fallback to the path iteration's rows, which
@@ -208,11 +247,27 @@ US = {
         # by the exact recursion into escCalibrationCRRAUK.csv (stage (i) --prepub). Brackets set from
         # coarse probes (2026-09-29): the UK's design is 0.23/0.57 at lambda 1.45/3.0 (rho = 2) and
         # 0.46/0.71 at 12/25 (rho = 0.5). nsScan 0 at rho = 0.5 scans at ns2D: the UK's (beta-imposed)
-        # calibration does not converge on the ns = 50 grid there.
-        'uk': {'bracket':   {0.5: (12.0, 25.0), 2.0: (1.5, 4.5)},
+        # calibration does not converge on the ns = 50 grid there. Rescaled 2026-10-23 by the UK's LOG lambda
+        # at the pension-only workbooks (7.786 against 7.264) and widened: the exact lambda was 2.08 and 0.38
+        # times the LOG one.
+        'uk': {'bracket':   {0.5: (11.5, 30.0), 2.0: (1.4, 5.5)},
                'nsScan':    {0.5: 0, 2.0: 50},
                'nScan':     4,
                'scenarios': ['baseline', 'acute', 'frIncome', 'frLeisure', 'frVoting', 'frBoth', 'frAll']},
+        # THE COST VARIANTS OF SECTION 7 (A8 of notes/paper_reviewResponse.md): the ageing counterfactuals
+        # under the paper's cost, the cost on the design (comparisonSpec) and the Pi-inclusive cost 'sizePiR'
+        # (python/US/modelESC.py: lambda*Pi_t/R_t, the factor the paper's cost absorbs into lambda, solved to
+        # the path's own Pi_t/R_t), at every rho of ρTable, both readings. 'sizePiR' is calibrated like the
+        # paper's cost and runs, with mild ageing under the other two at rho != 1, into the `tag`ged csvs
+        # (escCalibration{,CRRA}Costs, escPath{,CRRA}Costs, escShocks{,CRRA}Costs; mild ageing under the
+        # other two costs at rho != 1 in escShocksCRRACostsMild, its own file so the two runs never write one
+        # csv at once); collectESCexperiments.py --costs merges them with the paper's csvs into
+        # escAgeingCosts.csv.
+        'costVariants': {'spec': 'sizePiR', 'tag': 'Costs', 'scenarios': ['baseline', 'mild', 'acute'],
+                         'mildSpecs': ['size', 'scale'], 'mildTag': 'CostsMild',
+                         # the exact CRRA calibration: three scan nodes on the narrow bracket, on the ns2D grid,
+                         # brentq to 1e-3 in lambda (~1e-5 in the design); each node is two to three recursions
+                         'nScan': 3, 'nsScan': 0, 'xtol': 1e-3},
         # escExperiments.csv scenario keys -> the labels the appendix tables print.
         # 'frLeisure' is run and merged but no longer printed (dropped from the paper 2026-09-11).
         'scenarios': {'acute': 'Acute ageing', 'frIncome': 'Income distribution',
@@ -275,7 +330,12 @@ def usCalendar(country = 'US'):
 
     A regrouped country is its two-letter workbook plus the grouping's suffix -- 'UKUS' (the UK at US
     percentiles), 'FRUK' (France at the UK's cuts) -- and reads the workbook's 'calibration<suffix>'
-    sheet, as python/US/testEU.load does. A KeyError names the sheet when the workbook lacks it. """
+    sheet, as python/US/testEU.load does. A KeyError names the sheet when the workbook lacks it. A reading
+    (US['readings']) is the US workbook with tau0 derived as python/US/test.reading derives it. """
+    if country in US['readings']:
+        cal = dict(usCalendar('US'))
+        S, M = cal['τ0']*(1 - cal['α']), US['readings'][country]['medicare']
+        return cal | {'τ0': (S + M)/(1 - cal['α']), 'Ushare': M/(S + M)}
     base, suffix = (country, '') if country in US['workbooks'] else (country[:2], country[2:])
     sheet = 'calibration' + suffix
     wb = pd.read_excel(os.path.join(DATA, US['workbooks'][base]), sheet_name = None, header = None)

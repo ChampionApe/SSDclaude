@@ -52,9 +52,12 @@ PKLDIR = os.path.join(OUTDIR, 'instances')
 # Ordered so the csv reads as: what was solved, what it cost, whether to believe it, then the answer.
 COLUMNS = ['ρ', 'preferences', 'requested', 'residual', 'verifyResidual', 'occupancyι', 'occupancys',
            'nEqMax', 'nCandMax', 'nFallback',
-           'β', 'ω', 'η0', 'X0', 'X', 'hbar', 'commonX',
-           'KY', 'sr', 'τ', 'ι', 'nRoots', 'nfev', 'time', 'nι', 'ns', 'nτ', 'x0', 'x1', 'x2', 'x3',
+           'β', 'ω', 'η0', 'X0', 'X', 'hbar', 'commonX', 'epsPre0',
+           'KY', 'sr', 'τ', 'ι', 'yInf', 'spendGDP', 'srGDP',
+           'nRoots', 'nfev', 'time', 'nι', 'ns', 'nτ', 'x0', 'x1', 'x2', 'x3',
            'commit', 'timestamp']
+# yInf/spendGDP/srGDP: informal output over GDP, pension spending over GDP (the datum the tax target is
+# derived from, model.taxTarget) and savings over GDP at t0, GDP = formal plus informal output.
 # occupancy* sit beside verifyResidual because they answer the same kind of question and neither is
 # asserted: verifyResidual catches a point that is converged but not resolved, occupancy catches a state
 # grid whose nodes are mostly somewhere the dynamics never go. A grid that is too NARROW announces itself
@@ -78,8 +81,9 @@ def toRow(rec, requested, commit):
     """ calibratePoint's record -> one flat csv row. """
     g = rec['gridSettings']
     row = {k: rec.get(k) for k in ('ρ', 'preferences', 'residual', 'verifyResidual', 'occupancyι',
-                                   'occupancys', 'β', 'ω', 'η0', 'X0', 'X', 'hbar', 'commonX', 'KY',
-                                   'sr', 'τ', 'ι', 'nRoots', 'nfev', 'time')}
+                                   'occupancys', 'β', 'ω', 'η0', 'X0', 'X', 'hbar', 'commonX', 'epsPre0',
+                                   'KY', 'sr', 'τ', 'ι', 'yInf', 'spendGDP', 'srGDP', 'nRoots', 'nfev',
+                                   'time')}
     row |= {k: rec.get(k, -1) for k in ('nEqMax', 'nCandMax', 'nFallback')}
     row |= {'requested': requested, 'nι': g.get('nι'), 'ns': g.get('ns'), 'nτ': g.get('n'),
             'commit': commit, 'timestamp': datetime.datetime.now().isoformat(timespec = 'seconds')}
@@ -134,6 +138,11 @@ def main():
     # the two variants answer the same rho with different (eta_i, X_i, eta_0, X_0) (finding #13).
     p.add_argument('--commonX', action = 'store_true',
                    help = 'the common-X variant: informalSavings_rhoGridCommonX.csv, instancesCommonX/')
+    # The pre-reform eps = 0 variant (model.py __init__), likewise its own csv and instance directory; it
+    # composes with --commonX (the tags concatenate: ...CommonXEpsPre0).
+    p.add_argument('--epsPre0', action = 'store_true',
+                   help = 'pre-reform eps = 0: informalSavings_rhoGrid[CommonX]EpsPre0.csv, '
+                          'instances[CommonX]EpsPre0/')
     p.add_argument('--out', default = None, help = "default: the variant's own csv")
     # A sweep written to a non-default --out must also get its own --pkldir, or it silently overwrites the
     # canonical sweep's instances wherever the two grids share a value (the filename is the rho alone).
@@ -148,7 +157,7 @@ def main():
     p.add_argument('--x0', type = float, nargs = 4, metavar = ('BETA', 'OMEGA', 'ETA0', 'X0'),
                    default = None, help = "the anchor's starting (beta, omega, eta0, X0)")
     args = p.parse_args()
-    tag = 'CommonX' if args.commonX else ''
+    tag = ('CommonX' if args.commonX else '') + ('EpsPre0' if args.epsPre0 else '')
     if args.out is None:
         args.out = os.path.join(OUTDIR, f'informalSavings_rhoGrid{tag}.csv')
     if args.pkldir is None:
@@ -208,9 +217,10 @@ def main():
             sum(round(float(v), 6) in done for v in grid), len(grid), os.path.relpath(args.out, REPO)))
 
     m = ModelInformalSavings(pars = testmod.pars | {'ρ': float(args.anchor)}, commonX = args.commonX,
-                             **testmod.kwargs)
-    print('calibration variant: {}'.format('common X (formal workweek targeted)' if args.commonX
-                                            else 'vector X_i (relative hours as data)'))
+                             epsPre0 = args.epsPre0, **testmod.kwargs)
+    print('calibration variant: {}, pre-reform eps {}'.format(
+        'common X (formal workweek targeted)' if args.commonX else 'vector X_i (relative hours as data)',
+        '= 0' if args.epsPre0 else 'the basic pension (getEps)'))
 
     def write():
         (pd.DataFrame(list(rows.values())).reindex(columns = COLUMNS).sort_values('ρ')

@@ -1,6 +1,6 @@
 ---
 name: model-theorist
-description: Derives and checks the economics behind a model change before it is coded or written up: a functional form, a first-order or corner condition, an identification or calibration argument, in the paper's notation. Writes one note under notes/ and changes nothing else.
+description: "Derives and checks the economics behind a model change before it is coded or written up: a functional form, a first-order or corner condition, an identification or calibration argument, in the paper's notation. Writes one note under notes/ and changes nothing else."
 model: claude-fable-5-1
 effort: max
 tools: Read, Glob, Grep, Write, Edit, Bash, PowerShell

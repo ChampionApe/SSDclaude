@@ -1,6 +1,6 @@
 ---
 name: paper-data
-description: Collects and verifies external data and references for the paper with web access: the OECD and WIID series behind figure 1, bibliography entries checked against the publishers, survey vintages from the workbooks. Writes data/, results/ and References.bib.
+description: "Collects and verifies external data and references for the paper with web access: the OECD and WIID series behind figure 1, bibliography entries checked against the publishers, survey vintages from the workbooks. Writes data/, results/ and References.bib."
 model: claude-opus-5-5
 effort: xhigh
 tools: Read, Edit, Write, Glob, Grep, Bash, PowerShell, WebFetch, WebSearch

@@ -83,3 +83,13 @@ elasticities, and the return factor λ absorbs. W12: section 6's IES reason is c
 W13: every `\oa` key current, five pointer sentences rewritten. Editorial fixes, notation (h_{t,i}, s_{t,i}, τ^{+1}_t, k_t),
 three table notes via `tables.py`/`tablesUS.py`. latexmk 61 pages, one 0.5pt overfull; checkPaper OK; test_onlineAppendix 10/10.
 Committed and pushed to Overleaf and GitHub on RKB's go, for the full review.
+
+## 2026-10-24 — C4 of the review response (A6): appendix D's tables
+New `tablesHorizon.py`: `NUM_Horizon` (the calibration year and one period later at T ± periods and under the
+steady-state terminal condition, U.S. design given and chosen, Argentina with its reform) and `NUM_Residuals` (the tax
+rule's first-order-condition residuals off the grid, as solved and against converged τ-derivatives), both copied
+into `writing/Paper` for appendix D, not input yet. `NUM_Selection` leaves `ONLINE_ONLY` (appendix D's counts table too)
+and gains the columns no selection (−1) and not recorded (blank) and a note naming every counted exception from the
+data (`datasets.countExceptions`; today the one design-layer fallback). New readers `datasets.horizon`, `residuals`,
+`derivativeScheme`; `selectionCsvs` adds the horizon csvs. Inputs from `python/{US,InformalSavings}/runHorizon.py`
+(not wired; `REPLICATION.md` §3). Numbers and the open U.S. τ-derivative issue: `notes/ledger_C4.md`.

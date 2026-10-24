@@ -17,8 +17,8 @@ argument, docs `t=1` is `db['t'][0]` = `Base.tFirst`. Name collisions: `db['s0']
 **rate** (reported; `db['KY0']`, the capital-output ratio, is the `β` target since 2026-08-24), `db['t0']`
 is the *index* of the baseline year.
 
-**The tax target is derived, not read**: the workbook carries pension spending over GDP (0.071) and
-`test.py` sets `db['τ0'] = spending/(1-α)`. A literal rate went stale with α once (finding #12).
+**The tax target is derived, not read** (#12): pension spending over GDP (0.071), GDP = formal plus informal
+output (`EE_report`'s `Y`/`Y0`); `model.taxTarget` gives `τ0 = 0.1181` at the model's own `y = 0.0753`.
 
 ## Files
 
@@ -28,10 +28,11 @@ is the *index* of the baseline year.
 | `model.py` | `ModelInformalSavings`: db scaffolding (§0-2), EE solve (§3), steady state (§4), initial state (§5), calibration (§8, grid §8.1) |
 | `policy.py` | `LOG`/`CRRA`, the backward recursion over `ι_{t-1}` and over `(s_{t-1}, ι_{t-1})` |
 | `test.py` | loads `data/ArgentinaTest.xlsx`; a bare `ModelInformalSavings()` gives NaN/inf `θ`/`κ`/`ε`, expected |
-| experiments | `calibrateRhoGrid.py` (`--x0 β ω η0 X0` seeds the anchor; required at α = 0.35), `shockUniversal.py`, `shockEEOnly.py`, `sweepEpsThetaGrid.py` |
+| experiments | `calibrateRhoGrid.py` (`--x0 β ω η0 X0` seeds the anchor; required at α = 0.35), `shockUniversal.py`, `shockEEOnly.py`, `sweepEpsThetaGrid.py`, `reformDiagnostics.py` (the reform's 2010 FOC by group, (B.5), households' savings rates, low-ρ refinement) |
 | diagnostics | retired to `archive/code/InformalSavings/` (`measureGrids.py`, `measureOuterSettings.py`, `diagnoseRho07.py`, `diagnoseLogCrraBoundary.py`, the K/Y retarget and two plots); the measurements they produced back the settings below |
 | prepub check | `stationaryApprox.py`: a stationary policy function (ν frozen at each date's value, on the baseline's grids) against the exact date-specific one along the demographic path, LOG and CRRA; `results/numerical/`, driven by `python/paper/runShocks.py --prepub` |
-| tests | `test_ee.py`, `test_peeLOG.py`, `test_peeCRRA.py`, `test_peePath.py`, `test_createCopyFromt0.py`; slow: `test_calibration.py` (~12 min), `test_calibrationGrid.py` (~45 min) |
+| appendix D | `runHorizon.py` (not wired): the calibrated instances at T = 2130, 2190, 2280 and under the steady-state terminal condition (`resize`, checked against a fresh build), baseline and reform; the tax rule's FOC residuals off the grid; `results/numerical/ARG_{horizon,residuals}_commonX.csv` |
+| tests | `test_ee.py`, `test_peeLOG.py`, `test_peeCRRA.py`, `test_peePath.py`, `test_createCopyFromt0.py`, `test_reformVintage.py` (the reform period's lags, the GDP target, `epsPre0`); slow: `test_calibration.py` (~12 min), `test_calibrationGrid.py` (~45 min) |
 
 Sweeps resume from their own csv keyed on the parameter point alone: a re-run after a recalibration
 silently returns old rows unless given `--force` or a new `--out` (#13). `--out` is relative to this
@@ -60,6 +61,7 @@ and `archive/notes/informalSavings_numericalDeviations.md`.
   ratio `M = ∑γ_i(η_i/X_i)^ξ/Γ_h` (`Base.hoursUnitRatio`, 1 under vector X), and the data `z_j` are
   relative to the γ-weighted formal mean. `X` enters no aggregate, so β, ω, τ, K/Y and every shock
   coincide across variants to 1e-13; only `(η_i, X_i, η_0, X_0)` differ. `test_calibration.py` §6.
+  `epsPre0=True` (`--epsPre0`, tags `EpsPre0`/`_epsPre0`, composes with `--commonX`): pre-reform ε = 0.
 - Primitives are read from db; anything solve- or policy-dependent (`τ`, `θ`/`ε`, `s`/`h`, `B`, `ι`) is an
   explicit argument. `cacheParams()` is opt-in and block-scoped.
 - Differentiate along `ln(1-τ_t)`, not `τ_t` (`policy.py`'s `_gradProfile`); do not simplify back.
@@ -87,9 +89,11 @@ rank-one term (`eq:zdecomposition`; carry `Θ_{h,t+1}(ι_t)`, not `h_{t+1}`); un
 unnest into two 1-D roots. Also: `l_ι > 0` strictly; grid searches use the interior grid; `dlnc2i_dτ`
 stays closed-form.
 
-**`createCopyFromt0`**: as `informalAnalytical`, plus `stateAtT0` returns `{'s0', 'ι0'}` where `ι` is
-reported unlagged on `txE`, so the state entering `t0` is `report['ι'].xs(t0-1)`, or `init['ι']` when
-`t0 == db['t'][0]`. Pinned in `test_createCopyFromt0.py`.
+**`createCopyFromt0`**: as `informalAnalytical`; `stateAtT0` returns `{'s0', 'ι0', 'inherited'}` (`ι`/`si_s`
+are unlagged on `txE`: their entry at `t0-1`). With `inherited`, the copy's t0 tax condition holds the
+retirees' formal shares at the baseline's (consistency from `t0+1`) and `EE_report(lagged=)` takes t0's lags
+from the seed; the no-shock control then matches `τ_{t0}` to its grid resolution only (1.6e-6 at ρ = 1,
+3.3e-5 at 0.5): one root, two interpolations on 𝒯. `test_createCopyFromt0.py`, `test_reformVintage.py`.
 
 ## Status
 
@@ -99,21 +103,23 @@ experiment across the ρ grid (`match`; `flat` at ρ=1 only), and the `(ε, θ)`
 `num_*.tex` specs, read before editing those specs: `archive/notes/informalSavings_numericalDeviations.md`.
 
 `getEps` reads the pre-reform ε from the minimum pension's type, the first formal quartile, by label, and the
-workbook's γ₀ = 0.4706 counts informal households per formal household (32% of all). The committed results are
-the run of 2026-10-07 on these inputs (`logs/finalRunC8/`, both variants, both stages, the stationary check): ε =
-0.21, ω = 1.45, every count one equilibrium and no fallback.
+workbook's γ₀ = 0.4706 counts informal households per formal household (32% of all). The results are the C2 run
+of 2026-10-23/24 (`logs/C2runs/`, both variants, stage (i), (ii) and the stationary check; the inherited lags and
+the GDP tax target): τ₀ = 0.1181, ε = 0.21, ω = 1.50, the 2010 tax response +1.95 p.p.; the ε = 0 variant and
+`reformDiagnostics.py`'s csvs beside them (`notes/ledger_C2.md`). Every count one equilibrium and no fallback.
+Appendix D's checks (C4, `notes/ledger_C4.md`): from T = 2190 to 2130, 2280 or the steady state the 2010 tax moves
+≤ 0.005 p.p. and the reform's response ≤ 0.03 p.p.; the tax rule misses its FOC by ≤ 0.01 p.p. on the path.
 
 ## Open items
 
-- `EE_report` backs its first period's lagged objects out of `initialState_solve`, which is wrong on a
-  model *copy* (`c20` at `t0` off by +5.3–5.7%, `bbar` by ≤0.13% under CRRA; everything from `t0+1` on and
-  the paper's Argentina outputs unaffected). Fix: let it take the lagged state. Do not quote the
-  consumption columns until then.
+- `shockEEOnly.py` still reports `c20`/`bbar` at `t0` on `initialState_solve`'s proxies (no lagged state in
+  the baseline csv; `PROXYROW0`); no paper output reads them.
 - `κ`'s cached `db['κ']` goes stale under a varying `ε`; `shockUniversal.installEps` rewrites it, nothing
   detects an omission.
-- The low-ρ tail is converged but not resolved (`verifyResidual` 3.7e-3 at ρ = 0.5, 1.2e-3 at 0.6), and β > 1
+- The low-ρ tail is converged but not resolved (`verifyResidual` 1.6e-3 at ρ = 0.5, 1.5e-3 at 0.6), and β > 1
   at ρ ≤ 0.6 (the online appendix says so in OA.2.5; the earlier diagnosis is
-  `archive/notes/argentina_calibrationTarget.md`).
+  `archive/notes/argentina_calibrationTarget.md`); the reform's 2010 tax response there is resolved (nι = ns = 60
+  moves it by 0.001 and 0.016 p.p., `ARG_reformRefine_commonX.csv`).
 - `initialState_solve` returns the CRRA steady-state `s` in both cases (agrees with LOG to 1e-11, not
   bitwise); deliberate.
 - `lnRleadΘ` reads `α`/`power_h` at `t` though they are `t+1` objects; immaterial unless they vary.

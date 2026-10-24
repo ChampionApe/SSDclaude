@@ -120,22 +120,27 @@ def argentinaUniversal(commonX = None):
     srEE   = D.savingsRatePath(ρ, 'ee', commonX = commonX).iloc[0]
     srRef  = D.reformSavingsRate(ρ, 0, commonX = commonX)
     hRef   = D.baselineHours(ρ, commonX = commonX)     # the calibrated 2010 hours: 42.54 by definition, see config
+    # The formal benefits move by the same proportion for every formal type (D.formalBenefitChange), so one
+    # cell per scenario: a change, the one cell that is not a level, since a benefit level has no unit here.
+    bEE, bRef = (D.formalBenefitChange(ρ, w, 0, commonX = commonX) for w in ('ee', 'reform'))
+    chg = lambda x: '$' + '{:+.2f}'.format(100*x) + r'\%$'
 
-    # Every cell in this table is a level, savings included: with three rows the reader can difference
+    # Every other cell in this table is a level, savings included: with three rows the reader can difference
     # them, and the levels say what the savings rate actually is in each scenario.
-    rows = [['Baseline',             C.pct(ee['τ_base']),    C.pct(srBase), C.num(C.workweekHours(ee['h_base'], hRef))],
-            ['Economic Equilibrium', C.pct(ee['τ_ee']),      C.pct(srEE),   C.num(C.workweekHours(ee['h_ee'], hRef))],
-            ['Full effect',          C.pct(ref['τ_reform']), C.pct(srRef),  C.num(C.workweekHours(ref['h_reform'], hRef))]]
+    rows = [['Baseline',             C.pct(ee['τ_base']),    C.pct(srBase), C.num(C.workweekHours(ee['h_base'], hRef)), '--'],
+            ['Economic Equilibrium', C.pct(ee['τ_ee']),      C.pct(srEE),   C.num(C.workweekHours(ee['h_ee'], hRef)), chg(bEE)],
+            ['Full effect',          C.pct(ref['τ_reform']), C.pct(srRef),  C.num(C.workweekHours(ref['h_reform'], hRef)), chg(bRef)]]
     note = (r'\textit{Note:} The reform permanently raises $\epsilon$ to $1-\theta + \theta \eta_1 h_1/h$ '
             r'in the calibration year, unanticipated. The ' + LQ + 'Economic Equilibrium' + RQ +
             r' scenario solves for the new economic equilibrium path with taxes as in the Baseline '
             r'scenario, but with the new permanent $\epsilon$; the ' + LQ + 'Full effect' + RQ +
             r' scenario lets taxes be determined by the politico-economic equilibrium. $\rho=' +
-            C.num(ρ, 0) + r"$. The savings rate is savings relative to GDP."
+            C.num(ρ, 0) + r"$. The savings rate is savings relative to GDP, formal plus informal output. "
+            r'Formal benefits: the change in the benefit of every formal retiree against the Baseline.'
             + C.variantNote(commonX, arm = 'ARG'))
     return _wrap('ArgentinaUniversal' + sfx, 'results/shocks/{eeOnly,universal}_match_rho%.4f%s.csv' % (ρ, C.argVariantTag(commonX)),
                  'Pension system reform, year %d' % year + C.variantCaption(commonX, 'ARG'),
-                 'table:Argentina:Universal' + sfx, 'lccc',
+                 'table:Argentina:Universal' + sfx, 'lcccc',
                  [r'\textbf{Scenario}', r'\textbf{Tax rate}', r'\textbf{Savings rate}',
-                  r'\textbf{Avg. workweek (hours)}'], rows, note,
+                  r'\textbf{Avg. workweek (hours)}', r'\textbf{Formal benefits}'], rows, note,
                  ['baseline', rowKey('reform', effect = 'ee'), rowKey('reform', effect = 'full')])

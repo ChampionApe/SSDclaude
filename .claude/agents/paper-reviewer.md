@@ -1,6 +1,6 @@
 ---
 name: paper-reviewer
-description: Read-only audit of the paper draft in writing/Paper: a referee pass, a numbers-against-tables audit, or a claims-delivered check. Produces a report and changes no file.
+description: "Read-only audit of the paper draft in writing/Paper: a referee pass, a numbers-against-tables audit, or a claims-delivered check. Produces a report and changes no file."
 model: claude-opus-5-5
 effort: max
 tools: Read, Glob, Grep

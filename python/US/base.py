@@ -174,6 +174,10 @@ class Base:
     #   'size'   A = fθ, B = f(1-θ),  f(θ,τ) = exp(-½ λ τ Ṽ (1-θ)²)   the paper's spec: the Harberger loss of
     #            the flat component's implicit taxes; Ṽ = Σ_i γ_i (y_i-1)²/y_i (Vtilde), λ = db['wedgeP'],
     #            db['wedgePhi'] is a dummy f never reads
+    #   'sizePiR' as 'size' with λ·π: f = exp(-½ λ π τ Ṽ (1-θ)²), π = Π/R of the date f belongs to, the
+    #            return-factor ratio the Harberger loss of the implicit tax t_i/R carries (Π the pay-as-you-go
+    #            return factor, R the market return; db['wedgeΠR'], a (T,) series that ModelESC solves to the
+    #            equilibrium Π_t/R_t of the path, taken as given by households and voters)
     #   'scale'  A = fθ, B = f(1-θ),  f(θ) = φ+(1-φ)θ^p                 the previous spec, the comparison arm
     #   'flat'   A = θ,  B = f(1-θ),  f(θ) = φ+(1-φ)θ^p                 only the FLAT component is costly
     #
@@ -185,6 +189,8 @@ class Base:
     #
     # f takes the τ OF THE SAME DATE as the θ it scales -- (θ_t, τ_t) in bi, c2i and dlnc2i_dτ, (θ_{t+1},
     # τ_{t+1}) everywhere else -- so every call site passes the τ in scope, and dlnc2i_dτ carries ∂_τ ln f.
+    # The same dating gives 'sizePiR' its π: lag '[t-1]' is f(θ_t, τ_t), π_t; lag '' is f(θ_{t+1}, τ_{t+1}),
+    # π_{t+1} (wedgeΠR).
     # Ṽ carries the vintage of the bracket it multiplies: lag = '[t-1]' beside hηRatio(t, lag = '[t-1]')
     # (the retirees' cohort), the young's elsewhere. Under None, 'scale' and 'flat' τ is ignored, so those
     # paths are unchanged bit for bit (test_esc.py).
@@ -204,29 +210,39 @@ class Base:
             return np.where(live, γ*(ySafe-1)**2/ySafe, 0.).sum(axis = -1)
         return self._memo(('Vtilde', lag, self._year(t)), _v)
 
+    def wedgeΠR(self, t = None, lag = ''):
+        """ π = Π/R under 'sizePiR' at the date of the f that `lag` selects: π_t for lag '[t-1]' (f(θ_t, τ_t)),
+        π_{t+1} for lag '' (f(θ_{t+1}, τ_{t+1})); 1 under every other spec. Scalar on Base/BaseGrid, (T,)
+        on BaseTime. """
+        if self.db.get('wedgeSpec') != 'sizePiR':
+            return 1.
+        return self.get('wedgeΠR' if lag == '[t-1]' else 'wedgeΠR[t+1]', t)
+
     def fWedge(self, θ, τ = None, t = None, lag = ''):
         """ f, the share of contributions that reaches beneficiaries (Eq esc:AB): 1 with no wedge;
         φ+(1-φ)θ^p under 'scale'/'flat' (τ ignored); exp(-½ λ τ Ṽ (1-θ)²) under 'size', which needs the
-        τ of the same date as θ and raises without one. t, lag select Ṽ's vintage (Vtilde). Broadcasts
-        over θ and τ; on BaseTime both are (T,). """
+        τ of the same date as θ and raises without one; under 'sizePiR' λ carries π = Π/R of f's date
+        (wedgeΠR). t, lag select Ṽ's vintage (Vtilde) and π's date. Broadcasts over θ and τ; on BaseTime
+        both are (T,). """
         spec = self.db.get('wedgeSpec')
         if spec is None:
             return 1.
-        if spec == 'size':
+        if spec in ('size', 'sizePiR'):
             if τ is None:
-                raise ValueError("fWedge: spec 'size' needs the τ of the same date as θ (f = f(θ, τ)).")
-            return np.exp(-0.5*self.db['wedgeP']*np.asarray(τ, dtype = float)*self.Vtilde(t, lag)
-                          *(1-np.asarray(θ, dtype = float))**2)
+                raise ValueError(f"fWedge: spec {spec!r} needs the τ of the same date as θ (f = f(θ, τ)).")
+            return np.exp(-0.5*self.db['wedgeP']*self.wedgeΠR(t, lag)*np.asarray(τ, dtype = float)
+                          *self.Vtilde(t, lag)*(1-np.asarray(θ, dtype = float))**2)
         if spec not in ('scale', 'flat'):
             raise ValueError(f'fWedge: unknown wedge spec {spec!r}.')
         φ, p = self.db['wedgePhi'], self.db['wedgeP']
         return φ + (1-φ)*np.asarray(θ, dtype = float)**p
 
     def dlnfWedge_dτ(self, θ, τ = None, t = None, lag = ''):
-        """ ∂_τ ln f(θ,τ) = -½ λ Ṽ (1-θ)² under 'size'; 0 under every other spec (f does not see τ). """
-        if self.db.get('wedgeSpec') != 'size':
+        """ ∂_τ ln f(θ,τ) = -½ λ Ṽ (1-θ)² under 'size', times π under 'sizePiR' (π taken as given: an
+        aggregate of the path, not a function of the voter's τ); 0 under every other spec (f does not see τ). """
+        if self.db.get('wedgeSpec') not in ('size', 'sizePiR'):
             return 0.
-        return -0.5*self.db['wedgeP']*self.Vtilde(t, lag)*(1-np.asarray(θ, dtype = float))**2
+        return -0.5*self.db['wedgeP']*self.wedgeΠR(t, lag)*self.Vtilde(t, lag)*(1-np.asarray(θ, dtype = float))**2
 
     def wedgeA(self, θ, τ = None, t = None, lag = ''):
         """ The coefficient on own past earnings h_{t-1,i}η_{t-1,i} in the benefit formula. τ is the tax

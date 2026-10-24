@@ -72,7 +72,7 @@ os.chdir(HERE)
 import test as testmod
 import shocks as sh
 from modelESC import ModelESC
-from runESC import SHOCKS_ESC, HOSTS, mergeWrite, buildEU, readout as escReadout, wedgeReadout
+from runESC import SHOCKS_ESC, HOSTS, mergeWrite, buildEU, readout as escReadout, wedgeReadout, piColumn
 from runShocksUS import frenchData, hostRow
 from policy import multiplicityColumns
 
@@ -81,7 +81,7 @@ GSC = {'n': 101, 'ns': 150, 'smoothKnots': 4, 'interpKind': 'linear'}
 
 # The default scan bracket per spec when --bracket is not given (see the argument's comment): p for the
 # theta^p forms, lambda for 'size' (about 8.6 at rho = 1 under LOG and expected to fall in rho, as p does).
-BRACKET_CRRA = {'scale': (0.01, 3.0), 'flat': (0.01, 3.0), 'size': (0.25, 200.)}
+BRACKET_CRRA = {'scale': (0.01, 3.0), 'flat': (0.01, 3.0), 'size': (0.25, 200.), 'sizePiR': (0.5, 400.)}
 
 # Row-identity keys, rho-indexed counterparts of runESC's. commonX is in all three -- see mergeWrite.
 # method too: an exact row and a path row answer the same question by different solvers and must not
@@ -159,7 +159,8 @@ def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21, commonX
 
     theta_perm is the anticipated vote's fixed point (modelESC.solvePermanent's default); the unanticipated
     reading is recorded beside it. Every row here is a corner, where the two cannot differ -- which is
-    exactly the case finding #10 warns about, so the column is kept to make that visible."""
+    exactly the case finding #10 warns about, so the column is kept to make that visible. Each row carries
+    the tax counts of solvePermanent (every candidate's solve and the equilibrium at the choice)."""
     rows = []
     for ρ in ρs:
         for spec in specs:
@@ -185,7 +186,8 @@ def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21, commonX
                                      'atBound': r['atBound'], 'W0gap': W[0], 'W1gap': W[-1],
                                      'converged': r['converged'],
                                      'θPermIncumbent': r['θIncumbent'],
-                                     'τAtChoice': r['τAtChoice']})
+                                     'τAtChoice': r['τAtChoice']}
+                                    | multiplicityColumns(r.get('multiplicity')))
                         print('  rho={:<5} {:<6} wedge={:<11} θ_perm={:.4f}  corner={:<5} '
                               'W(0)-max={:+.5f} W(1)-max={:+.5f}  [{:.0f}s]'.format(
                                   ρ, spec, label, r['θ'], str(r['atBound']), W[0], W[-1], time.time()-tic))
@@ -198,7 +200,8 @@ def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21, commonX
 def stageSequential(ρs, out, commonX = False, gs = None, nθ = 201):
     """ The costless sequential FOC on the solved no-wedge baseline at every non-terminal dated period
     (position 0 has no predetermined ratio). One row per (rho, pos): the largest and smallest value over
-    the theta grid and whether it is negative throughout -- the corner claim is `negative` at every row. """
+    the theta grid and whether it is negative throughout -- the corner claim is `negative` at every row --
+    and the baseline solve's tax counts (policy.multiplicityColumns). """
     rows, θg = [], np.linspace(0., 1., nθ)
     for ρ in ρs:
         m = buildUS(ρ, None, commonX = commonX, gs = gs)
@@ -212,7 +215,7 @@ def stageSequential(ρs, out, commonX = False, gs = None, nθ = 201):
                          'date': dates[pos] if pos < len(dates) else np.nan,
                          'τ': float(np.asarray(sol['τ'])[pos]),
                          'focMax': float(foc[k]), 'θAtMax': float(θg[k]), 'focMin': float(np.min(foc)),
-                         'negative': bool(np.all(foc < 0.))})
+                         'negative': bool(np.all(foc < 0.))} | multiplicityColumns(sol.get('multiplicity')))
             print('  rho={:<4} pos={} ({}): max FOC {:+.4e} at θ={:.3f}, min {:+.4e}  -> {}'.format(
                 ρ, pos, rows[-1]['date'], foc[k], θg[k], np.min(foc),
                 'negative throughout' if rows[-1]['negative'] else 'NOT NEGATIVE'))
@@ -278,15 +281,17 @@ def pathRowsFrom(m, led, base, ρ, spec, phi, pCal, commonX, method, designRule 
                      'τ': r['τ'], 'sr': r['sr'], 'workweek': r['workweek'],
                      'τExo': rb['τ'], 'srExo': rb['sr'],
                      'converged': led.get('converged', True), 'step': led.get('step', np.nan),
-                     'τDrift': led['targetDrift']['τ'], 'RDrift': led['targetDrift']['R']} | solver)
+                     'τDrift': led['targetDrift']['τ'], 'RDrift': led['targetDrift']['R']}
+                    | piColumn(m, t) | solver)
     return rows
 
 
 def main():
     p = argparse.ArgumentParser(description = 'Endogenous theta under CRRA.')
     p.add_argument('--rho', type = float, nargs = '*', default = [2.0])
-    p.add_argument('--spec', nargs = '*', default = ['scale'], choices = ('scale', 'flat', 'size'),
-                   help = "'size' is the paper's wedge (f(theta, tau), lambda in the p slot)")
+    p.add_argument('--spec', nargs = '*', default = ['scale'], choices = ('scale', 'flat', 'size', 'sizePiR'),
+                   help = "'size' is the paper's wedge (f(theta, tau), lambda in the p slot); 'sizePiR' the "
+                          "paper's with lambda*Pi_t/R_t (ModelESC; --exact only)")
     p.add_argument('--commonX', action = 'store_true',
                    help = 'the common-X calibration variant (the paper leads with it). Written as a '
                           'column and part of the merge key -- see runESC.mergeWrite.')
@@ -514,6 +519,12 @@ def main():
                                     out = ledBase['out'] if 'out' in ledBase else ledBase
                                     mult = multiplicityOf(ledBase)
                                 elif a.exact:
+                                    if mt._hasΠR():
+                                        # pi of the shocked economy's pinned path: a closer start for the
+                                        # 2-D recursion's pi iteration than the host's free path
+                                        mt.solvePEE_CRRA()
+                                        mt._ΠRstart = {k: v for k, v in mt._ΠRstart.items()
+                                                       if not k.startswith('solveLeaded2D')}
                                     rec = mt.solveLeaded2D(pinAtT0 = False)
                                     θPath, out = rec['θ'], rec
                                     mult = multiplicityOf(rec)
@@ -535,7 +546,7 @@ def main():
                                                 'θ_t1': float(θPath.iloc[pos0+1]),
                                                 'τ_t0': r0['τ'], 'sr_t0': r0['sr'], 'ww_t0': r0['workweek'],
                                                 'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek']}
-                                               | solverColumns(a.designRule, a.Ma, mult))
+                                               | piColumn(mt, mt.t0Year) | solverColumns(a.designRule, a.Ma, mult))
                                 print('  {:<9} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} '
                                       'ww_t0={:.2f}  (θ_t1={:.4f}, {:.0f}s)'.format(
                                           name, str(pin), float(θPath.iloc[pos0]), r0['τ'], r0['sr'],

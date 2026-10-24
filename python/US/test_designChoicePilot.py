@@ -35,10 +35,10 @@ from policyESCpilot import resolveAt, deviationCheck, designSlopeAt, consistentT
 
 from gridsearch.testing import check, report
 
-PARS = testmod.pars | {'ρ': 1.0, 'β': 0.7606187875476447, 'ω': 1.4536273947550569}
+PARS = testmod.pars | {'ρ': 1.0, 'β': 0.655483014875856, 'ω': 1.2308601504079868}
 GS = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}
 # T2's reference numbers of the legacy layer's period dict (fresh process)
-REF_T2 = {'θNext': 111.47111977586651, 'τStar3': 395.12541942719207, 'τ00': 0.14243079889653795, 'nEqτ': 1625}
+REF_T2 = {'θNext': 97.62323322877532, 'τStar3': 299.858189753861, 'τ00': 0.11561914233529333, 'nEqτ': 1625}   # pension-only workbook, 2026-10-23
 
 
 tic = time.time()

@@ -1,6 +1,6 @@
 ---
 name: model-coder
-description: Implements one specified change to the model code or the gridsearch package and tests it: a brief in notes/ names the problem, the files and functions, and the checks that must pass. Writes code and tests under python/ and the module log; never edits writing/ or results/.
+description: "Implements one specified change to the model code or the gridsearch package and tests it: a brief in notes/ names the problem, the files and functions, and the checks that must pass. Writes code and tests under python/ and the module log; never edits writing/ or results/."
 model: claude-opus-5-5
 effort: xhigh
 tools: Read, Edit, Write, Glob, Grep, Bash, PowerShell, Monitor

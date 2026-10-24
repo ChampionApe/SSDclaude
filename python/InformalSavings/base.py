@@ -623,10 +623,25 @@ class Base:
         units and does not respond to the hours unit). """
         return h * self.hoursUnitRatio(t)
     def savingsRate(self, s, s_, h, t = None):
-        """ Eq (calibration:sr): s_t / ((s_{t-1}/ν_t)^α h_t^{1-α}). s, s_=s_{t-1}, h explicit.
-        Reported, not targeted -- capitalOutputRatio identifies β (see it). """
+        """ Eq (calibration:sr): s_t / ((s_{t-1}/ν_t)^α h_t^{1-α}), savings over FORMAL output. s,
+        s_=s_{t-1}, h explicit. Reported, not targeted -- capitalOutputRatio identifies β (see it). The
+        GDP-based rate is s_t/(outputFormal + outputInformal). """
         α = self.get('α', t)
         return s / ((s_/self.get('ν', t))**α * h**(1-α))
+
+    # GDP = formal plus informal output, both per formal young household (Σ_i γ_{t,i} = 1): the concept of
+    # the tax target (model.taxTarget) and of every "% of GDP" readout.
+    def outputFormal(self, s_, h, t = None):
+        """ Y_t/n_t = (s_{t-1}/ν_t)^α h_t^{1-α}: the Cobb-Douglas technology on eq:aggregateStates' K_t and
+        H_t, per formal young household. s_ = s_{t-1}, h = h_t (explicit). Equals w_t h_t/(1-α). """
+        α = self.get('α', t)
+        return (s_/self.get('ν', t))**α * h**(1-α)
+
+    def outputInformal(self, s_, t = None):
+        """ γ_{t,0} w_t^0 η_{t,0} h_{t,0} = γ_{t,0}(η_0^{1+ξ}/X_0^ξ)(w_t^0)^{1+ξ}: the informal type's linear
+        technology (eq:factorPrices0) at its labour supply (eq:informalOpt), per formal young household.
+        s_ = s_{t-1} (explicit). """
+        return self.get('γ0', t) * self.auxProd0(t) * self.w0(s_, t)**(1+self.get('ξ', t))
 
     def capitalOutputRatio(self, s_, h, t = None):
         """ Eq (calibration:KY): K_t/Y_t in ANNUAL output units, = yearsPerPeriod·(K_t/h_t)^{1-α} with

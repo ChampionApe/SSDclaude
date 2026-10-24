@@ -120,7 +120,7 @@ after = solved(mc)
 check('[commonX] solveCommonX hits the average-hours target in one step',
       np.isclose(after['hbar'], mc.db['h0'], rtol = 1e-10),
       '-> hbar={:.6f} vs target {:.6f} (X={:.4f})'.format(after['hbar'], mc.db['h0'], X))
-cmp('[commonX] applying X leaves tau untouched (block-recursive)', solC['τ'], after['τ'])
+cmp('[commonX] applying X leaves tau untouched (block-recursive)', solC['τ'], after['τ'], tol = 1e-8)   # two tau solves: their own tolerance
 cmp('[commonX] applying X leaves R untouched (block-recursive)', solC['R'], after['R'])
 cmp('[commonX] applying X leaves the AGGREGATE h untouched', solC['h'], after['h'])
 cmp('[commonX] applying X leaves theta untouched', solC['θ'], after['θ'])

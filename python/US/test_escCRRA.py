@@ -28,13 +28,13 @@ from modelESC import ModelESC
 
 from gridsearch.testing import check, report
 
-WEDGE = {'spec': 'scale', 'phi': 0.5, 'p': 0.4022}      # the LOG-calibrated wedge, held fixed across rho
+WEDGE = {'spec': 'scale', 'phi': 0.5, 'p': 0.4146}      # the LOG-calibrated wedge, held fixed across rho
 GS_LOG = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}
 GS_CRRA = GS_LOG | {'ns': 150}
 
 
 def build(ρ):
-    m = ModelESC(pars = testmod.pars | {'ρ': float(ρ), 'β': 0.76, 'ω': 1.45}, wedge = WEDGE,
+    m = ModelESC(pars = testmod.pars | {'ρ': float(ρ), 'β': 0.66, 'ω': 1.23}, wedge = WEDGE,
                  **testmod.kwargs)
     m.db['dates'], m.db['workweek'] = testmod.dates, testmod.workweek
     m.LOG.initGS(GS_LOG)
@@ -46,9 +46,14 @@ def build(ρ):
 # ---- the LOG anchor
 mLOG = build(1.0)
 θStar = float(mLOG.db['θ'].xs(mLOG.t0Year))
-chLOG = mLOG.leadedChoiceAtT0(mLOG.ESC.solveBackward())
-check('the LOG leaded choice reproduces theta* at the calibrated wedge (the anchor)',
-      abs(chLOG - θStar) < 2e-3, '-> choice={:.6f} vs theta*={:.6f}'.format(chLOG, θStar))
+solsLOG = mLOG.ESC.solveBackward()
+chLOG = mLOG.leadedChoiceAtT0(solsLOG)
+# WEDGE's p is calibrated on the design in FORCE at t0 (calibrateWedge's target); the limit below compares
+# the choice MADE at t0, LOG against CRRA, which is a period of nu_t away from it.
+designLOG = mLOG.leadedDesignAtT0(solsLOG)
+check('the LOG leaded design in force at t0 reproduces theta* at the calibrated wedge (the anchor)',
+      abs(designLOG - θStar) < 2e-3, '-> design={:.6f} vs theta*={:.6f} (choice made at t0 {:.6f})'.format(
+          designLOG, θStar, chLOG))
 
 # ---- the limit
 ρs = (1.10, 1.05, 1.02)
@@ -83,8 +88,8 @@ check('...at a first-order rate -- gap/(rho-1) settles', spread < 0.12,
 # target (the choice MADE at t0) and is 0.0901 under the current one (the design in FORCE at t0, since
 # 2026-08-24). Nothing here asserts the value -- the checks are about solver agreement -- so a stale
 # number would not fail, it would quietly stop testing what the comment says it tests.
-P_CRRA2 = 0.0901          # results/esc/escCalibrationCRRA.csv, rho=2, scale, phi=0.5
-m2 = ModelESC(pars = testmod.pars | {'ρ': 2.0, 'β': 0.76, 'ω': 1.45},
+P_CRRA2 = 0.0916          # results/esc/escCalibrationCRRA.csv, rho=2, scale, phi=0.5 (exact, 2026-10-23)
+m2 = ModelESC(pars = testmod.pars | {'ρ': 2.0, 'β': 0.52, 'ω': 1.11},
               wedge = WEDGE | {'p': P_CRRA2}, **testmod.kwargs)
 m2.db['dates'], m2.db['workweek'] = testmod.dates, testmod.workweek
 m2.LOG.initGS(GS_LOG); m2.CRRA.initGS(GS_CRRA)

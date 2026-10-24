@@ -1,6 +1,6 @@
 ---
 name: paper-compute
-description: Runs model code and pipeline stages for the paper: robustness runs, new drivers on the python/US/runESC.py pattern, builders in python/paper. Writes csvs under results/ and code under python/; never edits writing/Paper by hand.
+description: "Runs model code and pipeline stages for the paper: robustness runs, new drivers on the python/US/runESC.py pattern, builders in python/paper. Writes csvs under results/ and code under python/; never edits writing/Paper by hand."
 model: claude-opus-5-5
 effort: xhigh
 tools: Read, Edit, Write, Glob, Grep, Bash, PowerShell, Monitor

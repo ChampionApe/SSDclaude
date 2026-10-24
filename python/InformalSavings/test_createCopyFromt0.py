@@ -53,7 +53,8 @@ except ValueError:
 # ---- 3. behavioral round trip: no actual shock -> the copy reproduces the baseline's own tail
 base = m.solvePEE_LOG()
 seed = m.stateAtT0(base['report'], t0, init = base['init'])
-check('stateAtT0 returns s0 and ι0', set(seed) == {'s0', 'ι0'})
+check('stateAtT0 returns s0, ι0 and the inherited lags', set(seed) == {'s0', 'ι0', 'inherited'}
+      and set(seed['inherited']) == {'si_s', 'h'})
 shocked = mt0.solvePEE_LOG(**seed)
 
 dS0 = abs(base['report']['s'].xs(t0) - shocked['report']['s'].xs(0))
@@ -76,6 +77,7 @@ check('report[ι] later in the tail matches baseline (no shock)', dITail < 1e-6,
 sentinel = -0.12345
 seedFirst = m.stateAtT0(base['report'], m.db['t'][0], init = {'ι': sentinel})
 check("stateAtT0 at t0==db['t'][0] returns init['ι'] verbatim", seedFirst['ι0'] == sentinel)
+check("stateAtT0 at t0==db['t'][0] inherits no lags (steady-state assumption)", seedFirst['inherited'] is None)
 seedInterior = m.stateAtT0(base['report'], t0, init = {'ι': sentinel})
 check('stateAtT0 at an interior t0 ignores init and reads report[ι].xs(t0-1)',
       seedInterior['ι0'] != sentinel and np.isclose(seedInterior['ι0'], base['report']['ι'].xs(m.db['t'][t0Pos - 1])))

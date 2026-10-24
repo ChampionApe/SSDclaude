@@ -64,9 +64,10 @@ check("the record's x is the unbounded image of the record's parameters",
 # The history of moves, and the fine-grid extrapolation that independently confirms one of them, are in
 # archive/notes/informalSavings_results.md.
 check('the anchor reproduces the LOG calibration documented in the README',
-      # alpha = 0.35, tau0 = 0.071/(1-alpha), K/Y = 3.23, z_0 relative to the formal average (2026-09-11);
-      # was 0.651367 / 1.526699 with z_0 relative to the all-group mean, 0.807610 / 2.327810 at alpha = 0.43.
-      np.isclose(anchor['β'], 0.650578, rtol = 1e-4) and np.isclose(anchor['ω'], 1.491529, rtol = 1e-4),
+      # alpha = 0.35, tau0 = taxTarget's 0.118121 (spending over formal plus informal output), K/Y = 3.23
+      # (2026-10-23); was 0.650578 / 1.491529 at tau0 = 0.071/(1-alpha), 0.651367 / 1.526699 with z_0
+      # relative to the all-group mean, 0.807610 / 2.327810 at alpha = 0.43.
+      np.isclose(anchor['β'], 0.668641, rtol = 1e-4) and np.isclose(anchor['ω'], 1.496254, rtol = 1e-4),
       '-> β={:.6f}, ω={:.6f}'.format(anchor['β'], anchor['ω']))
 check('the inner grid actually used is recorded with the point',
       anchor['gridSettings']['nι'] == 50,

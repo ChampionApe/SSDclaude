@@ -1,6 +1,7 @@
 r""" Collect the endogenous-theta counterfactual runs across rho into one table.
 
 Run:  .venv\Scripts\python.exe python\US\collectESCexperiments.py [--host UK]
+      ... --costs        the ageing counterfactuals under the three costs -> escAgeingCosts.csv (see costs())
 
 Inputs (results/esc/): escShocks.csv (rho = 1, LOG, runESC.py) and escShocksCRRA.csv (rho != 1, CRRA,
 runESCcrra.py --stage shocks). Writes results/esc/escExperiments.csv (long form, one row per
@@ -50,13 +51,74 @@ def merge(log, crra):
     return d.sort_values(['commonX', 'method', 'spec', 'ρ', 'scenario', 'θpinned']).reset_index(drop = True)
 
 
+COSTS = ('size', 'scale', 'sizePiR')          # the paper's cost, the cost on the design, the Pi-inclusive one
+AGEING = ('baseline', 'mild', 'acute')
+OUTCOMES = ('θ_t0', 'τ_t0', 'sr_t0', 'ww_t0', 'θ_t1', 'τ_t1')
+
+
+def costs(frames):
+    """ The ageing counterfactuals (mild: nu -> (1+nu)/2, acute: nu -> 1; shocks.shockAgeing) under the three
+    costs of Eq esc:AB at every rho, both readings, as one long table. `frames` maps file stems to frames:
+    the paper's csvs ('escShocks', 'escShocksCRRA') and the cost-variant runs ('escShocksCosts',
+    'escShocksCRRACosts': 'sizePiR' at every rho; 'escShocksCRRACostsMild': mild ageing under 'size' and
+    'scale' at rho != 1). One
+    row per (rho, spec, scenario, θpinned) at the published method (LOG rows are exact), common X, phi 0.5,
+    with the outcomes at t0 and t0+1, their changes against the baseline of the SAME reading and spec (d*),
+    and pi = Pi/R at t0 where the spec carries it. A key found in two files is an error. Pure. """
+    parts = []
+    for stem, d in frames.items():
+        if d is None or d.empty:
+            continue
+        d = d.copy()
+        if 'ρ' not in d.columns:
+            d['ρ'] = 1.0
+        if 'method' not in d.columns:
+            d['method'] = np.nan
+        d['method'] = d['method'].fillna('path' if 'CRRA' in stem else 'exact')
+        d = d[(d['method'] == 'exact') & d['spec'].isin(COSTS) & d['scenario'].isin(AGEING)
+              & d['commonX'].fillna(False).astype(bool) & np.isclose(d['phi'], 0.5)]
+        d['source'] = stem
+        parts.append(d)
+    d = pd.concat(parts, ignore_index = True)
+    key = ['ρ', 'spec', 'scenario', 'θpinned']
+    dup = d.duplicated(key, keep = False)
+    if dup.any():
+        raise ValueError('escAgeingCosts: {} rows on {} come from two files: {}'.format(
+            int(dup.sum()), key, sorted(set(d.loc[dup, 'source']))))
+    base = d[d['scenario'] == 'baseline'].set_index(['ρ', 'spec', 'θpinned'])
+    at = pd.MultiIndex.from_frame(d[['ρ', 'spec', 'θpinned']])
+    for c in OUTCOMES:
+        d['d' + c] = d[c].values - base[c].reindex(at).values
+    cols = (['ρ', 'spec', 'p', 'scenario', 'θpinned', 'method', 'source'] + list(OUTCOMES)
+            + ['d' + c for c in OUTCOMES] + (['ΠR'] if 'ΠR' in d.columns else []))
+    return d[cols].sort_values(['spec', 'ρ', 'scenario', 'θpinned']).reset_index(drop = True)
+
+
 def main():
     sys.stdout.reconfigure(encoding = 'utf-8', line_buffering = True)
     # --host UK merges the UK-host runs (runESC.py / runESCcrra.py --host UK) into escExperimentsUK.csv.
     # A missing CRRA file is an empty frame there, so the LOG rows can be built before the CRRA leg ends.
     ap = argparse.ArgumentParser()
     ap.add_argument('--host', default = 'US', choices = ('US', 'UK'))
-    hs = '' if ap.parse_args().host == 'US' else ap.parse_args().host
+    ap.add_argument('--costs', action = 'store_true',
+                    help = "write escAgeingCosts.csv from the paper's csvs and the --tag Costs runs instead")
+    args = ap.parse_args()
+    if args.costs:
+        stems = ('escShocks', 'escShocksCRRA', 'escShocksCosts', 'escShocksCRRACosts', 'escShocksCRRACostsMild')
+        frames = {st: pd.read_csv(os.path.join(ESC, st + '.csv')) for st in stems
+                  if os.path.exists(os.path.join(ESC, st + '.csv'))}
+        d = costs(frames)
+        out = os.path.join(ESC, 'escAgeingCosts.csv')
+        d.to_csv(out, index = False)
+        print(f'-> {os.path.relpath(out, REPO)}  ({len(d)} rows from {", ".join(frames)})\n')
+        for pin, lab in ((True, 'theta PINNED'), (False, 'theta CHOSEN')):
+            sub = d[(d['θpinned'] == pin) & (d['scenario'] != 'baseline')]
+            piv = sub.pivot_table(index = ['scenario', 'spec'], columns = 'ρ', values = ['dθ_t0', 'dτ_t0'],
+                                  aggfunc = 'first')
+            print('--- {}: changes at 2020 against the baseline of the same reading ---'.format(lab))
+            print(piv.round(4).to_string(), '\n')
+        return
+    hs = '' if args.host == 'US' else args.host
     fCRRA = os.path.join(ESC, f'escShocksCRRA{hs}.csv')
     d = merge(pd.read_csv(os.path.join(ESC, f'escShocks{hs}.csv')),
               pd.read_csv(fCRRA) if (hs == '' or os.path.exists(fCRRA)) else pd.DataFrame(columns = ['ρ']))

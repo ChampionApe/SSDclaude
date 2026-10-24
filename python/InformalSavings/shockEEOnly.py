@@ -73,17 +73,18 @@ CSV, PKLDIR, OUTDIR = su.CSV, su.PKLDIR, su.OUTDIR
 NAMES = su.SERIES + ('s_',)                     # what EE_report is asked for
 SERIES = NAMES + ('sr',)                        # the written column blocks, in order
 CONTROLTOL = 1e-6                               # max|Δ| the no-shock control is allowed on any series
-# EE_report backs the lagged objects at its FIRST period out of initialState_solve rather than taking
-# them as arguments, so on a model copy those are the model's own initial-state proxies and not the
-# baseline's actual values entering t0 (which stateAtT0 knows, but EE_report has no way to accept). Two
-# reported series see them, at that one row only -- measured with the no-shock control below:
+# EE_report takes the lagged objects at its FIRST period from initialState_solve unless it is handed them
+# (`lagged`), and this script does not hand them over -- the baseline csv carries no lagged state -- so on
+# the copy those are the model's own initial-state proxies, not the baseline's values entering t0
+# (stateAtT0's 'inherited'). Two reported series see them, at that one row only -- measured with the
+# no-shock control below:
 #   c20   via ι_{t0-1} (ι_/si_s_):  ~5.5% of level, under BOTH solvers.
 #   bbar  via h_{t0-1} (hFromS at init['Γs']):  ~5e-4-7e-4 of level under CRRA, EXACT under LOG, where
 #         Γ_{s,t-1} is a function of (τ_t,θ_t) alone and the proxy is therefore the true value.
 # b0/bi do not: h_{t-1} cancels between them and bbar. Everything else reproduces to ≤3e-9 (CRRA's own
-# EE root tolerance) and ≤1e-15 under LOG. The full-effect CSV carries the same two artifacts in its
-# d_c20/d_bbar at t0 -- its reform path is a copy and its baseline is not -- so this file mirrors them
-# rather than diverging from it. Both are compared from the second row on, with the t0 gap reported.
+# EE root tolerance) and ≤1e-15 under LOG. The full-effect CSV's reform rows take the baseline's lagged
+# state (shockUniversal passes stateAtT0's seed), so its d_c20/d_bbar at t0 are exact and this file's are
+# not; no paper output reads either. Both are compared from the second row on, with the t0 gap reported.
 PROXYROW0 = ('c20', 'bbar')
 
 
@@ -198,6 +199,7 @@ def runEEOnly(ρ, settings, rule, refType, scale, control, resolveBaseline, out,
         print('baseline read from {}.  s entering t0 = {:.10f} (inverted from R_t0)'.format(
             os.path.relpath(univPath, REPO), s0))
     b = withLagAndRate(m, b, s0)
+    names = tuple(k for k in NAMES if k in b.columns)   # a baseline csv may predate a series (Y, Y0)
     print('s_ on the baseline: s__base(t0) = {:.10f} (the seed state), and s__base(t) = s_base(t-1) '
           'for t>t0 to {:.1e}'.format(float(b['s_'].iloc[0]),
                                       float(np.max(np.abs(b['s_'].values[1:] - b['s'].values[:-1])))))
@@ -210,8 +212,8 @@ def runEEOnly(ρ, settings, rule, refType, scale, control, resolveBaseline, out,
     x0 = None
     if control:
         _, ctrl = eeSolve(mt0, preferences, τ, θ, mt0.db['eps'].values, s0)
-        c = withLagAndRate(m, su.frame(ctrl, refType, names = NAMES, τ = τ).set_index(b.index), s0)
-        d = {k: np.abs(c[k].values - b[k].values) for k in SERIES if k in c}
+        c = withLagAndRate(m, su.frame(ctrl, refType, names = names, τ = τ).set_index(b.index), s0)
+        d = {k: np.abs(c[k].values - b[k].values) for k in SERIES if k in c and k in b}
         dev = {k: float(np.nanmax(v[1:] if k in PROXYROW0 else v)) for k, v in d.items()}
         print('control (copy, eps UNCHANGED, baseline tau) reproduces the baseline:  ' +
               '  '.join('max|Δ{}|={:.1e}'.format(k, v) for k, v in sorted(dev.items(), key = lambda kv: -kv[1])[:4]))
@@ -240,7 +242,7 @@ def runEEOnly(ρ, settings, rule, refType, scale, control, resolveBaseline, out,
     print('EE solved ({:.2f}s).  b^0/b^{} = {:.6f}, target {:.6f} (max|dev| {:.2e})'.format(
         time.time()-tStart, refType, ratio[0], target[0], np.max(np.abs(ratio-target))))
 
-    r = withLagAndRate(m, su.frame(ee, refType, names = NAMES, τ = τ).set_index(b.index), s0)
+    r = withLagAndRate(m, su.frame(ee, refType, names = names, τ = τ).set_index(b.index), s0)
     df = b.join(r, lsuffix = '_base', rsuffix = '_ee')
     for k in SERIES:
         if k+'_base' in df:

@@ -19,7 +19,7 @@ from modelESC import ModelESC
 from gridsearch.testing import check, report
 
 GS = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}
-PARS = testmod.pars | {'ρ': 1.0, 'β': 0.7606187875476447, 'ω': 1.4536273947550569}
+PARS = testmod.pars | {'ρ': 1.0, 'β': 0.655483014875856, 'ω': 1.2308601504079868}
 
 
 def build(wedge):
@@ -29,12 +29,12 @@ def build(wedge):
     return m
 
 
-PCAL = 0.37503226627596936          # the permanent timing's own calibrated p (scale, phi = 0.5)
-# fixed point / incumbent pinning / moving ratio. TODO's "p = 0.375" row is the calibrated p, where the
-# fixed point IS theta* by construction (p = 0.375 exactly gives 0.738178).
-PERMREF = {0.4:   (0.775076, 0.773380, 0.9096),
-           PCAL:  (0.738226, 0.738226, 0.8694),
-           0.25:  (0.541576, 0.549211, 0.652294)}
+PCAL = 0.3829869947071961           # the permanent timing's own calibrated p (scale, phi = 0.5; escPermanent.csv)
+# fixed point / incumbent pinning / moving ratio, at the pension-only workbook (2026-10-23). At the
+# calibrated p the fixed point IS theta* by construction.
+PERMREF = {0.4:   (0.753339, 0.752530, 0.869878),
+           PCAL:  (0.727757, 0.727757, 0.842138),
+           0.25:  (0.517452, 0.523040, 0.611723)}
 for pRef, (fp, inc, mov) in PERMREF.items():
     mR = build({'spec': 'scale', 'phi': 0.5, 'p': pRef})
     mR.calibrate()
@@ -47,7 +47,7 @@ for pRef, (fp, inc, mov) in PERMREF.items():
 
 mPC = build({'spec': 'scale', 'phi': 0.5, 'p': 0.4})
 recPC = mPC.calibrateWedge(spec = 'scale', phi = 0.5, preferences = 'permLOG', verbose = False)
-check('the permanent timing\'s own calibrated p reproduces 0.37503226627596936',
+check('the permanent timing\'s own calibrated p reproduces 0.3829869947071961',
       recPC['converged'] and abs(recPC['p'] - PCAL) < 2e-6,
       '-> p={:.14f} (residual {:+.1e})'.format(recPC['p'], recPC['residual']))
 

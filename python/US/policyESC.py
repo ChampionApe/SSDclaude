@@ -42,7 +42,7 @@ import time
 import numpy as np, pandas as pd
 from scipy import optimize
 from gridsearch import roots1d, CartesianGrid, griddedInterp1D, griddedSmooth1D, griddedGradient1D
-from policy import CRRA, multiplicitySummary, DESIGN_KEYS, DESIGN_NAMES
+from policy import CRRA, multiplicitySummary, mergeMultiplicity, DESIGN_KEYS, DESIGN_NAMES
 
 
 class LeadedBase:
@@ -1259,19 +1259,24 @@ class PermanentLOG(LeadedLOG):
     the wedge calibration targets, so the calibrated p is the same under both; they separate only away
     from it. ModelESC.solvePermanent exposes all three readings and reports the gaps. """
 
-    def τPath(self, θ, tFrom = None):
+    def τPath(self, θ, tFrom = None, withMultiplicity = False):
         """ tau_t for every t >= tFrom given a design path: the ordinary PEE, period by period, since z_t
         depends on (tau_t, theta_t) alone -- so a design that is one number before t0 and another from t0
         on needs no more work than a constant one. theta: scalar (constant) or a length-T path. Periods
-        before tFrom are left NaN -- they are not part of this experiment and must not be read. """
+        before tFrom are left NaN -- they are not part of this experiment and must not be read.
+        withMultiplicity: return (tau, the tax candidates' counts over the periods solved,
+        policy.multiplicitySummary) instead of tau alone. Each period is τAt's τOfθ call. """
         tIdx = self.db['t']
         θPath = np.full(len(tIdx), float(θ)) if np.isscalar(θ) else np.asarray(θ, dtype = float)
         out = np.full(len(tIdx), np.nan)
         start = 0 if tFrom is None else tIdx.get_loc(tFrom)
+        counts = {}
         for pos, t in enumerate(tIdx):
             if pos >= start:
-                out[pos] = self.τAt(t, θPath[pos])
-        return out
+                tLag = tIdx[pos-1] if pos > 0 else self.B.tFirst
+                τ, _, _, counts[t] = self.τOfθ(t, np.atleast_1d(θPath[pos]), tLag, terminal = (t == tIdx[-1]))
+                out[pos] = float(τ[0])
+        return (out, multiplicitySummary(counts)) if withMultiplicity else out
 
     def siRatioAt(self, t0, θ):
         """ s_{t0-1,i}/s_{t0-1} implied by a permanent design theta in force from t0 onward, shape (ni,).
@@ -1292,7 +1297,8 @@ class PermanentLOG(LeadedLOG):
         """ W_{t0} over a grid of candidate permanent designs, fully vectorised.
 
         siRatio_: the pinned predetermined state, shape (ni,). See the class docstring for why it is an
-        argument rather than something recomputed here. """
+        argument rather than something recomputed here. 'multiplicity': the tax candidates' counts of the
+        selections at t0, t0+1, t0+2 over every candidate design (τOfθ, policy.multiplicitySummary). """
         th = self.θCand if θCand is None else np.asarray(θCand, dtype = float)
         tIdx = self.db['t']
         pos = tIdx.get_loc(t0)
@@ -1300,29 +1306,31 @@ class PermanentLOG(LeadedLOG):
         t1 = tIdx[pos+1]
         terminal1 = (t1 == tIdx[-1])
 
-        τ0 = self.τOfθ(t0, th, tLag, terminal = False)[0]
-        τ1 = self.τOfθ(t1, th, t0, terminal = terminal1)[0]
+        counts = {}
+        τ0, _, _, counts[t0] = self.τOfθ(t0, th, tLag, terminal = False)
+        τ1, _, _, counts[t1] = self.τOfθ(t1, th, t0, terminal = terminal1)
         if terminal1:
             τ2 = None
         else:
             t2 = tIdx[pos+2]
-            τ2 = self.τOfθ(t2, th, t1, terminal = (t2 == tIdx[-1]))[0]
+            τ2, _, _, counts[t2] = self.τOfθ(t2, th, t1, terminal = (t2 == tIdx[-1]))
         cont = {'τ1': τ1, 'θ2': th, 'τ2': τ2, 'terminal1': terminal1}
         W, parts = self.objective(t0, tLag, t1, τ0, th, th, cont, s_ = s_, siRatio_ = siRatio_)
-        return {'θ': th, 'W': W, 'τ0': τ0, 'τ1': τ1, 'parts': parts}
+        return {'θ': th, 'W': W, 'τ0': τ0, 'τ1': τ1, 'parts': parts, 'multiplicity': multiplicitySummary(counts)}
 
     def solve(self, t0, siRatio_, θCand = None, s_ = 1.):
         """ The permanent design chosen at t0, given the predetermined s_{t0-1,i}/s_{t0-1}.
 
         nTurning counts sign changes in the gradient of W over the candidate grid, so a multi-peaked
-        objective is visible rather than silently resolved by argmax. """
+        objective is visible rather than silently resolved by argmax. 'multiplicity': objectiveOverθ's. """
         self._requireZeroMass()
         with self.BG.cacheParams():
             d = self.objectiveOverθ(t0, siRatio_, θCand = θCand, s_ = s_)
         thStar, atBound = self._argmax(d['θ'], d['W'])
         turns = int(np.sum(np.diff(np.sign(np.diff(d['W']))) != 0))
         return {'θ': thStar, 'atBound': atBound, 'W': d['W'], 'θCand': d['θ'],
-                'τAtChoice': float(np.interp(thStar, d['θ'], d['τ0'])), 'nTurning': turns}
+                'τAtChoice': float(np.interp(thStar, d['θ'], d['τ0'])), 'nTurning': turns,
+                'multiplicity': d['multiplicity']}
 
     def solveFixedPoint(self, t0, θ0, θCand = None, s_ = 1., tol = 1e-9, maxIter = 50):
         """ The permanent design under the ANTICIPATED vote (the class docstring's timing):
@@ -1380,7 +1388,8 @@ class PermanentCRRA(LeadedBase):
         restored in a finally block, so a failed candidate cannot leave db on the wrong design.
 
         'si' is each candidate's OWN s_{t0-1,i}/s_{t0-1}. W never uses it -- solveFixedPoint does, to
-        find the ratio the anticipated vote implies. Failed candidates keep ok=False and NaN rows. """
+        find the ratio the anticipated vote implies. 'mult' is each candidate's tax counts (solvePEE_CRRA's
+        'multiplicity'; None where it failed). Failed candidates keep ok=False and NaN rows. """
         self._requireZeroMass()
         t = self.db['t'][self.db['t'].get_loc(t0)]
         ε = self.db['eps'].values.astype(float)
@@ -1388,7 +1397,7 @@ class PermanentCRRA(LeadedBase):
         c = {'θ': ths, 'ok': np.zeros(n, dtype = bool), 'τ': np.full(n, np.nan),
              'h': np.full(n, np.nan), 's_': np.full(n, np.nan),
              'c1': np.full((n, self.ni), np.nan), 'B': np.full((n, self.ni), np.nan),
-             'si': np.full((n, self.ni), np.nan)}
+             'si': np.full((n, self.ni), np.nan), 'mult': [None]*n}
         thSave = self.db['θ'].values.astype(float).copy()
         try:
             for k, cand in enumerate(ths):
@@ -1403,6 +1412,7 @@ class PermanentCRRA(LeadedBase):
                     c['si'][k] = rep['si_s'].xs(tPrev).values.astype(float)
                     c['h'][k], c['s_'][k] = float(rep['h'].xs(t)), float(rep['s_'].xs(t))
                     c['τ'][k] = float(out['τ'].xs(t0))
+                    c['mult'][k] = out.get('multiplicity')
                     c['ok'][k] = True
                 except Exception as e:
                     if verbose:
@@ -1435,7 +1445,8 @@ class PermanentCRRA(LeadedBase):
     def solve(self, t0, siRatio_, s0 = None, θCand = None, solveKwargs = None, verbose = True,
               cache = None):
         """ Grid-search the permanent design under CRRA at a given pinned ratio. One full solvePEE_CRRA
-        per candidate, unless a cache from a previous _grid call is supplied. """
+        per candidate, unless a cache from a previous _grid call is supplied. 'multiplicity': the tax
+        counts over every candidate's solve (policy.mergeMultiplicity of the cache's 'mult'). """
         ths = self.θCand if θCand is None else np.asarray(θCand, dtype = float)
         if cache is None:
             cache = self._grid(t0, ths, s0 = s0, solveKwargs = solveKwargs, verbose = verbose)
@@ -1443,7 +1454,8 @@ class PermanentCRRA(LeadedBase):
         thStar, atBound = self._argmax(cache['θ'], Ws)
         ok = cache['ok']
         return {'θ': thStar, 'atBound': atBound, 'W': Ws, 'θCand': cache['θ'], 'cache': cache,
-                'τAtChoice': float(np.interp(thStar, cache['θ'][ok], cache['τ'][ok]))}
+                'τAtChoice': float(np.interp(thStar, cache['θ'][ok], cache['τ'][ok])),
+                'multiplicity': mergeMultiplicity(cache.get('mult', []))}
 
     def solveFixedPoint(self, t0, θ0, s0 = None, θCand = None, solveKwargs = None, verbose = True,
                         tol = 1e-6, maxIter = 50):

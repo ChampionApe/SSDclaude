@@ -42,6 +42,25 @@ def multiplicitySummary(sols, keys = ('nEq', 'nCand', 'fallback'), names = SUMMA
     return out
 
 
+def mergeMultiplicity(summaries, names = SUMMARY_NAMES):
+    """ One multiplicitySummary over several solves (a grid of candidate designs, a choice and the
+    equilibrium at it): the largest of the two maxima, the sums of the two state counts, the periods
+    concatenated. Summaries that are None or did not count (-1) are skipped; -1 where none counted. """
+    nEqM, nCandM, nMult, nFb, pMult, pFb = names
+    out = {nEqM: -1, nCandM: -1, nMult: -1, nFb: -1, pMult: [], pFb: []}
+    for s in summaries:
+        if not s or s.get(nEqM, -1) < 0:
+            continue
+        if out[nEqM] < 0:
+            out.update({nEqM: 0, nCandM: 0, nMult: 0, nFb: 0})
+        out[nEqM], out[nCandM] = max(out[nEqM], int(s[nEqM])), max(out[nCandM], int(s[nCandM]))
+        out[nMult] += int(s[nMult])
+        out[nFb] += int(s[nFb])
+        out[pMult] += list(s.get(pMult, []))
+        out[pFb] += list(s.get(pFb, []))
+    return out
+
+
 def multiplicityColumns(mult, design = False):
     """ A multiplicity summary as csv columns: nEqMax, nCandMax, nFallback (the tax rule) and, with
     design, nEqθMax, nBrθMax, nFallbackθ (LeadedCRRA2D's root layer); -1 where the summary is None or

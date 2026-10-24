@@ -72,8 +72,8 @@ def gitCommit():
 
 
 def toRow(rec, requested, commit):
-    """ calibratePoint's record -> one flat csv row, with the tax counts of its solve (nEqMax, nCandMax,
-    nFallback; policy.multiplicityColumns), -1 while calibratePoint's record carries none. """
+    """ calibratePoint's record -> one flat csv row, with the tax counts of the PEE solve at the calibrated
+    point (the record's 'multiplicity' as nEqMax, nCandMax, nFallback; policy.multiplicityColumns). """
     g = rec['gridSettings']
     row = {k: rec.get(k) for k in ('ρ', 'preferences', 'residual', 'verifyResidual', 'hoursDrift',
                                    'β', 'ω', 'λ', 'X', 'R', 'τ', 'sr', 'h', 'hbar', 'nfev', 'time')}

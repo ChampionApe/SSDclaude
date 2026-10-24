@@ -41,7 +41,7 @@ And the 'size' spec, f(theta_t, tau_t) = exp(-lambda tau_t Vtilde (1-theta_t)^2 
      and the choice is still s_{t-1}-free (items 3 and 4 under the new f); Vtilde is invariant to a common
      rescaling of X_i and of eta_i, zero when every y_i = 1 (and then f == 1), and masks a zero-mass type
      rather than letting 0*inf poison it; theta* is unchanged (f cancels from the replacement-rate ratio).
-     The 'scale' p at rho = 1, 0.4076119851, is pinned as the regression gate for the untouched paths.
+     The 'scale' p at rho = 1, 0.4146079382, is pinned as the regression gate for the untouched paths.
 """
 import os, sys
 import numpy as np
@@ -55,7 +55,7 @@ from modelESC import ModelESC
 from gridsearch.testing import check, report
 
 GS = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}
-PARS = testmod.pars | {'ρ': 1.0, 'β': 0.7606187875476447, 'ω': 1.4536273947550569}
+PARS = testmod.pars | {'ρ': 1.0, 'β': 0.655483014875856, 'ω': 1.2308601504079868}
 
 
 def build(cls, wedge = None):
@@ -177,7 +177,9 @@ for sLag in (1.0, 0.037, 12.5):
     W, _ = mW.ESC.objective(t0, tIdx[pos-1], t1, τt, θt, mW.ESC.θCand, cont, s_ = sLag)
     arg[sLag] = mW.ESC._argmax(mW.ESC.θCand, W)[0]
 spread = max(arg.values()) - min(arg.values())
-check('the leaded choice is invariant to s_{t-1} (appendix normalisation)', spread < 1e-12,
+# 1e-11: the argmax's parabolic step divides W's rounding (~1e-16) by its curvature over one cell; at the
+# pension-only calibration that leaves ~2e-12 between levels of s_{t-1} that W only shifts.
+check('the leaded choice is invariant to s_{t-1} (appendix normalisation)', spread < 1e-11,
       '-> argmax at s=1/0.037/12.5: {} (spread {:.1e})'.format(
           ', '.join('{:.6f}'.format(v) for v in arg.values()), spread))
 
@@ -294,9 +296,9 @@ check('...and it is NOT the choice made at t0 (they differ by a period of nu_t)'
       abs(design - chW) > 1e-3, '-> design_t0={:.6f} choice_at_t0={:.6f}'.format(design, chW))
 # Under LOG the policy has no state, so the design at t0 is thetaPolicy_{t0-1} evaluated anywhere.
 tPrev = mW.db['t'][pos0-1]
-check('...and under LOG it equals thetaPolicy_{t0-1} at any inherited design',
-      max(abs(design - mW.ESC.choiceAt(solsW, tPrev, x)) for x in (0.05, 0.5, 0.95)) < 1e-12,
-      '-> spread over inherited theta < 1e-12 (LOG has no state; see leadedDesignAtT0)')
+spreadW = max(abs(design - mW.ESC.choiceAt(solsW, tPrev, x)) for x in (0.05, 0.5, 0.95))
+check('...and under LOG it equals thetaPolicy_{t0-1} at any inherited design', spreadW < 1e-11,
+      '-> spread over inherited theta {:.1e} (LOG has no state; see leadedDesignAtT0)'.format(spreadW))
 
 # At the CALIBRATED wedge the design at t0 must land on theta* -- that is what calibrateWedge solves for,
 # and it is what puts the baseline row of every counterfactual table on the observed design.
@@ -310,7 +312,7 @@ check('at the calibrated p the FREE path reproduces theta* at t0', rec['converge
 check('...and the tax target is still hit there', abs(led['targetDrift']['τ']) < 1e-6,
       '-> tauDrift={:.2e} RDrift={:.2e}'.format(led['targetDrift']['τ'], led['targetDrift']['R']))
 # The regression gate for every path the 'size' spec must leave untouched (archive/notes/plan_escSizeLeak.md, check 2).
-check("the calibrated 'scale' p at rho = 1 reproduces 0.4076119851", abs(rec['p'] - 0.4076119851) < 1e-8,
+check("the calibrated 'scale' p at rho = 1 reproduces 0.4146079382", abs(rec['p'] - 0.4146079382) < 1e-8,
       '-> p={:.10f}'.format(rec['p']))
 
 # ---- 11. the new-path convention: a shocked model is the full horizon, not a copy from t0
@@ -637,8 +639,8 @@ check("fWedge under 'size' RAISES when called without tau (a call site that forg
 
 # ---- S14. getTheta under 'size' is the exogenous-theta number: f cancels from B/A
 θS = float(mSc.db['θ'].xs(t0))
-check("'size': theta* is 0.7382263650 (unchanged by lambda: the cost is proportional)",
-      abs(θS - 0.7382263650) < 1e-9 and np.max(np.abs(mSc.db['θ'].values - mUS.db['θ'].values)) < 1e-12,
+check("'size': theta* is 0.7277568007 (unchanged by lambda: the cost is proportional)",
+      abs(θS - 0.7277568007) < 1e-9 and np.max(np.abs(mSc.db['θ'].values - mUS.db['θ'].values)) < 1e-12,
       '-> theta*={:.10f} at lambda={:.4f}'.format(θS, recS['p']))
 A_S, B_S = mSc.B.wedgeA(θS, τ0S, t0), mSc.B.wedgeB(θS, τ0S, t0)
 check("'size': B/A reproduces the data ratio (1-theta)/theta at any tau", np.isclose(B_S/A_S, (1-θS)/θS, rtol = 1e-12))
@@ -647,7 +649,7 @@ check("'size': B/A reproduces the data ratio (1-theta)/theta at any tau", np.isc
 # re-elects the UK's observed design and the pinned one hits its tax target; a French shock on the UK
 # pins theta at the UK's design, not the US's (frenchData's 'θUS' is the host's)
 import runESC
-λUK = 7.264281      # results/esc/escCountry.csv: UK, 'own', 'size', common X
+λUK = 7.785900      # results/esc/escCountry.csv: UK, 'own', 'size', common X
 mUK = runESC.buildEU('UK', {'spec': 'size', 'phi': 0.5, 'p': λUK}, commonX = True)
 mUK.calibrate()
 _, hRefUK = runESC.baselineRefs(mUK)
@@ -661,5 +663,34 @@ dUK = runESC.frenchData(mUK, commonX = True, grouping = 'UK')
 rUK = runESC.leadedNewPath(mUK, hRefUK, runESC.SHOCKS_ESC['frIncome'][1], dUK, pin = True)
 check("French income distribution on the UK holds theta at the UK's design",
       abs(dUK['θUS'] - θUK) < 1e-14 and abs(rUK['θ0'] - θUK) < 1e-12, '-> {:.6f}'.format(rUK['θ0']))
+
+# ---- S16. 'sizePiR' (A8's Pi-inclusive cost): lambda*pi with pi = Pi/R of f's date, solved to the path's own
+mPi = build(ModelESC, {'spec': 'sizePiR', 'phi': 0.5, 'p': recS['p']})
+mPi.setΠR(1.0)
+mSz = build(ModelESC, {'spec': 'size', 'phi': 0.5, 'p': recS['p']})
+with mPi.B.cacheParams(), mSz.B.cacheParams():
+    same = max(abs(float(mPi.B.fWedge(x, 0.12, t0, lag)) - float(mSz.B.fWedge(x, 0.12, t0, lag)))
+               for x in (0., 0.5, 0.9) for lag in ('', '[t-1]'))
+check("'sizePiR' at pi = 1 is 'size' at the same lambda (f at both vintages; two builds, an ulp apart)", same < 1e-14,
+      '-> {:.1e}'.format(same))
+πTry = np.linspace(0.6, 0.4, mPi.T)
+mPi.setΠR(πTry)
+pos = mPi.db['t0']
+check("'sizePiR' dates pi by f: lag '[t-1]' (f(θ_t, τ_t)) reads pi_t, lag '' (f(θ_t+1, τ_t+1)) pi_t+1",
+      float(mPi.B.wedgeΠR(t0, '[t-1]')) == πTry[pos] and float(mPi.B.wedgeΠR(t0, '')) == πTry[pos+1])
+ledPi = mPi.solveLeaded(pinAtT0 = False)
+πPath = mPi.ΠRPath(ledPi['report'], ledPi['τ'].values, ledPi['θ'].values)
+check("'sizePiR': the leaded solve returns at its fixed point, pi = Pi/R of its own path",
+      np.max(np.abs(πPath - mPi.db['wedgeΠR'].values)) < 1e-9 and ledPi['ΠRgap'] < 1e-10,
+      '-> {} iterations, gap {:.1e}, pi_t0 {:.4f}'.format(ledPi['ΠRiter'], ledPi['ΠRgap'], πPath[pos]))
+pinPi = mPi.solvePEE_LOG()
+πPin = mPi.ΠRPath(pinPi['report'], pinPi['τ'].values, mPi.db['θ'].values)
+check("'sizePiR': and so does the pinned solve (solvePEE_LOG)", np.max(np.abs(πPin - mPi.db['wedgeΠR'].values)) < 1e-9)
+try:
+    mPi.solvePermanent('LOG')
+    refused = False
+except NotImplementedError:
+    refused = True
+check("'sizePiR' refuses the solvers that do not iterate pi (the permanent timing)", refused)
 
 report()
