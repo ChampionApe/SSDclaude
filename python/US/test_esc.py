@@ -41,7 +41,7 @@ And the 'size' spec, f(theta_t, tau_t) = exp(-lambda tau_t Vtilde (1-theta_t)^2 
      and the choice is still s_{t-1}-free (items 3 and 4 under the new f); Vtilde is invariant to a common
      rescaling of X_i and of eta_i, zero when every y_i = 1 (and then f == 1), and masks a zero-mass type
      rather than letting 0*inf poison it; theta* is unchanged (f cancels from the replacement-rate ratio).
-     The 'scale' p at rho = 1, 0.4146079382, is pinned as the regression gate for the untouched paths.
+     The 'scale' p at rho = 1, 0.4118945834, is pinned as the regression gate for the untouched paths.
 """
 import os, sys
 import numpy as np
@@ -167,7 +167,7 @@ t1 = tIdx[pos+1]
 τt = np.full(mW.ESC.nθCand, mW.ESC.τAt(t0, θStar))
 θt = np.full(mW.ESC.nθCand, θStar)
 s1 = sols[t1]
-cont = {'τ1': np.interp(mW.ESC.θCand, s1['θGrid'], s1['τ']),
+cont = {'τ1': s1['τCand'],                                  # the recursion's: T_{t+1} solved at each candidate
         'θ2': np.interp(mW.ESC.θCand, s1['θGrid'], s1['θNext']),
         'terminal1': False}
 s2 = sols[tIdx[pos+2]]
@@ -312,7 +312,7 @@ check('at the calibrated p the FREE path reproduces theta* at t0', rec['converge
 check('...and the tax target is still hit there', abs(led['targetDrift']['τ']) < 1e-6,
       '-> tauDrift={:.2e} RDrift={:.2e}'.format(led['targetDrift']['τ'], led['targetDrift']['R']))
 # The regression gate for every path the 'size' spec must leave untouched (archive/notes/plan_escSizeLeak.md, check 2).
-check("the calibrated 'scale' p at rho = 1 reproduces 0.4146079382", abs(rec['p'] - 0.4146079382) < 1e-8,
+check("the calibrated 'scale' p at rho = 1 reproduces 0.4118945834", abs(rec['p'] - 0.4118945834) < 1e-8,
       '-> p={:.10f}'.format(rec['p']))
 
 # ---- 11. the new-path convention: a shocked model is the full horizon, not a copy from t0
@@ -570,7 +570,7 @@ solsS = ledS['sols']
 τtS = np.full(mSc.ESC.nθCand, mSc.ESC.τAt(t0, θStarS))
 θtS = np.full(mSc.ESC.nθCand, θStarS)
 s1S = solsS[t1]
-contS = {'τ1': np.interp(mSc.ESC.θCand, s1S['θGrid'], s1S['τ']),
+contS = {'τ1': s1S['τCand'],
          'θ2': np.interp(mSc.ESC.θCand, s1S['θGrid'], s1S['θNext']),
          'terminal1': False}
 s2S = solsS[tIdx[pos+2]]
@@ -649,7 +649,7 @@ check("'size': B/A reproduces the data ratio (1-theta)/theta at any tau", np.isc
 # re-elects the UK's observed design and the pinned one hits its tax target; a French shock on the UK
 # pins theta at the UK's design, not the US's (frenchData's 'θUS' is the host's)
 import runESC
-λUK = 7.785900      # results/esc/escCountry.csv: UK, 'own', 'size', common X
+λUK = 7.739948      # the UK's own λ, 'size', common X: runESC.py --stage country (results/esc/escCountry.csv)
 mUK = runESC.buildEU('UK', {'spec': 'size', 'phi': 0.5, 'p': λUK}, commonX = True)
 mUK.calibrate()
 _, hRefUK = runESC.baselineRefs(mUK)

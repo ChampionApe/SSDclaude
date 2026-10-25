@@ -147,9 +147,19 @@ class LOG:
         -- monotone, settling to 1e-4 relative from ns=150 on, with ns=50 fully 2.4% off. So a calibration
         passes ns≥150 explicitly (calibrateRhoGrid.py does) while a solve keeps 50. Note the adaptive
         smoother was not avoiding that error, only masking it: it put every ns in a 0.3%-wide band with no
-        trend, so no amount of refinement revealed where the answer actually was. """
+        trend, so no amount of refinement revealed where the answer actually was.
+
+        gradKnotSpacing: the distance in τ between the interior knots of the least-squares spline the CRRA
+        τ-derivatives are taken from (CRRA._gradProfile), held in τ so that refining `n` puts more nodes
+        under each knot rather than more knots. Measured at the calibrated ρ = 0.5 and 2, ns = 150: with
+        0.04 (4 nodes per knot at n = 101) the 2020 tax moves ≤ 1.8e-5 and the θ 1 -> 0 gap ≤ 1.3e-4 from
+        n = 101 to 801, and spacings of 0.02 and 0.08 move the 2020 tax by ≤ 1.4e-4 (ρ = 0.5), ≤ 2e-5 (ρ = 2),
+        and the gap by ≤ 2.9e-4. An interpolating spline (no smoothing) does not converge in n there (2020
+        tax 0.1043, 0.1038, 0.1062, 0.1073 at n = 101 ... 801, ρ = 0.5): the profiles carry a kink wherever
+        s_t(τ_t) crosses a node of 𝒮, and the derivatives' noise compounds backwards through each policy's
+        slope in s. """
         return {'l': 1e-4, 'u': 1-1e-4, 'n': 101, 'Δl': 10, 'Δu': 10, 'ns': 50,
-                'interpKind': 'linear', 'smoothKnots': 4}
+                'interpKind': 'linear', 'smoothKnots': 4, 'gradKnotSpacing': 0.04}
 
     #######################################################################
     ##########   solveVectorized (docs alg:fast, "Gradient-based       ####
@@ -165,12 +175,23 @@ class LOG:
     # CRRA's B(s,h1)), so Γs/Θh/si_s never depend on the savings level (docs' "no endogenous states",
     # §PEELOG). si_s_'s first entry (generation already old at db['t'][0]) comes from
     # model.py's initialState_solve, which itself needs no s0.
+    #
+    # The bounds [l, u] of eq:root must lie inside the condition's domain [0, 1): z_t carries 1/(1-τ_t), and
+    # at τ_{tFirst} = 1 initialState_solve's steady-state root sees NaN and raises ValueError, which
+    # solveRobust does not catch. u = None therefore reads the grid's u (_gridSettings, 1 - 1e-4), so that
+    # a Newton step past 1 is clipped and penalised back as eq:root intends; l = 0 is inside the domain
+    # and returns a corner at exactly 0.
 
-    def stateVectorized(self, τtilde, θ, ε, l = 0, u = 1):
+    def _upper(self, u):
+        """ eq:root's upper bound for the gradient solve: `u`, or the grid's u when None. """
+        return self.GS['PEE']['gridSettings']['u'] if u is None else u
+
+    def stateVectorized(self, τtilde, θ, ε, l = 0, u = None):
         """ Build the dict of economic objects the LOG political FOC (eq:fast) needs at a candidate
         *unbounded* tax path τtilde (length T). θ, ε: full paths, as model.py's EE_LOG_solve. l, u:
-        bounds for gridsearch.robustRoot.clip -- τ is only ever evaluated inside [l,u]. """
-        d = {'τtilde': τtilde, 'τ': robustRoot.clip(τtilde, l, u), 'θ': θ, 'ε': ε}
+        bounds for gridsearch.robustRoot.clip -- τ is only ever evaluated inside [l,u]; u None is the
+        grid's (_upper). """
+        d = {'τtilde': τtilde, 'τ': robustRoot.clip(τtilde, l, self._upper(u)), 'θ': θ, 'ε': ε}
         d['τ1'], d['θ1'] = self.m.leadSym(d['τ']), self.m.leadSym(θ)
         d['βi'], d['β0'] = self.db['βi'].values, self.db['β0'].values
 
@@ -200,19 +221,22 @@ class LOG:
         dv20 = self.BT.dv20_dτ_LOG(τ, ε, d['Θh'])
         return self.BT.FOC(dv1i, dv10, dv2i, dv20)
 
-    def reportVectorized(self, res, l = 0, u = 1, tol = 1e-8):
+    def reportVectorized(self, res, l = 0, u = None, tol = 1e-8):
         """ Package a solveVectorized result: check convergence (self.m._checkConverged -- max|residual|,
         not scipy's own res.success), return the bounded policy τ=clip(τ̃,l,u) + solver diagnostics. """
         maxResid = self.m._checkConverged(res.fun, tol = tol, name = 'LOG.solveVectorized', scipyRes = res)
-        τ = robustRoot.clip(res.x, l, u)
+        τ = robustRoot.clip(res.x, l, self._upper(u))
         return {'τ': pd.Series(τ, index = self.db['t']),
                 'maxResid': maxResid, 'success': res.success, 'message': res.message}
 
-    def solveVectorized(self, θ, ε, x0 = None, l = 0, u = 1, a0 = 1, a1 = 1, tol = 1e-8, update = True, **kwargs):
+    def solveVectorized(self, θ, ε, x0 = None, l = 0, u = None, a0 = 1, a1 = 1, tol = 1e-8, update = True, **kwargs):
         """ Solve the stacked LOG political FOC (eq:fast) for the whole tax path at once, via the
         bounded-root reparameterization (gridsearch.robustRoot, eq:root). x0: defaults to a cached
-        self.x0['vectorized'] warm-start, else the constant db['τ0'] path. update: cache the solved τ̃ on
-        convergence. Returns just τ + solver diagnostics (see reportVectorized). """
+        self.x0['vectorized'] warm-start, else the constant db['τ0'] path. l, u: eq:root's bounds, u None the
+        grid's u < 1 (_upper; the section header says why u = 1 must not be used). update: cache the final
+        τ̃ as the next warm start, also when the solve failed. Returns just τ + solver diagnostics (see
+        reportVectorized). """
+        u = self._upper(u)
         if x0 is None:
             x0 = self.x0.get('vectorized', np.full(self.T, self.db['τ0']))
 
@@ -653,13 +677,38 @@ class CRRA(LOG):
                 W[k] = roots1d.cumtrapzColumns(τGrid, zk) + Lk[first, n][None, :]
         return W
 
+    @staticmethod
+    def _gradProfile(τGrid, y, knots):
+        """ dy/dτ along the tax grid, step 3 of docs alg:CRRA:grid. y: (M, ...) with M = len(τGrid), each
+        trailing index a profile along τ. Differentiated in x = ln(1-τ) and chain-ruled back, dy/dτ =
+        (dy/dx)·(-1/(1-τ)), as InformalSavings' CRRA._gradProfile (finding #7): every profile carries
+        ln(1-τ_t) through Θ_{h,t} ∝ ((1-α)(1-τ_t))^{ξ/(1+αξ)}, so dy/dτ diverges like 1/(1-τ_t) towards u,
+        and in x that part is affine and reproduced exactly. The spline is the least-squares cubic with
+        interior knots at every `knots`-th valid node (griddedGradient1D's fixed branch): a linear map of y
+        that picks no integer from the values (finding #5), and one that averages over the kinks the
+        profiles carry wherever s_t(τ_t) crosses a node of 𝒮 instead of passing them into the root of z_t.
+        focParts_t sets `knots` from the grid setting gradKnotSpacing. NaN (infeasible) nodes are dropped
+        per column and come back NaN. """
+        y = np.asarray(y, dtype = float)
+        flat = y.reshape(len(τGrid), -1)
+        dydx = griddedGradient1D(np.log(1-τGrid), flat, knots = knots)
+        return (dydx * (-1/(1-τGrid))[:, None]).reshape(y.shape)
+
+    def _gradKnots(self, τGrid):
+        """ The nodes per knot interval of _gradProfile's spline: gradKnotSpacing over the tax grid's step. """
+        spacing = self.GS['PEE']['gridSettings'].get('gradKnotSpacing', self._gridSettings['gradKnotSpacing'])
+        step = (float(τGrid[-1]) - float(τGrid[0]))/(len(τGrid) - 1)
+        return max(1, int(round(spacing/step)))
+
     def focParts_t(self, d, g, t, ε):
         """ The pieces of z_t that do not involve the predetermined shares, including every numerical
         τ-derivative (the splines dominate a period's cost): computed once per period and shared across
-        evaluations at different shares (focGrid_t, objectiveFrozen, the ESC solver's θ_t loop). """
+        evaluations at different shares (focGrid_t, objectiveFrozen, the ESC solver's θ_t loop). The three
+        numerical derivatives are _gradProfile's, along τ within each column of g. """
         BG, τ, τGrid = self.BG, d['τ'], g.values('τ')
         p = 1 - 1/BG.get('ρ', t)                             # ρ=1 already refused by stateGrid_t upstream
-        grad = lambda y: griddedGradient1D(τGrid, g.reshape(y)).reshape(np.shape(y))
+        knots = self._gradKnots(τGrid)
+        grad = lambda y: self._gradProfile(τGrid, g.reshape(y), knots).reshape(np.shape(y))
         with np.errstate(divide = 'ignore', invalid = 'ignore'):
             dlnh = grad(np.log(d['h']))
             dv1i = d['hatc1iPow'] * grad(d['lnhatc1i'])      # already a log; differentiate it directly

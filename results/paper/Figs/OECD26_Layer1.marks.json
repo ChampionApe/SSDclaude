@@ -276,7 +276,7 @@
    "label": "Australia",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 3.834078774296189,
+   "value": 3.8461477714441497,
    "text": "population 2020/1990: 1.50; pension spending: 3.8% of GDP",
    "table": null,
    "row": null
@@ -286,7 +286,7 @@
    "label": "Austria",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 9.779699537503866,
+   "value": 9.773926913663558,
    "text": "population 2020/1990: 1.16; pension spending: 9.8% of GDP",
    "table": null,
    "row": null
@@ -296,7 +296,7 @@
    "label": "Belgium",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 9.222016875747068,
+   "value": 9.225729927193438,
    "text": "population 2020/1990: 1.15; pension spending: 9.2% of GDP",
    "table": null,
    "row": null
@@ -306,7 +306,7 @@
    "label": "Canada",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 6.424092506894281,
+   "value": 6.4234685781909935,
    "text": "population 2020/1990: 1.37; pension spending: 6.4% of GDP",
    "table": null,
    "row": null
@@ -316,8 +316,8 @@
    "label": "Czech Republic",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 10.733450790661845,
-   "text": "population 2020/1990: 1.03; pension spending: 10.7% of GDP",
+   "value": 10.750373522903484,
+   "text": "population 2020/1990: 1.03; pension spending: 10.8% of GDP",
    "table": null,
    "row": null
   },
@@ -326,7 +326,7 @@
    "label": "Denmark",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 9.567675787430352,
+   "value": 9.573050735749549,
    "text": "population 2020/1990: 1.13; pension spending: 9.6% of GDP",
    "table": null,
    "row": null
@@ -336,8 +336,8 @@
    "label": "Finland",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 10.753149390544325,
-   "text": "population 2020/1990: 1.11; pension spending: 10.8% of GDP",
+   "value": 10.747366126841223,
+   "text": "population 2020/1990: 1.11; pension spending: 10.7% of GDP",
    "table": null,
    "row": null
   },
@@ -346,7 +346,7 @@
    "label": "France",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 9.874718236983623,
+   "value": 9.868944299720765,
    "text": "population 2020/1990: 1.19; pension spending: 9.9% of GDP",
    "table": null,
    "row": null
@@ -356,7 +356,7 @@
    "label": "Germany",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 11.999631908480962,
+   "value": 11.994720386758292,
    "text": "population 2020/1990: 1.05; pension spending: 12.0% of GDP",
    "table": null,
    "row": null
@@ -366,7 +366,7 @@
    "label": "Greece",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 12.217984594947108,
+   "value": 12.214760838241933,
    "text": "population 2020/1990: 1.05; pension spending: 12.2% of GDP",
    "table": null,
    "row": null
@@ -376,7 +376,7 @@
    "label": "Hungary",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 14.23349320561297,
+   "value": 14.227722947058677,
    "text": "population 2020/1990: 0.93; pension spending: 14.2% of GDP",
    "table": null,
    "row": null
@@ -386,7 +386,7 @@
    "label": "Iceland",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 5.367939537308184,
+   "value": 5.365755279231792,
    "text": "population 2020/1990: 1.40; pension spending: 5.4% of GDP",
    "table": null,
    "row": null
@@ -396,7 +396,7 @@
    "label": "Ireland",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 4.480040517257967,
+   "value": 4.497013246750868,
    "text": "population 2020/1990: 1.43; pension spending: 4.5% of GDP",
    "table": null,
    "row": null
@@ -406,7 +406,7 @@
    "label": "Italy",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 11.886480038087276,
+   "value": 11.880692249826229,
    "text": "population 2020/1990: 1.05; pension spending: 11.9% of GDP",
    "table": null,
    "row": null
@@ -416,7 +416,7 @@
    "label": "Japan",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 12.205380802931396,
+   "value": 12.205151692738529,
    "text": "population 2020/1990: 1.02; pension spending: 12.2% of GDP",
    "table": null,
    "row": null
@@ -426,7 +426,7 @@
    "label": "Luxembourg",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 2.868088935573031,
+   "value": 2.86325798314347,
    "text": "population 2020/1990: 1.65; pension spending: 2.9% of GDP",
    "table": null,
    "row": null
@@ -436,7 +436,7 @@
    "label": "Netherlands",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 9.610238963023953,
+   "value": 9.60456209245497,
    "text": "population 2020/1990: 1.17; pension spending: 9.6% of GDP",
    "table": null,
    "row": null
@@ -446,7 +446,7 @@
    "label": "New Zealand",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 4.500037909773254,
+   "value": 4.502946731924494,
    "text": "population 2020/1990: 1.50; pension spending: 4.5% of GDP",
    "table": null,
    "row": null
@@ -456,7 +456,7 @@
    "label": "Norway",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 7.907340718936177,
+   "value": 7.904374779871507,
    "text": "population 2020/1990: 1.27; pension spending: 7.9% of GDP",
    "table": null,
    "row": null
@@ -466,7 +466,7 @@
    "label": "Poland",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 12.955682242009331,
+   "value": 12.950060781194622,
    "text": "population 2020/1990: 1.00; pension spending: 13.0% of GDP",
    "table": null,
    "row": null
@@ -476,7 +476,7 @@
    "label": "Portugal",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 12.190749488924984,
+   "value": 12.184998504026655,
    "text": "population 2020/1990: 1.04; pension spending: 12.2% of GDP",
    "table": null,
    "row": null
@@ -486,7 +486,7 @@
    "label": "Spain",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 8.75925249369822,
+   "value": 8.75349772364665,
    "text": "population 2020/1990: 1.22; pension spending: 8.8% of GDP",
    "table": null,
    "row": null
@@ -496,7 +496,7 @@
    "label": "Sweden",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 8.948640613116783,
+   "value": 8.943466037033769,
    "text": "population 2020/1990: 1.21; pension spending: 8.9% of GDP",
    "table": null,
    "row": null
@@ -506,7 +506,7 @@
    "label": "Switzerland",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 7.735557118984145,
+   "value": 7.731260592965473,
    "text": "population 2020/1990: 1.29; pension spending: 7.7% of GDP",
    "table": null,
    "row": null
@@ -516,7 +516,7 @@
    "label": "United Kingdom",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 9.259831850593734,
+   "value": 9.264598617041836,
    "text": "population 2020/1990: 1.17; pension spending: 9.3% of GDP",
    "table": null,
    "row": null
@@ -526,7 +526,7 @@
    "label": "United States",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": 7.366000000001043,
+   "value": 7.3660000000010415,
    "text": "population 2020/1990: 1.33; pension spending: 7.4% of GDP",
    "table": null,
    "row": null
@@ -536,8 +536,8 @@
    "label": "fitted line",
    "series": "model",
    "panel": "pension spending against population 2020/1990",
-   "value": -16.503803352041913,
-   "text": "slope -16.50 (s.e. 0.59)",
+   "value": -16.49354199997356,
+   "text": "slope -16.49 (s.e. 0.59)",
    "table": "OECD26_Slopes",
    "row": "spending_growth"
   },
@@ -816,7 +816,7 @@
    "label": "Australia",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 3.834078774296189,
+   "value": 3.8461477714441497,
    "text": "Gini: 0.340; pension spending: 3.8% of GDP",
    "table": null,
    "row": null
@@ -826,7 +826,7 @@
    "label": "Austria",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 9.779699537503866,
+   "value": 9.773926913663558,
    "text": "Gini: 0.304; pension spending: 9.8% of GDP",
    "table": null,
    "row": null
@@ -836,7 +836,7 @@
    "label": "Belgium",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 9.222016875747068,
+   "value": 9.225729927193438,
    "text": "Gini: 0.274; pension spending: 9.2% of GDP",
    "table": null,
    "row": null
@@ -846,7 +846,7 @@
    "label": "Canada",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 6.424092506894281,
+   "value": 6.4234685781909935,
    "text": "Gini: 0.318; pension spending: 6.4% of GDP",
    "table": null,
    "row": null
@@ -856,8 +856,8 @@
    "label": "Czech Republic",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 10.733450790661845,
-   "text": "Gini: 0.254; pension spending: 10.7% of GDP",
+   "value": 10.750373522903484,
+   "text": "Gini: 0.254; pension spending: 10.8% of GDP",
    "table": null,
    "row": null
   },
@@ -866,7 +866,7 @@
    "label": "Denmark",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 9.567675787430352,
+   "value": 9.573050735749549,
    "text": "Gini: 0.283; pension spending: 9.6% of GDP",
    "table": null,
    "row": null
@@ -876,8 +876,8 @@
    "label": "Finland",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 10.753149390544325,
-   "text": "Gini: 0.277; pension spending: 10.8% of GDP",
+   "value": 10.747366126841223,
+   "text": "Gini: 0.277; pension spending: 10.7% of GDP",
    "table": null,
    "row": null
   },
@@ -886,7 +886,7 @@
    "label": "France",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 9.874718236983623,
+   "value": 9.868944299720765,
    "text": "Gini: 0.321; pension spending: 9.9% of GDP",
    "table": null,
    "row": null
@@ -896,7 +896,7 @@
    "label": "Germany",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 11.999631908480962,
+   "value": 11.994720386758292,
    "text": "Gini: 0.323; pension spending: 12.0% of GDP",
    "table": null,
    "row": null
@@ -906,7 +906,7 @@
    "label": "Greece",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 12.217984594947108,
+   "value": 12.214760838241933,
    "text": "Gini: 0.331; pension spending: 12.2% of GDP",
    "table": null,
    "row": null
@@ -916,7 +916,7 @@
    "label": "Hungary",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 14.23349320561297,
+   "value": 14.227722947058677,
    "text": "Gini: 0.303; pension spending: 14.2% of GDP",
    "table": null,
    "row": null
@@ -926,7 +926,7 @@
    "label": "Iceland",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 5.367939537308184,
+   "value": 5.365755279231792,
    "text": "Gini: 0.275; pension spending: 5.4% of GDP",
    "table": null,
    "row": null
@@ -936,7 +936,7 @@
    "label": "Ireland",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 4.480040517257967,
+   "value": 4.497013246750868,
    "text": "Gini: 0.302; pension spending: 4.5% of GDP",
    "table": null,
    "row": null
@@ -946,7 +946,7 @@
    "label": "Italy",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 11.886480038087276,
+   "value": 11.880692249826229,
    "text": "Gini: 0.358; pension spending: 11.9% of GDP",
    "table": null,
    "row": null
@@ -956,7 +956,7 @@
    "label": "Japan",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 12.205380802931396,
+   "value": 12.205151692738529,
    "text": "Gini: 0.330; pension spending: 12.2% of GDP",
    "table": null,
    "row": null
@@ -966,7 +966,7 @@
    "label": "Luxembourg",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 2.868088935573031,
+   "value": 2.86325798314347,
    "text": "Gini: 0.341; pension spending: 2.9% of GDP",
    "table": null,
    "row": null
@@ -976,7 +976,7 @@
    "label": "Netherlands",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 9.610238963023953,
+   "value": 9.60456209245497,
    "text": "Gini: 0.295; pension spending: 9.6% of GDP",
    "table": null,
    "row": null
@@ -986,7 +986,7 @@
    "label": "New Zealand",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 4.500037909773254,
+   "value": 4.502946731924494,
    "text": "Gini: 0.320; pension spending: 4.5% of GDP",
    "table": null,
    "row": null
@@ -996,7 +996,7 @@
    "label": "Norway",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 7.907340718936177,
+   "value": 7.904374779871507,
    "text": "Gini: 0.277; pension spending: 7.9% of GDP",
    "table": null,
    "row": null
@@ -1006,7 +1006,7 @@
    "label": "Poland",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 12.955682242009331,
+   "value": 12.950060781194622,
    "text": "Gini: 0.308; pension spending: 13.0% of GDP",
    "table": null,
    "row": null
@@ -1016,7 +1016,7 @@
    "label": "Portugal",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 12.190749488924984,
+   "value": 12.184998504026655,
    "text": "Gini: 0.328; pension spending: 12.2% of GDP",
    "table": null,
    "row": null
@@ -1026,7 +1026,7 @@
    "label": "Spain",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 8.75925249369822,
+   "value": 8.75349772364665,
    "text": "Gini: 0.343; pension spending: 8.8% of GDP",
    "table": null,
    "row": null
@@ -1036,7 +1036,7 @@
    "label": "Sweden",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 8.948640613116783,
+   "value": 8.943466037033769,
    "text": "Gini: 0.307; pension spending: 8.9% of GDP",
    "table": null,
    "row": null
@@ -1046,7 +1046,7 @@
    "label": "Switzerland",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 7.735557118984145,
+   "value": 7.731260592965473,
    "text": "Gini: 0.343; pension spending: 7.7% of GDP",
    "table": null,
    "row": null
@@ -1056,7 +1056,7 @@
    "label": "United Kingdom",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 9.259831850593734,
+   "value": 9.264598617041836,
    "text": "Gini: 0.329; pension spending: 9.3% of GDP",
    "table": null,
    "row": null
@@ -1066,7 +1066,7 @@
    "label": "United States",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": 7.366000000001043,
+   "value": 7.3660000000010415,
    "text": "Gini: 0.419; pension spending: 7.4% of GDP",
    "table": null,
    "row": null
@@ -1076,8 +1076,8 @@
    "label": "fitted line",
    "series": "model",
    "panel": "pension spending against Gini",
-   "value": -10.199889411546406,
-   "text": "slope -10.20 (s.e. 18.23)",
+   "value": -10.245614103788698,
+   "text": "slope -10.25 (s.e. 18.21)",
    "table": "OECD26_Slopes",
    "row": "spending_gini"
   },
@@ -1356,8 +1356,8 @@
    "label": "Australia",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 3.834078774296189,
-   "text": "Bismarckian index: 0.831; pension spending: 3.8% of GDP",
+   "value": 3.8461477714441497,
+   "text": "Bismarckian index: 0.826; pension spending: 3.8% of GDP",
    "table": null,
    "row": null
   },
@@ -1366,8 +1366,8 @@
    "label": "Austria",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 9.779699537503866,
-   "text": "Bismarckian index: 0.891; pension spending: 9.8% of GDP",
+   "value": 9.773926913663558,
+   "text": "Bismarckian index: 0.894; pension spending: 9.8% of GDP",
    "table": null,
    "row": null
   },
@@ -1376,8 +1376,8 @@
    "label": "Belgium",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 9.222016875747068,
-   "text": "Bismarckian index: 0.923; pension spending: 9.2% of GDP",
+   "value": 9.225729927193438,
+   "text": "Bismarckian index: 0.920; pension spending: 9.2% of GDP",
    "table": null,
    "row": null
   },
@@ -1386,7 +1386,7 @@
    "label": "Canada",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 6.424092506894281,
+   "value": 6.4234685781909935,
    "text": "Bismarckian index: 0.852; pension spending: 6.4% of GDP",
    "table": null,
    "row": null
@@ -1396,8 +1396,8 @@
    "label": "Czech Republic",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 10.733450790661845,
-   "text": "Bismarckian index: 0.907; pension spending: 10.7% of GDP",
+   "value": 10.750373522903484,
+   "text": "Bismarckian index: 0.904; pension spending: 10.8% of GDP",
    "table": null,
    "row": null
   },
@@ -1406,8 +1406,8 @@
    "label": "Denmark",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 9.567675787430352,
-   "text": "Bismarckian index: 0.910; pension spending: 9.6% of GDP",
+   "value": 9.573050735749549,
+   "text": "Bismarckian index: 0.909; pension spending: 9.6% of GDP",
    "table": null,
    "row": null
   },
@@ -1416,8 +1416,8 @@
    "label": "Finland",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 10.753149390544325,
-   "text": "Bismarckian index: 0.933; pension spending: 10.8% of GDP",
+   "value": 10.747366126841223,
+   "text": "Bismarckian index: 0.938; pension spending: 10.7% of GDP",
    "table": null,
    "row": null
   },
@@ -1426,8 +1426,8 @@
    "label": "France",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 9.874718236983623,
-   "text": "Bismarckian index: 0.890; pension spending: 9.9% of GDP",
+   "value": 9.868944299720765,
+   "text": "Bismarckian index: 0.891; pension spending: 9.9% of GDP",
    "table": null,
    "row": null
   },
@@ -1436,7 +1436,7 @@
    "label": "Germany",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 11.999631908480962,
+   "value": 11.994720386758292,
    "text": "Bismarckian index: 0.910; pension spending: 12.0% of GDP",
    "table": null,
    "row": null
@@ -1446,8 +1446,8 @@
    "label": "Greece",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 12.217984594947108,
-   "text": "Bismarckian index: 0.904; pension spending: 12.2% of GDP",
+   "value": 12.214760838241933,
+   "text": "Bismarckian index: 0.900; pension spending: 12.2% of GDP",
    "table": null,
    "row": null
   },
@@ -1456,7 +1456,7 @@
    "label": "Hungary",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 14.23349320561297,
+   "value": 14.227722947058677,
    "text": "Bismarckian index: 0.889; pension spending: 14.2% of GDP",
    "table": null,
    "row": null
@@ -1466,8 +1466,8 @@
    "label": "Iceland",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 5.367939537308184,
-   "text": "Bismarckian index: 0.886; pension spending: 5.4% of GDP",
+   "value": 5.365755279231792,
+   "text": "Bismarckian index: 0.881; pension spending: 5.4% of GDP",
    "table": null,
    "row": null
   },
@@ -1476,8 +1476,8 @@
    "label": "Ireland",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 4.480040517257967,
-   "text": "Bismarckian index: 0.834; pension spending: 4.5% of GDP",
+   "value": 4.497013246750868,
+   "text": "Bismarckian index: 0.833; pension spending: 4.5% of GDP",
    "table": null,
    "row": null
   },
@@ -1486,8 +1486,8 @@
    "label": "Italy",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 11.886480038087276,
-   "text": "Bismarckian index: 0.926; pension spending: 11.9% of GDP",
+   "value": 11.880692249826229,
+   "text": "Bismarckian index: 0.921; pension spending: 11.9% of GDP",
    "table": null,
    "row": null
   },
@@ -1496,7 +1496,7 @@
    "label": "Japan",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 12.205380802931396,
+   "value": 12.205151692738529,
    "text": "Bismarckian index: 0.931; pension spending: 12.2% of GDP",
    "table": null,
    "row": null
@@ -1506,8 +1506,8 @@
    "label": "Luxembourg",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 2.868088935573031,
-   "text": "Bismarckian index: 0.831; pension spending: 2.9% of GDP",
+   "value": 2.86325798314347,
+   "text": "Bismarckian index: 0.827; pension spending: 2.9% of GDP",
    "table": null,
    "row": null
   },
@@ -1516,8 +1516,8 @@
    "label": "Netherlands",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 9.610238963023953,
-   "text": "Bismarckian index: 0.908; pension spending: 9.6% of GDP",
+   "value": 9.60456209245497,
+   "text": "Bismarckian index: 0.905; pension spending: 9.6% of GDP",
    "table": null,
    "row": null
   },
@@ -1526,8 +1526,8 @@
    "label": "New Zealand",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 4.500037909773254,
-   "text": "Bismarckian index: 0.870; pension spending: 4.5% of GDP",
+   "value": 4.502946731924494,
+   "text": "Bismarckian index: 0.869; pension spending: 4.5% of GDP",
    "table": null,
    "row": null
   },
@@ -1536,8 +1536,8 @@
    "label": "Norway",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 7.907340718936177,
-   "text": "Bismarckian index: 0.909; pension spending: 7.9% of GDP",
+   "value": 7.904374779871507,
+   "text": "Bismarckian index: 0.908; pension spending: 7.9% of GDP",
    "table": null,
    "row": null
   },
@@ -1546,8 +1546,8 @@
    "label": "Poland",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 12.955682242009331,
-   "text": "Bismarckian index: 0.892; pension spending: 13.0% of GDP",
+   "value": 12.950060781194622,
+   "text": "Bismarckian index: 0.895; pension spending: 13.0% of GDP",
    "table": null,
    "row": null
   },
@@ -1556,8 +1556,8 @@
    "label": "Portugal",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 12.190749488924984,
-   "text": "Bismarckian index: 0.886; pension spending: 12.2% of GDP",
+   "value": 12.184998504026655,
+   "text": "Bismarckian index: 0.881; pension spending: 12.2% of GDP",
    "table": null,
    "row": null
   },
@@ -1566,7 +1566,7 @@
    "label": "Spain",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 8.75925249369822,
+   "value": 8.75349772364665,
    "text": "Bismarckian index: 0.890; pension spending: 8.8% of GDP",
    "table": null,
    "row": null
@@ -1576,8 +1576,8 @@
    "label": "Sweden",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 8.948640613116783,
-   "text": "Bismarckian index: 0.932; pension spending: 8.9% of GDP",
+   "value": 8.943466037033769,
+   "text": "Bismarckian index: 0.934; pension spending: 8.9% of GDP",
    "table": null,
    "row": null
   },
@@ -1586,8 +1586,8 @@
    "label": "Switzerland",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 7.735557118984145,
-   "text": "Bismarckian index: 0.890; pension spending: 7.7% of GDP",
+   "value": 7.731260592965473,
+   "text": "Bismarckian index: 0.891; pension spending: 7.7% of GDP",
    "table": null,
    "row": null
   },
@@ -1596,8 +1596,8 @@
    "label": "United Kingdom",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 9.259831850593734,
-   "text": "Bismarckian index: 0.869; pension spending: 9.3% of GDP",
+   "value": 9.264598617041836,
+   "text": "Bismarckian index: 0.866; pension spending: 9.3% of GDP",
    "table": null,
    "row": null
   },
@@ -1606,8 +1606,8 @@
    "label": "United States",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 7.366000000001043,
-   "text": "Bismarckian index: 0.837; pension spending: 7.4% of GDP",
+   "value": 7.3660000000010415,
+   "text": "Bismarckian index: 0.840; pension spending: 7.4% of GDP",
    "table": null,
    "row": null
   },
@@ -1616,8 +1616,8 @@
    "label": "fitted line",
    "series": "model",
    "panel": "pension spending against Bismarckian index",
-   "value": 65.9736019700105,
-   "text": "slope 65.97 (s.e. 14.21)",
+   "value": 65.35249255187213,
+   "text": "slope 65.35 (s.e. 13.83)",
    "table": "OECD26_Slopes",
    "row": "spending_index"
   },
@@ -1896,8 +1896,8 @@
    "label": "Australia",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8308780933706061,
-   "text": "population 2020/1990: 1.50; Bismarckian index: 0.831",
+   "value": 0.8255945046546104,
+   "text": "population 2020/1990: 1.50; Bismarckian index: 0.826",
    "table": null,
    "row": null
   },
@@ -1906,8 +1906,8 @@
    "label": "Austria",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8913088782050779,
-   "text": "population 2020/1990: 1.16; Bismarckian index: 0.891",
+   "value": 0.8939348096797708,
+   "text": "population 2020/1990: 1.16; Bismarckian index: 0.894",
    "table": null,
    "row": null
   },
@@ -1916,8 +1916,8 @@
    "label": "Belgium",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.9234793371323412,
-   "text": "population 2020/1990: 1.15; Bismarckian index: 0.923",
+   "value": 0.9198743035867826,
+   "text": "population 2020/1990: 1.15; Bismarckian index: 0.920",
    "table": null,
    "row": null
   },
@@ -1926,7 +1926,7 @@
    "label": "Canada",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8519329264269754,
+   "value": 0.8521577537964152,
    "text": "population 2020/1990: 1.37; Bismarckian index: 0.852",
    "table": null,
    "row": null
@@ -1936,8 +1936,8 @@
    "label": "Czech Republic",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.907100766431563,
-   "text": "population 2020/1990: 1.03; Bismarckian index: 0.907",
+   "value": 0.9035032951883338,
+   "text": "population 2020/1990: 1.03; Bismarckian index: 0.904",
    "table": null,
    "row": null
   },
@@ -1946,8 +1946,8 @@
    "label": "Denmark",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.9095040583831067,
-   "text": "population 2020/1990: 1.13; Bismarckian index: 0.910",
+   "value": 0.9093404833587511,
+   "text": "population 2020/1990: 1.13; Bismarckian index: 0.909",
    "table": null,
    "row": null
   },
@@ -1956,8 +1956,8 @@
    "label": "Finland",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.9334756075354521,
-   "text": "population 2020/1990: 1.11; Bismarckian index: 0.933",
+   "value": 0.9375610517470901,
+   "text": "population 2020/1990: 1.11; Bismarckian index: 0.938",
    "table": null,
    "row": null
   },
@@ -1966,8 +1966,8 @@
    "label": "France",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8901375594993753,
-   "text": "population 2020/1990: 1.19; Bismarckian index: 0.890",
+   "value": 0.8910900754070685,
+   "text": "population 2020/1990: 1.19; Bismarckian index: 0.891",
    "table": null,
    "row": null
   },
@@ -1976,7 +1976,7 @@
    "label": "Germany",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.9097312577720096,
+   "value": 0.9098711545428692,
    "text": "population 2020/1990: 1.05; Bismarckian index: 0.910",
    "table": null,
    "row": null
@@ -1986,8 +1986,8 @@
    "label": "Greece",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.9036913453408066,
-   "text": "population 2020/1990: 1.05; Bismarckian index: 0.904",
+   "value": 0.89965457589672,
+   "text": "population 2020/1990: 1.05; Bismarckian index: 0.900",
    "table": null,
    "row": null
   },
@@ -1996,7 +1996,7 @@
    "label": "Hungary",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8894183134730099,
+   "value": 0.8892689796507429,
    "text": "population 2020/1990: 0.93; Bismarckian index: 0.889",
    "table": null,
    "row": null
@@ -2006,8 +2006,8 @@
    "label": "Iceland",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8861345270205467,
-   "text": "population 2020/1990: 1.40; Bismarckian index: 0.886",
+   "value": 0.8808332761181324,
+   "text": "population 2020/1990: 1.40; Bismarckian index: 0.881",
    "table": null,
    "row": null
   },
@@ -2016,8 +2016,8 @@
    "label": "Ireland",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8335978985357947,
-   "text": "population 2020/1990: 1.43; Bismarckian index: 0.834",
+   "value": 0.8327815433957076,
+   "text": "population 2020/1990: 1.43; Bismarckian index: 0.833",
    "table": null,
    "row": null
   },
@@ -2026,8 +2026,8 @@
    "label": "Italy",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.9258876987801932,
-   "text": "population 2020/1990: 1.05; Bismarckian index: 0.926",
+   "value": 0.9208897945810814,
+   "text": "population 2020/1990: 1.05; Bismarckian index: 0.921",
    "table": null,
    "row": null
   },
@@ -2036,7 +2036,7 @@
    "label": "Japan",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.9309506454182576,
+   "value": 0.9313001242034848,
    "text": "population 2020/1990: 1.02; Bismarckian index: 0.931",
    "table": null,
    "row": null
@@ -2046,8 +2046,8 @@
    "label": "Luxembourg",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8314709408215339,
-   "text": "population 2020/1990: 1.65; Bismarckian index: 0.831",
+   "value": 0.8271585730510812,
+   "text": "population 2020/1990: 1.65; Bismarckian index: 0.827",
    "table": null,
    "row": null
   },
@@ -2056,8 +2056,8 @@
    "label": "Netherlands",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.9076680065834735,
-   "text": "population 2020/1990: 1.17; Bismarckian index: 0.908",
+   "value": 0.904720657160064,
+   "text": "population 2020/1990: 1.17; Bismarckian index: 0.905",
    "table": null,
    "row": null
   },
@@ -2066,8 +2066,8 @@
    "label": "New Zealand",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8697375912432747,
-   "text": "population 2020/1990: 1.50; Bismarckian index: 0.870",
+   "value": 0.8689500079031068,
+   "text": "population 2020/1990: 1.50; Bismarckian index: 0.869",
    "table": null,
    "row": null
   },
@@ -2076,8 +2076,8 @@
    "label": "Norway",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.9089970677871444,
-   "text": "population 2020/1990: 1.27; Bismarckian index: 0.909",
+   "value": 0.9080643912153038,
+   "text": "population 2020/1990: 1.27; Bismarckian index: 0.908",
    "table": null,
    "row": null
   },
@@ -2086,8 +2086,8 @@
    "label": "Poland",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8918466830751869,
-   "text": "population 2020/1990: 1.00; Bismarckian index: 0.892",
+   "value": 0.8950216165916203,
+   "text": "population 2020/1990: 1.00; Bismarckian index: 0.895",
    "table": null,
    "row": null
   },
@@ -2096,8 +2096,8 @@
    "label": "Portugal",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8859878371655158,
-   "text": "population 2020/1990: 1.04; Bismarckian index: 0.886",
+   "value": 0.8809517423275958,
+   "text": "population 2020/1990: 1.04; Bismarckian index: 0.881",
    "table": null,
    "row": null
   },
@@ -2106,7 +2106,7 @@
    "label": "Spain",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8895245787056871,
+   "value": 0.8895264476593921,
    "text": "population 2020/1990: 1.22; Bismarckian index: 0.890",
    "table": null,
    "row": null
@@ -2116,8 +2116,8 @@
    "label": "Sweden",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.9320784105905644,
-   "text": "population 2020/1990: 1.21; Bismarckian index: 0.932",
+   "value": 0.9342794940904469,
+   "text": "population 2020/1990: 1.21; Bismarckian index: 0.934",
    "table": null,
    "row": null
   },
@@ -2126,8 +2126,8 @@
    "label": "Switzerland",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8899573154096132,
-   "text": "population 2020/1990: 1.29; Bismarckian index: 0.890",
+   "value": 0.8906650301419353,
+   "text": "population 2020/1990: 1.29; Bismarckian index: 0.891",
    "table": null,
    "row": null
   },
@@ -2136,8 +2136,8 @@
    "label": "United Kingdom",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8685978732880095,
-   "text": "population 2020/1990: 1.17; Bismarckian index: 0.869",
+   "value": 0.8660503047149761,
+   "text": "population 2020/1990: 1.17; Bismarckian index: 0.866",
    "table": null,
    "row": null
   },
@@ -2146,8 +2146,8 @@
    "label": "United States",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": 0.8365988466312037,
-   "text": "population 2020/1990: 1.33; Bismarckian index: 0.837",
+   "value": 0.8395921285623309,
+   "text": "population 2020/1990: 1.33; Bismarckian index: 0.840",
    "table": null,
    "row": null
   },
@@ -2156,8 +2156,8 @@
    "label": "fitted line",
    "series": "model",
    "panel": "Bismarckian index against population 2020/1990",
-   "value": -0.12588534111810645,
-   "text": "slope -0.13 (s.e. 0.02)",
+   "value": -0.12876846783443466,
+   "text": "slope -0.13 (s.e. 0.03)",
    "table": "OECD26_Slopes",
    "row": "index_growth"
   },
@@ -2436,8 +2436,8 @@
    "label": "Australia",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8308780933706061,
-   "text": "Gini: 0.340; Bismarckian index: 0.831",
+   "value": 0.8255945046546104,
+   "text": "Gini: 0.340; Bismarckian index: 0.826",
    "table": null,
    "row": null
   },
@@ -2446,8 +2446,8 @@
    "label": "Austria",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8913088782050779,
-   "text": "Gini: 0.304; Bismarckian index: 0.891",
+   "value": 0.8939348096797708,
+   "text": "Gini: 0.304; Bismarckian index: 0.894",
    "table": null,
    "row": null
   },
@@ -2456,8 +2456,8 @@
    "label": "Belgium",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.9234793371323412,
-   "text": "Gini: 0.274; Bismarckian index: 0.923",
+   "value": 0.9198743035867826,
+   "text": "Gini: 0.274; Bismarckian index: 0.920",
    "table": null,
    "row": null
   },
@@ -2466,7 +2466,7 @@
    "label": "Canada",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8519329264269754,
+   "value": 0.8521577537964152,
    "text": "Gini: 0.318; Bismarckian index: 0.852",
    "table": null,
    "row": null
@@ -2476,8 +2476,8 @@
    "label": "Czech Republic",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.907100766431563,
-   "text": "Gini: 0.254; Bismarckian index: 0.907",
+   "value": 0.9035032951883338,
+   "text": "Gini: 0.254; Bismarckian index: 0.904",
    "table": null,
    "row": null
   },
@@ -2486,8 +2486,8 @@
    "label": "Denmark",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.9095040583831067,
-   "text": "Gini: 0.283; Bismarckian index: 0.910",
+   "value": 0.9093404833587511,
+   "text": "Gini: 0.283; Bismarckian index: 0.909",
    "table": null,
    "row": null
   },
@@ -2496,8 +2496,8 @@
    "label": "Finland",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.9334756075354521,
-   "text": "Gini: 0.277; Bismarckian index: 0.933",
+   "value": 0.9375610517470901,
+   "text": "Gini: 0.277; Bismarckian index: 0.938",
    "table": null,
    "row": null
   },
@@ -2506,8 +2506,8 @@
    "label": "France",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8901375594993753,
-   "text": "Gini: 0.321; Bismarckian index: 0.890",
+   "value": 0.8910900754070685,
+   "text": "Gini: 0.321; Bismarckian index: 0.891",
    "table": null,
    "row": null
   },
@@ -2516,7 +2516,7 @@
    "label": "Germany",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.9097312577720096,
+   "value": 0.9098711545428692,
    "text": "Gini: 0.323; Bismarckian index: 0.910",
    "table": null,
    "row": null
@@ -2526,8 +2526,8 @@
    "label": "Greece",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.9036913453408066,
-   "text": "Gini: 0.331; Bismarckian index: 0.904",
+   "value": 0.89965457589672,
+   "text": "Gini: 0.331; Bismarckian index: 0.900",
    "table": null,
    "row": null
   },
@@ -2536,7 +2536,7 @@
    "label": "Hungary",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8894183134730099,
+   "value": 0.8892689796507429,
    "text": "Gini: 0.303; Bismarckian index: 0.889",
    "table": null,
    "row": null
@@ -2546,8 +2546,8 @@
    "label": "Iceland",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8861345270205467,
-   "text": "Gini: 0.275; Bismarckian index: 0.886",
+   "value": 0.8808332761181324,
+   "text": "Gini: 0.275; Bismarckian index: 0.881",
    "table": null,
    "row": null
   },
@@ -2556,8 +2556,8 @@
    "label": "Ireland",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8335978985357947,
-   "text": "Gini: 0.302; Bismarckian index: 0.834",
+   "value": 0.8327815433957076,
+   "text": "Gini: 0.302; Bismarckian index: 0.833",
    "table": null,
    "row": null
   },
@@ -2566,8 +2566,8 @@
    "label": "Italy",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.9258876987801932,
-   "text": "Gini: 0.358; Bismarckian index: 0.926",
+   "value": 0.9208897945810814,
+   "text": "Gini: 0.358; Bismarckian index: 0.921",
    "table": null,
    "row": null
   },
@@ -2576,7 +2576,7 @@
    "label": "Japan",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.9309506454182576,
+   "value": 0.9313001242034848,
    "text": "Gini: 0.330; Bismarckian index: 0.931",
    "table": null,
    "row": null
@@ -2586,8 +2586,8 @@
    "label": "Luxembourg",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8314709408215339,
-   "text": "Gini: 0.341; Bismarckian index: 0.831",
+   "value": 0.8271585730510812,
+   "text": "Gini: 0.341; Bismarckian index: 0.827",
    "table": null,
    "row": null
   },
@@ -2596,8 +2596,8 @@
    "label": "Netherlands",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.9076680065834735,
-   "text": "Gini: 0.295; Bismarckian index: 0.908",
+   "value": 0.904720657160064,
+   "text": "Gini: 0.295; Bismarckian index: 0.905",
    "table": null,
    "row": null
   },
@@ -2606,8 +2606,8 @@
    "label": "New Zealand",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8697375912432747,
-   "text": "Gini: 0.320; Bismarckian index: 0.870",
+   "value": 0.8689500079031068,
+   "text": "Gini: 0.320; Bismarckian index: 0.869",
    "table": null,
    "row": null
   },
@@ -2616,8 +2616,8 @@
    "label": "Norway",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.9089970677871444,
-   "text": "Gini: 0.277; Bismarckian index: 0.909",
+   "value": 0.9080643912153038,
+   "text": "Gini: 0.277; Bismarckian index: 0.908",
    "table": null,
    "row": null
   },
@@ -2626,8 +2626,8 @@
    "label": "Poland",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8918466830751869,
-   "text": "Gini: 0.308; Bismarckian index: 0.892",
+   "value": 0.8950216165916203,
+   "text": "Gini: 0.308; Bismarckian index: 0.895",
    "table": null,
    "row": null
   },
@@ -2636,8 +2636,8 @@
    "label": "Portugal",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8859878371655158,
-   "text": "Gini: 0.328; Bismarckian index: 0.886",
+   "value": 0.8809517423275958,
+   "text": "Gini: 0.328; Bismarckian index: 0.881",
    "table": null,
    "row": null
   },
@@ -2646,7 +2646,7 @@
    "label": "Spain",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8895245787056871,
+   "value": 0.8895264476593921,
    "text": "Gini: 0.343; Bismarckian index: 0.890",
    "table": null,
    "row": null
@@ -2656,8 +2656,8 @@
    "label": "Sweden",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.9320784105905644,
-   "text": "Gini: 0.307; Bismarckian index: 0.932",
+   "value": 0.9342794940904469,
+   "text": "Gini: 0.307; Bismarckian index: 0.934",
    "table": null,
    "row": null
   },
@@ -2666,8 +2666,8 @@
    "label": "Switzerland",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8899573154096132,
-   "text": "Gini: 0.343; Bismarckian index: 0.890",
+   "value": 0.8906650301419353,
+   "text": "Gini: 0.343; Bismarckian index: 0.891",
    "table": null,
    "row": null
   },
@@ -2676,8 +2676,8 @@
    "label": "United Kingdom",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8685978732880095,
-   "text": "Gini: 0.329; Bismarckian index: 0.869",
+   "value": 0.8660503047149761,
+   "text": "Gini: 0.329; Bismarckian index: 0.866",
    "table": null,
    "row": null
   },
@@ -2686,8 +2686,8 @@
    "label": "United States",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": 0.8365988466312037,
-   "text": "Gini: 0.419; Bismarckian index: 0.837",
+   "value": 0.8395921285623309,
+   "text": "Gini: 0.419; Bismarckian index: 0.840",
    "table": null,
    "row": null
   },
@@ -2696,8 +2696,8 @@
    "label": "fitted line",
    "series": "model",
    "panel": "Bismarckian index against Gini",
-   "value": -0.4132345513757523,
-   "text": "slope -0.41 (s.e. 0.17)",
+   "value": -0.4062342487399228,
+   "text": "slope -0.41 (s.e. 0.18)",
    "table": "OECD26_Slopes",
    "row": "index_gini"
   }

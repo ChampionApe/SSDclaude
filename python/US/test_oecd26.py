@@ -11,9 +11,13 @@ Run:  .venv\Scripts\python.exe python\US\test_oecd26.py        (~2 min)
   S  data/oecd26_sample.csv is A4's rule on data/oecd29.csv: 26 kept; Mexico, Turkey and Korea dropped.
   C  At θ ≡ 1 the log tax is notes/theory_closedForm.md eq (1.4) at every date and each country's ν, all 29, with
      the cost installed (it vanishes with its τ-derivative at θ = 1); the corner τ = 0 included (Mexico, Turkey).
-  R  At the inputs of the published run of 2026-10-03 (the workbooks before review-2026-10), the code path
-     reproduces its LOG numbers at its λ = 8.643207: the U.S. ω (β imposed at that calibration's value) with the
-     design in force in 2020 on the datum, and appendix G.1's UK and France (ω, the design in force in 2020).
+  R  At the inputs of the published run of 2026-10-03 (the workbooks before review-2026-10) and its λ = 8.643207,
+     the code path reproduces that run's ω of the U.S. (β imposed at that calibration's value) and of appendix
+     G.1's UK and France; the designs in force in 2020 are pinned at today's LeadedLOG (PUB's comment).
+  B  The log tax's gradient solve evaluates the condition only below the grid's u < 1 (policy.LOG._upper): from a warm
+     start past τ = 1 it returns the cold start's equilibrium; Turkey's layer-2 row under CSES, seeded at the anchor
+     of 2026-10-25, calibrates to the ω of the run of 2026-10-24; on cold solves, where no iterate reaches the bound,
+     the tax is bitwise the one under u = 1 (one process, crossCuttingFindings #1).
   D  The layers at coarse grids in a temporary directory against an anchor row at a given λ: three countries
      through both layers (the U.S., Australia at the clip θ = 0, Italy at θ = 1), the U.S. rows against the
      anchor, reuse of rows under an unchanged key, recomputation under force or a moved anchor, refusal of a
@@ -133,8 +137,12 @@ HEAD = {   # data/{US,UK,FR}Main*.xlsx as of the run of 2026-10-03: ν (1960..21
     'FR': ([1.0262988524061831, 1.0262988524061831, 0.9668838626647813, 0.9037438499264058, 0.8705914625994323],
            [0.5820540935672515, 0.17598684210526316, 0.24195906432748537], [25112., 39361., 73767.],
            [0.8097, 0.8567, 0.8518], 0.21285714285714286, 1.0)}
+# ω: the run of 2026-10-03; the designs in force in 2020 (θUS and the second entries): today's LeadedLOG at that
+# run's λ, which reads the anticipated tax solved at every candidate (that run's 41-node table gave 0.7382263651
+# -- the datum, on which its λ was calibrated --, 0.6246139324, 0.7489380486)
 PUB = {'λ': 8.64320735564998, 'βUS': 0.7585347063319889, 'ωUS': 1.507771142663732, 'βSweep': 0.7606187875474915,
-       'UK': (1.2168885576097583, 0.6246139324148803), 'FR': (1.4180571029150613, 0.7489380485757039)}
+       'θUS': 0.7377083813119105,
+       'UK': (1.2168885576097583, 0.6241113041731652), 'FR': (1.4180571029150613, 0.7475506558049251)}
 
 
 def headInputs(k):
@@ -147,17 +155,58 @@ cal = m.calibrate()
 θIn = m.leadedDesignAtT0(m.ESC.solveBackward())
 counts.append(('R U.S.', m.ESC.lastMultiplicity))
 check("R: U.S. at the published inputs and λ, β imposed: ω is escCalibration.csv's and the design in force in 2020 "
-      'is θ*', abs(cal['pars']['ω'] - PUB['ωUS']) < 1e-9 and abs(θIn - HEAD['US'][5]) < 1e-7,
-      'ω {:.10f} (published {:.10f}), design - θ* {:.1e}'.format(cal['pars']['ω'], PUB['ωUS'], θIn - HEAD['US'][5]))
+      "today's", abs(cal['pars']['ω'] - PUB['ωUS']) < 1e-9 and abs(θIn - PUB['θUS']) < 1e-7,
+      'ω {:.10f} (published {:.10f}), design {:.10f} ({:.10f}; θ* {:.10f})'.format(
+          cal['pars']['ω'], PUB['ωUS'], θIn, PUB['θUS'], HEAD['US'][5]))
 for k in ('UK', 'FR'):
     m = oecd26.build(headInputs(k), PUB['βSweep'], 1.3, PUB['λ'])
     cal = m.calibrate()
     sols = m.ESC.solveBackward()
     θIn = m.leadedDesignAtT0(sols)
     counts.append(('R ' + k, m.ESC.lastMultiplicity))
-    check('R: {} at the published inputs under the U.S. λ: ω and the design in force in 2020 reproduce '
-          'escCountry.csv'.format(k), abs(cal['pars']['ω'] - PUB[k][0]) < 1e-9 and abs(θIn - PUB[k][1]) < 1e-9,
-          'ω {:.10f} (published {:.10f}), θ {:.10f} (published {:.10f})'.format(cal['pars']['ω'], PUB[k][0], θIn, PUB[k][1]))
+    check("R: {} at the published inputs under the U.S. λ: ω reproduces escCountry.csv, the design in force in 2020 "
+          "is today's".format(k), abs(cal['pars']['ω'] - PUB[k][0]) < 1e-9 and abs(θIn - PUB[k][1]) < 1e-9,
+          'ω {:.10f} (published {:.10f}), θ {:.10f} ({:.10f})'.format(cal['pars']['ω'], PUB[k][0], θIn, PUB[k][1]))
+
+# ==== B: the gradient solve's upper bound =====================================================================
+fine = R.settings()
+inpUS = oecd26.countryInputs('USA')
+ref = R._build(inpUS, β, ωSeed, 10., fine).solvePEE_LOG()['τ'].values.astype(float)
+dev, err = 0., ''
+for x0 in (np.r_[1.5, ref[1:]], np.full(len(ref), 3.)):
+    m = R._build(inpUS, β, ωSeed, 10., fine)
+    m.LOG.x0['vectorized'] = x0                       # the warm start a previous solve leaves behind
+    try:
+        out = m.solvePEE_LOG()
+        counts.append(('B warm start past 1', out['multiplicity']))
+        dev = max(dev, float(np.max(np.abs(out['τ'].values.astype(float) - ref))))
+    except Exception as e:
+        dev, err = np.inf, '{}: {}'.format(type(e).__name__, e)
+check("B: from a warm start past τ = 1 (the first date; every date at 3) the log tax solve returns the cold start's "
+      "equilibrium", dev < 1e-9, err or 'max |Δτ| {:.1e}'.format(dev))
+# runOECD26's layer 2, CSES, Turkey (θ = 1, so λ does not enter): β of results/calibration at 2026-10-25, ω seeded at
+# results/oecd26/anchor.csv's cses row of that day, where the ω root's first step sent the tax past 1; the ω of
+# layer2.csv's row of 2026-10-24, seeded at that day's anchor
+TUR = {'β': 0.655483014875856, 'ωSeed': 1.287314893152347, 'λ': 13.44349660231993, 'ω': 1.5265055644780803}
+m = R._build(oecd26.countryInputs('TUR', 'cses'), TUR['β'], TUR['ωSeed'], TUR['λ'], fine)
+try:
+    cal = m.calibrate()
+    counts.append(('B TUR cses', cal['report']['PEE']['multiplicity']))
+    ok = abs(cal['pars']['ω'] - TUR['ω']) < 1e-9 and abs(cal['report']['τ'] - m.db['τ0']) < 1e-8
+    msg = 'ω {:.10f}, minus 2026-10-24\'s {:.1e}; τ_2020 - τ0 {:.1e}'.format(
+        cal['pars']['ω'], cal['pars']['ω'] - TUR['ω'], cal['report']['τ'] - m.db['τ0'])
+except Exception as e:
+    ok, msg = False, '{}: {}'.format(type(e).__name__, e)
+check("B: Turkey's layer-2 row under CSES, ω seeded at the anchor of 2026-10-25, calibrates to the ω of 2026-10-24",
+      ok, msg)
+same = []
+for iso in ('USA', 'AUS', 'ITA', 'TUR'):
+    inp = oecd26.countryInputs(iso)
+    a, b = R._build(inp, β, ωSeed, 10., fine), R._build(inp, β, ωSeed, 10., fine)
+    θc, εc = a.db['θ'].values, a.db['eps'].values
+    same.append(np.array_equal(a.LOG.solveRobust(θc, εc, u = 1.)['τ'].values, b.LOG.solveRobust(θc, εc)['τ'].values))
+check('B: on cold solves the tax is bitwise the one under u = 1 (USA, AUS, ITA, TUR, one process)', all(same),
+      '{} of {} bitwise'.format(sum(same), len(same)))
 
 # ==== D: the driver ===========================================================================================
 tmp = tempfile.mkdtemp(prefix = 'oecd26_')

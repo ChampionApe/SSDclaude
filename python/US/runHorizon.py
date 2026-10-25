@@ -33,17 +33,19 @@ smoothing, at the nodes of the state grid S, the midpoints of its cells and the 
 enters t with, against the solved continuation tau_{t+1}(.) (CRRA.solveBackward_t / solveTerminal). The
 residual is tau_FOC(s) - tau_hat_t(s): the root of the first order condition at s against the policy
 function the recursion and the path use (smoothed, interpolated, clipped to [l, u]), in units of the tax.
-Two references: '' the condition as the solver evaluates it (its tax grid, its tau-derivatives:
-CRRA.focParts_t's smoothing spline in tau, absolute s = 1e-4), which isolates the state interpolation and the
-policy smoothing; 'Ref' the condition with converged tau-derivatives (an interpolating spline, s = 0, on a tax
-grid refined --refine-fold), the residual against the first order condition itself. Written as summary
+Two references: '' the condition as the solver evaluates it (its tax grid of 101 nodes, its tau-derivatives:
+CRRA._gradProfile's least-squares cubic in ln(1-tau), knots gradKnotSpacing = 0.04 apart in tau), which isolates
+the state interpolation and the policy smoothing; 'Ref' the same derivatives on a tax grid refined --refine-fold
+(801 nodes at the default 8, the knots still 0.04 apart: CRRA._gradKnots), where they have converged (to 1.8e-5 in
+the 2020 tax of a whole solve from 101 to 801 nodes; an interpolating spline does not converge here, python/US
+RESEARCH_LOG.md, 2026-10-24), so 'Ref' is the residual against the first order condition itself. Written as summary
 statistics (max, 99th percentile, median of |residual|) per (rho, ns, period, set, region): set 'node'
 (smoothing alone), 'cell' (interpolation and smoothing), 'path'; region 'all' or 'visited' (within the
 path's range of s, padded 20%).
 
-SCHEME. The whole solve at the calibrated parameters under the reference derivatives of RESIDUALS (n = 801,
-s = 0) against the published one: tau and s/Y at 2020 and 2050, and at theta = 0 and theta = 1 (shocks.py), whose
-gap in 2020 is section 6's design effect.
+SCHEME. The whole solve at the calibrated parameters under the reference of RESIDUALS (n = 801, the knots
+held) against the published one (n = 101): tau and s/Y at 2020 and 2050, and at theta = 0 and theta = 1 (shocks.py),
+whose gap in 2020 is section 6's design effect.
 
 JUMPS. tau_2020 over a fine scan of omega around its calibrated value (beta, X fixed): isolated spikes in the
 successive differences are discrete selection changes (finding #5); their size against the residuals says
@@ -66,11 +68,9 @@ os.chdir(HERE)
 
 import test as testmod
 import shocks as sh
-import policy
 from model import ModelUS
 from modelESC import ModelESC
 from policy import multiplicityColumns
-from gridsearch import interp
 
 OUTDIR = os.path.join(REPO, 'results', 'numerical')
 CALDIR = os.path.join(REPO, 'results', 'calibration')
@@ -302,18 +302,23 @@ def refined(τGrid, k):
 
 
 @contextmanager
-def referenceDerivatives(m, k):
-    """ The CRRA tax condition with converged tau-derivatives: CRRA.focParts_t's spline replaced by an
-    interpolating one (s = 0) and m's tax grid refined k-fold, restored on exit. policy.griddedGradient1D is the
-    name focParts_t resolves at call time; nothing else in the US tax solve calls it. """
-    grid, orig = m.CRRA.GS['PEE']['solGrids']['τ'].copy(), policy.griddedGradient1D
-    policy.griddedGradient1D = lambda x, y, s = 1e-4, k_ = 3, knots = None: interp._splineAlongAxis0(x, y, 0.0, 3, True)
+def referenceDerivatives(m, k, spacing = None):
+    """ The CRRA tax condition with converged tau-derivatives: m's tax grid refined k-fold with the derivatives'
+    knots held `spacing` apart in tau (gridSettings' gradKnotSpacing, the production 0.04 by default), so that
+    CRRA._gradKnots puts k times as many nodes under each knot; both restored on exit. """
+    settings = m.CRRA.GS['PEE']['gridSettings']
+    grid, spacing0 = m.CRRA.GS['PEE']['solGrids']['τ'].copy(), settings.get('gradKnotSpacing')
     m.CRRA.GS['PEE']['solGrids']['τ'] = refined(grid, k)
+    if spacing is not None:
+        settings['gradKnotSpacing'] = float(spacing)
     try:
         yield
     finally:
-        policy.griddedGradient1D = orig
         m.CRRA.GS['PEE']['solGrids']['τ'] = grid
+        if spacing0 is None:
+            settings.pop('gradKnotSpacing', None)
+        else:
+            settings['gradKnotSpacing'] = spacing0
 
 
 def stats(r):
@@ -405,10 +410,9 @@ def stageJumps(ρs, nss, nScan, width, out):
 
 
 def stageScheme(ρs, refine, out):
-    """ The whole CRRA solve at the calibrated parameters, published scheme against the reference derivatives
+    """ The whole CRRA solve at the calibrated parameters, published tax grid against the reference
     (referenceDerivatives on every period): the baseline and the theta = 0 / theta = 1 paths read at 2020/2050.
-    Parameters are not recalibrated under the reference derivatives: ModelUS.calibrate's root stalls there (at a
-    residual of 2e-3 at rho = 0.5). """
+    Parameters are held at the calibration, so the difference is the tax grid's alone. """
     rows = []
     for ρ in ρs:
         row = sweepRow(ρ)

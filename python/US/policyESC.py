@@ -232,20 +232,40 @@ class LeadedLOG(LeadedBase):
         return W, {'h': h, 's': s, 'R1': R1, 'Γs': Γs, 'Θh': Θh}
 
     # ------------------------------------------------------------------ one period
-    def solveBackward_t(self, t, tLag, t1, cont, terminal1):
-        """ One period of the recursion: tauPolicy_t on the state grid, then thetaPolicy_t by maximising
-        W_t over self.θCand at each state node.
+    def taxes_t(self, t, tLag, terminal, cand = True):
+        """ Step 2 of alg esc:leaded at period t: tauPolicy_t solved (τOfθ, polished) on the state grid and,
+        with cand, at every candidate design -- the anticipated tax function T_t(θ') that period t-1's
+        choice reads at its candidates. Solved there rather than interpolated off the state grid: between
+        nodes a piecewise-linear table has the secant's slope, not T_t', and the design objective is flat
+        enough at its maximum for that slope to move the argmax (finding #19). Returns the period-dict
+        entries 'τ', 'atBoundτ', 'nMaxτ', 'nCandτ', 'nEqτ', 'fallbackτ' (nθ,) on θGrid and 'τCand',
+        'nCandτCand', 'nEqτCand', 'fallbackτCand' (nθCand,) on θCand ('τCand' None without cand). """
+        K = self.nθ
+        θs = np.concatenate([self.θGrid, self.θCand]) if cand else self.θGrid
+        τ, atBound, nMax, ex = self.τOfθ(t, θs, tLag, terminal = terminal)
+        out = {'τ': τ[:K], 'atBoundτ': atBound[:K], 'nMaxτ': nMax[:K], 'nCandτ': ex['nCand'][:K],
+               'nEqτ': ex['nEq'][:K], 'fallbackτ': ex['fallback'][:K], 'τCand': None}
+        if cand:
+            out |= {'τCand': τ[K:], 'nCandτCand': ex['nCand'][K:], 'nEqτCand': ex['nEq'][K:],
+                    'fallbackτCand': ex['fallback'][K:]}
+        return out
 
-        cont: {'τPolicy1': callable theta1 -> tau_{t+1}, 'θPolicy1': callable or None (None iff t+1 is
-        terminal), 'τPolicy2': callable theta2 -> tau_{t+2} or None}. """
-        τState, atBoundτ, nMaxτ, extraτ = self.τOfθ(t, self.θGrid, tLag, terminal = False)
+    def solveBackward_t(self, t, tLag, t1, cont, terminal1, cand = True):
+        """ One period of the recursion: tauPolicy_t on the state grid (and at the candidates, taxes_t),
+        then thetaPolicy_t by maximising W_t over self.θCand at each state node.
+
+        cont: {'τ1Cand': (nθCand,) T_{t+1} at every candidate design, solved (taxes_t of t+1), 'θPolicy1':
+        callable or None (None iff t+1 is terminal), 'τPolicy2': callable theta2 -> tau_{t+2} or None}.
+        theta_{t+2} = thetaPolicy_{t+1}(theta') is the same at every candidate (the choice has no state,
+        module docstring), so tau_{t+2} read off t+2's table moves W_t's level alone, not its argmax. """
+        tax = self.taxes_t(t, tLag, terminal = False, cand = cand)
 
         K, C = self.nθ, self.nθCand
         θtM = np.repeat(self.θGrid, C)                 # (K*C,)
-        τtM = np.repeat(τState, C)
+        τtM = np.repeat(tax['τ'], C)
         θ1M = np.tile(self.θCand, K)
 
-        τ1 = cont['τPolicy1'](θ1M)
+        τ1 = np.tile(np.asarray(cont['τ1Cand'], dtype = float), K)
         if terminal1:
             θ2 = τ2 = None
         else:
@@ -257,11 +277,38 @@ class LeadedLOG(LeadedBase):
 
         θNext = np.empty(K); atBoundθ = np.empty(K, dtype = bool)
         for k in range(K):
-            θNext[k], atBoundθ[k] = self._argmax(self.θCand, W[k])
-        return {'θGrid': self.θGrid.copy(), 'τ': τState, 'θNext': θNext,
-                'atBoundτ': atBoundτ, 'nMaxτ': nMaxτ, 'nCandτ': extraτ['nCand'], 'nEqτ': extraτ['nEq'],
-                'fallbackτ': extraτ['fallback'], 'atBoundθ': atBoundθ, 'W': W,
-                'stateSpread': float(θNext.max() - θNext.min())}
+            θNext[k], atBoundθ[k] = self._argmaxCubic(self.θCand, W[k])
+        return tax | {'θGrid': self.θGrid.copy(), 'θNext': θNext, 'atBoundθ': atBoundθ, 'W': W,
+                      'stateSpread': float(θNext.max() - θNext.min())}
+
+    @staticmethod
+    def _argmaxCubic(x, y):
+        """ argmax of y over the uniform grid x, refined by the cubic through four nodes when the maximum is
+        interior: the maximising node, its two neighbours, and the next node on the side of the higher
+        neighbour. The parabola through three (LeadedBase._argmax) misplaces the vertex by O(h^2 y'''/y''),
+        the cubic by O(h^3). A corner is returned as a corner; where the four nodes do not fit on the grid
+        or the cubic has no maximum within a cell of the node, the parabola's answer. Returns (x*, atBound). """
+        k = int(np.argmax(y))
+        n = len(x)
+        if k == 0 or k == n-1:
+            return float(x[k]), True
+        xp, _ = LeadedBase._argmax(x, y)
+        j0 = k-2 if y[k-1] >= y[k+1] else k-1
+        if j0 < 0 or j0 + 4 > n or not np.all(np.isfinite(y[j0:j0+4])):
+            return xp, False
+        h = float(x[k+1] - x[k])
+        u = (np.asarray(x[j0:j0+4], dtype = float) - x[k])/h          # nodes in units of the step
+        a3, a2, a1, _ = np.polyfit(u, np.asarray(y[j0:j0+4], dtype = float) - y[k], 3)
+        # the stationary points, 3 a3 v^2 + 2 a2 v + a1 = 0, in the form that stays accurate as a3 -> 0
+        A, Bq, Cq = 3*a3, 2*a2, a1
+        disc = Bq*Bq - 4*A*Cq
+        if disc < 0:
+            r = []
+        else:
+            q = -0.5*(Bq + np.copysign(np.sqrt(disc), Bq))
+            r = ([q/A] if A != 0 else []) + ([Cq/q] if q != 0 else [])
+        r = [v for v in r if -1. <= v <= 1. and 6*a3*v + 2*a2 < 0]
+        return (float(x[k] + r[0]*h), False) if r else (xp, False)
 
     # ------------------------------------------------------------------ the recursion
     def solveBackward(self, tol = 0.0):
@@ -271,10 +318,11 @@ class LeadedLOG(LeadedBase):
         LOG.solveBackward_t's `terminal`). Period T-2 is the first with a theta choice, and its
         continuation reaches only into T-1, whose Theta_h is the terminal formula.
 
-        Returns {t: report}. Interpolation between grid nodes is piecewise linear (np.interp) throughout
-        -- notes/crossCuttingFindings.md #4/#5: this module's lineage has been bitten by adaptive knots
-        and by cubic overshoot in exactly this role, and a policy function about to be maximised over must
-        not carry interpolation wiggles. """
+        Returns {t: report}. The anticipated tax function T_{t+1}(θ') is solved at every candidate
+        (taxes_t); the policies read between state nodes (thetaPolicy_{t+1}, tauPolicy_{t+2}, and the
+        simulation's thetaPolicy_t) are piecewise linear (np.interp) -- notes/crossCuttingFindings.md #4/#5:
+        this module's lineage has been bitten by adaptive knots and by cubic overshoot in exactly this
+        role, and a policy function about to be maximised over must not carry interpolation wiggles. """
         self._requireZeroMass()
         tIdx = self.db['t']
         sols = {}
@@ -282,26 +330,31 @@ class LeadedLOG(LeadedBase):
             tT = tIdx[-1]
             posT = tIdx.get_loc(tT)
             tLagT = tIdx[posT-1] if posT > 0 else self.B.tFirst
-            τT, atBoundτT, nMaxτT, extraT = self.τOfθ(tT, self.θGrid, tLagT, terminal = True)
-            sols[tT] = {'θGrid': self.θGrid.copy(), 'τ': τT, 'θNext': None,
-                        'atBoundτ': atBoundτT, 'nMaxτ': nMaxτT, 'nCandτ': extraT['nCand'],
-                        'nEqτ': extraT['nEq'], 'fallbackτ': extraT['fallback'],
-                        'atBoundθ': None, 'terminal': True}
+            sols[tT] = {'θGrid': self.θGrid.copy(), 'θNext': None, 'atBoundθ': None, 'terminal': True} \
+                | self.taxes_t(tT, tLagT, terminal = True, cand = posT > 0)
 
             for pos in range(len(tIdx)-2, -1, -1):
                 t, t1 = tIdx[pos], tIdx[pos+1]
                 tLag = tIdx[pos-1] if pos > 0 else self.B.tFirst
                 terminal1 = (t1 == tIdx[-1])
                 s1 = sols[t1]
-                cont = {'τPolicy1': self._interp(s1['θGrid'], s1['τ']),
+                cont = {'τ1Cand': s1['τCand'],
                         'θPolicy1': None if terminal1 else self._interp(s1['θGrid'], s1['θNext']),
                         'τPolicy2': None}
                 if not terminal1:
                     s2 = sols[tIdx[pos+2]]
                     cont['τPolicy2'] = self._interp(s2['θGrid'], s2['τ'])
-                sols[t] = self.solveBackward_t(t, tLag, t1, cont, terminal1) | {'terminal': False}
-        self.lastMultiplicity = multiplicitySummary(sols, keys = ('nEqτ', 'nCandτ', 'fallbackτ'))
+                sols[t] = self.solveBackward_t(t, tLag, t1, cont, terminal1, cand = pos > 0) | {'terminal': False}
+        self.lastMultiplicity = self.multiplicity(sols)
         return sols
+
+    @staticmethod
+    def multiplicity(sols):
+        """ The tax rule's counts over a solution, policy.multiplicitySummary's six entries: the selections on
+        the state grid (nEqτ, nCandτ, fallbackτ) merged with those at the candidate designs (nEqτCand, ...;
+        taxes_t). """
+        return mergeMultiplicity([multiplicitySummary(sols, keys = ('nEqτ', 'nCandτ', 'fallbackτ')),
+                                  multiplicitySummary(sols, keys = ('nEqτCand', 'nCandτCand', 'fallbackτCand'))])
 
     @staticmethod
     def _interp(x, y):
@@ -469,14 +522,27 @@ class LeadedCRRA(LeadedBase):
 
 class Interp2D:
     """ A policy table over the 2-D state (s_, θ): piecewise-linear and linearly EXTRAPOLATING along s
-    (griddedInterp1D per θ column, NaN nodes dropped per column), piecewise-linear and clamped along θ
-    (the θ grid spans the whole unit interval, so no θ query can leave it). Linear throughout on purpose
-    -- notes/crossCuttingFindings.md #4/#5: an object feeding an argmax or a numerical derivative must
-    not carry interpolation wiggles. A column with fewer than two finite nodes evaluates to NaN. """
+    (griddedInterp1D per θ column, NaN nodes dropped per column), and along θ, clamped to the grid (which
+    spans the unit interval, so no θ query can leave it), by `kind`:
+      'cubic'   the Catmull-Rom cubic through the four nodes around the query (central-difference tangents,
+                C1, exact for quadratics; at an end cell the ghost node continues the end secant). The
+                design objective reads the continuation at candidate designs between θ nodes and is flat at
+                its maximum, so a piecewise-linear θ interpolant's kinks set the argmax (finding #19).
+                Catmull-Rom rather than a monotone cubic: PCHIP's tangents vanish at every turning point of
+                the nodal data, and the anticipated tax turns near the observed design. Where an outer node
+                is NaN the cell falls back to linear, so a query is NaN exactly when the linear one is.
+      'linear'  piecewise linear.
+    bounds: (lo, hi) the values are clipped to (a cubic can overshoot next to a kink or a flat stretch at a
+    bound), None for none. A column with fewer than two finite nodes evaluates to NaN. """
 
-    def __init__(self, sGrid, θGrid, tab):
+    KINDS = ('cubic', 'linear')
+
+    def __init__(self, sGrid, θGrid, tab, kind = 'cubic', bounds = None):
         """ tab: (ns, nθ) values on (sGrid, θGrid). """
+        if kind not in self.KINDS:
+            raise ValueError(f'Interp2D: kind {kind!r}, one of {self.KINDS}.')
         self.θGrid = np.asarray(θGrid, dtype = float)
+        self.kind, self.bounds = kind, bounds
         sGrid = np.asarray(sGrid, dtype = float)
         self.cols = []
         for k in range(tab.shape[1]):
@@ -489,12 +555,22 @@ class Interp2D:
         shape = s.shape
         sf, θf = s.reshape(-1), θ.reshape(-1)
         gθ = self.θGrid
-        j = np.clip(np.searchsorted(gθ, θf) - 1, 0, len(gθ) - 2)
+        n = len(gθ)
+        j = np.clip(np.searchsorted(gθ, θf) - 1, 0, n - 2)
         w = np.clip((θf - gθ[j])/(gθ[j+1] - gθ[j]), 0., 1.)
         V = np.stack([np.full_like(sf, np.nan) if c is None else np.asarray(c(sf), dtype = float)
                       for c in self.cols], axis = 1)
         idx = np.arange(len(sf))
-        return ((1 - w)*V[idx, j] + w*V[idx, j+1]).reshape(shape)
+        p1, p2 = V[idx, j], V[idx, j+1]
+        out = (1 - w)*p1 + w*p2
+        if self.kind == 'cubic':
+            p0 = np.where(j >= 1, V[idx, np.maximum(j - 1, 0)], 2*p1 - p2)
+            p3 = np.where(j <= n - 3, V[idx, np.minimum(j + 2, n - 1)], 2*p2 - p1)
+            cub = p1 + 0.5*w*((p2 - p0) + w*((2*p0 - 5*p1 + 4*p2 - p3) + w*(3*(p1 - p2) + p3 - p0)))
+            out = np.where(np.isfinite(cub), cub, out)
+        if self.bounds is not None:
+            out = np.clip(out, *self.bounds)
+        return out.reshape(shape)
 
 
 # ------------------------------------------------------------------ the frozen state (alg esc:crra2D)
@@ -732,9 +808,16 @@ class LeadedCRRA2D(CRRA, LeadedBase):
     _MAXCLOSE = 200                                       # closing iterations per bracket, a guard only
 
     def __init__(self, m, nθ = 13, nθCand = 21, designRule = 'root', Ma = 5, aTolBracket = 1e-9,
-                 aTolResidual = 1e-6, aClose = 'secant', **kwargs):
-        """ designRule: 'root' or 'legacy' (class docstring). Ma (>= 4), aTolBracket, aTolResidual, aClose:
-        the root layer's tabulation nodes, closing tolerances and closing method. """
+                 aTolResidual = 1e-6, aClose = 'secant', θInterp = 'cubic', **kwargs):
+        """ nθ, θInterp: the θ-state grid and the policies' interpolant along it (Interp2D's kind). The design
+        objective is flat at its maximum, and a piecewise-linear continuation sets its argmax at the kinks
+        (finding #19). At the λ of escCalibrationCRRA.csv ((β, ω, X) recalibrated), ns = 150 and 41
+        candidates, the design in force in 2020 at 13 / 25 / 49 / 97 nodes is, linear, 0.7248 / 0.7116 /
+        0.7143 / 0.7138 (ρ = 0.5) and 0.7227 / 0.7079 / 0.7106 / 0.7099 (ρ = 2); cubic at 13 / 25 / 49,
+        0.7145 / 0.7138 / 0.7139 (ρ = 0.5) and 0.7106 / 0.7100 / 0.7101 (ρ = 2). The cubic costs ~1.15 times
+        the linear at a given nθ, and a recursion's cost grows about in proportion to nθ.
+        designRule: 'root' or 'legacy' (class docstring). Ma (>= 4), aTolBracket, aTolResidual, aClose: the
+        root layer's tabulation nodes, closing tolerances and closing method. """
         super().__init__(m, **kwargs)
         if designRule not in self.DESIGN_RULES:
             raise ValueError(f'LeadedCRRA2D: designRule {designRule!r}, one of {self.DESIGN_RULES}.')
@@ -742,6 +825,9 @@ class LeadedCRRA2D(CRRA, LeadedBase):
             raise ValueError('LeadedCRRA2D: Ma >= 4 (one cell beyond the range at each end).')
         if aClose not in ('secant', 'bisection'):
             raise ValueError(f"LeadedCRRA2D: aClose {aClose!r}, 'secant' or 'bisection'.")
+        if θInterp not in Interp2D.KINDS:
+            raise ValueError(f'LeadedCRRA2D: θInterp {θInterp!r}, one of {Interp2D.KINDS}.')
+        self.θInterp = θInterp
         self.nθ, self.nθCand = nθ, nθCand
         self.θGrid = np.linspace(0., 1., nθ)
         self.θCand = np.linspace(0., 1., nθCand)
@@ -1106,12 +1192,17 @@ class LeadedCRRA2D(CRRA, LeadedBase):
                 | extra
                 | {'choose': choose, 'terminal': False,
                    'θSpread_s': np.nan if not choose else float(np.nanmax(θTab, axis = 0).max()
-                                                               - np.nanmin(θTab, axis = 0).min()),
-                   'τPolicy': Interp2D(sGrid, self.θGrid, τTab),
-                   'hPolicy': Interp2D(sGrid, self.θGrid, hTab),
-                   'sPolicy': Interp2D(sGrid, self.θGrid, sTab),
-                   'ΓsPolicy': Interp2D(sGrid, self.θGrid, ΓsTab),
-                   'θPolicy': Interp2D(sGrid, self.θGrid, θTab)})
+                                                               - np.nanmin(θTab, axis = 0).min())}
+                | self._interpolants(sGrid, {'τ': τTab, 'h': hTab, 's': sTab, 'Γs': ΓsTab, 'θ': θTab}))
+
+    def _interpolants(self, sGrid, tabs):
+        """ The period's Interp2D policies over (s_, θ) along θ by self.θInterp: 'τPolicy' clipped to the tax
+        grid's [l, u] and 'θPolicy' to [0, 1] (a cubic can overshoot a bound), the others unclipped. tabs:
+        {'τ', 'h', and optionally 's', 'Γs', 'θ'} (ns, nθ). """
+        gs = self.GS['PEE']['gridSettings']
+        bounds = {'τ': (gs['l'], gs['u']), 'θ': (0., 1.)}
+        return {f'{k}Policy': Interp2D(sGrid, self.θGrid, v, kind = self.θInterp, bounds = bounds.get(k))
+                for k, v in tabs.items()}
 
     def solveTerminal2D(self, ε, sGrid, t, tLag):
         """ The terminal period has no design to choose -- θ_T is its state. One inherited (closed-form)
@@ -1122,9 +1213,7 @@ class LeadedCRRA2D(CRRA, LeadedBase):
             rep = self.solveTerminal(float(θ), ε, t = t, sGrid = sGrid)
             τTab[:, k], hTab[:, k] = rep['τ'].values, rep['h'].values
         return {'sGrid': sGrid, 'θGrid': self.θGrid.copy(), 'τ': τTab, 'h': hTab,
-                'θNext': None, 'terminal': True, 'choose': False,
-                'τPolicy': Interp2D(sGrid, self.θGrid, τTab),
-                'hPolicy': Interp2D(sGrid, self.θGrid, hTab)}
+                'θNext': None, 'terminal': True, 'choose': False} | self._interpolants(sGrid, {'τ': τTab, 'h': hTab})
 
     # ------------------------------------------------------------------ the recursion
     def solvePolicies(self, θPin, pinPos = None, sGrid = None, verbose = False):

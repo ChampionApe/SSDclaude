@@ -4,8 +4,9 @@ test_oecd26.py.
 Run:  .venv\Scripts\python.exe python\US\test_oecd26Anchor.py        (~5 min)
 
   R  At the inputs of the published run of 2026-10-03 (the U.S. workbook before review-2026-10), ModelOECD with β
-     imposed at that calibration's value reproduces its λ = 8.643207 and ω (escCalibration.csv, 'size', LOG):
-     λ is calibrated to eq esc:calibration by ModelESC.calibrateWedge on a narrow bracket.
+     imposed at that calibration's value calibrates λ to eq esc:calibration (ModelESC.calibrateWedge on a narrow
+     bracket) at today's LeadedLOG, λ = 8.662481 and its ω (that run's anticipated tax was read off a 41-node
+     table: λ = 8.643207, escCalibration.csv of 2026-10-03).
   A  runOECD26.stageAnchor at coarse grids on the OECD inputs: λ and ω calibrated, the design in force in 2020 on
      the datum, τ_2020 on the target, one tax equilibrium; the U.S. layer-1 row at the anchor reproduces the
      anchor's readouts.
@@ -24,7 +25,7 @@ tic = time.time()
 NU = [1.405486131972424, 1.405486131972424, 1.339667762739423, 1.1219986438186136, 1.0688804499803877]
 Γ, INC, MU = [0.5822660721626665, 0.17572652815988363, 0.24200739967744997], [37116., 73299., 160208.], [0.474, 0.629, 0.765]
 TAU0, THETA = 0.1442857142857143, 0.7382263650417814
-LAMBDA, BETA, OMEGA = 8.64320735564998, 0.7585347063319889, 1.507771142663732
+LAMBDA, BETA, OMEGA = 8.662480950864664, 0.7585347063319889, 1.5078972407047575
 
 # ==== R ========================================================================================================
 y = np.asarray(INC)/np.sum(np.asarray(Γ)*np.asarray(INC))
@@ -33,9 +34,9 @@ m = oecd26.build(inp, BETA, 1.45, None)
 rec = m.calibrateWedge(spec = 'size', phi = 0.5, bracket = (8.0, 9.5), nScan = 3, verbose = False)
 ω = float(m.db['ω'].iloc[2])
 mult = m.ESC.lastMultiplicity
-check("R: λ and ω reproduce escCalibration.csv's 'size' row at its inputs, β imposed",
+check("R: λ and ω at the inputs of 2026-10-03, β imposed, reproduce today's calibration",
       rec['converged'] and abs(rec['p'] - LAMBDA) < 1e-6 and abs(ω - OMEGA) < 1e-8,
-      'λ {:.9f} (published {:.9f}), ω {:.10f} (published {:.10f}), design residual {:.1e}'.format(
+      'λ {:.9f} (recorded {:.9f}), ω {:.10f} (recorded {:.10f}), design residual {:.1e}'.format(
           rec['p'], LAMBDA, ω, OMEGA, rec['residual']))
 check('R: one tax equilibrium, no fallback', mult['nEqMax'] == 1 and mult['nFallback'] == 0, str(mult))
 

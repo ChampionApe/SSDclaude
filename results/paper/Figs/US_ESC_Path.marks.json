@@ -66,7 +66,7 @@
    "label": "2020",
    "series": "chosen",
    "panel": "Pension design θ_t",
-   "value": 0.7277568002323587,
+   "value": 0.7277568007348677,
    "text": "0.728",
    "table": null,
    "row": null
@@ -76,7 +76,7 @@
    "label": "2050",
    "series": "chosen",
    "panel": "Pension design θ_t",
-   "value": 0.8020793483511242,
+   "value": 0.8018758531663047,
    "text": "0.802",
    "table": null,
    "row": null
@@ -86,8 +86,8 @@
    "label": "2080",
    "series": "chosen",
    "panel": "Pension design θ_t",
-   "value": 0.8237946994616856,
-   "text": "0.824",
+   "value": 0.8189038842032942,
+   "text": "0.819",
    "table": null,
    "row": null
   },
@@ -96,8 +96,8 @@
    "label": "2110",
    "series": "chosen",
    "panel": "Pension design θ_t",
-   "value": 0.8242712095240902,
-   "text": "0.824",
+   "value": 0.8201171457800664,
+   "text": "0.820",
    "table": null,
    "row": null
   },
@@ -106,8 +106,8 @@
    "label": "2140",
    "series": "chosen",
    "panel": "Pension design θ_t",
-   "value": 0.8242712095240675,
-   "text": "0.824",
+   "value": 0.8201171457800437,
+   "text": "0.820",
    "table": null,
    "row": null
   },
@@ -116,8 +116,8 @@
    "label": "2170",
    "series": "chosen",
    "panel": "Pension design θ_t",
-   "value": 0.8242712095240974,
-   "text": "0.824",
+   "value": 0.8201171457801657,
+   "text": "0.820",
    "table": null,
    "row": null
   },
@@ -136,8 +136,8 @@
    "label": "2050",
    "series": "pinned",
    "panel": "Tax rate τ_t",
-   "value": 15.24684819747129,
-   "text": "15.25%",
+   "value": 15.255752565842881,
+   "text": "15.26%",
    "table": null,
    "row": null
   },
@@ -146,8 +146,8 @@
    "label": "2080",
    "series": "pinned",
    "panel": "Tax rate τ_t",
-   "value": 16.54779279091192,
-   "text": "16.55%",
+   "value": 16.55918508080553,
+   "text": "16.56%",
    "table": null,
    "row": null
   },
@@ -156,8 +156,8 @@
    "label": "2110",
    "series": "pinned",
    "panel": "Tax rate τ_t",
-   "value": 16.54779279091192,
-   "text": "16.55%",
+   "value": 16.55918508080553,
+   "text": "16.56%",
    "table": null,
    "row": null
   },
@@ -166,8 +166,8 @@
    "label": "2140",
    "series": "pinned",
    "panel": "Tax rate τ_t",
-   "value": 16.54779279091192,
-   "text": "16.55%",
+   "value": 16.55918508080553,
+   "text": "16.56%",
    "table": null,
    "row": null
   },
@@ -176,8 +176,8 @@
    "label": "2170",
    "series": "pinned",
    "panel": "Tax rate τ_t",
-   "value": 16.54779279091192,
-   "text": "16.55%",
+   "value": 16.55918508080553,
+   "text": "16.56%",
    "table": null,
    "row": null
   },
@@ -186,7 +186,7 @@
    "label": "2020",
    "series": "chosen",
    "panel": "Tax rate τ_t",
-   "value": 10.522857142434521,
+   "value": 10.52285714285863,
    "text": "10.52%",
    "table": null,
    "row": null
@@ -196,7 +196,7 @@
    "label": "2050",
    "series": "chosen",
    "panel": "Tax rate τ_t",
-   "value": 15.46300506849983,
+   "value": 15.45768120931019,
    "text": "15.46%",
    "table": null,
    "row": null
@@ -206,8 +206,8 @@
    "label": "2080",
    "series": "chosen",
    "panel": "Tax rate τ_t",
-   "value": 16.862472441889782,
-   "text": "16.86%",
+   "value": 16.8509380706484,
+   "text": "16.85%",
    "table": null,
    "row": null
   },
@@ -216,8 +216,8 @@
    "label": "2110",
    "series": "chosen",
    "panel": "Tax rate τ_t",
-   "value": 16.8628781118898,
-   "text": "16.86%",
+   "value": 16.85205672455041,
+   "text": "16.85%",
    "table": null,
    "row": null
   },
@@ -226,8 +226,8 @@
    "label": "2140",
    "series": "chosen",
    "panel": "Tax rate τ_t",
-   "value": 16.8628781118898,
-   "text": "16.86%",
+   "value": 16.852056724550398,
+   "text": "16.85%",
    "table": null,
    "row": null
   },
@@ -236,8 +236,8 @@
    "label": "2170",
    "series": "chosen",
    "panel": "Tax rate τ_t",
-   "value": 16.8628781118898,
-   "text": "16.86%",
+   "value": 16.85205672455051,
+   "text": "16.85%",
    "table": null,
    "row": null
   }

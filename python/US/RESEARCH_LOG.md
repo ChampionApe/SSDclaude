@@ -72,3 +72,34 @@ at 50 the path residual (6.9e-4 in τ) exceeds the jumps a scan over ω finds (2
 the path residual is 0.17 / 0.37 p.p. (ρ = 0.5 / 2): `CRRA.focParts_t` smooths along τ with s = 1e-4 (#7; open, model
 code); at the calibrated parameters the θ 1 → 0 tax gap moves 9.34 → 8.96 and 2.12 → 1.99 p.p.; recalibrating under
 converged derivatives stalls (residual 2e-3). Numbers `notes/ledger_C4.md`, logs `logs/C4/`.
+
+## 2026-10-24 — C6 of the review response: τ-derivatives and design grids (branch `review-2026-10`)
+`CRRA._gradProfile` (alg:CRRA:grid step 3; `LeadedCRRA2D` inherits it): a least-squares cubic in ln(1−τ), knots
+`gradKnotSpacing` = 0.04 apart in τ, for the smoothing spline in τ (s = 1e-4, adaptive). At the calibrated ρ = 0.5 / 2
+(ns 150) τ_2020 and the θ 1→0 gap move ≤ 1.8e-5 / 1.3e-4 from 101 to 801 tax nodes (10.461%, 9.13 p.p.; 10.400%, 2.01;
+published 10.523%, 9.34 / 2.12). C4's interpolating spline does not converge in n (10.43, 10.38, 10.62, 10.73%): each
+kink where s_t(τ) crosses a node of 𝒮 enters the root, compounding back through the policies' slope in s. Calibrations
+converge (1e-13), LOG bitwise. `LeadedLOG.taxes_t` solves T_{t+1} at every candidate, `_argmaxCubic` refines: θ_2020 at
+λ = 11.564 0.73242 (0.72776), the continuous maximiser to 4e-7; λ 11.345. `LeadedCRRA2D`'s policies are Catmull-Rom
+along θ (`Interp2D`) at 13 nodes: θ_2020 7.0e-4 / 6.4e-4 from the linear 97-node value at ρ = 0.5 / 2 (linear at 13:
+0.011 / 0.013; PCHIP would flatten the anticipated tax's turning point), ~1.15× the linear cost. `runHorizon`'s
+reference is the production derivative on 801 tax nodes. `test_gridConvergence.py`; logs `logs/C6/`; no csv rewritten.
+
+## 2026-10-25 — C6 reruns: stages (i)/(ii) main and prepub, C4's and C5's runs on C6's code (branch `review-2026-10`)
+Self-check first: the ρ = 1 counterfactuals reproduce `US_shocksCommonX.csv` exactly. 80 jobs under a 5-process cap
+(`logs/C6runs/`, `gen_jobs.py` → `jobs.tsv`, `scheduler.ps1`), 10.9 h, all converged. λ (`size`) is 25.082 / 11.345 /
+2.643 at ρ = 0.5 / 1 / 2 (was 23.691 / 11.564 / 2.459), the UK's own 16.694 / 7.740 / 3.103. θ 1→0 is 9.13 / 6.61 / 1.99 p.p.
+No rank changes; the design-layer fallback and the ns = 50 jumps are gone; converged residuals are 0.003 p.p.
+Crossed: 1 − f(θ*) 4.17% at ρ = 0.5 (the text: "no more than 4%"); the UK's λ is a third below the U.S. at ρ ≤ 1, 17.4% above at 2.
+Steady-state horizon at ρ = 0.5: +0.027 p.p. in τ_2020. Failed: `runOECD26` layer 2, CSES, Turkey (τ → 1 at ω = 1e-6),
+so `test_oecd26.py` P fails, 28/29 fast suites; `test_escCRRA` 13/13 with P_CRRA2 0.0916 → 0.0942. `notes/ledger_C6.md`.
+
+## 2026-10-25 — C6 §3: the log tax's gradient solve kept below τ = 1 (branch `review-2026-10`)
+Turkey's layer-2 CSES row failed because `LOG.solveVectorized` clipped τ̃ to [0, 1]. The ω root's first step (1.2873 → 1.5302)
+sent the warm-started τ̃_1960 past 1, where `initialState_solve`'s Γs bracket (1e-6) sees 1/(1 − τ) = ∞. The ValueError
+bypasses `solveRobust`'s RuntimeError fallback. The LOG code is f3a15a4's; C6 only moved the cses anchor's ω seed
+(1.287743 → 1.287315): f3a15a4's code fails at the new seed and C6's passes at the old. Fix: eq:root's u is the grid's,
+1 − 1e-4 (`LOG._upper`, #7's cousin; `informalAnalytical/policy.py` keeps u = 1). Replayed with `--force` to scratch,
+only TUR's layer-2 solves (cps, cses) passed u (`HOOK` lines in `logs/C6/oecd26_replay_R*.log`); TUR cses reran,
+ω = 1.5265055645 as on 2026-10-24. The resume write rewrote the other rows at ≤ 2e-14 relative (`runESC.mergeWrite`
+rereads with pandas' default parser). `test_oecd26.py` B; logs `logs/C6/tur_*.log`.

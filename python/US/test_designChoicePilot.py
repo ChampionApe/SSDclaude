@@ -38,7 +38,7 @@ from gridsearch.testing import check, report
 PARS = testmod.pars | {'ρ': 1.0, 'β': 0.655483014875856, 'ω': 1.2308601504079868}
 GS = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}
 # T2's reference numbers of the legacy layer's period dict (fresh process)
-REF_T2 = {'θNext': 97.62323322877532, 'τStar3': 299.858189753861, 'τ00': 0.11561914233529333, 'nEqτ': 1625}   # pension-only workbook, 2026-10-23
+REF_T2 = {'θNext': 100.86745364487373, 'τStar3': 295.9278405755352, 'τ00': 0.11781635590264158, 'nEqτ': 1625}   # pension-only workbook, gradKnotSpacing 0.04, cubic along θ
 
 
 tic = time.time()

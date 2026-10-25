@@ -52,7 +52,7 @@ held at this parameter point, and it costs nothing.
 import numpy as np, pandas as pd
 from scipy import optimize
 from model import ModelUS
-from policy import multiplicitySummary, mergeMultiplicity
+from policy import mergeMultiplicity
 from policyESC import LeadedLOG, LeadedCRRA, LeadedCRRA2D, PermanentLOG, PermanentCRRA
 
 WEDGE_SPECS = (None, 'scale', 'flat', 'size', 'sizePiR')
@@ -80,7 +80,8 @@ class ModelESC(ModelUS):
         """ wedge: {'spec': None|'scale'|'flat'|'size', 'phi': float, 'p': float} ('p' is lambda under
         'size'). spec=None reproduces ModelUS exactly (Base.wedgeA/wedgeB are then the identity), which is
         what test_esc.py pins. designRule, Ma: LeadedCRRA2D's design layer ('root', alg esc:crra2D, or
-        'legacy') and the root layer's tabulation nodes. """
+        'legacy') and the root layer's tabulation nodes. nθ2D: LeadedCRRA2D's θ-state grid, its policies
+        cubic along it (LeadedCRRA2D.__init__ for the measurement behind 13). """
         self._wedge0 = self._defaultWedge | (wedge or {})
         if self._wedge0['spec'] not in WEDGE_SPECS:
             raise ValueError(f"ModelESC: unknown wedge spec {self._wedge0['spec']!r}; one of {WEDGE_SPECS}.")
@@ -295,8 +296,7 @@ class ModelESC(ModelUS):
         drift = {'R': float(report['R'].xs(t0)) - float(self.db['R0']),
                  'τ': float(τPath.xs(t0)) - float(self.db['τ0'])}
         return {'sols': sols, 'θ': θPath, 'τ': τPath, 'sol': sol, 'report': report,
-                'targetDrift': drift,
-                'multiplicity': multiplicitySummary(sols, keys = ('nEqτ', 'nCandτ', 'fallbackτ'))}
+                'targetDrift': drift, 'multiplicity': LeadedLOG.multiplicity(sols)}
 
     def leadedChoiceAtT0(self, sols = None):
         """ thetaPolicy_{t0}(theta*) -- the design the t0 electorate picks FOR t0+1, given theta* in force.

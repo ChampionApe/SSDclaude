@@ -6,7 +6,7 @@
    "label": "Acute ageing",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Pension design in 2020",
-   "value": 0.7277568007346167,
+   "value": 0.7277568007346166,
    "text": "0.728",
    "table": null,
    "row": null
@@ -16,8 +16,8 @@
    "label": "Acute ageing",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.8252797867557505,
-   "text": "0.825",
+   "value": 0.8316540333699333,
+   "text": "0.832",
    "table": null,
    "row": null
   },
@@ -26,7 +26,7 @@
    "label": "French income distr.",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Pension design in 2020",
-   "value": 0.7277568007346167,
+   "value": 0.7277568007346166,
    "text": "0.728",
    "table": null,
    "row": null
@@ -36,8 +36,8 @@
    "label": "French income distr.",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.6812773872634302,
-   "text": "0.681",
+   "value": 0.7087095625229038,
+   "text": "0.709",
    "table": null,
    "row": null
   },
@@ -46,7 +46,7 @@
    "label": "French voting",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Pension design in 2020",
-   "value": 0.7277568007346167,
+   "value": 0.7277568007346166,
    "text": "0.728",
    "table": null,
    "row": null
@@ -56,8 +56,8 @@
    "label": "French voting",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.6836400567715172,
-   "text": "0.684",
+   "value": 0.7101404724315302,
+   "text": "0.710",
    "table": null,
    "row": null
   },
@@ -66,7 +66,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Pension design in 2020",
-   "value": 0.7277568007346163,
+   "value": 0.7277568007346166,
    "text": "0.728",
    "table": null,
    "row": null
@@ -76,7 +76,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.7279577888851276,
+   "value": 0.7277526363920341,
    "text": "0.728",
    "table": null,
    "row": null
@@ -86,7 +86,7 @@
    "label": "Acute ageing",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Pension design in 2020",
-   "value": 0.7277568007346166,
+   "value": 0.7277568007346167,
    "text": "0.728",
    "table": null,
    "row": null
@@ -96,8 +96,8 @@
    "label": "Acute ageing",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.8449614276471765,
-   "text": "0.845",
+   "value": 0.8366650925087225,
+   "text": "0.837",
    "table": null,
    "row": null
   },
@@ -106,7 +106,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Pension design in 2020",
-   "value": 0.7277568007346166,
+   "value": 0.7277568007346167,
    "text": "0.728",
    "table": null,
    "row": null
@@ -116,8 +116,8 @@
    "label": "French income distr.",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.7513590012863262,
-   "text": "0.751",
+   "value": 0.7490445480638807,
+   "text": "0.749",
    "table": null,
    "row": null
   },
@@ -126,7 +126,7 @@
    "label": "French voting",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Pension design in 2020",
-   "value": 0.7277568007346166,
+   "value": 0.7277568007346167,
    "text": "0.728",
    "table": null,
    "row": null
@@ -136,7 +136,7 @@
    "label": "French voting",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.6537666575401786,
+   "value": 0.654401175548534,
    "text": "0.654",
    "table": null,
    "row": null
@@ -146,7 +146,7 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Pension design in 2020",
-   "value": 0.7277568007346166,
+   "value": 0.7277568007346167,
    "text": "0.728",
    "table": null,
    "row": null
@@ -156,7 +156,7 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.7277568002323517,
+   "value": 0.7277568007344709,
    "text": "0.728",
    "table": null,
    "row": null
@@ -176,8 +176,8 @@
    "label": "Acute ageing",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.8322391448488029,
-   "text": "0.832",
+   "value": 0.8442013157950278,
+   "text": "0.844",
    "table": null,
    "row": null
   },
@@ -196,8 +196,8 @@
    "label": "French income distr.",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.9121919755546992,
-   "text": "0.912",
+   "value": 0.909734788916272,
+   "text": "0.910",
    "table": null,
    "row": null
   },
@@ -216,8 +216,8 @@
    "label": "French voting",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.3885963894332234,
-   "text": "0.389",
+   "value": 0.4049921649545794,
+   "text": "0.405",
    "table": null,
    "row": null
   },
@@ -226,7 +226,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Pension design in 2020",
-   "value": 0.7277568007346166,
+   "value": 0.7277568007346163,
    "text": "0.728",
    "table": null,
    "row": null
@@ -236,7 +236,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.7277197883339435,
+   "value": 0.7277532943140747,
    "text": "0.728",
    "table": null,
    "row": null
@@ -246,8 +246,8 @@
    "label": "Acute ageing",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": 8.39839346058833,
-   "text": "+8.4 p.p.",
+   "value": 8.24089800914265,
+   "text": "+8.2 p.p.",
    "table": null,
    "row": null
   },
@@ -256,7 +256,7 @@
    "label": "Acute ageing",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": 8.90882484813596,
+   "value": 8.85454836468808,
    "text": "+8.9 p.p.",
    "table": null,
    "row": null
@@ -266,8 +266,8 @@
    "label": "French income distr.",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": -0.7565242502320588,
-   "text": "−0.8 p.p.",
+   "value": -0.6855249938918493,
+   "text": "−0.7 p.p.",
    "table": null,
    "row": null
   },
@@ -276,8 +276,8 @@
    "label": "French income distr.",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": -0.7571641337913299,
-   "text": "−0.8 p.p.",
+   "value": -0.6990784305874492,
+   "text": "−0.7 p.p.",
    "table": null,
    "row": null
   },
@@ -286,7 +286,7 @@
    "label": "French voting",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": 0.3010521797362012,
+   "value": 0.28792876994545996,
    "text": "+0.3 p.p.",
    "table": null,
    "row": null
@@ -296,7 +296,7 @@
    "label": "French voting",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": 0.2593488045006198,
+   "value": 0.26413246962054965,
    "text": "+0.3 p.p.",
    "table": null,
    "row": null
@@ -306,8 +306,8 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": 0.0016272971800609937,
-   "text": "+0.002 p.p.",
+   "value": 0.0002906102207503314,
+   "text": "0.000 p.p.",
    "table": null,
    "row": null
   },
@@ -316,8 +316,8 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": 0.004880306665860923,
-   "text": "+0.005 p.p.",
+   "value": -6.595042787022054e-05,
+   "text": "0.000 p.p.",
    "table": null,
    "row": null
   },
@@ -326,7 +326,7 @@
    "label": "Acute ageing",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": 7.813466041652319,
+   "value": 7.828293923644949,
    "text": "+7.8 p.p.",
    "table": null,
    "row": null
@@ -336,7 +336,7 @@
    "label": "Acute ageing",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": 8.26873581723079,
+   "value": 8.253490871529708,
    "text": "+8.3 p.p.",
    "table": null,
    "row": null
@@ -346,7 +346,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": -0.67316947744379,
+   "value": -0.6844284493657802,
    "text": "−0.7 p.p.",
    "table": null,
    "row": null
@@ -356,7 +356,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": -0.6625289755437511,
+   "value": -0.6760561286289504,
    "text": "−0.7 p.p.",
    "table": null,
    "row": null
@@ -366,8 +366,8 @@
    "label": "French voting",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": 0.8493028094316499,
-   "text": "+0.8 p.p.",
+   "value": 0.85077846104364,
+   "text": "+0.9 p.p.",
    "table": null,
    "row": null
   },
@@ -376,8 +376,8 @@
    "label": "French voting",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": 0.8486773276786195,
-   "text": "+0.8 p.p.",
+   "value": 0.8635887344153395,
+   "text": "+0.9 p.p.",
    "table": null,
    "row": null
   },
@@ -396,7 +396,7 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": -1.1102230246251565e-14,
+   "value": -2.9004576518332215e-13,
    "text": "0.000 p.p.",
    "table": null,
    "row": null
@@ -406,8 +406,8 @@
    "label": "Acute ageing",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": 7.557008979497419,
-   "text": "+7.6 p.p.",
+   "value": 7.344766260949719,
+   "text": "+7.3 p.p.",
    "table": null,
    "row": null
   },
@@ -416,8 +416,8 @@
    "label": "Acute ageing",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": 7.7300746093431805,
-   "text": "+7.7 p.p.",
+   "value": 7.544433782930141,
+   "text": "+7.5 p.p.",
    "table": null,
    "row": null
   },
@@ -426,7 +426,7 @@
    "label": "French income distr.",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": -0.6394424881880106,
+   "value": -0.5821929079987007,
    "text": "−0.6 p.p.",
    "table": null,
    "row": null
@@ -436,8 +436,8 @@
    "label": "French income distr.",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": -0.45771873824001913,
-   "text": "−0.5 p.p.",
+   "value": -0.3957558847230605,
+   "text": "−0.4 p.p.",
    "table": null,
    "row": null
   },
@@ -446,8 +446,8 @@
    "label": "French voting",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": 1.7939743417841894,
-   "text": "+1.8 p.p.",
+   "value": 1.68235793458429,
+   "text": "+1.7 p.p.",
    "table": null,
    "row": null
   },
@@ -456,8 +456,8 @@
    "label": "French voting",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": 2.435157353686991,
-   "text": "+2.4 p.p.",
+   "value": 2.226328574942979,
+   "text": "+2.2 p.p.",
    "table": null,
    "row": null
   },
@@ -466,7 +466,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": -0.00015775184431937594,
+   "value": 0.00044355870258000474,
    "text": "0.000 p.p.",
    "table": null,
    "row": null
@@ -476,7 +476,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": -0.00015098154670933894,
+   "value": -5.643347417011446e-05,
    "text": "0.000 p.p.",
    "table": null,
    "row": null
@@ -486,7 +486,7 @@
    "label": "Acute ageing",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Savings over GDP",
-   "value": -1.8433685432865503,
+   "value": -1.7863452239177495,
    "text": "−1.8 p.p. of GDP",
    "table": null,
    "row": null
@@ -496,8 +496,8 @@
    "label": "Acute ageing",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Savings over GDP",
-   "value": -2.1835404024302676,
-   "text": "−2.2 p.p. of GDP",
+   "value": -2.147886363593362,
+   "text": "−2.1 p.p. of GDP",
    "table": null,
    "row": null
   },
@@ -506,7 +506,7 @@
    "label": "French income distr.",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Savings over GDP",
-   "value": 0.22465565334044757,
+   "value": 0.1830626608755087,
    "text": "+0.2 p.p. of GDP",
    "table": null,
    "row": null
@@ -516,7 +516,7 @@
    "label": "French income distr.",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Savings over GDP",
-   "value": 0.30964852437638746,
+   "value": 0.28605334664314835,
    "text": "+0.3 p.p. of GDP",
    "table": null,
    "row": null
@@ -526,7 +526,7 @@
    "label": "French voting",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Savings over GDP",
-   "value": -0.15908406242598788,
+   "value": -0.1522801865065515,
    "text": "−0.2 p.p. of GDP",
    "table": null,
    "row": null
@@ -536,7 +536,7 @@
    "label": "French voting",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Savings over GDP",
-   "value": -0.07760961690104623,
+   "value": -0.09545590472175125,
    "text": "−0.1 p.p. of GDP",
    "table": null,
    "row": null
@@ -546,7 +546,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Savings over GDP",
-   "value": 0.0002042898511700475,
+   "value": -5.863705745012826e-05,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -556,7 +556,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Savings over GDP",
-   "value": -0.0003724847632735617,
+   "value": 2.3600341843010852e-05,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -566,7 +566,7 @@
    "label": "Acute ageing",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Savings over GDP",
-   "value": -1.8534048256248559,
+   "value": -1.8569067996027648,
    "text": "−1.9 p.p. of GDP",
    "table": null,
    "row": null
@@ -576,7 +576,7 @@
    "label": "Acute ageing",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Savings over GDP",
-   "value": -2.008489489708682,
+   "value": -1.9974271570166051,
    "text": "−2.0 p.p. of GDP",
    "table": null,
    "row": null
@@ -586,7 +586,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Savings over GDP",
-   "value": 0.15454433656421962,
+   "value": 0.16022423946598308,
    "text": "+0.2 p.p. of GDP",
    "table": null,
    "row": null
@@ -596,7 +596,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Savings over GDP",
-   "value": 0.16921068003111245,
+   "value": 0.1748351802026682,
    "text": "+0.2 p.p. of GDP",
    "table": null,
    "row": null
@@ -606,7 +606,7 @@
    "label": "French voting",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Savings over GDP",
-   "value": -0.30247789886925835,
+   "value": -0.3030694460170308,
    "text": "−0.3 p.p. of GDP",
    "table": null,
    "row": null
@@ -616,7 +616,7 @@
    "label": "French voting",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Savings over GDP",
-   "value": -0.21819025551574944,
+   "value": -0.21198325366648424,
    "text": "−0.2 p.p. of GDP",
    "table": null,
    "row": null
@@ -626,7 +626,7 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Savings over GDP",
-   "value": -1.3600232051658168e-14,
+   "value": -7.771561172376096e-15,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -636,7 +636,7 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Savings over GDP",
-   "value": 7.771561172376096e-15,
+   "value": 2.525757381022231e-13,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -646,7 +646,7 @@
    "label": "Acute ageing",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Savings over GDP",
-   "value": -1.7682040222524862,
+   "value": -1.7605810833516087,
    "text": "−1.8 p.p. of GDP",
    "table": null,
    "row": null
@@ -656,7 +656,7 @@
    "label": "Acute ageing",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Savings over GDP",
-   "value": -1.8071644350219112,
+   "value": -1.7967673757829603,
    "text": "−1.8 p.p. of GDP",
    "table": null,
    "row": null
@@ -666,7 +666,7 @@
    "label": "French income distr.",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Savings over GDP",
-   "value": 0.10848454564893417,
+   "value": 0.1008540710890235,
    "text": "+0.1 p.p. of GDP",
    "table": null,
    "row": null
@@ -676,7 +676,7 @@
    "label": "French income distr.",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Savings over GDP",
-   "value": 0.029457259988658613,
+   "value": 0.02871917096672505,
    "text": "+0.03 p.p. of GDP",
    "table": null,
    "row": null
@@ -686,7 +686,7 @@
    "label": "French voting",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Savings over GDP",
-   "value": -0.36100763010873393,
+   "value": -0.352876117976095,
    "text": "−0.4 p.p. of GDP",
    "table": null,
    "row": null
@@ -696,7 +696,7 @@
    "label": "French voting",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Savings over GDP",
-   "value": -0.3177854026091084,
+   "value": -0.29603610957445015,
    "text": "−0.3 p.p. of GDP",
    "table": null,
    "row": null
@@ -706,7 +706,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Savings over GDP",
-   "value": -2.293824348881257e-05,
+   "value": -0.00019229266298936842,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -716,7 +716,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Savings over GDP",
-   "value": -4.7469630600482926e-05,
+   "value": 0.0001166861180515455,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -726,8 +726,8 @@
    "label": "Acute ageing",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Average workweek",
-   "value": -0.2840356577102128,
-   "text": "−0.3 hours",
+   "value": -0.22287481925376085,
+   "text": "−0.2 hours",
    "table": null,
    "row": null
   },
@@ -736,7 +736,7 @@
    "label": "Acute ageing",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Average workweek",
-   "value": -0.4418167360511447,
+   "value": -0.4230432239662818,
    "text": "−0.4 hours",
    "table": null,
    "row": null
@@ -746,7 +746,7 @@
    "label": "French income distr.",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Average workweek",
-   "value": 0.9288566756087775,
+   "value": 0.9065889534329585,
    "text": "+0.9 hours",
    "table": null,
    "row": null
@@ -756,7 +756,7 @@
    "label": "French income distr.",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Average workweek",
-   "value": 0.9042834604524046,
+   "value": 0.8937920380961089,
    "text": "+0.9 hours",
    "table": null,
    "row": null
@@ -766,7 +766,7 @@
    "label": "French voting",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Average workweek",
-   "value": -0.08503164937420848,
+   "value": -0.07904630906469379,
    "text": "−0.1 hours",
    "table": null,
    "row": null
@@ -776,7 +776,7 @@
    "label": "French voting",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Average workweek",
-   "value": -0.09612295516807734,
+   "value": -0.0883687174579606,
    "text": "−0.1 hours",
    "table": null,
    "row": null
@@ -786,7 +786,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Average workweek",
-   "value": -4.584085912904932,
+   "value": -4.600204602469098,
    "text": "−4.6 hours",
    "table": null,
    "row": null
@@ -796,7 +796,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Average workweek",
-   "value": -4.594019084571904,
+   "value": -4.610867838384571,
    "text": "−4.6 hours",
    "table": null,
    "row": null
@@ -806,8 +806,8 @@
    "label": "Acute ageing",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Average workweek",
-   "value": -0.4460922747633447,
-   "text": "−0.4 hours",
+   "value": -0.45034130308549436,
+   "text": "−0.5 hours",
    "table": null,
    "row": null
   },
@@ -816,7 +816,7 @@
    "label": "Acute ageing",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Average workweek",
-   "value": -0.5148650080510322,
+   "value": -0.5195851923277743,
    "text": "−0.5 hours",
    "table": null,
    "row": null
@@ -826,7 +826,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Average workweek",
-   "value": 0.8554163204182856,
+   "value": 0.8576564098060189,
    "text": "+0.9 hours",
    "table": null,
    "row": null
@@ -836,7 +836,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Average workweek",
-   "value": 0.868403567526336,
+   "value": 0.870539570962876,
    "text": "+0.9 hours",
    "table": null,
    "row": null
@@ -846,7 +846,7 @@
    "label": "French voting",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Average workweek",
-   "value": -0.18460996249904582,
+   "value": -0.1849510122732667,
    "text": "−0.2 hours",
    "table": null,
    "row": null
@@ -856,7 +856,7 @@
    "label": "French voting",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Average workweek",
-   "value": -0.23666402726864533,
+   "value": -0.24895265680907386,
    "text": "−0.2 hours",
    "table": null,
    "row": null
@@ -866,7 +866,7 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Average workweek",
-   "value": -4.379021488708645,
+   "value": -4.378459788005543,
    "text": "−4.4 hours",
    "table": null,
    "row": null
@@ -876,7 +876,7 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Average workweek",
-   "value": -4.387908323524776,
+   "value": -4.387257278596458,
    "text": "−4.4 hours",
    "table": null,
    "row": null
@@ -886,7 +886,7 @@
    "label": "Acute ageing",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Average workweek",
-   "value": -0.6355818268197311,
+   "value": -0.586573667036113,
    "text": "−0.6 hours",
    "table": null,
    "row": null
@@ -896,7 +896,7 @@
    "label": "Acute ageing",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Average workweek",
-   "value": -0.621833775984669,
+   "value": -0.5833125617211294,
    "text": "−0.6 hours",
    "table": null,
    "row": null
@@ -906,7 +906,7 @@
    "label": "French income distr.",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Average workweek",
-   "value": 0.8046755094901243,
+   "value": 0.7932907321289946,
    "text": "+0.8 hours",
    "table": null,
    "row": null
@@ -916,7 +916,7 @@
    "label": "French income distr.",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Average workweek",
-   "value": 0.8971996845052672,
+   "value": 0.8722890536505474,
    "text": "+0.9 hours",
    "table": null,
    "row": null
@@ -926,7 +926,7 @@
    "label": "French voting",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Average workweek",
-   "value": -0.29976189809424625,
+   "value": -0.2769586093338745,
    "text": "−0.3 hours",
    "table": null,
    "row": null
@@ -936,8 +936,8 @@
    "label": "French voting",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Average workweek",
-   "value": -0.6845264571448055,
-   "text": "−0.7 hours",
+   "value": -0.632681455028191,
+   "text": "−0.6 hours",
    "table": null,
    "row": null
   },
@@ -946,7 +946,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Average workweek",
-   "value": -4.189716933927947,
+   "value": -4.20492067885597,
    "text": "−4.2 hours",
    "table": null,
    "row": null
@@ -956,7 +956,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Average workweek",
-   "value": -4.195131067049012,
+   "value": -4.211797645497278,
    "text": "−4.2 hours",
    "table": null,
    "row": null

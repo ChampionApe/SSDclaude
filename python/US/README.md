@@ -22,10 +22,11 @@
 | `runHorizon.py` | appendix D, not wired: the calibrated economy at T = 2140, 2200, 2290 and under the steady-state terminal condition (design given and chosen), the tax rule's FOC residuals off the grid, a jump scan, and whole solves under converged τ-derivatives; `results/numerical/US_{horizon,horizonDesign,residuals,jumps,derivativeScheme}.csv` |
 | `c5Numbers.py` | the review response's smaller numbers (package C5): C.1's critical turnout ratio, the ranking of the counterfactuals across ρ, the marginal loss, λ against elasticities, index units, the design condition's response to inequality, τ_2020(s_2019); `results/numerical/C5_*.csv`, no paper output |
 
-Ten fast test suites (~6.5 min; `test_esc.py` alone ~235 s, both cost specs; `test_designChoicePilot.py`, the
+Eleven fast test suites (~12 min; `test_esc.py` alone ~9 min, both cost specs; `test_designChoicePilot.py`, the
 CRRA design layer; `test_frozenSelection.py`, the tax-candidate selection; `test_counts.py`, the counts in every
-driver's rows; `test_oecd26.py`, the cross-country loader and layers, ~2 min) and three slow ones
-(`test_escTiming.py`, the permanent timing's reference numbers, ~75 s; `test_escCRRA.py`, ~7 min;
+driver's rows; `test_oecd26.py`, the cross-country loader and layers, ~2 min; `test_gridConvergence.py`, the CRRA
+τ-derivatives, the log design's anticipated tax and the 2-D recursion's θ grid against finer grids, ~1.5 min) and
+three slow ones (`test_escTiming.py`, the permanent timing's reference numbers, ~75 s; `test_escCRRA.py`, ~7 min;
 `test_oecd26Anchor.py`, the cross-country anchor, ~5 min), registered in `python/runTests.py`.
 
 ## Running it
@@ -67,6 +68,8 @@ keyed on `spec`, `phi`, `commonX` and the row's identifiers); `runESCcrra.py --b
   (`0·NaN` poisons the FOC; `test_ee.py` perturbs the slot). `getEps` raises if `γ_0 > 0`.
 - **The LOG FOC decouples across `t`** (`eq:us:model:PEELOG:decoupling`); the backward solver is still
   used. Not true under CRRA.
+- **The log tax's gradient solve stays below τ = 1** (`LOG._upper`): eq:root's `u` is the grid's 1 − 1e-4, since
+  `z_t` carries 1/(1 − τ_t); at `u` = 1 a Newton step past 1 made `initialState_solve` raise (`test_oecd26.py` B).
 - **Tax candidates are compared at frozen shares** (`num_robustroot.tex`, `roots1d.selectMaxFrozen`, finding
   #18). Every candidate (both corners, every crossing) is tested and ranked on `z_t` re-evaluated at its own
   frozen shares and integrated (`LOG.objectiveFrozen`, `CRRA.objectiveFrozen`; `CRRA.focParts_t`/`zAtShares`
@@ -96,7 +99,9 @@ the two variants differ only in how the hours unit is fixed. Variant A (`commonX
 load-bearing under B.
 
 Settings: linear interpolant, `smoothKnots=4` (pinned, never adaptive: finding #5), `ns=150` for
-calibration against 50 for a solve. `steadyState_CRRA_bounds` ties the bracket to `Base.ΓsCap` with
+calibration against 50 for a solve, `gradKnotSpacing=0.04` (the CRRA τ-derivatives, `CRRA._gradProfile`: a
+least-squares cubic in ln(1−τ) with knots 0.04 apart in τ, held as `n` is refined; #5, #7; an interpolating
+spline does not converge in `n` here). `steadyState_CRRA_bounds` ties the bracket to `Base.ΓsCap` with
 geometric expansion (#7); `test_crra.py` asserts it tracks the cap. Health checks: `R`, `τ` constant down
 the csv; `β`, `ω`, `sr`, `h` agree across variants to ~1e-13; `h̄` pinned under `--commonX`.
 
@@ -146,14 +151,15 @@ calibration (`--noFrance` skips).
 - Runs under the variant `config.US['commonX']` names; `commonX` and `spec` are part of every merge key,
   in every stage of `runESC.py` and `runESCcrra.py` (#13), so the two specs' rows coexist in one csv.
 - Calibration target: the design *in force* in 2020 (`leadedDesignAtT0`), by a log-grid scan of the cost
-  parameter for one sign change (`WEDGE_BRACKET` per spec) then a bracketed root. At `ρ` = 1: `λ` = 11.564
-  under `'size'` (`Ṽ_US` = 0.436, `f(θ*)` = 0.981, `f(0)` = 0.767), `p` = 0.4146 under `'scale'`.
+  parameter for one sign change (`WEDGE_BRACKET` per spec) then a bracketed root. At `ρ` = 1 the code gives `λ` =
+  11.345 under `'size'` (`Ṽ_US` = 0.436, `f(θ*)` = 0.981, `f(0)` = 0.771) and `p` = 0.4119 under `'scale'`.
 - `LeadedCRRA2D` is the exact 2-D recursion and the PUBLISHED CRRA method (`runESCcrra.py --exact`,
   `method` = exact rows; the path iteration's rows stay under `method` = path as the cross-check). Pinned
-  periods collapse the candidate grid inside the recursion; the θ-state grid matters (13 nodes), the `s`
-  grid does not (50 vs 150: 3e-5 in θ); the objective is flat near its maximum, so the candidate grid
-  sets the third decimal of the design (41 nodes, `config.US['esc']['nCand2D']`). ~40 s per period at
-  `ns=150`; the cost calibration scans at `ns=50` and refines at 150.
+  periods collapse the candidate grid inside the recursion; the θ-state grid matters (13 nodes, `nθ2D`, with the
+  policies cubic along it, `Interp2D`: piecewise-linear continuations put θ_2020 0.011-0.013 off the 97-node value at
+  13 nodes, #19; the cubic 6.4-7.0e-4), the `s` grid does not (50 vs 150: 3e-5 in θ); the objective is flat near its
+  maximum, so the candidate grid sets the third decimal of the design (41 nodes, `config.US['esc']['nCand2D']`).
+  ~80 s per period at `ns=150`; the cost calibration scans at `ns=50` and refines at 150.
 - `ModelESC.sequentialFOC`: the costless sequential FOC on a solved path (`test_esc.py` at ρ = 1,
   `runESCcrra.py --stage sequential` under CRRA). Negative on [0,1] at every dated period.
 - Permanent timing: the joint `(τ_{t0}, θ)` choice concentrates to a 1-D search; the savings ratio is
@@ -166,31 +172,37 @@ calibration (`--noFrance` skips).
 Implemented and tested: EE, LOG and CRRA PEE, both calibration variants, `ModelFR`, ρ sweeps for all four
 calibrations in both variants, three counterfactual families in both readings, the endogenous-`θ` leaded
 choice (LOG, CRRA path iteration, exact 2-D) and permanent timing, the Π-inclusive cost and the Medicare
-reading, and the `python/paper/` wiring. The results are the pension-only run of 2026-10-23 (C1 of the review
-response, `logs/C1/`, numbers in `notes/ledger_C1.md`; the run of 2026-10-03 is HEAD's).
+reading, and the `python/paper/` wiring. The results are C6's reruns of 2026-10-25 (`logs/C6runs/`, numbers in
+`notes/ledger_C6.md`) on the pension-only calibration of 2026-10-23 (C1, `notes/ledger_C1.md`), under the converged
+CRRA τ-derivatives and design grids below.
 
-- Under `'size'` the UK (own `λ` = 7.79 against the US's 11.56 under LOG) and the UK at US percentiles (7.05) have own
+- Under `'size'` the UK (own `λ` = 7.74 against the US's 11.35 under LOG) and the UK at US percentiles (7.12) have own
   calibrations; France has none, its observed `θ = 1` being out of reach of a cost quadratic in the
   redistribution performed. As ESC host (`--host UK`, CRRA into `escCalibrationCRRAUK.csv`) the UK's exact
   calibration scans at `ns` = 150 at `ρ` = 0.5, where `ns` = 50 does not converge. Its data caveats: `data/README.md`.
-- At ρ = 2 (and for some λ at 0.5) the `ns` = 50 CRRA tax solve jumps by ~1e-5 in τ, which can stop the (β, ω) root
-  at a scan node; `calibrateWedge` then brackets between the finite neighbours, and `'sizePiR'` scans at `ns` = 150.
-- Appendix D (`runHorizon.py`, `notes/ledger_C4.md`): from T = 2200 to 2140, 2290 or the steady-state terminal condition
-  τ_2020 moves ≤ 0.0012 p.p. and the chosen θ_2020 ≤ 6e-5 (LOG rows identical); a scan over ω ± 0.1% at `ns` = 50
-  jumps by up to 2e-4 in τ_2020 (none at 150), inside that grid's path residual (6.9e-4).
-- Open: the CRRA tax condition's τ-derivatives are not converged. `CRRA.focParts_t` fits `griddedGradient1D` along τ
-  at its default s = 1e-4 (adaptive knots, 101 nodes), where `InformalSavings._gradProfile` uses ln(1−τ) and s = 0
-  (#7): against converged derivatives the root on the path moves 0.17 (ρ = 0.5) and 0.37 p.p. (ρ = 2), and at the
-  calibrated parameters the θ = 0 − θ = 1 tax gap is 8.96 / 1.99 p.p. against 9.34 / 2.12. `LeadedCRRA2D` inherits it.
+- Under the smoothing-spline derivatives the `ns` = 50 CRRA tax solve jumped by up to 2e-4 in τ, which can stop the
+  (β, ω) root at a scan node; `calibrateWedge` then brackets between the finite neighbours, and `'sizePiR'` scans at
+  `ns` = 150. Under C6's derivatives the ω scan of `US_jumps.csv` shows no jump (largest second difference 1.8e-6).
+- Appendix D (`runHorizon.py`, `notes/ledger_C4.md`, `ledger_C6.md` §5): from T = 2200 to 2140, 2290 or the steady-state
+  terminal condition τ_2020 moves ≤ 0.027 p.p. (ρ = 0.5, steady state) and the chosen θ_2020 ≤ 1.4e-4 (LOG rows
+  identical); on the path the tax rule solves its first order condition to 0.003 p.p. against converged derivatives.
+- The CRRA τ-derivatives (2026-10-24, C6): `CRRA._gradProfile`, the least-squares cubic in ln(1−τ) with knots
+  `gradKnotSpacing` = 0.04 apart (`LeadedCRRA2D` inherits it). At the calibrated parameters (ns = 150) the 2020 tax and
+  the θ 1 → 0 gap move ≤ 1.8e-5 and ≤ 1.3e-4 from 101 to 801 tax nodes: 10.461% and 9.13 p.p. at ρ = 0.5, 10.400% and
+  2.01 at ρ = 2, against the published smoothing spline's 10.523% / 9.34 and 10.523% / 2.12. The interpolating spline
+  of C4's reference does not converge in `n` here (10.43, 10.38, 10.62, 10.73% at ρ = 0.5). Calibrations converge to
+  1e-13. Recalibrated, the gap is 9.13 / 1.99 p.p. (RESEARCH_LOG.md, 2026-10-24 and 2026-10-25, C6).
 - `PermanentCRRA` puts the costless permanent choice at θ = 1 for every ρ ≥ 1.1 (θ = 0 under LOG; 2026-10-03: θ = 0
   up to ρ = 1.3) (`escPermanentCRRA.csv`, the online appendix's `ESC_Timing`).
 - The path iteration (`method = 'path'`) values each candidate on its own re-solved path, an approximation
   reported as such (`num_esc.tex`).
-- The cross-country test (`oecd26.py`, `runOECD26.py`, stage (ii) entry `oecd26`): run 2026-10-24 at the pension-only
-  U.S. calibration (β = 0.6555), fine grids, both turnout readings, the 29 (`results/oecd26/`, `logs/C3/`, 18 min):
-  anchor `λ` = 11.22 (cps) and 13.58 (cses); one equilibrium and no fallback in every row; numbers in
-  `notes/ledger_C3.md`. At the inputs of the run of 2026-10-03 the code reproduces that run's `λ` and G.1's rows.
-- Open: `LeadedLOG` reads the anticipated tax function T_{t+1}(θ) off a linear table on its 41-node design grid, which
-  biases the log design choice by about −0.005 at the calibration (θ_2020 0.7278 against 0.7324 with T solved at every
-  candidate, 0.7323 at 321 nodes; finding #19); the exact CRRA recursion's 13-node θ-state grid is unmeasured
-  (`notes/ledger_C5.md`, 2026-10-24).
+- The cross-country test (`oecd26.py`, `runOECD26.py`, stage (ii) entry `oecd26`): rerun 2026-10-25 on C6's code at the
+  pension-only U.S. calibration (β = 0.6555), fine grids, both turnout readings, the 29 (`results/oecd26/`,
+  `logs/C6runs/oecd26.log`, 35 min): anchor `λ` = 11.11 (cps) and 13.44 (cses); numbers in `notes/ledger_C3.md`,
+  `ledger_C6.md` §7. Turkey's layer-2 CSES row is from 2026-10-25, after the log tax solve's bound fix (invariants).
+- The design grids (C6): `LeadedLOG` solves the anticipated tax T_{t+1}(θ') at every candidate design (`taxes_t`)
+  and refines its argmax by a cubic through four candidates (`_argmaxCubic`). At λ = 11.564 θ_2020 is 0.73242 (0.7278
+  off the former 41-node table, #19), the maximiser of W_1990 with T solved everywhere to 4e-7, the same at every state
+  grid; recalibrated, λ = 11.345 (`solveBackward` ~4 s, 1.4 s before). `LeadedCRRA2D` interpolates its policies along
+  θ by a Catmull-Rom cubic at 13 nodes (above). `runHorizon.py`'s
+  converged reference is the production τ-derivative on 801 tax nodes, its knots held 0.04 apart.

@@ -15,10 +15,10 @@ $\bm{\rho}$ & \textbf{Grid} & \multicolumn{4}{c}{\textbf{As solved}} & \multicol
  & & Path & Visited, max & Visited, 99\% & All, max & Path & Visited, max & Visited, 99\% & All, max \\
 \midrule 
 \multicolumn{10}{l}{\textit{United States, CRRA preferences}} \\
-0.5 & 150 & $3.2 \times 10^{-4}$ & 0.0064 & 0.0052 & 0.36 & 0.17 & 0.17 & 0.17 & 0.49 \\ % row: us@0.5@150
-2.0 & 150 & $1.9 \times 10^{-4}$ & 0.0011 & $3.5 \times 10^{-4}$ & 0.72 & 0.37 & 0.38 & 0.37 & 1.0 \\ % row: us@2.0@150
-0.5 & 50 & 0.056 & 0.12 & 0.11 & 1.9 & 0.21 & 0.38 & 0.31 & 2.0 \\ % row: us@0.5@50
-2.0 & 50 & 0.069 & 0.091 & 0.064 & 3.6 & 0.42 & 0.51 & 0.50 & 3.7 \\[.4em] % row: us@2.0@50
+0.5 & 150 & $5.3 \times 10^{-4}$ & 0.0024 & 0.0020 & 0.46 & 0.0028 & 0.0045 & 0.0043 & 0.45 \\ % row: us@0.5@150
+2.0 & 150 & $8.8 \times 10^{-4}$ & 0.0023 & 0.0022 & 0.41 & 0.0013 & 0.0015 & 0.0014 & 0.41 \\ % row: us@2.0@150
+0.5 & 50 & 0.050 & 0.091 & 0.090 & 1.7 & 0.050 & 0.094 & 0.093 & 1.8 \\ % row: us@0.5@50
+2.0 & 50 & 0.0065 & 0.018 & 0.017 & 1.8 & 0.0069 & 0.019 & 0.018 & 1.7 \\[.4em] % row: us@2.0@50
 \multicolumn{10}{l}{\textit{Argentina}} \\
 0.5 & 45$\times$45 & 0.0064 & 0.22 & 0.14 & 0.35 & 0.0098 & 0.23 & 0.14 & 0.34 \\ % row: arg@0.5
 1.0 & 45 & 0.0012 & 0.0023 & 0.0021 & 0.0028 & 0.0024 & 0.0046 & 0.0039 & 0.0046 \\ % row: arg@1.0
@@ -27,7 +27,7 @@ $\bm{\rho}$ & \textbf{Grid} & \multicolumn{4}{c}{\textbf{As solved}} & \multicol
 \end{tabularx}
 \begin{tablenotes}[flushleft]
 \footnotesize
-\item[] \textit{Note:} Each cell is the largest (or 99th percentile) absolute difference, in percentage points of the tax rate, between the root of the first order condition at a state and the policy function there, over the periods of the paper's horizon: at the state the equilibrium path enters each period with, at the centres of the state grid's cells within the range the path visits (padded by a fifth), and at the centres of all its cells. The grid column gives the nodes of the state grid. The root is located by the selection of every period, without the smoothing of the policy, against the solved continuation. The first four columns evaluate the condition as the solver does; the last four with its derivatives in the tax converged, on a tax grid of 801 nodes in the U.S.\ and 401 in Argentina. The U.S.\ solver differentiates along the tax with a smoothing spline, Argentina's along $\ln(1-\tau)$ with an interpolating one. Solved at every period with converged derivatives and the calibrated parameters, the U.S.\ tax in 2020 is 10.73\% and 10.50\% at $\rho = 0.5$ and $2.0$ (the calibration's 10.52\%), and the difference between $\theta = 0$ and $\theta = 1$ is 8.96 and 1.99 p.p. against 9.34 and 2.12 p.p. Log preferences in the U.S.\ have no state.
+\item[] \textit{Note:} Each cell is the largest (or 99th percentile) absolute difference, in percentage points of the tax rate, between the root of the first order condition at a state and the policy function there, over the periods of the paper's horizon: at the state the equilibrium path enters each period with, at the centres of the state grid's cells within the range the path visits (padded by a fifth), and at the centres of all its cells. The grid column gives the nodes of the state grid. The root is located by the selection of every period, without the smoothing of the policy, against the solved continuation. The first four columns evaluate the condition as the solver does; the last four with its derivatives in the tax converged, on a tax grid of 801 nodes in the U.S.\ and 401 in Argentina. The U.S.\ solver differentiates along the tax with a smoothing spline, Argentina's along $\ln(1-\tau)$ with an interpolating one. Solved at every period with converged derivatives and the calibrated parameters, the U.S.\ tax in 2020 is 10.52\% and 10.52\% at $\rho = 0.5$ and $2.0$ (the calibration's 10.52\%), and the difference between $\theta = 0$ and $\theta = 1$ is 9.11 and 1.99 p.p. against 9.13 and 1.99 p.p. Log preferences in the U.S.\ have no state.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

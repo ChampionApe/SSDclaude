@@ -28,7 +28,7 @@ from modelESC import ModelESC
 
 from gridsearch.testing import check, report
 
-WEDGE = {'spec': 'scale', 'phi': 0.5, 'p': 0.4146}      # the LOG-calibrated wedge, held fixed across rho
+WEDGE = {'spec': 'scale', 'phi': 0.5, 'p': 0.4119}      # the LOG-calibrated wedge, held fixed across rho
 GS_LOG = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}
 GS_CRRA = GS_LOG | {'ns': 150}
 
@@ -88,7 +88,7 @@ check('...at a first-order rate -- gap/(rho-1) settles', spread < 0.12,
 # target (the choice MADE at t0) and is 0.0901 under the current one (the design in FORCE at t0, since
 # 2026-08-24). Nothing here asserts the value -- the checks are about solver agreement -- so a stale
 # number would not fail, it would quietly stop testing what the comment says it tests.
-P_CRRA2 = 0.0916          # results/esc/escCalibrationCRRA.csv, rho=2, scale, phi=0.5 (exact, 2026-10-23)
+P_CRRA2 = 0.0942          # results/esc/escCalibrationCRRA.csv, rho=2, scale, phi=0.5 (exact, 2026-10-25)
 m2 = ModelESC(pars = testmod.pars | {'ρ': 2.0, 'β': 0.52, 'ω': 1.11},
               wedge = WEDGE | {'p': P_CRRA2}, **testmod.kwargs)
 m2.db['dates'], m2.db['workweek'] = testmod.dates, testmod.workweek
@@ -137,8 +137,7 @@ check('pinned everywhere, the 2-D recursion reproduces the exogenous CRRA tax pa
 # by entirely different routes (a 2-D policy recursion vs repeated full-path solves), and at rho=2 the
 # measured state slope is ~0.01, so they must agree to grid accuracy. Run at the SOLVE grid (ns=50),
 # where the measured choice is 0.7433 against ns=150's 0.7430 -- the s-grid is not what the accuracy
-# hangs on; the theta-STATE grid is (7 nodes gave 0.723), so nθ stays at the default 13
-# (archive/sessionLogs/RESEARCH_LOG_US.md, 2026-08-24).
+# hangs on; the theta-STATE grid is (the default nθ2D, LeadedCRRA2D.__init__).
 m2.CRRA.initGS(GS_LOG | {'ns': 50})
 out2D = m2.solveLeaded2D(pinAtT0 = True)
 ch2D = m2.leadedChoiceAtT0_2D(out = out2D)

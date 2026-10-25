@@ -903,8 +903,8 @@ z
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--fit">
-    <path d="M 37.842803 40.152744 
-L 142.03859 103.948269 
+    <path d="M 37.842803 40.171596 
+L 142.03859 103.927455 
 " clip-path="url(#p905df98dd9)" style="fill: none; stroke: #eb6834; stroke-width: 1.2; stroke-linecap: square"/>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--aus">
@@ -917,127 +917,127 @@ z
 " style="stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </defs>
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="120.596324" y="92.607297" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="120.596324" y="92.542384" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--aut">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="70.984805" y="60.628971" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="70.984805" y="60.660018" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--bel">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="70.071443" y="63.628449" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="70.071443" y="63.608478" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--can">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="101.792659" y="78.676993" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="101.792659" y="78.680349" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--cze">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="52.398608" y="55.499251" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="52.398608" y="55.408232" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--dnk">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="66.968911" y="61.769333" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="66.968911" y="61.740424" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--fin">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="63.46044" y="55.393302" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="63.46044" y="55.424408" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--fra">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="75.435634" y="60.117916" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="75.435634" y="60.148971" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--deu">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="54.471795" y="48.689137" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="54.471795" y="48.715554" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--grc">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="54.805245" y="47.514734" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="54.805245" y="47.532073" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--hun">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="37.842803" y="36.674387" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="37.842803" y="36.705423" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--isl">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="105.330126" y="84.357477" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="105.330126" y="84.369225" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--irl">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="110.694317" y="89.133013" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="110.694317" y="89.041726" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--ita">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="54.616773" y="49.297721" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="54.616773" y="49.32885" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--jpn">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="50.644372" y="47.582523" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="50.644372" y="47.583756" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--lux">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="142.03859" y="97.802842" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="142.03859" y="97.828825" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--nld">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="71.81118" y="61.540409" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="71.81118" y="61.570942" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--nzl">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="119.610473" y="89.025458" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="119.610473" y="89.009813" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--nor">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="86.569955" y="70.699391" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="86.569955" y="70.715343" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--pol">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="48.237735" y="43.547052" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="48.237735" y="43.577287" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--prt">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="53.500442" y="47.661218" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="53.500442" y="47.692149" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--esp">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="79.321048" y="66.117412" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="79.321048" y="66.148363" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--swe">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="78.059738" y="65.098794" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="78.059738" y="65.126625" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--che">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="89.266548" y="71.623324" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="89.266548" y="71.646432" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--gbr">
     <g clip-path="url(#p905df98dd9)">
-     <use xlink:href="#m2ee7996571" x="71.738691" y="63.425062" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="71.738691" y="63.399424" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_growth--model--usa">
@@ -1416,133 +1416,133 @@ L 285.996414 113.228764
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--fit">
-    <path d="M 176.590837 61.329067 
-L 280.786624 70.364471 
+    <path d="M 176.590837 61.317639 
+L 280.786624 70.393547 
 " clip-path="url(#p316642a276)" style="fill: none; stroke: #eb6834; stroke-width: 1.2; stroke-linecap: square"/>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--aus">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="230.808074" y="92.607297" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="230.808074" y="92.542384" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--aut">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="207.969775" y="60.628971" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="207.969775" y="60.660018" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--bel">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="189.243634" y="63.628449" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="189.243634" y="63.608478" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--can">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="216.763469" y="78.676993" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="216.763469" y="78.680349" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--cze">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="176.590837" y="55.499251" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="176.590837" y="55.408232" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--dnk">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="194.494545" y="61.769333" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="194.494545" y="61.740424" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--fin">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="191.141554" y="55.393302" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="191.141554" y="55.424408" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--fra">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="218.598124" y="60.117916" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="218.598124" y="60.148971" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--deu">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="219.989932" y="48.689137" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="219.989932" y="48.715554" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--grc">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="225.114315" y="47.514734" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="225.114315" y="47.532073" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--hun">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="207.400399" y="36.674387" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="207.400399" y="36.705423" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--isl">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="189.306898" y="84.357477" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="189.306898" y="84.369225" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--irl">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="206.514703" y="89.133013" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="206.514703" y="89.041726" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--ita">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="242.448648" y="49.297721" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="242.448648" y="49.32885" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--jpn">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="224.671467" y="47.582523" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="224.671467" y="47.583756" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--lux">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="231.250922" y="97.802842" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="231.250922" y="97.828825" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--nld">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="202.276016" y="61.540409" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="202.276016" y="61.570942" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--nzl">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="218.092013" y="89.025458" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="218.092013" y="89.009813" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--nor">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="190.635442" y="70.699391" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="190.635442" y="70.715343" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--pol">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="210.626862" y="43.547052" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="210.626862" y="43.577287" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--prt">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="222.900076" y="47.661218" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="222.900076" y="47.692149" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--esp">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="232.769258" y="66.117412" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="232.769258" y="66.148363" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--swe">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="209.677902" y="65.098794" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="209.677902" y="65.126625" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--che">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="232.895786" y="71.623324" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="232.895786" y="71.646432" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--gbr">
     <g clip-path="url(#p316642a276)">
-     <use xlink:href="#m2ee7996571" x="223.595979" y="63.425062" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="223.595979" y="63.399424" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_gini--model--usa">
@@ -2090,138 +2090,138 @@ L 422.51976 113.228764
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--fit">
-    <path d="M 379.016514 85.519613 
-L 397.681993 49.114233 
+    <path d="M 378.055275 86.818396 
+L 398.425254 47.462576 
 " clip-path="url(#p85e65837c4)" style="fill: none; stroke: #eb6834; stroke-width: 1.2; stroke-linecap: square"/>
    </g>
    <g id="OECD26_Layer1--spending_index--model--aus">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="379.016514" y="92.607297" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="378.055275" y="92.542384" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--aut">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="390.010636" y="60.628971" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="390.488369" y="60.660018" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--bel">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="395.86338" y="63.628449" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="395.207519" y="63.608478" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--can">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="382.847002" y="78.676993" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="382.887905" y="78.680349" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--cze">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="392.88364" y="55.499251" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="392.229156" y="55.408232" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--dnk">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="393.320869" y="61.769333" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="393.29111" y="61.740424" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--fin">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="397.681993" y="55.393302" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="398.425254" y="55.424408" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--fra">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="389.797539" y="60.117916" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="389.970829" y="60.148971" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--deu">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="393.362203" y="48.689137" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="393.387655" y="48.715554" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--grc">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="392.263367" y="47.514734" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="391.528961" y="47.532073" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--hun">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="389.666687" y="36.674387" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="389.639519" y="36.705423" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--isl">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="389.06927" y="84.357477" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="388.104818" y="84.369225" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--irl">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="379.511326" y="89.133013" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="379.362807" y="89.041726" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--ita">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="396.301531" y="49.297721" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="395.392267" y="49.32885" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--jpn">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="397.222629" y="47.582523" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="397.286209" y="47.583756" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--lux">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="379.12437" y="97.802842" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="378.339825" y="97.828825" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--nld">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="392.986838" y="61.540409" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="392.450629" y="61.570942" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--nzl">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="386.08619" y="89.025458" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="385.942905" y="89.009813" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--nor">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="393.228633" y="70.699391" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="393.058952" y="70.715343" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--pol">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="390.108478" y="43.547052" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="390.686091" y="43.577287" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--prt">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="389.042583" y="47.661218" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="388.126371" y="47.692149" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--esp">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="389.686019" y="66.117412" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="389.686359" y="66.148363" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--swe">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="397.427802" y="65.098794" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="397.828243" y="65.126625" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--che">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="389.764747" y="71.623324" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="389.893501" y="71.646432" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--gbr">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="385.878842" y="63.425062" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="385.415365" y="63.399424" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--spending_index--model--usa">
     <g clip-path="url(#p85e65837c4)">
-     <use xlink:href="#m2ee7996571" x="380.057286" y="73.610974" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="380.601851" y="73.610974" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
   </g>
@@ -2734,138 +2734,138 @@ L 147.24838 252.299174
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--fit">
-    <path d="M 37.842803 169.591992 
-L 142.03859 185.039939 
+    <path d="M 37.842803 169.63365 
+L 142.03859 185.435399 
 " clip-path="url(#p7b04c57a10)" style="fill: none; stroke: #eb6834; stroke-width: 1.2; stroke-linecap: square"/>
    </g>
    <g id="OECD26_Layer1--index_growth--model--aus">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="120.596324" y="185.558698" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="120.596324" y="186.460844" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--aut">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="70.984805" y="175.240444" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="70.984805" y="174.792079" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--bel">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="70.071443" y="169.747499" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="70.071443" y="170.363041" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--can">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="101.792659" y="181.96369" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="101.792659" y="181.925302" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--cze">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="52.398608" y="172.544058" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="52.398608" y="173.158308" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--dnk">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="66.968911" y="172.133708" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="66.968911" y="172.161638" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--fin">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="63.46044" y="168.040686" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="63.46044" y="167.343117" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--fra">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="75.435634" y="175.440441" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="75.435634" y="175.277803" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--deu">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="54.471795" y="172.094915" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="54.471795" y="172.071028" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--grc">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="54.805245" y="173.1262" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="54.805245" y="173.815458" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--hun">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="37.842803" y="175.563248" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="37.842803" y="175.588746" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--isl">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="105.330126" y="176.123938" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="105.330126" y="177.0291" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--irl">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="110.694317" y="185.094304" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="110.694317" y="185.233693" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--ita">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="54.616773" y="169.336283" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="54.616773" y="170.18965" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--jpn">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="50.644372" y="168.471811" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="50.644372" y="168.412139" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--lux">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="142.03859" y="185.457472" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="142.03859" y="186.193787" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--nld">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="71.81118" y="172.447205" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="71.81118" y="172.95045" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--nzl">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="119.610473" y="178.923633" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="119.610473" y="179.058109" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--nor">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="86.569955" y="172.220274" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="86.569955" y="172.379524" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--pol">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="48.237735" y="175.148616" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="48.237735" y="174.606512" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--prt">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="53.500442" y="176.148985" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="53.500442" y="177.008873" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--esp">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="79.321048" y="175.545104" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="79.321048" y="175.544785" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--swe">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="78.059738" y="168.27925" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="78.059738" y="167.903426" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--che">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="89.266548" y="175.471216" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="89.266548" y="175.350378" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--gbr">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="71.738691" y="179.118234" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="71.738691" y="179.553219" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_growth--model--usa">
     <g clip-path="url(#p7b04c57a10)">
-     <use xlink:href="#m2ee7996571" x="95.268643" y="184.581908" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="95.268643" y="184.07082" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
   </g>
@@ -3288,138 +3288,138 @@ L 285.996414 252.299174
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--fit">
-    <path d="M 176.590837 171.219717 
-L 280.786624 182.840575 
+    <path d="M 176.590837 171.470454 
+L 280.786624 182.894452 
 " clip-path="url(#pf43004304b)" style="fill: none; stroke: #eb6834; stroke-width: 1.2; stroke-linecap: square"/>
    </g>
    <g id="OECD26_Layer1--index_gini--model--aus">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="230.808074" y="185.558698" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="230.808074" y="186.460844" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--aut">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="207.969775" y="175.240444" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="207.969775" y="174.792079" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--bel">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="189.243634" y="169.747499" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="189.243634" y="170.363041" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--can">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="216.763469" y="181.96369" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="216.763469" y="181.925302" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--cze">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="176.590837" y="172.544058" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="176.590837" y="173.158308" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--dnk">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="194.494545" y="172.133708" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="194.494545" y="172.161638" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--fin">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="191.141554" y="168.040686" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="191.141554" y="167.343117" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--fra">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="218.598124" y="175.440441" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="218.598124" y="175.277803" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--deu">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="219.989932" y="172.094915" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="219.989932" y="172.071028" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--grc">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="225.114315" y="173.1262" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="225.114315" y="173.815458" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--hun">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="207.400399" y="175.563248" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="207.400399" y="175.588746" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--isl">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="189.306898" y="176.123938" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="189.306898" y="177.0291" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--irl">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="206.514703" y="185.094304" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="206.514703" y="185.233693" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--ita">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="242.448648" y="169.336283" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="242.448648" y="170.18965" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--jpn">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="224.671467" y="168.471811" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="224.671467" y="168.412139" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--lux">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="231.250922" y="185.457472" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="231.250922" y="186.193787" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--nld">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="202.276016" y="172.447205" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="202.276016" y="172.95045" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--nzl">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="218.092013" y="178.923633" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="218.092013" y="179.058109" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--nor">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="190.635442" y="172.220274" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="190.635442" y="172.379524" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--pol">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="210.626862" y="175.148616" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="210.626862" y="174.606512" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--prt">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="222.900076" y="176.148985" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="222.900076" y="177.008873" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--esp">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="232.769258" y="175.545104" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="232.769258" y="175.544785" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--swe">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="209.677902" y="168.27925" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="209.677902" y="167.903426" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--che">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="232.895786" y="175.471216" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="232.895786" y="175.350378" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--gbr">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="223.595979" y="179.118234" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="223.595979" y="179.553219" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
    <g id="OECD26_Layer1--index_gini--model--usa">
     <g clip-path="url(#pf43004304b)">
-     <use xlink:href="#m2ee7996571" x="280.786624" y="184.581908" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
+     <use xlink:href="#m2ee7996571" x="280.786624" y="184.07082" style="fill: #eb6834; stroke: #fcfcfb; stroke-width: 0.5; stroke-linejoin: miter"/>
     </g>
    </g>
   </g>
