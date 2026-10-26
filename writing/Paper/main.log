@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.10.6)  22 OCT 2026 10:18
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.10.6)  26 OCT 2026 20:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1533,17 +1533,18 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <8> on input line 3.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <6> on input line 3.
-<Figs/OECDdata.pdf, id=211, 427.11569pt x 281.85298pt>
+<Figs/OECDdata.pdf, id=232, 427.11569pt x 281.85298pt>
 File: Figs/OECDdata.pdf Graphic file (type pdf)
 <use Figs/OECDdata.pdf>
 Package pdftex.def Info: Figs/OECDdata.pdf  used on input line 12.
 (pdftex.def)             Requested size: 452.9679pt x 298.92616pt.
- [2] [3 <./Figs/OECDdata.pdf>]
-[4]) (./Sections/Model.tex [5{c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-
-mathit.enc}{c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}] [6{c:/tex
-live/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}{c:/texlive/2026/texmf-di
-st/fonts/enc/dvips/lm/lm-mathsy.enc}] [7] [8] [9]) (./Sections/Log.tex [10]
-[11] [12]) (./Sections/Numerical.tex [13] [14]) (./Sections/Argentina.tex
+ [2] [3{c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc} <./Figs/OE
+CDdata.pdf>] [4])
+(./Sections/Model.tex [5] [6{c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-r
+m.enc}{c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}] [7{c:/texl
+ive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}] [8] [9] [10])
+(./Sections/Log.tex [11] [12] [13] [14]) (./Sections/Numerical.tex [15])
+(./Sections/Argentina.tex [16]
 Package epstopdf Info: Source file: <Figs/coverageArg.eps>
 (epstopdf)                    date: 2026-08-25 15:39:17
 (epstopdf)                    size: 14307 bytes
@@ -1554,38 +1555,38 @@ Package epstopdf Info: Source file: <Figs/coverageArg.eps>
 rted-to.pdf Figs/coverageArg.eps>
 (epstopdf)             \includegraphics on input line 10.
 Package epstopdf Info: Output file is already uptodate.
-<Figs/coverageArg-eps-converted-to.pdf, id=540, 397.485pt x 289.08pt>
+<Figs/coverageArg-eps-converted-to.pdf, id=591, 397.485pt x 289.08pt>
 File: Figs/coverageArg-eps-converted-to.pdf Graphic file (type pdf)
 <use Figs/coverageArg-eps-converted-to.pdf>
 Package pdftex.def Info: Figs/coverageArg-eps-converted-to.pdf  used on input l
 ine 10.
 (pdftex.def)             Requested size: 317.07614pt x 230.60707pt.
-
-[15] [16 <./Figs/coverageArg-eps-converted-to.pdf>]
-(./Tables/ArgentinaCalibration.tex) (./Tables/ArgentinaUniversal.tex) [17]
-<Figs/ARG_CRRA_LOG.pdf, id=598, 650.43pt x 462.52798pt>
+ [17 <./Figs/coverageArg-eps-converted-to.pdf>]
+[18] (./Tables/ArgentinaCalibration.tex) [19] (./Tables/ArgentinaUniversal.tex)
+[20]
+<Figs/ARG_CRRA_LOG.pdf, id=660, 650.43pt x 462.52798pt>
 File: Figs/ARG_CRRA_LOG.pdf Graphic file (type pdf)
 <use Figs/ARG_CRRA_LOG.pdf>
-Package pdftex.def Info: Figs/ARG_CRRA_LOG.pdf  used on input line 42.
+Package pdftex.def Info: Figs/ARG_CRRA_LOG.pdf  used on input line 44.
 (pdftex.def)             Requested size: 452.9679pt x 322.11589pt.
-)
-(./Sections/OECD.tex [18] [19 <./Figs/ARG_CRRA_LOG.pdf>]
+ [21 <./Figs/ARG_CRRA_LOG.pdf>]) (./Sections/OECD.tex [22]
 (./Tables/USUKFRCalibration.tex)
-<Figs/US_overview.pdf, id=685, 607.068pt x 325.215pt>
+<Figs/US_overview.pdf, id=751, 607.068pt x 325.215pt>
 File: Figs/US_overview.pdf Graphic file (type pdf)
 <use Figs/US_overview.pdf>
 Package pdftex.def Info: Figs/US_overview.pdf  used on input line 21.
 (pdftex.def)             Requested size: 452.9679pt x 242.66013pt.
- [20] [21 <./Figs/US_overview.pdf>] [22])
-(./Sections/EndogenousTheta.tex [23] [24] [25] (./Tables/US_ESC_Calibration.tex
-)
-<Figs/US_ESC_overview.pdf, id=838, 578.16pt x 549.25201pt>
+ [23] [24 <./Figs/US_overview.pdf>] [25])
+(./Sections/EndogenousTheta.tex [26] [27] [28] [29]
+(./Tables/US_ESC_Calibration.tex)
+<Figs/US_ESC_overview.pdf, id=922, 578.16pt x 549.25201pt>
 File: Figs/US_ESC_overview.pdf Graphic file (type pdf)
 <use Figs/US_ESC_overview.pdf>
 Package pdftex.def Info: Figs/US_ESC_overview.pdf  used on input line 48.
 (pdftex.def)             Requested size: 452.9679pt x 430.3173pt.
- [26] [27 <./Figs/US_ESC_overview.pdf>]) (./Sections/Conclusion.tex [28])
-[29] [30] [31] (./Appendix/EconomicEquilibrium.tex
+ [30] [31 <./Figs/US_ESC_overview.pdf>]
+[32] (./Tables/OECD26_Slopes.tex)) (./Sections/Conclusion.tex [33] [34])
+[35] [36] [37] (./Appendix/EconomicEquilibrium.tex
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.2}
 ) has been already used, duplicate ignored
 <to be read again> 
@@ -1689,154 +1690,214 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.6}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.6 \begin{align*}
+l.5 \begin{align*}
                    [6]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.1}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.25  \end{align}
+l.22  \end{align}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.2}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.25  \end{align}
+l.22  \end{align}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.3}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.25  \end{align}
+l.22  \end{align}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.4}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.25  \end{align}
+l.22  \end{align}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{page.7}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.28 
+l.25 
       [7]
-pdfTeX warning (ext4): destination with the same identifier (name{page.8}) has 
-been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.47 
-      [8]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.5}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.57 \end{align}
+l.33 \end{align}
                 
-pdfTeX warning (ext4): destination with the same identifier (name{page.9}) has 
-been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.66 \begin{align*}
-                    [9]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.6}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.82 \end{align}
+l.39 \end{align}
                 
+pdfTeX warning (ext4): destination with the same identifier (name{page.8}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.41 
+      [8]
+pdfTeX warning (ext4): destination with the same identifier (name{page.9}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.52 T
+      he argument carries over to the tax condition with the cost of section...
+[9]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.7}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.82 \end{align}
+l.60 \end{align}
+                
+pdfTeX warning (ext4): destination with the same identifier (name{equation.0.8}
+) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.64 \end{align}
                 
 pdfTeX warning (ext4): destination with the same identifier (name{page.10}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.86 \begin{align*}
-                    [10]
-pdfTeX warning (ext4): destination with the same identifier (name{page.11}) has
- been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.116 \end{align*}
-                   [11]
-pdfTeX warning (ext4): destination with the same identifier (name{equation.0.8}
-) has been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.131 \end{align}
-                 
+l.64 \end{align}
+                 [10]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.9}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.131 \end{align}
-                 
+l.75 \end{align}
+                
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.10
 }) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.145 \end{align}
-                 
+l.86 \end{align}
+                
+pdfTeX warning (ext4): destination with the same identifier (name{page.11}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.86 \end{align}
+                 [11]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.11
 }) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.145 \end{align}
+l.102 \end{align}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{page.12}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.145 \end{align}
-                  [12]) (./Appendix/EndogenousDesign.tex
+l.102 \end{align}
+                  [12]
+pdfTeX warning (ext4): destination with the same identifier (name{page.13}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.112 \begin{align}
+                   \label{eq:LOG:repAgentTax} [13]
+pdfTeX warning (ext4): destination with the same identifier (name{equation.0.12
+}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.114 \end{align}
+                 
+pdfTeX warning (ext4): destination with the same identifier (name{page.14}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.131 \begin{align*}
+                     [14]
+pdfTeX warning (ext4): destination with the same identifier (name{equation.0.13
+}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.139 \end{align}
+                 
+pdfTeX warning (ext4): destination with the same identifier (name{equation.0.14
+}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.139 \end{align}
+                 
+pdfTeX warning (ext4): destination with the same identifier (name{page.15}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.156 \end{align*}
+                   [15]
+pdfTeX warning (ext4): destination with the same identifier (name{page.16}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.182 \end{align*}
+                   [16]
+pdfTeX warning (ext4): destination with the same identifier (name{equation.0.15
+}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.188 \end{align}
+                 
+pdfTeX warning (ext4): destination with the same identifier (name{equation.0.16
+}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.188 \end{align}
+                 ) (./Appendix/EndogenousDesign.tex
+pdfTeX warning (ext4): destination with the same identifier (name{page.17}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.4 \subsection{Costless redistribution}
+                                        \label{app:esc:corner} [17]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.1}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.8 \end{align}
                
-pdfTeX warning (ext4): destination with the same identifier (name{page.13}) has
- been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.13 \end{proposition}
-                       [13]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.2}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.18 \end{align}
                 
-pdfTeX warning (ext4): destination with the same identifier (name{page.14}) has
+pdfTeX warning (ext4): destination with the same identifier (name{page.18}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.39 F
-      inally, $D_i$ falls with $\theta_t$ only for types below mean income, ...
-[14]
+l.25 F
+      irst, relative incomes average to one. By the definition of $\Gamma_h$...
+[18]
+pdfTeX warning (ext4): destination with the same identifier (name{page.19}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.42 
+      [19]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.3}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.48 \end{align}
                 
-pdfTeX warning (ext4): destination with the same identifier (name{page.15}) has
+pdfTeX warning (ext4): destination with the same identifier (name{page.20}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.52 
-      [15]
-pdfTeX warning (ext4): destination with the same identifier (name{page.16}) has
+      [20]
+pdfTeX warning (ext4): destination with the same identifier (name{page.21}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.60 \smalltitle{The Harberger loss.}
-                                      A set of proportional wedges $t_i$ on ...
-[16]
+l.59 
+      [21]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.4}
 ) has been already used, duplicate ignored
 <to be read again> 
@@ -1849,12 +1910,12 @@ pdfTeX warning (ext4): destination with the same identifier (name{equation.0.5}
                    \relax 
 l.69 \end{align}
                 
-pdfTeX warning (ext4): destination with the same identifier (name{page.17}) has
+pdfTeX warning (ext4): destination with the same identifier (name{page.22}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.73 
-      [17]
+l.71 
+      [22]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.6}
 ) has been already used, duplicate ignored
 <to be read again> 
@@ -1879,194 +1940,240 @@ pdfTeX warning (ext4): destination with the same identifier (name{equation.0.7b
                    \relax 
 l.87 \end{align}
                 
+pdfTeX warning (ext4): destination with the same identifier (name{page.23}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.87 \end{align}
+                 [23]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.8}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.94 \end{align}
                 
-pdfTeX warning (ext4): destination with the same identifier (name{page.18}) has
- been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.96 
-      [18]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.9}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.102 \end{align}
                  
+pdfTeX warning (ext4): destination with the same identifier (name{page.24}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.104 
+       [24]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.10
 }) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.110 \end{align}
                  
-pdfTeX warning (ext4): destination with the same identifier (name{page.19}) has
+pdfTeX warning (ext4): destination with the same identifier (name{page.25}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.112 \end{proposition}
-                        [19]) (./Appendix/TerminalStates.tex
-pdfTeX warning (ext4): destination with the same identifier (name{page.20}) has
- been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.10 \begin{align}
-                   [20]
+l.115 
+       [25]) (./Appendix/TerminalStates.tex
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.1}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.15 \end{align}
+l.16 \end{align}
                 
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.2}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.15 \end{align}
+l.16 \end{align}
                 
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.3}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.15 \end{align}
+l.16 \end{align}
                 
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.4}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.15 \end{align}
+l.16 \end{align}
                 
+pdfTeX warning (ext4): destination with the same identifier (name{page.26}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.16 \end{align}
+                 [26]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.5}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.22 \end{align}
+l.23 \end{align}
                 
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.6}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.22 \end{align}
+l.23 \end{align}
                 
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.7}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.32 \end{align}
+l.33 \end{align}
                 
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.8}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.32 \end{align}
+l.33 \end{align}
                 
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.9}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.32 \end{align}
+l.33 \end{align}
                 
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.10
 }) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.36 \end{align}
-                ) (./Appendix/HouseholdSurveyArg.tex
-pdfTeX warning (ext4): destination with the same identifier (name{page.21}) has
+l.37 \end{align}
+                
+pdfTeX warning (ext4): destination with the same identifier (name{page.27}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.7 \subsection{The household survey}
-                                      [21]
-pdfTeX warning (ext4): destination with the same identifier (name{page.22}) has
+l.41 
+      [27] (./Tables/NUM_Horizon.tex) (./Tables/NUM_Selection.tex)
+(./Tables/NUM_Residuals.tex)
+pdfTeX warning (ext4): destination with the same identifier (name{page.28}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.53 \FloatBarrier
+                   [28]
+pdfTeX warning (ext4): destination with the same identifier (name{page.29}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.53 \FloatBarrier
+                   [29]
+pdfTeX warning (ext4): destination with the same identifier (name{page.30}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.53 \FloatBarrier
+                   [30]
+pdfTeX warning (ext4): destination with the same identifier (name{page.31}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.53 \FloatBarrier
+                   [31]) (./Appendix/HouseholdSurveyArg.tex
+pdfTeX warning (ext4): destination with the same identifier (name{page.32}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.17     \begin{align*}
-                        [22]
-pdfTeX warning (ext4): destination with the same identifier (name{page.23}) has
+                        [32
+
+]
+pdfTeX warning (ext4): destination with the same identifier (name{page.33}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.27 
-      [23]
+l.25 
+      [33]
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.1}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.35     \end{align}
                     
-pdfTeX warning (ext4): destination with the same identifier (name{page.24}) has
+pdfTeX warning (ext4): destination with the same identifier (name{page.34}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.37 
-      [24]) (./Appendix/CalibrationOECD.tex
-pdfTeX warning (ext4): destination with the same identifier (name{page.25}) has
+      [34]) (./Appendix/CalibrationOECD.tex
+pdfTeX warning (ext4): destination with the same identifier (name{page.35}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.9 
-     [25] (./Tables/US_householdheterogeneity.tex)
-pdfTeX warning (ext4): destination with the same identifier (name{page.26}) has
+l.6 
+     [35] (./Tables/US_householdheterogeneity.tex)
+pdfTeX warning (ext4): destination with the same identifier (name{page.36}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.19 \end{align*}
-                  [26] (./Tables/FR_householdheterogeneity.tex)
-(./Tables/UK_householdheterogeneity.tex)
-pdfTeX warning (ext4): destination with the same identifier (name{page.27}) has
+l.14 \FloatBarrier
+                   [36] (./Tables/FR_householdheterogeneity.tex)
+pdfTeX warning (ext4): destination with the same identifier (name{page.37}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.34 \FloatBarrier
-                   [27] (./Tables/FRUK_householdheterogeneity.tex))
-(./Appendix/EndogenousDesignResults.tex
-pdfTeX warning (ext4): destination with the same identifier (name{page.28}) has
- been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.7 
-     [28] (./Tables/UK_ESC_Calibration.tex) (./Tables/US_ESC_Country.tex)
-pdfTeX warning (ext4): destination with the same identifier (name{page.29}) has
- been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.12 
-      [29]
-<Figs/US_ESC_Path.pdf, id=1266, 427.11569pt x 166.22101pt>
+l.26 \FloatBarrier
+                   [37] (./Tables/UK_householdheterogeneity.tex) [38]
+(./Tables/FRUK_householdheterogeneity.tex))
+(./Appendix/EndogenousDesignResults.tex (./Tables/UK_ESC_Calibration.tex)
+(./Tables/US_ESC_Country.tex) [39] [40]
+<Figs/US_ESC_Path.pdf, id=1515, 427.11569pt x 166.22101pt>
 File: Figs/US_ESC_Path.pdf Graphic file (type pdf)
 <use Figs/US_ESC_Path.pdf>
 Package pdftex.def Info: Figs/US_ESC_Path.pdf  used on input line 22.
 (pdftex.def)             Requested size: 452.9679pt x 176.28978pt.
-)
-pdfTeX warning (ext4): destination with the same identifier (name{page.30}) has
- been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.50 \end{document}
-                    [30 <./Figs/US_ESC_Path.pdf>] (./main.aux)
+) (./Appendix/OECD26.tex [41 <./Figs/US_ESC_Path.pdf>] [42]
+<Figs/OECD26_Layer1.pdf, id=1612, 427.11569pt x 281.85298pt>
+File: Figs/OECD26_Layer1.pdf Graphic file (type pdf)
+<use Figs/OECD26_Layer1.pdf>
+Package pdftex.def Info: Figs/OECD26_Layer1.pdf  used on input line 18.
+(pdftex.def)             Requested size: 452.9679pt x 298.92616pt.
+ [43 <./Figs/OECD26_Layer1.pdf>] (./Tables/OECD26_Omega.tex)) [44] (./main.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2026-09-09>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 5929DC12D0CCE4AE59DB200514330E04;8908.
+(rerunfilecheck)             Checksum: 45187ACBF69E3F0E01CC7C76FD24CC94;9911.
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 39530 strings out of 467050
- 753765 string characters out of 5410550
- 1617526 words of memory out of 5000000
- 67944 multiletter control sequences out of 15000+600000
- 726996 words of font info for 115 fonts, out of 8000000 for 9000
+ 39717 strings out of 467050
+ 757346 string characters out of 5410550
+ 1672821 words of memory out of 5000000
+ 68065 multiletter control sequences out of 15000+600000
+ 741155 words of font info for 126 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 112i,21n,111p,2451b,1916s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 112i,21n,111p,2791b,1916s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+pdfTeX warning (dest): name{Hfootnote.46} has been referenced but does not exis
+t, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{Hfootnote.45} has been referenced but does not exis
+t, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{Hfootnote.44} has been referenced but does not exis
+t, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{Hfootnote.43} has been referenced but does not exis
+t, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{Hfootnote.42} has been referenced but does not exis
+t, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{Hfootnote.41} has been referenced but does not exis
+t, replaced by a fixed one
+
 
 pdfTeX warning (dest): name{Hfootnote.40} has been referenced but does not exis
 t, replaced by a fixed one
@@ -2234,22 +2341,24 @@ pe1/public/lm/lmex10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi
 /2026/texmf-dist/fonts/type1/public/lm/lmmi5.pfb><c:/texlive/2026/texmf-dist/fo
 nts/type1/public/lm/lmmi6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm
 /lmmi7.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi8.pfb><c:/texl
-ive/2026/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/texlive/2026/texmf-dist
-/fonts/type1/public/lm/lmr12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public
-/lm/lmr17.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr5.pfb><c:/te
-xlive/2026/texmf-dist/fonts/type1/public/lm/lmr6.pfb><c:/texlive/2026/texmf-dis
-t/fonts/type1/public/lm/lmr7.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public
-/lm/lmr8.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmri10.pfb><c:/t
-exlive/2026/texmf-dist/fonts/type1/public/lm/lmri12.pfb><c:/texlive/2026/texmf-
-dist/fonts/type1/public/lm/lmsy10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/p
-ublic/lm/lmsy6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy7.pfb>
-<c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy8.pfb><c:/texlive/2026/te
-xmf-dist/fonts/type1/public/lm/lmtt10.pfb><c:/texlive/2026/texmf-dist/fonts/typ
-e1/public/lm/lmtt12.pfb>
-Output written on main.pdf (61 pages, 820787 bytes).
+ive/2026/texmf-dist/fonts/type1/public/lm/lmmib10.pfb><c:/texlive/2026/texmf-di
+st/fonts/type1/public/lm/lmr10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/publ
+ic/lm/lmr12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr17.pfb><c:
+/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr5.pfb><c:/texlive/2026/texmf-
+dist/fonts/type1/public/lm/lmr6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/pub
+lic/lm/lmr7.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr8.pfb><c:/
+texlive/2026/texmf-dist/fonts/type1/public/lm/lmri10.pfb><c:/texlive/2026/texmf
+-dist/fonts/type1/public/lm/lmri12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/
+public/lm/lmsy10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy6.pf
+b><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy7.pfb><c:/texlive/2026/
+texmf-dist/fonts/type1/public/lm/lmsy8.pfb><c:/texlive/2026/texmf-dist/fonts/ty
+pe1/public/lm/lmtt10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmtt
+12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.p
+fb>
+Output written on main.pdf (81 pages, 963493 bytes).
 PDF statistics:
- 1512 PDF objects out of 1728 (max. 8388607)
- 1105 compressed objects within 12 object streams
- 246 named destinations out of 1000 (max. 500000)
- 419 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1875 PDF objects out of 2073 (max. 8388607)
+ 1397 compressed objects within 14 object streams
+ 285 named destinations out of 1000 (max. 500000)
+ 464 words of extra memory for PDF output out of 10000 (max. 10000000)
 

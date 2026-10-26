@@ -78,7 +78,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 - **The review's smaller U.S. numbers** (package C5, not wired): `python/US/c5Numbers.py` and a `runShocksUS.py
   --out` run at every ρ of the sweep write `results/numerical/C5_*.csv` (C.1's critical turnout ratio, the ranking of
   the counterfactuals, the marginal loss, λ against elasticities, index units, the design's response to inequality,
-  τ_2020(s_2019)); only `US_TaxState` (the site's B3) reads one. Commands in `REPLICATION.md` §3, numbers in
+  τ_2020(s_2019), the strategic term); only the site's `US_TaxState` and `US_Strategic` read them. Commands in `REPLICATION.md` §3, numbers in
   `archive/notes/reviewResponse_2026-10/ledger_C5.md`.
 - **Appendix D's checks** (package C4, not wired): `python/{US,InformalSavings}/runHorizon.py` re-solve the calibrated
   economies at other horizons and under the steady-state terminal condition, and take the tax rule's first-order-condition
@@ -105,7 +105,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `tablesHorizon.py` | appendix D: the horizon and terminal condition (`NUM_Horizon`, and date by date for the site, `NUM_HorizonPaths`), the residuals off the grid (`NUM_Residuals`); its counts table is `tablesOA.numSelection` (`NUM_Selection`, grouped by solve; file by file on the site, `NUM_SelectionFiles`) |
 | `tablesOECD26.py`, `figuresOECD26.py` | the cross-country test (`results/oecd26/`, `python/US/runOECD26.py`): figure 1.1's relations with the model's layer 1 beside the data (`OECD26_Layer1`; layer 2 by argument), the slopes of data and both layers (`OECD26_Slopes`), the calibrated `ω`'s (`OECD26_Omega`); the turnout, sample and design reading of the online appendix's variants by argument. `test_oecd26.py` checks them on synthetic csvs |
 
-## Outputs wired (50)
+## Outputs wired (51)
 
 Every generated `.tex` carries a `%% Source:` banner with the csv it was read from; `--list` reports what is
 buildable now. Every table row ends in a `% row: <key>` comment (`tables.rowKey`) and every figure also writes
@@ -114,9 +114,9 @@ reads the marks to tie each dataset of the site to the paper's figure. The paper
 calibration and household tables, `ArgentinaUniversal`, `ARG_CRRA_LOG`, `US_overview`, `US_ESC_Calibration`,
 `US_ESC_overview`, `OECDdata`, appendix G's `UK_ESC_Calibration`, `US_ESC_Country` and `US_ESC_Path`, the
 cross-country test's `OECD26_*` at the design in force in 2020, and appendix D's `NUM_Horizon`, `NUM_Residuals`
-and `NUM_Selection`, the counts grouped by solve); the online appendix's 40 exhibits (`onlineAppendix.EXHIBITS`)
-read 32 outputs, of which the 27 `ONLINE_ONLY` (the four `data` outputs among them, the `OECD26_*_29` and
-`_cses` variants, `OECD_Medicare`, `US_TaxState`, `NUM_HorizonPaths`, `NUM_SelectionFiles`) are never copied into
+and `NUM_Selection`, the counts grouped by solve); the online appendix's 41 exhibits (`onlineAppendix.EXHIBITS`)
+read 33 outputs, of which the 28 `ONLINE_ONLY` (the four `data` outputs among them, the `OECD26_*_29` and
+`_cses` variants, `OECD_Medicare`, `US_TaxState`, `US_Strategic`, `NUM_HorizonPaths`, `NUM_SelectionFiles`) are never copied into
 `writing/Paper`. The 59 outputs neither input nor shown (the
 `_vectorX` twins, the counterfactual and ESC tables, the ρ-grid, path and ξ tables) were retired with their
 builders on 2026-10-09. Every US counterfactual is a new equilibrium path read at 2020 (`python/US/shocks.py`).

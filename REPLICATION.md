@@ -68,10 +68,13 @@ write the reform's two files per $\rho$ into `results/shocks/`. The reform's dia
 the 2010 first order condition by generation and type, both sides of condition (B.5), households' savings rates,
 and the low-$\rho$ tax response on a finer state grid.
 
-The U.S. numbers of the review response that no output reads yet are written to `results/numerical/C5_*.csv` by
+The smaller U.S. numbers of the review response are written to `results/numerical/C5_*.csv` by
 `python\US\c5Numbers.py <command>` after stages (i) and (ii): `a1` (the critical turnout ratio of proposition C.1),
 `a9` (the counterfactuals ranked at every $\rho$), `loss`, `lambda`, `index`, `design` (log) and `designCRRA --rho
-0.5` and `--rho 2.0` (about an hour each), and `a13`. `a9` also reads the U.S. counterfactuals at the other $\rho$ of
+0.5` and `--rho 2.0` (about an hour each), `a13` (the 2020 tax against inherited capital, `C5_taxPolicyState.csv`,
+read by the online appendix's `US_TaxState`) and `strategic` (the strategic term of the 2020 choice,
+$\partial\tau_{2050}/\partial s_{2020}\cdot\partial s_{2020}/\partial\tau_{2020}$, `C5_strategicTerm.csv`, read by the
+online appendix's `US_Strategic`); no other output reads them. `a9` also reads the U.S. counterfactuals at the other $\rho$ of
 the sweep, `python\US\runShocksUS.py --commonX --rho 1.0 0.6 0.7 0.8 0.9 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9
 --noFrance --out <repo>\results\numerical\C5_US_shocksRhoGridCommonX.csv` (about 30 minutes; the path must be
 absolute, since the script runs from `python\US`).
@@ -185,6 +188,16 @@ endogenous-design scripts (`python/US/runESC*.py`), `results/oecd26/` by the cro
   non-contributive old-age pensions) is drawn from Cetrángolo and Grushka (2020), table 6, which reproduces the
   Boletín Estadístico de la Seguridad Social. The data file and the script are not yet in the
   repository (TODO: add `data/argentinaCoverage.csv` with a Readme row and a builder in `python/paper`).
+- **Numbers the prose computes from the results.** Section 5 (`Sections/Argentina.tex`, "Two moments of the
+  episode") quotes the 2010 rise in pension spending, 1.2% of GDP (1.170), and in spending on informal retirees,
+  1.1% of GDP (1.053), and for the $\epsilon = 0$ reading 2.5% (2.520) and 2.0% (1.968). They are read off the
+  first row (`t` = 3, 2010) of `results/shocks/universal_match_rho1.0000_commonX.csv` and of
+  `..._commonX_epsPre0.csv` (see §3), columns `τ_w`, `Y_w`, `Y0_w`, `b0_w`, `biAvg_w` for `w` = `base`, `reform`.
+  Spending over GDP is $S_w = \tau_w(1-\alpha)Y_w/(Y_w + Y0_w)$ (`python/paper/datasets.spendingPath`), the
+  informal retirees' part of it $S_w\,\gamma_0 b0_w/(\gamma_0 b0_w + \text{biAvg}_w)$, the outlay being
+  proportional to $\gamma_0 b^0_t + \sum_i\gamma_{t-1,i}b^i_t$ at every date (eq:governmentBudget), with $\alpha$ =
+  0.35 and $\gamma_0$ = 8/17 from `results/paper/calibrationSummary.csv`; each number is reform minus base (the
+  $\epsilon = 0$ base pays informal retirees nothing).
 - **Numbers quoted from other sources** (pension spending across the OECD, the coverage and spending
   figures of the Argentine reform, replacement rates) are cited where they appear; the calibration
   appendices state every target and its source.
@@ -193,8 +206,8 @@ endogenous-design scripts (`python/US/runESC*.py`), `results/oecd26/` by the cro
 
 ## 6. Checks
 
-- `python\runTests.py`: the model, solver and online-appendix test suites (24 fast suites, about 7 minutes; `--all` adds
-  five slow ones, about an hour).
+- `python\runTests.py`: the model, solver and online-appendix test suites (29 fast suites; `--all` adds six slow ones,
+  which run real calibrations and take hours).
 - `python\paper\build.py --list`: every registered output is buildable from the committed results.
 - `writing\checkPaper.py`: every cross-reference and citation in the paper resolves, with word counts per
   section and the list of pending items.

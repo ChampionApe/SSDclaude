@@ -33,7 +33,8 @@ everything below are in the working tree.
    brought to RKB before any commit. Done 2026-10-26, with the five fallback passages; the workbooks' `Readme`
    sheets deleted (their content is in `data/README.md` and appendix F).
 2. **Commit** phase 3 and the 2026-10-26 changes, on RKB's go.
-3. **V**, on RKB's go:
+3. **V** (RKB's go 2026-10-26; done but the `runTests.py --all` verdict: latexmk clean, numbers audit and referee
+   pass run, their 15 fixes applied, the documentation items below done):
    - builds and tests: `build.py`, `checkPaper`, latexmk, `test_onlineAppendix`, `runTests.py`;
    - a numbers-against-tables audit of the whole paper (paper-reviewer), and a referee pass over sections 3 and
      7 and appendices B–D against each review comment (paper-reviewer-lead);

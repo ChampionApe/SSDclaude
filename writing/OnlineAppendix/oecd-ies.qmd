@@ -7,7 +7,7 @@ U.S. and imposed on the UK and France, so their interest factors are predictions
 falls as the IES rises in every country, since the young resist taxation less, and it keeps its ranking: highest
 in France, then the U.S., lowest in the UK. The savings rate falls with the IES in every country, and the
 UK's and France's interest factors rise toward the U.S. target. The taste for leisure, pinned by each country's
-average workweek, falls a little with the IES in the UK and is nearly flat in the U.S. and France. At the highest
+average workweek, falls a little with the IES in the UK and is nearly flat in the U.S. and France. At the lowest
 elasticity of the grid the thirty-year discount factor exceeds one, which the UK and France inherit.
 
 {{< include _generated/exhibits/OECD_RhoGrid.qmd >}}

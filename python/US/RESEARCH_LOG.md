@@ -112,3 +112,13 @@ French leisure counterfactual is not ν-free, since France's X is pinned by hour
 ρ = 1, rates unchanged; income and voting rows unchanged (η_FR moves by one factor). One design-layer fallback appeared
 (escShocksCRRA, ρ = 0.5, cost on the design, frLeisure chosen). oecd26 recomputed nothing. Tests eu 40, esc 91, counts 11,
 oecd26 32, onlineAppendix 10, all pass. Numbers and the paper lines that moved: `notes/ledger_C7.md`.
+
+## 2026-10-26 — V, documentation items (branch `review-2026-10`)
+README cut to 100 lines; the pre-cut file is `archive/readmes/US_README_2026-10-26.md` (`archive/INDEX.md`). Technical note:
+num_esc's permanent timing at `test_escTiming.py`'s pins (p = 0.4: 0.753 pinned, 0.870 moving, 0.7525 incumbent; p = 0.25:
+0.517 / 0.523), the flat-only variant's leaded calibration and the path iteration dated as last run 2026-10-03 at θ* = 0.738
+(path rows unchanged since, checked against f3a15a4~1), model_calibration's θ 0.728 against 0.735 (z = 0.507, 1.0005).
+`REPLICATION.md` maps section 5's informal-retiree spending (1.053 / 1.968% of GDP: S·γ0 b0/(γ0 b0 + biAvg) from the
+`universal_match` csvs) and `c5Numbers.py strategic`; `data/README.md` the Argentine ν copies. `oecd29Data.py`'s two
+French notes rerun offline from `logs/oecd29_raw/`: only the `note` columns of `oecd29_{population,sources}.csv` moved.
+`NUM_Residuals` already described the least-squares cubic; rebuilt identical. build 51, --site, --map (table unchanged), checkPaper OK.

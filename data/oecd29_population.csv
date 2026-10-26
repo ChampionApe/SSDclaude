@@ -405,10 +405,10 @@ USA,United States,wpp2019,1990,1.3502546,252120.31,186720.57,
 USA,United States,wpp2019,2020,1.3128758,331002.65,252120.31,
 USA,United States,wpp2019,2050,1.1462721,379419.1,331002.65,
 USA,United States,wpp2019,2080,1.0942976,415197.4,379419.1,
-FRA,France,wpp2024_frRule,1990,1.0207852,56990.238,46428.134,"appendix F rule, gap 2.5 years; FRMain.xlsx population!D has 1.026299"
-FRA,France,wpp2024_frRule,2020,0.96688386,65905.277,56990.238,"appendix F rule, gap 2.5 years; FRMain.xlsx population!D has 0.966884"
-FRA,France,wpp2024_frRule,2050,0.90374386,68219.675,65905.277,"appendix F rule, gap 2.0 years; FRMain.xlsx population!D has 0.903744"
-FRA,France,wpp2024_frRule,2080,0.87265794,68024.937,68219.675,"appendix F rule, gap 2.0 years; FRMain.xlsx population!D has 0.870591"
+FRA,France,wpp2024_frRule,1990,1.0207852,56990.238,46428.134,"appendix F rule until 2026-10-26, gap 2.5 years; FRMain.xlsx population!D had 1.026299 (wpp2024_nraAdj since)"
+FRA,France,wpp2024_frRule,2020,0.96688386,65905.277,56990.238,"appendix F rule until 2026-10-26, gap 2.5 years; FRMain.xlsx population!D had 0.966884 (wpp2024_nraAdj since)"
+FRA,France,wpp2024_frRule,2050,0.90374386,68219.675,65905.277,"appendix F rule until 2026-10-26, gap 2.0 years; FRMain.xlsx population!D had 0.903744 (wpp2024_nraAdj since)"
+FRA,France,wpp2024_frRule,2080,0.87265794,68024.937,68219.675,"appendix F rule until 2026-10-26, gap 2.0 years; FRMain.xlsx population!D had 0.870591 (wpp2024_nraAdj since)"
 AUS,Australia,wpp2024_nraAdj,1990,1.6658506,17126.298,10280.813,"men's normal retirement age 0.0 years below the US's (PaG 2021, current)"
 AUS,Australia,wpp2024_nraAdj,2020,1.5031731,25743.791,17126.298,"men's normal retirement age 0.0 years below the US's (PaG 2021, current)"
 AUS,Australia,wpp2024_nraAdj,2050,1.262711,32506.969,25743.791,"men's normal retirement age 0.0 years below the US's (PaG 2021, future)"

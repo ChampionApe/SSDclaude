@@ -45,7 +45,8 @@ WORKBOOKS = {'USA': ('USMain_test.xlsx', 'heterogeneity'), 'GBR': ('UKMain.xlsx'
 
 PERIODS = [1990, 2020, 2050, 2080]           # nu_t = P(t)/P(t-30); the workbooks copy 1990 to 1960, 2080 to 2110
 FR_GAPS = {1990: 2.5, 2020: 2.5, 2050: 2.0, 2080: 2.0}          # appendix F until 2026-10-26: France 2.5 years before
-FR_WORKBOOK = {1990: 1.026299, 2020: 0.966884, 2050: 0.903744, 2080: 0.870591}   # the US/UK, 2 from 2050 (now the nraAdj gaps)
+                                                                # the US/UK, 2 from 2050 (now the nraAdj gaps)
+FR_WORKBOOK = {1990: 1.026299, 2020: 0.966884, 2050: 0.903744, 2080: 0.870591}   # FRMain.xlsx population!D until then
 DIST_YEAR, DIST_WINDOW = 2019, 2             # last pre-pandemic year; ESP, IRL, ITA earnings ratios jump in 2020-21
 SURVEY = {'USA': 2018, 'GBR': 2006, 'FRA': 2018}   # CPS March 2019, BHPS wave 17 (2006-07), LIS 2018
 US_CUTS = (0.582266, 0.757993)               # data/USMain_test.xlsx heterogeneity, cumulative shares
@@ -180,7 +181,8 @@ def population(nra):
     for t, v in nraRule(n24['FRA'], FR_GAPS).items():
         rows.append({'iso3': 'FRA', 'country': NAME['FRA'], 'definition': 'wpp2024_frRule', 'period': t, 'nu': v,
                      'pop': p24.at[t, 'FRA'], 'pop_lag30': p24.at[t - 30, 'FRA'],
-                     'note': 'appendix F rule, gap {} years; FRMain.xlsx population!D has {:.6f}'.format(
+                     'note': 'appendix F rule until 2026-10-26, gap {} years; FRMain.xlsx population!D had {:.6f} '
+                             '(wpp2024_nraAdj since)'.format(
                          FR_GAPS[t], FR_WORKBOOK[t])})
     us = nra.loc['USA']
     for c in ISO3:
@@ -705,7 +707,8 @@ def _secondarySources(sec):
          n('nra_current_men') + '; rules of 2020', _retrieved('pagNra'), RAW['pagNra'][2],
          'wpp2024_nraAdj applies appendix F\'s rule to every country with the gap to the US men\'s age (current for '
          '1990 and 2020, future for 2050 and 2080), mirrored for later retirement. France here: 64.5 and 66 against '
-         'the US 66 and 67 (gaps 1.5 and 1), not appendix F\'s 63.5 (gaps 2.5 and 2).'),
+         'the US 66 and 67 (gaps 1.5 and 1), as in appendix F and FRMain.xlsx population!D since 2026-10-26; until '
+         'then a French age of 63.5 with no source (gaps 2.5 and 2, definition wpp2024_frRule).'),
         ('pwt_labsh_2019, pwt_labsh_2020, pwt_ky_na_*, pwt_ky_pp_*, pwt_avh_*', 'Groningen Growth and Development '
          'Centre', 'Penn World Table 11.0 (DataverseNL, doi:10.34894/FABVLR), sheet Data',
          'labsh; ky_na = rnna/rgdpna (constant national prices); ky_pp = cn/cgdpo (current PPPs); avh', 'PWT 11.0',

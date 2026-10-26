@@ -350,10 +350,13 @@ Outputs no builder reads, moved from `results/` on 2026-10-07 (same relative pat
 - `findings_longform.md`: the full `notes/crossCuttingFindings.md` as of 2026-09-11 (findings 1 to 15), with
   every measurement and addendum. Same numbering as the live file.
 
-## README snapshots (pre-cut, 2026-09-11)
+## README snapshots (pre-cut)
 
 - `readmes/<module>_README_2026-09-11.md` for `root`, `US`, `InformalSavings`, `informalAnalytical`,
   `paper`, `gridsearch`: the long versions with every measurement the live READMEs now only point to.
+- `readmes/US_README_2026-10-26.md`: the US README before its second cut (213 to 100 lines): the calibration
+  settings and health checks, the counterfactual conventions, the endogenous-design solvers and the status
+  measurements of C1–C7 (λ, the τ-derivatives, the design grids, appendix D, the cross-country test).
 
 ## Pilots
 
