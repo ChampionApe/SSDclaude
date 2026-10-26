@@ -5,10 +5,13 @@ political weights.
 Every builder takes
   turnout  'cps' (every economy at the U.S. CPS propensities to vote, the paper's) | 'cses' (each its own,
            the online appendix's; Luxembourg has none and drops out of data and model alike);
-  sample   '26' (data/oecd26_sample.csv's sample26, the paper's) | '29' (figure 1.1's countries);
-  reading  'chosen' (the design chosen in 2020 at the observed design, in force in 2050) | 'inForce' (the
-           design in force in 2020 on the freely simulated path, appendix G.1's reading).
-The model's design enters every regression on the index's scale, I = 1/(2 - θ), the inverse of the loader's
+  sample   '26' (data/oecd26_sample.csv's sample26, the paper's) | '29' (figure 1.1's countries, the online
+           appendix's);
+  reading  'inForce' (the design in force in 2020 on the freely simulated path, chosen in 1990: the reading
+           of lambda's target and of appendix G.1, the paper's) | 'chosen' (the design chosen in 2020 at the
+           observed design, in force from 2050).
+An output's name and label carry the parts that differ from the paper's variant (`suffix`). The model's design
+enters every regression on the index's scale, I = 1/(2 - θ), the inverse of the loader's
 θ = 2 - 1/I; spending is 100 τ (1 - α), % of GDP, the inverse of the calibration's τ0. Both sides of every
 slope use figure 1.1's regressors (OECD population growth 2020/1990, the WIID Gini) and the same countries.
 """
@@ -24,15 +27,24 @@ from tablesUS import _xwrap
 RELATIONS = (('spending', 'growth'), ('spending', 'gini'), ('spending', 'index'),
              ('index', 'growth'), ('index', 'gini'))
 READINGS = {'chosen': 'θChosen', 'inForce': 'θInForce'}
+PAPER = {'turnout': 'cps', 'sample': '26', 'reading': 'inForce'}     # the paper's variant: every default
 YTEX = {'spending': 'Pension spending', 'index': 'Bismarckian index'}
 XTEX = {'growth': 'population growth', 'gini': 'the Gini', 'index': 'the Bismarckian index'}
 
 
-def suffix(turnout = 'cps', sample = '26', reading = 'chosen'):
-    r""" '' for the paper's variant; otherwise the parts that differ, e.g. '_cses_29'. Appended to an output's
-    name and \label. """
-    return ('' if turnout == 'cps' else '_' + turnout) + ('' if sample == '26' else '_' + sample) \
-        + ('' if reading == 'chosen' else '_' + reading)
+def suffix(turnout = 'cps', sample = '26', reading = 'inForce'):
+    r""" '' for the paper's variant (PAPER); otherwise the parts that differ, e.g. '_cses_29'. Appended to an
+    output's name and \label. """
+    v = {'turnout': turnout, 'sample': sample, 'reading': reading}
+    return ''.join('_' + v[k] for k in ('turnout', 'sample', 'reading') if v[k] != PAPER[k])
+
+
+def variantCaption(turnout = 'cps', sample = '26', reading = 'inForce'):
+    """ What a caption adds for a variant other than the paper's: '' for the paper's own. """
+    parts = ([r'every country of figure \ref{fig:US:OECDdata}'] if sample != PAPER['sample'] else []) \
+        + (['each country at its own turnout'] if turnout != PAPER['turnout'] else []) \
+        + (['the design chosen in 2020'] if reading != PAPER['reading'] else [])
+    return ''.join(', ' + p for p in parts)
 
 
 def _check(turnout, sample, reading):
@@ -41,7 +53,7 @@ def _check(turnout, sample, reading):
                          .format(turnout, sample, reading))
 
 
-def panelData(layer, turnout = 'cps', sample = '26', reading = 'chosen'):
+def panelData(layer, turnout = 'cps', sample = '26', reading = 'inForce'):
     r""" One row per country of the sample with a model row: figure 1.1's x variables (`growth`, `gini`), the
     data's `spendingData`, `indexData`, and the model's `spendingModel`, `θModel`, `indexModel` = 1/(2 - θ),
     from layer `layer` (1 | 2). Countries whose model row is 'noTurnout' (cses) are dropped from both sides and
@@ -98,7 +110,7 @@ def _xy(p, yRole, xRole, side):
     return x, y
 
 
-def slopes(turnout = 'cps', sample = '26', reading = 'chosen'):
+def slopes(turnout = 'cps', sample = '26', reading = 'inForce'):
     """ One row per relation of RELATIONS: OLS of the data and of layers 1 and 2 (`data`, `layer1`, `layer2`,
     each an ols dict), on the countries both layers cover. Layer 2 matches spending by construction, so its
     spending-on-regressor rows are flagged `targeted2`. """
@@ -119,7 +131,7 @@ def _cell(o, digits = 2):
     return '$' + C.num(o['slope'], digits) + '$ $(' + C.num(o['se'], digits) + ')$'
 
 
-def oecd26Slopes(turnout = 'cps', sample = '26', reading = 'chosen'):
+def oecd26Slopes(turnout = 'cps', sample = '26', reading = 'inForce'):
     r""" The slopes of figure 1.1's relations: the data on the sample, the model with the U.S. political weight
     and cost (layer 1) and with each country's own political weight (layer 2). """
     s = slopes(turnout, sample, reading)
@@ -131,7 +143,8 @@ def oecd26Slopes(turnout = 'cps', sample = '26', reading = 'chosen'):
                  r'\textit{targeted}' if r['targeted2'] else _cell(r['layer2'])]
         body.append(' & '.join(cells) + r' \\ % row: ' + rowKey(r['y'] + '_' + r['x']))
     design = (r'the design chosen in 2020, which binds from 2050' if reading == 'chosen' else
-              r'the design in force in 2020 on the freely simulated path')
+              r'the design in force in 2020 on the freely simulated path, chosen in 1990 (for the U.S.\ its '
+              r'observed design, the target of $\lambda$)')
     dropped = s.attrs['dropped']
     note = (r'\textit{Note:} Least-squares slopes with standard errors in parentheses, ' + str(s.attrs['n'])
             + ' countries' + (' (without ' + ', '.join(dropped) + ', which has no turnout data)' if dropped else '')
@@ -143,13 +156,14 @@ def oecd26Slopes(turnout = 'cps', sample = '26', reading = 'chosen'):
             + (r' Turnout: each country\textquotesingle s own.' if turnout == 'cses' else ''))
     name = 'OECD26_Slopes' + suffix(turnout, sample, reading)
     return _xwrap(name, 'results/oecd26/layer1.csv, layer2.csv, anchor.csv; data/oecdFigure1.csv, oecd26_sample.csv',
-                  r'Figure \ref{fig:US:OECDdata}\textquotesingle s relations in the data and in the model',
+                  r'Figure \ref{fig:US:OECDdata}\textquotesingle s relations in the data and in the model'
+                  + variantCaption(turnout, sample, reading),
                   'table:OECD26:slopes' + suffix(turnout, sample, reading), 'lYYY',
                   [r'\textbf{Relation}', r'\textbf{Data}', r'\textbf{Layer 1}', r'\textbf{Layer 2}'],
                   '\n'.join(body), note, width = r'\textwidth')
 
 
-def oecd26Omega(turnout = 'cps', sample = '26', reading = 'chosen'):
+def oecd26Omega(turnout = 'cps', sample = '26', reading = 'inForce'):
     r""" Layer 2 by country: the inputs that differ across countries (workers per retiree in 2020, the dispersion
     of relative incomes, spending, the index and the design it implies), the calibrated political weight and the
     design predicted at the U.S. cost, in the order of figure 1.1's footnote. """
@@ -157,25 +171,35 @@ def oecd26Omega(turnout = 'cps', sample = '26', reading = 'chosen'):
     p = panelData(2, turnout, sample, reading)
     m = D.oecd26Layer(2, turnout).loc[p.index]
     a = D.oecd26Anchor(turnout)
+    smp = D.oecd26Sample()
+    outside = [c for c in p.index if not bool(smp.at[c, 'sample26'])]
     body = []
     for c in p.index:
         r = m.loc[c]
-        cells = [str(p.at[c, 'country']) + (r'$^{\ast}$' if c == 'USA' else ''), C.num(float(r['ν2020']), 2),
+        tag = r'$^{\ast}$' if c == 'USA' else r'$^{\dagger}$' if c in outside else ''
+        cells = [str(p.at[c, 'country']) + tag, C.num(float(r['ν2020']), 2),
                  C.num(float(r['Vtilde']), 3), C.num(float(r['spendingData']), 1), C.num(float(r['indexData']), 3),
                  C.num(float(r['θData']), 3), C.num(float(r['ω']), 3), C.num(float(p.at[c, 'θModel']), 3),
                  C.num(float(p.at[c, 'indexModel']), 3)]
         body.append(' & '.join(cells) + r' \\ % row: ' + c.lower())
-    design = 'chosen in 2020' if reading == 'chosen' else 'in force in 2020'
+    design = ('chosen in 2020, in force from 2050' if reading == 'chosen' else
+              'in force in 2020 on the freely simulated path, chosen in 1990')
     note = (r'\textit{Note:} $\nu_{2020}$, workers per retiree; $\tilde V$, the dispersion of relative incomes at '
             r'the U.S.\ income percentiles; spending in \% of GDP; $I$, the Bismarckian index, and $\theta = 2 - 1/I$ '
             r'clipped to $[0,1]$. $\omega$ is calibrated to spending at $\beta = ' + C.num(float(a['β']), 3)
-            + r'$ and the U.S.\ $\lambda = ' + C.num(float(a['p']), 3) + r'$; the last two columns are the design '
-            + design + r' and its index. $^{\ast}$The U.S.\ is the anchor, where $\lambda$ is calibrated.'
+            + r'$ and the U.S.\ $\lambda = ' + C.num(float(a['p']), 3) + r'$; the last two columns are the '
+            r'model\textquotesingle s design, ' + design + r', and its index. $^{\ast}$The U.S.\ is the anchor, '
+            r'where $\lambda$ is calibrated.'
+            + (r' $^{\dagger}$Outside the paper\textquotesingle s sample: informal employment above '
+               + '{:g}'.format(float(smp['informalMax'].iloc[0])) + r'\% of employment.' if outside else '')
             + (r' Turnout: each country\textquotesingle s own.' if turnout == 'cses' else ''))
-    header = [r'\textbf{Country}', r'$\nu_{2020}$', r'$\tilde V$', r'\textbf{Spending}', '$I$', r'$\theta$',
-              r'$\omega$', r'$\theta$ \textbf{chosen}', r'$I$ \textbf{chosen}']
+    # two header rows, the data's columns and the model's under a spanner each, so that nine columns fit
+    header = (r' & \multicolumn{5}{c}{\textbf{Data}} & \multicolumn{3}{c}{\textbf{Model, layer 2}} \\' + '\n'
+              + r'\cmidrule(lr){2-6}\cmidrule(lr){7-9}' + '\n'
+              + r'\textbf{Country} & $\nu_{2020}$ & $\tilde V$ & spending & $I$ & $\theta$ & $\omega$ & $\theta$ & $I$')
     name = 'OECD26_Omega' + suffix(turnout, sample, reading)
     return _xwrap(name, 'results/oecd26/layer2.csv, anchor.csv; data/oecdFigure1.csv, oecd26_sample.csv',
-                  r'The countries of the cross-country test, each calibrated to its pension spending',
-                  'table:OECD26:omega' + suffix(turnout, sample, reading), 'l' + 'Y'*(len(header) - 1), header,
-                  '\n'.join(body), note, width = r'\textwidth', size = r'\footnotesize')
+                  r'The countries of the cross-country test, each calibrated to its pension spending'
+                  + variantCaption(turnout, sample, reading),
+                  'table:OECD26:omega' + suffix(turnout, sample, reading), 'l' + 'Y'*8, header,
+                  '\n'.join(body), note, width = r'\textwidth', size = r'\footnotesize\setlength{\tabcolsep}{3pt}')

@@ -2,7 +2,7 @@
 
 Findings that recurred across modules, written once and cited by number from code and READMEs. Each entry
 is the statement, the tell and the habit. The long forms of 1–15, with the measurements behind each, are
-in `archive/findings_longform.md` under the same numbers; 16–19 exist only here. **Do not renumber.**
+in `archive/findings_longform.md` under the same numbers; 16–21 exist only here. **Do not renumber.**
 
 ## 1. Bitwise reproducibility holds within a process, not across processes
 
@@ -292,3 +292,35 @@ difference of the directly evaluated objective at a point between the interpolan
 the forward–backward asymmetry as the kink size. Where the derivative misses by more than a few percent,
 locate the maximum from the objective and verify the choice by a one-shot deviation check at the frozen
 state rather than by a residual.
+
+## 20. A setting that never moved is a setting that was never tested
+
+Three U.S. solver settings had stood since they were written, and every result rested on them: the CRRA
+tax derivative (a smoothing spline at s = 1e-4), LeadedLOG's anticipated tax read off a 41-node linear table,
+and the exact CRRA design recursion's 13-node linear θ grid. A horizon and residual audit for a review
+(2026-10-24) found the path residual at 0.17–0.37 p.p.; refining each grid showed none had converged. The
+log design was biased by −0.005, the 13-node θ grid erred by 0.011, and the θ 1→0 gap moved 9.34 → 9.13 p.p.
+No sign or ranking changed, but λ, θ* and a dozen quoted numbers did, and the fix cost 80 reruns
+(`archive/notes/reviewResponse_2026-10/ledger_C6.md`; `python/US/test_gridConvergence.py`).
+
+**Tell.** A grid size or smoothing parameter set once and never varied; a residual or horizon check that
+nobody has run; a derivative or interpolant whose accuracy is asserted in a docstring, not measured.
+
+**Habit.** Every numerical derivative and every interpolated continuation gets a refinement test (double
+the nodes, or halve the step, until the quantity the paper prints moves by less than its last printed digit),
+kept as a test, before results built on it are written up.
+
+## 21. A claim the builders print needs a csv behind it, and a datum needs a source
+
+Two things the review response found in text that read as settled: a generated table note asserting that
+France's slope at the Bismarckian corner is negative (computed once in a scratch script, nowhere in
+`results/`), and France's retirement age of 63.5 in appendix F, with no source, against 64.5 in the paper's own
+source for every other pension datum (PaG 2021). Both survived because nothing in the pipeline recomputes a
+sentence or a parameter typed into prose; the second moved France's ν by 7% and needed a rerun (2026-10-26).
+
+**Tell.** A sign or a number in a builder's note that no csv column holds; a parameter in an appendix with no
+citation; a value typed into a workbook cell instead of a formula on a sourced column.
+
+**Habit.** A builder that prints a qualitative claim reads it from a csv and refuses to build if the csv
+disagrees (`tablesUS._frenchCornerFalls`); every datum in a calibration appendix names its source, and a
+review pass checks the ones that do not.

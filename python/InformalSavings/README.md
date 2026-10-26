@@ -106,8 +106,8 @@ experiment across the ρ grid (`match`; `flat` at ρ=1 only), and the `(ε, θ)`
 workbook's γ₀ = 0.4706 counts informal households per formal household (32% of all). The results are the C2 run
 of 2026-10-23/24 (`logs/C2runs/`, both variants, stage (i), (ii) and the stationary check; the inherited lags and
 the GDP tax target): τ₀ = 0.1181, ε = 0.21, ω = 1.50, the 2010 tax response +1.95 p.p.; the ε = 0 variant and
-`reformDiagnostics.py`'s csvs beside them (`notes/ledger_C2.md`). Every count one equilibrium and no fallback.
-Appendix D's checks (C4, `notes/ledger_C4.md`): from T = 2190 to 2130, 2280 or the steady state the 2010 tax moves
+`reformDiagnostics.py`'s csvs beside them (`archive/notes/reviewResponse_2026-10/ledger_C2.md`). Every count one equilibrium and no fallback.
+Appendix D's checks (C4, `archive/notes/reviewResponse_2026-10/ledger_C4.md`): from T = 2190 to 2130, 2280 or the steady state the 2010 tax moves
 ≤ 0.005 p.p. and the reform's response ≤ 0.03 p.p.; the tax rule misses its FOC by ≤ 0.01 p.p. on the path.
 
 ## Open items

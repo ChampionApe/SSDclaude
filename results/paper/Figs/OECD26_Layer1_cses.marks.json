@@ -1,0 +1,2605 @@
+{
+ "figure": "OECD26_Layer1_cses",
+ "marks": [
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--aus",
+   "label": "Australia",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 4.16,
+   "text": "population 2020/1990: 1.50; pension spending: 4.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--aut",
+   "label": "Austria",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 14.349,
+   "text": "population 2020/1990: 1.16; pension spending: 14.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--bel",
+   "label": "Belgium",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 11.475,
+   "text": "population 2020/1990: 1.15; pension spending: 11.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--can",
+   "label": "Canada",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 6.377,
+   "text": "population 2020/1990: 1.37; pension spending: 6.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--cze",
+   "label": "Czech Republic",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 8.645,
+   "text": "population 2020/1990: 1.03; pension spending: 8.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--dnk",
+   "label": "Denmark",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 8.204,
+   "text": "population 2020/1990: 1.13; pension spending: 8.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--fin",
+   "label": "Finland",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 12.561,
+   "text": "population 2020/1990: 1.11; pension spending: 12.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--fra",
+   "label": "France",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 14.437,
+   "text": "population 2020/1990: 1.19; pension spending: 14.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--deu",
+   "label": "Germany",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 11.214,
+   "text": "population 2020/1990: 1.05; pension spending: 11.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--grc",
+   "label": "Greece",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 17.874,
+   "text": "population 2020/1990: 1.05; pension spending: 17.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--hun",
+   "label": "Hungary",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.703,
+   "text": "population 2020/1990: 0.93; pension spending: 7.7% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--isl",
+   "label": "Iceland",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 3.042,
+   "text": "population 2020/1990: 1.40; pension spending: 3.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--irl",
+   "label": "Ireland",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 3.253,
+   "text": "population 2020/1990: 1.43; pension spending: 3.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--ita",
+   "label": "Italy",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 17.415,
+   "text": "population 2020/1990: 1.05; pension spending: 17.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--jpn",
+   "label": "Japan",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.595,
+   "text": "population 2020/1990: 1.02; pension spending: 9.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--nld",
+   "label": "Netherlands",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 6.763,
+   "text": "population 2020/1990: 1.17; pension spending: 6.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--nzl",
+   "label": "New Zealand",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 5.143,
+   "text": "population 2020/1990: 1.50; pension spending: 5.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--nor",
+   "label": "Norway",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.581,
+   "text": "population 2020/1990: 1.27; pension spending: 7.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--pol",
+   "label": "Poland",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 11.422,
+   "text": "population 2020/1990: 1.00; pension spending: 11.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--prt",
+   "label": "Portugal",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 13.618,
+   "text": "population 2020/1990: 1.04; pension spending: 13.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--esp",
+   "label": "Spain",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 12.812,
+   "text": "population 2020/1990: 1.22; pension spending: 12.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--swe",
+   "label": "Sweden",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 8.483,
+   "text": "population 2020/1990: 1.21; pension spending: 8.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--che",
+   "label": "Switzerland",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 6.857,
+   "text": "population 2020/1990: 1.29; pension spending: 6.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--gbr",
+   "label": "United Kingdom",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.836,
+   "text": "population 2020/1990: 1.17; pension spending: 7.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--usa",
+   "label": "United States",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.366,
+   "text": "population 2020/1990: 1.33; pension spending: 7.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--data--fit",
+   "label": "fitted line",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": -16.742797825875627,
+   "text": "slope -16.74 (s.e. 4.00)",
+   "table": "OECD26_Slopes_cses",
+   "row": "spending_growth"
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--aus",
+   "label": "Australia",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 4.390209264859307,
+   "text": "population 2020/1990: 1.50; pension spending: 4.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--aut",
+   "label": "Austria",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.66111176548081,
+   "text": "population 2020/1990: 1.16; pension spending: 9.7% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--bel",
+   "label": "Belgium",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.50999627041405,
+   "text": "population 2020/1990: 1.15; pension spending: 9.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--can",
+   "label": "Canada",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 6.78801816339318,
+   "text": "population 2020/1990: 1.37; pension spending: 6.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--cze",
+   "label": "Czech Republic",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 10.924214377220986,
+   "text": "population 2020/1990: 1.03; pension spending: 10.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--dnk",
+   "label": "Denmark",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.921709490615692,
+   "text": "population 2020/1990: 1.13; pension spending: 9.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--fin",
+   "label": "Finland",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 10.6343355988763,
+   "text": "population 2020/1990: 1.11; pension spending: 10.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--fra",
+   "label": "France",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.75610275779639,
+   "text": "population 2020/1990: 1.19; pension spending: 9.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--deu",
+   "label": "Germany",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 12.04336654046967,
+   "text": "population 2020/1990: 1.05; pension spending: 12.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--grc",
+   "label": "Greece",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 12.364266985301466,
+   "text": "population 2020/1990: 1.05; pension spending: 12.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--hun",
+   "label": "Hungary",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 14.11492003635622,
+   "text": "population 2020/1990: 0.93; pension spending: 14.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--isl",
+   "label": "Iceland",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 5.699970024185203,
+   "text": "population 2020/1990: 1.40; pension spending: 5.7% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--irl",
+   "label": "Ireland",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 4.847593855664894,
+   "text": "population 2020/1990: 1.43; pension spending: 4.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--ita",
+   "label": "Italy",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 11.767564617909404,
+   "text": "population 2020/1990: 1.05; pension spending: 11.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--jpn",
+   "label": "Japan",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 12.369449513733503,
+   "text": "population 2020/1990: 1.02; pension spending: 12.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--nld",
+   "label": "Netherlands",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.554721097549535,
+   "text": "population 2020/1990: 1.17; pension spending: 9.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--nzl",
+   "label": "New Zealand",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 4.979587549467841,
+   "text": "population 2020/1990: 1.50; pension spending: 5.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--nor",
+   "label": "Norway",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 8.132308220708595,
+   "text": "population 2020/1990: 1.27; pension spending: 8.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--pol",
+   "label": "Poland",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 12.897035009816406,
+   "text": "population 2020/1990: 1.00; pension spending: 12.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--prt",
+   "label": "Portugal",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 12.103928553963064,
+   "text": "population 2020/1990: 1.04; pension spending: 12.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--esp",
+   "label": "Spain",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 8.641039257826518,
+   "text": "population 2020/1990: 1.22; pension spending: 8.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--swe",
+   "label": "Sweden",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.000454660566279,
+   "text": "population 2020/1990: 1.21; pension spending: 9.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--che",
+   "label": "Switzerland",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.805091927961994,
+   "text": "population 2020/1990: 1.29; pension spending: 7.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--gbr",
+   "label": "United Kingdom",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.467647016216413,
+   "text": "population 2020/1990: 1.17; pension spending: 9.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--usa",
+   "label": "United States",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.366000000001044,
+   "text": "population 2020/1990: 1.33; pension spending: 7.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_growth--model--fit",
+   "label": "fitted line",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": -16.494071051548964,
+   "text": "slope -16.49 (s.e. 0.53)",
+   "table": "OECD26_Slopes_cses",
+   "row": "spending_growth"
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--aus",
+   "label": "Australia",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 4.16,
+   "text": "Gini: 0.340; pension spending: 4.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--aut",
+   "label": "Austria",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 14.349,
+   "text": "Gini: 0.304; pension spending: 14.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--bel",
+   "label": "Belgium",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 11.475,
+   "text": "Gini: 0.274; pension spending: 11.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--can",
+   "label": "Canada",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 6.377,
+   "text": "Gini: 0.318; pension spending: 6.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--cze",
+   "label": "Czech Republic",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 8.645,
+   "text": "Gini: 0.254; pension spending: 8.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--dnk",
+   "label": "Denmark",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 8.204,
+   "text": "Gini: 0.283; pension spending: 8.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--fin",
+   "label": "Finland",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 12.561,
+   "text": "Gini: 0.277; pension spending: 12.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--fra",
+   "label": "France",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 14.437,
+   "text": "Gini: 0.321; pension spending: 14.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--deu",
+   "label": "Germany",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 11.214,
+   "text": "Gini: 0.323; pension spending: 11.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--grc",
+   "label": "Greece",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 17.874,
+   "text": "Gini: 0.331; pension spending: 17.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--hun",
+   "label": "Hungary",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 7.703,
+   "text": "Gini: 0.303; pension spending: 7.7% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--isl",
+   "label": "Iceland",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 3.042,
+   "text": "Gini: 0.275; pension spending: 3.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--irl",
+   "label": "Ireland",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 3.253,
+   "text": "Gini: 0.302; pension spending: 3.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--ita",
+   "label": "Italy",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 17.415,
+   "text": "Gini: 0.358; pension spending: 17.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--jpn",
+   "label": "Japan",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 9.595,
+   "text": "Gini: 0.330; pension spending: 9.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--nld",
+   "label": "Netherlands",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 6.763,
+   "text": "Gini: 0.295; pension spending: 6.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--nzl",
+   "label": "New Zealand",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 5.143,
+   "text": "Gini: 0.320; pension spending: 5.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--nor",
+   "label": "Norway",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 7.581,
+   "text": "Gini: 0.277; pension spending: 7.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--pol",
+   "label": "Poland",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 11.422,
+   "text": "Gini: 0.308; pension spending: 11.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--prt",
+   "label": "Portugal",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 13.618,
+   "text": "Gini: 0.328; pension spending: 13.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--esp",
+   "label": "Spain",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 12.812,
+   "text": "Gini: 0.343; pension spending: 12.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--swe",
+   "label": "Sweden",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 8.483,
+   "text": "Gini: 0.307; pension spending: 8.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--che",
+   "label": "Switzerland",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 6.857,
+   "text": "Gini: 0.343; pension spending: 6.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--gbr",
+   "label": "United Kingdom",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 7.836,
+   "text": "Gini: 0.329; pension spending: 7.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--usa",
+   "label": "United States",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 7.366,
+   "text": "Gini: 0.419; pension spending: 7.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--data--fit",
+   "label": "fitted line",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 18.669333266128284,
+   "text": "slope 18.67 (s.e. 24.67)",
+   "table": "OECD26_Slopes_cses",
+   "row": "spending_gini"
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--aus",
+   "label": "Australia",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 4.390209264859307,
+   "text": "Gini: 0.340; pension spending: 4.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--aut",
+   "label": "Austria",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 9.66111176548081,
+   "text": "Gini: 0.304; pension spending: 9.7% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--bel",
+   "label": "Belgium",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 9.50999627041405,
+   "text": "Gini: 0.274; pension spending: 9.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--can",
+   "label": "Canada",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 6.78801816339318,
+   "text": "Gini: 0.318; pension spending: 6.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--cze",
+   "label": "Czech Republic",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 10.924214377220986,
+   "text": "Gini: 0.254; pension spending: 10.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--dnk",
+   "label": "Denmark",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 9.921709490615692,
+   "text": "Gini: 0.283; pension spending: 9.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--fin",
+   "label": "Finland",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 10.6343355988763,
+   "text": "Gini: 0.277; pension spending: 10.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--fra",
+   "label": "France",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 9.75610275779639,
+   "text": "Gini: 0.321; pension spending: 9.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--deu",
+   "label": "Germany",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 12.04336654046967,
+   "text": "Gini: 0.323; pension spending: 12.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--grc",
+   "label": "Greece",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 12.364266985301466,
+   "text": "Gini: 0.331; pension spending: 12.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--hun",
+   "label": "Hungary",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 14.11492003635622,
+   "text": "Gini: 0.303; pension spending: 14.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--isl",
+   "label": "Iceland",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 5.699970024185203,
+   "text": "Gini: 0.275; pension spending: 5.7% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--irl",
+   "label": "Ireland",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 4.847593855664894,
+   "text": "Gini: 0.302; pension spending: 4.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--ita",
+   "label": "Italy",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 11.767564617909404,
+   "text": "Gini: 0.358; pension spending: 11.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--jpn",
+   "label": "Japan",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 12.369449513733503,
+   "text": "Gini: 0.330; pension spending: 12.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--nld",
+   "label": "Netherlands",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 9.554721097549535,
+   "text": "Gini: 0.295; pension spending: 9.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--nzl",
+   "label": "New Zealand",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 4.979587549467841,
+   "text": "Gini: 0.320; pension spending: 5.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--nor",
+   "label": "Norway",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 8.132308220708595,
+   "text": "Gini: 0.277; pension spending: 8.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--pol",
+   "label": "Poland",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 12.897035009816406,
+   "text": "Gini: 0.308; pension spending: 12.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--prt",
+   "label": "Portugal",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 12.103928553963064,
+   "text": "Gini: 0.328; pension spending: 12.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--esp",
+   "label": "Spain",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 8.641039257826518,
+   "text": "Gini: 0.343; pension spending: 8.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--swe",
+   "label": "Sweden",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 9.000454660566279,
+   "text": "Gini: 0.307; pension spending: 9.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--che",
+   "label": "Switzerland",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 7.805091927961994,
+   "text": "Gini: 0.343; pension spending: 7.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--gbr",
+   "label": "United Kingdom",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 9.467647016216413,
+   "text": "Gini: 0.329; pension spending: 9.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--usa",
+   "label": "United States",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 7.366000000001044,
+   "text": "Gini: 0.419; pension spending: 7.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_gini--model--fit",
+   "label": "fitted line",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": -5.864606481356558,
+   "text": "slope -5.86 (s.e. 16.33)",
+   "table": "OECD26_Slopes_cses",
+   "row": "spending_gini"
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--aus",
+   "label": "Australia",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 4.16,
+   "text": "Bismarckian index: 0.499; pension spending: 4.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--aut",
+   "label": "Austria",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 14.349,
+   "text": "Bismarckian index: 1.000; pension spending: 14.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--bel",
+   "label": "Belgium",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 11.475,
+   "text": "Bismarckian index: 0.643; pension spending: 11.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--can",
+   "label": "Canada",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 6.377,
+   "text": "Bismarckian index: 0.729; pension spending: 6.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--cze",
+   "label": "Czech Republic",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 8.645,
+   "text": "Bismarckian index: 0.603; pension spending: 8.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--dnk",
+   "label": "Denmark",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 8.204,
+   "text": "Bismarckian index: 0.639; pension spending: 8.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--fin",
+   "label": "Finland",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 12.561,
+   "text": "Bismarckian index: 1.000; pension spending: 12.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--fra",
+   "label": "France",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 14.437,
+   "text": "Bismarckian index: 1.000; pension spending: 14.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--deu",
+   "label": "Germany",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 11.214,
+   "text": "Bismarckian index: 0.892; pension spending: 11.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--grc",
+   "label": "Greece",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 17.874,
+   "text": "Bismarckian index: 0.857; pension spending: 17.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--hun",
+   "label": "Hungary",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 7.703,
+   "text": "Bismarckian index: 1.000; pension spending: 7.7% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--isl",
+   "label": "Iceland",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 3.042,
+   "text": "Bismarckian index: 0.711; pension spending: 3.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--irl",
+   "label": "Ireland",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 3.253,
+   "text": "Bismarckian index: 0.500; pension spending: 3.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--ita",
+   "label": "Italy",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 17.415,
+   "text": "Bismarckian index: 1.000; pension spending: 17.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--jpn",
+   "label": "Japan",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 9.595,
+   "text": "Bismarckian index: 0.750; pension spending: 9.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--nld",
+   "label": "Netherlands",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 6.763,
+   "text": "Bismarckian index: 0.954; pension spending: 6.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--nzl",
+   "label": "New Zealand",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 5.143,
+   "text": "Bismarckian index: 0.604; pension spending: 5.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--nor",
+   "label": "Norway",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 7.581,
+   "text": "Bismarckian index: 0.759; pension spending: 7.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--pol",
+   "label": "Poland",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 11.422,
+   "text": "Bismarckian index: 0.962; pension spending: 11.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--prt",
+   "label": "Portugal",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 13.618,
+   "text": "Bismarckian index: 0.982; pension spending: 13.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--esp",
+   "label": "Spain",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 12.812,
+   "text": "Bismarckian index: 1.000; pension spending: 12.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--swe",
+   "label": "Sweden",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 8.483,
+   "text": "Bismarckian index: 0.868; pension spending: 8.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--che",
+   "label": "Switzerland",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 6.857,
+   "text": "Bismarckian index: 0.831; pension spending: 6.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--gbr",
+   "label": "United Kingdom",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 7.836,
+   "text": "Bismarckian index: 0.694; pension spending: 7.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--usa",
+   "label": "United States",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 7.366,
+   "text": "Bismarckian index: 0.790; pension spending: 7.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--data--fit",
+   "label": "fitted line",
+   "series": "data",
+   "panel": "pension spending against Bismarckian index",
+   "value": 16.389058542889728,
+   "text": "slope 16.39 (s.e. 3.75)",
+   "table": "OECD26_Slopes_cses",
+   "row": "spending_index"
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--aus",
+   "label": "Australia",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 4.390209264859307,
+   "text": "Bismarckian index: 0.684; pension spending: 4.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--aut",
+   "label": "Austria",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 9.66111176548081,
+   "text": "Bismarckian index: 0.800; pension spending: 9.7% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--bel",
+   "label": "Belgium",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 9.50999627041405,
+   "text": "Bismarckian index: 0.814; pension spending: 9.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--can",
+   "label": "Canada",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 6.78801816339318,
+   "text": "Bismarckian index: 0.731; pension spending: 6.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--cze",
+   "label": "Czech Republic",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 10.924214377220986,
+   "text": "Bismarckian index: 0.839; pension spending: 10.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--dnk",
+   "label": "Denmark",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 9.921709490615692,
+   "text": "Bismarckian index: 0.807; pension spending: 9.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--fin",
+   "label": "Finland",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 10.6343355988763,
+   "text": "Bismarckian index: 0.819; pension spending: 10.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--fra",
+   "label": "France",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 9.75610275779639,
+   "text": "Bismarckian index: 0.801; pension spending: 9.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--deu",
+   "label": "Germany",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 12.04336654046967,
+   "text": "Bismarckian index: 0.829; pension spending: 12.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--grc",
+   "label": "Greece",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 12.364266985301466,
+   "text": "Bismarckian index: 0.823; pension spending: 12.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--hun",
+   "label": "Hungary",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 14.11492003635622,
+   "text": "Bismarckian index: 0.852; pension spending: 14.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--isl",
+   "label": "Iceland",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 5.699970024185203,
+   "text": "Bismarckian index: 0.703; pension spending: 5.7% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--irl",
+   "label": "Ireland",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 4.847593855664894,
+   "text": "Bismarckian index: 0.732; pension spending: 4.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--ita",
+   "label": "Italy",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 11.767564617909404,
+   "text": "Bismarckian index: 0.840; pension spending: 11.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--jpn",
+   "label": "Japan",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 12.369449513733503,
+   "text": "Bismarckian index: 0.835; pension spending: 12.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--nld",
+   "label": "Netherlands",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 9.554721097549535,
+   "text": "Bismarckian index: 0.797; pension spending: 9.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--nzl",
+   "label": "New Zealand",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 4.979587549467841,
+   "text": "Bismarckian index: 0.687; pension spending: 5.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--nor",
+   "label": "Norway",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 8.132308220708595,
+   "text": "Bismarckian index: 0.771; pension spending: 8.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--pol",
+   "label": "Poland",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 12.897035009816406,
+   "text": "Bismarckian index: 0.840; pension spending: 12.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--prt",
+   "label": "Portugal",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 12.103928553963064,
+   "text": "Bismarckian index: 0.833; pension spending: 12.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--esp",
+   "label": "Spain",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 8.641039257826518,
+   "text": "Bismarckian index: 0.791; pension spending: 8.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--swe",
+   "label": "Sweden",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 9.000454660566279,
+   "text": "Bismarckian index: 0.788; pension spending: 9.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--che",
+   "label": "Switzerland",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 7.805091927961994,
+   "text": "Bismarckian index: 0.787; pension spending: 7.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--gbr",
+   "label": "United Kingdom",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 9.467647016216413,
+   "text": "Bismarckian index: 0.813; pension spending: 9.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--usa",
+   "label": "United States",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 7.366000000001044,
+   "text": "Bismarckian index: 0.790; pension spending: 7.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--spending_index--model--fit",
+   "label": "fitted line",
+   "series": "model",
+   "panel": "pension spending against Bismarckian index",
+   "value": 51.406883030122444,
+   "text": "slope 51.41 (s.e. 4.00)",
+   "table": "OECD26_Slopes_cses",
+   "row": "spending_index"
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--aus",
+   "label": "Australia",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.4992,
+   "text": "population 2020/1990: 1.50; Bismarckian index: 0.499",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--aut",
+   "label": "Austria",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 1.0,
+   "text": "population 2020/1990: 1.16; Bismarckian index: 1.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--bel",
+   "label": "Belgium",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.643,
+   "text": "population 2020/1990: 1.15; Bismarckian index: 0.643",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--can",
+   "label": "Canada",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.7293,
+   "text": "population 2020/1990: 1.37; Bismarckian index: 0.729",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--cze",
+   "label": "Czech Republic",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.6034,
+   "text": "population 2020/1990: 1.03; Bismarckian index: 0.603",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--dnk",
+   "label": "Denmark",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.6395,
+   "text": "population 2020/1990: 1.13; Bismarckian index: 0.639",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--fin",
+   "label": "Finland",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 1.0,
+   "text": "population 2020/1990: 1.11; Bismarckian index: 1.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--fra",
+   "label": "France",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 1.0,
+   "text": "population 2020/1990: 1.19; Bismarckian index: 1.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--deu",
+   "label": "Germany",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8925,
+   "text": "population 2020/1990: 1.05; Bismarckian index: 0.892",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--grc",
+   "label": "Greece",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8571,
+   "text": "population 2020/1990: 1.05; Bismarckian index: 0.857",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--hun",
+   "label": "Hungary",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 1.0,
+   "text": "population 2020/1990: 0.93; Bismarckian index: 1.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--isl",
+   "label": "Iceland",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.7106,
+   "text": "population 2020/1990: 1.40; Bismarckian index: 0.711",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--irl",
+   "label": "Ireland",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.5,
+   "text": "population 2020/1990: 1.43; Bismarckian index: 0.500",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--ita",
+   "label": "Italy",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 1.0,
+   "text": "population 2020/1990: 1.05; Bismarckian index: 1.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--jpn",
+   "label": "Japan",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.75,
+   "text": "population 2020/1990: 1.02; Bismarckian index: 0.750",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--nld",
+   "label": "Netherlands",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.9535,
+   "text": "population 2020/1990: 1.17; Bismarckian index: 0.954",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--nzl",
+   "label": "New Zealand",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.6039,
+   "text": "population 2020/1990: 1.50; Bismarckian index: 0.604",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--nor",
+   "label": "Norway",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.7591,
+   "text": "population 2020/1990: 1.27; Bismarckian index: 0.759",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--pol",
+   "label": "Poland",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.9623,
+   "text": "population 2020/1990: 1.00; Bismarckian index: 0.962",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--prt",
+   "label": "Portugal",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.9817,
+   "text": "population 2020/1990: 1.04; Bismarckian index: 0.982",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--esp",
+   "label": "Spain",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 1.0,
+   "text": "population 2020/1990: 1.22; Bismarckian index: 1.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--swe",
+   "label": "Sweden",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8681,
+   "text": "population 2020/1990: 1.21; Bismarckian index: 0.868",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--che",
+   "label": "Switzerland",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8305,
+   "text": "population 2020/1990: 1.29; Bismarckian index: 0.831",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--gbr",
+   "label": "United Kingdom",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.6941,
+   "text": "population 2020/1990: 1.17; Bismarckian index: 0.694",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--usa",
+   "label": "United States",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.7903,
+   "text": "population 2020/1990: 1.33; Bismarckian index: 0.790",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--data--fit",
+   "label": "fitted line",
+   "series": "data",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": -0.6203034831302612,
+   "text": "slope -0.62 (s.e. 0.18)",
+   "table": "OECD26_Slopes_cses",
+   "row": "index_growth"
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--aus",
+   "label": "Australia",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.6838845572265073,
+   "text": "population 2020/1990: 1.50; Bismarckian index: 0.684",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--aut",
+   "label": "Austria",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8001062968756949,
+   "text": "population 2020/1990: 1.16; Bismarckian index: 0.800",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--bel",
+   "label": "Belgium",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8143544930106713,
+   "text": "population 2020/1990: 1.15; Bismarckian index: 0.814",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--can",
+   "label": "Canada",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.7308437000084305,
+   "text": "population 2020/1990: 1.37; Bismarckian index: 0.731",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--cze",
+   "label": "Czech Republic",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8388476281166349,
+   "text": "population 2020/1990: 1.03; Bismarckian index: 0.839",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--dnk",
+   "label": "Denmark",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8071148240445376,
+   "text": "population 2020/1990: 1.13; Bismarckian index: 0.807",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--fin",
+   "label": "Finland",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8187720610213338,
+   "text": "population 2020/1990: 1.11; Bismarckian index: 0.819",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--fra",
+   "label": "France",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.801213131804974,
+   "text": "population 2020/1990: 1.19; Bismarckian index: 0.801",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--deu",
+   "label": "Germany",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8286519769854301,
+   "text": "population 2020/1990: 1.05; Bismarckian index: 0.829",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--grc",
+   "label": "Greece",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8226217874869859,
+   "text": "population 2020/1990: 1.05; Bismarckian index: 0.823",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--hun",
+   "label": "Hungary",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8521882999454029,
+   "text": "population 2020/1990: 0.93; Bismarckian index: 0.852",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--isl",
+   "label": "Iceland",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.7025869626498094,
+   "text": "population 2020/1990: 1.40; Bismarckian index: 0.703",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--irl",
+   "label": "Ireland",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.7320301175619862,
+   "text": "population 2020/1990: 1.43; Bismarckian index: 0.732",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--ita",
+   "label": "Italy",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8402303962063357,
+   "text": "population 2020/1990: 1.05; Bismarckian index: 0.840",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--jpn",
+   "label": "Japan",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8354449147724827,
+   "text": "population 2020/1990: 1.02; Bismarckian index: 0.835",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--nld",
+   "label": "Netherlands",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.7967324770446291,
+   "text": "population 2020/1990: 1.17; Bismarckian index: 0.797",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--nzl",
+   "label": "New Zealand",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.6869418555484998,
+   "text": "population 2020/1990: 1.50; Bismarckian index: 0.687",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--nor",
+   "label": "Norway",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.7709232856347247,
+   "text": "population 2020/1990: 1.27; Bismarckian index: 0.771",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--pol",
+   "label": "Poland",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8396700674932639,
+   "text": "population 2020/1990: 1.00; Bismarckian index: 0.840",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--prt",
+   "label": "Portugal",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8328776644197066,
+   "text": "population 2020/1990: 1.04; Bismarckian index: 0.833",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--esp",
+   "label": "Spain",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.7910166610874905,
+   "text": "population 2020/1990: 1.22; Bismarckian index: 0.791",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--swe",
+   "label": "Sweden",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.7882573016492513,
+   "text": "population 2020/1990: 1.21; Bismarckian index: 0.788",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--che",
+   "label": "Switzerland",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.7873947095973521,
+   "text": "population 2020/1990: 1.29; Bismarckian index: 0.787",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--gbr",
+   "label": "United Kingdom",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.8134566169696328,
+   "text": "population 2020/1990: 1.17; Bismarckian index: 0.813",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--usa",
+   "label": "United States",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": 0.7903225806471076,
+   "text": "population 2020/1990: 1.33; Bismarckian index: 0.790",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_growth--model--fit",
+   "label": "fitted line",
+   "series": "model",
+   "panel": "Bismarckian index against population 2020/1990",
+   "value": -0.2915537444825111,
+   "text": "slope -0.29 (s.e. 0.02)",
+   "table": "OECD26_Slopes_cses",
+   "row": "index_growth"
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--aus",
+   "label": "Australia",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.4992,
+   "text": "Gini: 0.340; Bismarckian index: 0.499",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--aut",
+   "label": "Austria",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 1.0,
+   "text": "Gini: 0.304; Bismarckian index: 1.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--bel",
+   "label": "Belgium",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.643,
+   "text": "Gini: 0.274; Bismarckian index: 0.643",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--can",
+   "label": "Canada",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.7293,
+   "text": "Gini: 0.318; Bismarckian index: 0.729",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--cze",
+   "label": "Czech Republic",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.6034,
+   "text": "Gini: 0.254; Bismarckian index: 0.603",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--dnk",
+   "label": "Denmark",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.6395,
+   "text": "Gini: 0.283; Bismarckian index: 0.639",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--fin",
+   "label": "Finland",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 1.0,
+   "text": "Gini: 0.277; Bismarckian index: 1.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--fra",
+   "label": "France",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 1.0,
+   "text": "Gini: 0.321; Bismarckian index: 1.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--deu",
+   "label": "Germany",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8925,
+   "text": "Gini: 0.323; Bismarckian index: 0.892",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--grc",
+   "label": "Greece",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8571,
+   "text": "Gini: 0.331; Bismarckian index: 0.857",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--hun",
+   "label": "Hungary",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 1.0,
+   "text": "Gini: 0.303; Bismarckian index: 1.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--isl",
+   "label": "Iceland",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.7106,
+   "text": "Gini: 0.275; Bismarckian index: 0.711",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--irl",
+   "label": "Ireland",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.5,
+   "text": "Gini: 0.302; Bismarckian index: 0.500",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--ita",
+   "label": "Italy",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 1.0,
+   "text": "Gini: 0.358; Bismarckian index: 1.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--jpn",
+   "label": "Japan",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.75,
+   "text": "Gini: 0.330; Bismarckian index: 0.750",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--nld",
+   "label": "Netherlands",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.9535,
+   "text": "Gini: 0.295; Bismarckian index: 0.954",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--nzl",
+   "label": "New Zealand",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.6039,
+   "text": "Gini: 0.320; Bismarckian index: 0.604",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--nor",
+   "label": "Norway",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.7591,
+   "text": "Gini: 0.277; Bismarckian index: 0.759",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--pol",
+   "label": "Poland",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.9623,
+   "text": "Gini: 0.308; Bismarckian index: 0.962",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--prt",
+   "label": "Portugal",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.9817,
+   "text": "Gini: 0.328; Bismarckian index: 0.982",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--esp",
+   "label": "Spain",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 1.0,
+   "text": "Gini: 0.343; Bismarckian index: 1.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--swe",
+   "label": "Sweden",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8681,
+   "text": "Gini: 0.307; Bismarckian index: 0.868",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--che",
+   "label": "Switzerland",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8305,
+   "text": "Gini: 0.343; Bismarckian index: 0.831",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--gbr",
+   "label": "United Kingdom",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.6941,
+   "text": "Gini: 0.329; Bismarckian index: 0.694",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--usa",
+   "label": "United States",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.7903,
+   "text": "Gini: 0.419; Bismarckian index: 0.790",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--data--fit",
+   "label": "fitted line",
+   "series": "data",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8747743531216122,
+   "text": "slope 0.87 (s.e. 1.01)",
+   "table": "OECD26_Slopes_cses",
+   "row": "index_gini"
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--aus",
+   "label": "Australia",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.6838845572265073,
+   "text": "Gini: 0.340; Bismarckian index: 0.684",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--aut",
+   "label": "Austria",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8001062968756949,
+   "text": "Gini: 0.304; Bismarckian index: 0.800",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--bel",
+   "label": "Belgium",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8143544930106713,
+   "text": "Gini: 0.274; Bismarckian index: 0.814",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--can",
+   "label": "Canada",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.7308437000084305,
+   "text": "Gini: 0.318; Bismarckian index: 0.731",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--cze",
+   "label": "Czech Republic",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8388476281166349,
+   "text": "Gini: 0.254; Bismarckian index: 0.839",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--dnk",
+   "label": "Denmark",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8071148240445376,
+   "text": "Gini: 0.283; Bismarckian index: 0.807",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--fin",
+   "label": "Finland",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8187720610213338,
+   "text": "Gini: 0.277; Bismarckian index: 0.819",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--fra",
+   "label": "France",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.801213131804974,
+   "text": "Gini: 0.321; Bismarckian index: 0.801",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--deu",
+   "label": "Germany",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8286519769854301,
+   "text": "Gini: 0.323; Bismarckian index: 0.829",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--grc",
+   "label": "Greece",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8226217874869859,
+   "text": "Gini: 0.331; Bismarckian index: 0.823",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--hun",
+   "label": "Hungary",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8521882999454029,
+   "text": "Gini: 0.303; Bismarckian index: 0.852",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--isl",
+   "label": "Iceland",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.7025869626498094,
+   "text": "Gini: 0.275; Bismarckian index: 0.703",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--irl",
+   "label": "Ireland",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.7320301175619862,
+   "text": "Gini: 0.302; Bismarckian index: 0.732",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--ita",
+   "label": "Italy",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8402303962063357,
+   "text": "Gini: 0.358; Bismarckian index: 0.840",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--jpn",
+   "label": "Japan",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8354449147724827,
+   "text": "Gini: 0.330; Bismarckian index: 0.835",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--nld",
+   "label": "Netherlands",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.7967324770446291,
+   "text": "Gini: 0.295; Bismarckian index: 0.797",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--nzl",
+   "label": "New Zealand",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.6869418555484998,
+   "text": "Gini: 0.320; Bismarckian index: 0.687",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--nor",
+   "label": "Norway",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.7709232856347247,
+   "text": "Gini: 0.277; Bismarckian index: 0.771",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--pol",
+   "label": "Poland",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8396700674932639,
+   "text": "Gini: 0.308; Bismarckian index: 0.840",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--prt",
+   "label": "Portugal",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8328776644197066,
+   "text": "Gini: 0.328; Bismarckian index: 0.833",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--esp",
+   "label": "Spain",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.7910166610874905,
+   "text": "Gini: 0.343; Bismarckian index: 0.791",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--swe",
+   "label": "Sweden",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.7882573016492513,
+   "text": "Gini: 0.307; Bismarckian index: 0.788",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--che",
+   "label": "Switzerland",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.7873947095973521,
+   "text": "Gini: 0.343; Bismarckian index: 0.787",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--gbr",
+   "label": "United Kingdom",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.8134566169696328,
+   "text": "Gini: 0.329; Bismarckian index: 0.813",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--usa",
+   "label": "United States",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": 0.7903225806471076,
+   "text": "Gini: 0.419; Bismarckian index: 0.790",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Layer1_cses--index_gini--model--fit",
+   "label": "fitted line",
+   "series": "model",
+   "panel": "Bismarckian index against Gini",
+   "value": -0.019328536265014407,
+   "text": "slope -0.02 (s.e. 0.30)",
+   "table": "OECD26_Slopes_cses",
+   "row": "index_gini"
+  }
+ ]
+}

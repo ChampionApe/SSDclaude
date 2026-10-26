@@ -32,7 +32,7 @@ self-check (HEAD's targets give the θ = 1 tax 0.122797 and λ 8.643207356 bitwi
 solved to the path's own, `ModelESC._ΠRFixedPoint`, calibrate's outer π loop); `calibrateWedge` brackets across a failed
 scan node; `collectESCexperiments.py --costs`. Found: at ρ = 2 the ns = 50 CRRA tax solve jumps by ~1e-5 in τ at some
 (β, ω, λ), which stops the (β, ω) root and 2-cycles the π iteration (damped, accepted below 2e-4); 'sizePiR' scans at
-ns = 150. LOG λ 11.564, 'sizePiR' 20.839; the closed-form θ = 1 tax holds to 6e-13. Numbers: `notes/ledger_C1.md`.
+ns = 150. LOG λ 11.564, 'sizePiR' 20.839; the closed-form θ = 1 tax holds to 6e-13. Numbers: `archive/notes/reviewResponse_2026-10/ledger_C1.md`.
 
 ## 2026-10-23 — C3 of the review response, phase 1: the cross-country test's code (branch `review-2026-10`)
 
@@ -41,7 +41,7 @@ and re-derived at every refresh, #9; WPP ν; figure 1.1's cash spending; β of t
 G.1; ω alone calibrated). `runOECD26.py`: anchor (the U.S., ω and λ), layer 1 (the anchor's ω, λ), layer 2 (own ω),
 turnout cps/cses; rows reused only under an equal inputs hash, layers tied to the anchor's (#13). Self-check: at
 the 2026-10-03 inputs the code path gives λ = 8.643207 (1e-10) and G.1's UK and France rows (1e-14); the tax at
-θ ≡ 1 is `notes/theory_closedForm.md` (1.4) for all 29 (1e-10, τ = 0 corners included). `test_oecd26.py`,
+θ ≡ 1 is `archive/notes/reviewResponse_2026-10/theory_closedForm.md` (1.4) for all 29 (1e-10, τ = 0 corners included). `test_oecd26.py`,
 `test_oecd26Anchor.py`; builders in `python/paper/{tables,figures}OECD26.py`. No results: runs in phase 2.
 
 ## 2026-10-24 — C3, phase 2: the cross-country test run (branch `review-2026-10`)
@@ -51,12 +51,12 @@ the 2026-10-03 inputs the code path gives λ = 8.643207 (1e-10) and G.1's UK and
 equilibrium, no fallback; eq (1.4) at θ ≡ 1 to 2.6e-11. Stage (ii) runs it (`runShocksUS.py` entry `oecd26`, always:
 the rows' keys decide). `datasets.oecd26Anchor` refuses an anchor at another U.S. β or on the coarse grid;
 `test_oecd26.py` P checks `results/oecd26/` against today's β and inputs and skips while the files are partial (a
-run writes them row by row). Built `OECD26_Layer1`, `OECD26_Slopes`, `OECD26_Omega`. Numbers: `notes/ledger_C3.md`.
+run writes them row by row). Built `OECD26_Layer1`, `OECD26_Slopes`, `OECD26_Omega`. Numbers: `archive/notes/reviewResponse_2026-10/ledger_C3.md`.
 
 ## 2026-10-24 — C5 of the review response: the smaller U.S. numbers (branch `review-2026-10`)
 
 `c5Numbers.py` (no model code changed; self-check reproduces τ_2020, the θ = 1 tax and θ_2020 at λ = 11.564 bitwise)
--> `results/numerical/C5_*.csv`, numbers and paper lines in `notes/ledger_C5.md`. C.1's critical turnout ratio
+-> `results/numerical/C5_*.csv`, numbers and paper lines in `archive/notes/reviewResponse_2026-10/ledger_C5.md`. C.1's critical turnout ratio
 11.5 / 3.4 / 1.84 at ρ = 0.5 / 1 / 2 against 1.61; the ranking at every ρ of the sweep (U.S. counterfactuals at
 ρ 0.6–1.9 by `runShocksUS.py --out`); #7, #22 (λ ≈ εΠ/R: 52–209× at ρ = 1), index units; #5's split through the
 Π-inclusive slot at a fixed π (log, and exact 2-D CRRA at ρ = 0.5, 2, ~1 h each): the cost's linearity in τ is
@@ -71,7 +71,7 @@ at every date to 2110. Residuals |τ_FOC − τ̂| off the grid, as solved: ≤ 
 at 50 the path residual (6.9e-4 in τ) exceeds the jumps a scan over ω finds (2.3e-4). Against converged τ-derivatives
 the path residual is 0.17 / 0.37 p.p. (ρ = 0.5 / 2): `CRRA.focParts_t` smooths along τ with s = 1e-4 (#7; open, model
 code); at the calibrated parameters the θ 1 → 0 tax gap moves 9.34 → 8.96 and 2.12 → 1.99 p.p.; recalibrating under
-converged derivatives stalls (residual 2e-3). Numbers `notes/ledger_C4.md`, logs `logs/C4/`.
+converged derivatives stalls (residual 2e-3). Numbers `archive/notes/reviewResponse_2026-10/ledger_C4.md`, logs `logs/C4/`.
 
 ## 2026-10-24 — C6 of the review response: τ-derivatives and design grids (branch `review-2026-10`)
 `CRRA._gradProfile` (alg:CRRA:grid step 3; `LeadedCRRA2D` inherits it): a least-squares cubic in ln(1−τ), knots
@@ -92,7 +92,7 @@ Self-check first: the ρ = 1 counterfactuals reproduce `US_shocksCommonX.csv` ex
 No rank changes; the design-layer fallback and the ns = 50 jumps are gone; converged residuals are 0.003 p.p.
 Crossed: 1 − f(θ*) 4.17% at ρ = 0.5 (the text: "no more than 4%"); the UK's λ is a third below the U.S. at ρ ≤ 1, 17.4% above at 2.
 Steady-state horizon at ρ = 0.5: +0.027 p.p. in τ_2020. Failed: `runOECD26` layer 2, CSES, Turkey (τ → 1 at ω = 1e-6),
-so `test_oecd26.py` P fails, 28/29 fast suites; `test_escCRRA` 13/13 with P_CRRA2 0.0916 → 0.0942. `notes/ledger_C6.md`.
+so `test_oecd26.py` P fails, 28/29 fast suites; `test_escCRRA` 13/13 with P_CRRA2 0.0916 → 0.0942. `archive/notes/reviewResponse_2026-10/ledger_C6.md`.
 
 ## 2026-10-25 — C6 §3: the log tax's gradient solve kept below τ = 1 (branch `review-2026-10`)
 Turkey's layer-2 CSES row failed because `LOG.solveVectorized` clipped τ̃ to [0, 1]. The ω root's first step (1.2873 → 1.5302)
@@ -103,3 +103,12 @@ bypasses `solveRobust`'s RuntimeError fallback. The LOG code is f3a15a4's; C6 on
 only TUR's layer-2 solves (cps, cses) passed u (`HOOK` lines in `logs/C6/oecd26_replay_R*.log`); TUR cses reran,
 ω = 1.5265055645 as on 2026-10-24. The resume write rewrote the other rows at ≤ 2e-14 relative (`runESC.mergeWrite`
 rereads with pandas' default parser). `test_oecd26.py` B; logs `logs/C6/tur_*.log`.
+
+## 2026-10-26 — C7: France's ν at PaG 2021's retirement-age gap (branch `review-2026-10`)
+RKB's `FRMain.xlsx` `population!D` (gap 1.5/1 years): every run that reads France's ν rerun (`logs/C7/`, 37 jobs, 2.3 h;
+self-check: escCountry's France row bitwise on HEAD's ν). France ω 1.346 → 1.446 at ρ = 1 (ν_2020 0.97 → 1.04, X 6.90 →
+6.64, R 2.265 → 2.432); its design under the U.S. λ 0.7954 → 0.7953, corner slope still negative and λ-free. Found: the
+French leisure counterfactual is not ν-free, since France's X is pinned by hours at a ν-dependent wage: workweek +0.32 h at
+ρ = 1, rates unchanged; income and voting rows unchanged (η_FR moves by one factor). One design-layer fallback appeared
+(escShocksCRRA, ρ = 0.5, cost on the design, frLeisure chosen). oecd26 recomputed nothing. Tests eu 40, esc 91, counts 11,
+oecd26 32, onlineAppendix 10, all pass. Numbers and the paper lines that moved: `notes/ledger_C7.md`.

@@ -175,8 +175,11 @@ US = {
     # counterfactual defined THROUGH eta or X: the French income-distribution and leisure rows.
     # The headline tables and figures read this; their vector-X twins pass commonX = not this.
     'commonX': True,
+    # gradKnotSpacing is recorded, not forwarded (python/US/policy.CRRA's default): the distance in tau between
+    # the knots of the least-squares cubic in ln(1 - tau) the CRRA tau-derivatives are taken from. Appendix
+    # D's residual table (tablesHorizon.numResiduals) prints it.
     'gridSettings': {'interpKind': 'linear', 'smoothKnots': 4, 'n': 101, 'ns': 150,
-                     'verify': 225, 'verifyN': 151},
+                     'verify': 225, 'verifyN': 151, 'gradKnotSpacing': 0.04},
     # --- Endogenous system characteristics (sec:esc): the leaded choice of theta under a deadweight
     # cost on the pension system (python/US/base.py fWedge, writing/US/model_esc.tex). Every spec is
     # PROPORTIONAL -- the cost scales the whole benefit and cancels from the replacement-rate ratio, so
@@ -254,7 +257,7 @@ US = {
                'nsScan':    {0.5: 0, 2.0: 50},
                'nScan':     4,
                'scenarios': ['baseline', 'acute', 'frIncome', 'frLeisure', 'frVoting', 'frBoth', 'frAll']},
-        # THE COST VARIANTS OF SECTION 7 (A8 of notes/paper_reviewResponse.md): the ageing counterfactuals
+        # THE COST VARIANTS OF SECTION 7 (A8 of archive/notes/reviewResponse_2026-10/paper_reviewResponse.md): the ageing counterfactuals
         # under the paper's cost, the cost on the design (comparisonSpec) and the Pi-inclusive cost 'sizePiR'
         # (python/US/modelESC.py: lambda*Pi_t/R_t, the factor the paper's cost absorbs into lambda, solved to
         # the path's own Pi_t/R_t), at every rho of ρTable, both readings. 'sizePiR' is calibrated like the

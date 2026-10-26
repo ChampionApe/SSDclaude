@@ -14,7 +14,7 @@ protocol showing up in the data (see modelFR.py):
     2.443: nothing in ModelFR reads it, and a stray ModelUS.calibrate on one of these workbooks must fail
     loudly rather than quietly target the US interest rate.
   * The population sheet's 'Worker-to-retiree' is the column the model uses. France's is adjusted for its
-    lower retirement age (2.5 years below the US/UK in 2020, narrowing to 2 by 2050) and so differs from
+    lower retirement age (1.5 years below the US in 1990 and 2020, 1 from 2050; PaG 2021, appendix F) and so differs from
     the raw census ratio in the neighbouring column; the UK's does not need the adjustment.
 
 France's 'Replacement rate' is 1, and getTheta (getθ) returns exactly 1 at RR0 = 1 for ANY income

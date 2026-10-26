@@ -14,7 +14,7 @@ MARKFMT = dict(F1.MARKFMT)
 AXIS = {'spending': (0, 20), 'index': (0.44, 1.07)}
 
 
-def oecd26Figure(layer = 1, turnout = 'cps', sample = '26', reading = 'chosen'):
+def oecd26Figure(layer = 1, turnout = 'cps', sample = '26', reading = 'inForce'):
     r""" OECD26_Layer1 (layer 1) or its layer-2 counterpart OECD26_Layer2: 2x3 as figure 1.1, the legend in
     the sixth cell (layer 1), or 1x3 with the index panels (layer 2). Every dot and line is a mark; a dot is
     linked to its country's row of OECD26_Omega (lowercase ISO3), a line carries its slope. """

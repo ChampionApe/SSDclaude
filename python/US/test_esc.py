@@ -693,4 +693,18 @@ except NotImplementedError:
     refused = True
 check("'sizePiR' refuses the solvers that do not iterate pi (the permanent timing)", refused)
 
+# ---- S17. France's corner (runESC.py --stage corner, app:esc:cost): under log the slope of the 1990
+# electorate's design objective at theta_2020 = 1, and the tax there, do not depend on lambda, and France's
+# slope is negative, so no lambda re-elects France's observed corner (table US_ESC_Country's note)
+cFR = []
+for λc in (0.0, recS['p']):
+    mFRc = runESC.buildEU('FR', None if λc == 0 else {'spec': 'size', 'phi': 0.5, 'p': λc}, commonX = True)
+    mFRc.calibrate()
+    cFR.append(runESC.cornerSlope(mFRc, int(mFRc.db['t'].get_loc(mFRc.t0Year)) - 1))
+check("France's slope at the Bismarckian corner is negative and the same at lambda = 0 and the U.S. lambda",
+      all(c['slope'] < 0 for c in cFR) and abs(cFR[0]['slope'] - cFR[1]['slope']) < 1e-8
+      and abs(cFR[0]['τ1Corner'] - cFR[1]['τ1Corner']) < 1e-10,
+      '-> slope {:+.6f} / {:+.6f}, T(1) {:.6f} / {:.6f}'.format(cFR[0]['slope'], cFR[1]['slope'],
+                                                              cFR[0]['τ1Corner'], cFR[1]['τ1Corner']))
+
 report()

@@ -64,7 +64,7 @@ WEDGE_SPECS = (None, 'scale', 'flat', 'size', 'sizePiR')
 # so its bracket is doubled.
 WEDGE_BRACKET = {'scale': (0.05, 3.0), 'flat': (0.05, 3.0), 'size': (0.5, 200.), 'sizePiR': (1.0, 400.)}
 # The pi = Pi/R path a 'sizePiR' solve starts from when it has no earlier one (U.S. 2020,
-# notes/theory_closedForm.md 3.4), the fixed point's tolerance (max |Δpi| over the path; the map contracts by
+# archive/notes/reviewResponse_2026-10/theory_closedForm.md 3.4), the fixed point's tolerance (max |Δpi| over the path; the map contracts by
 # about 0.03 per iteration at the U.S. calibration) and iteration cap. The exact 2-D recursion (~6 min per
 # iteration at ns = 150) stops at ΠR_TOL2D: a pi error of 1e-5 moves the design by ~4e-6. A CRRA tax solve
 # stops at ΠR_TOLCRRA; a pi error of 1e-8 moves tau by ~1e-11. A fixed point that stalls on a jump of the

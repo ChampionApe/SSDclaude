@@ -64,7 +64,7 @@ class ModelUS:
 
         The informal type j=0 has NO mass here (γ_0 = 0) -- the docs' model has no such household at all.
         The slot is nonetheless retained throughout db, base.py and policy.py, because the data are laid
-        out that way (see the workbook's Readme sheet) and every array is j-indexed. With γ_0 = 0 the
+        out that way (data/README.md) and every array is j-indexed. With γ_0 = 0 the
         informal terms are computed and then multiplied by zero: κ_t collapses to p_t (Base.κ), and the
         informal blocs drop out of the political FOC (Base.FOC). Synthetic η_0/X_0 keep those dead terms
         finite -- they must stay finite, since 0·NaN is NaN and would poison the whole FOC.

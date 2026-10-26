@@ -1,0 +1,42 @@
+# C6. The cross-country test {#esc-oecd26}
+
+Section {{< var p.sec_esc >}} of the paper ends with a test of the model across the OECD countries of figure
+{{< var p.fig_US_OECDdata >}}. The U.S., measured as the other countries are, from the OECD earnings deciles at the
+U.S. income percentiles, anchors the test: its political weight of the old ω and its cost parameter λ. Layer 1
+gives every other country the U.S. ω and λ with its own workers per retiree, income distribution and observed
+design, and predicts its tax rate and its design. Layer 2 calibrates each country's ω to its pension spending and
+predicts its design. The model's design is the one in force in 2020, chosen in 1990, as for the U.S. target of λ.
+The paper leaves out the countries whose informal employment is high and gives every country the U.S. propensities
+to vote by income group. This page repeats the test with all the countries of the figure, and with each country's
+own propensities to vote.
+
+## All the countries {#esc-oecd26-all}
+
+Korea, Mexico and Turkey join the sample. The data's slope of spending on the Gini then turns negative, the
+model's sign, and the data's slope of the index on population growth flattens toward layer 1's. The other signs
+are those on the paper's sample: spending falls with population growth and rises with the index in the data and
+in the model, the model's spending rising more steeply with the index; the index falls with population growth in
+the data and in both layers; and the index rises with the Gini in the data, not significantly, where it falls in
+both layers. The table after the slopes gives the political weight of the old each country's spending implies.
+
+{{< include _generated/exhibits/OECD26_Layer1_29.qmd >}}
+
+{{< include _generated/exhibits/OECD26_Slopes_29.qmd >}}
+
+{{< include _generated/exhibits/OECD26_Omega_29.qmd >}}
+
+## Each country's own turnout {#esc-oecd26-turnout}
+
+Each country's propensities to vote by income group now come from the CSES. The U.S. anchor is recalibrated at
+its own CSES turnout, which raises λ, and Luxembourg, with no CSES election, leaves data and model alike. The
+relations the test reproduces at the U.S. turnout keep their signs: spending falls with population growth, about as
+steeply in layer 1 as in the data on these countries, and rises with the index in both layers, and the index falls
+with population growth in both layers. On the Gini, where the data show no significant relation, layer 1's slope of the
+index nearly vanishes and layer 2's takes the data's sign, neither significantly, while layer 1's slope of
+spending keeps the sign opposite to the data's.
+
+{{< include _generated/exhibits/OECD26_Layer1_cses.qmd >}}
+
+{{< include _generated/exhibits/OECD26_Slopes_cses.qmd >}}
+
+{{< include _generated/exhibits/OECD26_Omega_cses.qmd >}}

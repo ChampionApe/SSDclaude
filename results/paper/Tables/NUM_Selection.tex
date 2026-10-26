@@ -7,65 +7,31 @@
 \caption{Equilibrium counts in the results the exhibits read}
 \label{table:OA:NUM_Selection}
 \renewcommand{\arraystretch}{1.25}
-\small
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{4.6cm}YYYYYYY}
+\footnotesize\setlength{\tabcolsep}{5pt}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.0cm}YYYYYY}
 \toprule
-\textbf{File} & \textbf{Rows} & \textbf{Counted} & \textbf{No selection} & \textbf{Not recorded} & \textbf{Equilibria, max} & \textbf{Candidates, max} & \textbf{Fallbacks} \\
+ & & \multicolumn{2}{c}{\textbf{Rows}} & \multicolumn{2}{c}{\textbf{Largest number of}} & \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+\textbf{Solves} & \textbf{Files} & all & counted & equilibria & candidates & \textbf{Fallbacks} \\
 \midrule 
-\multicolumn{8}{l}{\textit{Tax rule: Argentina}} \\
-informalSavings\_rhoGridCommonX.csv & 16 & 16 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_informalsavings_rhogridcommonx
-universal\_match\_rho*\_commonX.csv (16 files) & 112 & 112 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_universal_match_rho_commonx
-eeOnly\_match\_rho*\_commonX.csv (16 files) & 112 & 0 & 112 & 0 & -- & -- & -- \\ % row: tax_eeonly_match_rho_commonx
-epsThetaGrid\_rho1.0000\_commonX.csv & 378 & 378 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_epsthetagrid_rho1_0000_commonx
-informalSavings\_rhoGrid.csv & 16 & 16 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_informalsavings_rhogrid
-universal\_match\_rho*.csv (16 files) & 112 & 112 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_universal_match_rho
-eeOnly\_match\_rho*.csv (16 files) & 112 & 0 & 112 & 0 & -- & -- & -- \\ % row: tax_eeonly_match_rho
-epsThetaGrid\_rho1.0000.csv & 378 & 378 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_epsthetagrid_rho1_0000
-ARG\_stationaryApprox\_commonX.csv & 30 & 30 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_arg_stationaryapprox_commonx
-ARG\_horizon\_commonX.csv & 84 & 84 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_arg_horizon_commonx
-\multicolumn{8}{l}{\textit{Tax rule: the U.S., the UK and France}} \\
-US\_rhoGridCommonX.csv & 16 & 16 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_us_rhogridcommonx
-UK\_rhoGridCommonX.csv & 16 & 16 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_uk_rhogridcommonx
-FR\_rhoGridCommonX.csv & 16 & 16 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_fr_rhogridcommonx
-US\_shocksCommonX.csv & 54 & 30 & 24 & 0 & 1 & 3 & 0 \\ % row: tax_us_shockscommonx
-UK\_shocksCommonX.csv & 54 & 30 & 24 & 0 & 1 & 3 & 0 \\ % row: tax_uk_shockscommonx
-US\_rhoGrid.csv & 16 & 16 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_us_rhogrid
-UK\_rhoGrid.csv & 16 & 16 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_uk_rhogrid
-FR\_rhoGrid.csv & 16 & 16 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_fr_rhogrid
-US\_shocks.csv & 54 & 30 & 24 & 0 & 1 & 3 & 0 \\ % row: tax_us_shocks
-UK\_shocks.csv & 54 & 30 & 24 & 0 & 1 & 3 & 0 \\ % row: tax_uk_shocks
-escCalibration.csv & 5 & 5 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_esccalibration
-escCalibrationCRRA.csv & 8 & 0 & 4 & 4 & -- & -- & -- \\ % row: tax_esccalibrationcrra
-escCalibrationCRRAUK.csv & 2 & 0 & 2 & 0 & -- & -- & -- \\ % row: tax_esccalibrationcrrauk
-escCountry.csv & 12 & 9 & 3 & 0 & 1 & 3 & 0 \\ % row: tax_esccountry
-escShocks.csv & 34 & 34 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_escshocks
-escShocksCRRA.csv & 120 & 32 & 28 & 60 & 1 & 3 & 0 \\ % row: tax_escshockscrra
-escShocksUK.csv & 15 & 15 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_escshocksuk
-escShocksCRRAUK.csv & 30 & 16 & 14 & 0 & 1 & 3 & 0 \\ % row: tax_escshockscrrauk
-escPath.csv & 16 & 16 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_escpath
-escPathCRRA.csv & 48 & 0 & 32 & 16 & -- & -- & -- \\ % row: tax_escpathcrra
-escXiRobustness.csv & 33 & 33 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_escxirobustness
-escPermanent.csv & 7 & 7 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_escpermanent
-escPermanentCRRA.csv & 6 & 6 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_escpermanentcrra
-escSequentialCRRA.csv & 14 & 14 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_escsequentialcrra
-US\_stationaryApprox.csv & 45 & 45 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_us_stationaryapprox
-US\_ESC\_stationaryApprox.csv & 27 & 9 & 18 & 0 & 1 & 3 & 0 \\ % row: tax_us_esc_stationaryapprox
-US\_horizon.csv & 96 & 96 & 0 & 0 & 1 & 3 & 0 \\ % row: tax_us_horizon
-US\_horizonDesign.csv & 48 & 0 & 48 & 0 & -- & -- & -- \\ % row: tax_us_horizondesign
-US\_derivativeScheme.csv & 24 & 24 & 0 & 0 & 1 & 3 & 0 \\[.5em] % row: tax_us_derivativescheme
-\multicolumn{8}{l}{\textit{Design layer of the exact CRRA recursion: brackets as candidates}} \\
-escCalibrationCRRA.csv & 8 & 4 & 0 & 4 & 1 & 1 & 0 \\ % row: design_esccalibrationcrra
-escCalibrationCRRAUK.csv & 2 & 2 & 0 & 0 & 1 & 1 & 0 \\ % row: design_esccalibrationcrrauk
-escShocksCRRA.csv & 120 & 28 & 32 & 60 & 1 & 1 & 0 \\ % row: design_escshockscrra
-escShocksCRRAUK.csv & 30 & 14 & 16 & 0 & 1 & 1 & 0 \\ % row: design_escshockscrrauk
-escPathCRRA.csv & 48 & 32 & 0 & 16 & 1 & 1 & 0 \\ % row: design_escpathcrra
-US\_ESC\_stationaryApprox.csv & 27 & 18 & 9 & 0 & 1 & 1 & 0 \\ % row: design_us_esc_stationaryapprox
-US\_horizonDesign.csv & 48 & 48 & 0 & 0 & 1 & 1 & 0 \\ % row: design_us_horizondesign
+\multicolumn{7}{l}{\textit{Tax rule: Argentina}} \\
+Calibrations & 2 & 32 & 32 & 1 & 3 & 0 \\ % row: tax_arg_calibration
+Experiments & 64 & 448 & 224 & 1 & 3 & 0 \\ % row: tax_arg_shocks
+Equilibria over designs & 2 & 756 & 756 & 1 & 3 & 0 \\ % row: tax_arg_sweeps
+Numerical checks & 2 & 114 & 114 & 1 & 3 & 0 \\[.5em] % row: tax_arg_numerical
+\multicolumn{7}{l}{\textit{Tax rule: the U.S., the UK and France}} \\
+Calibrations & 6 & 96 & 96 & 1 & 3 & 0 \\ % row: tax_us_calibration
+Experiments & 4 & 216 & 120 & 1 & 3 & 0 \\ % row: tax_us_shocks
+Endogenous design & 14 & 350 & 188 & 1 & 3 & 0 \\ % row: tax_us_esc
+Numerical checks & 5 & 240 & 174 & 1 & 3 & 0 \\[.5em] % row: tax_us_numerical
+\multicolumn{7}{l}{\textit{Design layer of the exact CRRA recursion}} \\
+Endogenous design & 5 & 208 & 80 & 1 & 1 & 1 \\ % row: design_esc
+Numerical checks & 2 & 75 & 66 & 1 & 1 & 0 \\ % row: design_numerical
 \bottomrule
 \end{tabularx}
 \begin{tablenotes}[flushleft]
 \footnotesize
-\item[] \textit{Note:} Per csv, the rows; the rows that record the counts; the rows whose solve selects nothing at that layer and records $-1$ (no selection); the rows written before the counts were recorded (not recorded); and over the counted rows the largest number of equilibria at any state and period, the largest number of candidates and the total number of states at which the solver fell back. The tax rule is the selection of the technical documentation, which falls back on the tax that maximizes its integral criterion where no candidate passes the equilibrium test. No selection in the tax rule: the economic-equilibrium rows, with taxes held at the baseline path; the rows of the exact recursion under CRRA preferences with the design chosen, whose tax is selected inside the design layer and counted there; and cost calibrations that failed, France\textquotesingle{}s and the regrouped UK\textquotesingle{}s observed designs being out of the cost\textquotesingle{}s reach. The design layer is that of the exact recursion, which compares the candidate designs with the retirees\textquotesingle{} savings shares held fixed and then makes the shares consistent: its candidates are the brackets of that consistency residual, and where none closes to an equilibrium it falls back on comparing each design at its own consistent shares; no selection there are the rows with the design pinned, and the log rows of the stationary check. Not recorded: the rows of the earlier cost on the design and of the path iteration under CRRA preferences, the cross-check the exhibits do not read, written before the counts existed and not rerun at the current calibration. escExperiments.csv and escExperimentsUK.csv, which the endogenous-design exhibits read, merge the escShocks* files, whose counts are the rows above. Every counted row has one equilibrium at every state and period, and no fallback.
+\item[] \textit{Note:} The files of results that the exhibits read, grouped by the solves that wrote them: per group the files, their rows, the rows that record the counts, and over these the largest number of equilibria at any state and period, the largest number of candidates, and the number of states at which no candidate passed the equilibrium test and the solver fell back. The other rows select nothing at that layer (the economic-equilibrium rows, with taxes held at the baseline path; the tax of the exact recursion, selected inside its design layer; the cost calibrations that failed; the rows with the design pinned) or were written before the counts existed; the online appendix lists every file. The tax rule\textquotesingle s candidates are the two corners and the crossings of the first order condition; the design layer\textquotesingle s are the brackets of its consistency residual. Every counted row has one equilibrium at every state and period, except where no candidate passed: the solver fell back at one state of the design layer in escShocksCRRA.csv ($\rho = 0.5$, the cost on the design, frLeisure, design chosen, exact recursion).
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

@@ -9,7 +9,7 @@ Run:  .venv\Scripts\python.exe python\US\test_oecd26.py        (~2 min)
      for Luxembourg); on the built model hηRatio = y_i, Vtilde and θ on every date, θ surviving updateAuxPars,
      setWedge and calibrate (#9) and differing from getθ on the group means; the U.S. ν is the U.S. workbook's.
   S  data/oecd26_sample.csv is A4's rule on data/oecd29.csv: 26 kept; Mexico, Turkey and Korea dropped.
-  C  At θ ≡ 1 the log tax is notes/theory_closedForm.md eq (1.4) at every date and each country's ν, all 29, with
+  C  At θ ≡ 1 the log tax is archive/notes/reviewResponse_2026-10/theory_closedForm.md eq (1.4) at every date and each country's ν, all 29, with
      the cost installed (it vanishes with its τ-derivative at θ = 1); the corner τ = 0 included (Mexico, Turkey).
   R  At the inputs of the published run of 2026-10-03 (the workbooks before review-2026-10) and its λ = 8.643207,
      the code path reproduces that run's ω of the U.S. (β imposed at that calibration's value) and of appendix
@@ -27,7 +27,7 @@ Run:  .venv\Scripts\python.exe python\US\test_oecd26.py        (~2 min)
      equilibrium and no fallback per row. Skipped with a NOTE while the files are absent or partial (a run in
      progress writes them row by row). R's β are the 2026-10-03 run's by design; nothing else is.
   U  Every solve above records one tax equilibrium and no fallback: under log the tax is unique
-     (notes/theory_uniqueness.md), so a count above one is a defect.
+     (archive/notes/reviewResponse_2026-10/theory_uniqueness.md), so a count above one is a defect.
 """
 import os, sys, time, tempfile, shutil
 import numpy as np, pandas as pd

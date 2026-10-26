@@ -113,7 +113,7 @@ SYMBOLS = {'textquotesingle': '\u2019', 'ldots': '…', 'dots': '…', 'textenda
            'S': '§', 'textasciitilde': '~', 'textbackslash': '\\', 'centering': '', 'raggedright': '',
            'raggedleft': '', 'footnotesize': '', 'small': '', 'normalsize': '', 'scriptsize': '', 'noindent': '',
            'arraybackslash': '', 'hfill': ' ', 'quad': ' ', 'qquad': ' ', 'newline': '<br>', 'par': ' ',
-           'relax': '', 'xspace': '', 'ignorespaces': '', 'unskip': '', 'LaTeX': 'LaTeX', 'TeX': 'TeX'}
+           'relax': '', 'allowbreak': '', 'xspace': '', 'ignorespaces': '', 'unskip': '', 'LaTeX': 'LaTeX', 'TeX': 'TeX'}
 ESCAPES = {'%': '%', '&': '&amp;', '_': '_', '#': '#', '$': '$', '{': '{', '}': '}', ',': '\u2009',
            ' ': ' ', ';': ' ', ':': ' ', '!': '', '/': '', '-': '', '\\': '<br>', "'": "'", '`': '`'}
 CITE = re.compile(r'(?:[Tt]extcite|[Pp]arencite|cite[tp]?|citeauthor|citeyear)s?$')

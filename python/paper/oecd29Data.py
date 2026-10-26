@@ -44,8 +44,8 @@ WORKBOOKS = {'USA': ('USMain_test.xlsx', 'heterogeneity'), 'GBR': ('UKMain.xlsx'
              'FRA': ('FRMain.xlsx', 'heterogeneity'), 'FRA@UK': ('FRMain.xlsx', 'heterogeneityUK')}
 
 PERIODS = [1990, 2020, 2050, 2080]           # nu_t = P(t)/P(t-30); the workbooks copy 1990 to 1960, 2080 to 2110
-FR_GAPS = {1990: 2.5, 2020: 2.5, 2050: 2.0, 2080: 2.0}          # appendix F: France retires 2.5 years before
-FR_WORKBOOK = {1990: 1.026299, 2020: 0.966884, 2050: 0.903744, 2080: 0.870591}   # the US/UK, 2 from 2050
+FR_GAPS = {1990: 2.5, 2020: 2.5, 2050: 2.0, 2080: 2.0}          # appendix F until 2026-10-26: France 2.5 years before
+FR_WORKBOOK = {1990: 1.026299, 2020: 0.966884, 2050: 0.903744, 2080: 0.870591}   # the US/UK, 2 from 2050 (now the nraAdj gaps)
 DIST_YEAR, DIST_WINDOW = 2019, 2             # last pre-pandemic year; ESP, IRL, ITA earnings ratios jump in 2020-21
 SURVEY = {'USA': 2018, 'GBR': 2006, 'FRA': 2018}   # CPS March 2019, BHPS wave 17 (2006-07), LIS 2018
 US_CUTS = (0.582266, 0.757993)               # data/USMain_test.xlsx heterogeneity, cumulative shares

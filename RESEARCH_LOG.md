@@ -41,8 +41,8 @@ Bash-tool heredocs collapse a double backslash to one: edit scripts with TeX in 
 ## 2026-10-23 — the AI review reconciled and the response planned
 
 The review of 2026-10-22 (`coarse-output/`) was read critically and reconciled comment by comment with RKB:
-`notes/paper_reviewResponse.md` holds the agreed actions A1–A14 and the detailed comments at their first-pass
-verdicts; `notes/plan_reviewResponse.md` turns them into agent packages, with a checkpoint before any writing (TODO
+`archive/notes/reviewResponse_2026-10/paper_reviewResponse.md` holds the agreed actions A1–A14 and the detailed comments at their first-pass
+verdicts; `archive/notes/reviewResponse_2026-10/plan_reviewResponse.md` turns them into agent packages, with a checkpoint before any writing (TODO
 W16). Found on the way: the U.S. design target is pension-only (39.2/49.2; PaG 2021 has 49.6) while τ includes
 Medicare, against the text (decided: pensions only in all three countries, Medicare in the OA); appendix B.1 prints
 the young term with 1+β; ν_t is UN WPP 2024 total population growth, not census data. An agent assembled the

@@ -30,6 +30,7 @@ book:
         - oecd-countries.qmd
         - oecd-parameters.qmd
         - oecd-leisure.qmd
+        - oecd-medicare.qmd
     - part: esc.qmd
       chapters:
         - esc-paths.qmd
@@ -37,6 +38,7 @@ book:
         - esc-costs.qmd
         - esc-parameters.qmd
         - esc-timing.qmd
+        - esc-oecd26.qmd
     - part: checks.qmd
       chapters:
         - data.qmd

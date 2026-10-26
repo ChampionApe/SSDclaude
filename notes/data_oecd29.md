@@ -76,7 +76,7 @@ replacement-rate ratio is 39.2/49.2 = .797 in the workbook against 39.2/49.6 = .
   turnout is too high (US .76 weighted against about .67), so the gradient is more reliable than the level.
   OECD WISE has no turnout by income; the ESS needs a login.
 - **Normal retirement age**, PaG 2021 figure 3.7 (StatLink 2cvxya), current (retiring 2020) and future (entering
-  2020), by sex, 29 of 29. France 64.5 and 66 against the US 66 and 67, not appendix F's 63.5 and a gap of 2;
+  2020), by sex, 29 of 29. France 64.5 and 66 against the US 66 and 67 (appendix F's French rule uses these gaps since 2026-10-26, so `wpp2024_nraAdj` for France is `FRMain.xlsx`'s ν);
   Turkey 52 for men now; future ages indexed to life expectancy reach 74 (DNK), 71 (ITA), 69 (NLD).
 - **PWT 11.0** labour share and K/Y (rnna/rgdpna and cn/cgdpo), 2019-20, 29 of 29. **OECD hours** actually worked
   per worker, 29 of 29 (the OECD warns levels are not comparable; Mexico 2,247 against PWT's 1,639).

@@ -13,8 +13,8 @@ Bismarckian design.
 In every country the chosen design moves against the number of workers per retiree. As the population ages, the
 electorate ties benefits more closely to earnings, and the design levels off when the demography does. Under the
 U.S. cost parameter the three countries' designs keep their observed order in 2020: the UK's lowest, France's
-highest, the U.S. in between. From 2050 the U.S. design lies above France's, since France's population is already old
-in 2020 and ages least afterwards. The UK's workers per retiree rise until 2020 before they fall, and its design
+highest, the U.S. in between. France's design stays above the U.S. one, but from 2050 by much less, since France's
+population is already old in 2020 and ages least afterwards. The UK's workers per retiree rise until 2020 before they fall, and its design
 moves against them, falling and then rising. At its own parameter the UK's design passes through its observed value in 2020 and
 follows the same pattern. The tax rate rises with ageing everywhere.
 

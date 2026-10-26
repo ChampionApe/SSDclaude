@@ -4,7 +4,7 @@ Entries to 2026-10-07 are in `archive/sessionLogs/RESEARCH_LOG_InformalSavings.m
 `archive/INDEX.md`. Format: one entry per session, at most ~10 lines: what changed, why, where to
 look. A lesson that would recur goes to `notes/crossCuttingFindings.md` once, cited by number, not here.
 
-## 2026-10-23 — C2 code (W16, `notes/brief_C2.md`): the reform period's lags, the GDP target, ε = 0
+## 2026-10-23 — C2 code (W16, `archive/notes/reviewResponse_2026-10/brief_C2.md`): the reform period's lags, the GDP target, ε = 0
 - #4: a copy's first period rebuilt the retirees' formal shares per candidate tax at its own vintage (new ε in
   κ_{t0}; under CRRA also ν_{t0+1} in B), and `EE_report` took t0's lags from `initialState_solve` (c20 up to 5.7% off).
   `stateAtT0` now returns `inherited` (s_{t0-1,i}/s_{t0-1}, h_{t0-1}); `solvePEE_*(inherited=)` holds the shares in
@@ -22,7 +22,7 @@ look. A lesson that would recur goes to `notes/crossCuttingFindings.md` once, ci
   savings −0.36 p.p. of GDP, formal benefits +1.46% (−12.70% at fixed taxes). ε = 0 variant: Δτ +4.20 p.p.
 - New `reformDiagnostics.py` (`ARG_reform{FOC,B5,HouseholdSavings,Refine}_commonX.csv`); `sweepEpsThetaGrid.py`
   writes `srGDP`, `Y`, `Y0`. The tax response turns negative between ρ = 0.6 and 0.5, grid-resolved.
-- Numbers, sources and the paper's sentences: `notes/ledger_C2.md`.
+- Numbers, sources and the paper's sentences: `archive/notes/reviewResponse_2026-10/ledger_C2.md`.
 
 ## 2026-10-24 — C4 (W16, A6): horizon, terminal condition and first-order-condition residuals
 - New `runHorizon.py` (not wired): the common-X instances at T = 2130/2190/2280 and under the steady-state terminal
@@ -32,4 +32,4 @@ look. A lesson that would recur goes to `notes/crossCuttingFindings.md` once, ci
   steady state: 1.950), the largest move −0.420 → −0.390 p.p. at ρ = 0.5, T = 2130.
 - Residuals |τ_FOC − τ̂| off the grid: ≤ 0.008 p.p. on the path (0.014 on a 4× tax grid); every off-grid state ≤ 0.003
   (ρ = 1) and 0.015 p.p. (ρ = 2); at ρ = 0.5 the 2-D smoothing departs ≤ 0.35 p.p. from the raw selection at
-  1920–2010 states away from the path. Numbers `notes/ledger_C4.md`, log `logs/C4/ARG.log`.
+  1920–2010 states away from the path. Numbers `archive/notes/reviewResponse_2026-10/ledger_C4.md`, log `logs/C4/ARG.log`.

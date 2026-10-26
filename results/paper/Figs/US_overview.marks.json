@@ -46,7 +46,7 @@
    "label": "French income distr.",
    "series": "ρ = 0.5",
    "panel": "Equilibrium tax rate",
-   "value": -1.5756061915235307,
+   "value": -1.57560619153609,
    "text": "−1.6 p.p.",
    "table": null,
    "row": null
@@ -66,7 +66,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5",
    "panel": "Equilibrium tax rate",
-   "value": -0.0010097991809399076,
+   "value": -0.0009176172308208996,
    "text": "−0.001 p.p.",
    "table": null,
    "row": null
@@ -116,7 +116,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0",
    "panel": "Equilibrium tax rate",
-   "value": -1.2900828641425806,
+   "value": -1.29008286414259,
    "text": "−1.3 p.p.",
    "table": null,
    "row": null
@@ -186,7 +186,7 @@
    "label": "French income distr.",
    "series": "ρ = 2.0",
    "panel": "Equilibrium tax rate",
-   "value": -0.8203866314776,
+   "value": -0.8203866314827002,
    "text": "−0.8 p.p.",
    "table": null,
    "row": null
@@ -206,7 +206,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0",
    "panel": "Equilibrium tax rate",
-   "value": 0.000864114900590851,
+   "value": 0.0008662533844003284,
    "text": "+0.001 p.p.",
    "table": null,
    "row": null
@@ -256,7 +256,7 @@
    "label": "French income distr.",
    "series": "ρ = 0.5",
    "panel": "Savings over GDP",
-   "value": 0.8784218446049791,
+   "value": 0.8784218446060005,
    "text": "+0.9 p.p. of GDP",
    "table": null,
    "row": null
@@ -276,7 +276,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5",
    "panel": "Savings over GDP",
-   "value": 0.0006861382846196085,
+   "value": 0.0005867363030792605,
    "text": "+0.001 p.p. of GDP",
    "table": null,
    "row": null
@@ -326,7 +326,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0",
    "panel": "Savings over GDP",
-   "value": 0.47424660510838046,
+   "value": 0.47424660510836936,
    "text": "+0.5 p.p. of GDP",
    "table": null,
    "row": null
@@ -346,7 +346,7 @@
    "label": "French leisure",
    "series": "ρ = 1.0",
    "panel": "Savings over GDP",
-   "value": 8.326672684688674e-15,
+   "value": 0.0,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -396,7 +396,7 @@
    "label": "French income distr.",
    "series": "ρ = 2.0",
    "panel": "Savings over GDP",
-   "value": 0.17283857288422078,
+   "value": 0.17283857288398208,
    "text": "+0.2 p.p. of GDP",
    "table": null,
    "row": null
@@ -416,7 +416,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0",
    "panel": "Savings over GDP",
-   "value": -7.912808960841566e-05,
+   "value": -7.491054364039407e-05,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -466,7 +466,7 @@
    "label": "French income distr.",
    "series": "ρ = 0.5",
    "panel": "Average workweek",
-   "value": 1.145006424022725,
+   "value": 1.1450064240204298,
    "text": "+1.1 hours",
    "table": null,
    "row": null
@@ -486,8 +486,8 @@
    "label": "French leisure",
    "series": "ρ = 0.5",
    "panel": "Average workweek",
-   "value": -4.550298917674155,
-   "text": "−4.6 hours",
+   "value": -4.03343463748304,
+   "text": "−4.0 hours",
    "table": null,
    "row": null
   },
@@ -556,8 +556,8 @@
    "label": "French leisure",
    "series": "ρ = 1.0",
    "panel": "Average workweek",
-   "value": -4.34753422256135,
-   "text": "−4.3 hours",
+   "value": -4.029297136582592,
+   "text": "−4.0 hours",
    "table": null,
    "row": null
   },
@@ -606,7 +606,7 @@
    "label": "French income distr.",
    "series": "ρ = 2.0",
    "panel": "Average workweek",
-   "value": 0.8273834246820044,
+   "value": 0.8273834246824023,
    "text": "+0.8 hours",
    "table": null,
    "row": null
@@ -626,8 +626,8 @@
    "label": "French leisure",
    "series": "ρ = 2.0",
    "panel": "Average workweek",
-   "value": -4.194769130232871,
-   "text": "−4.2 hours",
+   "value": -4.036073385479945,
+   "text": "−4.0 hours",
    "table": null,
    "row": null
   }

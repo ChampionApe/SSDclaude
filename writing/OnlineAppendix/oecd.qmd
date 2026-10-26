@@ -5,11 +5,14 @@ France and changes the U.S. calibration one characteristic at a time: its pensio
 income distribution, voting patterns and taste for leisure that set France apart. Appendix {{< var p.app_US >}} gives
 the data and the household heterogeneity. This part shows the calibrations across the IES, the counterfactuals with
 the UK compared with the U.S. and with the UK regrouped at the U.S. income groups, the U.S. counterfactuals across the
-Frisch elasticity, and what changes when the taste for leisure is identified group by group.
+Frisch elasticity and the tax rate against inherited savings, what changes when the taste for leisure is identified
+group by group, and the U.S. with Medicare among the transfers to the old.
 
 - [B1. Calibration](oecd-ies.qmd): the three calibrations at every IES of the grid.
 - [B2. Other countries](oecd-countries.qmd): what shapes pensions, savings and labor supply in the U.S. and the
   UK, and the UK at the U.S. income groups.
 - [B3. Other parameters](oecd-parameters.qmd): the U.S. counterfactuals across the intertemporal and the Frisch
-  elasticity.
+  elasticity, and the tax rate against inherited savings.
 - [B4. Identification of X](oecd-leisure.qmd): the common taste for leisure against one per income group.
+- [B5. Medicare among the transfers to the old](oecd-medicare.qmd): the U.S. calibrated with Medicare in the tax
+  rate and as a flat benefit, and its counterfactuals.

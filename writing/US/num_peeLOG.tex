@@ -15,7 +15,7 @@ Both $d\upsilon_{1,t}^i/d\tau_t$ and $\partial \ln(\Theta_{h,t})/\partial\tau_t$
 
 \begin{alg}[Gradient-based roots for the politico-economic equilibrium with log preferences]
 \label{\refalg:LOG:fast}
-This is barely an algorithm, in the sense that it includes no fallback options, but simply presumes that the first order condition is well behaved. Let $\tilde{\bm{\tau}} \in \mathbb{R}^{T}$ be a candidate vector of policies and $\bm{\tau}$ the bounded version where each $\tau_t \in [l, u]$. We solve for the vector by identifying the $\tilde{\bm{\tau}}$ that solves \eqref{\refeq:root} period by period, with $z_t$ from \eqref{\refeq:LOG:foc}, and then report $\bm{\tau}$ as the bounded version.
+This is barely an algorithm, in the sense that it includes no fallback options, but simply presumes that the first order condition is well behaved. Let $\tilde{\bm{\tau}} \in \mathbb{R}^{T}$ be a candidate vector of policies and $\bm{\tau}$ the bounded version where each $\tau_t \in [l, u]$. We solve for the vector by identifying the $\tilde{\bm{\tau}}$ that solves \eqref{\refeq:root} period by period, with $z_t$ from \eqref{\refeq:LOG:foc}, and then report $\bm{\tau}$ as the bounded version. The bounds are $l = 0$ and the upper end of the grid, $u = 1-10^{-4}$, and never $u = 1$. A Newton step that takes some $\tilde{\tau}_t$ past one is then bounded and penalised back by \eqref{\refeq:root}, as intended; with $u = 1$ the bounded tax of the first period could reach one, where the steady state that supplies the savings shares of the first period's retirees (\cref{\refsec:EE}) is undefined, and the solve would stop on an error rather than on a residual.
 \end{alg}
 
 \begin{alg}[Grid search over the full path]\label{\refalg:LOG:gridsearch}

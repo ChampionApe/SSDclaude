@@ -74,6 +74,24 @@ Where the reasoning behind each choice the paper rests on is written down.
   and published on 2026-10-09: `notes/plan_onlineAppendix.md`.
 - Figure 1 rebuilt from its sources: paper log 2026-09-30.
 
+**The response to the AI review of 2026-10-22 (W16), archived 2026-10-26** — `notes/reviewResponse_2026-10/`
+- What was agreed with RKB on each of the review's 11 overall and 25 detailed comments (A1–A14, 1–25):
+  `paper_reviewResponse.md`; the execution plan, its principles and the package status table, including every
+  "for RKB" question and its answer: `plan_reviewResponse.md`.
+- Proposition 2 at the fixed point for J types, the ν condition, B.1's young term: `theory_prop2.md` (T1). The
+  log-HtM uniqueness proof, the CRRA corner threshold $(c_i/c_j)^{1/\rho}$, C.2's corner holding only locally:
+  `theory_uniqueness.md` (T2). The J = 1 closed form against Gonzalez-Eiras and Niepelt (2008), $I = 1/(2-\theta)$,
+  λ ≈ εΠ/R: `theory_closedForm.md` (T3).
+- Old → new for every number the prose cited, per package: `ledger_C1.md` (pension-only U.S. target, Medicare
+  reading, cash spending), `ledger_C2.md` (Argentina: the reform-date retirees' shares, GDP with informal output,
+  ε = 0, B.5, the IES reversal, W15), `ledger_C3.md` (the 26-country test, in force against chosen designs),
+  `ledger_C4.md` (horizon, residuals, counts), `ledger_C5.md` (critical turnout, ranking, marginal loss, λ against
+  elasticities, index units, A13), `ledger_C6.md` (the converged CRRA τ-derivatives and LeadedLOG's anticipated
+  tax; finding #20).
+- The briefs: `brief_C0.md` (candidate counts), `brief_C2.md` (Argentina fixes), `brief_C6.md` and
+  `brief_C6runs.md` (solver fixes and reruns), `brief_W.md` (the writers' shared rules).
+- The open remainder at archiving: live in `notes/reviewResponse_open.md` until W16 closes.
+
 ## Session logs
 
 `sessionLogs/RESEARCH_LOG_<log>.md`, one per live log, oldest first: verbatim through 2026-09-11, then a heading
@@ -313,6 +331,10 @@ Retired scripts, moved 2026-10-07; not runnable from here (they import their mod
   design-layer pilot's driver, items M1 to M8), `test_createCopyFromt0.py` (the suite of `ModelUS`'s model
   copies, which nothing has called since the counterfactuals became full-horizon paths and `thetaStakes.py`
   retired).
+- `code/scheduler/`: `gen_jobs.py` and `scheduler.ps1`, the dependency-ordered job runner of C6's 80 reruns
+  (2026-10-24, 10.9 h): `gen_jobs.py` writes `jobs.tsv` (name, S/L for short or long, dependencies, command),
+  `scheduler.ps1 -dir <logdir>` starts eligible jobs up to a solver cap and logs start/ok/fail. Copy both into a
+  fresh `logs/<package>/` and edit the job list; the paths inside point at the deleted `logs/C6runs/`.
 
 ## Results
 

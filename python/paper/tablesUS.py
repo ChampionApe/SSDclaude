@@ -259,6 +259,22 @@ def escCalibrationTable(spec = None):
 COUNTRYROWS = (('UK', 'UK', 'gbr'), ('FR', 'France', 'fra'), ('UKUS', r'UK at U.S.\ income groups', 'ukus'))
 
 
+def _frenchCornerFalls(tol = 1e-6):
+    """ The note's claim, read off escCornerSlope.csv: the 1990 electorate's slope at theta_2020 = 1 is
+    negative for France at every lambda on file, and neither it nor the tax there moves with lambda. """
+    df = D.escCornerSlope()
+    fr = df[df['country'] == 'FR']
+    fr = fr[fr['vote'] == fr['vote'].min()]
+    if len(fr) < 2 or not np.isclose(fr['λ'], 0).any():
+        raise D.MissingInput('escCornerSlope.csv (France at lambda = 0 and at least one other)')
+    if not (fr['slope'] < 0).all():
+        raise ValueError("US_ESC_Country: France's slope at the corner is not negative: {}".format(fr['slope'].tolist()))
+    for col in ('slope', 'τ1Corner'):
+        v = fr[col].values.astype(float)
+        if np.ptp(v) > tol*max(1.0, np.abs(v).max()):
+            raise ValueError("US_ESC_Country: France's {} at the corner moves with lambda: {}".format(col, v.tolist()))
+
+
 def escCountryTable(spec = None):
     r""" Table \ref{table:US_ESC:country}: the cross-country test of the cost specification. One row per
     economy -- the UK, France, and the UK regrouped at US income percentiles -- with its observed design,
@@ -290,7 +306,10 @@ def escCountryTable(spec = None):
               r'$\theta$ \textbf{chosen, U.S.} $' + sym + '$', r'\textbf{Own} $' + sym + '$'] \
              + ([r'$\tilde V$'] if hasV else [])
     if spec == 'size':
-        gap = r' No finite $\lambda$ makes France re-elect its observed design: it is the corner $\theta = 1$.'
+        _frenchCornerFalls()
+        gap =(r' No $\lambda$ makes France re-elect its observed design, the Bismarckian corner $\theta = 1$: under '
+               r'log preferences neither the slope of the design objective at that corner nor the tax rate there '
+               r'depends on $\lambda$, and France\textquotesingle s slope there is negative.')
     else:
         gap = (r' No finite $p$ makes France re-elect its observed design, the corner $\theta = 1$.')
     note = (r'\textit{Note:} Each economy is its own calibration at $\rho = 1$ with U.S.\ $' + sym + ' = '
@@ -298,7 +317,7 @@ def escCountryTable(spec = None):
             + r' is the design in 2020 on the economy\textquotesingle s own freely simulated path under the '
             r'U.S.\ parameter, to be read against the observed one; ' + LQ + 'own' + RQ + r' is the value at '
             r'which that path re-elects the observed design.' + gap + C.variantNote(C.US['commonX']))
-    return _xwrap('US_ESC_Country', 'results/esc/escCountry.csv',
+    return _xwrap('US_ESC_Country', 'results/esc/escCountry.csv, results/esc/escCornerSlope.csv',
                   r'The UK and France under the U.S.\ cost of redistribution',
                   'table:US_ESC:country', 'l' + 'Y'*(len(header) - 1), header, '\n'.join(rows), note,
                   width = r'\textwidth')

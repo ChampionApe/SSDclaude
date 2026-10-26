@@ -99,6 +99,13 @@ EXHIBITS = {
         caption = r'The counterfactuals of the U.S.\ across the intertemporal and the Frisch elasticity',
         note = r'As figure \ref{oa:OECD_Hosts}, for the U.S. Across $\xi$ the U.S.\ and France are recalibrated at '
                r'each value under log preferences ($\rho = 1$), the targets unchanged.'),
+    'US_TaxState': E('figure', 'US_TaxState',
+        caption = r'The U.S.\ tax rate in 2020 against the savings the economy inherits',
+        note = r'The tax policy of 2020, the tax rate the 2020 electorate chooses at each level of the savings '
+               r'inherited from the previous period, given the policies of the later electorates; the savings as a '
+               r'multiple of their value on the equilibrium path, the vertical line. The design is given and each '
+               r'$\rho$ is at its own calibration, so every line passes through the calibrated tax rate there.'),
+    'US_Strategic': E('table', 'US_Strategic'),
     # B4
     'OECD_LeisureCalibration': E('table', 'OECD_LeisureCalibration'),
     'OECD_LeisureGroups': E('table', 'OECD_LeisureGroups'),
@@ -108,6 +115,14 @@ EXHIBITS = {
                r'the vector $X_i$, each the change against the baseline of the same calibration and $\rho$. The '
                r'design, ageing and voting rows are the same under the two. All French characteristics imposes France\textquotesingle s '
                r'income distribution, leisure preferences and voting patterns at once.'),
+    # B5
+    'OECD_Medicare': E('table', 'OECD_Medicare'),
+    'OECD_MedicareRows': E('explorer', 'OECD_Counterfactuals',
+        caption = r'The counterfactuals of the U.S.\ with pensions alone and with Medicare',
+        note = r'As figure \ref{oa:OECD_Hosts}, for the U.S.\ under the paper\textquotesingle s calibration, '
+               r'pensions alone, and under the calibration with Medicare among the transfers to the old (table '
+               r'\ref{table:OA:OECD_Medicare}). Each bar is the change against the baseline of the same calibration '
+               r'and $\rho$; France\textquotesingle s households are cut at the U.S.\ income percentiles in both.'),
     # C1
     'ESC_PathsCountries': E('explorer', 'ESC_Paths',
         caption = r'The baseline path with the design chosen, by country',
@@ -143,6 +158,27 @@ EXHIBITS = {
                r'the design pinned is not stored.'),
     # C5
     'ESC_Timing': E('table', 'ESC_Timing'),
+    # C6
+    'OECD26_Layer1_29': E('figure', 'OECD26_Layer1_29',
+        caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, every country of '
+                  r'the figure',
+        note = r'Layer 1 of the cross-country test of section \ref{sec:esc} on every country of figure '
+               r'\ref{fig:US:OECDdata}, Korea, Mexico and Turkey included: each country at the U.S.\ $\beta$, '
+               r'$\omega$ and $\lambda$, with its own workers per retiree, income distribution and observed design. '
+               r'The model\textquotesingle s index is $1/(2-\theta)$ of the design in force in 2020 on the freely '
+               r'simulated path, its spending $\tau(1-\alpha)$ at the observed design. The lines are least-squares '
+               r'fits (table \ref{table:OECD26:slopes_29}).'),
+    'OECD26_Slopes_29': E('table', 'OECD26_Slopes_29'),
+    'OECD26_Omega_29': E('table', 'OECD26_Omega_29'),
+    'OECD26_Layer1_cses': E('figure', 'OECD26_Layer1_cses',
+        caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, each country at '
+                  r'its own turnout',
+        note = r'As figure \ref{oa:OECD26_Layer1_29}, on the paper\textquotesingle s sample, with each '
+               r'country\textquotesingle s propensities to vote by income group from the CSES in place of the U.S.\ '
+               r'CPS ones; the U.S.\ anchor is recalibrated at its own CSES turnout. Luxembourg, with no CSES '
+               r'election, is left out of data and model alike (table \ref{table:OECD26:slopes_cses}).'),
+    'OECD26_Slopes_cses': E('table', 'OECD26_Slopes_cses'),
+    'OECD26_Omega_cses': E('table', 'OECD26_Omega_cses'),
     # D1
     'OECDdata': E('figure', 'OECDdata'),
     'OECD_Countries': E('table', 'OECD_Countries'),
@@ -151,6 +187,8 @@ EXHIBITS = {
     # D2
     'NUM_Stationary': E('table', 'NUM_Stationary'),
     'NUM_Selection': E('table', 'NUM_Selection'),
+    'NUM_SelectionFiles': E('table', 'NUM_SelectionFiles'),
+    'NUM_HorizonPaths': E('table', 'NUM_HorizonPaths'),
 }
 
 # Keys of the site before 2026-10-09, which drafts of the paper cite: each is defined as an alias of its new page.
@@ -294,7 +332,7 @@ class Provenance:
         src = read(os.path.join(HERE, 'build.py'))
         for m in re.finditer(r"_variants\(\s*'([^']+)',\s*([\w.]+)", src):
             self.builder[m.group(1)] = m.group(2)
-        for m in re.finditer(r"'([^']+)'\s*:\s*\(\s*'(?:table|figure|data)'\s*,\s*([\w.]+)", src):
+        for m in re.finditer(r"'([^']+)'\s*:\s*\(\s*'(?:table|figure|data)'\s*,\s*(?:partial\(\s*)?([\w.]+)", src):
             self.builder.setdefault(m.group(1), m.group(2))
         self.commit = git('rev-parse', '--short', 'HEAD') or 'unknown'
         self.dirty = bool(git('status', '--porcelain', '--', 'results', 'python/paper'))

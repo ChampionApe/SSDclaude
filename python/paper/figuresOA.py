@@ -158,6 +158,42 @@ def oecdRhoGrid(commonX = None):
 
 
 # ---------------------------------------------------------------------------------------------------
+# The 2020 tax against inherited savings
+# ---------------------------------------------------------------------------------------------------
+def usTaxState():
+    r""" US_TaxState: the U.S. tax policy of 2020 against the savings the 2020 economy inherits, as a multiple of
+    their equilibrium value, one line per rho of the paper (datasets.taxPolicyState; design given, each rho at
+    its own calibration). The equilibrium point, where every line passes through the calibrated tax, is the
+    vertical rule. Colours as the online appendix's rho series. """
+    name = 'US_TaxState'
+    df = D.taxPolicyState()
+    year0 = C.usCalendar()['year0']
+    colours = {0.5: SERIES[0], 1.0: SERIES[1], 2.0: INK['secondary']}
+    fig, ax = plt.subplots(1, 1, figsize = (WIDTH*0.62, 2.5), constrained_layout = True)
+    _style(ax, '', 'Tax rate in {}, percent'.format(year0),
+           'Savings inherited in {}, relative to the equilibrium path'.format(year0))
+    ax.axvline(1., color = INK['secondary'], linewidth = 0.6, linestyle = (0, (2, 2)), zorder = 1)
+    marks, handles, labels = [], [], []
+    for k, ρ in enumerate(sorted(df['ρ'].unique())):
+        if float(ρ) not in colours:
+            raise ValueError('US_TaxState: no colour for ρ = {}'.format(ρ))
+        sub = df[np.isclose(df['ρ'], ρ) & np.isfinite(df['τ2020'])]
+        xs, ys = sub['s_2019/s*'].values.astype(float), 100*sub['τ2020'].values.astype(float)
+        colour = colours[float(ρ)]
+        ax.plot(xs, ys, color = colour, linewidth = 1.2, zorder = 3)
+        for x, y in zip(xs, ys):
+            gid = markId(name, 'rho' + C.num(ρ, 1), 's' + C.num(x, 2))
+            _point(ax, x, y, gid, colour, MARKERS[k], ms = 3.2)
+            marks.append(_mark(gid, 'inherited savings × ' + C.num(x, 2), 'ρ = ' + C.num(ρ, 1),
+                               'Tax rate in {}'.format(year0), y, C.num(y, 2) + '%'))
+        handles.append(Line2D([], [], color = colour, marker = MARKERS[k], markersize = 3.2, linewidth = 1.2,
+                              markeredgecolor = SURFACE, markeredgewidth = 0.5))
+        labels.append(r'$\rho = ' + C.num(ρ, 1) + '$' + (' (log)' if np.isclose(ρ, 1.0) else ''))
+    _key(handles, labels, ax, loc = 'upper right')
+    return _save(fig, name, marks)
+
+
+# ---------------------------------------------------------------------------------------------------
 # The endogenous design's baseline path
 # ---------------------------------------------------------------------------------------------------
 def escPathPaper():

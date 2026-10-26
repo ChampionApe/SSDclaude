@@ -369,6 +369,21 @@ def usSweep(country, commonX = None):
 # ---------------------------------------------------------------------------------------------------
 # Endogenous system characteristics (results/esc/)
 # ---------------------------------------------------------------------------------------------------
+def escCornerSlope(commonX = None, spec = None):
+    """ python/US/runESC.stageCorner's csv: per economy (FR, US, UK), lambda (0, the U.S. value, 100) and
+    electorate (`vote`, the db['t'] position; `date`), the slope of the leaded design objective at
+    theta_{t+1} = 1 and the anticipated tax there (`τ1Corner`); at the requested variant, spec and phi.
+    Each row is recalibrated at its lambda (omega moves wherever the observed design is below the corner). """
+    commonX = C.US['commonX'] if commonX is None else commonX
+    spec = C.US['esc']['spec'] if spec is None else spec
+    path = os.path.join(C.ESCDIR, 'escCornerSlope.csv')
+    df = pd.read_csv(_need(path))
+    keep = [i for i, rec in enumerate(df.to_dict('records'))
+            if _escVariant(rec, commonX) and rec['spec'] == spec
+            and np.isclose(float(rec['phi']), C.US['esc']['phi'])]
+    return _noDuplicates(df.iloc[keep].copy(), ['country', 'λ', 'vote'], path)
+
+
 def escCountry(commonX = None, spec = None):
     """ python/US/runESC.stageCountry's csv: France, the UK and the UK regrouped at US income percentiles
     ('UKUS') under the ESC cost, at the requested variant, spec (config.US['esc']['spec'] by default) and
@@ -778,6 +793,24 @@ def derivativeScheme():
     'baseline', 'theta0', 'theta1', dates 2020 and 2050. """
     path = os.path.join(C.NUMDIR, 'US_derivativeScheme.csv')
     return _noDuplicates(pd.read_csv(_need(path)), ['ρ', 'scheme', 'scenario', 'date'], path)
+
+
+def taxPolicyState():
+    """ The U.S. 2020 tax policy function against inherited savings (python/US/c5Numbers.py a13): per (rho,
+    `s_2019/s*`), `τ2020` the policy at the savings the 2020 economy inherits, as a multiple of their value on the
+    equilibrium path, and `τ2020Equilibrium` the path's tax; design given, the calibration of each rho, NaN off
+    the policy's state grid. """
+    path = os.path.join(C.NUMDIR, 'C5_taxPolicyState.csv')
+    return _noDuplicates(pd.read_csv(_need(path)), ['ρ', 's_2019/s*'], path).sort_values(['ρ', 's_2019/s*'])
+
+
+def strategicTerm():
+    """ The strategic term of the U.S. 2020 choice (python/US/c5Numbers.py strategic): per rho, `dsdτ` the
+    economic equilibrium's ds_2020/dtau_2020 at the inherited savings of the path, `dτ1ds` the slope of the
+    2050 policy function there, `strategic` their product, and the three as elasticities; under log only the
+    zeros of prop:LOG:PEE (the rest NaN). """
+    path = os.path.join(C.NUMDIR, 'C5_strategicTerm.csv')
+    return _noDuplicates(pd.read_csv(_need(path)), ['ρ'], path).sort_values('ρ')
 
 
 def selectionCsvs():

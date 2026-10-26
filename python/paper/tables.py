@@ -140,7 +140,8 @@ def argentinaUniversal(commonX = None):
             + C.variantNote(commonX, arm = 'ARG'))
     return _wrap('ArgentinaUniversal' + sfx, 'results/shocks/{eeOnly,universal}_match_rho%.4f%s.csv' % (ρ, C.argVariantTag(commonX)),
                  'Pension system reform, year %d' % year + C.variantCaption(commonX, 'ARG'),
-                 'table:Argentina:Universal' + sfx, 'lcccc',
+                 # fixed centred columns, so that the headers wrap within the measure
+                 'table:Argentina:Universal' + sfx, 'l' + r'>{\centering\arraybackslash}p{2.3cm}'*4,
                  [r'\textbf{Scenario}', r'\textbf{Tax rate}', r'\textbf{Savings rate}',
                   r'\textbf{Avg. workweek (hours)}', r'\textbf{Formal benefits}'], rows, note,
                  ['baseline', rowKey('reform', effect = 'ee'), rowKey('reform', effect = 'full')])

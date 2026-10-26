@@ -17,7 +17,7 @@ Inputs per country (`countryInputs`):
           file's Vtilde_usPct.
   θ       eq calibration:thetaSimple of writing/US, θ = 2 - 1/I, with I = grr100_men/grr050_men (figure 1.1's
           index, PaG 2021), clipped to [0, 1] (`thetaFromIndex`; its inverse I = 1/(2 - θ) is exact under the
-          benefit formula and any proportional cost, notes/theory_closedForm.md section 2). Not getθ on the
+          benefit formula and any proportional cost, archive/notes/reviewResponse_2026-10/theory_closedForm.md section 2). Not getθ on the
           group means (eq calibration:theta): ModelOECD.getθ re-derives the same value at every refresh, so no
           updateAuxPars can undo it (crossCuttingFindings #9).
   τ0      figure 1.1's cash pension spending over the labour share, pensionSpending/100/(1 - α).
@@ -33,7 +33,7 @@ ModelOECD calibrates ω alone against τ_{t0} (model.py eq:calibration with R dr
 with θ exogenous at the datum and the cost installed; the cost parameter λ (the 'p' slot) is calibrated by
 ModelESC.calibrateWedge to eq esc:calibration (the design in force in 2020 on the freely simulated path is the
 datum).
-`closedFormTax` is the log tax at θ ≡ 1, notes/theory_closedForm.md eq (1.4): at θ = 1 the cost vanishes with
+`closedFormTax` is the log tax at θ ≡ 1, archive/notes/reviewResponse_2026-10/theory_closedForm.md eq (1.4): at θ = 1 the cost vanishes with
 its τ-derivative, so it holds under any λ and any μ, β -> 0 in the terminal period.
 
 Only the common-X calibration is defined: relative hours are not among the inputs.
@@ -183,7 +183,7 @@ def build(inp, β, ω, λ = None, spec = 'size', phi = 0.5, gs = None, nθ = 41,
 
 
 def closedFormTax(α, β, ξ, ω, ν, terminal = False):
-    """ The log tax at θ_t = 1, notes/theory_closedForm.md eq (1.4); β -> 0 in the terminal period. """
+    """ The log tax at θ_t = 1, archive/notes/reviewResponse_2026-10/theory_closedForm.md eq (1.4); β -> 0 in the terminal period. """
     Ψ = (1 + ξ)*(1 + (0. if terminal else α*β*(1 + ξ)/(1 + α*ξ)))
     return max(0., (ω*(1 - α) - α*ν*Ψ)/(ω*(1 - α)*(1 + ξ) + (1 - α)*ν*Ψ))
 

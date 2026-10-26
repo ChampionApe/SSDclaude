@@ -66,7 +66,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Pension design in 2020",
-   "value": 0.7277568007346166,
+   "value": 0.7277568007346167,
    "text": "0.728",
    "table": null,
    "row": null
@@ -76,7 +76,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.7277526363920341,
+   "value": 0.7277497635780352,
    "text": "0.728",
    "table": null,
    "row": null
@@ -116,7 +116,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.7490445480638807,
+   "value": 0.7490445480636273,
    "text": "0.749",
    "table": null,
    "row": null
@@ -146,7 +146,7 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Pension design in 2020",
-   "value": 0.7277568007346167,
+   "value": 0.7277568007346166,
    "text": "0.728",
    "table": null,
    "row": null
@@ -156,7 +156,7 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.7277568007344709,
+   "value": 0.7277568007346057,
    "text": "0.728",
    "table": null,
    "row": null
@@ -226,7 +226,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Pension design in 2020",
-   "value": 0.7277568007346163,
+   "value": 0.7277568007346165,
    "text": "0.728",
    "table": null,
    "row": null
@@ -236,7 +236,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Pension design in 2020",
-   "value": 0.7277532943140747,
+   "value": 0.7277533223070054,
    "text": "0.728",
    "table": null,
    "row": null
@@ -306,7 +306,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": 0.0002906102207503314,
+   "value": 0.00026521526685086005,
    "text": "0.000 p.p.",
    "table": null,
    "row": null
@@ -316,7 +316,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": -6.595042787022054e-05,
+   "value": -0.00014875143155013149,
    "text": "0.000 p.p.",
    "table": null,
    "row": null
@@ -346,7 +346,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": -0.6844284493657802,
+   "value": -0.6844284493657704,
    "text": "−0.7 p.p.",
    "table": null,
    "row": null
@@ -356,7 +356,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": -0.6760561286289504,
+   "value": -0.6760561286290003,
    "text": "−0.7 p.p.",
    "table": null,
    "row": null
@@ -396,7 +396,7 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": -2.9004576518332215e-13,
+   "value": -1.9012569296705806e-13,
    "text": "0.000 p.p.",
    "table": null,
    "row": null
@@ -466,7 +466,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Equilibrium tax rate",
-   "value": 0.00044355870258000474,
+   "value": 0.00042696405114922564,
    "text": "0.000 p.p.",
    "table": null,
    "row": null
@@ -476,7 +476,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Equilibrium tax rate",
-   "value": -5.643347417011446e-05,
+   "value": -5.913349983982519e-05,
    "text": "0.000 p.p.",
    "table": null,
    "row": null
@@ -546,7 +546,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Savings over GDP",
-   "value": -5.863705745012826e-05,
+   "value": -2.935080138793955e-05,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -556,7 +556,7 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Savings over GDP",
-   "value": 2.3600341843010852e-05,
+   "value": 3.0208446526736044e-05,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -596,7 +596,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Savings over GDP",
-   "value": 0.1748351802026682,
+   "value": 0.17483518020269734,
    "text": "+0.2 p.p. of GDP",
    "table": null,
    "row": null
@@ -626,7 +626,7 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Savings over GDP",
-   "value": -7.771561172376096e-15,
+   "value": -1.3600232051658168e-14,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -636,7 +636,7 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Savings over GDP",
-   "value": 2.525757381022231e-13,
+   "value": 2.739475313262574e-13,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -706,7 +706,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Savings over GDP",
-   "value": -0.00019229266298936842,
+   "value": -0.00018279712124175118,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -716,7 +716,7 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Savings over GDP",
-   "value": 0.0001166861180515455,
+   "value": 0.00011414040771762224,
    "text": "0.000 p.p. of GDP",
    "table": null,
    "row": null
@@ -786,8 +786,8 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ pinned",
    "panel": "Average workweek",
-   "value": -4.600204602469098,
-   "text": "−4.6 hours",
+   "value": -4.084092056383781,
+   "text": "−4.1 hours",
    "table": null,
    "row": null
   },
@@ -796,8 +796,8 @@
    "label": "French leisure",
    "series": "ρ = 0.5, θ chosen",
    "panel": "Average workweek",
-   "value": -4.610867838384571,
-   "text": "−4.6 hours",
+   "value": -4.0935635431745325,
+   "text": "−4.1 hours",
    "table": null,
    "row": null
   },
@@ -836,7 +836,7 @@
    "label": "French income distr.",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Average workweek",
-   "value": 0.870539570962876,
+   "value": 0.8705395709629258,
    "text": "+0.9 hours",
    "table": null,
    "row": null
@@ -866,8 +866,8 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ pinned",
    "panel": "Average workweek",
-   "value": -4.378459788005543,
-   "text": "−4.4 hours",
+   "value": -4.060503529891498,
+   "text": "−4.1 hours",
    "table": null,
    "row": null
   },
@@ -876,8 +876,8 @@
    "label": "French leisure",
    "series": "ρ = 1.0, θ chosen",
    "panel": "Average workweek",
-   "value": -4.387257278596458,
-   "text": "−4.4 hours",
+   "value": -4.068662161768579,
+   "text": "−4.1 hours",
    "table": null,
    "row": null
   },
@@ -946,8 +946,8 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ pinned",
    "panel": "Average workweek",
-   "value": -4.20492067885597,
-   "text": "−4.2 hours",
+   "value": -4.0462713219173665,
+   "text": "−4.0 hours",
    "table": null,
    "row": null
   },
@@ -956,8 +956,8 @@
    "label": "French leisure",
    "series": "ρ = 2.0, θ chosen",
    "panel": "Average workweek",
-   "value": -4.211797645497278,
-   "text": "−4.2 hours",
+   "value": -4.052888061053558,
+   "text": "−4.1 hours",
    "table": null,
    "row": null
   }

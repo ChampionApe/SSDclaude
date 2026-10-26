@@ -92,4 +92,15 @@ into `writing/Paper` for appendix D, not input yet. `NUM_Selection` leaves `ONLI
 and gains the columns no selection (−1) and not recorded (blank) and a note naming every counted exception from the
 data (`datasets.countExceptions`; today the one design-layer fallback). New readers `datasets.horizon`, `residuals`,
 `derivativeScheme`; `selectionCsvs` adds the horizon csvs. Inputs from `python/{US,InformalSavings}/runHorizon.py`
-(not wired; `REPLICATION.md` §3). Numbers and the open U.S. τ-derivative issue: `notes/ledger_C4.md`.
+(not wired; `REPLICATION.md` §3). Numbers and the open U.S. τ-derivative issue: `archive/notes/reviewResponse_2026-10/ledger_C4.md`.
+
+## 2026-10-25 — W9 of the review response: the online appendix pages, appendix D's layouts
+New site pages B5 (`oecd-medicare`: `OECD_Medicare`, host `USMedicare` in `OECD_Counterfactuals`) and C6 (`esc-oecd26`:
+the cross-country test on all 29 and at CSES turnout, six `OECD26_*_29`/`_cses` outputs), sections `oecd-state` (A13,
+`US_TaxState` from `C5_taxPolicyState.csv`) and `num-horizon` (`NUM_HorizonPaths`); 50 outputs, 40 exhibits. The paper's
+`OECD26_*` now read the design in force in 2020 (checkpoint 2; `tablesOECD26.PAPER`). Appendix D's tables fit the
+page: `NUM_Selection` groups the files by solve (file by file in `NUM_SelectionFiles`), `NUM_Horizon` short headers;
+`ArgentinaUniversal`, `OECD26_Omega` within the measure; `NUM_Residuals`' note describes C6's least-squares cubic in
+ln(1−τ) (`config.US['gridSettings']['gradKnotSpacing']`); `US_ESC_Country`'s France note gives the log-corner reason.
+Eight stale OA sentences fixed against the datasets (ω ranking, θ = 1 corner, France vs U.S. path, cost on the design a
+third, timing). Not done: A13's myopic/Markov split (needs a model function). Checks: test_onlineAppendix 10/10, test_oecd26 5/5.

@@ -4,19 +4,19 @@ UK,0.5,acute,mild ageing,2.3749326075555413,2.3749326075555413,,0.11194285714320
 UK,0.5,acute,design (θ 1→0),6.175817188766299,6.175817188766299,1.0,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
 UK,0.5,acute,θ = 0,2.9496012024539886,2.9496012024539886,,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
 UK,0.5,acute,θ = 1,-3.22621598631231,3.22621598631231,,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
-UK,0.5,acute,income distribution,0.06697252655062935,0.06697252655062935,4.0,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
+UK,0.5,acute,income distribution,0.0669725265204299,0.0669725265204299,4.0,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
 UK,0.5,acute,voting,0.22599127249998963,0.22599127249998963,3.0,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
-UK,0.5,acute,leisure,-0.012230612364440285,0.012230612364440285,5.0,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
-UK,0.5,acute,all French,0.2649392245006599,0.2649392245006599,,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
+UK,0.5,acute,leisure,-0.011618589369639942,0.011618589369639942,5.0,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
+UK,0.5,acute,all French,0.2625829063330892,0.2625829063330892,,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
 UK,0.5,mild,acute ageing,4.9830716426437185,4.9830716426437185,,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
 UK,0.5,mild,mild ageing,2.3749326075555413,2.3749326075555413,2.0,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
 UK,0.5,mild,design (θ 1→0),6.175817188766299,6.175817188766299,1.0,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
 UK,0.5,mild,θ = 0,2.9496012024539886,2.9496012024539886,,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
 UK,0.5,mild,θ = 1,-3.22621598631231,3.22621598631231,,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
-UK,0.5,mild,income distribution,0.06697252655062935,0.06697252655062935,4.0,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
+UK,0.5,mild,income distribution,0.0669725265204299,0.0669725265204299,4.0,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
 UK,0.5,mild,voting,0.22599127249998963,0.22599127249998963,3.0,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
-UK,0.5,mild,leisure,-0.012230612364440285,0.012230612364440285,5.0,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
-UK,0.5,mild,all French,0.2649392245006599,0.2649392245006599,,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
+UK,0.5,mild,leisure,-0.011618589369639942,0.011618589369639942,5.0,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
+UK,0.5,mild,all French,0.2625829063330892,0.2625829063330892,,0.1119428571432024,results/shocks/UK_shocksCommonX.csv
 UK,1.0,acute,acute ageing,4.7288952845903784,4.7288952845903784,1.0,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
 UK,1.0,acute,mild ageing,2.2615518880468284,2.2615518880468284,,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
 UK,1.0,acute,design (θ 1→0),4.554201121099709,4.554201121099709,2.0,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
@@ -24,8 +24,8 @@ UK,1.0,acute,θ = 0,2.2609459131781584,2.2609459131781584,,0.1119428571428572,re
 UK,1.0,acute,θ = 1,-2.2932552079215505,2.2932552079215505,,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
 UK,1.0,acute,income distribution,0.29479013382451014,0.29479013382451014,4.0,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
 UK,1.0,acute,voting,0.33230560812499976,0.33230560812499976,3.0,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
-UK,1.0,acute,leisure,-1.1102230246251565e-14,1.1102230246251565e-14,5.0,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
-UK,1.0,acute,all French,0.607597546418559,0.607597546418559,,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
+UK,1.0,acute,leisure,9.71445146547012e-15,9.71445146547012e-15,5.0,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
+UK,1.0,acute,all French,0.6075975464185492,0.6075975464185492,,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
 UK,1.0,mild,acute ageing,4.7288952845903784,4.7288952845903784,,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
 UK,1.0,mild,mild ageing,2.2615518880468284,2.2615518880468284,2.0,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
 UK,1.0,mild,design (θ 1→0),4.554201121099709,4.554201121099709,1.0,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
@@ -33,44 +33,44 @@ UK,1.0,mild,θ = 0,2.2609459131781584,2.2609459131781584,,0.1119428571428572,res
 UK,1.0,mild,θ = 1,-2.2932552079215505,2.2932552079215505,,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
 UK,1.0,mild,income distribution,0.29479013382451014,0.29479013382451014,4.0,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
 UK,1.0,mild,voting,0.33230560812499976,0.33230560812499976,3.0,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
-UK,1.0,mild,leisure,-1.1102230246251565e-14,1.1102230246251565e-14,5.0,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
-UK,1.0,mild,all French,0.607597546418559,0.607597546418559,,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
+UK,1.0,mild,leisure,9.71445146547012e-15,9.71445146547012e-15,5.0,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
+UK,1.0,mild,all French,0.6075975464185492,0.6075975464185492,,0.1119428571428572,results/shocks/UK_shocksCommonX.csv
 UK,2.0,acute,acute ageing,4.21703486296225,4.21703486296225,1.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
 UK,2.0,acute,mild ageing,2.0226418114438385,2.0226418114438385,,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
 UK,2.0,acute,design (θ 1→0),2.776610426973569,2.776610426973569,2.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
 UK,2.0,acute,θ = 0,1.342096091895799,1.342096091895799,,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
 UK,2.0,acute,θ = 1,-1.4345143350777703,1.4345143350777703,,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
-UK,2.0,acute,income distribution,0.3641686592264895,0.3641686592264895,4.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
+UK,2.0,acute,income distribution,0.3641686592111795,0.3641686592111795,4.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
 UK,2.0,acute,voting,0.5233979298095603,0.5233979298095603,3.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
-UK,2.0,acute,leisure,-5.8547923000029645e-05,5.8547923000029645e-05,5.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
-UK,2.0,acute,all French,0.8756658910353599,0.8756658910353599,,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
+UK,2.0,acute,leisure,-6.84105715104133e-05,6.84105715104133e-05,5.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
+UK,2.0,acute,all French,0.8756932428968994,0.8756932428968994,,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
 UK,2.0,mild,acute ageing,4.21703486296225,4.21703486296225,,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
 UK,2.0,mild,mild ageing,2.0226418114438385,2.0226418114438385,2.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
 UK,2.0,mild,design (θ 1→0),2.776610426973569,2.776610426973569,1.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
 UK,2.0,mild,θ = 0,1.342096091895799,1.342096091895799,,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
 UK,2.0,mild,θ = 1,-1.4345143350777703,1.4345143350777703,,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
-UK,2.0,mild,income distribution,0.3641686592264895,0.3641686592264895,4.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
+UK,2.0,mild,income distribution,0.3641686592111795,0.3641686592111795,4.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
 UK,2.0,mild,voting,0.5233979298095603,0.5233979298095603,3.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
-UK,2.0,mild,leisure,-5.8547923000029645e-05,5.8547923000029645e-05,5.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
-UK,2.0,mild,all French,0.8756658910353599,0.8756658910353599,,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
+UK,2.0,mild,leisure,-6.84105715104133e-05,6.84105715104133e-05,5.0,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
+UK,2.0,mild,all French,0.8756932428968994,0.8756932428968994,,0.1119428571430041,results/shocks/UK_shocksCommonX.csv
 UKUS,0.5,acute,acute ageing,5.0837065431108,5.0837065431108,1.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
 UKUS,0.5,acute,mild ageing,2.4378348528500906,2.4378348528500906,,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
 UKUS,0.5,acute,design (θ 1→0),2.20907452211625,2.20907452211625,2.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
 UKUS,0.5,acute,θ = 0,1.1406355557772794,1.1406355557772794,,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
 UKUS,0.5,acute,θ = 1,-1.0684389663389706,1.0684389663389706,,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
-UKUS,0.5,acute,income distribution,2.0090256531099806,2.0090256531099806,3.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
+UKUS,0.5,acute,income distribution,2.0090256531078294,2.0090256531078294,3.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
 UKUS,0.5,acute,voting,0.03493228856703001,0.03493228856703001,4.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
-UKUS,0.5,acute,leisure,0.0004412349795090975,0.0004412349795090975,5.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
-UKUS,0.5,acute,all French,2.038256211034528,2.038256211034528,,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
+UKUS,0.5,acute,leisure,0.002887602176789017,0.002887602176789017,5.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
+UKUS,0.5,acute,all French,2.0348489556174605,2.0348489556174605,,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
 UKUS,0.5,mild,acute ageing,5.0837065431108,5.0837065431108,,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
 UKUS,0.5,mild,mild ageing,2.4378348528500906,2.4378348528500906,1.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
 UKUS,0.5,mild,design (θ 1→0),2.20907452211625,2.20907452211625,2.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
 UKUS,0.5,mild,θ = 0,1.1406355557772794,1.1406355557772794,,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
 UKUS,0.5,mild,θ = 1,-1.0684389663389706,1.0684389663389706,,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
-UKUS,0.5,mild,income distribution,2.0090256531099806,2.0090256531099806,3.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
+UKUS,0.5,mild,income distribution,2.0090256531078294,2.0090256531078294,3.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
 UKUS,0.5,mild,voting,0.03493228856703001,0.03493228856703001,4.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
-UKUS,0.5,mild,leisure,0.0004412349795090975,0.0004412349795090975,5.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
-UKUS,0.5,mild,all French,2.038256211034528,2.038256211034528,,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
+UKUS,0.5,mild,leisure,0.002887602176789017,0.002887602176789017,5.0,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
+UKUS,0.5,mild,all French,2.0348489556174605,2.0348489556174605,,0.1119428571426273,results/shocks/UKUS_shocksCommonX.csv
 UKUS,1.0,acute,acute ageing,4.770283031239719,4.770283031239719,1.0,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
 UKUS,1.0,acute,mild ageing,2.2832259820914107,2.2832259820914107,,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
 UKUS,1.0,acute,design (θ 1→0),1.4611567828945502,1.4611567828945502,3.0,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
@@ -79,7 +79,7 @@ UKUS,1.0,acute,θ = 1,-0.7194893641955497,0.7194893641955497,,0.1119428571428571
 UKUS,1.0,acute,income distribution,1.827195027407222,1.827195027407222,2.0,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
 UKUS,1.0,acute,voting,0.06698740806597991,0.06698740806597991,4.0,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
 UKUS,1.0,acute,leisure,0.0,0.0,5.0,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
-UKUS,1.0,acute,all French,1.9421608799546297,1.9421608799546297,,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
+UKUS,1.0,acute,all French,1.9421608799546215,1.9421608799546215,,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
 UKUS,1.0,mild,acute ageing,4.770283031239719,4.770283031239719,,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
 UKUS,1.0,mild,mild ageing,2.2832259820914107,2.2832259820914107,1.0,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
 UKUS,1.0,mild,design (θ 1→0),1.4611567828945502,1.4611567828945502,3.0,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
@@ -88,259 +88,259 @@ UKUS,1.0,mild,θ = 1,-0.7194893641955497,0.7194893641955497,,0.1119428571428571,
 UKUS,1.0,mild,income distribution,1.827195027407222,1.827195027407222,2.0,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
 UKUS,1.0,mild,voting,0.06698740806597991,0.06698740806597991,4.0,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
 UKUS,1.0,mild,leisure,0.0,0.0,5.0,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
-UKUS,1.0,mild,all French,1.9421608799546297,1.9421608799546297,,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
+UKUS,1.0,mild,all French,1.9421608799546215,1.9421608799546215,,0.1119428571428571,results/shocks/UKUS_shocksCommonX.csv
 UKUS,2.0,acute,acute ageing,4.22909277951911,4.22909277951911,1.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
 UKUS,2.0,acute,mild ageing,2.028701739261178,2.028701739261178,,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
 UKUS,2.0,acute,design (θ 1→0),0.44230183394926015,0.44230183394926015,3.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
 UKUS,2.0,acute,θ = 0,0.19079691089795986,0.19079691089795986,,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
 UKUS,2.0,acute,θ = 1,-0.2515049230513003,0.2515049230513003,,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
-UKUS,2.0,acute,income distribution,1.5335910886252981,1.5335910886252981,2.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
+UKUS,2.0,acute,income distribution,1.533591088618709,1.533591088618709,2.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
 UKUS,2.0,acute,voting,0.12825140522828016,0.12825140522828016,4.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
-UKUS,2.0,acute,leisure,-3.1642559820965754e-05,3.1642559820965754e-05,5.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
-UKUS,2.0,acute,all French,1.7630618113197007,1.7630618113197007,,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
+UKUS,2.0,acute,leisure,-2.9261970320437758e-05,2.9261970320437758e-05,5.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
+UKUS,2.0,acute,all French,1.76304040198942,1.76304040198942,,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
 UKUS,2.0,mild,acute ageing,4.22909277951911,4.22909277951911,,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
 UKUS,2.0,mild,mild ageing,2.028701739261178,2.028701739261178,1.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
 UKUS,2.0,mild,design (θ 1→0),0.44230183394926015,0.44230183394926015,3.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
 UKUS,2.0,mild,θ = 0,0.19079691089795986,0.19079691089795986,,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
 UKUS,2.0,mild,θ = 1,-0.2515049230513003,0.2515049230513003,,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
-UKUS,2.0,mild,income distribution,1.5335910886252981,1.5335910886252981,2.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
+UKUS,2.0,mild,income distribution,1.533591088618709,1.533591088618709,2.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
 UKUS,2.0,mild,voting,0.12825140522828016,0.12825140522828016,4.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
-UKUS,2.0,mild,leisure,-3.1642559820965754e-05,3.1642559820965754e-05,5.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
-UKUS,2.0,mild,all French,1.7630618113197007,1.7630618113197007,,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
+UKUS,2.0,mild,leisure,-2.9261970320437758e-05,2.9261970320437758e-05,5.0,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
+UKUS,2.0,mild,all French,1.76304040198942,1.76304040198942,,0.1119428571428047,results/shocks/UKUS_shocksCommonX.csv
 US,0.5,acute,acute ageing,9.283500852211068,9.283500852211068,1.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
 US,0.5,acute,mild ageing,4.251721595075219,4.251721595075219,,0.1052285714285045,results/shocks/US_shocksCommonX.csv
 US,0.5,acute,design (θ 1→0),9.12688568727501,9.12688568727501,2.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
 US,0.5,acute,θ = 0,5.857543029514869,5.857543029514869,,0.1052285714285045,results/shocks/US_shocksCommonX.csv
 US,0.5,acute,θ = 1,-3.269342657760141,3.269342657760141,,0.1052285714285045,results/shocks/US_shocksCommonX.csv
-US,0.5,acute,income distribution,-1.5756061915235307,1.5756061915235307,3.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
+US,0.5,acute,income distribution,-1.57560619153609,1.57560619153609,3.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
 US,0.5,acute,voting,0.33605326335406915,0.33605326335406915,4.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
-US,0.5,acute,leisure,-0.0010097991809399076,0.0010097991809399076,5.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
-US,0.5,acute,all French,-1.2925671598314203,1.2925671598314203,,0.1052285714285045,results/shocks/US_shocksCommonX.csv
+US,0.5,acute,leisure,-0.0009176172308208996,0.0009176172308208996,5.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
+US,0.5,acute,all French,-1.29281439505263,1.29281439505263,,0.1052285714285045,results/shocks/US_shocksCommonX.csv
 US,0.5,mild,acute ageing,9.283500852211068,9.283500852211068,,0.1052285714285045,results/shocks/US_shocksCommonX.csv
 US,0.5,mild,mild ageing,4.251721595075219,4.251721595075219,2.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
 US,0.5,mild,design (θ 1→0),9.12688568727501,9.12688568727501,1.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
 US,0.5,mild,θ = 0,5.857543029514869,5.857543029514869,,0.1052285714285045,results/shocks/US_shocksCommonX.csv
 US,0.5,mild,θ = 1,-3.269342657760141,3.269342657760141,,0.1052285714285045,results/shocks/US_shocksCommonX.csv
-US,0.5,mild,income distribution,-1.5756061915235307,1.5756061915235307,3.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
+US,0.5,mild,income distribution,-1.57560619153609,1.57560619153609,3.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
 US,0.5,mild,voting,0.33605326335406915,0.33605326335406915,4.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
-US,0.5,mild,leisure,-0.0010097991809399076,0.0010097991809399076,5.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
-US,0.5,mild,all French,-1.2925671598314203,1.2925671598314203,,0.1052285714285045,results/shocks/US_shocksCommonX.csv
+US,0.5,mild,leisure,-0.0009176172308208996,0.0009176172308208996,5.0,0.1052285714285045,results/shocks/US_shocksCommonX.csv
+US,0.5,mild,all French,-1.29281439505263,1.29281439505263,,0.1052285714285045,results/shocks/US_shocksCommonX.csv
 US,0.6,acute,acute ageing,9.17530428261966,9.17530428261966,1.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.6,acute,mild ageing,4.196519548620009,4.196519548620009,,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.6,acute,design (θ 1→0),8.67411596201493,8.67411596201493,2.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.6,acute,θ = 0,5.61441786438589,5.61441786438589,,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.6,acute,θ = 1,-3.0596980976290404,3.0596980976290404,,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.6,acute,income distribution,-1.5306019778874205,1.5306019778874205,3.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.6,acute,income distribution,-1.5306019778333706,1.5306019778333706,3.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.6,acute,voting,0.4645824356147091,0.4645824356147091,4.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.6,acute,leisure,-3.474626064092767e-05,3.474626064092767e-05,5.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.6,acute,all French,-1.173438479226721,1.173438479226721,,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.6,acute,leisure,2.4474703069765624e-05,2.4474703069765624e-05,5.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.6,acute,all French,-1.1734997115246004,1.1734997115246004,,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.6,mild,acute ageing,9.17530428261966,9.17530428261966,,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.6,mild,mild ageing,4.196519548620009,4.196519548620009,2.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.6,mild,design (θ 1→0),8.67411596201493,8.67411596201493,1.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.6,mild,θ = 0,5.61441786438589,5.61441786438589,,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.6,mild,θ = 1,-3.0596980976290404,3.0596980976290404,,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.6,mild,income distribution,-1.5306019778874205,1.5306019778874205,3.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.6,mild,income distribution,-1.5306019778333706,1.5306019778333706,3.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.6,mild,voting,0.4645824356147091,0.4645824356147091,4.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.6,mild,leisure,-3.474626064092767e-05,3.474626064092767e-05,5.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.6,mild,all French,-1.173438479226721,1.173438479226721,,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.6,mild,leisure,2.4474703069765624e-05,2.4474703069765624e-05,5.0,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.6,mild,all French,-1.1734997115246004,1.1734997115246004,,0.1052285714285705,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.7,acute,acute ageing,9.01725116585164,9.01725116585164,1.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.7,acute,mild ageing,4.142832467433621,4.142832467433621,,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.7,acute,design (θ 1→0),8.17620739721308,8.17620739721308,2.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.7,acute,θ = 0,5.32082211527867,5.32082211527867,,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.7,acute,θ = 1,-2.8553852819344097,2.8553852819344097,,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.7,acute,income distribution,-1.4914349942976302,1.4914349942976302,3.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.7,acute,income distribution,-1.4914349942897198,1.4914349942897198,3.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.7,acute,voting,0.5956934934529299,0.5956934934529299,4.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.7,acute,leisure,-0.00016992649524982806,0.00016992649524982806,5.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.7,acute,all French,-1.0319882649594394,1.0319882649594394,,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.7,acute,leisure,-0.00016071952654017618,0.00016071952654017618,5.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.7,acute,all French,-1.0320071867219602,1.0320071867219602,,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.7,mild,acute ageing,9.01725116585164,9.01725116585164,,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.7,mild,mild ageing,4.142832467433621,4.142832467433621,2.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.7,mild,design (θ 1→0),8.17620739721308,8.17620739721308,1.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.7,mild,θ = 0,5.32082211527867,5.32082211527867,,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.7,mild,θ = 1,-2.8553852819344097,2.8553852819344097,,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.7,mild,income distribution,-1.4914349942976302,1.4914349942976302,3.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.7,mild,income distribution,-1.4914349942897198,1.4914349942897198,3.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.7,mild,voting,0.5956934934529299,0.5956934934529299,4.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.7,mild,leisure,-0.00016992649524982806,0.00016992649524982806,5.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.7,mild,all French,-1.0319882649594394,1.0319882649594394,,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.7,mild,leisure,-0.00016071952654017618,0.00016071952654017618,5.0,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.7,mild,all French,-1.0320071867219602,1.0320071867219602,,0.1052285714280371,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.8,acute,acute ageing,8.894814648996599,8.894814648996599,1.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.8,acute,mild ageing,4.09292806488861,4.09292806488861,,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.8,acute,design (θ 1→0),7.660387237140311,7.660387237140311,2.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.8,acute,θ = 0,5.006970348243761,5.006970348243761,,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.8,acute,θ = 1,-2.6534168888965497,2.6534168888965497,,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.8,acute,income distribution,-1.4211540380028698,1.4211540380028698,3.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.8,acute,income distribution,-1.4211540380057606,1.4211540380057606,3.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.8,acute,voting,0.7174109522107702,0.7174109522107702,4.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.8,acute,leisure,-1.698601714977821e-05,1.698601714977821e-05,5.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.8,acute,all French,-0.8914185678263103,0.8914185678263103,,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.8,acute,leisure,9.559649904039569e-05,9.559649904039569e-05,5.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.8,acute,all French,-0.8914273333334694,0.8914273333334694,,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.8,mild,acute ageing,8.894814648996599,8.894814648996599,,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.8,mild,mild ageing,4.09292806488861,4.09292806488861,2.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.8,mild,design (θ 1→0),7.660387237140311,7.660387237140311,1.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.8,mild,θ = 0,5.006970348243761,5.006970348243761,,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.8,mild,θ = 1,-2.6534168888965497,2.6534168888965497,,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.8,mild,income distribution,-1.4211540380028698,1.4211540380028698,3.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.8,mild,income distribution,-1.4211540380057606,1.4211540380057606,3.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.8,mild,voting,0.7174109522107702,0.7174109522107702,4.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.8,mild,leisure,-1.698601714977821e-05,1.698601714977821e-05,5.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.8,mild,all French,-0.8914185678263103,0.8914185678263103,,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.8,mild,leisure,9.559649904039569e-05,9.559649904039569e-05,5.0,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.8,mild,all French,-0.8914273333334694,0.8914273333334694,,0.1052285714279248,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.9,acute,acute ageing,8.77146263858958,8.77146263858958,1.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.9,acute,mild ageing,4.041061941104831,4.041061941104831,,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.9,acute,design (θ 1→0),7.132225366617749,7.132225366617749,2.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.9,acute,θ = 0,4.672704284742399,4.672704284742399,,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.9,acute,θ = 1,-2.45952108187535,2.45952108187535,,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.9,acute,income distribution,-1.354994473344119,1.354994473344119,3.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.9,acute,income distribution,-1.35499447330769,1.35499447330769,3.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.9,acute,voting,0.82904652766492,0.82904652766492,4.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.9,acute,leisure,6.34547349206982e-05,6.34547349206982e-05,5.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.9,acute,all French,-0.7541312267158997,0.7541312267158997,,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.9,acute,leisure,5.779737464045587e-05,5.779737464045587e-05,5.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.9,acute,all French,-0.7541298341273692,0.7541298341273692,,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.9,mild,acute ageing,8.77146263858958,8.77146263858958,,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.9,mild,mild ageing,4.041061941104831,4.041061941104831,2.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.9,mild,design (θ 1→0),7.132225366617749,7.132225366617749,1.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.9,mild,θ = 0,4.672704284742399,4.672704284742399,,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.9,mild,θ = 1,-2.45952108187535,2.45952108187535,,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.9,mild,income distribution,-1.354994473344119,1.354994473344119,3.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.9,mild,income distribution,-1.35499447330769,1.35499447330769,3.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,0.9,mild,voting,0.82904652766492,0.82904652766492,4.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.9,mild,leisure,6.34547349206982e-05,6.34547349206982e-05,5.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,0.9,mild,all French,-0.7541312267158997,0.7541312267158997,,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.9,mild,leisure,5.779737464045587e-05,5.779737464045587e-05,5.0,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,0.9,mild,all French,-0.7541298341273692,0.7541298341273692,,0.1052285714271633,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.0,acute,acute ageing,8.654600471457059,8.654600471457059,1.0,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.0,acute,mild ageing,3.9923086591717603,3.9923086591717603,,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.0,acute,design (θ 1→0),6.60854264843877,6.60854264843877,2.0,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.0,acute,θ = 0,4.33667341851932,4.33667341851932,,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.0,acute,θ = 1,-2.2718692299194503,2.2718692299194503,,0.1052285714285764,results/shocks/US_shocksCommonX.csv
-US,1.0,acute,income distribution,-1.2900828641425806,1.2900828641425806,3.0,0.1052285714285764,results/shocks/US_shocksCommonX.csv
+US,1.0,acute,income distribution,-1.29008286414259,1.29008286414259,3.0,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.0,acute,voting,0.9335659088451895,0.9335659088451895,4.0,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.0,acute,leisure,0.0,0.0,5.0,0.1052285714285764,results/shocks/US_shocksCommonX.csv
-US,1.0,acute,all French,-0.6223555069330298,0.6223555069330298,,0.1052285714285764,results/shocks/US_shocksCommonX.csv
+US,1.0,acute,all French,-0.6223555069330409,0.6223555069330409,,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.0,mild,acute ageing,8.654600471457059,8.654600471457059,,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.0,mild,mild ageing,3.9923086591717603,3.9923086591717603,2.0,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.0,mild,design (θ 1→0),6.60854264843877,6.60854264843877,1.0,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.0,mild,θ = 0,4.33667341851932,4.33667341851932,,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.0,mild,θ = 1,-2.2718692299194503,2.2718692299194503,,0.1052285714285764,results/shocks/US_shocksCommonX.csv
-US,1.0,mild,income distribution,-1.2900828641425806,1.2900828641425806,3.0,0.1052285714285764,results/shocks/US_shocksCommonX.csv
+US,1.0,mild,income distribution,-1.29008286414259,1.29008286414259,3.0,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.0,mild,voting,0.9335659088451895,0.9335659088451895,4.0,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.0,mild,leisure,0.0,0.0,5.0,0.1052285714285764,results/shocks/US_shocksCommonX.csv
-US,1.0,mild,all French,-0.6223555069330298,0.6223555069330298,,0.1052285714285764,results/shocks/US_shocksCommonX.csv
+US,1.0,mild,all French,-0.6223555069330409,0.6223555069330409,,0.1052285714285764,results/shocks/US_shocksCommonX.csv
 US,1.1,acute,acute ageing,8.538148380335368,8.538148380335368,1.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.1,acute,mild ageing,3.942736760383199,3.942736760383199,,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.1,acute,design (θ 1→0),6.09554702479995,6.09554702479995,2.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.1,acute,θ = 0,3.99889414474001,3.99889414474001,,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.1,acute,θ = 1,-2.09665288005994,2.09665288005994,,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.1,acute,income distribution,-1.2302091878547305,1.2302091878547305,3.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.1,acute,income distribution,-1.2302091878537396,1.2302091878537396,3.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.1,acute,voting,1.03052168600425,1.03052168600425,4.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.1,acute,leisure,0.00020040357285033839,0.00020040357285033839,5.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.1,acute,all French,-0.4988827457313799,0.4988827457313799,,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.1,acute,leisure,0.00019763990724008806,0.00019763990724008806,5.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.1,acute,all French,-0.4988580604418605,0.4988580604418605,,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.1,mild,acute ageing,8.538148380335368,8.538148380335368,,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.1,mild,mild ageing,3.942736760383199,3.942736760383199,2.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.1,mild,design (θ 1→0),6.09554702479995,6.09554702479995,1.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.1,mild,θ = 0,3.99889414474001,3.99889414474001,,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.1,mild,θ = 1,-2.09665288005994,2.09665288005994,,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.1,mild,income distribution,-1.2302091878547305,1.2302091878547305,3.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.1,mild,income distribution,-1.2302091878537396,1.2302091878537396,3.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.1,mild,voting,1.03052168600425,1.03052168600425,4.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.1,mild,leisure,0.00020040357285033839,0.00020040357285033839,5.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.1,mild,all French,-0.4988827457313799,0.4988827457313799,,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.1,mild,leisure,0.00019763990724008806,0.00019763990724008806,5.0,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.1,mild,all French,-0.4988580604418605,0.4988580604418605,,0.1052285714287577,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.2,acute,acute ageing,8.430697034424469,8.430697034424469,1.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.2,acute,mild ageing,3.89802945953899,3.89802945953899,,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.2,acute,design (θ 1→0),5.593740532806539,5.593740532806539,2.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.2,acute,θ = 0,3.6654286938905796,3.6654286938905796,,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.2,acute,θ = 1,-1.9283118389159595,1.9283118389159595,,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.2,acute,income distribution,-1.1723611448668194,1.1723611448668194,3.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.2,acute,income distribution,-1.1723611448768794,1.1723611448768794,3.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.2,acute,voting,1.1232424604464595,1.1232424604464595,4.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.2,acute,leisure,0.00014973723469063893,0.00014973723469063893,5.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.2,acute,all French,-0.37706877812988954,0.37706877812988954,,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.2,acute,leisure,0.00013929713142957212,0.00013929713142957212,5.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.2,acute,all French,-0.3770591731797099,0.3770591731797099,,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.2,mild,acute ageing,8.430697034424469,8.430697034424469,,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.2,mild,mild ageing,3.89802945953899,3.89802945953899,2.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.2,mild,design (θ 1→0),5.593740532806539,5.593740532806539,1.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.2,mild,θ = 0,3.6654286938905796,3.6654286938905796,,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.2,mild,θ = 1,-1.9283118389159595,1.9283118389159595,,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.2,mild,income distribution,-1.1723611448668194,1.1723611448668194,3.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.2,mild,income distribution,-1.1723611448768794,1.1723611448768794,3.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.2,mild,voting,1.1232424604464595,1.1232424604464595,4.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.2,mild,leisure,0.00014973723469063893,0.00014973723469063893,5.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.2,mild,all French,-0.37706877812988954,0.37706877812988954,,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.2,mild,leisure,0.00013929713142957212,0.00013929713142957212,5.0,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.2,mild,all French,-0.3770591731797099,0.3770591731797099,,0.1052285714286966,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.3,acute,acute ageing,8.327825950646298,8.327825950646298,1.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.3,acute,mild ageing,3.8513931018842,3.8513931018842,,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.3,acute,design (θ 1→0),5.106241131207641,5.106241131207641,2.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.3,acute,θ = 0,3.3383846012839906,3.3383846012839906,,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.3,acute,θ = 1,-1.7678565299236504,1.7678565299236504,,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.3,acute,income distribution,-1.1166736687416203,1.1166736687416203,4.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.3,acute,income distribution,-1.1166736687295995,1.1166736687295995,4.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.3,acute,voting,1.2119073116774903,1.2119073116774903,3.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.3,acute,leisure,0.0004419583776199554,0.0004419583776199554,5.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.3,acute,all French,-0.26175686766266026,0.26175686766266026,,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.3,acute,leisure,0.0004155544468698036,0.0004155544468698036,5.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.3,acute,all French,-0.2617853050105298,0.2617853050105298,,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.3,mild,acute ageing,8.327825950646298,8.327825950646298,,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.3,mild,mild ageing,3.8513931018842,3.8513931018842,2.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.3,mild,design (θ 1→0),5.106241131207641,5.106241131207641,1.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.3,mild,θ = 0,3.3383846012839906,3.3383846012839906,,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.3,mild,θ = 1,-1.7678565299236504,1.7678565299236504,,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.3,mild,income distribution,-1.1166736687416203,1.1166736687416203,4.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.3,mild,income distribution,-1.1166736687295995,1.1166736687295995,4.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.3,mild,voting,1.2119073116774903,1.2119073116774903,3.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.3,mild,leisure,0.0004419583776199554,0.0004419583776199554,5.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.3,mild,all French,-0.26175686766266026,0.26175686766266026,,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.3,mild,leisure,0.0004155544468698036,0.0004155544468698036,5.0,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.3,mild,all French,-0.2617853050105298,0.2617853050105298,,0.1052285714318089,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.4,acute,acute ageing,8.22515432897421,8.22515432897421,1.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.4,acute,mild ageing,3.8064514513630296,3.8064514513630296,,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.4,acute,design (θ 1→0),4.63100035647533,4.63100035647533,2.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.4,acute,θ = 0,3.012805974449459,3.012805974449459,,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.4,acute,θ = 1,-1.6181943820258713,1.6181943820258713,,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.4,acute,income distribution,-1.0687670719463804,1.0687670719463804,4.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.4,acute,income distribution,-1.0687670719422713,1.0687670719422713,4.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.4,acute,voting,1.2967595184843388,1.2967595184843388,3.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.4,acute,leisure,-0.0002786532429813193,0.0002786532429813193,5.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.4,acute,all French,-0.15371947309489042,0.15371947309489042,,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.4,acute,leisure,-0.00024644528842099334,0.00024644528842099334,5.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.4,acute,all French,-0.15369285048775078,0.15369285048775078,,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.4,mild,acute ageing,8.22515432897421,8.22515432897421,,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.4,mild,mild ageing,3.8064514513630296,3.8064514513630296,2.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.4,mild,design (θ 1→0),4.63100035647533,4.63100035647533,1.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.4,mild,θ = 0,3.012805974449459,3.012805974449459,,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.4,mild,θ = 1,-1.6181943820258713,1.6181943820258713,,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.4,mild,income distribution,-1.0687670719463804,1.0687670719463804,4.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.4,mild,income distribution,-1.0687670719422713,1.0687670719422713,4.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.4,mild,voting,1.2967595184843388,1.2967595184843388,3.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.4,mild,leisure,-0.0002786532429813193,0.0002786532429813193,5.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.4,mild,all French,-0.15371947309489042,0.15371947309489042,,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.4,mild,leisure,-0.00024644528842099334,0.00024644528842099334,5.0,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.4,mild,all French,-0.15369285048775078,0.15369285048775078,,0.1052285714284995,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.5,acute,acute ageing,8.127744453831628,8.127744453831628,1.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.5,acute,mild ageing,3.76488777267924,3.76488777267924,,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.5,acute,design (θ 1→0),4.16651507407772,4.16651507407772,2.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.5,acute,θ = 0,2.695705655388619,2.695705655388619,,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.5,acute,θ = 1,-1.4708094186891008,1.4708094186891008,,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.5,acute,income distribution,-1.0206337202759403,1.0206337202759403,4.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.5,acute,income distribution,-1.0206337202750797,1.0206337202750797,4.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.5,acute,voting,1.3780704899712004,1.3780704899712004,3.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.5,acute,leisure,-4.280650507948458e-05,4.280650507948458e-05,5.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.5,acute,all French,-0.04607062227156011,0.04607062227156011,,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.5,acute,leisure,-4.4153337590280284e-05,4.4153337590280284e-05,5.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.5,acute,all French,-0.046086675424160395,0.046086675424160395,,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.5,mild,acute ageing,8.127744453831628,8.127744453831628,,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.5,mild,mild ageing,3.76488777267924,3.76488777267924,2.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.5,mild,design (θ 1→0),4.16651507407772,4.16651507407772,1.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.5,mild,θ = 0,2.695705655388619,2.695705655388619,,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.5,mild,θ = 1,-1.4708094186891008,1.4708094186891008,,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.5,mild,income distribution,-1.0206337202759403,1.0206337202759403,4.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.5,mild,income distribution,-1.0206337202750797,1.0206337202750797,4.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.5,mild,voting,1.3780704899712004,1.3780704899712004,3.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.5,mild,leisure,-4.280650507948458e-05,4.280650507948458e-05,5.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.5,mild,all French,-0.04607062227156011,0.04607062227156011,,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.5,mild,leisure,-4.4153337590280284e-05,4.4153337590280284e-05,5.0,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.5,mild,all French,-0.046086675424160395,0.046086675424160395,,0.1052285714283738,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.6,acute,acute ageing,8.03430930636782,8.03430930636782,1.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.6,acute,mild ageing,3.7258948186886993,3.7258948186886993,,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.6,acute,design (θ 1→0),3.711021756223029,3.711021756223029,2.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.6,acute,θ = 0,2.3823549266642594,2.3823549266642594,,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.6,acute,θ = 1,-1.3286668295587694,1.3286668295587694,,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.6,acute,income distribution,-0.9742593675963598,0.9742593675963598,4.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.6,acute,income distribution,-0.97425936760413,0.97425936760413,4.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.6,acute,voting,1.460142677673801,1.460142677673801,3.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.6,acute,leisure,0.0004870517736205171,0.0004870517736205171,5.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.6,acute,all French,0.05669861813087096,0.05669861813087096,,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.6,acute,leisure,0.0004704920285397707,0.0004704920285397707,5.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.6,acute,all French,0.056714269552410324,0.056714269552410324,,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.6,mild,acute ageing,8.03430930636782,8.03430930636782,,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.6,mild,mild ageing,3.7258948186886993,3.7258948186886993,1.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.6,mild,design (θ 1→0),3.711021756223029,3.711021756223029,2.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.6,mild,θ = 0,2.3823549266642594,2.3823549266642594,,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.6,mild,θ = 1,-1.3286668295587694,1.3286668295587694,,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.6,mild,income distribution,-0.9742593675963598,0.9742593675963598,4.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.6,mild,income distribution,-0.97425936760413,0.97425936760413,4.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.6,mild,voting,1.460142677673801,1.460142677673801,3.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.6,mild,leisure,0.0004870517736205171,0.0004870517736205171,5.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.6,mild,all French,0.05669861813087096,0.05669861813087096,,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.6,mild,leisure,0.0004704920285397707,0.0004704920285397707,5.0,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.6,mild,all French,0.056714269552410324,0.056714269552410324,,0.1052285714275682,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.7,acute,acute ageing,7.938662930486499,7.938662930486499,1.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.7,acute,mild ageing,3.6813443517036597,3.6813443517036597,,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.7,acute,design (θ 1→0),3.2658243362076207,3.2658243362076207,2.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.7,acute,θ = 0,2.073418110099641,2.073418110099641,,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.7,acute,θ = 1,-1.1924062261079795,1.1924062261079795,,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.7,acute,income distribution,-0.9326745211073504,0.9326745211073504,4.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.7,acute,income distribution,-0.9326745211124907,0.9326745211124907,4.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.7,acute,voting,1.5343793541285593,1.5343793541285593,3.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.7,acute,leisure,4.3988852393983535e-06,4.3988852393983535e-06,5.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.7,acute,all French,0.15208053948651962,0.15208053948651962,,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.7,acute,leisure,1.7680867020475333e-05,1.7680867020475333e-05,5.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.7,acute,all French,0.1520659123806195,0.1520659123806195,,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.7,mild,acute ageing,7.938662930486499,7.938662930486499,,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.7,mild,mild ageing,3.6813443517036597,3.6813443517036597,1.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.7,mild,design (θ 1→0),3.2658243362076207,3.2658243362076207,2.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.7,mild,θ = 0,2.073418110099641,2.073418110099641,,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.7,mild,θ = 1,-1.1924062261079795,1.1924062261079795,,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.7,mild,income distribution,-0.9326745211073504,0.9326745211073504,4.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.7,mild,income distribution,-0.9326745211124907,0.9326745211124907,4.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.7,mild,voting,1.5343793541285593,1.5343793541285593,3.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.7,mild,leisure,4.3988852393983535e-06,4.3988852393983535e-06,5.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.7,mild,all French,0.15208053948651962,0.15208053948651962,,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.7,mild,leisure,1.7680867020475333e-05,1.7680867020475333e-05,5.0,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.7,mild,all French,0.1520659123806195,0.1520659123806195,,0.1052285714287408,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.8,acute,acute ageing,7.85357410001607,7.85357410001607,1.0,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.8,acute,mild ageing,3.65089935369268,3.65089935369268,,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.8,acute,design (θ 1→0),2.834605229180799,2.834605229180799,2.0,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
@@ -348,8 +348,8 @@ US,1.8,acute,θ = 0,1.7756032363369396,1.7756032363369396,,0.1052285714289041,re
 US,1.8,acute,θ = 1,-1.0590019928438597,1.0590019928438597,,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.8,acute,income distribution,-0.8920810915780897,0.8920810915780897,4.0,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.8,acute,voting,1.6180256377236801,1.6180256377236801,3.0,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.8,acute,leisure,-0.0007408021089505556,0.0007408021089505556,5.0,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.8,acute,all French,0.25566434842071994,0.25566434842071994,,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.8,acute,leisure,-0.000695767920159962,0.000695767920159962,5.0,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.8,acute,all French,0.25568069768250046,0.25568069768250046,,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.8,mild,acute ageing,7.85357410001607,7.85357410001607,,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.8,mild,mild ageing,3.65089935369268,3.65089935369268,1.0,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.8,mild,design (θ 1→0),2.834605229180799,2.834605229180799,2.0,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
@@ -357,8 +357,8 @@ US,1.8,mild,θ = 0,1.7756032363369396,1.7756032363369396,,0.1052285714289041,res
 US,1.8,mild,θ = 1,-1.0590019928438597,1.0590019928438597,,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.8,mild,income distribution,-0.8920810915780897,0.8920810915780897,4.0,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.8,mild,voting,1.6180256377236801,1.6180256377236801,3.0,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.8,mild,leisure,-0.0007408021089505556,0.0007408021089505556,5.0,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.8,mild,all French,0.25566434842071994,0.25566434842071994,,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.8,mild,leisure,-0.000695767920159962,0.000695767920159962,5.0,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.8,mild,all French,0.25568069768250046,0.25568069768250046,,0.1052285714289041,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.9,acute,acute ageing,7.764266480388181,7.764266480388181,1.0,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.9,acute,mild ageing,3.606012722686121,3.606012722686121,,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.9,acute,design (θ 1→0),2.4046679774979403,2.4046679774979403,2.0,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
@@ -366,8 +366,8 @@ US,1.9,acute,θ = 0,1.4780388357908403,1.4780388357908403,,0.1052285714283764,re
 US,1.9,acute,θ = 1,-0.9266291417070999,0.9266291417070999,,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.9,acute,income distribution,-0.8518975792669803,0.8518975792669803,4.0,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.9,acute,voting,1.6897384196267309,1.6897384196267309,3.0,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.9,acute,leisure,0.00023254714567044754,0.00023254714567044754,5.0,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.9,acute,all French,0.3463891306083808,0.3463891306083808,,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.9,acute,leisure,0.00022565929665013806,0.00022565929665013806,5.0,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.9,acute,all French,0.34640389641400066,0.34640389641400066,,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.9,mild,acute ageing,7.764266480388181,7.764266480388181,,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.9,mild,mild ageing,3.606012722686121,3.606012722686121,1.0,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.9,mild,design (θ 1→0),2.4046679774979403,2.4046679774979403,2.0,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
@@ -375,23 +375,23 @@ US,1.9,mild,θ = 0,1.4780388357908403,1.4780388357908403,,0.1052285714283764,res
 US,1.9,mild,θ = 1,-0.9266291417070999,0.9266291417070999,,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.9,mild,income distribution,-0.8518975792669803,0.8518975792669803,4.0,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,1.9,mild,voting,1.6897384196267309,1.6897384196267309,3.0,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.9,mild,leisure,0.00023254714567044754,0.00023254714567044754,5.0,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
-US,1.9,mild,all French,0.3463891306083808,0.3463891306083808,,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.9,mild,leisure,0.00022565929665013806,0.00022565929665013806,5.0,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
+US,1.9,mild,all French,0.34640389641400066,0.34640389641400066,,0.1052285714283764,results/numerical/C5_US_shocksRhoGridCommonX.csv
 US,2.0,acute,acute ageing,7.683888675226751,7.683888675226751,1.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
 US,2.0,acute,mild ageing,3.57323178096753,3.57323178096753,,0.1052285714289727,results/shocks/US_shocksCommonX.csv
 US,2.0,acute,design (θ 1→0),1.98822081121202,1.98822081121202,2.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
 US,2.0,acute,θ = 0,1.1804576761140397,1.1804576761140397,,0.1052285714289727,results/shocks/US_shocksCommonX.csv
 US,2.0,acute,θ = 1,-0.8077631350979803,0.8077631350979803,,0.1052285714289727,results/shocks/US_shocksCommonX.csv
-US,2.0,acute,income distribution,-0.8203866314776,0.8203866314776,4.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
+US,2.0,acute,income distribution,-0.8203866314827002,0.8203866314827002,4.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
 US,2.0,acute,voting,1.75958791134143,1.75958791134143,3.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
-US,2.0,acute,leisure,0.000864114900590851,0.000864114900590851,5.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
-US,2.0,acute,all French,0.43306181678904043,0.43306181678904043,,0.1052285714289727,results/shocks/US_shocksCommonX.csv
+US,2.0,acute,leisure,0.0008662533844003284,0.0008662533844003284,5.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
+US,2.0,acute,all French,0.43309575564045993,0.43309575564045993,,0.1052285714289727,results/shocks/US_shocksCommonX.csv
 US,2.0,mild,acute ageing,7.683888675226751,7.683888675226751,,0.1052285714289727,results/shocks/US_shocksCommonX.csv
 US,2.0,mild,mild ageing,3.57323178096753,3.57323178096753,1.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
 US,2.0,mild,design (θ 1→0),1.98822081121202,1.98822081121202,2.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
 US,2.0,mild,θ = 0,1.1804576761140397,1.1804576761140397,,0.1052285714289727,results/shocks/US_shocksCommonX.csv
 US,2.0,mild,θ = 1,-0.8077631350979803,0.8077631350979803,,0.1052285714289727,results/shocks/US_shocksCommonX.csv
-US,2.0,mild,income distribution,-0.8203866314776,0.8203866314776,4.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
+US,2.0,mild,income distribution,-0.8203866314827002,0.8203866314827002,4.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
 US,2.0,mild,voting,1.75958791134143,1.75958791134143,3.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
-US,2.0,mild,leisure,0.000864114900590851,0.000864114900590851,5.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
-US,2.0,mild,all French,0.43306181678904043,0.43306181678904043,,0.1052285714289727,results/shocks/US_shocksCommonX.csv
+US,2.0,mild,leisure,0.0008662533844003284,0.0008662533844003284,5.0,0.1052285714289727,results/shocks/US_shocksCommonX.csv
+US,2.0,mild,all French,0.43309575564045993,0.43309575564045993,,0.1052285714289727,results/shocks/US_shocksCommonX.csv

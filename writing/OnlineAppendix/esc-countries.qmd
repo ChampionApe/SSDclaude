@@ -4,7 +4,7 @@
 
 The figure takes the counterfactuals of the paper's figure {{< var p.fig_US_ESC_overview >}} to the UK, at the UK's
 own cost parameter, and sets it below the U.S. on the same axis. Each counterfactual is read twice, with the design pinned at the host's observed
-value and with it chosen. Acute ageing ties both designs more closely to earnings, the UK's by a little more.
+value and with it chosen. Acute ageing ties both designs more closely to earnings, by about as much.
 France's voting patterns move both toward flat benefits, the UK's by about as much at the lowest IES and by less
 at the higher ones, since its own voting profile is already flatter than the U.S. one. France's income distribution moves the two designs in opposite
 directions at every IES: on the U.S. it compresses relative incomes, on the UK it spreads them. On the UK, choosing

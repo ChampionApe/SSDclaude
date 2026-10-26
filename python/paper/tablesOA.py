@@ -410,7 +410,73 @@ def _exceptionText(f, ids, nEq, fb, layer):
     return r'{} in {} ({})'.format(what, _tex(f), ', '.join(parts))
 
 
+def _countVerdict(entries, stats):
+    """ The closing sentence of both count tables: one equilibrium everywhere, or every counted exception named
+    (datasets.countExceptions). """
+    exc = [_exceptionText(*e, layer) for _, _, ps in entries for layer in ('tax', 'design')
+           for e in D.countExceptions(ps, layer)]
+    eqMax = max(s['eqMax'] for s in stats.values() if s['eqMax'] is not None)
+    if eqMax == 1:      # the exceptions are then all fallbacks: states where no candidate passed
+        return r'Every counted row has one equilibrium at every state and period' + (
+            ', except where no candidate passed: ' + '; '.join(exc) + '.' if exc else ', and no fallback.')
+    return r'The largest number of equilibria at any state is ' + str(eqMax) + ': ' + '; '.join(exc) + '.'
+
+
+SOLVEGROUPS = {'calibration': 'Calibrations', 'shocks': 'Experiments', 'sweeps': 'Equilibria over designs',
+               'esc': 'Endogenous design', 'numerical': 'Numerical checks'}      # results/<dir>, in print order
+ARMWORDS = (('ARG', 'Argentina'), ('US', 'The U.S., the UK and France'))
+
+
 def numSelection():
+    r""" Appendix D's count table: datasets.selectionCsvs' files grouped by arm and by the results directory that
+    holds them (SOLVEGROUPS), the tax rule first and then the design layer of the exact CRRA recursion over every
+    file that records it; per group the files, the rows, the rows that record counts, and over them the largest
+    number of equilibria and of candidates and the total of fallback states (datasets.countSummary over the
+    group's files). The split of the other rows and the file-by-file list are numSelectionFiles' (the online
+    appendix). Rows keyed `<layer>_<arm>_<dir>`. """
+    entries = D.selectionCsvs()
+    stats = {(lab, layer): D.countSummary(ps, layer) for _, lab, ps in entries for layer in ('tax', 'design')}
+    num = lambda v: '--' if v is None else str(v)
+    cells = lambda s: [str(s['files']), str(s['rows']), str(s['counted']), num(s['eqMax']), num(s['candMax']),
+                       num(s['fallbacks'])]
+    group = lambda ps: os.path.basename(os.path.dirname(ps[0]))
+    unknown = sorted({group(ps) for _, _, ps in entries} - set(SOLVEGROUPS))
+    if unknown:
+        raise ValueError('NUM_Selection: no label for results/{}'.format(', '.join(unknown)))
+    lines = []
+    for arm, words in ARMWORDS:
+        lines.append(_title('Tax rule: ' + words.replace('The U.S.', 'the U.S.'), 7))
+        for g, lab in SOLVEGROUPS.items():
+            ps = [p for a, _, pp in entries if a == arm and group(pp) == g for p in pp]
+            if ps:
+                lines.append(_row([lab] + cells(D.countSummary(ps, 'tax')), 'tax_{}_{}'.format(arm.lower(), g)))
+        lines[-1] = lines[-1].replace(r' \\ % row:', r' \\[.5em] % row:')
+    lines.append(_title('Design layer of the exact CRRA recursion', 7))
+    for g, lab in SOLVEGROUPS.items():
+        ps = [p for _, lab2, pp in entries if group(pp) == g and stats[(lab2, 'design')]['counted'] for p in pp]
+        if ps:
+            lines.append(_row([lab] + cells(D.countSummary(ps, 'design')), 'design_' + g))
+    note = (r'\textit{Note:} The files of results that the exhibits read, grouped by the solves that wrote them: '
+            r'per group the files, their rows, the rows that record the counts, and over these the largest number '
+            r'of equilibria at any state and period, the largest number of candidates, and the number of states at '
+            r'which no candidate passed the equilibrium test and the solver fell back. The other rows select '
+            r'nothing at that layer (the economic-equilibrium rows, with taxes held at the baseline path; the tax '
+            r'of the exact recursion, selected inside its design layer; the cost calibrations that failed; the '
+            r'rows with the design pinned) or were '
+            r'written before the counts existed; the online appendix lists every file. The tax rule\textquotesingle '
+            r's candidates are the two corners and the crossings of the first order condition; the design '
+            r'layer\textquotesingle s are the brackets of its consistency residual. '
+            + _countVerdict(entries, stats))
+    header = (r' & & \multicolumn{2}{c}{\textbf{Rows}} & \multicolumn{2}{c}{\textbf{Largest number of}} & \\'
+              + '\n' + r'\cmidrule(lr){3-4}\cmidrule(lr){5-6}' + '\n'
+              r'\textbf{Solves} & \textbf{Files} & all & counted & equilibria & candidates & \textbf{Fallbacks}')
+    return _xwrap('NUM_Selection', 'results/{calibration,shocks,sweeps,esc,numerical}/*.csv',
+                  'Equilibrium counts in the results the exhibits read', _label('NUM_Selection'),
+                  r'>{\raggedright\arraybackslash}p{3.0cm}YYYYYY', header, _body(lines), note, width = r'\textwidth',
+                  size = r'\footnotesize\setlength{\tabcolsep}{5pt}\renewcommand{\arraystretch}{1.1}')
+
+
+def numSelectionFiles():
     r""" The equilibrium counts per results csv behind the outputs (datasets.selectionCsvs, the horizon runs of
     appendix D among them): rows; rows that record counts, rows whose solve selects nothing at that layer
     (-1), rows written before the counts existed (blank); over the counted rows the largest number of
@@ -419,11 +485,15 @@ def numSelection():
     recursion of writing/US/num_esc.tex (nEqθMax, nBrθMax, nFallbackθ), whose candidates are brackets. A csv
     that records no count of a layer prints '--' in its statistics; the design block lists only the csvs that
     record that layer. The note names every counted row with more than one equilibrium or a fallback
-    (datasets.countExceptions). Rows keyed `<layer>_<file>`. Appendix D's table and the online appendix's. """
+    (datasets.countExceptions). Rows keyed `<layer>_<file>`. The online appendix's; appendix D prints the
+    grouped numSelection. """
     entries = D.selectionCsvs()
     stats = {(lab, layer): D.countSummary(ps, layer) for _, lab, ps in entries for layer in ('tax', 'design')}
     num = lambda v: '--' if v is None else str(v)
-    fname = lambda lab, n: _tex(lab) + ('' if n == 1 else r' (' + str(n) + ' files)')
+    # a file name may break after an underscore and inside a camel-case word (\allowbreak, which the site drops),
+    # so that seven count columns fit beside it
+    fname = lambda lab, n: (re.sub(r'(?<=[a-z])(?=[A-Z])', r'\\allowbreak{}', _tex(lab).replace(r'\_', r'\_\allowbreak{}'))
+                            + ('' if n == 1 else r' (' + str(n) + ' files)'))
     cells = lambda s: [str(s['rows']), str(s['counted']), str(s['uncounted']), str(s['unrecorded']),
                        num(s['eqMax']), num(s['candMax']), num(s['fallbacks'])]
     lines = []
@@ -440,14 +510,7 @@ def numSelection():
         if s['counted'] == 0:
             continue
         lines.append(_row([fname(lab, s['files'])] + cells(s), 'design_' + _fileKey(lab)))
-    exc = [_exceptionText(*e, layer) for _, _, ps in entries for layer in ('tax', 'design')
-           for e in D.countExceptions(ps, layer)]
-    eqMax = max(s['eqMax'] for s in stats.values() if s['eqMax'] is not None)
-    if eqMax == 1:
-        last = r'Every counted row has one equilibrium at every state and period' + (
-            '; ' + '; '.join(exc) + '.' if exc else ', and no fallback.')
-    else:
-        last = r'The largest number of equilibria at any state is ' + str(eqMax) + ': ' + '; '.join(exc) + '.'
+    last = _countVerdict(entries, stats)
     note = (r'\textit{Note:} Per csv, the rows; the rows that record the counts; the rows whose solve selects '
             r'nothing at that layer and records $-1$ (no selection); the rows written before the counts were '
             r'recorded (not recorded); and over the counted rows the largest number of equilibria at any state and '
@@ -467,12 +530,13 @@ def numSelection():
             r'exhibits do not read, written before the counts existed and not rerun at the current calibration. '
             r'escExperiments.csv and escExperimentsUK.csv, which the endogenous-design exhibits read, merge the '
             r'escShocks* files, whose counts are the rows above. ' + last)
-    return _xwrap('NUM_Selection', 'results/{calibration,shocks,sweeps,esc,numerical}/*.csv',
-                  'Equilibrium counts in the results the exhibits read', _label('NUM_Selection'),
-                  r'>{\raggedright\arraybackslash}p{4.6cm}YYYYYYY',
-                  [r'\textbf{File}', r'\textbf{Rows}', r'\textbf{Counted}', r'\textbf{No selection}',
-                   r'\textbf{Not recorded}', r'\textbf{Equilibria, max}', r'\textbf{Candidates, max}',
-                   r'\textbf{Fallbacks}'], _body(lines), note, width = r'\textwidth', size = r'\small')
+    return _xwrap('NUM_SelectionFiles', 'results/{calibration,shocks,sweeps,esc,numerical}/*.csv',
+                  'Equilibrium counts in the results the exhibits read, file by file', _label('NUM_SelectionFiles'),
+                  r'>{\raggedright\arraybackslash}p{3.0cm}YYYYYYY',
+                  r'\textbf{File} & \multicolumn{4}{c}{\textbf{Rows}} & \multicolumn{2}{c}{\textbf{Largest number of}} '
+                  r'& \textbf{Fallback} \\' + '\n' + r'\cmidrule(lr){2-5}\cmidrule(lr){6-7}' + '\n'
+                  r' & all & counted & no selection & not recorded & equilibria & candidates & states',
+                  _body(lines), note, width = r'\textwidth', size = r'\footnotesize\setlength{\tabcolsep}{4pt}')
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -623,6 +687,82 @@ def oecdRegroupings():
                   r'The UK and France at their own and at each other\textquotesingle s income groups',
                   _label('OECD_Regroupings'), 'l' + 'Y'*len(keys),
                   [r'\textbf{Parameter}'] + [h for _, h in REGROUPED], _body(lines), note, width = r'\textwidth')
+
+
+MEDICARE = 'USMedicare'        # config.US['readings']: the U.S. with Medicare among the transfers to the old
+
+
+def oecdMedicare():
+    r""" B5.1: the U.S. calibrated with Medicare among the transfers to the old (config.US['readings']), beside
+    the paper's pension-only calibration, at the rho of the paper's figures (config.US['ρTable']): beta, omega
+    and the common X, solved with the equilibrium path at each rho against the same interest factor and
+    workweek. The design and the tax rate, targets common to every rho, go in the note; the builder checks that
+    the Medicare design is the pension design scaled by the pension share of the transfers. """
+    c = D.usCalibrationSummary(True)
+    if MEDICARE not in c:
+        raise D.MissingInput('results/paper/usCalibrationSummary.csv (no {} row)'.format(MEDICARE))
+    us, med = c['US'], c[MEDICARE]
+    cal = C.usCalendar(MEDICARE)
+    if not np.isclose(float(med['θ']), (1 - cal['Ushare'])*float(us['θ']), rtol = 0, atol = 1e-9):
+        raise ValueError('OECD_Medicare: θ {} is not (1 - {}) × {}'.format(med['θ'], cal['Ushare'], us['θ']))
+    sw = {k: D.usSweep(k) for k in ('US', MEDICARE)}
+    lines = []
+    for ρ in C.US['ρTable']:
+        cells = [C.num(ρ, 1)]
+        for k in ('US', MEDICARE):
+            r = sw[k][np.isclose(sw[k]['ρ'], ρ)]
+            if r.empty:
+                raise D.MissingInput('{} (ρ = {})'.format(C.usSweepCsv(k, True), ρ))
+            r = r.iloc[-1]
+            cells += [C.num(float(r['β']), 3), C.num(float(r['ω']), 3), C.num(float(r['X']), 2)]
+        lines.append(_row(cells, 'rho@' + _rhoKey(ρ)))
+    year0, α = C.usCalendar()['year0'], float(us['α'])
+    head3 = r'$\beta$ & $\omega$ & $X$'
+    header = (r' & \multicolumn{3}{c}{\textbf{Pensions only, the paper\textquotesingle s}} & '
+              r'\multicolumn{3}{c}{\textbf{Pensions and Medicare}} \\' + '\n'
+              r'\cmidrule(lr){2-4}\cmidrule(lr){5-7}' + '\n'
+              r'\textbf{CRRA} ($\rho$) & ' + head3 + ' & ' + head3)
+    note = (r'\textit{Note:} Common $X$. Both calibrations target the same 30-year interest factor and average '
+            r'workweek at the same income groups. With Medicare, ' + C.num(100*C.US['readings'][MEDICARE]['medicare'], 1)
+            + r'\% of GDP, added to pension spending, ' + C.num(100*float(us['τ0'])*(1 - α), 2) + r'\% of GDP, the '
+            r'tax rate in ' + str(year0) + ' is ' + C.pct(float(med['τ0'])) + ' against ' + C.pct(float(us['τ0']))
+            + r'; Medicare is paid as a flat benefit, so the design is $\theta = (1-m)\,\theta_P = '
+            + C.num(float(med['θ']), 3) + r'$, with $m = ' + C.num(cal['Ushare'], 3) + r'$ Medicare\textquotesingle s'
+            + r' share of the transfers and $\theta_P = ' + C.num(float(us['θ']), 3) + r'$ the pension design '
+            r'read off the replacement rates.')
+    return _xwrap('OECD_Medicare', 'results/calibration/{US,USMedicare}_rhoGridCommonX.csv',
+                  r'The U.S.\ calibration with Medicare among the transfers to the old', _label('OECD_Medicare'),
+                  'YYYYYYY', header, _body(lines), note, width = r'.9\textwidth')
+
+
+def usStrategic():
+    r""" B3.1: the strategic term of the U.S. 2020 choice per rho (datasets.strategicTerm): the elasticity of the
+    savings the 2020 young carry into 2050 to the 2020 tax, the elasticity of the 2050 tax to those savings (the
+    slope of the 2050 policy function) and their product as the change of the 2050 tax per unit change of the
+    2020 tax. Design given, each rho at its own calibration, at the equilibrium path. """
+    df = D.strategicTerm()
+    year0 = C.usCalendar()['year0']
+    year1 = year0 + 30
+    lines = []
+    for _, r in df.iterrows():
+        ρ = float(r['ρ'])
+        cells = [C.num(ρ, 1) + (' (log)' if np.isclose(ρ, 1.0) else ''),
+                 _dash(r['elasticity s,τ'], lambda v: _signed(v, 3)),
+                 _signed(r['elasticity τ1,s'], 3), _signed(r['strategic'], 3)]
+        lines.append(_row(cells, 'rho@' + _rhoKey(ρ)))
+    header = (r'\textbf{CRRA} ($\rho$) & Savings ' + str(year0) + r', $\frac{d\ln s_{' + str(year0) + r'}}{d\ln\tau_{'
+              + str(year0) + r'}}$ & Policy ' + str(year1) + r', $\frac{d\ln\tau_{' + str(year1) + r'}}{d\ln s_{'
+              + str(year0) + r'}}$ & Strategic term, $\frac{d\tau_{' + str(year1) + r'}}{d\tau_{' + str(year0) + r'}}$')
+    note = (r'\textit{Note:} At the equilibrium path, the design given. The savings response is the economic '
+            r'equilibrium\textquotesingle s at the savings inherited in ' + str(year0) + r', given the policies of '
+            r'the later electorates; the policy slope is that of the ' + str(year1) + r' tax policy at the '
+            r'savings carried into ' + str(year1) + r'. The strategic term, their product in levels, is the change '
+            r'in the ' + str(year1) + r' tax rate, in percentage points, when the ' + str(year0) + r' electorate '
+            r'raises its tax rate by one percentage point. Under log preferences the tax rate does not depend on '
+            r'the state and the term is zero.')
+    return _xwrap('US_Strategic', 'results/numerical/C5_strategicTerm.csv',
+                  r'The strategic term of the U.S.\ tax choice in ' + str(year0), _label('US_Strategic'),
+                  'lYYY', header, _body(lines), note, width = r'.9\textwidth')
 
 
 def escCostCalibration():

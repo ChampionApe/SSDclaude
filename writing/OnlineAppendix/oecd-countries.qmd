@@ -10,7 +10,7 @@ distribution, voting patterns or taste for leisure, with France's households cut
 On both hosts ageing and the design move the tax rate most, except on the U.S. at an IES of two, where France's
 voting patterns move it by more than either corner of the design. Ageing and France's voting patterns move the UK's
 tax rate by less than the U.S. one at every IES. Flat benefits raise it by less up to an IES of one, while fully
-earnings-related ones lower it by more at every IES. Two rows change sign
+earnings-related ones lower it by about as much up to an IES of one and by more at two. Two rows change sign
 between the hosts. France's income distribution raises the UK's tax rate where it lowers the U.S. one, because at
 the UK's income cuts France is the more unequal of the two (appendix {{< var p.app_US >}}). France's taste for
 leisure lengthens the UK's workweek where it shortens the U.S. one, since France's average taste for leisure lies

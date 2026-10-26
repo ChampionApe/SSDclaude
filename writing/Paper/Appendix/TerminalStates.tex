@@ -1,7 +1,8 @@
-\section{Terminal states}\label{app:T}\setcounter{equation}{0}
-We consider two different terminal states of the model: A finite horizon version where the economy ends after $t=T$ and a steady state version. The paper reports the finite-horizon solution, in periods of thirty years from 1960 to $T = 2200$ for the rich economies and from 1920 to $T = 2190$ for Argentina, with population growth held at its last projected rate after 2080 (2070 for Argentina).
+\FloatBarrier
+\section{Terminal states and numerical checks}\label{app:T}\setcounter{equation}{0}
+We consider two terminal states of the model: a finite-horizon version, in which the economy ends after $t=T$, and a steady-state version. The paper reports the finite-horizon solution, in periods of thirty years from 1960 to $T = 2200$ for the rich economies and from 1920 to $T = 2190$ for Argentina, with population growth held at its last projected rate after 2080 (2070 for Argentina). The appendix then reports three checks on the computed equilibria: how much they depend on the horizon and the terminal state, how many candidates and equilibria the solver finds, and how closely the policy functions solve their first order conditions between the nodes of their grids.
 
-\smalltitle{Finite Horizon.}
+\smalltitle{Finite horizon.}
 In the finite horizon, consumption functions and indirect utility in economic equilibrium are those of the general case in every period $t<T$. For the young generations at time $T$, we simply say that
 \begin{align*}
     u_{T, j} = u_j\left(c_{1,T}^j, h_{T,j}\right).
@@ -9,11 +10,11 @@ In the finite horizon, consumption functions and indirect utility in economic eq
 In this case, the economic equilibrium at $t = T$ is the general formulation with $\beta = \tau_{t+1} = s_t = s_{t,j}= 0$. Specifically:
 \begin{align}
     h_t &= \left(\Gamma_{h}\right)^{\frac{1}{1+\alpha\xi}}\left((1-\alpha)(1-\tau_t)\right)^{\frac{\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}} \\
-    h_{t,i} &= h_t\frac{(\eta_{i}/X_{i})^{\xi}}{\Gamma_{h}} \\ 
+    h_{t,i} &= h_t\frac{(\eta_{i}/X_{i})^{\xi}}{\Gamma_{h}} \\
     \tilde{c}_{1,t}^i &= \frac{1}{1+\xi}\dfrac{\eta_{i}^{1+\xi}}{X_{i}^{\xi}}\left(\frac{h_t}{\Gamma_{h}}\right)^{\frac{1+\xi}{\xi}}  \\
     \tilde{c}_{1,t}^0 &= \dfrac{1}{1+\xi}\dfrac{\eta_{0}^{1+\xi}}{X_{0}^{\xi}}\left(w_t^0\right)^{1+\xi}.
 \end{align}
-For the retired generation, the relevant consumption functions are unchanged. 
+For the retired generation, the relevant consumption functions are unchanged.
 
 For the politico-economic equilibrium, the marginal effect of $\tau_t$ on retirees is the same as for $t<T$. For working households, the effects are much simpler, namely:
 \begin{align}
@@ -23,9 +24,9 @@ For the politico-economic equilibrium, the marginal effect of $\tau_t$ on retire
 
 
 \smalltitle{Steady state, infinite horizon.}
-In steady state, we combine equations for aggregate labor supply and savings states to write:
+In the steady-state version, population growth stays at its last projected rate forever, and the equilibrium is the limit of finite-horizon equilibria as the horizon grows. We compute it as the finite horizon extended by 40 periods: the policy at the paper's $T$ then no longer changes from one period to the next (table \ref{table:T:Horizon}), so that $T$ is the start of a steady state. In a steady state, where the tax and the design are constant, the equations for aggregate labor supply and savings combine into:
 \begin{align}
-    s^* =& \Gamma_h^{1+\xi}\left[\left(\frac{(1-\alpha)(1-\tau)}{\Gamma_h-\frac{1-\alpha}{\alpha}\frac{\theta\tau}{1+\gamma_0\epsilon}\Gamma_s}\right)^{1+\xi}\frac{\Gamma_s^{1+\alpha\xi}}{\nu^{\alpha(1+\xi)}}\right]^{\frac{1}{1-\alpha}} \\ 
+    s^* =& \Gamma_h^{1+\xi}\left[\left(\frac{(1-\alpha)(1-\tau)}{\Gamma_h-\frac{1-\alpha}{\alpha}\frac{\theta\tau}{1+\gamma_0\epsilon}\Gamma_s}\right)^{1+\xi}\frac{\Gamma_s^{1+\alpha\xi}}{\nu^{\alpha(1+\xi)}}\right]^{\frac{1}{1-\alpha}} \\
     \Gamma_s =& \frac{1}{1+\xi}\frac{\Gamma_h B }{1+B+\frac{1-\alpha}{\alpha}\frac{\tau}{1+\gamma_0\epsilon}\left(1+\theta B\right)} \\
     B =& \left(\beta\right)^{\rho} \left(R^*\right)^{\rho-1}, \qquad R^* = \alpha\left(\frac{s^*}{\nu h^*}\right)^{\alpha-1} \notag \\
     \frac{s^*}{\nu h^*} =& \frac{(s^*)^{\frac{1}{1+\xi}}\Gamma_s^{\frac{\xi}{1+\xi}}}{\nu \Gamma_h} = \left(\frac{(1-\alpha)(1-\tau)}{\Gamma_h-\frac{1-\alpha}{\alpha}\frac{\theta\tau}{1+\gamma_0\epsilon}\Gamma_s}\frac{\Gamma_s}{\nu}\right)^{\frac{1}{1-\alpha}}
@@ -34,3 +35,19 @@ We can use this to write the discount function as
 \begin{align}
     B = \left(\beta\right)^{\rho} \left(\alpha\frac{\Gamma_h-\frac{1-\alpha}{\alpha}\frac{\theta\tau}{1+\gamma_0\epsilon}\Gamma_s}{(1-\alpha)(1-\tau)}\frac{\nu}{\Gamma_s}   \right)^{\rho-1}
 \end{align}
+
+\smalltitle{The horizon and the terminal state.}
+Table \ref{table:T:Horizon} reports the paper's equilibria solved again with the backward induction started two periods earlier, three periods later and from the steady state: the U.S.\ with the design given and with the design chosen, and Argentina in its baseline and with the universal pension. Under log preferences the U.S.\ tax at a date before $T$ cannot depend on the horizon, since without informal households the condition at each date does not involve the continuation (proposition \ref{prop:PEE:unique}). Under CRRA preferences and with informal savers the policy functions carry a state through which the horizon could reach the calibration year, but it matters little there. No tax rate in the calibration year changes by more than $0.03$ p.p., no savings rate by more than $0.013$ p.p.\ of GDP, and the design chosen in 2020 does not change at the third decimal. The largest change, $0.030$ p.p., is in Argentina's response to the universal pension at $\rho = 0.5$ when the horizon is two periods shorter; in the U.S.\ it is $0.027$ p.p., at $\rho = 0.5$ under the steady state. One period later the changes are of the same size, at most $0.028$ p.p.\ in a tax rate.
+
+\input{Tables/NUM_Horizon}
+
+\smalltitle{Equilibrium counts.}
+The candidates for the tax at a state are the two corners and every crossing of the first order condition. At every state and date the solver records their number and the number that pass the equilibrium test of section \ref{sec:numerical}; the exact recursion with the design chosen under CRRA preferences records the same for the design. Table \ref{table:OA:NUM_Selection} reports the largest of these counts for each solve behind the paper's exhibits, and the \oa{num-selection} lists them for every file of results. Every solve that records the counts has one equilibrium at every state and date, with one exception in the choice of the design. At one state and date, in the U.S.\ with its taste for leisure rescaled to France's level at $\rho = 0.5$ and under the cost on the design itself (appendix \ref{app:esc:cost}), no design passes the test, and the solver ranks the designs there by the political objective, each at its own consistent distribution of savings. Since the corners are always candidates, the count of candidates for the tax is at least two, and it never exceeds three, the corners and one crossing. Under log-GHH preferences with no informal households, or with hand-to-mouth ones and $\xi(1-2\alpha) \leq 1$, one equilibrium follows from proposition \ref{prop:PEE:unique}, and a larger count there would be a numerical failure rather than a selection. Under CRRA preferences and with informal savers the count is the evidence that the proposition does not provide.
+
+\input{Tables/NUM_Selection}
+
+\smalltitle{Accuracy off the grid.}
+The policy functions are computed at the nodes of a grid of states, and the equilibrium path enters each period between them. Table \ref{table:T:Residuals} compares the policy function at such states with the root of the period's first order condition there. On the path the two differ by less than $0.001$ p.p.\ of the tax rate in the U.S.\ and $0.01$ p.p.\ in Argentina. Over the states the path visits, the difference stays below $0.003$ p.p.\ in the U.S.\ and below $0.02$ p.p.\ in Argentina, except at $\rho = 0.5$ in the periods before 2010, where it reaches $0.22$ p.p. There the policy, which the solver smooths across states, departs from the root at the nodes as much as between them. Larger differences arise only at states the path never visits. The condition carries derivatives in the tax that are computed numerically, and with derivatives converged on a finer tax grid the difference on the path is at most $0.003$ p.p.\ in the U.S.\ and $0.014$ p.p.\ in Argentina. The U.S.\ results use a grid of 150 states; on one of 50 the difference on the path rises to $0.050$ p.p.\ at $\rho = 0.5$.
+
+\input{Tables/NUM_Residuals}
+\FloatBarrier

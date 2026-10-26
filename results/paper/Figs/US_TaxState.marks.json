@@ -1,0 +1,395 @@
+{
+ "figure": "US_TaxState",
+ "marks": [
+  {
+   "id": "US_TaxState--rho0.5--s0.50",
+   "label": "inherited savings × 0.50",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate in 2020",
+   "value": 11.40603288709038,
+   "text": "11.41%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho0.5--s0.60",
+   "label": "inherited savings × 0.60",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate in 2020",
+   "value": 11.198859904589611,
+   "text": "11.20%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho0.5--s0.70",
+   "label": "inherited savings × 0.70",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate in 2020",
+   "value": 10.984753878923991,
+   "text": "10.98%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho0.5--s0.80",
+   "label": "inherited savings × 0.80",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate in 2020",
+   "value": 10.81014420410956,
+   "text": "10.81%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho0.5--s0.90",
+   "label": "inherited savings × 0.90",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate in 2020",
+   "value": 10.66382716648385,
+   "text": "10.66%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho0.5--s0.95",
+   "label": "inherited savings × 0.95",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate in 2020",
+   "value": 10.592218863125149,
+   "text": "10.59%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho0.5--s1.00",
+   "label": "inherited savings × 1.00",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate in 2020",
+   "value": 10.52282066530379,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho0.5--s1.05",
+   "label": "inherited savings × 1.05",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate in 2020",
+   "value": 10.45654723671621,
+   "text": "10.46%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho0.5--s1.10",
+   "label": "inherited savings × 1.10",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate in 2020",
+   "value": 10.39366898319324,
+   "text": "10.39%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho0.5--s1.20",
+   "label": "inherited savings × 1.20",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate in 2020",
+   "value": 10.27721022150001,
+   "text": "10.28%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho0.5--s1.30",
+   "label": "inherited savings × 1.30",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate in 2020",
+   "value": 10.16888129073447,
+   "text": "10.17%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho0.5--s1.40",
+   "label": "inherited savings × 1.40",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate in 2020",
+   "value": 10.06734049664296,
+   "text": "10.07%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho0.5--s1.50",
+   "label": "inherited savings × 1.50",
+   "series": "ρ = 0.5",
+   "panel": "Tax rate in 2020",
+   "value": 9.97534880328257,
+   "text": "9.98%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho1.0--s0.50",
+   "label": "inherited savings × 0.50",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285714285764,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho1.0--s0.60",
+   "label": "inherited savings × 0.60",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285714285764,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho1.0--s0.70",
+   "label": "inherited savings × 0.70",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285714285764,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho1.0--s0.80",
+   "label": "inherited savings × 0.80",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285714285764,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho1.0--s0.90",
+   "label": "inherited savings × 0.90",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285714285764,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho1.0--s0.95",
+   "label": "inherited savings × 0.95",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285714285764,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho1.0--s1.00",
+   "label": "inherited savings × 1.00",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285714285764,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho1.0--s1.05",
+   "label": "inherited savings × 1.05",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285714285764,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho1.0--s1.10",
+   "label": "inherited savings × 1.10",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285714285764,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho1.0--s1.20",
+   "label": "inherited savings × 1.20",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285714285764,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho1.0--s1.30",
+   "label": "inherited savings × 1.30",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285714285764,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho1.0--s1.40",
+   "label": "inherited savings × 1.40",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285714285764,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho1.0--s1.50",
+   "label": "inherited savings × 1.50",
+   "series": "ρ = 1.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285714285764,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho2.0--s0.50",
+   "label": "inherited savings × 0.50",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.16505692685337,
+   "text": "10.17%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho2.0--s0.60",
+   "label": "inherited savings × 0.60",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.26026961374818,
+   "text": "10.26%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho2.0--s0.70",
+   "label": "inherited savings × 0.70",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.34182631943653,
+   "text": "10.34%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho2.0--s0.80",
+   "label": "inherited savings × 0.80",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.41148588978402,
+   "text": "10.41%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho2.0--s0.90",
+   "label": "inherited savings × 0.90",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.47053434589181,
+   "text": "10.47%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho2.0--s0.95",
+   "label": "inherited savings × 0.95",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.49741663702333,
+   "text": "10.50%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho2.0--s1.00",
+   "label": "inherited savings × 1.00",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.52285681306638,
+   "text": "10.52%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho2.0--s1.05",
+   "label": "inherited savings × 1.05",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.54687880851211,
+   "text": "10.55%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho2.0--s1.10",
+   "label": "inherited savings × 1.10",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.569759262056511,
+   "text": "10.57%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho2.0--s1.20",
+   "label": "inherited savings × 1.20",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.61169430106821,
+   "text": "10.61%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho2.0--s1.30",
+   "label": "inherited savings × 1.30",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.64982647305657,
+   "text": "10.65%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho2.0--s1.40",
+   "label": "inherited savings × 1.40",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.68456816263685,
+   "text": "10.68%",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "US_TaxState--rho2.0--s1.50",
+   "label": "inherited savings × 1.50",
+   "series": "ρ = 2.0",
+   "panel": "Tax rate in 2020",
+   "value": 10.717040040410119,
+   "text": "10.72%",
+   "table": null,
+   "row": null
+  }
+ ]
+}

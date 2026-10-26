@@ -37,6 +37,8 @@ Run:  .venv\Scripts\python.exe python\US\c5Numbers.py <command> [--rho ...]
               -> C5_designDecompCRRA_rho<rho>.csv
   a13         tau_2020 against inherited capital s_2019 (the CRRA policy function of 2020, alg:CRRA:grid) at
               each rho. -> C5_taxPolicyState.csv
+  strategic   the strategic term of the 2020 choice, dtau_2050/ds_2020 * ds_2020/dtau_2020 (the slope of the
+              2050 policy function times the economic equilibrium's savings response). -> C5_strategicTerm.csv
 
 Nothing here writes a csv the paper reads; every output is results/numerical/C5_*.csv.
 """
@@ -734,8 +736,49 @@ def a13(a):
     return 0
 
 
+def strategic(a, δ = 0.005):
+    """ The strategic term of the 2020 electorate's choice, dtau_2050/ds_2020 * ds_2020/dtau_2020 at the
+    equilibrium path: ds/dtau from eq:stateResidual at s_2019 given the continuation (stateApprox_t, central
+    difference +-δ in tau_2020), dtau/ds the slope of the 2050 policy function (central, +-1% of s_2020).
+    Zero under log (prop:LOG:PEE). """
+    rows = []
+    for ρ in a.rho:
+        if ρ == 1:
+            rows.append({'ρ': ρ, 'dsdτ': np.nan, 'dτ1ds': 0.0, 'strategic': 0.0, 'elasticity τ1,s': 0.0, 'elasticity τ1,τ': 0.0})
+            continue
+        m, _ = usModel(ρ)
+        base = m.solvePEE_CRRA()
+        tIdx, t0 = m.db['t'], m.t0Year
+        t1 = tIdx[tIdx.get_loc(t0) + 1]
+        θ1 = float(m.db['θ'].xs(t1))
+        s_ = float(base['report']['s_'].xs(t0))
+        sEq = float(base['report']['s_'].xs(t1))
+        τ0, τ1 = float(base['τ'].xs(t0)), float(base['τ'].xs(t1))
+        CR, solp = m.CRRA, base['sols'][t1]
+        sC = np.asarray(base['sols'][t0]['τ'].index, dtype = float)
+        sC = np.linspace(sC.min(), sC.max(), 4001)
+
+        def sOf(τ):
+            Θs = CR.stateApprox_t(np.full_like(sC, τ), sC, t0, θ1, solp)['Θs']
+            return float(CR._rootS(Θs[:, None], sC, np.array([s_]), t0)[0][0])
+        sAt = sOf(τ0)
+        dsdτ = (sOf(τ0 + δ) - sOf(τ0 - δ))/(2*δ)
+        dτ1ds = (float(solp['τPolicy'](1.01*sAt)) - float(solp['τPolicy'](0.99*sAt)))/(0.02*sAt)
+        rows.append({'ρ': ρ, 'τ_t0': τ0, 'τ_t1': τ1, 's_t0': sAt, 's_t0 path': sEq,
+                     'dsdτ': dsdτ, 'dτ1ds': dτ1ds, 'strategic': dτ1ds*dsdτ,
+                     'elasticity s,τ': dsdτ*τ0/sAt, 'elasticity τ1,s': dτ1ds*sAt/τ1,
+                     'elasticity τ1,τ': dτ1ds*dsdτ*τ0/τ1})
+        r = rows[-1]
+        print(f"rho={ρ}: s_{t0} {sAt:.6f} (path {sEq:.6f}); ds/dtau {dsdτ:+.5f} (el {r['elasticity s,τ']:+.3f}); "
+              f"dtau_{t1}/ds {dτ1ds:+.5f} (el {r['elasticity τ1,s']:+.3f}); strategic dtau_{t1}/dtau_{t0} "
+              f"{r['strategic']:+.5f}")
+    pd.DataFrame(rows).to_csv(out('C5_strategicTerm.csv'), index = False)
+    print('->', os.path.relpath(out('C5_strategicTerm.csv'), REPO))
+    return 0
+
+
 COMMANDS = {'selfcheck': selfcheck, 'a1': a1, 'a9': a9, 'loss': loss, 'lambda': lam, 'index': index,
-            'design': design, 'designCRRA': designCRRA, 'a13': a13}
+            'design': design, 'designCRRA': designCRRA, 'a13': a13, 'strategic': strategic}
 
 
 def main():

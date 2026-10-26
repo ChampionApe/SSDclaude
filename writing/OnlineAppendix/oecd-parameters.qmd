@@ -8,7 +8,8 @@ elasticity ξ varies under log preferences. At each ξ the U.S. and France are r
 discount factor, the political weight of the old and the taste for leisure take new values. The ranking of the
 determinants holds at every ξ of the grid: ageing and the design move the tax rate most, France's characteristics
 far less. A higher Frisch elasticity dampens the responses of the tax rate a little and some responses of savings by more,
-and it enlarges every response of hours, since labor supply is more elastic.
+and it enlarges the responses of hours, since labor supply is more elastic, all but that to France's taste for
+leisure, which it makes a little smaller.
 
 ::: {.oa-explorer}
 {{< include _generated/exhibits/OECD_Frisch-head.qmd >}}
@@ -28,3 +29,22 @@ counterfactuals(oecd.filter(d => d.host === "US" && d.calibration === "commonX" 
 
 {{< include _generated/exhibits/OECD_Frisch-foot.qmd >}}
 :::
+
+## The tax rate and inherited savings {#oecd-state}
+
+The tax rate of the Markov equilibrium is a function of the state the economy inherits, the savings of the previous
+period's young. The figure shows the U.S. tax policy of 2020 at inherited savings below and above their value on the
+equilibrium path, each IES at its own calibration. Under log preferences the tax rate does not depend on the state
+(section {{< var p.sec_LOG >}}). Away from log preferences it does: at an IES of one half the tax rate falls as
+inherited savings rise, and at an IES of two it rises, less steeply.
+
+{{< include _generated/exhibits/US_TaxState.qmd >}}
+
+Because the tax rate depends on the state, the 2020 electorate's choice reaches the 2050 tax rate through the
+savings it leaves: a higher tax lowers what the young save, and the 2050 electorate's policy responds to those
+savings. Voters in the Markov equilibrium take this into account. The table gives the size of that strategic term at
+the equilibrium path, the elasticity of savings to the tax times the slope of the 2050 policy function. It is small
+at both values of the IES. At one half, a higher tax in 2020 raises the 2050 tax by a small fraction of a percentage
+point per point, since the policy falls with savings; at two, it lowers it, by less.
+
+{{< include _generated/exhibits/US_Strategic.qmd >}}

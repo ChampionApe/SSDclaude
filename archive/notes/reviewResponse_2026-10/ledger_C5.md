@@ -182,6 +182,11 @@ period solve with the continuation's policy response frozen while h_{t+1} keeps 
 no solver function offers (`policy.CRRA.stateApprox_t` reads τ_{t+1} and h_{t+1} off one continuation); a model
 function would have to change, so it is left for W9 to decide.
 
+**Decided 2026-10-26 (RKB): the split is answered by the size of the strategic term instead**, `c5Numbers.py
+strategic` -> `C5_strategicTerm.csv`, OA table `US_Strategic` on `oecd-state` (B3), nothing in the paper. At the
+2020 equilibrium, dτ_2050/dτ_2020 = +0.024 at ρ = 0.5 (savings elasticity −0.181 times the 2050 policy elasticity
+−0.086) and −0.005 at ρ = 2 (−0.097, +0.033); zero under log. The recomputed s_2020 matches the path to 4e-8.
+
 ## Found on the way
 
 - **The log design choice carries a grid error of 0.005.** `LeadedLOG` reads the anticipated tax function

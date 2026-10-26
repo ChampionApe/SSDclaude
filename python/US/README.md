@@ -40,6 +40,7 @@ python\US\collectESCexperiments.py                           # merge -> results/
 python\US\runESC.py --stage shocks --host UK | runESCcrra.py --exact --host UK   # acute ageing and French shocks on the UK, own λ
 python\US\collectESCexperiments.py --host UK                 # -> escExperimentsUK.csv
 python\US\runESC.py --stage pathHost --spec size --phi 0.5 --commonX   # the design path of France and the UK -> escPathHost.csv
+python\US\runESC.py --stage corner --spec size --phi 0.5 --commonX     # slope at theta = 1 by lambda (France's corner) -> escCornerSlope.csv
 python\US\runShocksXi.py [--xi 0.2 0.4]                      # the US shocks at other ξ (LOG, common X) -> US_shocksXiCommonX.csv
 python\US\calibrateRhoGrid.py --medicare 0.029 | runShocksUS.py --medicare 0.029   # the Medicare reading -> USMedicare_*
 python\US\runESC.py --stage calib path shocks --spec sizePiR --tag Costs --scenarios baseline mild acute --commonX
@@ -131,6 +132,8 @@ calibration (`--noFrance` skips).
   re-install the pin at the end because the last `updateAuxPars` wins (#9; asserted in `test_esc.py`).
 - `shocks.ηLevel` preserves the HOST's `Γ_h`, which is 1 on `ModelUS` but `λ` on a calibrated vector-X
   `ModelFR`; resetting it to 1 would undo the UK's hours calibration (`test_eu.py`).
+- The leisure row imports France's calibrated `X`, pinned by hours at France's wage, so it moves with France's `ν`
+  (C7: +0.32 h at ρ = 1); the income and voting rows do not (`η_FR` moves by one factor, which `ηLevel` absorbs).
 
 ## Endogenous `θ`
 
@@ -173,8 +176,9 @@ Implemented and tested: EE, LOG and CRRA PEE, both calibration variants, `ModelF
 calibrations in both variants, three counterfactual families in both readings, the endogenous-`θ` leaded
 choice (LOG, CRRA path iteration, exact 2-D) and permanent timing, the Π-inclusive cost and the Medicare
 reading, and the `python/paper/` wiring. The results are C6's reruns of 2026-10-25 (`logs/C6runs/`, numbers in
-`notes/ledger_C6.md`) on the pension-only calibration of 2026-10-23 (C1, `notes/ledger_C1.md`), under the converged
-CRRA τ-derivatives and design grids below.
+`archive/notes/reviewResponse_2026-10/ledger_C6.md`) on the pension-only calibration of 2026-10-23 (C1, `archive/notes/reviewResponse_2026-10/ledger_C1.md`), under the converged
+CRRA τ-derivatives and design grids below; every row that reads France's ν is C7's rerun of 2026-10-26 at PaG 2021's
+retirement-age gap (`logs/C7/`, `notes/ledger_C7.md`).
 
 - Under `'size'` the UK (own `λ` = 7.74 against the US's 11.35 under LOG) and the UK at US percentiles (7.12) have own
   calibrations; France has none, its observed `θ = 1` being out of reach of a cost quadratic in the
@@ -183,7 +187,7 @@ CRRA τ-derivatives and design grids below.
 - Under the smoothing-spline derivatives the `ns` = 50 CRRA tax solve jumped by up to 2e-4 in τ, which can stop the
   (β, ω) root at a scan node; `calibrateWedge` then brackets between the finite neighbours, and `'sizePiR'` scans at
   `ns` = 150. Under C6's derivatives the ω scan of `US_jumps.csv` shows no jump (largest second difference 1.8e-6).
-- Appendix D (`runHorizon.py`, `notes/ledger_C4.md`, `ledger_C6.md` §5): from T = 2200 to 2140, 2290 or the steady-state
+- Appendix D (`runHorizon.py`, `archive/notes/reviewResponse_2026-10/ledger_C4.md`, `ledger_C6.md` §5): from T = 2200 to 2140, 2290 or the steady-state
   terminal condition τ_2020 moves ≤ 0.027 p.p. (ρ = 0.5, steady state) and the chosen θ_2020 ≤ 1.4e-4 (LOG rows
   identical); on the path the tax rule solves its first order condition to 0.003 p.p. against converged derivatives.
 - The CRRA τ-derivatives (2026-10-24, C6): `CRRA._gradProfile`, the least-squares cubic in ln(1−τ) with knots
@@ -198,7 +202,7 @@ CRRA τ-derivatives and design grids below.
   reported as such (`num_esc.tex`).
 - The cross-country test (`oecd26.py`, `runOECD26.py`, stage (ii) entry `oecd26`): rerun 2026-10-25 on C6's code at the
   pension-only U.S. calibration (β = 0.6555), fine grids, both turnout readings, the 29 (`results/oecd26/`,
-  `logs/C6runs/oecd26.log`, 35 min): anchor `λ` = 11.11 (cps) and 13.44 (cses); numbers in `notes/ledger_C3.md`,
+  `logs/C6runs/oecd26.log`, 35 min): anchor `λ` = 11.11 (cps) and 13.44 (cses); numbers in `archive/notes/reviewResponse_2026-10/ledger_C3.md`,
   `ledger_C6.md` §7. Turkey's layer-2 CSES row is from 2026-10-25, after the log tax solve's bound fix (invariants).
 - The design grids (C6): `LeadedLOG` solves the anticipated tax T_{t+1}(θ') at every candidate design (`taxes_t`)
   and refines its argmax by a cubic through four candidates (`_argmaxCubic`). At λ = 11.564 θ_2020 is 0.73242 (0.7278

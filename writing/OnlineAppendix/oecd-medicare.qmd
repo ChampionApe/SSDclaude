@@ -1,0 +1,43 @@
+# B5. Medicare among the transfers to the old {#oecd-medicare}
+
+The paper calibrates the U.S. to its public pensions alone, as it does the UK and France: the tax rate covers
+pension spending, and the design is read off the replacement rates of the public pension (appendix
+{{< var p.app_US >}}). Medicare is the other large transfer to the U.S. old. This page reads it as part of the
+system: its spending enters the tax rate, and since it pays every retiree the same benefit, it enters the design as
+a flat component. The U.S. system is then larger and less earnings-related than in the paper.
+
+## The calibration {#oecd-medicare-calibration}
+
+Medicare raises the tax rate by its spending and lowers the design by its share of the transfers, which puts the
+U.S. design below the UK's. Both calibrations target the same interest factor and workweek. To hold the interest
+factor with the larger system the discount factor rises, the political weight of the old rises to sustain the
+higher tax rate, and the taste for leisure falls a little, at every IES.
+
+{{< include _generated/exhibits/OECD_Medicare.qmd >}}
+
+## The counterfactuals {#oecd-medicare-rows}
+
+The figure sets the counterfactuals of the paper's figure {{< var p.fig_US_overview >}} on the U.S. with Medicare
+below those on the paper's U.S. Ageing moves the tax rate by about as much in the two, and it remains the largest
+determinant at every IES. Starting from a less earnings-related design, flat benefits raise the tax rate by less
+and fully earnings-related ones lower it by more; the gap between the two corners narrows, most at an IES of two.
+France's income distribution lowers the tax rate by more, and France's voting patterns raise it by more; at an IES
+of two, as on the paper's U.S., France's voting patterns move the tax rate by more than either corner of the
+design.
+
+::: {.oa-explorer}
+{{< include _generated/exhibits/OECD_MedicareRows-head.qmd >}}
+
+```{ojs}
+//| echo: false
+import {counterfactuals, control, ROWS_GIVEN, RHO, GIVEN_OUTCOMES} from "./assets/oa.js"
+oecd = FileAttachment("_generated/data/OECD_Counterfactuals.csv").csv({typed: true})
+oecdMain = oecd.filter(d => d.source === "main" && d.calibration === "commonX" && d.effect === "full")
+viewof b5Out = control("radio", GIVEN_OUTCOMES, {key: "outcome", label: "Outcome", value: "tau"})
+counterfactuals(oecdMain, {rows: ROWS_GIVEN, series: RHO, outcome: b5Out, width,
+  facets: [{label: "U.S., pensions alone (the paper's)", filter: d => d.host === "US"},
+           {label: "U.S., pensions and Medicare", filter: d => d.host === "USMedicare"}]})
+```
+
+{{< include _generated/exhibits/OECD_MedicareRows-foot.qmd >}}
+:::

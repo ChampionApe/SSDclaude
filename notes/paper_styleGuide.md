@@ -37,7 +37,7 @@ These rules are indicative, adjust if the context warrants it:
 | Savings rate | changes in p.p. of GDP, one decimal; levels in \% | "1.6 p.p.\ of GDP", "the baseline's 15.4\%" |
 | Pension spending | \% of GDP, one decimal | "1.9\% of GDP" |
 | Hours | weekly hours, one decimal | "about 6.2 hours per week", "at most 0.7 hours" |
-| Bismarckian index θ | three decimals | "0.738", "0.972" |
+| Design θ; index I = 1/(2−θ) | three decimals | "0.728", "0.972" |
 | Other parameters | as in the table | "$\xi=0.30$", "$K/Y = 3.23$" |
 | Solver tolerances | scientific | "$6\times10^{-4}$" (rare; mostly for the technical notes) |
 
@@ -59,7 +59,8 @@ These rules are indicative, adjust if the context warrants it:
 - **Preferences**: "log-GHH preferences" for the analytical case; "CRRA preferences" or "general CRRA
   preferences" for the extension; ρ is read as the intertemporal elasticity of substitution and
   written "IES" after first definition. ξ is the Frisch elasticity.
-- **Fixed symbols**: τ tax rate, θ Bismarckian index, ε universal-pension level, γ₀ informal share,
+- **Fixed symbols**: τ tax rate, θ the design (the weight on earnings-related benefits; "the Bismarckian index" is
+  figure 1.1's I = 1/(2−θ), the ratio of replacement rates, not θ: review comment #13), ε universal-pension level, γ₀ informal share,
   ν_t workers per retiree, ω political weight of the old, μ_i propensity to vote, X_i taste for
   leisure, η_i productivity, β discount factor, α capital share, s savings, h hours.
 - **Timing**: model periods are thirty years; calendar years name periods ("2010", "2020", "2040").

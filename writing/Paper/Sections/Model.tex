@@ -1,6 +1,6 @@
 \section{The Model}\label{sec:model}
 \subsection{Demographics, Inequality, and Institutions}\label{sec:model:Demo}
-We consider an economy populated by overlapping generations of workers and retirees. Within each generational cohort, we consider $J+1$ household types indexed $j = 0, \dots, J$. The $j>0$ household types allocate time between labor and leisure, pay taxes on labor income, consume, and save. When they reach retirement, they spend the return on their savings and any social security benefits they may receive, and die. Type $j=0$ households similarly allocate time between labor and leisure, consume, and save for retirement. However, they supply labor to an informal labor market, thus not subject to labor income taxes, and they save for retirement using an informal savings technology. The distribution of type $j>0$ households is given by $\gamma_j$ with $\sum_{j>0} \gamma_j = 1$, and the share of type $j=0$ households is $\gamma_0$. The ratio of workers to retirees in period $t$ follows a deterministic process, and is given by $\nu_t$. 
+We consider an economy populated by overlapping generations of workers and retirees. Within each generational cohort, we consider $J+1$ household types indexed $j = 0, \dots, J$. The $j>0$ household types allocate time between labor and leisure, pay taxes on labor income, consume, and save. When they reach retirement, they spend the return on their savings and any social security benefits they may receive, and die. Type $j=0$ households similarly allocate time between labor and leisure, consume, and save for retirement. However, they supply labor to an informal labor market, thus not subject to labor income taxes, and they save for retirement using an informal savings technology. The distribution of the formal household types $j>0$ is given by $\gamma_j$ with $\sum_{j>0} \gamma_j = 1$, and each cohort has $\gamma_0$ informal households, of type $j=0$, per formal household, a share $\gamma_0/(1+\gamma_0)$ of the cohort. The ratio of formal workers to formal retirees in period $t$ follows a deterministic process, and is given by $\nu_t$; since $\gamma_0$ is constant, it is also the ratio of all workers to all retirees.
 
 
 The government runs a pay-as-you-go (PAYG) pension system with a balanced budget. Each period, the government imposes a tax on labor supplied in the formal sector and transfers the collected amount directly to retirees. We consider social security systems that differ along two dimensions: whether workers need to qualify to receive full benefits or not and the type of benefits provided, either tied to earnings or flat-rate. We describe the different systems in section \ref{sec:model:socialSecurity}. 
@@ -29,7 +29,7 @@ In equilibrium this implies the following factor prices:
     R_t = \alpha \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha-1}, \qquad w_t = (1-\alpha) \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha}.
 \end{align}
 
-Informal households produce with a linear technology, so the informal wage $w_t^0$ and the return on informal savings $R_t^0$ are proportional to the formal sector's factor prices. 
+Informal households produce with a linear technology, and we index its factor prices to the formal sector's: the informal wage $w_t^0$ is the formal wage that would prevail at the same capital per formal worker, $s_{t-1}/\nu_t$, without the pension system, and the return on informal savings is proportional to the formal return, $R_t^0 = r_0R_t$ (appendix \ref{app:EE}). At a given capital stock the informal wage therefore does not respond to taxes: a payroll tax that lowers formal hours raises the formal wage, but not informal earnings or the old-age endowment of the hand-to-mouth informal households of section \ref{sec:LOG}.
 
 
 \subsection{Preferences and Household Choices}
@@ -87,13 +87,13 @@ Benefits are thus given by:
     b_t^i =& \left[\theta h_{t-1,i} \eta_{i}+(1-\theta)h_{t-1}\right] \overline{b}_t \\
     b_t^0 =& \epsilon h_{t-1} \overline{b}_t
 \end{align}
-where $\epsilon$ determines the level of universal pensions received by informal workers, $\theta$ measures how Bismarckian are the benefits of formal workers, and $\overline{b}_t$ is the average formal worker's pension benefits. With $\epsilon=0$ the system is purely contributive and there are no pensions for informal workers. With $\epsilon = 1-\theta$ they receive the basic common pension of formal workers, and with $\epsilon = 1-\theta+\theta \eta_1 h_{t-1,1}/h_{t-1}$ the system is purely universal in the sense that informal workers receive the same pensions as the type of formal working household with lowest productivity.  
+where $\epsilon$ determines the level of universal pensions received by informal workers, $\theta$ measures how Bismarckian are the benefits of formal workers, and $\overline{b}_t$ is the pension rate per unit of past effective labor, so that the average formal pension is $h_{t-1}\overline{b}_t$. With $\epsilon=0$ the system is purely contributive and there are no pensions for informal workers. With $\epsilon = 1-\theta$ they receive the basic common pension of formal workers, and with $\epsilon = 1-\theta+\theta \eta_1 h_{t-1,1}/h_{t-1}$ the system is purely universal in the sense that informal workers receive the same pensions as the type of formal working household with lowest productivity.  
 
 The balanced budget requirement implies that 
 \begin{align*}
     \nu_t w_t\tau_th_t = \sum_{j \geq 0} \gamma_j b_t^j
 \end{align*}
-This implies that the average pension rate $\overline{b}_t$ is:% is defined only in terms aggregate states:
+This implies that the pension rate $\overline{b}_t$ is:% is defined only in terms aggregate states:
 \begin{align}
     \overline{b}_t = \dfrac{\nu_tw_th_t\tau_t}{h_{t-1}(1+\gamma_0 \epsilon)}.
 \end{align}

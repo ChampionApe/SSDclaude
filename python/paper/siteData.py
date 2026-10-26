@@ -85,15 +85,19 @@ def _oecdBlock(df, source, host, calibration, ξ):
     return rows
 
 
+OECDHOSTS = ('US', 'UK', 'UKUS', 'USMedicare')
+
+
 def oecdCounterfactuals():
     """ OECD_Counterfactuals: every counterfactual of section 6 on the U.S., on the UK (France at the UK's
-    groups) and on the UK regrouped at the U.S. groups (France at the U.S. groups), under both calibrations
-    of the taste for leisure and at the three rho of the paper ('main'); and on the U.S. at three Frisch
-    elasticities, rho = 1, common X ('xi'; python/US/runShocksXi.py). Both effects: 'full' and 'ee' (the tax
-    held at its baseline path). """
+    groups), on the UK regrouped at the U.S. groups (France at the U.S. groups) and on the U.S. with Medicare
+    among the transfers to the old (config.US['readings']; France referenced to that U.S.), under both
+    calibrations of the taste for leisure and at the three rho of the paper ('main'); and on the U.S. at three
+    Frisch elasticities, rho = 1, common X ('xi'; python/US/runShocksXi.py). Both effects: 'full' and 'ee' (the
+    tax held at its baseline path). """
     ξ0 = _workbookXi()
     rows = []
-    for host in ('US', 'UK', 'UKUS'):
+    for host in OECDHOSTS:
         for cx in (True, False):
             rows += _oecdBlock(D.usShocks(commonX = cx, host = host), 'main', host,
                                'commonX' if cx else 'vectorX', ξ0)

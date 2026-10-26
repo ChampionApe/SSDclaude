@@ -34,6 +34,12 @@ Four stages, each writing its own csv under results/esc/:
            stage, 'own'), France cut at the UK's income groups -> escShocksUK.csv (appendix app:UKUS).
   pathHost the path stage on France and the UK, under the US-calibrated p and under their own
            (escCountry.csv) -> escPathHost.csv.
+  corner   'size' only: the slope of the leaded design objective at the Bismarckian corner, theta_{t+1} = 1,
+           and the tax there, for France, the U.S. and the UK at lambda = 0, the U.S. lambda and 100, the
+           1990 and the 2020 electorate (app:esc:cost: under log both are free of lambda, so a negative slope
+           means no lambda re-elects the corner) -> escCornerSlope.csv. Each row is recalibrated at its
+           lambda, so the slope is lambda-free only where the observed design is the corner (France): the
+           U.S. and the UK observe a design below it, where the cost moves omega and with it the slope.
 
 Spec 'sizePiR' (ModelESC: the 'size' cost with lambda*Pi_t/R_t, pi solved to the path's own) runs the calib,
 path and shocks stages; its rows carry 'ΠR', pi at the row's date (t0 for calib and shocks). Run it with a
@@ -123,6 +129,7 @@ KEYPATHHOST = ['spec', 'phi', 'commonX', 'country', 'wedgeFrom', 'pos']
 KEYCTY = ['spec', 'phi', 'commonX', 'country', 'wedgeFrom']
 KEYPERM = ['spec', 'phi', 'commonX', 'source']
 KEYFIG = ['spec', 'phi', 'commonX', 'axis', 'value']
+KEYCORNER = ['spec', 'phi', 'commonX', 'country', 'λ', 'vote']
 
 
 def pickCalib(calib, spec, phi, commonX):
@@ -708,11 +715,63 @@ def stageFig1(specs, phis, calib, out, ρ = 1.0, commonX = False):
 
 # ---------------------------------------------------------------- main
 
+
+# ---------------------------------------------------------------- stage: the slope at the Bismarckian corner
+
+CORNERH = 1e-4                       # the step of the one-sided difference at theta_{t+1} = 1
+CORNERλ = (0.0, None, 100.0)         # None: the U.S. lambda of escCalibration
+
+
+def cornerSlope(m, vote):
+    """ d W_t/d theta_{t+1} at theta_{t+1} = 1 for the electorate at db['t'] position `vote` (one-sided,
+    second order, step CORNERH), the design in force and its tax at t given, theta_{t+2} = 1; and the
+    anticipated tax there, T_{t+1}(1). Under log the choice is separable (prop:esc:separability), so the
+    continuation at theta_{t+2} = 1 does not move the slope. """
+    tIdx = m.db['t']
+    t, t1, t2 = tIdx[vote], tIdx[vote + 1], tIdx[vote + 2]
+    tLag = tIdx[vote - 1] if vote > 0 else m.B.tFirst
+    θt = float(m.db['θ'].xs(t))
+    θ1 = 1.0 - CORNERH*np.arange(3)
+    τt = m.ESC.τOfθ(t, np.array([θt]), tLag, terminal = False)[0][0]
+    τ1 = m.ESC.τOfθ(t1, θ1, t, terminal = False)[0]
+    τ2 = m.ESC.τOfθ(t2, np.array([1.0]), t1, terminal = (t2 == tIdx[-1]))[0][0]
+    cont = {'τ1': τ1, 'θ2': np.ones_like(θ1), 'τ2': np.full_like(θ1, τ2), 'terminal1': False}
+    W, _ = m.ESC.objective(t, tLag, t1, np.full_like(θ1, τt), np.full_like(θ1, θt), θ1, cont)
+    return {'date': m.db['dates'][vote], 'ω': float(m.db['ω'].xs(t)),
+            'τ1Corner': float(τ1[0]), 'slope': float((3*W[0] - 4*W[1] + W[2])/(2*CORNERH))}
+
+
+def stageCorner(specs, phis, calib, out, commonX = False):
+    rows = []
+    for spec in [s for s in specs if s == 'size']:
+        for phi in phis:
+            hit = pickCalib(calib, spec, phi, commonX)
+            if hit.empty:
+                continue
+            for country in ('FR', 'US', 'UK'):
+                for λ in CORNERλ:
+                    λv = float(hit.iloc[0]['p']) if λ is None else λ
+                    wedge = None if λv == 0 else {'spec': spec, 'phi': phi, 'p': λv}
+                    m = (buildUS(wedge, commonX = commonX) if country == 'US'
+                         else buildEU(country, wedge, commonX = commonX))
+                    m.calibrate()
+                    p0 = int(m.db['t'].get_loc(m.t0Year))
+                    for vote in (p0 - 1, p0):
+                        r = cornerSlope(m, vote)
+                        rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'country': country,
+                                     'λ': λv, 'λFrom': 'US' if λ is None else 'fixed', 'vote': vote,
+                                     'θStar': float(m.db['θ'].xs(m.t0Year))} | r)
+                        print('[{}] {} λ={:8.3f} vote {}: slope at θ=1 {:+.6f}, T(1) {:.6f}'
+                              .format(spec, country, λv, r['date'], r['slope'], r['τ1Corner']))
+                    mergeWrite(out, rows, KEYCORNER)
+    return pd.DataFrame(rows)
+
+
 def main():
     p = argparse.ArgumentParser(description = 'Endogenous theta: leaded choice under the deadweight wedge.')
     p.add_argument('--stage', nargs = '*', default = ['calib', 'path', 'shocks', 'country', 'fig1',
                                                      'permanent'],
-                   choices = ('calib', 'path', 'pathHost', 'shocks', 'country', 'fig1', 'permanent'),
+                   choices = ('calib', 'path', 'pathHost', 'shocks', 'country', 'fig1', 'permanent', 'corner'),
                    help = "pathHost: the design path of France and the UK under the US and their own cost "
                           "(escPathHost.csv; needs escCalibration.csv and escCountry.csv)")
     p.add_argument('--scenarios', nargs = '*', default = None,
@@ -767,6 +826,8 @@ def main():
         stageCountry(a.spec, a.phi, calib, f('escCountry'), commonX = a.commonX)
     if 'fig1' in a.stage:
         stageFig1(a.spec, a.phi, calib, f('escFig1'), ρ = a.rho, commonX = a.commonX)
+    if 'corner' in a.stage:
+        stageCorner(a.spec, a.phi, calib, f('escCornerSlope'), commonX = a.commonX)
     if 'permanent' in a.stage:
         stagePermanent(a.spec, a.phi, f('escPermanent'), ρ = a.rho, commonX = a.commonX)
     print('\n-> {}'.format(os.path.relpath(OUTDIR, REPO)))

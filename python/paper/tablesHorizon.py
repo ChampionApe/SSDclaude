@@ -1,6 +1,7 @@
 r""" Appendix D's tables (app:T): the horizon and the terminal condition (NUM_Horizon), and the first order
-condition's residuals off the policy functions' grids (NUM_Residuals). The candidate counts are
-tablesOA.numSelection (NUM_Selection), which appendix D and the online appendix share.
+condition's residuals off the policy functions' grids (NUM_Residuals); and the online appendix's date-by-date
+detail of the first (NUM_HorizonPaths). The candidate counts are tablesOA.numSelection (NUM_Selection), which
+appendix D and the online appendix share.
 
 Inputs: results/numerical/{US_horizon,US_horizonDesign,US_residuals,US_derivativeScheme}.csv
 (python/US/runHorizon.py) and ARG_horizon_commonX.csv, ARG_residuals_commonX.csv
@@ -18,6 +19,8 @@ from tablesOA import _row, _body, _signed, _rhoKey
 BASE_TSS = 3                                     # the paper's horizon: three periods after the last projection
 ALTERNATIVES = (('finite', 1), ('finite', 6), ('steadyState', None))
 RHOS = (0.5, 1.0, 2.0)
+TIGHT = (r'\footnotesize\setlength{\tabcolsep}{4pt}'      # ten columns within the measure, and the rows within a
+         r'\renewcommand{\arraystretch}{1.0}')            # page: overrides _xwrap's 1.25
 
 
 def _label(name):
@@ -83,9 +86,9 @@ def numHorizon():
     note = (r'\textit{Note:} Every parameter at its calibrated value at the paper' + "'" + r's horizon, $T = '
             + str(Tus[('finite', BASE_TSS)]) + r'$ in the United States and $' + str(Targ[('finite', BASE_TSS)])
             + r'$ in Argentina; the first two columns are the levels there. The other columns are the change '
-            r'against them at the same date: with the backward induction started two periods earlier ($T = '
-            + str(Tus[('finite', 1)]) + r'$ and $' + str(Targ[('finite', 1)]) + r'$), three periods later ($T = '
-            + str(Tus[('finite', 6)]) + r'$ and $' + str(Targ[('finite', 6)]) + r'$), and under the steady-state '
+            r'against them at the same date: shorter, with the backward induction started two periods earlier ($T = '
+            + str(Tus[('finite', 1)]) + r'$ and $' + str(Targ[('finite', 1)]) + r'$); longer, three periods later ($T = '
+            + str(Tus[('finite', 6)]) + r'$ and $' + str(Targ[('finite', 6)]) + r'$); and under the steady-state '
             r'terminal condition of appendix \ref{app:T}, population growth held at its last projected rate from '
             r'the last projection date on and the policy functions stationary from there, computed as the finite '
             r'horizon extended by ' + str(kSS) + r' periods (at the paper' + "'" + r's $T$ its tax policy '
@@ -97,13 +100,92 @@ def numHorizon():
             r'Argentina the universal pension is that of section \ref{sec:argentina}, its change against '
             r'the baseline of the same horizon.')
     head = (r'\textbf{Outcome} & $\bm{\rho}$ & \multicolumn{2}{c}{\textbf{Paper' + "'" + r's $\bm{T}$}} & '
-            r'\multicolumn{2}{c}{\textbf{Two periods shorter}} & \multicolumn{2}{c}{\textbf{Three periods '
-            r'longer}} & \multicolumn{2}{c}{\textbf{Steady state}}')
+            r'\multicolumn{2}{c}{\textbf{Shorter}} & \multicolumn{2}{c}{\textbf{Longer}} & '
+            r'\multicolumn{2}{c}{\textbf{Steady state}}')
     return _xwrap('NUM_Horizon', 'results/numerical/{US_horizon,US_horizonDesign,ARG_horizon'
                   + C.argVariantTag(C.ARG['commonX']) + '}.csv',
                   'The horizon and the terminal condition', _label('Horizon'),
-                  r'>{\raggedright\arraybackslash}p{3.4cm}c' + 'Y'*8, head, _body(lines), note,
-                  width = r'\textwidth', size = r'\footnotesize')
+                  r'>{\raggedright\arraybackslash}p{3.0cm}c' + 'Y'*8, head, _body(lines), note,
+                  width = r'\textwidth', size = TIGHT)
+
+
+ALTLABEL = {('finite', 1): 'Two periods shorter', ('finite', 6): 'Three periods longer',
+            ('steadyState', None): 'Steady state'}
+ALTKEY = {('finite', 1): 'shorter', ('finite', 6): 'longer', ('steadyState', None): 'steady'}
+LOGTOL = 1e-9          # the U.S. log rows: horizon-free (prop:LOG:PEE) to the solver's tolerance, or refused
+
+
+def _projectedYears(cal):
+    """ The dated years from the calibration year to the last dated one. """
+    return [y for k, y in sorted(cal['dates'].items()) if k >= cal['t0']]
+
+
+def _pathsPanel(df, title, years, outcomes, ρs, arm):
+    """ One panel of NUM_HorizonPaths: a title row with the dates, then per (outcome, rho, alternative) the
+    change against the paper's horizon at every date. """
+    lines = [r'\multicolumn{3}{l}{\textit{' + title + r'}} & ' + ' & '.join(str(y) for y in years) + r' \\']
+    for label, block, col, change, key in outcomes:
+        for i, ρ in enumerate(ρs):
+            base = _pick(df, block, ρ, 'finite', BASE_TSS)
+            for j, (terminal, tss) in enumerate(ALTERNATIVES):
+                alt = _pick(df, block, ρ, terminal, tss)
+                cells = [label if i == j == 0 else '', C.num(ρ, 1) if j == 0 else '', ALTLABEL[(terminal, tss)]]
+                cells += [change(alt.loc[t, col] - base.loc[t, col]) if np.isfinite(alt.loc[t, col]) else '--'
+                          for t in years]
+                lines.append(_row(cells, '{}_{}@{}@{}'.format(arm, key, _rhoKey(ρ), ALTKEY[(terminal, tss)])))
+        lines[-1] = lines[-1].replace(r' \\ % row:', r' \\[.4em] % row:')
+    return lines
+
+
+def numHorizonPaths():
+    r""" The online appendix's detail of NUM_Horizon: the change against the paper's horizon at every projected
+    date from the calibration year on, under each alternative horizon. The U.S. under CRRA preferences (the
+    tax with the design given; the design and the tax with it chosen), whose log rows do not depend on the
+    horizon and are checked to LOGTOL rather than printed; Argentina's tax and the universal pension's change
+    in it at every rho. Rows keyed `<arm>_<outcome>@<rho>@<alternative>`. """
+    us, arg = D.horizon('US'), D.horizon('ARG')
+    dpp = lambda v: _signed(100*v, 3)
+    dth = lambda v: _signed(v, 4)
+    calUS, calARG = C.usCalendar(), C.calendar()
+    yUS, yARG = _projectedYears(calUS), _projectedYears(calARG)
+    usOut = [('Tax rate, design given', 'tax', 'τ', dpp, 'tax'),
+             (r'Design $\theta$, chosen', 'design', 'θ', dth, 'design'),
+             ('Tax rate, design chosen', 'design', 'τ', dpp, 'taxchosen')]
+    logGap = 0.
+    for _, block, col, _, _ in usOut:
+        base = _pick(us, block, 1.0, 'finite', BASE_TSS)
+        for terminal, tss in ALTERNATIVES:
+            alt = _pick(us, block, 1.0, terminal, tss)
+            logGap = max(logGap, float(np.max(np.abs(alt.loc[yUS, col].values - base.loc[yUS, col].values))))
+    if not logGap <= LOGTOL:
+        raise ValueError('NUM_HorizonPaths: the U.S. log rows move with the horizon by {:.2e}'.format(logGap))
+    crra = sorted(float(r) for r in us[us['preferences'] == 'CRRA']['ρ'].unique())
+    lines = _pathsPanel(us, 'United States, CRRA preferences', yUS, usOut, crra, 'us')
+    lines += _pathsPanel(arg, 'Argentina', yARG, [
+        ('Tax rate', 'tax', 'τ', dpp, 'tax'),
+        ('Universal pension: change in the tax rate', 'tax', 'dτ', dpp, 'reform')], RHOS, 'arg')
+    Tus = {k: int(_pick(us, 'tax', crra[0], *k)['T'].iloc[0]) for k in (('finite', BASE_TSS), ('finite', 1), ('finite', 6))}
+    Targ = {k: int(_pick(arg, 'tax', 1.0, *k)['T'].iloc[0]) for k in (('finite', BASE_TSS), ('finite', 1), ('finite', 6))}
+    note = (r'\textit{Note:} The change in each outcome against the paper' + "'" + r's horizon ($T = '
+            + str(Tus[('finite', BASE_TSS)]) + r'$ in the United States, $' + str(Targ[('finite', BASE_TSS)])
+            + r'$ in Argentina) at the same date, every parameter at its calibrated value: with the backward '
+            r'induction started two periods earlier ($T = ' + str(Tus[('finite', 1)]) + r'$ and $'
+            + str(Targ[('finite', 1)]) + r'$), three periods later ($T = ' + str(Tus[('finite', 6)]) + r'$ and $'
+            + str(Targ[('finite', 6)]) + r'$), and under the steady-state terminal condition of appendix '
+            r'\ref{app:T}. The dates run from the calibration year to the last dated period. Changes in the tax '
+            r'rates in percentage points, in the design in units of $\theta$. '
+            r'Under log preferences ($\rho = 1$) the U.S.\ outcomes do not depend on the horizon: their largest '
+            r'change at these dates is ' + _sci(logGap) + r', and they are not shown. The levels at the '
+            r'calibration year and one period later are in the horizon table of appendix \ref{app:T}.')
+    head = (r'\textbf{Outcome} & $\bm{\rho}$ & \textbf{Horizon} & \multicolumn{' + str(len(yUS)) + r'}{c}{'
+            r'\textbf{Change against the paper' + "'" + r's} $\bm{T}$}')
+    if len(yUS) != len(yARG):
+        raise ValueError('NUM_HorizonPaths: {} U.S. and {} Argentine dates'.format(len(yUS), len(yARG)))
+    return _xwrap('NUM_HorizonPaths', 'results/numerical/{US_horizon,US_horizonDesign,ARG_horizon'
+                  + C.argVariantTag(C.ARG['commonX']) + '}.csv',
+                  'The horizon and the terminal condition, date by date', 'table:OA:NUM_HorizonPaths',
+                  r'>{\raggedright\arraybackslash}p{3.2cm}c>{\raggedright\arraybackslash}p{2.6cm}' + 'Y'*len(yUS),
+                  head, _body(lines), note, width = r'\textwidth', size = r'\footnotesize')
 
 
 def _sci(v):
@@ -177,9 +259,10 @@ def numResiduals():
             r'nodes of the state grid. The root is located by the selection of every period, without the smoothing '
             r'of the policy, against the solved continuation. The first four columns evaluate the condition as '
             r'the solver does; the last four with its derivatives in the tax converged, on a tax grid of '
-            + str(nTau(us)) + r' nodes in the U.S.\ and ' + str(nTau(arg)) + r' in Argentina. The U.S.\ solver '
-            r'differentiates along the tax with a smoothing spline, Argentina' + "'" + r's along $\ln(1-\tau)$ with '
-            r'an interpolating one. Solved at every period with converged derivatives and the calibrated parameters, '
+            + str(nTau(us)) + r' nodes in the U.S.\ and ' + str(nTau(arg)) + r' in Argentina. Both solvers '
+            r'differentiate along $\ln(1-\tau)$: the U.S.\ one with a least-squares cubic spline whose knots are '
+            + C.num(C.US['gridSettings']['gradKnotSpacing'], 2) + r' apart in the tax, Argentina' + "'" + r's with '
+            r'an interpolating spline. Solved at every period with converged derivatives and the calibrated parameters, '
             r'the U.S.\ tax in ' + str(y0) + ' is ' + both(lambda ρ: C.num(100*base('reference', ρ, y0), 2) + r'\%')
             + ' at $\\rho = ' + both(lambda ρ: C.num(ρ, 1)).replace(' and ', '$ and $') + r'$ (the calibration'
             + "'" + r's ' + C.num(100*base('published', ρs[0], y0), 2) + r'\%), and the difference between '
