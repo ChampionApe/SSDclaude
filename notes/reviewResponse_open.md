@@ -33,8 +33,8 @@ everything below are in the working tree.
    brought to RKB before any commit. Done 2026-10-26, with the five fallback passages; the workbooks' `Readme`
    sheets deleted (their content is in `data/README.md` and appendix F).
 2. **Commit** phase 3 and the 2026-10-26 changes, on RKB's go.
-3. **V** (RKB's go 2026-10-26; done but the `runTests.py --all` verdict: latexmk clean, numbers audit and referee
-   pass run, their 15 fixes applied, the documentation items below done):
+3. **V** (RKB's go 2026-10-26; done: latexmk clean, numbers audit and referee
+   pass run, their 15 fixes applied, the documentation items below done; `runTests.py --all` 35/35):
    - builds and tests: `build.py`, `checkPaper`, latexmk, `test_onlineAppendix`, `runTests.py`;
    - a numbers-against-tables audit of the whole paper (paper-reviewer), and a referee pass over sections 3 and
      7 and appendices B–D against each review comment (paper-reviewer-lead);
@@ -45,7 +45,7 @@ everything below are in the working tree.
      "0.738 against 0.745"); `NUM_Residuals`' note still says "smoothing spline" (`tablesHorizon.py`);
      `data/oecd29_sources.csv` still says "appendix F's 63.5" (stage (0) rerun, network); `python/US/README.md`
      is 209 lines against the ~100 budget.
-4. **Overleaf** push of both projects and the OA publish, on RKB's go.
+4. **Overleaf** push of both projects and the OA publish: done 2026-10-26 (`d5f0ef6`), for RKB's review there.
 5. **Wrap-up**: TODO W16 removed, a root `RESEARCH_LOG.md` entry, this file and C7's brief and ledger archived
    with a line in `archive/INDEX.md`.
 
