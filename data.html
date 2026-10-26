@@ -207,6 +207,11 @@ window.Quarto = {
   <a href="./oecd-leisure.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B4. Identification of X</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./oecd-medicare.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B5. Medicare among the transfers to the old</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -241,6 +246,11 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./esc-timing.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C5. The timing of the choice</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./esc-oecd26.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C6. The cross-country test</span></a>
   </div>
 </li>
       </ul>
@@ -303,7 +313,7 @@ window.Quarto = {
 
 <p>Figure 1.1 of the paper sets pension spending and the Bismarckian–Beveridgean index of the OECD countries against their population growth and their income inequality. The tabs below the figure give the values behind each marker with the year each refers to, the provider, dataset and series of every column with the date it was retrieved, and the pairwise correlations the paper’s introduction describes.</p>
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
-<div class="oa-exhibit oa-figure" id="ex-OECDdata"><div class="oa-caption"><span class="oa-num">Figure D1.1.</span> Population growth, income inequality, pension spending and design <span class="oa-badge">Figure 1.1 in the paper</span></div><img src="_generated/figs/OECDdata.svg" alt="Population growth, income inequality, pension spending and design"><div class="oa-note"><em>Note:</em> <em>Sources:</em> OECD Social Expenditure Database (pension spending), OECD historical population data (population growth), OECD, <em>Pensions at a Glance 2021</em>, table 4.1 (Bismarckian–Beveridgean index) and the UNU-WIDER World Income Inequality Database (Gini coefficient). Details are in the technical documentation (Berg and Gonzalez-Eiras 2026).</div><div class="oa-links">Data: <a href="_generated/data/data/oecdFigure1.csv" download="">oecdFigure1.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>data/oecdFigure1.csv</code></li></ul><p>Built by <code>oecdFigure1.figure</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECDdata</code>, then <code>build.py --site</code>.</p></details></div></div>
+<div class="oa-exhibit oa-figure" id="ex-OECDdata"><div class="oa-caption"><span class="oa-num">Figure D1.1.</span> Population growth, income inequality, pension spending and design <span class="oa-badge">Figure 1.1 in the paper</span></div><img src="_generated/figs/OECDdata.svg" alt="Population growth, income inequality, pension spending and design"><div class="oa-note"><em>Note:</em> <em>Sources:</em> OECD Social Expenditure Database (pension spending), OECD historical population data (population growth), OECD, <em>Pensions at a Glance 2021</em>, table 4.1 (Bismarckian–Beveridgean index) and the UNU-WIDER World Income Inequality Database (Gini coefficient). Details are in the technical documentation (Berg and Gonzalez-Eiras 2026). Section 7.3 of the paper takes the model to 26 of these countries, without Mexico, Turkey and Korea, where more than a quarter of employment is informal (ILOSTAT).</div><div class="oa-links">Data: <a href="_generated/data/data/oecdFigure1.csv" download="">oecdFigure1.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>data/oecdFigure1.csv</code></li></ul><p>Built by <code>oecdFigure1.figure</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d5f0ef6/python/paper">python/paper</a>) at commit <code>d5f0ef6</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECDdata</code>, then <code>build.py --site</code>.</p></details></div></div>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Countries</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Sources</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Correlations</a></li></ul>
 <div class="tab-content">
@@ -347,7 +357,7 @@ window.Quarto = {
 </tbody></table>
 <div class="oa-notes">
 <p><em>Note:</em> The 29 OECD members plotted in figure <a href="#ex-OECDdata">D1.1</a>. Each variable is read in 2020 or the nearest year within 2 years of it (the year columns); population growth is the population of 2020 over that of 1990. Sources in table <a href="#ex-OECD_Sources">D1.2</a>. In bold the economies the paper calibrates.</p>
-</div></div><div class="oa-links">Data: <a href="_generated/data/data/oecdFigure1.csv" download="">oecdFigure1.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>data/oecdFigure1.csv</code></li></ul><p>Built by <code>tablesOA.oecdCountries</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Countries</code>, then <code>build.py --site</code>.</p></details></div></div>
+</div></div><div class="oa-links">Data: <a href="_generated/data/data/oecdFigure1.csv" download="">oecdFigure1.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>data/oecdFigure1.csv</code></li></ul><p>Built by <code>tablesOA.oecdCountries</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d5f0ef6/python/paper">python/paper</a>) at commit <code>d5f0ef6</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Countries</code>, then <code>build.py --site</code>.</p></details></div></div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
@@ -373,7 +383,7 @@ window.Quarto = {
 </tbody></table>
 <div class="oa-notes">
 <p><em>Note:</em> The columns are those of data/oecdFigure1.csv; data/oecdFigure1_sources.csv carries the URL of every source.</p>
-</div></div><div class="oa-links">Data: <a href="_generated/data/data/oecdFigure1_sources.csv" download="">oecdFigure1_sources.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>data/oecdFigure1_sources.csv</code></li></ul><p>Built by <code>tablesOA.oecdSources</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Sources</code>, then <code>build.py --site</code>.</p></details></div></div>
+</div></div><div class="oa-links">Data: <a href="_generated/data/data/oecdFigure1_sources.csv" download="">oecdFigure1_sources.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>data/oecdFigure1_sources.csv</code></li></ul><p>Built by <code>tablesOA.oecdSources</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d5f0ef6/python/paper">python/paper</a>) at commit <code>d5f0ef6</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Sources</code>, then <code>build.py --site</code>.</p></details></div></div>
 </div>
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
@@ -392,7 +402,7 @@ window.Quarto = {
 </tbody></table>
 <div class="oa-notes">
 <p><em>Note:</em> The concepts plotted in figure <a href="#ex-OECDdata">D1.1</a>. Pairwise complete observations; the <span class="math inline">\(p\)</span>-values are those of the two-sided tests of zero correlation. Variables as in table <a href="#ex-OECD_Countries">D1.1</a> and their sources in table <a href="#ex-OECD_Sources">D1.2</a>.</p>
-</div></div><div class="oa-links">Data: <a href="_generated/data/results/paper/oecdCorrelations.csv" download="">oecdCorrelations.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/oecdCorrelations.csv</code></li></ul><p>Built by <code>tablesOA.oecdCorrelations</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/ea52b8e/python/paper">python/paper</a>) at commit <code>ea52b8e</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Correlations</code>, then <code>build.py --site</code>.</p></details></div></div>
+</div></div><div class="oa-links">Data: <a href="_generated/data/results/paper/oecdCorrelations.csv" download="">oecdCorrelations.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/oecdCorrelations.csv</code></li></ul><p>Built by <code>tablesOA.oecdCorrelations</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d5f0ef6/python/paper">python/paper</a>) at commit <code>d5f0ef6</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Correlations</code>, then <code>build.py --site</code>.</p></details></div></div>
 </div>
 </div>
 </div>
