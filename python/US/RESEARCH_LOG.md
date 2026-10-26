@@ -111,7 +111,7 @@ self-check: escCountry's France row bitwise on HEAD's ν). France ω 1.346 → 1
 French leisure counterfactual is not ν-free, since France's X is pinned by hours at a ν-dependent wage: workweek +0.32 h at
 ρ = 1, rates unchanged; income and voting rows unchanged (η_FR moves by one factor). One design-layer fallback appeared
 (escShocksCRRA, ρ = 0.5, cost on the design, frLeisure chosen). oecd26 recomputed nothing. Tests eu 40, esc 91, counts 11,
-oecd26 32, onlineAppendix 10, all pass. Numbers and the paper lines that moved: `notes/ledger_C7.md`.
+oecd26 32, onlineAppendix 10, all pass. Numbers and the paper lines that moved: `archive/notes/reviewResponse_2026-10/ledger_C7.md`.
 
 ## 2026-10-26 — V, documentation items (branch `review-2026-10`)
 README cut to 100 lines; the pre-cut file is `archive/readmes/US_README_2026-10-26.md` (`archive/INDEX.md`). Technical note:

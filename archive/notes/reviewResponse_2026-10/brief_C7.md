@@ -24,7 +24,7 @@ tolerance unchanged; check that rather than assume it.
 3. `python/paper/build.py` (all), `--site` generation (`onlineAppendix.py`), `--map`; `writing/checkPaper.py`;
    `python/US/test_eu.py`, `test_esc.py`, `test_counts.py`, `test_oecd26.py`, `python/paper/test_onlineAppendix.py`.
    A test that pins an old French number: update the pinned value only if the change is the ν change, and say so.
-4. Ledger `notes/ledger_C7.md` (≤ 60 lines): files rerun with timings; old → new for every French number the
+4. Ledger `archive/notes/reviewResponse_2026-10/ledger_C7.md` (≤ 60 lines): files rerun with timings; old → new for every French number the
    paper or online appendix prints in prose or a generated table (France's ω and β, 2020 tax, the France
    reference rows, the design chosen under the U.S. λ (0.795), the own-λ row (still none?), the corner slope
    (still negative and λ-free?), France's design path, FRUK rows, section 6's ω ordering France > U.S. > UK);

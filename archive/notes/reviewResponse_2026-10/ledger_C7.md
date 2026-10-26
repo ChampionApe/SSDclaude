@@ -1,6 +1,6 @@
 # Ledger C7: France's ν at the PaG 2021 retirement-age gap
 
-Brief `notes/brief_C7.md` (W16, RKB 2026-10-26): `data/FRMain.xlsx` `population!D` (the only sheet changed) has ν 1990–2080
+Brief `archive/notes/reviewResponse_2026-10/brief_C7.md` (W16, RKB 2026-10-26): `data/FRMain.xlsx` `population!D` (the only sheet changed) has ν 1990–2080
 = 1.098687, 1.038558, 0.967240, 0.932899 (was 1.020785, 0.966884, 0.903744, 0.872658). Old = HEAD (`logs/C7/old/`); numbers from
 `logs/C7/{compare,ledger_numbers}.py`.
 

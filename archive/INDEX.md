@@ -90,7 +90,10 @@ Where the reasoning behind each choice the paper rests on is written down.
   tax; finding #20).
 - The briefs: `brief_C0.md` (candidate counts), `brief_C2.md` (Argentina fixes), `brief_C6.md` and
   `brief_C6runs.md` (solver fixes and reruns), `brief_W.md` (the writers' shared rules).
-- The open remainder at archiving: live in `notes/reviewResponse_open.md` until W16 closes.
+- The decisions of 2026-10-26 (A13 as the strategic term, France's corner slope in the pipeline, C.2's cut,
+  France's ν at the PaG 2021 gaps, section 7.1's wording kept) and V's checklist: `reviewResponse_open.md`. France's
+  reruns at the new ν (the leisure rows move, one design-layer fallback): `brief_C7.md`, `ledger_C7.md`. W16 closed
+  2026-10-26 (`d5f0ef6`); the A13 split is TODO C13.
 
 ## Session logs
 

@@ -48,3 +48,13 @@ Medicare, against the text (decided: pensions only in all three countries, Medic
 the young term with 1+β; ν_t is UN WPP 2024 total population growth, not census data. An agent assembled the
 29-country inputs (`data/oecd29*.csv` by `python/paper/oecd29Data.py`, `notes/data_oecd29.md`). Python run with
 `-I` ignores PYTHONIOENCODING: Greek letters print with `-X utf8`.
+
+## 2026-10-24 to 2026-10-26 — the review response carried out (W16 closed)
+
+Phases 1–3 of the plan of 2026-10-23: code and runs C0–C7, theory notes T1–T3, the writing W1–W9 and verification V
+(numbers audit, referee pass, 15 fixes, `runTests.py --all` 35/35), commits `f3a15a4`, `cd81410`, `6bb36ec`, `d5f0ef6`.
+Decided with RKB on 2026-10-26: A13 as the strategic term in the OA only; France's ν at PaG 2021's retirement-age gaps
+(1.5/1), rerun as C7, which moved the French leisure rows and left one design-layer fallback state, now stated; section
+7.1's wording kept. The workbooks' `Readme` sheets were deleted, their content in `data/README.md`. Both Overleaf
+projects pushed and the OA published from `d5f0ef6`. Everything is in `archive/notes/reviewResponse_2026-10/`
+(`archive/INDEX.md`); left open: TODO C13 (the A13 split), D3, W17. Findings #20–21.

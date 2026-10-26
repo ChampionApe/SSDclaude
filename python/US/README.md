@@ -88,7 +88,7 @@ test, appendix D's checks, and the `python/paper/` wiring.
 The results are C6's reruns of 2026-10-25 (`logs/C6runs/`) on the pension-only calibration of 2026-10-23 (C1), under
 the converged CRRA τ-derivatives and design grids (`test_gridConvergence.py`); every row that reads France's `ν` is
 C7's rerun of 2026-10-26 at PaG 2021's retirement-age gaps (`logs/C7/`). Numbers, old → new:
-`archive/notes/reviewResponse_2026-10/ledger_C{1..6}.md`, `notes/ledger_C7.md`. At ρ = 1: `θ*` = 0.7278, `λ` =
+`archive/notes/reviewResponse_2026-10/ledger_C{1..6}.md`, `archive/notes/reviewResponse_2026-10/ledger_C7.md`. At ρ = 1: `θ*` = 0.7278, `λ` =
 11.345 (`'size'`; 25.082 and 2.643 at ρ = 0.5 and 2), the UK's own 7.74; France has no interior crossing.
 
 ## Open
@@ -96,5 +96,5 @@ C7's rerun of 2026-10-26 at PaG 2021's retirement-age gaps (`logs/C7/`). Numbers
 - The path iteration (`method = path`) and the flat-only variant's leaded calibration were last run on 2026-10-03
   at the earlier calibration (`θ*` = 0.738); they are cross-checks no exhibit prints (`num_esc.tex`, checks).
 - One design-layer fallback state: `escShocksCRRA.csv`, ρ = 0.5, `'scale'`, French leisure, design chosen.
-- A13's myopic/Markov split needs a new model function (deferred; `notes/reviewResponse_open.md`).
+- A13's myopic/Markov split needs a new model function (deferred; TODO C13).
 - Data caveats of the UK and France: `data/README.md`.
