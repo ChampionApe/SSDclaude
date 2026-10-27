@@ -73,5 +73,5 @@ round-trip exact. Overleaf pulled before the writing (RKB's abstract and introdu
 (numbers audit and referee pass by two reviewers, their fixes in). Symbol rule: the transported parameter is
 `\varepsilon`, never the universal pension's `\epsilon` (style guide §4). Lesson: tex edits never through the Bash
 tool's sed or heredocs, which mangle backslashes (a `\v` became a vertical tab); scripts written with Write instead.
-Commit e14e556; `runTests.py --all` 35/35 in 3068 s. Open: RKB's Overleaf review (the Conde-Ruiz sentence's new place in the
+Commits e14e556, 8267f10; `runTests.py --all` 35/35 in 3068 s; the online appendix published from 8267f10 (gh-pages 4281a38). Open: RKB's Overleaf review (the Conde-Ruiz sentence's new place in the
 introduction, the ε letter), W17, C13, C12, D2, W14.
