@@ -95,6 +95,16 @@ Where the reasoning behind each choice the paper rests on is written down.
   reruns at the new ν (the leisure rows move, one design-layer fallback): `brief_C7.md`, `ledger_C7.md`. W16 closed
   2026-10-26 (`d5f0ef6`); the A13 split is TODO C13.
 
+**The paper by object (C14, R6, R7, W18–W21, V), archived 2026-10-27** — `notes/byObject_2026-10/`
+- The decisions of 2026-10-27 (one laboratory, the U.S.; the UK and France as donor data plus the deep test;
+  the cross-section transporting ε with λ_i = ε Π_i/R_i, the common-return β bracket, both turnouts; section 6's
+  spending test without the cost; the UK as host retired, D3 closed), the packages and their agents, checkpoint 1
+  as decided (ε, common β, U.S. turnout; the inequality verdict conditional on the turnout profile; the deep test
+  under both transports), the Overleaf pull and the status table: `plan_byObject.md`.
+- Every slope of every variant, the anchors, the deep test under both transports with the share of each distance
+  closed (the UK 0.33, France 0.06 under ε; 0.23, 0.25 under λ), the reconcile rows, the counts, the wall times and
+  the paper sentences the main variant changed, old → new with file:line: `ledger_R6.md`.
+
 ## Session logs
 
 `sessionLogs/RESEARCH_LOG_<log>.md`, one per live log, oldest first: verbatim through 2026-09-11, then a heading

@@ -9,18 +9,7 @@ some of them; new items continue the numbering.
 
 ## Plan in progress
 
-**C14, R6, R7, W18–W21. The paper by object** (RKB, 2026-10-27; plan `notes/plan_byObject.md`). Section 6 the
-laboratory with the design given, closing with the 26-country spending test at the observed designs without the
-cost; section 7 the laboratory with the design chosen, then the deep test on the UK and France, then the 26-country
-design test. The UK and France become donor data plus the deep test; the UK as host retires (R7). The cross-section
-transports $\epsilon$ rather than $\lambda$ (`sizePiR`), reports the common-return $\beta$ bracket, and runs both
-turnout readings. C14 the driver's variants (model-coder), R6 the runs, builders and ledger (paper-compute), checkpoint
-1 with RKB, then the writing on the Overleaf-pulled state and V.
-
-**D3. The UK at the U.S. income cuts.** Closes with R7 of `notes/plan_byObject.md` (the regrouped row and online B2
-retire with the UK as host; the caveats below go with them). Until then: `UKMain.xlsx`'s `calibrationUS` regroups the UK by a linear fit
-(`data/README.md`): relative incomes (0.79, 1.07, 1.45) at shares 58/18/24%. The UK's own groups, (0.50, 1.00,
-2.13) at 29/58/13%, bound any exact regrouping: the top 24% average at least 1.61 and the bottom 58% at most 0.75, so $\tilde V \geq 0.10$ (0.104) against the 0.065 of `US_ESC_Country`'s last row, read in appendix G.1 (with the re-read design 0.543), appendix F.3 and online B2. That the regrouping moves the UK's choice little probably survives. A recount of the survey at the U.S. cuts, then stage (i) for `UKUS` and the ESC stages. On RKB's call of 2026-10-22 the paper carries a caveat until then: G.1 states the bound and calls the row an approximation, F.3 says the fit understates the dispersion, and G.1's comparison of the UK at its own cuts (0.223) with France at the U.S. cuts (0.218) gives France at the UK's cuts (0.246) in parentheses. Remove the caveats when the row is recomputed.
+**W22. RKB's review of the by-object draft on Overleaf** (2026-10-28): the draft of 2026-10-27 (`archive/notes/byObject_2026-10/plan_byObject.md`, its decisions and status). Points left for RKB: the Conde-Ruiz sentence now sits in the introduction's design-literature paragraph (W20); the transported cost parameter is written ε (`\varepsilon`), distinct from the universal pension ϵ, and a different letter is RKB's call (referee pass); section 7.4 and appendix H grew by about half.
 
 ## Candidates, not scheduled
 

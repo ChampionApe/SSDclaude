@@ -58,3 +58,20 @@ Decided with RKB on 2026-10-26: A13 as the strategic term in the OA only; France
 7.1's wording kept. The workbooks' `Readme` sheets were deleted, their content in `data/README.md`. Both Overleaf
 projects pushed and the OA published from `d5f0ef6`. Everything is in `archive/notes/reviewResponse_2026-10/`
 (`archive/INDEX.md`); left open: TODO C13 (the A13 split), D3, W17. Findings #20–21.
+
+## 2026-10-27 — the paper by object (C14, R6, R7, W18–W21, V)
+
+Decided with RKB in the morning: one laboratory, the U.S., with France and the UK as donor data plus the deep test;
+section 6 ends with the 26-country test of spending at the observed designs without the cost, section 7 holds the
+deep test (7.3) and the design test (7.4); the cross-section transports ε (λ_i = ε Π_i/R_i, `sizePiR`), β common with
+the common-return bracket beside, both turnouts run; the UK as host retired (R7, D3 closed). Plan and ledger in
+`archive/notes/byObject_2026-10/`. Checkpoint 1: ε, common β and U.S. turnout as the main variant, the inequality verdict
+conditional on the turnout profile, the deep test under both transports (a third of the UK's distance and little of
+France's under ε, a quarter of each under λ). Runs 3 h 19 min, every row one equilibrium; new exhibits
+`OECD26_Spending`, `OECD26_Robustness`, `OECD26_Reconcile`, `USFRCalibration`; `runESC.mergeWrite` rereads csvs
+round-trip exact. Overleaf pulled before the writing (RKB's abstract and introduction edits kept) and pushed after V
+(numbers audit and referee pass by two reviewers, their fixes in). Symbol rule: the transported parameter is
+`\varepsilon`, never the universal pension's `\epsilon` (style guide §4). Lesson: tex edits never through the Bash
+tool's sed or heredocs, which mangle backslashes (a `\v` became a vertical tab); scripts written with Write instead.
+Commit e14e556; `runTests.py --all` 35/35 in 3068 s. Open: RKB's Overleaf review (the Conde-Ruiz sentence's new place in the
+introduction, the ε letter), W17, C13, C12, D2, W14.
