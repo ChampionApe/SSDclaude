@@ -8,7 +8,6 @@ Run:  .venv\Scripts\python.exe python\US\runESC.py                     # every s
       ... --stage country                      France and the UK
       ... --spec scale flat  --phi 0.25 0.5 0.75
       ... --spec size --phi 0.5 --commonX --stage calib path shocks country     # the paper's wedge
-      ... --spec size --phi 0.5 --commonX --stage shocks --host UK   # French characteristics on the UK
 
 Four stages, each writing its own csv under results/esc/:
 
@@ -30,8 +29,6 @@ Four stages, each writing its own csv under results/esc/:
   country  France and the UK under (i) the US-calibrated wedge and (ii) their own. (i) asks whether one
            common technology of redistribution puts the three countries in the observed order; (ii) is the
            appendix's own convention (a separately calibrated p per country).
-  shocks --host UK   acute ageing and the French scenarios on the UK at its own calibrated p (country
-           stage, 'own'), France cut at the UK's income groups -> escShocksUK.csv (appendix app:UKUS).
   pathHost the path stage on France and the UK, under the US-calibrated p and under their own
            (escCountry.csv) -> escPathHost.csv.
   corner   'size' only: the slope of the leaded design objective at the Bismarckian corner, theta_{t+1} = 1,
@@ -42,8 +39,8 @@ Four stages, each writing its own csv under results/esc/:
            U.S. and the UK observe a design below it, where the cost moves omega and with it the slope.
 
 Spec 'sizePiR' (ModelESC: the 'size' cost with lambda*Pi_t/R_t, pi solved to the path's own) runs the calib,
-path and shocks stages; its rows carry 'ΠR', pi at the row's date (t0 for calib and shocks). Run it with a
---tag: it is an experiment beside the paper's cost, not a row of the paper's csvs.
+path, shocks and country stages; its rows carry 'ΠR', pi at the row's date (t0 for calib, shocks and country).
+Run it with a --tag: it is an experiment beside the paper's cost, not a row of the paper's csvs.
 
 Everything is LOG (rho = 1). The CRRA case needs a two-dimensional (s, theta) state and is not this file.
 """
@@ -85,7 +82,9 @@ def mergeWrite(path, rows, key):
     never match the run's own rows again and duplicate them on every write. """
     df = pd.DataFrame(rows)
     if os.path.exists(path) and len(df):
-        old = pd.read_csv(path)
+        # round_trip: the default parser keeps 17 digits counting the zeros after the decimal point, so a rewrite
+        # would truncate the rows it merely carries (a 1e-4 diagnostic lost its last three digits).
+        old = pd.read_csv(path, float_precision = 'round_trip')
         # A csv written before one of the key columns existed has no way to match a new row, and must
         # not be dropped on the strength of the columns it does share -- so the missing column is added
         # as NaN, which the '__na__' fill turns into a key no current row can equal. The old rows are
@@ -171,20 +170,19 @@ def buildUS(wedge = None, ρ = 1.0, nθ = 41, nθCand = 121, commonX = False):
     return m
 
 
-def buildEU(country, wedge = None, grouping = None, nθ = 41, nθCand = 121, ρ = 1.0, commonX = False,
-            ω = 2., **escKw):
+def buildEU(country, wedge = None, nθ = 41, nθCand = 121, ρ = 1.0, commonX = False, ω = 2., **escKw):
     """ France or the UK under the wedge. commonX must MATCH the US model it is compared against: under
     commonX France's X_i is a single scalar and its eta_i inverts z^eta directly, so both characteristics
     differ from the vector-X calibration and a mismatched pair would put a France that does not exist in
     this run's units next to the US rows (runShocksUS.frenchData says the same about the shock data).
     ω only seeds calibrate(); escKw goes to ModelESC (nθCandCRRA, nθCand2D). """
-    pars, kwargs, dates, workweek = testEU.load(country, grouping = grouping)
+    pars, kwargs, dates, workweek = testEU.load(country)
     pars.update({'ρ': float(ρ), 'ω': float(ω)})
     # usReference must be read off the SAME variant's sweep: it carries hbar_US, and hbar differs
     # between vector X and common X by construction (python/US/README.md).
     m = ModelESCFR(pars = pars, wedge = wedge, usRef = testEU.usReference(commonX = commonX), nθ = nθ,
                    nθCand = nθCand, commonX = commonX, **escKw, **kwargs)
-    m.db['dates'], m.db['workweek'], m.db['country'] = dates, workweek, country + (grouping or '')
+    m.db['dates'], m.db['workweek'], m.db['country'] = dates, workweek, country
     m.LOG.initGS(GS)
     return m
 
@@ -394,27 +392,25 @@ def leadedNewPath(m, hbarRef, apply = None, data = None, pin = False):
             'θ1': float(θPath.iloc[pos+1]), 'm': mt, 'multiplicity': mult}
 
 
-def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, host = 'US', scenarios = None):
-    """ host 'US': the cost parameter is the US calibration (escCalibration.csv). host 'UK': the UK's OWN
-    calibrated parameter (escCountry.csv, wedgeFrom 'own'; `calib` is that frame), France regrouped at the
-    UK's income cuts, and the scenarios of HOST_SCENARIOS. `scenarios` runs a subset (rows of other
-    scenarios on disk are kept by mergeWrite); France's own row is run with any French scenario. """
+def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, scenarios = None):
+    """ The counterfactuals on the US at the US-calibrated cost parameter (escCalibration.csv's frame,
+    `calib`). `scenarios` runs a subset (rows of other scenarios on disk are kept by mergeWrite); France's
+    own row is run with any French scenario. Every row carries host 'US'. """
     rows = []
-    frGrouping = HOSTS[host]
+    host = 'US'
     for spec in specs:
         for phi in phis:
-            hit = pickCalib(calib, spec, phi, commonX) if host == 'US' else pickOwn(calib, host, spec, phi, commonX)
+            hit = pickCalib(calib, spec, phi, commonX)
             if hit.empty:
-                print(f'  [{spec}, φ={phi}] no calibrated cost for host {host} -- skipped')
+                print(f'  [{spec}, φ={phi}] no calibrated cost -- skipped')
                 continue
             p = float(hit.iloc[0]['p'])
-            m = (buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX) if host == 'US'
-                 else buildEU(host, {'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX))
+            m = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
             m.calibrate()
             _, hbarRef = baselineRefs(m)
-            data = frenchData(m, commonX = commonX, grouping = frGrouping)
+            data = frenchData(m, commonX = commonX)
             print(f'\n[{host}: {spec}, φ={phi}, p={p:.4f}] counterfactuals')
-            names = scenarios or (ESC_SCENARIOS if host == 'US' else HOST_SCENARIOS)
+            names = scenarios or ESC_SCENARIOS
             for name in names:
                 apply, d = (None, None) if name == 'baseline' else (SHOCKS_ESC[name][1], data)
                 for pin in (True, False):
@@ -442,7 +438,7 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, host = 'US',
             if not any(n.startswith('fr') for n in names):
                 continue
             try:
-                f = franceRow(m, spec, phi, p, hbarRef, ρ = ρ, commonX = commonX, grouping = frGrouping)
+                f = franceRow(m, spec, phi, p, hbarRef, ρ = ρ, commonX = commonX)
                 rows.append(f | {'host': host})
                 print('  {:<10} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}'
                       .format('France', 'True', f['θ_t0'], f['τ_t0'], f['sr_t0'], f['ww_t0']))
@@ -452,15 +448,15 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, host = 'US',
     return pd.DataFrame(rows)
 
 
-def franceRow(m, spec, phi, p, hbarRef, ρ = 1.0, commonX = False, grouping = None):
+def franceRow(m, spec, phi, p, hbarRef, ρ = 1.0, commonX = False):
     """ France's own calibrated equilibrium at 2020 under the same wedge, in escShocks' row schema.
 
     Not a shock on the host model: France carries its own eta, X, mu, nu AND its own calibrated omega, so
     what separates it from the all-French-characteristics row is precisely what the observable
     characteristics do not explain. The workweek is on the host's scale (hbarRef, and the host's datum
     passed explicitly to readout) and is ModelFR's own hours target, so that cell reproduces the datum
-    rather than predicting it. grouping: France's income cuts, those of the host (None = US, 'UK'). """
-    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, grouping = grouping, ρ = ρ, commonX = commonX)
+    rather than predicting it. """
+    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
     mFR.calibrate()
     pos = mFR.db['t0']
     out = mFR.solvePEE_LOG()
@@ -503,26 +499,19 @@ SHOCKS_ESC = dict(sh.SHOCKS) | {
 # the two characteristics that move the DESIGN in opposite directions.
 ESC_SCENARIOS = ('baseline', 'mild', 'acute', 'frIncome', 'frLeisure', 'frVoting', 'frBoth', 'frAll')
 
-# A host other than the US runs acute ageing and the French characteristics (appendix app:UKUS; the online
-# appendix's two-host figure). HOSTS: host -> the grouping France's households are cut at for that host
-# (runShocksUS.HOSTS' third entry).
-HOST_SCENARIOS = ('baseline', 'acute', 'frIncome', 'frLeisure', 'frVoting', 'frBoth', 'frAll')
-HOSTS = {'US': None, 'UK': 'UK'}
-
-
 def pickOwn(country, host, spec, phi, commonX):
-    """ The host's OWN converged cost calibration from escCountry.csv's frame, or an empty frame. """
+    """ `host`'s OWN converged cost calibration from escCountry.csv's frame (`country`), or an empty frame. """
     hit = country[(country['country'] == host) & (country['wedgeFrom'] == 'own') & (country['spec'] == spec)
                   & (country['phi'] == phi) & (country['converged'].astype(str) == 'True')]
     return hit[hit['commonX'].astype(bool) == bool(commonX)]
 
 
-def frenchData(m, commonX = False, grouping = None):
-    """ France's characteristics in the form shocks.py wants (runShocksUS.frenchData, LOG only), cut at
-    `grouping` (None = US percentiles, 'UK' = the UK's cuts). 'θUS' is the HOST's design.
+def frenchData(m, commonX = False):
+    """ France's characteristics in the form shocks.py wants (runShocksUS.frenchData, LOG only), France's
+    households cut at the US percentiles. 'θUS' is the US design.
 
-    commonX must match the host model being shocked, for the reason buildEU gives. """
-    parsFR, kwFR, datesFR, wwFR = testEU.load('FR', grouping = grouping)
+    commonX must match the US model being shocked, for the reason buildEU gives. """
+    parsFR, kwFR, datesFR, wwFR = testEU.load('FR')
     mFR = ModelFR(pars = parsFR | {'ρ': 1., 'ω': 2.}, usRef = testEU.usReference(commonX = commonX),
                   commonX = commonX, **kwFR)
     mFR.db['dates'], mFR.db['workweek'] = datesFR, wwFR
@@ -543,6 +532,21 @@ def frenchData(m, commonX = False, grouping = None):
 
 # ---------------------------------------------------------------- stage: France and the UK
 
+def usWedgeRow(m, spec, phi, commonX, label, pUS):
+    """ The country stage's row of `m` (France or the UK built at the U.S. parameter pUS, calibrated): the design in
+    force in 2020 on the freely simulated path (leadedDesignAtT0 on its own policies: under 'sizePiR' solveLeaded
+    at its own fixed point in pi), the counts of that recursion, and the 2020 tax on the theta*-pinned path
+    (solvePEE_LOG, at its own pi, which wedgeReadout's 'ΠR' then reads). """
+    t0 = m.t0Year
+    θStar = float(m.db['θ'].xs(t0))
+    ch = m.leadedDesignAtT0()
+    mult = m.ESC.lastMultiplicity
+    τc = float(m.solvePEE_LOG()['τ'].xs(t0))
+    return ({'spec': spec, 'phi': phi, 'commonX': commonX, 'country': label, 'wedgeFrom': 'US',
+             'p': pUS, 'θStar': θStar, 'choice': ch, 'ω': float(m.db['ω'].xs(t0)), 'τ': τc}
+            | wedgeReadout(m, τc) | multiplicityColumns(mult))
+
+
 def stageCountry(specs, phis, calib, out, commonX = False):
     rows = []
     for spec in specs:
@@ -551,32 +555,21 @@ def stageCountry(specs, phis, calib, out, commonX = False):
             if hit.empty:
                 continue
             pUS = float(hit.iloc[0]['p'])
-            for country, grouping in (('FR', None), ('UK', None), ('UK', 'US')):
-                label = country + (grouping or '')
+            for country in ('FR', 'UK'):
+                label = country
                 # (i) the US-calibrated wedge, imposed
                 try:
-                    m = buildEU(country, {'spec': spec, 'phi': phi, 'p': pUS}, grouping = grouping,
-                                commonX = commonX)
+                    m = buildEU(country, {'spec': spec, 'phi': phi, 'p': pUS}, commonX = commonX)
                     m.calibrate()
-                    t0 = m.t0Year
-                    sols = m.ESC.solveBackward()
-                    mult = m.ESC.lastMultiplicity
-                    θStar = float(m.db['θ'].xs(t0))
-                    ch = m.leadedDesignAtT0(sols)
-                    τc = float(m.solvePEE_LOG()['τ'].xs(t0))
-                    rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'country': label,
-                                 'wedgeFrom': 'US',
-                                 'p': pUS, 'θStar': θStar, 'choice': ch,
-                                 'ω': float(m.db['ω'].xs(t0)), 'τ': τc} | wedgeReadout(m, τc)
-                                | multiplicityColumns(mult))
+                    rows.append(usWedgeRow(m, spec, phi, commonX, label, pUS))
+                    θStar, ch = rows[-1]['θStar'], rows[-1]['choice']
                     print('[{}, φ={}] {:<5} US wedge p={:.4f}: θ*={:.4f} -> choice {:.4f}  (Vtilde={:.4f})'
                           .format(spec, phi, label, pUS, θStar, ch, rows[-1]['Vtilde']))
                 except Exception as e:
                     print(f'  {label} US-wedge FAILED {type(e).__name__}: {e}')
                 # (ii) its own calibrated p
                 try:
-                    m = buildEU(country, {'spec': spec, 'phi': phi, 'p': pUS}, grouping = grouping,
-                                commonX = commonX)
+                    m = buildEU(country, {'spec': spec, 'phi': phi, 'p': pUS}, commonX = commonX)
                     rec = m.calibrateWedge(spec = spec, phi = phi, verbose = False)
                     own = (wedgeReadout(m, m.ESC.τAt(m.t0Year, rec['θ'])) if rec['converged']
                            else {'Vtilde': float(m.B.Vtilde(m.t0Year))})
@@ -775,8 +768,8 @@ def main():
                    help = "pathHost: the design path of France and the UK under the US and their own cost "
                           "(escPathHost.csv; needs escCalibration.csv and escCountry.csv)")
     p.add_argument('--scenarios', nargs = '*', default = None,
-                   help = 'the shocks stage runs these scenarios only (default: all of the host); rows of '
-                          'the others on disk are kept')
+                   help = 'the shocks stage runs these scenarios only (default: all); rows of the others '
+                          'on disk are kept')
     p.add_argument('--spec', nargs = '*', default = ['scale', 'flat'],
                    choices = ('scale', 'flat', 'size', 'sizePiR'),
                    help = "'size' is the paper's wedge (f(theta, tau), lambda in the p slot); 'scale' the "
@@ -792,21 +785,9 @@ def main():
                    help = 'the scan bracket for the wedge parameter (p, or lambda under size); default per '
                           'spec, ModelESC.WEDGE_BRACKET. Applies to every spec asked for in one run.')
     p.add_argument('--tag', default = '')
-    p.add_argument('--host', default = 'US', choices = tuple(HOSTS),
-                   help = "the economy the shocks stage imposes France's characteristics on. 'UK': the "
-                          "UK's own calibrated cost (escCountry.csv, run the country stage first), France "
-                          "cut at the UK's groups; writes escShocksUK.csv. Only the shocks stage takes it.")
     a = p.parse_args()
     os.makedirs(OUTDIR, exist_ok = True)
     f = lambda n: os.path.join(OUTDIR, f'{n}{a.tag}.csv')
-
-    if a.host != 'US':
-        if set(a.stage) != {'shocks'}:
-            raise SystemExit('--host {} runs the shocks stage only (--stage shocks)'.format(a.host))
-        stageShocks(a.spec, a.phi, pd.read_csv(f('escCountry')), f('escShocks' + a.host), ρ = a.rho,
-                    commonX = a.commonX, host = a.host, scenarios = a.scenarios)
-        print('\n-> {}'.format(os.path.relpath(OUTDIR, REPO)))
-        return 0
 
     calib = None
     if 'calib' in a.stage:

@@ -3,8 +3,6 @@ r""" Workbook loaders for the France and UK variants -- the ModelFR counterpart 
     import testEU
     m = testEU.model('FR')                 # France
     m = testEU.model('UK')                 # UK, its own income groups
-    m = testEU.model('UK', grouping = 'US')  # UK, regrouped at US income percentiles
-    m = testEU.model('FR', grouping = 'UK')  # France, regrouped at the UK's own income cuts
 
 Same sheet layout as data/USMain_test.xlsx with two differences, both of which are the calibration
 protocol showing up in the data (see modelFR.py):
@@ -20,16 +18,9 @@ protocol showing up in the data (see modelFR.py):
 France's 'Replacement rate' is 1, and getTheta (getθ) returns exactly 1 at RR0 = 1 for ANY income
 grouping -- which is why France's groups can be cut at US percentiles. Nothing imposes theta = 1 in code.
 
-The UK workbook carries a second pair of sheets, 'heterogeneityUS'/'calibrationUS', holding the same UK
-data regrouped at the US income percentiles (cumulative population shares 0.5823/0.7580/1). Those are for
-counterfactuals that need the two countries' groups to line up; the UK's OWN calibration uses its own
-half-mean/mean cuts, which is what grouping = 'UK' (the default) selects. The two carry different
-replacement-rate ratios (0.694 vs 0.868) and so different theta -- they are not interchangeable.
-
-The France workbook takes the same convention for the UK exercise: a pair 'heterogeneityUK'/'calibrationUK'
-holding France regrouped at the UK's own cuts (cumulative shares 0.2916/0.8728/1), selected by
-grouping = 'UK'. `load` raises a KeyError naming the sheet until that pair exists in data/FRMain.xlsx.
-A grouping is just a sheet suffix: nothing here checks that it makes sense for the country.
+Only the 'population', 'heterogeneity' and 'calibration' sheets are read. The regrouped pairs in the
+workbooks (the UK at US percentiles, 'heterogeneityUS'/'calibrationUS'; France at the UK's cuts,
+'heterogeneityUK'/'calibrationUK') are not (data/README.md).
 """
 import os
 import numpy as np, pandas as pd
@@ -40,17 +31,11 @@ PATHS = {'FR': os.path.join(DIR, '..', '..', 'data', 'FRMain.xlsx'),
 t_ss = 3   # number of periods in steady state, as in test.py
 
 
-def load(country, grouping = None, t_ss = t_ss):
-    """ Read a workbook into (pars, kwargs, dates, workweek), in the form ModelFR's __init__ wants.
-    grouping selects the sheet pair: None/'' the workbook's own, 'US' the '...US' pair (UK), 'UK' the
-    '...UK' pair (France). """
-    suffix = grouping or ''
+def load(country, t_ss = t_ss):
+    """ Read a workbook into (pars, kwargs, dates, workweek), in the form ModelFR's __init__ wants. """
     wb = pd.read_excel(PATHS[country], sheet_name = None, header = None)
 
     def sheet(name):
-        if name not in wb:
-            raise KeyError("{} has no sheet '{}': the {} regrouping of {} has not been added to the workbook"
-                           .format(os.path.basename(PATHS[country]), name, suffix or 'own', country))
         d = pd.DataFrame(wb[name].values)
         return pd.DataFrame(d.iloc[1:, ].values, columns = d.iloc[0, :])
 
@@ -60,8 +45,8 @@ def load(country, grouping = None, t_ss = t_ss):
     TLog = len(datesLog)
     dates = datesLog.union(pd.Index([datesLog[-1]+30*i for i in range(1, t_ss+1)]))
 
-    dfj = sheet('heterogeneity'+suffix)
-    dfc = sheet('calibration'+suffix)
+    dfj = sheet('heterogeneity')
+    dfc = sheet('calibration')
     dfc = pd.Series(dfc.iloc[0, :].values, index = dfc.columns)
     workweek = dfc['Average workweek']
 
@@ -96,15 +81,15 @@ def usReference(commonX = False, h0US = None, variant = ''):
     return usRefFromCsv(csv, h0US = h0US)
 
 
-def model(country, grouping = None, commonX = False, ρ = 1., ω = 2., usVariant = '', **over):
+def model(country, commonX = False, ρ = 1., ω = 2., usVariant = '', **over):
     """ A ready ModelFR on `country`'s workbook, with the US reference wired to the sweep of the matching
     variant (and US reading, usVariant; see usReference). beta is NOT set here: setUSRef installs it from
     the reference at db's rho when calibrate runs.
     """
     from modelFR import ModelFR
-    pars, kwargs, dates, workweek = load(country, grouping = grouping)
+    pars, kwargs, dates, workweek = load(country)
     pars.update({'ρ': ρ, 'ω': ω})
     m = ModelFR(pars = pars | over, commonX = commonX,
                 usRef = usReference(commonX = commonX, variant = usVariant), **kwargs)
-    m.db['dates'], m.db['workweek'], m.db['country'] = dates, workweek, country+(grouping or '')
+    m.db['dates'], m.db['workweek'], m.db['country'] = dates, workweek, country
     return m

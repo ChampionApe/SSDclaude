@@ -85,16 +85,15 @@ def _oecdBlock(df, source, host, calibration, ξ):
     return rows
 
 
-OECDHOSTS = ('US', 'UK', 'UKUS', 'USMedicare')
+OECDHOSTS = ('US', 'USMedicare')
 
 
 def oecdCounterfactuals():
-    """ OECD_Counterfactuals: every counterfactual of section 6 on the U.S., on the UK (France at the UK's
-    groups), on the UK regrouped at the U.S. groups (France at the U.S. groups) and on the U.S. with Medicare
-    among the transfers to the old (config.US['readings']; France referenced to that U.S.), under both
-    calibrations of the taste for leisure and at the three rho of the paper ('main'); and on the U.S. at three
-    Frisch elasticities, rho = 1, common X ('xi'; python/US/runShocksXi.py). Both effects: 'full' and 'ee' (the
-    tax held at its baseline path). """
+    """ OECD_Counterfactuals: every counterfactual of section 6 on the U.S. and on the U.S. with Medicare among
+    the transfers to the old (config.US['readings']; France referenced to that U.S.), under both calibrations of
+    the taste for leisure and at the three rho of the paper ('main'); and on the U.S. at three Frisch
+    elasticities, rho = 1, common X ('xi'; python/US/runShocksXi.py). Both effects: 'full' and 'ee' (the tax
+    held at its baseline path). """
     ξ0 = _workbookXi()
     rows = []
     for host in OECDHOSTS:
@@ -131,16 +130,16 @@ def _escRows(source, host, spec, ξ, ρ, scenario, pinned, lev, base):
 
 
 def escCounterfactuals():
-    """ ESC_Counterfactuals: section 7's counterfactuals on the U.S. (both cost specifications) and on the UK
-    (the paper's cost at the UK's own parameter), each read with the design pinned and chosen, at the three
-    rho of the paper ('main'); and acute ageing on the U.S. at three Frisch elasticities, rho = 1 ('xi';
-    escXiRobustness.csv, whose baselines are its path rows in 2020). The design is a level; the tax rate,
-    savings over GDP and the workweek are also changes against the baseline of the same reading. """
+    """ ESC_Counterfactuals: section 7's counterfactuals on the U.S. under both cost specifications, each read
+    with the design pinned and chosen, at the three rho of the paper ('main'); and acute ageing on the U.S. at
+    three Frisch elasticities, rho = 1 ('xi'; escXiRobustness.csv, whose baselines are its path rows in 2020).
+    The design is a level; the tax rate, savings over GDP and the workweek are also changes against the
+    baseline of the same reading. """
     ξ0 = _workbookXi()
     rows = []
-    for host in ('US', 'UK'):
-        df = D.escExperiments(host)
-        for spec in ([s for s in sorted(df['spec'].unique())] if host == 'US' else [C.US['esc']['spec']]):
+    for host in ('US',):
+        df = D.escExperiments()
+        for spec in sorted(df['spec'].unique()):
             for ρ in C.US['esc']['ρTable']:
                 for pinned in (True, False):
                     try:

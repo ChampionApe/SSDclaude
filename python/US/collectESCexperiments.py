@@ -1,6 +1,6 @@
 r""" Collect the endogenous-theta counterfactual runs across rho into one table.
 
-Run:  .venv\Scripts\python.exe python\US\collectESCexperiments.py [--host UK]
+Run:  .venv\Scripts\python.exe python\US\collectESCexperiments.py
       ... --costs        the ageing counterfactuals under the three costs -> escAgeingCosts.csv (see costs())
 
 Inputs (results/esc/): escShocks.csv (rho = 1, LOG, runESC.py) and escShocksCRRA.csv (rho != 1, CRRA,
@@ -96,10 +96,7 @@ def costs(frames):
 
 def main():
     sys.stdout.reconfigure(encoding = 'utf-8', line_buffering = True)
-    # --host UK merges the UK-host runs (runESC.py / runESCcrra.py --host UK) into escExperimentsUK.csv.
-    # A missing CRRA file is an empty frame there, so the LOG rows can be built before the CRRA leg ends.
     ap = argparse.ArgumentParser()
-    ap.add_argument('--host', default = 'US', choices = ('US', 'UK'))
     ap.add_argument('--costs', action = 'store_true',
                     help = "write escAgeingCosts.csv from the paper's csvs and the --tag Costs runs instead")
     args = ap.parse_args()
@@ -118,11 +115,8 @@ def main():
             print('--- {}: changes at 2020 against the baseline of the same reading ---'.format(lab))
             print(piv.round(4).to_string(), '\n')
         return
-    hs = '' if args.host == 'US' else args.host
-    fCRRA = os.path.join(ESC, f'escShocksCRRA{hs}.csv')
-    d = merge(pd.read_csv(os.path.join(ESC, f'escShocks{hs}.csv')),
-              pd.read_csv(fCRRA) if (hs == '' or os.path.exists(fCRRA)) else pd.DataFrame(columns = ['ρ']))
-    out = os.path.join(ESC, f'escExperiments{hs}.csv')
+    d = merge(pd.read_csv(os.path.join(ESC, 'escShocks.csv')), pd.read_csv(os.path.join(ESC, 'escShocksCRRA.csv')))
+    out = os.path.join(ESC, 'escExperiments.csv')
     d.to_csv(out, index = False)
     print(f'-> {os.path.relpath(out, REPO)}  ({len(d)} rows)\n')
 

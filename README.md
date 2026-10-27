@@ -24,7 +24,7 @@ has a `README.md` (purpose, files, how to run, invariants, status, open items) a
 | `runTests.py` | the repo-wide runner: 24 fast suites (~7 min), `--all` adds the five slow ones (~1 h), `--list`, `-k <pattern>` |
 
 **`results/`**: solved output. `calibration/` holds the parameter sweeps and one pickled instance per point,
-each sweep with its own pickle directory (`instances/` for Argentina, `instancesUS*`, `instances{FR,UK,UKUS}*`);
+each sweep with its own pickle directory (`instances/` for Argentina, `instancesUS*`, `instances{FR,UK}*`);
 `shocks/` the counterfactual paths; `sweeps/` the `(ε, θ)` comparative statics; `esc/` the endogenous-`θ`
 runs; `numerical/` the stationary-policy checks; `paper/` the built tables and figures. Superseded runs go in a
 subdirectory, never beside the live ones (`notes/crossCuttingFindings.md` #8).

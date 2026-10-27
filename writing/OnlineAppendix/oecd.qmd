@@ -1,16 +1,14 @@
 # B. Rich OECD countries with the design given {#oecd}
 
-Section {{< var p.sec_oecd >}} of the paper calibrates the model without informal households to the U.S., the UK and
-France and changes the U.S. calibration one characteristic at a time: its pension design, its demography, and the
+Section {{< var p.sec_oecd >}} of the paper calibrates the model without informal households to the U.S. and France
+and changes the U.S. calibration one characteristic at a time: its pension design, its demography, and the
 income distribution, voting patterns and taste for leisure that set France apart. Appendix {{< var p.app_US >}} gives
-the data and the household heterogeneity. This part shows the calibrations across the IES, the counterfactuals with
-the UK compared with the U.S. and with the UK regrouped at the U.S. income groups, the U.S. counterfactuals across the
-Frisch elasticity and the tax rate against inherited savings, what changes when the taste for leisure is identified
+the data, the household heterogeneity and the UK's calibration, which the deep test of section
+{{< var p.sec_esc_deepTest >}} uses. This part shows the three calibrations across the IES, the U.S. counterfactuals
+across the Frisch elasticity and the tax rate against inherited savings, what changes when the taste for leisure is identified
 group by group, and the U.S. with Medicare among the transfers to the old.
 
 - [B1. Calibration](oecd-ies.qmd): the three calibrations at every IES of the grid.
-- [B2. Other countries](oecd-countries.qmd): what shapes pensions, savings and labor supply in the U.S. and the
-  UK, and the UK at the U.S. income groups.
 - [B3. Other parameters](oecd-parameters.qmd): the U.S. counterfactuals across the intertemporal and the Frisch
   elasticity, and the tax rate against inherited savings.
 - [B4. Identification of X](oecd-leisure.qmd): the common taste for leisure against one per income group.

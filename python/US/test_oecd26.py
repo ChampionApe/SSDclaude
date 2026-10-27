@@ -1,7 +1,7 @@
 r""" The cross-country test's loader and driver (oecd26.py, runOECD26.py); the two calibrations of the cost parameter
 are test_oecd26Anchor.py's (slow).
 
-Run:  .venv\Scripts\python.exe python\US\test_oecd26.py        (~2 min)
+Run:  .venv\Scripts\python.exe python\US\test_oecd26.py        (~4.5 min)
 
   L  The loader reproduces data/oecd29*.csv for the 29: ν over DATES against oecd29_population.csv (wpp2024, with
      the 1960 and 2110 copies), γ_i, y_i and Ṽ against the distribution file and oecd29.csv's *_usPct, I against
@@ -22,14 +22,29 @@ Run:  .venv\Scripts\python.exe python\US\test_oecd26.py        (~2 min)
      through both layers (the U.S., Australia at the clip θ = 0, Italy at θ = 1), the U.S. rows against the
      anchor, reuse of rows under an unchanged key, recomputation under force or a moved anchor, refusal of a
      stale anchor row, and Luxembourg's 'noTurnout' row under cses.
-  P  results/oecd26/, once complete, was computed at the U.S. calibration of now: each anchor row keyed on today's
-     β and U.S. inputs at the fine grid, each layer row against that anchor and keyed on today's inputs, one tax
-     equilibrium and no fallback per row. Skipped with a NOTE while the files are absent or partial (a run in
-     progress writes them row by row). R's β are the 2026-10-03 run's by design; nothing else is.
+  N  Spec 'none', coarse: the anchor calibrates ω to τ0 and reads no design (p, θChosen, θInForce, fStar, f0 NaN,
+     status 'ok'); at θ_c = 1 (France, Austria) layer 1's τ_2020 is eq (1.4) at ν_2020.
+  Q  betaRule 'commonR', coarse, at D's anchor: layer 1's R_2020 is the anchor's (the U.S. recovers the anchor's β),
+     layer 2's two residuals vanish; the β-common settings carry no betaRule (their keys are unchanged).
+  Π  Spec 'sizePiR', coarse: each row's π fixed points converged (ΠRgap < ΠR_TOL), λEff2020 = p·ΠR2020, and the
+     readouts are each solve's own: τ_2020 and ΠR2020 a fresh solvePEE_LOG's, θInForce and τInForce a fresh
+     solveLeaded(pinAtT0 = False)'s; layer 2 matches spending.
+  K  runESC.usWedgeRow (the country stage's U.S.-cost row), the UK at coarse design grids: under 'sizePiR' the
+     choice is a fresh free path's at its own π, the tax and ΠR the pinned path's; under 'size' the choice is the
+     earlier sequence's (policies solved first, then leadedDesignAtT0 on them) bitwise.
+  M  results/oecd26/'s csvs copied to a temporary directory: a run under 'size', 'common' at the fine grid reuses
+     every row, whether or not the csv has the betaRule column; a forced recompute of GBR's layer-1 cps row writes
+     the column ('common' on every row) and reproduces τ_2020 and θInForce to 1e-10, the other rows unchanged.
+     Skipped with a NOTE while results/oecd26/ is absent, partial or not current (P says which).
+  P  results/oecd26/, once complete, was computed at the U.S. calibration of now: per spec, each anchor row keyed on
+     today's β and U.S. inputs at the fine grid; per spec and β rule, each layer row against that anchor and keyed
+     on today's inputs, one tax equilibrium and no fallback per row. A variant whose rows are absent or partial (a
+     run in progress writes them row by row) is skipped with a NOTE. R's β are the 2026-10-03 run's by design;
+     nothing else is.
   U  Every solve above records one tax equilibrium and no fallback: under log the tax is unique
      (archive/notes/reviewResponse_2026-10/theory_uniqueness.md), so a count above one is a defect.
 """
-import os, sys, time, tempfile, shutil
+import os, sys, time, tempfile, shutil, filecmp
 import numpy as np, pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -37,7 +52,9 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 import test as testmod
 import oecd26
 import runOECD26 as R
+import runESC
 from model import ModelUS
+from modelESC import ΠR_TOL
 from gridsearch.testing import check, report
 
 tic = time.time()
@@ -214,9 +231,10 @@ cfg = R.settings(coarse = True)
 inpUS = oecd26.countryInputs('USA')
 m = R._build(inpUS, β, ωSeed, 10., cfg)
 cal = m.calibrate()
-a = {'turnout': 'cps', 'spec': R.SPEC, 'phi': R.PHI, 'commonX': R.COMMONX, 'iso3': 'USA', 'status': 'ok', 'β': β,
-     'ω': float(cal['pars']['ω']), 'p': 10., 'τData': inpUS['τ0'], 'θData': inpUS['θ'],
+a = {'turnout': 'cps', 'spec': cfg['spec'], 'phi': R.PHI, 'commonX': R.COMMONX, 'betaRule': 'common', 'iso3': 'USA',
+     'status': 'ok', 'β': β, 'ω': float(cal['pars']['ω']), 'p': 10., 'τData': inpUS['τ0'], 'θData': inpUS['θ'],
      'inputsKey': R.anchorKey(inpUS, β, cfg), 'grid': cfg['grid']}
+RA = float(cal['report']['R'])                     # the anchor's R_2020 (the θ-pinned path's), Q's target
 R.mergeWrite(os.path.join(tmp, 'anchor.csv'), [a], R.KEYANCHOR)
 counts.append(('D anchor at λ = 10', cal['report']['PEE']['multiplicity']))
 ref = (β, ωSeed, βSource)
@@ -263,46 +281,215 @@ lux = R.stageLayer('layer1', 'cses', ['LUX'], tmp, a, cfg)
 check("D: Luxembourg under cses gets a 'noTurnout' row", len(lux) == 1 and lux[0]['status'] == 'noTurnout'
       and lux[0]['nEqMax'] == -1)
 
+MULT = ('nEqMax', 'nCandMax', 'nFallback')
+
+# ==== N: no cost ==============================================================================================
+tmpN = tempfile.mkdtemp(prefix = 'oecd26N_')
+cfgN = R.settings(coarse = True, spec = 'none')
+aN = R.stageAnchor('cps', tmpN, cfgN, (β, ωSeed, βSource))
+counts.append(('N anchor', {k: aN[k] for k in MULT}))
+check("N: the 'none' anchor calibrates ω to τ0 and reads no design (p, θChosen, θInForce, fStar, f0 NaN), status ok",
+      aN['status'] == 'ok' and abs(aN['τResidual']) < 1e-8 and cfgN['bracket'] is None
+      and all(np.isnan(float(aN[k])) for k in ('p', 'θChosen', 'θInForce', 'τInForce', 'fStar', 'f0', 'τPinGap',
+                                                'ΠR2020', 'λEff2020')),
+      'ω {:.6f}, τ_2020 - τ0 {:.1e}'.format(aN['ω'], aN['τResidual']))
+rowsN = {r['iso3']: r for r in R.stageLayer('layer1', 'cps', ['FRA', 'AUT'], tmpN, aN, cfgN)}
+gapN = {}
+for iso, r in rowsN.items():
+    inp = oecd26.countryInputs(iso)
+    gapN[iso] = abs(r['τ2020'] - oecd26.closedFormTax(inp['α'], β, inp['ξ'], aN['ω'],
+                                                      inp['ν'][oecd26.DATES.get_loc(oecd26.T0YEAR)]))
+    counts.append(('N layer1 ' + iso, {k: r[k] for k in MULT}))
+check("N: at θ_c = 1 (FRA, AUT) layer 1's τ_2020 without the cost is eq (1.4) at ν_2020, and no design is read",
+      all(rowsN[c]['θData'] == 1. and np.isnan(rowsN[c]['θInForce']) for c in ('FRA', 'AUT'))
+      and max(gapN.values()) < 1e-8, ', '.join('{} |Δτ| {:.1e}'.format(c, g) for c, g in gapN.items()))
+
+# ==== Q: β set to the anchor's 2020 return ====================================================================
+tmpQ = tempfile.mkdtemp(prefix = 'oecd26Q_')
+cfgQ = R.settings(coarse = True, betaRule = 'commonR')
+aQ = a | {'R2020': RA}
+q1 = {r['iso3']: r for r in R.stageLayer('layer1', 'cps', ['USA', 'GBR'], tmpQ, aQ, cfgQ)}
+q2 = R.stageLayer('layer2', 'cps', ['GBR'], tmpQ, aQ, cfgQ)[0]
+for r in list(q1.values()) + [q2]:
+    counts.append(('Q {} {}'.format(r['layer'], r['iso3']), {k: r[k] for k in MULT}))
+check("Q: under 'commonR' layer 1's R_2020 is the anchor's at the anchor's ω (USA, GBR); the U.S. recovers the "
+      "anchor's β", all(r['status'] == 'ok' and abs(r['R2020'] - RA) < 1e-8 and r['ω'] == a['ω'] and r['βAnchor'] == β
+                        and r['RTarget'] == RA for r in q1.values()) and abs(q1['USA']['β'] - β) < 1e-8,
+      'R_2020 - R_US: {}; β: USA {:.10f} (anchor {:.10f}), GBR {:.6f}'.format(
+          ', '.join('{} {:.1e}'.format(c, r['R2020'] - RA) for c, r in q1.items()), q1['USA']['β'], β, q1['GBR']['β']))
+check("Q: under 'commonR' layer 2's two residuals vanish (GBR: R_2020/R_US - 1, τ_2020 - τ0)",
+      q2['status'] == 'ok' and abs(q2['R2020']/RA - 1) < 1e-8 and abs(q2['τ2020'] - q2['τData']) < 1e-8
+      and q2['calResidual'] < 1e-8,
+      'R {:.1e}, τ {:.1e}; β {:.6f}, ω {:.6f}'.format(q2['R2020']/RA - 1, q2['τ2020'] - q2['τData'], q2['β'], q2['ω']))
+check("Q: the β-common settings carry no betaRule (their rows keep their keys); a 'commonR' row has a key of its own",
+      'betaRule' not in R.settings() and 'betaRule' not in cfg and q1['USA']['inputsKey'] != l1['USA']['inputsKey'])
+
+# ==== Π: the Π-inclusive cost =================================================================================
+tmpP = tempfile.mkdtemp(prefix = 'oecd26P_')
+cfgP = R.settings(coarse = True, spec = 'sizePiR')
+aP = a | {'spec': 'sizePiR', 'p': 20.}
+p1 = R.stageLayer('layer1', 'cps', ['GBR'], tmpP, aP, cfgP)[0]
+p2 = R.stageLayer('layer2', 'cps', ['GBR'], tmpP, aP, cfgP)[0]
+for r in (p1, p2):
+    counts.append(('Π {} GBR'.format(r['layer']), {k: r[k] for k in MULT}))
+inpG = oecd26.countryInputs('GBR')
+m2 = R._build(inpG, β, a['ω'], 20., cfgP)
+pin2 = m2.solvePEE_LOG()
+t0 = m2.t0Year
+m3 = R._build(inpG, β, a['ω'], 20., cfgP)
+led3 = m3.solveLeaded(pinAtT0 = False)
+dev = {'τ2020': abs(p1['τ2020'] - float(pin2['τ'].xs(t0))), 'ΠR2020': abs(p1['ΠR2020'] - float(m2.db['wedgeΠR'].xs(t0))),
+       'θInForce': abs(p1['θInForce'] - float(led3['θ'].xs(t0))), 'τInForce': abs(p1['τInForce'] - float(led3['τ'].xs(t0)))}
+check("Π: under 'sizePiR' each row's π fixed points converged (ΠRgap < ΠR_TOL) and λEff2020 = p·ΠR2020 (GBR, both layers)",
+      all(r['status'] == 'ok' and r['ΠRgap'] < ΠR_TOL and abs(r['λEff2020'] - 20.*r['ΠR2020']) < 1e-12 for r in (p1, p2)),
+      'ΠRgap {:.1e}, {:.1e}; ΠR2020 {:.6f}, λEff2020 {:.4f}'.format(p1['ΠRgap'], p2['ΠRgap'], p1['ΠR2020'], p1['λEff2020']))
+check("Π: layer 1's τ_2020 and ΠR2020 are a fresh solvePEE_LOG's, θInForce and τInForce a fresh "
+      "solveLeaded(pinAtT0 = False)'s, each at its own π", max(dev.values()) < 1e-9,
+      ', '.join('{} {:.1e}'.format(k, v) for k, v in dev.items()) + '; τPinGap {:.1e}'.format(p1['τPinGap']))
+check("Π: layer 2 under 'sizePiR' matches spending (GBR)", abs(p2['τ2020'] - p2['τData']) < 1e-8,
+      'τ_2020 - τ0 {:.1e}, ω {:.6f}'.format(p2['τ2020'] - p2['τData'], p2['ω']))
+
+# ==== K: the country stage's U.S.-cost row ====================================================================
+def ukModel(spec, p):
+    m = runESC.buildEU('UK', {'spec': spec, 'phi': 0.5, 'p': p}, commonX = True, nθ = 21, nθCand = 41)
+    m.calibrate()
+    return m
+
+
+rowK = runESC.usWedgeRow(ukModel('sizePiR', 20.), 'sizePiR', 0.5, True, 'UK', 20.)
+mK = ukModel('sizePiR', 20.)
+ledK = mK.solveLeaded(pinAtT0 = False)
+pinK = mK.solvePEE_LOG()
+tK = mK.t0Year
+devK = {'choice': abs(rowK['choice'] - float(ledK['θ'].xs(tK))), 'τ': abs(rowK['τ'] - float(pinK['τ'].xs(tK))),
+        'ΠR': abs(rowK['ΠR'] - float(mK.db['wedgeΠR'].xs(tK)))}
+counts.append(('K UK sizePiR', {k: rowK[k] for k in MULT}))
+check("K: the country stage's U.S.-cost row under 'sizePiR' (UK): the choice is a fresh free path's at its own π, "
+      "τ and ΠR the θ*-pinned path's", max(devK.values()) < 1e-9,
+      ', '.join('{} {:.1e}'.format(k, v) for k, v in devK.items()) + '; choice {:.6f}, ΠR {:.6f}'.format(
+          rowK['choice'], rowK['ΠR']))
+rowS = runESC.usWedgeRow(ukModel('size', 10.), 'size', 0.5, True, 'UK', 10.)
+mS = ukModel('size', 10.)
+solsS = mS.ESC.solveBackward()
+multS = runESC.multiplicityColumns(mS.ESC.lastMultiplicity)
+chS = mS.leadedDesignAtT0(solsS)
+check("K: under 'size' the row's choice and counts are the earlier sequence's bitwise (policies solved, then "
+      "leadedDesignAtT0 on them)", rowS['choice'] == chS and all(rowS[k] == v for k, v in multS.items()),
+      'choice {!r} and {!r}'.format(rowS['choice'], chS))
+
 # ==== P: the results on disk are current ======================================================================
 def production():
-    """ results/oecd26's three csvs, or None while they are absent or partial: runOECD26.py writes them row by row
-    (both turnout readings' anchors, 29 rows per reading in each layer when complete), and a reader running beside
-    it sees a partial file. """
+    """ results/oecd26's three csvs, betaRule 'common' where the column is absent or blank (runOECD26.LEGACY), or
+    None while a file is absent. """
     try:
         f = {n: pd.read_csv(os.path.join(R.OUTDIR, n + '.csv'), dtype = {'inputsKey': str, 'anchorKey': str},
                             float_precision = 'round_trip') for n in ('anchor', 'layer1', 'layer2')}
     except (OSError, pd.errors.ParserError, pd.errors.EmptyDataError):
         return None
-    n = len(oecd26.countries())*len(oecd26.TURNOUT)
-    full = (sorted(f['anchor']['turnout']) == sorted(oecd26.TURNOUT) and len(f['layer1']) == n == len(f['layer2']))
-    return f if full else None
+    for d in f.values():
+        d['betaRule'] = d['betaRule'].fillna('common') if 'betaRule' in d.columns else 'common'
+    return f
 
 
 prod = production()
+current = {}                      # ('anchor', spec) or (layer, spec, betaRule) -> complete and keyed on now
+nC = len(oecd26.countries())
 if prod is None:
-    print('NOTE  P skipped: results/oecd26/ is absent or partial (runOECD26.py writes it row by row); run this suite '
-          'again once the run has finished')
+    print('NOTE  P skipped: results/oecd26/ is absent (runOECD26.py writes it row by row)')
 else:
-    an, fine, data = prod['anchor'], R.settings(), oecd26.readData()
-    rd = lambda layer: prod[layer]
-    keyA = {t: R.anchorKey(oecd26.countryInputs('USA', t, data), β, fine) for t in oecd26.TURNOUT}
-    check('P: results/oecd26/anchor.csv holds one ok anchor per turnout, keyed on the U.S. β and inputs of now, '
-          'fine grid', sorted(an['turnout']) == sorted(oecd26.TURNOUT) and set(an['status']) == {'ok'}
-          and all(an.loc[an['turnout'] == t, 'inputsKey'].iloc[0] == k for t, k in keyA.items()),
-          'β {} on disk, {} now'.format(sorted(set(an['β'])), β))
-    for layer in ('layer1', 'layer2'):
-        d = rd(layer)
-        ok = d[d['status'] == 'ok']
-        par = {t: (float(r['β']), float(r['ω']), float(r['p'])) for t, r in an.set_index('turnout').iterrows()}
-        cur = [oecd26.inputsKey(layer, oecd26.modelInputs(oecd26.countryInputs(r['iso3'], r['turnout'], data)),
-                                *par[r['turnout']], fine) for _, r in ok.iterrows()]
-        check('P: {}: 29 rows per turnout, each computed against the anchor on disk and keyed on the inputs of now; '
-              'one tax equilibrium and no fallback in every ok row'.format(layer),
-              set(d['status']) <= {'ok', 'noTurnout'}
-              and set(d.loc[d['status'] == 'noTurnout', 'iso3']) <= {'LUX'}
-              and bool((d['anchorKey'] == d['turnout'].map(dict(zip(an['turnout'], an['inputsKey'])))).all())
-              and list(ok['inputsKey']) == cur and bool((ok['nEqMax'] == 1).all() and (ok['nFallback'] == 0).all()),
-              '{} ok, {} noTurnout'.format(len(ok), int((d['status'] == 'noTurnout').sum())))
+    data, an = oecd26.readData(), prod['anchor']
+    for spec in sorted(set(an['spec'])):
+        aS = an[an['spec'] == spec]
+        if sorted(aS['turnout']) != sorted(oecd26.TURNOUT):
+            print('NOTE  P skipped for {}: anchor rows for {} only'.format(spec, sorted(aS['turnout'])))
+            continue
+        keyA = {t: R.anchorKey(oecd26.countryInputs('USA', t, data), β, R.settings(spec = spec)) for t in oecd26.TURNOUT}
+        current[('anchor', spec)] = (set(aS['status']) == {'ok'} and set(aS['betaRule']) == {'common'}
+                                     and all(aS.loc[aS['turnout'] == t, 'inputsKey'].iloc[0] == k for t, k in keyA.items()))
+        check('P: results/oecd26/anchor.csv, {}: one ok anchor per turnout, keyed on the U.S. β and inputs of now, '
+              'fine grid'.format(spec), current[('anchor', spec)], 'β {} on disk, {} now'.format(sorted(set(aS['β'])), β))
+        par = {t: (float(r['β']), float(r['ω']), float(r['p'])) for t, r in aS.set_index('turnout').iterrows()}
+        RAn = {t: float(r['R2020']) for t, r in aS.set_index('turnout').iterrows()}
+        for layer in ('layer1', 'layer2'):
+            dl = prod[layer]
+            for rule in sorted(set(dl.loc[dl['spec'] == spec, 'betaRule'])):
+                d = dl[(dl['spec'] == spec) & (dl['betaRule'] == rule)]
+                if any((d['turnout'] == t).sum() != nC for t in oecd26.TURNOUT):
+                    print('NOTE  P skipped for {} {} {}: {} rows, {} per turnout when complete'.format(
+                        layer, spec, rule, len(d), nC))
+                    continue
+                ok = d[d['status'] == 'ok']
+                fineL = R.settings(spec = spec, betaRule = rule)
+                cur = [oecd26.inputsKey(layer, oecd26.modelInputs(oecd26.countryInputs(r['iso3'], r['turnout'], data)),
+                                        *par[r['turnout']], fineL, *([RAn[r['turnout']]] if rule == 'commonR' else []))
+                       for _, r in ok.iterrows()]
+                current[(layer, spec, rule)] = (
+                    set(d['status']) <= {'ok', 'noTurnout'} and set(d.loc[d['status'] == 'noTurnout', 'iso3']) <= {'LUX'}
+                    and bool((d['anchorKey'] == d['turnout'].map(dict(zip(aS['turnout'], aS['inputsKey'])))).all())
+                    and list(ok['inputsKey']) == cur and bool((ok['nEqMax'] == 1).all() and (ok['nFallback'] == 0).all()))
+                check('P: {}, {}, {}: 29 rows per turnout, each computed against the anchor on disk and keyed on the '
+                      'inputs of now; one tax equilibrium and no fallback in every ok row'.format(layer, spec, rule),
+                      current[(layer, spec, rule)],
+                      '{} ok, {} noTurnout'.format(len(ok), int((d['status'] == 'noTurnout').sum())))
+
+# ==== M: the rows on disk are reused under betaRule 'common' ==================================================
+if not all(current.get(k) for k in (('anchor', 'size'), ('layer1', 'size', 'common'), ('layer2', 'size', 'common'))):
+    print("NOTE  M skipped: results/oecd26/ has no complete and current 'size'/'common' rows (P)")
+else:
+    tmpM = tempfile.mkdtemp(prefix = 'oecd26M_')
+    for n in ('anchor', 'layer1', 'layer2'):
+        shutil.copy(os.path.join(R.OUTDIR, n + '.csv'), os.path.join(tmpM, n + '.csv'))
+    hadColumn = 'betaRule' in pd.read_csv(os.path.join(R.OUTDIR, 'layer1.csv'), nrows = 1).columns
+    fineS, refNow = R.settings(), (β, ωSeed, βSource)
+    def change(old, new, skip = None):
+        """ The largest relative change of a value of `old`'s rows in `new` (rows matched on KEYLAYER, those `skip`
+        selects left out), the 'time' column ignored; inf where a row, a column, a NaN or a non-float cell differs. """
+        if skip is not None:
+            old, new = old[~skip(old)], new[~skip(new)]
+        o, n_ = old.set_index(R.KEYLAYER).sort_index(), new.set_index(R.KEYLAYER).sort_index()
+        if not (o.index.equals(n_.index) and set(o.columns) <= set(n_.columns)):
+            return np.inf
+        rel = 0.
+        for c in o.columns.drop('time', errors = 'ignore'):
+            x, y = o[c], n_[c]
+            if pd.api.types.is_float_dtype(x) and pd.api.types.is_float_dtype(y):
+                x, y = x.values, y.values
+                fin = np.isfinite(x)
+                rel = max(rel, np.inf if not np.array_equal(fin, np.isfinite(y)) else
+                          float(np.max(np.abs(y[fin] - x[fin])/np.maximum(np.abs(x[fin]), 1e-300), initial = 0.)))
+            elif not (x.fillna('').astype(str) == y.fillna('').astype(str)).all():
+                rel = np.inf
+        return rel
+
+    readM = lambda n: pd.read_csv(os.path.join(tmpM, n + '.csv'), dtype = {'inputsKey': str, 'anchorKey': str},
+                                  float_precision = 'round_trip')
+    old = production()
+    anchorsM = {t: R.stageAnchor(t, tmpM, fineS, refNow) for t in oecd26.TURNOUT}
+    solved = [r for layer in ('layer1', 'layer2') for t in oecd26.TURNOUT
+              for r in R.stageLayer(layer, t, oecd26.countries(), tmpM, anchorsM[t], fineS) if r['status'] != 'noTurnout']
+    new = {n: readM(n) for n in ('layer1', 'layer2')}
+    relM = max(change(old[n], new[n]) for n in new)
+    check("M: a 'size'/'common' run at the fine grid on results/oecd26/'s rows ({} betaRule column) solves no row and "
+          "leaves anchor.csv as it was; the layer files, rewritten for Luxembourg's 'noTurnout' rows, carry betaRule "
+          "('common' where they had none) on unchanged rows".format('with a' if hadColumn else 'no'),
+          not solved and filecmp.cmp(os.path.join(tmpM, 'anchor.csv'), os.path.join(R.OUTDIR, 'anchor.csv'),
+                                     shallow = False)
+          and all(d['betaRule'].notna().all() and (hadColumn or set(d['betaRule']) == {'common'}) for d in new.values())
+          and relM < 1e-13, '{} rows solved; layer rows: max relative change {:.1e}'.format(len(solved), relM))
+    sel = lambda d: (d['iso3'] == 'GBR') & (d['turnout'] == 'cps') & (d['spec'] == 'size') & (d['betaRule'] == 'common')
+    disk = old['layer1'][sel(old['layer1'])].iloc[0]
+    forced = R.stageLayer('layer1', 'cps', ['GBR'], tmpM, anchorsM['cps'], fineS, force = True)[0]
+    devG = {k: abs(forced[k] - float(disk[k])) for k in ('τ2020', 'θInForce')}
+    rel = change(old['layer1'], readM('layer1'), sel)
+    check("M: a forced recompute of GBR (layer 1, 'size', 'common', cps) reproduces the row on disk's τ_2020 and "
+          "θInForce to 1e-10, the other rows unchanged", max(devG.values()) < 1e-10 and rel < 1e-13,
+          'τ_2020 {:.1e}, θInForce {:.1e}; other rows: max relative change {:.1e}'.format(
+              devG['τ2020'], devG['θInForce'], rel))
+    check('M: after the rewrite every row is reused again',
+          R.stageLayer('layer1', 'cps', oecd26.countries(), tmpM, anchorsM['cps'], fineS) == [])
+    shutil.rmtree(tmpM, ignore_errors = True)
+for d in (tmpN, tmpQ, tmpP):
+    shutil.rmtree(d, ignore_errors = True)
 
 # ==== U: uniqueness ===========================================================================================
 bad = [(k, c) for k, c in counts if not (c and c['nEqMax'] == 1 and c['nFallback'] == 0)]

@@ -1,0 +1,1085 @@
+{
+ "figure": "OECD26_Spending",
+ "marks": [
+  {
+   "id": "OECD26_Spending--spending_growth--data--aus",
+   "label": "Australia",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 4.16,
+   "text": "population 2020/1990: 1.50; pension spending: 4.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--aut",
+   "label": "Austria",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 14.349,
+   "text": "population 2020/1990: 1.16; pension spending: 14.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--bel",
+   "label": "Belgium",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 11.475,
+   "text": "population 2020/1990: 1.15; pension spending: 11.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--can",
+   "label": "Canada",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 6.377,
+   "text": "population 2020/1990: 1.37; pension spending: 6.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--cze",
+   "label": "Czech Republic",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 8.645,
+   "text": "population 2020/1990: 1.03; pension spending: 8.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--dnk",
+   "label": "Denmark",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 8.204,
+   "text": "population 2020/1990: 1.13; pension spending: 8.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--fin",
+   "label": "Finland",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 12.561,
+   "text": "population 2020/1990: 1.11; pension spending: 12.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--fra",
+   "label": "France",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 14.437,
+   "text": "population 2020/1990: 1.19; pension spending: 14.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--deu",
+   "label": "Germany",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 11.214,
+   "text": "population 2020/1990: 1.05; pension spending: 11.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--grc",
+   "label": "Greece",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 17.874,
+   "text": "population 2020/1990: 1.05; pension spending: 17.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--hun",
+   "label": "Hungary",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.703,
+   "text": "population 2020/1990: 0.93; pension spending: 7.7% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--isl",
+   "label": "Iceland",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 3.042,
+   "text": "population 2020/1990: 1.40; pension spending: 3.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--irl",
+   "label": "Ireland",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 3.253,
+   "text": "population 2020/1990: 1.43; pension spending: 3.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--ita",
+   "label": "Italy",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 17.415,
+   "text": "population 2020/1990: 1.05; pension spending: 17.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--jpn",
+   "label": "Japan",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.595,
+   "text": "population 2020/1990: 1.02; pension spending: 9.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--lux",
+   "label": "Luxembourg",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.037,
+   "text": "population 2020/1990: 1.65; pension spending: 9.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--nld",
+   "label": "Netherlands",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 6.763,
+   "text": "population 2020/1990: 1.17; pension spending: 6.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--nzl",
+   "label": "New Zealand",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 5.143,
+   "text": "population 2020/1990: 1.50; pension spending: 5.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--nor",
+   "label": "Norway",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.581,
+   "text": "population 2020/1990: 1.27; pension spending: 7.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--pol",
+   "label": "Poland",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 11.422,
+   "text": "population 2020/1990: 1.00; pension spending: 11.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--prt",
+   "label": "Portugal",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 13.618,
+   "text": "population 2020/1990: 1.04; pension spending: 13.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--esp",
+   "label": "Spain",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 12.812,
+   "text": "population 2020/1990: 1.22; pension spending: 12.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--swe",
+   "label": "Sweden",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 8.483,
+   "text": "population 2020/1990: 1.21; pension spending: 8.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--che",
+   "label": "Switzerland",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 6.857,
+   "text": "population 2020/1990: 1.29; pension spending: 6.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--gbr",
+   "label": "United Kingdom",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.836,
+   "text": "population 2020/1990: 1.17; pension spending: 7.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--usa",
+   "label": "United States",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.366,
+   "text": "population 2020/1990: 1.33; pension spending: 7.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--data--fit",
+   "label": "fitted line",
+   "series": "data",
+   "panel": "pension spending against population 2020/1990",
+   "value": -12.843733649932126,
+   "text": "slope -12.84 (s.e. 3.67)",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--aus",
+   "label": "Australia",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 5.827861698734859,
+   "text": "population 2020/1990: 1.50; pension spending: 5.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--aut",
+   "label": "Austria",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.19173841583347,
+   "text": "population 2020/1990: 1.16; pension spending: 9.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--bel",
+   "label": "Belgium",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.634925509771954,
+   "text": "population 2020/1990: 1.15; pension spending: 9.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--can",
+   "label": "Canada",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 6.356179125672999,
+   "text": "population 2020/1990: 1.37; pension spending: 6.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--cze",
+   "label": "Czech Republic",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 12.813581985268456,
+   "text": "population 2020/1990: 1.03; pension spending: 12.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--dnk",
+   "label": "Denmark",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 10.172734412063583,
+   "text": "population 2020/1990: 1.13; pension spending: 10.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--fin",
+   "label": "Finland",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 10.163914061703728,
+   "text": "population 2020/1990: 1.11; pension spending: 10.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--fra",
+   "label": "France",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.2866047783133,
+   "text": "population 2020/1990: 1.19; pension spending: 9.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--deu",
+   "label": "Germany",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 11.496028317259311,
+   "text": "population 2020/1990: 1.05; pension spending: 11.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--grc",
+   "label": "Greece",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 11.883615456990212,
+   "text": "population 2020/1990: 1.05; pension spending: 11.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--hun",
+   "label": "Hungary",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 13.64490234490878,
+   "text": "population 2020/1990: 0.93; pension spending: 13.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--isl",
+   "label": "Iceland",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 5.133115613977961,
+   "text": "population 2020/1990: 1.40; pension spending: 5.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--irl",
+   "label": "Ireland",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.483860970468655,
+   "text": "population 2020/1990: 1.43; pension spending: 7.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--ita",
+   "label": "Italy",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 11.29656159943216,
+   "text": "population 2020/1990: 1.05; pension spending: 11.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--jpn",
+   "label": "Japan",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 12.180644069803735,
+   "text": "population 2020/1990: 1.02; pension spending: 12.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--lux",
+   "label": "Luxembourg",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 2.3677265443470765,
+   "text": "population 2020/1990: 1.65; pension spending: 2.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--nld",
+   "label": "Netherlands",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.031604290458604,
+   "text": "population 2020/1990: 1.17; pension spending: 9.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--nzl",
+   "label": "New Zealand",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 4.852342003081685,
+   "text": "population 2020/1990: 1.50; pension spending: 4.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--nor",
+   "label": "Norway",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.596282608193293,
+   "text": "population 2020/1990: 1.27; pension spending: 7.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--pol",
+   "label": "Poland",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 12.381945507493633,
+   "text": "population 2020/1990: 1.00; pension spending: 12.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--prt",
+   "label": "Portugal",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 11.604387339646223,
+   "text": "population 2020/1990: 1.04; pension spending: 11.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--esp",
+   "label": "Spain",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 8.173308421692282,
+   "text": "population 2020/1990: 1.22; pension spending: 8.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--swe",
+   "label": "Sweden",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 8.41885857109781,
+   "text": "population 2020/1990: 1.21; pension spending: 8.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--che",
+   "label": "Switzerland",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.291341687566325,
+   "text": "population 2020/1990: 1.29; pension spending: 7.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--gbr",
+   "label": "United Kingdom",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 9.795212754562392,
+   "text": "population 2020/1990: 1.17; pension spending: 9.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--usa",
+   "label": "United States",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": 7.365999999999996,
+   "text": "population 2020/1990: 1.33; pension spending: 7.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_growth--model--fit",
+   "label": "fitted line",
+   "series": "model",
+   "panel": "pension spending against population 2020/1990",
+   "value": -14.904767295684483,
+   "text": "slope -14.90 (s.e. 0.73)",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--aus",
+   "label": "Australia",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 4.16,
+   "text": "Gini: 0.340; pension spending: 4.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--aut",
+   "label": "Austria",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 14.349,
+   "text": "Gini: 0.304; pension spending: 14.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--bel",
+   "label": "Belgium",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 11.475,
+   "text": "Gini: 0.274; pension spending: 11.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--can",
+   "label": "Canada",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 6.377,
+   "text": "Gini: 0.318; pension spending: 6.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--cze",
+   "label": "Czech Republic",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 8.645,
+   "text": "Gini: 0.254; pension spending: 8.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--dnk",
+   "label": "Denmark",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 8.204,
+   "text": "Gini: 0.283; pension spending: 8.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--fin",
+   "label": "Finland",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 12.561,
+   "text": "Gini: 0.277; pension spending: 12.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--fra",
+   "label": "France",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 14.437,
+   "text": "Gini: 0.321; pension spending: 14.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--deu",
+   "label": "Germany",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 11.214,
+   "text": "Gini: 0.323; pension spending: 11.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--grc",
+   "label": "Greece",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 17.874,
+   "text": "Gini: 0.331; pension spending: 17.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--hun",
+   "label": "Hungary",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 7.703,
+   "text": "Gini: 0.303; pension spending: 7.7% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--isl",
+   "label": "Iceland",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 3.042,
+   "text": "Gini: 0.275; pension spending: 3.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--irl",
+   "label": "Ireland",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 3.253,
+   "text": "Gini: 0.302; pension spending: 3.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--ita",
+   "label": "Italy",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 17.415,
+   "text": "Gini: 0.358; pension spending: 17.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--jpn",
+   "label": "Japan",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 9.595,
+   "text": "Gini: 0.330; pension spending: 9.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--lux",
+   "label": "Luxembourg",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 9.037,
+   "text": "Gini: 0.341; pension spending: 9.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--nld",
+   "label": "Netherlands",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 6.763,
+   "text": "Gini: 0.295; pension spending: 6.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--nzl",
+   "label": "New Zealand",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 5.143,
+   "text": "Gini: 0.320; pension spending: 5.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--nor",
+   "label": "Norway",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 7.581,
+   "text": "Gini: 0.277; pension spending: 7.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--pol",
+   "label": "Poland",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 11.422,
+   "text": "Gini: 0.308; pension spending: 11.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--prt",
+   "label": "Portugal",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 13.618,
+   "text": "Gini: 0.328; pension spending: 13.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--esp",
+   "label": "Spain",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 12.812,
+   "text": "Gini: 0.343; pension spending: 12.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--swe",
+   "label": "Sweden",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 8.483,
+   "text": "Gini: 0.307; pension spending: 8.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--che",
+   "label": "Switzerland",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 6.857,
+   "text": "Gini: 0.343; pension spending: 6.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--gbr",
+   "label": "United Kingdom",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 7.836,
+   "text": "Gini: 0.329; pension spending: 7.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--usa",
+   "label": "United States",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 7.366,
+   "text": "Gini: 0.419; pension spending: 7.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--data--fit",
+   "label": "fitted line",
+   "series": "data",
+   "panel": "pension spending against Gini",
+   "value": 17.79670677451375,
+   "text": "slope 17.80 (s.e. 23.90)",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--aus",
+   "label": "Australia",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 5.827861698734859,
+   "text": "Gini: 0.340; pension spending: 5.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--aut",
+   "label": "Austria",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 9.19173841583347,
+   "text": "Gini: 0.304; pension spending: 9.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--bel",
+   "label": "Belgium",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 9.634925509771954,
+   "text": "Gini: 0.274; pension spending: 9.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--can",
+   "label": "Canada",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 6.356179125672999,
+   "text": "Gini: 0.318; pension spending: 6.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--cze",
+   "label": "Czech Republic",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 12.813581985268456,
+   "text": "Gini: 0.254; pension spending: 12.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--dnk",
+   "label": "Denmark",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 10.172734412063583,
+   "text": "Gini: 0.283; pension spending: 10.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--fin",
+   "label": "Finland",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 10.163914061703728,
+   "text": "Gini: 0.277; pension spending: 10.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--fra",
+   "label": "France",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 9.2866047783133,
+   "text": "Gini: 0.321; pension spending: 9.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--deu",
+   "label": "Germany",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 11.496028317259311,
+   "text": "Gini: 0.323; pension spending: 11.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--grc",
+   "label": "Greece",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 11.883615456990212,
+   "text": "Gini: 0.331; pension spending: 11.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--hun",
+   "label": "Hungary",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 13.64490234490878,
+   "text": "Gini: 0.303; pension spending: 13.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--isl",
+   "label": "Iceland",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 5.133115613977961,
+   "text": "Gini: 0.275; pension spending: 5.1% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--irl",
+   "label": "Ireland",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 7.483860970468655,
+   "text": "Gini: 0.302; pension spending: 7.5% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--ita",
+   "label": "Italy",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 11.29656159943216,
+   "text": "Gini: 0.358; pension spending: 11.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--jpn",
+   "label": "Japan",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 12.180644069803735,
+   "text": "Gini: 0.330; pension spending: 12.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--lux",
+   "label": "Luxembourg",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 2.3677265443470765,
+   "text": "Gini: 0.341; pension spending: 2.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--nld",
+   "label": "Netherlands",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 9.031604290458604,
+   "text": "Gini: 0.295; pension spending: 9.0% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--nzl",
+   "label": "New Zealand",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 4.852342003081685,
+   "text": "Gini: 0.320; pension spending: 4.9% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--nor",
+   "label": "Norway",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 7.596282608193293,
+   "text": "Gini: 0.277; pension spending: 7.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--pol",
+   "label": "Poland",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 12.381945507493633,
+   "text": "Gini: 0.308; pension spending: 12.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--prt",
+   "label": "Portugal",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 11.604387339646223,
+   "text": "Gini: 0.328; pension spending: 11.6% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--esp",
+   "label": "Spain",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 8.173308421692282,
+   "text": "Gini: 0.343; pension spending: 8.2% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--swe",
+   "label": "Sweden",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 8.41885857109781,
+   "text": "Gini: 0.307; pension spending: 8.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--che",
+   "label": "Switzerland",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 7.291341687566325,
+   "text": "Gini: 0.343; pension spending: 7.3% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--gbr",
+   "label": "United Kingdom",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 9.795212754562392,
+   "text": "Gini: 0.329; pension spending: 9.8% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--usa",
+   "label": "United States",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": 7.365999999999996,
+   "text": "Gini: 0.419; pension spending: 7.4% of GDP",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_Spending--spending_gini--model--fit",
+   "label": "fitted line",
+   "series": "model",
+   "panel": "pension spending against Gini",
+   "value": -15.653710747775119,
+   "text": "slope -15.65 (s.e. 16.47)",
+   "table": null,
+   "row": null
+  }
+ ]
+}

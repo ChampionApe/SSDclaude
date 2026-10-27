@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.10.6)  26 OCT 2026 20:30
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.10.6)  27 OCT 2026 19:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1533,10 +1533,10 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <8> on input line 3.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <6> on input line 3.
-<Figs/OECDdata.pdf, id=232, 427.11569pt x 281.85298pt>
+<Figs/OECDdata.pdf, id=239, 427.11569pt x 281.85298pt>
 File: Figs/OECDdata.pdf Graphic file (type pdf)
 <use Figs/OECDdata.pdf>
-Package pdftex.def Info: Figs/OECDdata.pdf  used on input line 12.
+Package pdftex.def Info: Figs/OECDdata.pdf  used on input line 13.
 (pdftex.def)             Requested size: 452.9679pt x 298.92616pt.
  [2] [3{c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc} <./Figs/OE
 CDdata.pdf>] [4])
@@ -1555,7 +1555,7 @@ Package epstopdf Info: Source file: <Figs/coverageArg.eps>
 rted-to.pdf Figs/coverageArg.eps>
 (epstopdf)             \includegraphics on input line 10.
 Package epstopdf Info: Output file is already uptodate.
-<Figs/coverageArg-eps-converted-to.pdf, id=591, 397.485pt x 289.08pt>
+<Figs/coverageArg-eps-converted-to.pdf, id=603, 397.485pt x 289.08pt>
 File: Figs/coverageArg-eps-converted-to.pdf Graphic file (type pdf)
 <use Figs/coverageArg-eps-converted-to.pdf>
 Package pdftex.def Info: Figs/coverageArg-eps-converted-to.pdf  used on input l
@@ -1564,29 +1564,48 @@ ine 10.
  [17 <./Figs/coverageArg-eps-converted-to.pdf>]
 [18] (./Tables/ArgentinaCalibration.tex) [19] (./Tables/ArgentinaUniversal.tex)
 [20]
-<Figs/ARG_CRRA_LOG.pdf, id=660, 650.43pt x 462.52798pt>
+<Figs/ARG_CRRA_LOG.pdf, id=672, 650.43pt x 462.52798pt>
 File: Figs/ARG_CRRA_LOG.pdf Graphic file (type pdf)
 <use Figs/ARG_CRRA_LOG.pdf>
 Package pdftex.def Info: Figs/ARG_CRRA_LOG.pdf  used on input line 44.
 (pdftex.def)             Requested size: 452.9679pt x 322.11589pt.
  [21 <./Figs/ARG_CRRA_LOG.pdf>]) (./Sections/OECD.tex [22]
-(./Tables/USUKFRCalibration.tex)
-<Figs/US_overview.pdf, id=751, 607.068pt x 325.215pt>
+(./Tables/USFRCalibration.tex)
+<Figs/US_overview.pdf, id=769, 607.068pt x 325.215pt>
 File: Figs/US_overview.pdf Graphic file (type pdf)
 <use Figs/US_overview.pdf>
 Package pdftex.def Info: Figs/US_overview.pdf  used on input line 21.
 (pdftex.def)             Requested size: 452.9679pt x 242.66013pt.
- [23] [24 <./Figs/US_overview.pdf>] [25])
-(./Sections/EndogenousTheta.tex [26] [27] [28] [29]
+ [23] [24 <./Figs/US_overview.pdf>] [25]
+<Figs/OECD26_Spending.pdf, id=880, 427.11569pt x 155.38051pt>
+File: Figs/OECD26_Spending.pdf Graphic file (type pdf)
+<use Figs/OECD26_Spending.pdf>
+Package pdftex.def Info: Figs/OECD26_Spending.pdf  used on input line 58.
+(pdftex.def)             Requested size: 452.9679pt x 164.79263pt.
+
+(./Figs/OECD26_Spending_note.tex) [26]) (./Sections/EndogenousTheta.tex
+[27 <./Figs/OECD26_Spending.pdf>] [28] [29] [30]
 (./Tables/US_ESC_Calibration.tex)
-<Figs/US_ESC_overview.pdf, id=922, 578.16pt x 549.25201pt>
+<Figs/US_ESC_overview.pdf, id=1004, 578.16pt x 549.25201pt>
 File: Figs/US_ESC_overview.pdf Graphic file (type pdf)
 <use Figs/US_ESC_overview.pdf>
 Package pdftex.def Info: Figs/US_ESC_overview.pdf  used on input line 48.
 (pdftex.def)             Requested size: 452.9679pt x 430.3173pt.
- [30] [31 <./Figs/US_ESC_overview.pdf>]
-[32] (./Tables/OECD26_Slopes.tex)) (./Sections/Conclusion.tex [33] [34])
-[35] [36] [37] (./Appendix/EconomicEquilibrium.tex
+ [31] [32 <./Figs/US_ESC_overview.pdf>]
+[33] (./Tables/US_ESC_Country.tex
+Overfull \hbox (8.36314pt too wide) in paragraph at lines 19--19
+ []| 
+ []
+
+) [34] [35]
+<Figs/OECD26_Layer1.pdf, id=1161, 427.11569pt x 281.85298pt>
+File: Figs/OECD26_Layer1.pdf Graphic file (type pdf)
+<use Figs/OECD26_Layer1.pdf>
+Package pdftex.def Info: Figs/OECD26_Layer1.pdf  used on input line 106.
+(pdftex.def)             Requested size: 452.9679pt x 298.92616pt.
+ (./Tables/OECD26_Slopes.tex) [36 <./Figs/OECD26_Layer1.pdf>])
+(./Sections/Conclusion.tex [37]) [38] [39] [40] [41]
+(./Appendix/EconomicEquilibrium.tex
 pdfTeX warning (ext4): destination with the same identifier (name{equation.0.2}
 ) has been already used, duplicate ignored
 <to be read again> 
@@ -2103,50 +2122,68 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.35}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.6 
-     [35] (./Tables/US_householdheterogeneity.tex)
+l.4 
+     [35] (./Tables/USUKFRCalibration.tex)
 pdfTeX warning (ext4): destination with the same identifier (name{page.36}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.14 \FloatBarrier
-                   [36] (./Tables/FR_householdheterogeneity.tex)
+l.11 
+      [36] (./Tables/US_householdheterogeneity.tex)
 pdfTeX warning (ext4): destination with the same identifier (name{page.37}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.26 \FloatBarrier
-                   [37] (./Tables/UK_householdheterogeneity.tex) [38]
-(./Tables/FRUK_householdheterogeneity.tex))
-(./Appendix/EndogenousDesignResults.tex (./Tables/UK_ESC_Calibration.tex)
-(./Tables/US_ESC_Country.tex) [39] [40]
-<Figs/US_ESC_Path.pdf, id=1515, 427.11569pt x 166.22101pt>
+l.23 
+      [37] (./Tables/FR_householdheterogeneity.tex)
+(./Tables/UK_householdheterogeneity.tex))
+(./Appendix/EndogenousDesignResults.tex
+pdfTeX warning (ext4): destination with the same identifier (name{page.38}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.1 \FloatBarrier
+                  [38] (./Tables/UK_ESC_Calibration.tex)
+pdfTeX warning (ext4): destination with the same identifier (name{page.39}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.13 
+      [39]
+<Figs/US_ESC_Path.pdf, id=1677, 427.11569pt x 166.22101pt>
 File: Figs/US_ESC_Path.pdf Graphic file (type pdf)
 <use Figs/US_ESC_Path.pdf>
-Package pdftex.def Info: Figs/US_ESC_Path.pdf  used on input line 22.
+Package pdftex.def Info: Figs/US_ESC_Path.pdf  used on input line 19.
 (pdftex.def)             Requested size: 452.9679pt x 176.28978pt.
-) (./Appendix/OECD26.tex [41 <./Figs/US_ESC_Path.pdf>] [42]
-<Figs/OECD26_Layer1.pdf, id=1612, 427.11569pt x 281.85298pt>
-File: Figs/OECD26_Layer1.pdf Graphic file (type pdf)
-<use Figs/OECD26_Layer1.pdf>
-Package pdftex.def Info: Figs/OECD26_Layer1.pdf  used on input line 18.
-(pdftex.def)             Requested size: 452.9679pt x 298.92616pt.
- [43 <./Figs/OECD26_Layer1.pdf>] (./Tables/OECD26_Omega.tex)) [44] (./main.aux)
+) (./Appendix/OECD26.tex
+pdfTeX warning (ext4): destination with the same identifier (name{page.40}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.7 
+     [40 <./Figs/US_ESC_Path.pdf>]
+pdfTeX warning (ext4): destination with the same identifier (name{page.41}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.12 
+      [41] (./Tables/OECD26_Omega.tex) [42] (./Tables/OECD26_Robustness.tex)
+[43] (./Tables/OECD26_Reconcile.tex)) [44] [45] (./main.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2026-09-09>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 45187ACBF69E3F0E01CC7C76FD24CC94;9911.
+(rerunfilecheck)             Checksum: 2ECB4A4C16640CD0D2C4F0E5A0232F58;10393.
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 39717 strings out of 467050
- 757346 string characters out of 5410550
- 1672821 words of memory out of 5000000
- 68065 multiletter control sequences out of 15000+600000
+ 39772 strings out of 467050
+ 758707 string characters out of 5410550
+ 1675224 words of memory out of 5000000
+ 68101 multiletter control sequences out of 15000+600000
  741155 words of font info for 126 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  112i,21n,111p,2791b,1916s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -2355,10 +2392,10 @@ texmf-dist/fonts/type1/public/lm/lmsy8.pfb><c:/texlive/2026/texmf-dist/fonts/ty
 pe1/public/lm/lmtt10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmtt
 12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.p
 fb>
-Output written on main.pdf (81 pages, 963493 bytes).
+Output written on main.pdf (86 pages, 1008043 bytes).
 PDF statistics:
- 1875 PDF objects out of 2073 (max. 8388607)
- 1397 compressed objects within 14 object streams
- 285 named destinations out of 1000 (max. 500000)
- 464 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 2003 PDF objects out of 2073 (max. 8388607)
+ 1479 compressed objects within 15 object streams
+ 294 named destinations out of 1000 (max. 500000)
+ 485 words of extra memory for PDF output out of 10000 (max. 10000000)
 

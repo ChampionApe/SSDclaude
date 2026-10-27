@@ -178,15 +178,16 @@ def test_datasets_are_complete():
     are the pinned workweek of the CRRA paths, which escPathCRRA.csv does not store. """
     o = _data('OECD_Counterfactuals')
     m = o[o['source'] == 'main']
-    assert set(m['host']) == {'US', 'UK', 'UKUS', 'USMedicare'} and set(m['calibration']) == {'commonX', 'vectorX'}
-    for h in ('US', 'UK', 'UKUS', 'USMedicare'):
+    assert set(m['host']) == {'US', 'USMedicare'} and set(m['calibration']) == {'commonX', 'vectorX'}
+    for h in ('US', 'USMedicare'):
         sub = m[(m['host'] == h) & (m['effect'] == 'full')]
         for ρ in (0.5, 1.0, 2.0):
             have = set(sub[np.isclose(sub['rho'], ρ)]['scenario'])
             assert {'theta0', 'theta1', 'mild', 'acute', 'income', 'voting', 'leisure'} <= have, (h, ρ)
     assert sorted(o[o['source'] == 'xi']['xi'].unique()) == [0.2, 0.3, 0.4]
     e = _data('ESC_Counterfactuals')
-    for h in ('US', 'UK'):
+    assert set(e['host']) == {'US'}
+    for h in ('US',):
         for ρ in (0.5, 1.0, 2.0):
             have = set(e[(e['host'] == h) & (e['source'] == 'main') & np.isclose(e['rho'], ρ)]['scenario'])
             assert {'acute', 'income', 'voting', 'leisure'} <= have, (h, ρ)

@@ -338,6 +338,9 @@ Retired scripts, moved 2026-10-07; not runnable from here (they import their mod
   (2026-10-24, 10.9 h): `gen_jobs.py` writes `jobs.tsv` (name, S/L for short or long, dependencies, command),
   `scheduler.ps1 -dir <logdir>` starts eligible jobs up to a solver cap and logs start/ok/fail. Copy both into a
   fresh `logs/<package>/` and edit the job list; the paths inside point at the deleted `logs/C6runs/`.
+- `code/OnlineAppendix/`: the site's pages B2 (`oecd-countries.qmd`) and C2 (`esc-countries.qmd`), the UK as
+  host beside the U.S. and the UK at U.S. income groups, retired 2026-10-27 (R7); their keys are aliases of `oecd`
+  and `esc` (`python/paper/onlineAppendix.OLDKEYS`), their data in `results/ukHost_2026-10/` below.
 
 ## Results
 
@@ -347,6 +350,13 @@ Outputs no builder reads, moved from `results/` on 2026-10-07 (same relative pat
 - `results/sweeps/superseded/`: the ε–θ grid at ρ = 1 before the K/Y retarget.
 - `results/diagnostics/thetaStakes.csv`, `results/calibration/informalSavings_KYGrid.csv`: the outputs of the two
   retired scripts above.
+- `results/ukHost_2026-10/` (2026-10-27, R7: the UK as a second host economy retired; the UK is donor data and the
+  deep test): `shocks/` the counterfactuals of section 6 on the UK (`UK_shocks*.csv`) and on the UK at U.S. income
+  groups (`UKUS_shocks*.csv`); `calibration/` the sweeps of France at the UK's cuts and the UK at U.S. percentiles
+  (`FRUK_rhoGrid*.csv`, `UKUS_rhoGrid*.csv`) with their `instances*` pickles; `esc/` section 7's counterfactuals on
+  the UK at its own λ (`escShocksUK.csv`, `escShocksCRRAUK.csv`, merged in `escExperimentsUK.csv`); `paper/Tables/`
+  the last builds of `FRUK_householdheterogeneity`, `UKUS_householdheterogeneity` and `OECD_Regroupings`. The
+  `UKUS` rows of `results/esc/escCountry.csv` stay there, unprinted. All at the calibrations of C6/C7.
 
 ## Findings, long form
 
@@ -360,6 +370,9 @@ Outputs no builder reads, moved from `results/` on 2026-10-07 (same relative pat
 - `readmes/US_README_2026-10-26.md`: the US README before its second cut (213 to 100 lines): the calibration
   settings and health checks, the counterfactual conventions, the endogenous-design solvers and the status
   measurements of C1–C7 (λ, the τ-derivatives, the design grids, appendix D, the cross-country test).
+- `readmes/paper_README_2026-10-27.md`: the paper README before its cut (167 to under 100 lines, R6): the US
+  arm's runs one bullet each (the UK as host, the site's runs, the two costs, the cost variants, Medicare,
+  Argentina's GDP, C4/C5), the long file map and the traps in full.
 
 ## Pilots
 

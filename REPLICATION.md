@@ -35,7 +35,7 @@ Argentine arm runs on `python/InformalSavings/`, the U.S., France and UK arm on 
 |---|---|---|---|
 | (0) data | `python\paper\dataTargets.py` (Penn World Table, through FRED) | `python\paper\oecdFigure1.py` (the cross-section of figure 1) | `data/argentina_*.csv`, `data/oecdFigure1*.csv` |
 | (i) calibration | `python\paper\runCalibration.py` (about 3 h) | `python\paper\runCalibrationUS.py` (about an hour; `--prepub` adds the exact CRRA cost calibrations, many hours) | `results/calibration/`, `results/paper/*Summary.csv` |
-| (ii) experiments | `python\paper\runShocks.py` (about 1 h) | `python\paper\runShocksUS.py` (about an hour; `--prepub` adds the CRRA endogenous-design runs, hours) | `results/shocks/`, `results/sweeps/`, `results/esc/`, `results/oecd26/` |
+| (ii) experiments | `python\paper\runShocks.py` (about 1 h) | `python\paper\runShocksUS.py` (about an hour, and about four more cold for the deep test under ε and the cross-country variants; `--prepub` adds the CRRA endogenous-design runs, hours) | `results/shocks/`, `results/sweeps/`, `results/esc/`, `results/oecd26/` |
 | (iii) build | `python\paper\build.py` | the same | `results/paper/{Tables,Figs}`, copied into `writing/Paper/` |
 
 Each stage is run as `.venv\Scripts\python.exe <script>` from the repository root, skips work whose output
@@ -44,18 +44,28 @@ published number are recorded in `python/paper/config.py`. `results/` is committ
 model instance per calibration point, so stage (iii) runs on the committed results without re-solving
 anything, and a solved instance can be loaded directly (see `python/<model>/README.md`).
 
-The cross-country test of section 7 (the model calibrated to the OECD cross-section of figure 1) has two stage
-(0) scripts of its own, run by hand: `python\paper\oecd29Data.py` (network) and `python\paper\oecd26Sample.py`
-(the sample rule, no network) write `data/oecd29*.csv` and `data/oecd26_sample.csv`. Its runs belong to stage
-(ii): `runShocksUS.py`'s entry `oecd26` calls `python\US\runOECD26.py` (about 20 minutes cold) on every run, and
-the script recomputes only the rows whose inputs or U.S. calibration have changed, writing `results/oecd26/`.
+The cross-country test on 26 OECD countries of figure 1 (section 6's test of spending at the observed designs, without
+the cost, and section 7.4's test of the design, in which each country keeps its own demography, income distribution
+and observed design and takes the U.S. $\beta$, propensities to vote and cost of redistribution, the last carried as
+the elasticity $\varepsilon$, so that $\lambda_i = \varepsilon\,\Pi_i/R_i$) has two stage (0) scripts of its own, run by hand: `python\paper\oecd29Data.py`
+(network) and `python\paper\oecd26Sample.py` (the sample rule, no network) write `data/oecd29*.csv` and
+`data/oecd26_sample.csv`. Its runs belong to stage (ii): `runShocksUS.py`'s entry `oecd26` calls
+`python\US\runOECD26.py` once per variant of `config.US['oecd26']['variants']` (the costs $\varepsilon$, $\lambda$
+and none, each country's $\beta$ common or set to the U.S. return, U.S. and own turnout; about three hours cold) on
+every run, and the script recomputes only the rows whose inputs or U.S. calibration have changed, writing
+`results/oecd26/`. The paper's variant (`spec` `'sizePiR'`, `betaRule` `'common'`, `turnout` `'cps'`) and section 6's
+(`spendingSpec` `'none'`) are set in `config.US['oecd26']` alone.
 
 The U.S. stage scripts also run the online appendix's Medicare reading of the U.S. calibration
-(`config.US['readings']`: `results/calibration/USMedicare_rhoGrid*.csv`, `results/shocks/USMedicare_shocks*.csv`) and
-the cost variants of section 7 (`config.US['esc']['costVariants']`: `results/esc/*Costs*.csv`, merged into
-`results/esc/escAgeingCosts.csv`); no output reads them yet.
+(`config.US['readings']`: `results/calibration/USMedicare_rhoGrid*.csv`, `results/shocks/USMedicare_shocks*.csv`,
+read by `OECD_Medicare` and `OECD_Counterfactuals`) and the cost that keeps $\Pi_t/R_t$, whose parameter is
+$\varepsilon$ (`config.US['esc']['costVariants']`, the `Costs`-tagged csvs of `results/esc/`): stage (i) calibrates
+$\varepsilon$ on the U.S. (`escCalibrationCosts.csv`), and stage (ii)'s entry `escCountryCosts` runs the deep test of
+section 7.3 under it, the U.S. $\varepsilon$ on the UK and France and the UK's own (`escCountryCosts.csv`, about an
+hour); both are read by `US_ESC_Country` and `OECD26_Reconcile`. The ageing runs under that cost (entry `escCosts`)
+are merged into `results/esc/escAgeingCosts.csv`, which no output reads.
 
-Two Argentine runs are not yet driven by the stage scripts either; no output reads them yet. The pre-reform
+Two Argentine runs are not driven by the stage scripts, and no output reads them yet. The pre-reform
 $\epsilon = 0$ variant of the calibration and its reform, after stage (i), with the scripts' grid settings
 (`--interpKind cubic --smoothKnots 4 --nι 45 --ns 45`):
 `python\InformalSavings\calibrateRhoGrid.py --lo 0.5 --hi 2.0 --step 0.1 --anchor 1.0 --commonX --epsPre0 --x0 0.693156
@@ -125,7 +135,7 @@ endogenous-design scripts (`python/US/runESC*.py`), `results/oecd26/` by the cro
 (`python/US/runOECD26.py`), and `data/oecdFigure1.csv` and `data/oecd26_sample.csv` by stage (0).
 
 <!-- outputs:begin -->
-51 outputs, generated by `python\paper\build.py --map` on 2026-10-26. Reads are traced at build time, `rho*` standing for the files of a rho grid. "online appendix" marks an output the paper does not input, and "online appendix only" one that is not copied into `writing/Paper` at all; the online appendix's own replication page lists the exhibits it shows.
+55 outputs, generated by `python\paper\build.py --map` on 2026-10-27. Reads are traced at build time, `rho*` standing for the files of a rho grid. "online appendix" marks an output the paper does not input, and "online appendix only" one that is not copied into `writing/Paper` at all; the online appendix's own replication page lists the exhibits it shows.
 
 | Output | Kind | File in `writing/Paper` | Reads | Input by |
 |---|---|---|---|---|
@@ -133,25 +143,27 @@ endogenous-design scripts (`python/US/runESC*.py`), `results/oecd26/` by the cro
 | `ArgentinaUniversal` | table | `Tables/ArgentinaUniversal.tex` | `results/calibration/informalSavings_rhoGridCommonX.csv`, `results/paper/calibrationSummary.csv`, `results/shocks/eeOnly_match_rho*_commonX.csv`, `results/shocks/universal_match_rho*_commonX.csv` | `Sections/Argentina.tex` |
 | `ARG_LOG_FourInOne` | figure | `Figs/ARG_LOG_FourInOne.pdf` | `results/paper/calibrationSummary.csv`, `results/sweeps/epsThetaGrid_rho*_commonX.csv` | online appendix |
 | `ARG_CRRA_LOG` | figure | `Figs/ARG_CRRA_LOG.pdf` | `results/calibration/informalSavings_rhoGridCommonX.csv`, `results/paper/calibrationSummary.csv`, `results/shocks/eeOnly_match_rho*_commonX.csv` (16 files), `results/shocks/universal_match_rho*_commonX.csv` (16 files) | `Sections/Argentina.tex` |
-| `USUKFRCalibration` | table | `Tables/USUKFRCalibration.tex` | `data/USMain_test.xlsx`, `results/paper/usCalibrationSummary.csv` | `Sections/OECD.tex` |
+| `USUKFRCalibration` | table | `Tables/USUKFRCalibration.tex` | `data/USMain_test.xlsx`, `results/paper/usCalibrationSummary.csv` | `Appendix/CalibrationOECD.tex` |
+| `USFRCalibration` | table | `Tables/USFRCalibration.tex` | `results/paper/usCalibrationSummary.csv` | `Sections/OECD.tex` |
 | `US_householdheterogeneity` | table | `Tables/US_householdheterogeneity.tex` | `results/paper/usCalibrationSummary.csv` | `Appendix/CalibrationOECD.tex` |
 | `FR_householdheterogeneity` | table | `Tables/FR_householdheterogeneity.tex` | `results/paper/usCalibrationSummary.csv` | `Appendix/CalibrationOECD.tex` |
 | `UK_householdheterogeneity` | table | `Tables/UK_householdheterogeneity.tex` | `results/paper/usCalibrationSummary.csv` | `Appendix/CalibrationOECD.tex` |
-| `FRUK_householdheterogeneity` | table | `Tables/FRUK_householdheterogeneity.tex` | `results/paper/usCalibrationSummary.csv` | `Appendix/CalibrationOECD.tex` |
-| `UKUS_householdheterogeneity` | table | `Tables/UKUS_householdheterogeneity.tex` | `results/paper/usCalibrationSummary.csv` | online appendix |
 | `US_overview` | figure | `Figs/US_overview.pdf` | `results/shocks/US_shocksCommonX.csv` | `Sections/OECD.tex` |
 | `US_ESC_overview` | figure | `Figs/US_ESC_overview.pdf` | `results/esc/escExperiments.csv`, `results/paper/usCalibrationSummary.csv` | `Sections/EndogenousTheta.tex` |
 | `US_ESC_Calibration` | table | `Tables/US_ESC_Calibration.tex` | `results/esc/escCalibration.csv`, `results/esc/escCalibrationCRRA.csv` | `Sections/EndogenousTheta.tex` |
 | `UK_ESC_Calibration` | table | `Tables/UK_ESC_Calibration.tex` | `results/esc/escCalibrationCRRAUK.csv`, `results/esc/escCountry.csv` | `Appendix/EndogenousDesignResults.tex` |
-| `US_ESC_Country` | table | `Tables/US_ESC_Country.tex` | `results/esc/escCornerSlope.csv`, `results/esc/escCountry.csv` | `Appendix/EndogenousDesignResults.tex` |
+| `US_ESC_Country` | table | `Tables/US_ESC_Country.tex` | `results/esc/escCalibrationCosts.csv`, `results/esc/escCornerSlope.csv`, `results/esc/escCountry.csv`, `results/esc/escCountryCosts.csv` | `Sections/EndogenousTheta.tex` |
 | `US_ESC_Path` | figure | `Figs/US_ESC_Path.pdf` | `results/esc/escCalibration.csv`, `results/esc/escCalibrationCRRA.csv`, `results/esc/escPath.csv` | `Appendix/EndogenousDesignResults.tex` |
 | `OECDdata` | figure | `Figs/OECDdata.pdf` | `data/oecdFigure1.csv` | `Sections/Introduction.tex` |
-| `OECD26_Layer1` | figure | `Figs/OECD26_Layer1.pdf` | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer1.csv` | `Appendix/OECD26.tex` |
+| `OECD26_Spending` | figure | `Figs/OECD26_Spending.pdf` | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer1.csv` | `Sections/OECD.tex` |
+| `OECD26_Layer1` | figure | `Figs/OECD26_Layer1.pdf` | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer1.csv` | `Sections/EndogenousTheta.tex` |
 | `OECD26_Slopes` | table | `Tables/OECD26_Slopes.tex` | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer1.csv`, `results/oecd26/layer2.csv` | `Sections/EndogenousTheta.tex` |
 | `OECD26_Omega` | table | `Tables/OECD26_Omega.tex` | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer2.csv` | `Appendix/OECD26.tex` |
+| `OECD26_Robustness` | table | `Tables/OECD26_Robustness.tex` | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer1.csv`, `results/oecd26/layer2.csv` | `Appendix/OECD26.tex` |
+| `OECD26_Reconcile` | table | `Tables/OECD26_Reconcile.tex` | `results/calibration/US_rhoGridCommonX.csv`, `results/esc/escCalibration.csv`, `results/esc/escCalibrationCosts.csv`, `results/esc/escCountry.csv`, `results/esc/escCountryCosts.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer2.csv`, `results/paper/usCalibrationSummary.csv` | `Appendix/OECD26.tex` |
 | `NUM_Horizon` | table | `Tables/NUM_Horizon.tex` | `results/numerical/ARG_horizon_commonX.csv`, `results/numerical/US_horizon.csv`, `results/numerical/US_horizonDesign.csv` | `Appendix/TerminalStates.tex` |
 | `NUM_Residuals` | table | `Tables/NUM_Residuals.tex` | `results/numerical/ARG_residuals_commonX.csv`, `results/numerical/US_derivativeScheme.csv`, `results/numerical/US_residuals.csv` | `Appendix/TerminalStates.tex` |
-| `NUM_Selection` | table | `Tables/NUM_Selection.tex` | `results/calibration/FR_rhoGrid.csv`, `results/calibration/FR_rhoGridCommonX.csv`, `results/calibration/UK_rhoGrid.csv`, `results/calibration/UK_rhoGridCommonX.csv`, `results/calibration/US_rhoGrid.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/calibration/informalSavings_rhoGrid.csv`, `results/calibration/informalSavings_rhoGridCommonX.csv`, `results/esc/escCalibration.csv`, `results/esc/escCalibrationCRRA.csv`, `results/esc/escCalibrationCRRAUK.csv`, `results/esc/escCountry.csv`, `results/esc/escPath.csv`, `results/esc/escPathCRRA.csv`, `results/esc/escPermanent.csv`, `results/esc/escPermanentCRRA.csv`, `results/esc/escSequentialCRRA.csv`, `results/esc/escShocks.csv`, `results/esc/escShocksCRRA.csv`, `results/esc/escShocksCRRAUK.csv`, `results/esc/escShocksUK.csv`, `results/esc/escXiRobustness.csv`, `results/numerical/ARG_horizon_commonX.csv`, `results/numerical/ARG_stationaryApprox_commonX.csv`, `results/numerical/US_ESC_stationaryApprox.csv`, `results/numerical/US_derivativeScheme.csv`, `results/numerical/US_horizon.csv`, `results/numerical/US_horizonDesign.csv`, `results/numerical/US_stationaryApprox.csv`, `results/shocks/UK_shocks.csv`, `results/shocks/UK_shocksCommonX.csv`, `results/shocks/US_shocks.csv`, `results/shocks/US_shocksCommonX.csv`, `results/shocks/eeOnly_match_rho*.csv` (16 files), `results/shocks/eeOnly_match_rho*_commonX.csv` (16 files), `results/shocks/universal_match_rho*.csv` (16 files), `results/shocks/universal_match_rho*_commonX.csv` (16 files), `results/sweeps/epsThetaGrid_rho*.csv`, `results/sweeps/epsThetaGrid_rho*_commonX.csv` | `Appendix/TerminalStates.tex` |
+| `NUM_Selection` | table | `Tables/NUM_Selection.tex` | `results/calibration/FR_rhoGrid.csv`, `results/calibration/FR_rhoGridCommonX.csv`, `results/calibration/UK_rhoGrid.csv`, `results/calibration/UK_rhoGridCommonX.csv`, `results/calibration/US_rhoGrid.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/calibration/informalSavings_rhoGrid.csv`, `results/calibration/informalSavings_rhoGridCommonX.csv`, `results/esc/escCalibration.csv`, `results/esc/escCalibrationCRRA.csv`, `results/esc/escCalibrationCRRAUK.csv`, `results/esc/escCountry.csv`, `results/esc/escPath.csv`, `results/esc/escPathCRRA.csv`, `results/esc/escPermanent.csv`, `results/esc/escPermanentCRRA.csv`, `results/esc/escSequentialCRRA.csv`, `results/esc/escShocks.csv`, `results/esc/escShocksCRRA.csv`, `results/esc/escXiRobustness.csv`, `results/numerical/ARG_horizon_commonX.csv`, `results/numerical/ARG_stationaryApprox_commonX.csv`, `results/numerical/US_ESC_stationaryApprox.csv`, `results/numerical/US_derivativeScheme.csv`, `results/numerical/US_horizon.csv`, `results/numerical/US_horizonDesign.csv`, `results/numerical/US_stationaryApprox.csv`, `results/shocks/US_shocks.csv`, `results/shocks/US_shocksCommonX.csv`, `results/shocks/eeOnly_match_rho*.csv` (16 files), `results/shocks/eeOnly_match_rho*_commonX.csv` (16 files), `results/shocks/universal_match_rho*.csv` (16 files), `results/shocks/universal_match_rho*_commonX.csv` (16 files), `results/sweeps/epsThetaGrid_rho*.csv`, `results/sweeps/epsThetaGrid_rho*_commonX.csv` | `Appendix/TerminalStates.tex` |
 | `OECD_Countries` | table | online appendix only | `data/oecdFigure1.csv` | -- |
 | `OECD_Sources` | table | online appendix only | `data/oecdFigure1_sources.csv` | -- |
 | `OECD_Correlations` | table | online appendix only | `results/paper/oecdCorrelations.csv` | -- |
@@ -161,7 +173,6 @@ endogenous-design scripts (`python/US/runESC*.py`), `results/oecd26/` by the cro
 | `NUM_Stationary` | table | online appendix only | `results/numerical/ARG_stationaryApprox_commonX.csv`, `results/numerical/US_ESC_stationaryApprox.csv`, `results/numerical/US_stationaryApprox.csv` | -- |
 | `ARG_LeisureCalibration` | table | online appendix only | `results/paper/calibrationSummary.csv` | -- |
 | `ARG_LeisureRho` | table | online appendix only | `results/calibration/informalSavings_rhoGrid.csv`, `results/calibration/informalSavings_rhoGridCommonX.csv`, `results/paper/calibrationSummary.csv` | -- |
-| `OECD_Regroupings` | table | online appendix only | `results/paper/usCalibrationSummary.csv` | -- |
 | `OECD_LeisureCalibration` | table | online appendix only | `results/paper/usCalibrationSummary.csv` | -- |
 | `OECD_LeisureGroups` | table | online appendix only | `results/paper/usCalibrationSummary.csv` | -- |
 | `ESC_CostCalibration` | table | online appendix only | `results/esc/escCalibration.csv`, `results/esc/escCalibrationCRRA.csv` | -- |
@@ -169,16 +180,19 @@ endogenous-design scripts (`python/US/runESC*.py`), `results/oecd26/` by the cro
 | `US_TaxState` | figure | online appendix only | `results/numerical/C5_taxPolicyState.csv` | -- |
 | `US_Strategic` | table | online appendix only | `results/numerical/C5_strategicTerm.csv` | -- |
 | `NUM_HorizonPaths` | table | online appendix only | `results/numerical/ARG_horizon_commonX.csv`, `results/numerical/US_horizon.csv`, `results/numerical/US_horizonDesign.csv` | -- |
-| `NUM_SelectionFiles` | table | online appendix only | `results/calibration/FR_rhoGrid.csv`, `results/calibration/FR_rhoGridCommonX.csv`, `results/calibration/UK_rhoGrid.csv`, `results/calibration/UK_rhoGridCommonX.csv`, `results/calibration/US_rhoGrid.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/calibration/informalSavings_rhoGrid.csv`, `results/calibration/informalSavings_rhoGridCommonX.csv`, `results/esc/escCalibration.csv`, `results/esc/escCalibrationCRRA.csv`, `results/esc/escCalibrationCRRAUK.csv`, `results/esc/escCountry.csv`, `results/esc/escPath.csv`, `results/esc/escPathCRRA.csv`, `results/esc/escPermanent.csv`, `results/esc/escPermanentCRRA.csv`, `results/esc/escSequentialCRRA.csv`, `results/esc/escShocks.csv`, `results/esc/escShocksCRRA.csv`, `results/esc/escShocksCRRAUK.csv`, `results/esc/escShocksUK.csv`, `results/esc/escXiRobustness.csv`, `results/numerical/ARG_horizon_commonX.csv`, `results/numerical/ARG_stationaryApprox_commonX.csv`, `results/numerical/US_ESC_stationaryApprox.csv`, `results/numerical/US_derivativeScheme.csv`, `results/numerical/US_horizon.csv`, `results/numerical/US_horizonDesign.csv`, `results/numerical/US_stationaryApprox.csv`, `results/shocks/UK_shocks.csv`, `results/shocks/UK_shocksCommonX.csv`, `results/shocks/US_shocks.csv`, `results/shocks/US_shocksCommonX.csv`, `results/shocks/eeOnly_match_rho*.csv` (16 files), `results/shocks/eeOnly_match_rho*_commonX.csv` (16 files), `results/shocks/universal_match_rho*.csv` (16 files), `results/shocks/universal_match_rho*_commonX.csv` (16 files), `results/sweeps/epsThetaGrid_rho*.csv`, `results/sweeps/epsThetaGrid_rho*_commonX.csv` | -- |
+| `NUM_SelectionFiles` | table | online appendix only | `results/calibration/FR_rhoGrid.csv`, `results/calibration/FR_rhoGridCommonX.csv`, `results/calibration/UK_rhoGrid.csv`, `results/calibration/UK_rhoGridCommonX.csv`, `results/calibration/US_rhoGrid.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/calibration/informalSavings_rhoGrid.csv`, `results/calibration/informalSavings_rhoGridCommonX.csv`, `results/esc/escCalibration.csv`, `results/esc/escCalibrationCRRA.csv`, `results/esc/escCalibrationCRRAUK.csv`, `results/esc/escCountry.csv`, `results/esc/escPath.csv`, `results/esc/escPathCRRA.csv`, `results/esc/escPermanent.csv`, `results/esc/escPermanentCRRA.csv`, `results/esc/escSequentialCRRA.csv`, `results/esc/escShocks.csv`, `results/esc/escShocksCRRA.csv`, `results/esc/escXiRobustness.csv`, `results/numerical/ARG_horizon_commonX.csv`, `results/numerical/ARG_stationaryApprox_commonX.csv`, `results/numerical/US_ESC_stationaryApprox.csv`, `results/numerical/US_derivativeScheme.csv`, `results/numerical/US_horizon.csv`, `results/numerical/US_horizonDesign.csv`, `results/numerical/US_stationaryApprox.csv`, `results/shocks/US_shocks.csv`, `results/shocks/US_shocksCommonX.csv`, `results/shocks/eeOnly_match_rho*.csv` (16 files), `results/shocks/eeOnly_match_rho*_commonX.csv` (16 files), `results/shocks/universal_match_rho*.csv` (16 files), `results/shocks/universal_match_rho*_commonX.csv` (16 files), `results/sweeps/epsThetaGrid_rho*.csv`, `results/sweeps/epsThetaGrid_rho*_commonX.csv` | -- |
 | `OECD26_Layer1_29` | figure | online appendix only | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer1.csv` | -- |
 | `OECD26_Slopes_29` | table | online appendix only | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer1.csv`, `results/oecd26/layer2.csv` | -- |
 | `OECD26_Omega_29` | table | online appendix only | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer2.csv` | -- |
 | `OECD26_Layer1_cses` | figure | online appendix only | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer1.csv` | -- |
 | `OECD26_Slopes_cses` | table | online appendix only | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer1.csv`, `results/oecd26/layer2.csv` | -- |
 | `OECD26_Omega_cses` | table | online appendix only | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer2.csv` | -- |
+| `OECD26_Layer1_size` | figure | online appendix only | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer1.csv` | -- |
+| `OECD26_Slopes_size` | table | online appendix only | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer1.csv`, `results/oecd26/layer2.csv` | -- |
+| `OECD26_Omega_size` | table | online appendix only | `data/oecd26_sample.csv`, `data/oecdFigure1.csv`, `results/calibration/US_rhoGridCommonX.csv`, `results/oecd26/anchor.csv`, `results/oecd26/layer2.csv` | -- |
 | `ARG_ReformPaths` | data | online appendix only | `results/calibration/informalSavings_rhoGridCommonX.csv`, `results/paper/calibrationSummary.csv`, `results/shocks/eeOnly_match_rho*_commonX.csv` (16 files), `results/shocks/universal_match_rho*_commonX.csv` (16 files) | -- |
-| `OECD_Counterfactuals` | data | online appendix only | `results/paper/usCalibrationSummary.csv`, `results/shocks/UKUS_shocks.csv`, `results/shocks/UKUS_shocksCommonX.csv`, `results/shocks/UK_shocks.csv`, `results/shocks/UK_shocksCommonX.csv`, `results/shocks/USMedicare_shocks.csv`, `results/shocks/USMedicare_shocksCommonX.csv`, `results/shocks/US_shocks.csv`, `results/shocks/US_shocksCommonX.csv`, `results/shocks/US_shocksXiCommonX.csv` | -- |
-| `ESC_Counterfactuals` | data | online appendix only | `results/esc/escExperiments.csv`, `results/esc/escExperimentsUK.csv`, `results/esc/escXiRobustness.csv`, `results/paper/usCalibrationSummary.csv` | -- |
+| `OECD_Counterfactuals` | data | online appendix only | `results/paper/usCalibrationSummary.csv`, `results/shocks/USMedicare_shocks.csv`, `results/shocks/USMedicare_shocksCommonX.csv`, `results/shocks/US_shocks.csv`, `results/shocks/US_shocksCommonX.csv`, `results/shocks/US_shocksXiCommonX.csv` | -- |
+| `ESC_Counterfactuals` | data | online appendix only | `results/esc/escExperiments.csv`, `results/esc/escXiRobustness.csv`, `results/paper/usCalibrationSummary.csv` | -- |
 | `ESC_Paths` | data | online appendix only | `results/esc/escCalibration.csv`, `results/esc/escCalibrationCRRA.csv`, `results/esc/escPath.csv`, `results/esc/escPathCRRA.csv`, `results/esc/escPathHost.csv`, `results/esc/escXiRobustness.csv`, `results/paper/usCalibrationSummary.csv` | -- |
 <!-- outputs:end -->
 

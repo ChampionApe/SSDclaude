@@ -41,15 +41,16 @@ run the interactive cells; check them in a visible window or in headless Chrome 
   `<id>-head.qmd` and `<id>-foot.qmd` around an interactive figure's OJS cells. `<id>` is a key of `EXHIBITS` in
   `python/paper/onlineAppendix.py`, which names the output shown and, for an interactive figure, the dataset
   (`python/paper/siteData.py`, a `data` output of `build.py`). Exhibits are numbered per page in the order the page
-  includes them (Figure B2.1); an exhibit the paper inputs also carries its number there (from `main.aux`).
+  includes them (Figure B3.1); an exhibit the paper inputs also carries its number there (from `main.aux`).
 - The headings are the source of the paper's `\oa{key}` macros: `build.py --site` rewrites
-  `writing/Paper/onlineAppendix.tex` from them, with every key of the site before 2026-10-09 defined as an alias of
-  its new page (`OLDKEYS`), and `writing/checkPaper.py` fails on a key the paper uses that is not defined. Renaming a
-  heading's key breaks the paper's references to it unless the old key joins `OLDKEYS`.
+  `writing/Paper/onlineAppendix.tex` from them, with every retired key (the site's before 2026-10-09, the pages B2
+  and C2 retired 2026-10-27) defined as an alias of a live page (`OLDKEYS`), and `writing/checkPaper.py` fails on a key the paper uses that is not defined. Renaming a
+  heading's key breaks the paper's references to it unless the old key joins `OLDKEYS`. A page's code is typed in its
+  heading and in the lists of `index.qmd` and its part's landing page; the codes B2 and C2 stay unused, not reassigned.
 - No number is typed in the prose. The paper's and the site's exhibit, section and appendix numbers come from
   `{{< var p.<label> >}}` and `{{< var x.<id> >}}` (`_variables.yml`, the label's `:` written `_`). The prose says
   what an exhibit shows and how to read it; every sign and ranking it states is checked against the dataset.
-- A counterfactual chart stacks what it compares (U.S. over UK, one cost over the other) on one x axis, drawn once
+- A counterfactual chart stacks what it compares (one calibration over another, one cost over the other) on one x axis, drawn once
   under the last. Every chart draws at the width of its own box (`fitted` in `oa.js`): OJS's `width` is `main`'s,
   which spans the page once the page holds a `.column-page` block. Only C1's and C4's path figures are page-wide.
 - An interactive figure opens at the paper's reading (ρ = 1, common X, the paper's cost, the U.S.), and its

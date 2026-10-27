@@ -1,42 +1,75 @@
 # C6. The cross-country test {#esc-oecd26}
 
-Section {{< var p.sec_esc >}} of the paper ends with a test of the model across the OECD countries of figure
-{{< var p.fig_US_OECDdata >}}. The U.S., measured as the other countries are, from the OECD earnings deciles at the
-U.S. income percentiles, anchors the test: its political weight of the old ω and its cost parameter λ. Layer 1
-gives every other country the U.S. ω and λ with its own workers per retiree, income distribution and observed
-design, and predicts its tax rate and its design. Layer 2 calibrates each country's ω to its pension spending and
-predicts its design. The model's design is the one in force in 2020, chosen in 1990, as for the U.S. target of λ.
-The paper leaves out the countries whose informal employment is high and gives every country the U.S. propensities
-to vote by income group. This page repeats the test with all the countries of the figure, and with each country's
-own propensities to vote.
+Section {{< var p.sec_esc_crossSection >}} of the paper tests the model on 26 OECD countries of figure
+{{< var p.fig_US_OECDdata >}} in one main variant: every country keeps its own workers per retiree, income
+distribution and observed design, and takes from the U.S. the cost of redistribution as the elasticity
+$\varepsilon$, so that it faces $\lambda_i = \varepsilon\,\Pi_i/R_i$ at its own ratio of the pay-as-you-go return
+to the market return, the discount factor $\beta$ and the propensities to vote by income group. The test holds
+these, the preferences and, in layer 1, the political weight of the old $\omega$ common to all countries (layer 2
+calibrates each country's $\omega$ to its pension spending), and the sections below relax them one at a time and then
+extend the sample to every country of the figure.
 
-## All the countries {#esc-oecd26-all}
+## The paper's variant {#esc-oecd26-paper}
 
-Korea, Mexico and Turkey join the sample. The data's slope of spending on the Gini then turns negative, the
-model's sign, and the data's slope of the index on population growth flattens toward layer 1's. The other signs
-are those on the paper's sample: spending falls with population growth and rises with the index in the data and
-in the model, the model's spending rising more steeply with the index; the index falls with population growth in
-the data and in both layers; and the index rises with the Gini in the data, not significantly, where it falls in
-both layers. The table after the slopes gives the political weight of the old each country's spending implies.
+The paper reports this variant in figure {{< var p.fig_OECD26_layer1 >}} and table
+{{< var p.table_OECD26_slopes >}}, and each country's political weight and design in table
+{{< var p.table_OECD26_omega >}}. Spending falls with population growth in the data and in layer 1 (layer 2 matches
+spending by construction); spending rises with the Bismarckian index and the index falls with population growth in
+the data and in both layers; and the index falls with the Gini in both layers, significantly in layer 1 only, where
+the data show a rise that is not significant. The variants below are read against these signs.
 
-{{< include _generated/exhibits/OECD26_Layer1_29.qmd >}}
+## The U.S. λ in every country {#esc-oecd26-size}
 
-{{< include _generated/exhibits/OECD26_Slopes_29.qmd >}}
+Every country takes the U.S. cost parameter $\lambda$ itself in place of $\varepsilon$, so that its cost does not move
+with its ratio $\Pi/R$, and the U.S. anchor is recalibrated under it; at the U.S. ratio the two are the same cost.
+The ratio falls as a population ages, so a country whose ratio is below the U.S. one, as most are, faces a larger cost
+under $\lambda$ than under $\varepsilon$, and each of them chooses a more Bismarckian design, as the UK and France do in
+the deep test of section {{< var p.sec_esc_deepTest >}}. The index then falls more steeply with population growth in
+both layers, and spending rises a little less steeply with the index; the index's relation with the Gini keeps its
+sign and its significance, or its absence, in each layer.
 
-{{< include _generated/exhibits/OECD26_Omega_29.qmd >}}
+{{< include _generated/exhibits/OECD26_Layer1_size.qmd >}}
+
+{{< include _generated/exhibits/OECD26_Slopes_size.qmd >}}
+
+{{< include _generated/exhibits/OECD26_Omega_size.qmd >}}
+
+## Each country's return at the U.S. one {#esc-oecd26-beta}
+
+Setting each country's $\beta$ so that its return in 2020 is the U.S. one, in place of the U.S. $\beta$ itself, has
+no exhibit here: table {{< var p.table_OECD26_robustness >}} in appendix {{< var p.app_oecd26 >}} of the paper
+reports its slopes under both costs and at both sources of the propensities to vote.
 
 ## Each country's own turnout {#esc-oecd26-turnout}
 
-Each country's propensities to vote by income group now come from the CSES. The U.S. anchor is recalibrated at
-its own CSES turnout, which raises λ, and Luxembourg, with no CSES election, leaves data and model alike. The
+Each country's propensities to vote by income group now come from the CSES. The U.S. anchor is recalibrated at its
+own CSES profile, which raises $\varepsilon$, and Luxembourg, with no CSES election, leaves data and model alike. The
 relations the test reproduces at the U.S. turnout keep their signs: spending falls with population growth, about as
 steeply in layer 1 as in the data on these countries, and rises with the index in both layers, and the index falls
-with population growth in both layers. On the Gini, where the data show no significant relation, layer 1's slope of the
-index nearly vanishes and layer 2's takes the data's sign, neither significantly, while layer 1's slope of
-spending keeps the sign opposite to the data's.
+with population growth in both layers. On the Gini, where the data show no significant relation, layer 1's slope of
+the index nearly vanishes and layer 2's takes the data's sign, neither significantly, while layer 1's slope of
+spending keeps the sign opposite to the data's. In layer 2 the UK, which the paper's variant places above the U.S.
+design, falls below it, on the side where the deep test of section {{< var p.sec_esc_deepTest >}} places it, and
+France's design moves toward the one the deep test gives it (table {{< var x.OECD26_Omega_cses >}}).
 
 {{< include _generated/exhibits/OECD26_Layer1_cses.qmd >}}
 
 {{< include _generated/exhibits/OECD26_Slopes_cses.qmd >}}
 
 {{< include _generated/exhibits/OECD26_Omega_cses.qmd >}}
+
+## All the countries {#esc-oecd26-all}
+
+Korea, Mexico and Turkey join the sample, at the paper's variant. The data's slope of spending on the Gini then
+turns negative, the model's sign, and the data's slope of the index on population growth flattens toward layer 1's.
+The other signs are those on the paper's sample: spending falls with population growth and rises with the index in
+the data and in the model, the model's spending rising more steeply with the index; the index falls with population
+growth in the data and in both layers; and the index rises with the Gini in the data, not significantly, where it
+falls in both layers, significantly in layer 1 only. The table after the slopes gives the political weight of the old
+each country's spending implies.
+
+{{< include _generated/exhibits/OECD26_Layer1_29.qmd >}}
+
+{{< include _generated/exhibits/OECD26_Slopes_29.qmd >}}
+
+{{< include _generated/exhibits/OECD26_Omega_29.qmd >}}

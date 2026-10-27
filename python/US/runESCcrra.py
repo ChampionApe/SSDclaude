@@ -72,7 +72,7 @@ os.chdir(HERE)
 import test as testmod
 import shocks as sh
 from modelESC import ModelESC
-from runESC import SHOCKS_ESC, HOSTS, mergeWrite, buildEU, readout as escReadout, wedgeReadout, piColumn
+from runESC import SHOCKS_ESC, mergeWrite, buildEU, readout as escReadout, wedgeReadout, piColumn
 from runShocksUS import frenchData, hostRow
 from policy import multiplicityColumns
 
@@ -127,12 +127,12 @@ def buildHost(host, ρ, wedge = None, nθCandCRRA = 13, commonX = False, gs = No
     return m
 
 
-def franceRowCRRA(m, ρ, spec, phi, p, hbarRef, commonX = False, gs = None, grouping = None):
+def franceRowCRRA(m, ρ, spec, phi, p, hbarRef, commonX = False, gs = None):
     """ runESC.franceRow at rho != 1: France's own calibrated equilibrium at 2020 under the same wedge,
     exogenous theta, in escShocksCRRA's row schema. See runESC.franceRow for what the row means and why
     its workweek is a target rather than a prediction. Exogenous theta, so the row is method-free; the
-    caller stamps the method it is filed under. grouping: France cut at the host's groups. """
-    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, grouping = grouping, ρ = ρ, commonX = commonX)
+    caller stamps the method it is filed under. """
+    mFR = buildEU('FR', {'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
     mFR.CRRA.initGS(GSC if gs is None else gs)
     mFR.calibrate(preferences = 'CRRA')
     pos = mFR.db['t0']
@@ -334,17 +334,17 @@ def main():
     p.add_argument('--nCand', type = int, default = 13)
     p.add_argument('--maxIter', type = int, default = 4)
     p.add_argument('--tag', default = '')
-    p.add_argument('--host', default = 'US', choices = tuple(HOSTS),
-                   help = "'UK': calibrate the UK's OWN cost and impose France's characteristics (cut at the "
-                          "UK's groups) on it; every csv name carries the host (escCalibrationCRRAUK.csv, "
-                          "escShocksCRRAUK.csv). Mild ageing is not run on the UK.")
+    p.add_argument('--host', default = 'US', choices = ('US', 'UK'),
+                   help = "'UK': calibrate the UK's OWN cost (the deep test), the calib stage only; the csv "
+                          'name carries the host (escCalibrationCRRAUK.csv)')
     a = p.parse_args()
+    if a.host != 'US' and set(a.stage) != {'calib'}:
+        p.error('--host {} runs the calib stage only (--stage calib)'.format(a.host))
     os.makedirs(OUTDIR, exist_ok = True)
     hs = '' if a.host == 'US' else a.host
     fCal = os.path.join(OUTDIR, f'escCalibrationCRRA{hs}{a.tag}.csv')
     fPath = os.path.join(OUTDIR, f'escPathCRRA{hs}{a.tag}.csv')
     fShk = os.path.join(OUTDIR, f'escShocksCRRA{hs}{a.tag}.csv')
-    frGrouping = HOSTS[a.host]
     method = 'exact' if a.exact else 'path'
     gs = GSC | {'ns': a.ns}
     nScan = a.nScan if a.nScan is not None else (6 if a.exact else 14)
@@ -495,8 +495,7 @@ def main():
                     if any(n.startswith('fr') for n in a.scenarios):
                         if ρ not in frDataCache:
                             print('  calibrating France at rho={} for the French scenarios ...'.format(ρ))
-                            frDataCache[ρ] = frenchData(m, ρ, 'CRRA', gs = gs, commonX = a.commonX,
-                                                       grouping = frGrouping)
+                            frDataCache[ρ] = frenchData(m, ρ, 'CRRA', gs = gs, commonX = a.commonX)
                         frData = frDataCache[ρ]
                     for name in a.scenarios:
                         for pin in (True, False):
@@ -562,8 +561,7 @@ def main():
                         continue
                     try:
                         tic = time.time()
-                        f = franceRowCRRA(m, ρ, spec, phi, pCal, hbarRef, commonX = a.commonX, gs = gs,
-                                          grouping = frGrouping)
+                        f = franceRowCRRA(m, ρ, spec, phi, pCal, hbarRef, commonX = a.commonX, gs = gs)
                         f['method'], f['host'] = method, a.host
                         f |= solverColumns(a.designRule, a.Ma, f.pop('multiplicity'))
                         shkRows.append(f)

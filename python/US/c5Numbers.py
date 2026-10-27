@@ -12,8 +12,8 @@ Run:  .venv\Scripts\python.exe python\US\c5Numbers.py <command> [--rho ...]
               mu_i = y_i^k and mu_i = (mu_i^CPS)^m, and the pairwise bound (D_H/D_L)^{1/rho} at theta_t = 0.
               -> C5_criticalTurnout.csv
   a9          every counterfactual of figure 6.1 (tax rate, full effect, p.p.) at every rho on file, ranked by
-              size: results/shocks/{US,UK,UKUS}_shocksCommonX.csv and C5_US_shocksRhoGridCommonX.csv (the
-              U.S. at the other rho of the sweep, runShocksUS.py --out). -> C5_ranking.csv
+              size: results/shocks/US_shocksCommonX.csv and C5_US_shocksRhoGridCommonX.csv (the U.S. at the
+              other rho of the sweep, runShocksUS.py --out). -> C5_ranking.csv
   loss        the share of revenue lost, 1 - f of eq:esc:budget, at theta* and below it, at each rho's calibrated
               cost (the paper's and the Pi-inclusive one), the 2020 tax held and, under log, re-solved
               (T_2020(theta)); and its derivative in theta at theta*. -> C5_marginalLoss.csv
@@ -239,7 +239,7 @@ RANKED = ('ageing', 'design (θ 1→0)', 'income distribution', 'voting', 'leisu
 
 
 def a9(a):
-    srcs = [('US', 'US_shocksCommonX.csv'), ('UK', 'UK_shocksCommonX.csv'), ('UKUS', 'UKUS_shocksCommonX.csv')]
+    srcs = [('US', 'US_shocksCommonX.csv')]
     frames = []
     for host, f in srcs:
         d = pd.read_csv(os.path.join(SHK, f)).assign(host = host, source = 'results/shocks/' + f)

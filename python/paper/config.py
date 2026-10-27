@@ -148,18 +148,6 @@ US = {
     'ρAnchor':    1.0,                        # the sole LOG point, and the sweeps' march anchor
     'ρBaseline':  1.0,                        # the headline specification: the LOG tables
     'ρTable':     [0.5, 1.0, 2.0],            # the rows the CRRA tables print
-    # 'UKUS' is the UK workbook regrouped at US income percentiles -- a separate calibration, kept for
-    # counterfactual comparability and NOT interchangeable with 'UK' (different RR0, so different theta).
-    # 'FRUK' is France regrouped at the UK's own income cuts (data/FRMain.xlsx sheets heterogeneityUK /
-    # calibrationUK), the France the UK exercise below borrows from; theta = 1 whatever the grouping.
-    # A regrouping whose sheets are not in the workbook yet is skipped by the sweep stage, not failed.
-    'extraSweeps': ('UKUS', 'FRUK'),
-    # THE UK EXERCISE (2026-09-22): the French-characteristics counterfactuals of sec:oecd repeated with
-    # the UK as the host economy -- its own calibration, France cut at its income groups (FRUK).
-    # python/US/runShocksUS.py --host UK writes results/shocks/UK_shocks{,CommonX}.csv, which the online
-    # appendix's counterfactuals read (siteData.oecdCounterfactuals). The other pairing, --host UKUS (the
-    # UK at US percentiles with France as is), is the online appendix's regrouped UK.
-    'ukHost': 'UK',
     # READINGS of the U.S. workbook that are a switch rather than a sheet: name -> the driver flags of
     # python/US/calibrateRhoGrid.py and runShocksUS.py. 'USMedicare' is the online appendix's 'transfers to
     # the old': Medicare spending, 2.9% of GDP (MedPAC 2020 Data Book, data/README.md; the workbook's
@@ -245,18 +233,16 @@ US = {
         'Ma':         5,
         # The pre-publication timing checks: the permanent choice traced in rho under CRRA.
         'ρPermanentCRRA': [1.1, 1.2, 1.3, 1.4, 1.5, 2.0],
-        # The UK as host of acute ageing and the French characteristics under the chosen design (appendix
-        # app:UKUS), at the UK's OWN cost parameter, calibrated per rho as the US one is: LOG from escCountry.csv ('own'), CRRA
-        # by the exact recursion into escCalibrationCRRAUK.csv (stage (i) --prepub). Brackets set from
-        # coarse probes (2026-09-29): the UK's design is 0.23/0.57 at lambda 1.45/3.0 (rho = 2) and
-        # 0.46/0.71 at 12/25 (rho = 0.5). nsScan 0 at rho = 0.5 scans at ns2D: the UK's (beta-imposed)
-        # calibration does not converge on the ns = 50 grid there. Rescaled 2026-10-23 by the UK's LOG lambda
-        # at the pension-only workbooks (7.786 against 7.264) and widened: the exact lambda was 2.08 and 0.38
-        # times the LOG one.
+        # The UK's OWN cost parameter per rho (the deep test, UK_ESC_Calibration), calibrated as the US one is:
+        # LOG from escCountry.csv ('own'), CRRA by the exact recursion into escCalibrationCRRAUK.csv (stage (i)
+        # --prepub, runESCcrra.py --host UK --stage calib). Brackets set from coarse probes (2026-09-29): the
+        # UK's design is 0.23/0.57 at lambda 1.45/3.0 (rho = 2) and 0.46/0.71 at 12/25 (rho = 0.5). nsScan 0 at
+        # rho = 0.5 scans at ns2D: the UK's (beta-imposed) calibration does not converge on the ns = 50 grid
+        # there. Rescaled 2026-10-23 by the UK's LOG lambda at the pension-only workbooks (7.786 against 7.264)
+        # and widened: the exact lambda was 2.08 and 0.38 times the LOG one.
         'uk': {'bracket':   {0.5: (11.5, 30.0), 2.0: (1.4, 5.5)},
                'nsScan':    {0.5: 0, 2.0: 50},
-               'nScan':     4,
-               'scenarios': ['baseline', 'acute', 'frIncome', 'frLeisure', 'frVoting', 'frBoth', 'frAll']},
+               'nScan':     4},
         # THE COST VARIANTS OF SECTION 7 (A8 of archive/notes/reviewResponse_2026-10/paper_reviewResponse.md): the ageing counterfactuals
         # under the paper's cost, the cost on the design (comparisonSpec) and the Pi-inclusive cost 'sizePiR'
         # (python/US/modelESC.py: lambda*Pi_t/R_t, the factor the paper's cost absorbs into lambda, solved to
@@ -275,6 +261,29 @@ US = {
         # 'frLeisure' is run and merged but no longer printed (dropped from the paper 2026-09-11).
         'scenarios': {'acute': 'Acute ageing', 'frIncome': 'Income distribution',
                       'frVoting': 'Voting', 'frAll': 'All French characteristics'},
+    },
+    # THE CROSS-COUNTRY TEST (python/US/runOECD26.py, results/oecd26/), the one place its paper variant lives:
+    # the builders (tablesOECD26.PAPER, figuresOECD26) and the readers (datasets.oecd26*) default to it, and
+    # runOECD26.py's --spec/--betaRule defaults are read from here.
+    #   spec      the cost transported from the U.S. anchor: 'sizePiR' (lambda_i = epsilon Pi_i/R_i, epsilon
+    #             the U.S. one), 'size' (lambda itself), 'none' (no cost)
+    #   betaRule  'common' (the U.S. beta in every country) | 'commonR' (each country's beta set so that its
+    #             2020 return is the U.S. anchor's)
+    #   turnout   'cps' (the U.S. CPS propensities in every country) | 'cses' (each country's own)
+    #   reading   the model's design: 'inForce' (in force in 2020, chosen in 1990) | 'chosen' (chosen in 2020)
+    #   spendingSpec  the cost of section 6's spending test at the observed designs
+    # `variants`: the runs stage (ii)'s entry 'oecd26' makes, one runOECD26.py command each, in this order (an
+    # anchor before the layers that read it); rows already current are reused, so a rerun costs seconds.
+    'oecd26': {
+        'spec': 'sizePiR', 'betaRule': 'common', 'turnout': 'cps', 'reading': 'inForce', 'spendingSpec': 'none',
+        'variants': [
+            {'spec': ['size', 'sizePiR'], 'betaRule': ['common'], 'turnout': ['cps', 'cses'],
+             'stage': ['anchor', 'layer1', 'layer2']},
+            {'spec': ['none'], 'betaRule': ['common'], 'turnout': ['cps', 'cses'],
+             'stage': ['anchor', 'layer1', 'layer2']},
+            {'spec': ['size', 'sizePiR'], 'betaRule': ['commonR'], 'turnout': ['cps', 'cses'],
+             'stage': ['layer1', 'layer2']},
+        ],
     },
 }
 
@@ -295,7 +304,7 @@ def escBracket(ρ, spec = None):
 
 
 # Which sweep csv belongs to which country and calibration variant. The US is calibrated on its own
-# (calibrateRhoGrid.py); FR/UK/UKUS impose the US beta and are swept by calibrateRhoGridEU.py.
+# (calibrateRhoGrid.py); FR/UK impose the US beta and are swept by calibrateRhoGridEU.py.
 def usSweepCsv(country, commonX = False):
     tag = ('US_rhoGrid' if country == 'US' else country + '_rhoGrid') + ('CommonX' if commonX else '')
     return os.path.join(CALIBDIR, tag + '.csv')
@@ -307,17 +316,8 @@ def usInstanceDir(country, commonX = False):
 
 
 def usShockCsv(host = 'US', commonX = False):
-    """ python/US/runShocksUS.py's long csv for `host` ('US' | 'UK' | 'UKUS') and variant. """
+    """ python/US/runShocksUS.py's long csv for `host` ('US' | 'USMedicare', the reading) and variant. """
     return os.path.join(SHOCKDIR, host + '_shocks' + ('CommonX' if commonX else '') + '.csv')
-
-
-def usHasSheets(country):
-    """ Does the workbook carry `country`'s calibration sheet? False for a regrouping not yet added. """
-    try:
-        usCalendar(country)
-    except KeyError:
-        return False
-    return True
 
 
 @functools.lru_cache(maxsize = None)
@@ -331,23 +331,15 @@ def usCalendar(country = 'US'):
     than absent -- it is present and stale (python/US/test_createCopyFromt0.py), which is the other
     reason nothing in this pipeline reads it.
 
-    A regrouped country is its two-letter workbook plus the grouping's suffix -- 'UKUS' (the UK at US
-    percentiles), 'FRUK' (France at the UK's cuts) -- and reads the workbook's 'calibration<suffix>'
-    sheet, as python/US/testEU.load does. A KeyError names the sheet when the workbook lacks it. A reading
-    (US['readings']) is the US workbook with tau0 derived as python/US/test.reading derives it. """
+    A reading (US['readings']) is the US workbook with tau0 derived as python/US/test.reading derives it. """
     if country in US['readings']:
         cal = dict(usCalendar('US'))
         S, M = cal['τ0']*(1 - cal['α']), US['readings'][country]['medicare']
         return cal | {'τ0': (S + M)/(1 - cal['α']), 'Ushare': M/(S + M)}
-    base, suffix = (country, '') if country in US['workbooks'] else (country[:2], country[2:])
-    sheet = 'calibration' + suffix
-    wb = pd.read_excel(os.path.join(DATA, US['workbooks'][base]), sheet_name = None, header = None)
+    wb = pd.read_excel(os.path.join(DATA, US['workbooks'][country]), sheet_name = None, header = None)
     dft = pd.DataFrame(wb['population'].values)
     dates = pd.DataFrame(dft.iloc[1:, ].values, columns = dft.iloc[0, :]).set_index('t').index
-    if sheet not in wb:
-        raise KeyError("{} has no sheet '{}': the {} regrouping has not been added to the workbook"
-                       .format(US['workbooks'][base], sheet, country))
-    dfc = pd.DataFrame(wb[sheet].values)
+    dfc = pd.DataFrame(wb['calibration'].values)
     dfc = pd.Series(dfc.iloc[1, :].values, index = dfc.iloc[0, :].values)
     return {'dates': {i: int(d) for i, d in enumerate(dates)},
             't0': int(list(dates).index(dfc['Calibration year'])),

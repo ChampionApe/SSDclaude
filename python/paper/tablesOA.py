@@ -423,7 +423,8 @@ def _countVerdict(entries, stats):
 
 
 SOLVEGROUPS = {'calibration': 'Calibrations', 'shocks': 'Experiments', 'sweeps': 'Equilibria over designs',
-               'esc': 'Endogenous design', 'numerical': 'Numerical checks'}      # results/<dir>, in print order
+               'esc': 'Endogenous design', 'oecd26': 'Cross-country test',
+               'numerical': 'Numerical checks'}                                  # results/<dir>, in print order
 ARMWORDS = (('ARG', 'Argentina'), ('US', 'The U.S., the UK and France'))
 
 
@@ -462,7 +463,8 @@ def numSelection():
             r'which no candidate passed the equilibrium test and the solver fell back. The other rows select '
             r'nothing at that layer (the economic-equilibrium rows, with taxes held at the baseline path; the tax '
             r'of the exact recursion, selected inside its design layer; the cost calibrations that failed; the '
-            r'rows with the design pinned) or were '
+            r'cross-country test\textquotesingle s rows of Luxembourg at its own turnout, which has no CSES '
+            r'election and so no solve; the rows with the design pinned) or were '
             r'written before the counts existed; the online appendix lists every file. The tax rule\textquotesingle '
             r's candidates are the two corners and the crossings of the first order condition; the design '
             r'layer\textquotesingle s are the brackets of its consistency residual. '
@@ -470,7 +472,7 @@ def numSelection():
     header = (r' & & \multicolumn{2}{c}{\textbf{Rows}} & \multicolumn{2}{c}{\textbf{Largest number of}} & \\'
               + '\n' + r'\cmidrule(lr){3-4}\cmidrule(lr){5-6}' + '\n'
               r'\textbf{Solves} & \textbf{Files} & all & counted & equilibria & candidates & \textbf{Fallbacks}')
-    return _xwrap('NUM_Selection', 'results/{calibration,shocks,sweeps,esc,numerical}/*.csv',
+    return _xwrap('NUM_Selection', 'results/{calibration,shocks,sweeps,esc,oecd26,numerical}/*.csv',
                   'Equilibrium counts in the results the exhibits read', _label('NUM_Selection'),
                   r'>{\raggedright\arraybackslash}p{3.0cm}YYYYYY', header, _body(lines), note, width = r'\textwidth',
                   size = r'\footnotesize\setlength{\tabcolsep}{5pt}\renewcommand{\arraystretch}{1.1}')
@@ -519,18 +521,21 @@ def numSelectionFiles():
             r'that maximizes its integral criterion where no candidate passes the equilibrium test. No selection '
             r'in the tax rule: the economic-equilibrium rows, with taxes held at the baseline path; the rows of '
             r'the exact recursion under CRRA preferences with the design chosen, whose tax is selected inside the '
-            r'design layer and counted there; and cost calibrations that failed, France\textquotesingle{}s and '
-            r'the regrouped UK\textquotesingle{}s observed designs being out of the cost\textquotesingle{}s '
-            r'reach. The design layer is that of the exact recursion, which compares the candidate designs with '
+            r'design layer and counted there; and cost calibrations that failed, France\textquotesingle{}s '
+            r'observed design being out of the cost\textquotesingle{}s reach, and under the cost on the design '
+            r'that of the UK at the U.S.\ income groups, a row escCountry.csv keeps and no exhibit prints; and the '
+            r'cross-country test\textquotesingle s rows of Luxembourg at its own turnout, which has no CSES election '
+            r'and so no solve. '
+            r'The design layer is that of the exact recursion, which compares the candidate designs with '
             r'the retirees\textquotesingle{} savings shares held fixed and then makes the shares consistent: its '
             r'candidates are the brackets of that consistency residual, and where none closes to an equilibrium it '
             r'falls back on comparing each design at its own consistent shares; no selection there are the rows '
             r'with the design pinned, and the log rows of the stationary check. Not recorded: the rows of the '
             r'earlier cost on the design and of the path iteration under CRRA preferences, the cross-check the '
             r'exhibits do not read, written before the counts existed and not rerun at the current calibration. '
-            r'escExperiments.csv and escExperimentsUK.csv, which the endogenous-design exhibits read, merge the '
-            r'escShocks* files, whose counts are the rows above. ' + last)
-    return _xwrap('NUM_SelectionFiles', 'results/{calibration,shocks,sweeps,esc,numerical}/*.csv',
+            r'escExperiments.csv, which the endogenous-design exhibits read, merges the escShocks* files, whose '
+            r'counts are the rows above. ' + last)
+    return _xwrap('NUM_SelectionFiles', 'results/{calibration,shocks,sweeps,esc,oecd26,numerical}/*.csv',
                   'Equilibrium counts in the results the exhibits read, file by file', _label('NUM_SelectionFiles'),
                   r'>{\raggedright\arraybackslash}p{3.0cm}YYYYYYY',
                   r'\textbf{File} & \multicolumn{4}{c}{\textbf{Rows}} & \multicolumn{2}{c}{\textbf{Largest number of}} '
@@ -540,8 +545,8 @@ def numSelectionFiles():
 
 
 # ---------------------------------------------------------------------------------------------------
-# The two calibrations of the taste for leisure side by side (pages A3, B4), the regroupings (B2) and the two
-# cost specifications (C3). Only what differs across the columns compared is printed; each builder checks that
+# The two calibrations of the taste for leisure side by side (pages A3, B4) and the two cost specifications
+# (C3). Only what differs across the columns compared is printed; each builder checks that
 # what it leaves out is the same, and the note says so.
 # ---------------------------------------------------------------------------------------------------
 VARIANTHEAD = (r'\textbf{Common} $\bm{X}$', r'\textbf{Vector} $\bm{X_i}$')
@@ -653,40 +658,6 @@ def oecdLeisureGroups():
     return _xwrap('OECD_LeisureGroups', 'results/paper/usCalibrationSummary.csv',
                   'Leisure and productivity by income group under the two calibrations',
                   _label('OECD_LeisureGroups'), 'lYYYYYY', header, _body(lines), note, width = r'.9\textwidth')
-
-
-# B2.1's economies in print order: the U.S., the UK at its own and at the U.S. groups, France at the U.S. groups
-# (table 3's) and at the UK's.
-REGROUPED = (('US', r'\textbf{U.S.}'), ('UK', r'\textbf{UK}'), ('UKUS', r'\textbf{UK, U.S.\ groups}'),
-             ('FR', r'\textbf{France}'), ('FRUK', r'\textbf{France, UK groups}'))
-
-
-def oecdRegroupings():
-    r""" B2.1: table \ref{table:US:Calib}'s country parameters for the U.S., the UK at its own income groups and
-    at the U.S. ones, and France at the U.S. groups (table 3's) and at the UK's (rho = 1, common X), with the tax
-    rate each targets. """
-    c = D.usCalibrationSummary(True)
-    keys = [k for k, _ in REGROUPED]
-    miss = [k for k in keys if k not in c]
-    if miss:
-        raise D.MissingInput('results/paper/usCalibrationSummary.csv (no {} row)'.format(', '.join(miss)))
-    year0 = C.usCalendar()['year0']
-    rows = [('theta', r'$\theta$', lambda r: C.num(r['θ'])),
-            ('omega', r'$\omega$', lambda r: C.num(r['ω'])),
-            ('X', '$X$', lambda r: C.num(r['Xbar'], 2)),
-            ('nu', r'$\nu_{%d}$' % year0, lambda r: C.num(r['ν2020'])),
-            ('etaratio', r'$\eta_H/\eta_L$', lambda r: C.num(r['ηHηL'])),
-            ('tau', r'$\tau_{%d}$' % year0, lambda r: C.pct(r['τ0'], 1))]
-    lines = [_row([lab] + [f(c[k]) for k in keys], key) for key, lab, f in rows]
-    note = (r'\textit{Note:} $\rho = 1$, common $X$. The U.S., UK and France columns are those of table '
-            r'\ref{table:US:Calib}, France grouped at the U.S.\ income percentiles. The UK at the U.S.\ groups is a '
-            r'linear fit of the UK\textquotesingle s group means against cumulative population shares, not a '
-            r'recount of the survey. $\theta$ is read off the replacement rates at each grouping\textquotesingle s '
-            r'cuts, and France\textquotesingle s is one at any cuts; the tax rate is a target.')
-    return _xwrap('OECD_Regroupings', 'results/paper/usCalibrationSummary.csv',
-                  r'The UK and France at their own and at each other\textquotesingle s income groups',
-                  _label('OECD_Regroupings'), 'l' + 'Y'*len(keys),
-                  [r'\textbf{Parameter}'] + [h for _, h in REGROUPED], _body(lines), note, width = r'\textwidth')
 
 
 MEDICARE = 'USMedicare'        # config.US['readings']: the U.S. with Medicare among the transfers to the old

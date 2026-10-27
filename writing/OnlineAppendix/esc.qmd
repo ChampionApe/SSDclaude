@@ -3,15 +3,15 @@
 Section {{< var p.sec_esc >}} of the paper lets the electorate choose the design θ as well as the tax rate, under a
 deadweight cost of redistribution whose parameter λ is calibrated so that the U.S. electorate re-elects its observed
 design. Appendix {{< var p.app_esc >}} derives the cost and appendix {{< var p.app_escResults >}} holds further
-results. This part follows the design along each country's projected demography, compares the UK with the U.S.,
-sets a second cost specification against the paper's, varies the elasticities, reports the checks of the timing of
-the choice, and repeats the cross-country test on all the countries and at each country's own turnout.
+results. This part follows the design along each country's projected demography, sets a second cost specification
+against the paper's, varies the elasticities, reports the checks of the timing of
+the choice, and repeats the cross-country test under other maintained assumptions and on all the countries.
 
 - [C1. The path in levels](esc-paths.qmd): the design, the tax rate, savings and hours as the U.S., the UK and
   France age, with the design chosen and with it pinned.
-- [C2. Other countries](esc-countries.qmd): what shapes the design in the U.S. and the UK.
 - [C3. Other cost specifications](esc-costs.qmd): the paper's cost against a cost attached to the design itself.
 - [C4. Other parameters](esc-parameters.qmd): the U.S. across the intertemporal and the Frisch elasticity.
 - [C5. The timing of the choice](esc-timing.qmd): the corner the design reaches without the cost, under each timing.
-- [C6. The cross-country test](esc-oecd26.qmd): the test of section {{< var p.sec_esc >}} on every country of figure
-  {{< var p.fig_US_OECDdata >}} and with each country's own propensities to vote.
+- [C6. The cross-country test](esc-oecd26.qmd): the test of section {{< var p.sec_esc_crossSection >}} with the U.S.
+  cost parameter carried as $\lambda$ rather than $\varepsilon$, with each country's own propensities to vote, and on every country of
+  figure {{< var p.fig_US_OECDdata >}}.

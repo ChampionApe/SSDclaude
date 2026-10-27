@@ -104,3 +104,37 @@ page: `NUM_Selection` groups the files by solve (file by file in `NUM_SelectionF
 ln(1−τ) (`config.US['gridSettings']['gradKnotSpacing']`); `US_ESC_Country`'s France note gives the log-corner reason.
 Eight stale OA sentences fixed against the datasets (ω ranking, θ = 1 corner, France vs U.S. path, cost on the design a
 third, timing). Not done: A13's myopic/Markov split (needs a model function). Checks: test_onlineAppendix 10/10, test_oecd26 5/5.
+
+## 2026-10-27 — R6: the cross-section's variants run, their builders (branch `review-2026-10`, `notes/plan_byObject.md`)
+Runs (`logs/R6/`, 3 h 19 min): `runOECD26.py` none, sizePiR (anchor, both layers), size and sizePiR under commonR,
+cps and cses; `runESC.py --stage country --spec sizePiR --tag Costs` -> `escCountryCosts.csv` (stage (ii)'s
+`escCountryCosts`). Every row nEqMax 1, nFallback 0; the paper's size rows unchanged to 1e-15 (relative). Anchor ε 20.014
+(λEff 11.108); layer 1 index on growth −0.23, on the Gini −0.67 (0.29); under ε the deep test closes 0.33 of the UK's
+distance and 0.06 of France's. New outputs `OECD26_Spending` (with its generated note), `OECD26_Robustness`,
+`OECD26_Reconcile`, `USFRCalibration`, `OECD26_*_size`; `US_ESC_Country` over λ and ε without UKUS; `StaleInput`.
+README cut to 98 lines (pre-cut in `archive/readmes/`). Ledger `notes/ledger_R6.md`. build 58/58, paper test_oecd26
+13/13, test_onlineAppendix 10/10; US test_oecd26 53/55: M's "other rows unchanged" at 6.5e-13 > 1e-13, from
+`runESC.mergeWrite` rereading with pandas 3's default parser (16 decimals).
+
+## 2026-10-27 — R7: the UK as a second host economy retired (branch `review-2026-10`, `notes/plan_byObject.md`)
+RKB's decision: the UK is donor data and the deep test. Gone: stage (i)'s `FRUK`/`UKUS` sweeps, stage (ii)'s `shocksUK*`,
+`shocksUKUS*`, `escShocksUK`, `escShocksCRRAUK`, `escExperimentsUK`, `config.US['ukHost']`, `extraSweeps`, `esc['uk']['scenarios']`;
+`--host` of `runShocksUS.py`, `runESC.py`, `collectESCexperiments.py`, `--grouping` and `testEU`'s regrouped sheets; the UKUS row
+of `runESC.stageCountry` (old rows stay in `escCountry.csv`, unprinted); `runESCcrra.py --host UK` runs `--stage calib` only.
+Builders `FRUK_`/`UKUS_householdheterogeneity`, `OECD_Regroupings`, site pages B2/C2 and exhibits retired (keys aliased to
+`oecd`/`esc`). csvs, pickles, last builds: `archive/results/ukHost_2026-10/`; pages `archive/code/OnlineAppendix/`.
+`NUM_Selection`: experiments 4 -> 2 files, endogenous design 14 -> 12 (tax) and 5 -> 4 (design); maxima, fallback unchanged.
+build 55/55 (`US_ESC_Country` identical), `--map`, `--site` (20 pages, 38 exhibits), test_onlineAppendix 10/10, fast suites
+29/29 (1067 s), test_eu 23/23, test_esc 90/90. Logs `logs/R7/`. TODO D3 closes.
+
+## 2026-10-27 — W21: the online appendix, the replication map, the READMEs (branch `review-2026-10`, `notes/plan_byObject.md`)
+The transported cost parameter prints as `\varepsilon` (appendix C.2's Harberger elasticity) in every builder and site note
+(`tablesUS.COSTSYMBOL`, `tablesOECD26`, `onlineAppendix.OECD26LAYER1`); `\epsilon` stays the universal pension. `US_ESC_Country`
+gains each economy's Π/R of 2020 under the U.S. ε (UK 0.529, France 0.432, `escCountryCosts.csv`) and in its note the U.S. 0.555,
+checked so that ε·Π/R is the U.S. λ (1e-3). Notes point to appendix F for the UK and France (`OECD26_Reconcile`, `UK_ESC_Calibration`),
+section 7.4 (`OECD26_Spending`); `NUM_SelectionFiles` names the unprinted regrouped-UK row. Page C6 by variant (the paper's, λ,
+β rule, own turnout, 29; new keys `esc-oecd26-paper`, `-beta`, none retired); the codes keep the B2/C2 gaps. `REPLICATION.md` §3
+and `data/README.md` follow; the stale `FRUK_`/`UKUS_householdheterogeneity` copies removed from `writing/Paper`. build 55/55 (paper
+inputs 24), `--map`, `--site`, test_onlineAppendix 10/10, test_oecd26 13/13, checkPaper OK; `logs/W21/`. The site's paper numbers
+wait for a fresh `writing/Paper/main.aux` (2026-10-26's lacks `sec:esc:deepTest`): rerun `--site` after V's latexmk.
+Addendum: `selectionCsvs` covers `escCalibrationCosts`, `escCountryCosts` and `results/oecd26` (a new group, Luxembourg's `noTurnout` rows uncounted); `NUM_Selection` endogenous design 14/313/164, cross-country 3/586/576, maxima unchanged, no prose number moves.

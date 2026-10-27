@@ -63,6 +63,10 @@ These rules are indicative, adjust if the context warrants it:
   figure 1.1's I = 1/(2−θ), the ratio of replacement rates, not θ: review comment #13), ε universal-pension level, γ₀ informal share,
   ν_t workers per retiree, ω political weight of the old, μ_i propensity to vote, X_i taste for
   leisure, η_i productivity, β discount factor, α capital share, s savings, h hours.
+  The cost parameter transported across countries (sections 7.3, 7.4, appendix H) is the Harberger
+  elasticity of appendix C.2 and is written `$\varepsilon$` (ε), with λ_i = ε Π_i/R_i; never
+  `$\epsilon$` (ϵ), which is the universal pension. The generated tables print `\varepsilon` for it
+  (`tablesUS.COSTSYMBOL`, `tablesOECD26.COSTSYMBOL`).
 - **Timing**: model periods are thirty years; calendar years name periods ("2010", "2020", "2040").
 - **Country names**: "the U.S." (with periods, used adjectivally as "U.S.\ inequality"), "the UK"
   (no periods), "France". "Argentina".

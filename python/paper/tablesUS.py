@@ -61,22 +61,42 @@ def _xwrap(name, src, caption, label, colspec, header, body, note = None, width 
 
 # ---------------------------------------------------------------------------------------------------
 # LaTeX: column headers, captions, block titles. figuresOA draws the US, UK and FR entries as plain text.
-COUNTRYNAME = {'US': 'U.S.', 'UK': 'UK', 'FR': 'France', 'FRUK': 'France, UK income groups',
-               'UKUS': r'UK, U.S.\ income groups'}
+COUNTRYNAME = {'US': 'U.S.', 'UK': 'UK', 'FR': 'France'}
 CAPTIONNAME = dict(COUNTRYNAME, US = 'the U.S.')    # "Household heterogeneity -- the U.S."
 
 
-def usukfrCalibration(commonX = None):
-    r""" Table \ref{table:US:Calib}: the headline calibration for the three countries.
+# The calibration table's countries, in its column order, and as its note names the ones other than the U.S.
+CALIBCOUNTRIES = ('US', 'UK', 'FR')
+NOTENAME = {'UK': 'the UK', 'FR': 'France'}
+COUNTWORD = {2: 'two', 3: 'three'}
+
+
+def _andList(items):
+    return items[0] if len(items) == 1 else ', '.join(items[:-1]) + ' and ' + items[-1]
+
+
+def usukfrCalibration(commonX = None, countries = CALIBCOUNTRIES):
+    r""" Table \ref{table:US:Calib}: the headline calibration for the three countries; with `countries` a subset
+    (the U.S. first, in CALIBCOUNTRIES' order), the same table for those alone, named and labelled by them
+    (('US', 'FR'): USFRCalibration, table:US:CalibUSFR).
 
     `X` is the POPULATION-WEIGHTED MEAN of X_i -- the only summary of a vector whose level IS the hours
     unit, and the one the leisure counterfactual is matched on. The lower panel holds the parameters the
-    three countries share, each in one cell across the country columns: beta, calibrated on the US and
-    imposed on France and the UK at the same rho, and rho, xi and alpha, imposed. A value that differs
+    countries share, each in one cell across the country columns: beta, calibrated on the US and
+    imposed on the others at the same rho, and rho, xi and alpha, imposed. A value that differs
     across the countries raises rather than printing one of them. """
     commonX = C.US['commonX'] if commonX is None else commonX
+    if countries[0] != 'US' or any(k not in CALIBCOUNTRIES for k in countries) or len(countries) < 2:
+        raise ValueError('usukfrCalibration: the U.S. first, then some of {}; got {}'.format(CALIBCOUNTRIES[1:],
+                                                                                         countries))
     c = D.usCalibrationSummary(commonX)
-    cols = [k for k in ('US', 'UK', 'FR') if k in c]     # the hand-written column order
+    cols = [k for k in CALIBCOUNTRIES if k in countries]     # the hand-written column order
+    lack = [k for k in cols if k not in c]
+    if lack:
+        raise D.MissingInput(os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv') + ' (no {} row)'.format(lack))
+    full = tuple(cols) == CALIBCOUNTRIES
+    name = ''.join(cols) + 'Calibration'
+    others = [NOTENAME[k] for k in ('FR', 'UK') if k in cols]   # the note's order
     year0 = C.usCalendar()['year0']
     # Booktabs horizontals, plus the one deviation: a hairline at 25% black on each side of the value
     # block, which is what separates the numbers from the prose column now that there is no spanner.
@@ -120,16 +140,19 @@ def usukfrCalibration(commonX = None):
     header = ([r'\textbf{Parameter}'] + [r'\textbf{' + COUNTRYNAME[k] + '}' for k in cols]
               + [r'\textbf{Identified by}'])
     # The one note that spells the variant out; every other US table points here (config.variantNote).
+    n = len(cols)
     note = (r'\item \textit{Note:} $X$ is the '
-            r'population-weighted mean of $X_i$; its level is the hours unit, pinned for France and the '
-            r'UK by targeting average hours relative to the U.S.\ rather than in levels. The lower panel is '
-            r'common to the three countries; $\beta$ is calibrated for the U.S.\ and imposed on the other two.'
+            r'population-weighted mean of $X_i$; its level is the hours unit, pinned for ' + _andList(others)
+            + r' by targeting average hours relative to the U.S.\ rather than in levels. The lower panel is '
+            r'common to the ' + COUNTWORD[n] + r' countries; $\beta$ is calibrated for the U.S.\ and imposed on '
+            + ('the other ' + COUNTWORD[n - 1] if n > 2 else others[0]) + '.'
             + C.variantNote(commonX, full = True))
-    return (BANNER.format(name = 'USUKFRCalibration' + C.variantSuffix(commonX),
+    return (BANNER.format(name = name + C.variantSuffix(commonX),
                           src = 'results/paper/usCalibrationSummary.csv')
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
-            + '\\caption{Calibration, the U.S., the UK and France' + C.variantCaption(commonX) + '}\n'
-            + '\\label{table:US:Calib' + C.variantSuffix(commonX) + '}\n'
+            + '\\caption{Calibration, ' + _andList([CAPTIONNAME[k] if k != 'UK' else 'the UK' for k in cols])
+            + C.variantCaption(commonX) + '}\n'
+            + '\\label{table:US:Calib' + ('' if full else ''.join(cols)) + C.variantSuffix(commonX) + '}\n'
             + '\\renewcommand{\\arraystretch}{1.3}\n'
             + '\\begin{tabularx}{\\textwidth}{l' + rule + 'C{1.4cm}'*len(cols) + rule
             + '>{\\raggedright\\arraybackslash}X}\n\\toprule\n'
@@ -180,17 +203,6 @@ def frHouseholdHeterogeneity(commonX = None):
 
 def ukHouseholdHeterogeneity(commonX = None):
     return _householdHeterogeneity('UK', 'UK_householdheterogeneity', 'table:a_US:CalibUK', commonX)
-
-
-def frukHouseholdHeterogeneity(commonX = None):
-    """ France regrouped at the UK's income cuts -- the France the UK exercise borrows from. """
-    return _householdHeterogeneity('FRUK', 'FRUK_householdheterogeneity', 'table:a_US:CalibFRUK', commonX)
-
-
-def ukusHouseholdHeterogeneity(commonX = None):
-    """ The UK regrouped at US income percentiles -- the third row of US_ESC_Country. Its group means are
-    a linear fit of the UK's own, not a microdata recount (data/UKMain.xlsx, sheet heterogeneityUS). """
-    return _householdHeterogeneity('UKUS', 'UKUS_householdheterogeneity', 'table:a_US:CalibUKUS', commonX)
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -255,8 +267,14 @@ def escCalibrationTable(spec = None):
                   'table:US_ESC:calibration', 'YYYYY', _costHeader(spec), body, note, width = r'.8\textwidth')
 
 
-# escCountry.csv's economy keys, in the order the table prints them, their labels and row keys.
-COUNTRYROWS = (('UK', 'UK', 'gbr'), ('FR', 'France', 'fra'), ('UKUS', r'UK at U.S.\ income groups', 'ukus'))
+# escCountry.csv's economy keys, in the order the table prints them, their labels and row keys. The UK at U.S.
+# income groups ('UKUS') stays in the csvs and is not printed.
+COUNTRYROWS = (('UK', 'UK', 'gbr'), ('FR', 'France', 'fra'))
+# The deep test's transports of the U.S. cost parameter, in the table's order, and the parameter's symbol: the
+# paper's 'size' (λ) and config.US['esc']['costVariants']'s 'sizePiR' (ε, the cost λ_i = ε Π_i/R_i). ε is appendix
+# C.2's Harberger elasticity and prints as \varepsilon: \epsilon is the paper's universal pension.
+TRANSPORTS = ('size', C.US['esc']['costVariants']['spec'])
+COSTSYMBOL = {'size': r'\lambda', 'sizePiR': r'\varepsilon', 'scale': 'p'}
 
 
 def _frenchCornerFalls(tol = 1e-6):
@@ -275,51 +293,91 @@ def _frenchCornerFalls(tol = 1e-6):
             raise ValueError("US_ESC_Country: France's {} at the corner moves with lambda: {}".format(col, v.tolist()))
 
 
-def escCountryTable(spec = None):
-    r""" Table \ref{table:US_ESC:country}: the cross-country test of the cost specification. One row per
-    economy -- the UK, France, and the UK regrouped at US income percentiles -- with its observed design,
-    the design its electorate chooses under the US-calibrated parameter, and the parameter at which it
-    re-elects its own design (`--` where no finite value does: France's observed design is the corner
-    theta = 1). Vtilde is printed when the csv carries it (rows written since the 'size' spec). rho = 1
-    (LOG) only: the country stage has no CRRA counterpart. """
-    spec = C.US['esc']['spec'] if spec is None else spec
-    df = D.escCountry(spec = spec)
-    sym = _wedgeSymbol(spec)
-    us = df[df['wedgeFrom'] == 'US']
-    hasV = 'Vtilde' in df.columns and bool(us['Vtilde'].notna().any())
-    rows = []
+def escCountryTable(specs = TRANSPORTS):
+    r""" Table \ref{table:US_ESC:country}: the deep test of the cost. One row per economy of COUNTRYROWS -- the UK
+    and France -- with its observed design and Ṽ, and per transport of the U.S. parameter in `specs` (TRANSPORTS:
+    its λ, its ε) the design its electorate chooses under it and the parameter at which it re-elects its own
+    design (`--` where no finite value does: France's observed design is the corner theta = 1, which no
+    proportional cost reaches, escCornerSlope.csv under 'size'). Vtilde is printed when the csvs carry it (rows
+    written since the 'size' spec). With ε among `specs`, each economy's Π/R of 2020 on its path under the U.S. ε
+    (escCountryCosts.csv's `ΠR`, the 'US' row; the 'size' rows carry none), and the note's U.S. ratio from the ε
+    calibration (datasets.escCalibrationLOG), at which the U.S. ε and λ must be one cost (checked, 1e-3 relative).
+    rho = 1 (LOG) only: the country stage has no CRRA counterpart. """
+    specs = list(specs)
+    pir = C.US['esc']['costVariants']['spec']
+    dfs = {spec: D.escCountry(spec = spec) for spec in specs}
+    us = {spec: df[df['wedgeFrom'] == 'US'] for spec, df in dfs.items()}
+    hasV = all('Vtilde' in df.columns for df in dfs.values()) and all(bool(u['Vtilde'].notna().any())
+                                                                       for u in us.values())
+    hasR = pir in specs
+    if hasR and ('ΠR' not in us[pir].columns or us[pir]['ΠR'].isna().any()):
+        raise D.MissingInput('escCountry ({}): no ΠR on a U.S.-parameter row'.format(pir))
+    rows, pUS, ownFR = [], {}, False
     for key, name, rk in COUNTRYROWS:
-        u = us[us['country'] == key]
-        if u.empty:
-            raise D.MissingInput('escCountry ({}, US {}, {}, phi={})'
-                                 .format(key, sym, spec, C.US['esc']['phi']))
-        u = u.iloc[-1]
-        own = df[(df['country'] == key) & (df['wedgeFrom'] == 'own')]
-        cells = [name, C.num(float(u['θStar']), 3), C.num(float(u['choice']), 3),
-                 '--' if own.empty else C.num(float(own.iloc[-1]['p']), 3)]
-        if hasV:
-            cells.append('--' if u['Vtilde'] != u['Vtilde'] else C.num(float(u['Vtilde']), 3))
-        rows.append(keyed(' & '.join(cells) + r' \\', rk))
-    pUS = float(us.iloc[-1]['p'])
+        cells, θs, Vs = [], [], []
+        for spec in specs:
+            u = us[spec][us[spec]['country'] == key]
+            if u.empty:
+                raise D.MissingInput('escCountry ({}, US {}, {}, phi={})'
+                                     .format(key, COSTSYMBOL[spec], spec, C.US['esc']['phi']))
+            u = u.iloc[-1]
+            pUS[spec] = float(u['p'])
+            θs.append(float(u['θStar']))
+            Vs.append(float(u['Vtilde']) if hasV else np.nan)
+            own = dfs[spec][(dfs[spec]['country'] == key) & (dfs[spec]['wedgeFrom'] == 'own')]
+            ownFR |= key == 'FR' and not own.empty
+            cells += [C.num(float(u['choice']), 3), '--' if own.empty else C.num(float(own.iloc[-1]['p']), 3)]
+        if np.ptp(θs) > 1e-6 or (hasV and np.ptp(Vs) > 1e-6):
+            raise ValueError('US_ESC_Country: {} has another observed design or Ṽ under {}: {} {}'.format(
+                key, specs, θs, Vs))
+        lead = [name, C.num(θs[0], 3)] + (['--' if Vs[0] != Vs[0] else C.num(Vs[0], 3)] if hasV else [])
+        if hasR:
+            lead.append(C.num(float(us[pir][us[pir]['country'] == key].iloc[-1]['ΠR']), 3))
+        rows.append(keyed(' & '.join(lead + cells) + r' \\', rk))
+    if ownFR:
+        raise ValueError("US_ESC_Country: France has an 'own' cost parameter, which the note says no value gives")
+    ratio = ''
+    if hasR:
+        cal = D.escCalibrationLOG(pir)
+        if abs(float(cal['p']) - pUS[pir]) > 1e-6*pUS[pir]:
+            raise ValueError('US_ESC_Country: the U.S. {} {} of escCountry differs from its calibration {}: a stale '
+                             'country stage'.format(pir, pUS[pir], cal['p']))
+        rUS = float(cal['ΠR'])
+        if 'size' in specs and abs(pUS[pir]*rUS - pUS['size']) > 1e-3*pUS['size']:
+            raise ValueError('US_ESC_Country: the U.S. ε·Π/R {} is not its λ {}, which the note says'
+                             .format(pUS[pir]*rUS, pUS['size']))
+        ratio = (r' $\Pi/R$ is the ratio of the pay-as-you-go return factor to the market return in 2020 on the '
+                 r'economy\textquotesingle s own path under the U.S.\ $' + COSTSYMBOL[pir] + r'$, at which it faces '
+                 r'$\lambda_i = ' + COSTSYMBOL[pir] + r'\,\Pi_{i,2020}/R_{i,2020}$; the U.S.\ ratio is $'
+                 + C.num(rUS, 3) + '$' + (r', at which the U.S.\ $' + COSTSYMBOL[pir] + r'$ and $\lambda$ are the same '
+                                         r'cost' if 'size' in specs else '') + '.')
+    ncol = 2 + hasV + hasR
     # \mbox: in the narrow Y column the header otherwise breaks as "ob-served"
-    header = [r'\textbf{Economy}', r'$\theta^{\ast}$ \mbox{\textbf{observed}}',
-              r'$\theta$ \textbf{chosen, U.S.} $' + sym + '$', r'\textbf{Own} $' + sym + '$'] \
-             + ([r'$\tilde V$'] if hasV else [])
-    if spec == 'size':
+    header = (' & '*ncol + ' & '.join(r'\multicolumn{2}{c}{\textbf{U.S.} $' + COSTSYMBOL[spec] + '$}'
+                                      for spec in specs) + r' \\' + '\n'
+              + ''.join(r'\cmidrule(lr){%d-%d}' % (ncol + 1 + 2*i, ncol + 2 + 2*i) for i in range(len(specs))) + '\n'
+              + ' & '.join([r'\textbf{Economy}', r'$\theta^{\ast}$ \mbox{\textbf{observed}}']
+                           + ([r'$\tilde V$'] if hasV else []) + ([r'$\Pi/R$'] if hasR else [])
+                           + sum(([r'$\theta$ \textbf{chosen}', r'\textbf{Own} $' + COSTSYMBOL[spec] + '$']
+                                  for spec in specs), [])))
+    pars = [r'U.S.\ $' + COSTSYMBOL[spec] + ' = ' + C.num(pUS[spec], 3) + '$' for spec in specs]
+    which = 'either parameter' if len(specs) > 1 else '$' + COSTSYMBOL[specs[0]] + '$'
+    gap = (r' No value of ' + which + r' makes France re-elect its observed design, the Bismarckian corner '
+           r'$\theta = 1$')
+    if 'size' in specs:
         _frenchCornerFalls()
-        gap =(r' No $\lambda$ makes France re-elect its observed design, the Bismarckian corner $\theta = 1$: under '
-               r'log preferences neither the slope of the design objective at that corner nor the tax rate there '
-               r'depends on $\lambda$, and France\textquotesingle s slope there is negative.')
+        gap += (r': under log preferences neither the slope of the design objective at that corner nor the tax rate '
+                r'there depends on the cost parameter, and France\textquotesingle s slope there is negative.')
     else:
-        gap = (r' No finite $p$ makes France re-elect its observed design, the corner $\theta = 1$.')
-    note = (r'\textit{Note:} Each economy is its own calibration at $\rho = 1$ with U.S.\ $' + sym + ' = '
-            + C.num(pUS, 3) + '$. ' + LQ + 'Chosen' + RQ
+        gap += '.'
+    note = (r'\textit{Note:} Each economy is its own calibration at $\rho = 1$, with the ' + ' or the '.join(pars)
+            + '.' + ratio + ' ' + LQ + 'Chosen' + RQ
             + r' is the design in 2020 on the economy\textquotesingle s own freely simulated path under the '
             r'U.S.\ parameter, to be read against the observed one; ' + LQ + 'own' + RQ + r' is the value at '
             r'which that path re-elects the observed design.' + gap + C.variantNote(C.US['commonX']))
-    return _xwrap('US_ESC_Country', 'results/esc/escCountry.csv, results/esc/escCornerSlope.csv',
+    return _xwrap('US_ESC_Country', 'results/esc/escCountry.csv, escCountryCosts.csv, escCornerSlope.csv',
                   r'The UK and France under the U.S.\ cost of redistribution',
-                  'table:US_ESC:country', 'l' + 'Y'*(len(header) - 1), header, '\n'.join(rows), note,
+                  'table:US_ESC:country', 'l' + 'Y'*(ncol - 1 + 2*len(specs)), header, '\n'.join(rows), note,
                   width = r'\textwidth')
 
 
@@ -327,7 +385,7 @@ def ukEscCalibrationTable(spec = None):
     r""" Table \ref{table:UK_ESC:calibration} (appendix app:escResults:calibration): the UK's own calibrated
     cost per rho at its own income groups (datasets.escCalibrationHost: rho = 1 from escCountry.csv, the
     other rho from escCalibrationCRRAUK.csv), in the layout of escCalibrationTable. beta is the US value
-    without the cost at each rho, imposed as in section 6; omega is recalibrated with the cost parameter. """
+    without the cost at each rho, imposed as in appendix F (app:US); omega is recalibrated with the cost parameter. """
     spec = C.US['esc']['spec'] if spec is None else spec
     cal = D.escCalibrationHost('UK', spec = spec)
     recs = {}
@@ -340,8 +398,8 @@ def ukEscCalibrationTable(spec = None):
     note = (r'\textit{Note:} As table \ref{table:US_ESC:calibration}, for the UK at its own income groups, where '
             r'$\theta^{\ast} = ' + C.num(θ, 3) + '$' + ('' if V is None else r' and $\tilde V = ' + C.num(V, 3) + '$')
             + r' at every $\rho$; $' + sym + r'$ is the value at which the UK electorate re-elects its observed '
-            r'design. $\beta$ is the U.S.\ value of the calibration without the cost, imposed as in section '
-            r'\ref{sec:oecd}, and $\omega$ is recalibrated with $' + sym + r'$.' + C.variantNote(C.US['commonX']))
+            r'design. $\beta$ is the U.S.\ value of the calibration without the cost, imposed as in appendix '
+            r'\ref{app:US}, and $\omega$ is recalibrated with $' + sym + r'$.' + C.variantNote(C.US['commonX']))
     return _xwrap('UK_ESC_Calibration', 'results/esc/escCountry.csv, escCalibrationCRRAUK.csv',
                   'The calibrated cost of redistribution in the UK',
                   'table:UK_ESC:calibration', 'YYYYY', _costHeader(spec), body, note, width = r'.8\textwidth')

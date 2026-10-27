@@ -143,43 +143,6 @@ EXPERIMENTS = {
         'outputs': lambda: [os.path.join(C.SHOCKDIR, 'US_shocks_freeTheta.csv')],
         'note':    'French income distribution with theta re-derived',
     },
-    # --- The UK exercise (config.US['ukHost']): the same families with the UK as host and France cut at
-    # the UK's own income groups. Needs the UK and FRUK sweeps of the variant; until the France workbook
-    # carries its UK regrouping the FRUK sweep does not exist and the entry is skipped, not failed.
-    'shocksUK': {
-        'part':    'main',
-        'script':  'runShocksUS.py',
-        'args':    RHOFLAGS + GRIDFLAGS + ['--host', C.US['ukHost']],
-        'outputs': lambda: [C.usShockCsv(C.US['ukHost'], False)],
-        'requires': lambda: [C.usSweepCsv(C.US['ukHost'], False), C.usSweepCsv('FRUK', False)],
-        'note':    'French characteristics on the UK, all rho, both effects',
-    },
-    'shocksUKCommonX': {
-        'part':    'main',
-        'script':  'runShocksUS.py',
-        'args':    RHOFLAGS + GRIDFLAGS + ['--host', C.US['ukHost'], '--commonX'],
-        'outputs': lambda: [C.usShockCsv(C.US['ukHost'], True)],
-        'requires': lambda: [C.usSweepCsv(C.US['ukHost'], True), C.usSweepCsv('FRUK', True)],
-        'note':    'the same on the UK under common X (the headline)',
-    },
-    # The UK regrouped at the US income groups as host, France at its own (the US) groups: the online
-    # appendix's comparison of the UK under the two groupings (siteData.oecdCounterfactuals).
-    'shocksUKUS': {
-        'part':    'main',
-        'script':  'runShocksUS.py',
-        'args':    RHOFLAGS + GRIDFLAGS + ['--host', 'UKUS'],
-        'outputs': lambda: [C.usShockCsv('UKUS', False)],
-        'requires': lambda: [C.usSweepCsv('UKUS', False), C.usSweepCsv('FR', False)],
-        'note':    'the counterfactuals on the UK at US income groups',
-    },
-    'shocksUKUSCommonX': {
-        'part':    'main',
-        'script':  'runShocksUS.py',
-        'args':    RHOFLAGS + GRIDFLAGS + ['--host', 'UKUS', '--commonX'],
-        'outputs': lambda: [C.usShockCsv('UKUS', True)],
-        'requires': lambda: [C.usSweepCsv('UKUS', True), C.usSweepCsv('FR', True)],
-        'note':    'the same under common X',
-    },
     # The US counterfactuals at other Frisch elasticities, rho = 1, common X: the US and France recalibrated at
     # each xi inside the script (python/US/runShocksXi.py, whose first xi reproduces US_shocksCommonX.csv).
     'shocksXi': {
@@ -221,14 +184,24 @@ EXPERIMENTS = {
         'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibrationCosts.csv')],
         'note':    'the Pi-inclusive cost: design path, mild and acute ageing, LOG (rho = 1)',
     },
-    # The UK, France and the UK at US income groups under the US parameter and under their own
-    # (Tables/US_ESC_Country.tex).
+    # The UK and France under the US parameter and under their own (Tables/US_ESC_Country.tex). The csv also
+    # holds rows of the UK at US income groups ('UKUS'), which the stage no longer writes and nothing prints.
     'escCountry': {
         'part':    'main',
         'script':  'runESC.py',
         'args':    ['--stage', 'country'] + ESCSPEC_LOG + ESCVARIANT,
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escCountry.csv')],
         'note':    'the UK and France under the ESC cost, LOG (rho = 1)',
+    },
+    # The same under the Pi-inclusive cost, at the U.S. epsilon and their own (escCountryCosts.csv): the epsilon
+    # columns of US_ESC_Country and OECD26_Reconcile.
+    'escCountryCosts': {
+        'part':    'main',
+        'script':  'runESC.py',
+        'args':    ['--stage', 'country'] + CVSPEC + ESCVARIANT,
+        'outputs': lambda: [os.path.join(C.ESCDIR, 'escCountryCosts.csv')],
+        'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibrationCosts.csv')],
+        'note':    'the UK and France under the Pi-inclusive cost, LOG (rho = 1)',
     },
     # The same path for France and the UK under the US-calibrated cost and their own (escCountry.csv): the
     # online appendix's paths by country (runESC.stagePathHost).
@@ -241,13 +214,15 @@ EXPERIMENTS = {
         'note':    'endogenous-theta design path of France and the UK, LOG (rho = 1)',
     },
     # The cross-country test (python/US/runOECD26.py, results/oecd26/): the U.S. at the OECD inputs (anchor), every
-    # country at its omega and lambda (layer 1) and with its own omega (layer 2), both turnout readings; LOG, the
-    # paper's cost. Its rows are keyed on their inputs, so the child decides what to recompute: always run.
+    # country at its omega and cost parameter (layer 1) and with its own omega (layer 2), LOG; one command per
+    # variant of config.US['oecd26']['variants'] (costs, beta rules, turnout readings, stages), in its order. Its
+    # rows are keyed on their inputs, so the child decides what to recompute: always run.
     'oecd26': {
         'part':    'main',
         'always':  True,
         'script':  'runOECD26.py',
-        'args':    [],
+        'argSets': lambda: [['--spec'] + v['spec'] + ['--betaRule'] + v['betaRule'] + ['--turnout'] + v['turnout']
+                            + ['--stage'] + v['stage'] for v in C.US['oecd26']['variants']],
         'outputs': lambda: [os.path.join(C.RESULTS, 'oecd26', f + '.csv') for f in ('anchor', 'layer1', 'layer2')],
         'requires': lambda: [C.usSweepCsv('US', True)],
         'note':    'the cross-country test, LOG (rho = 1)',
@@ -360,37 +335,6 @@ EXPERIMENTS = {
         'outputs': lambda: [os.path.join(C.NUMDIR, 'US_ESC_stationaryApprox.csv')],
         'note':    'stationary vs date-specific design policies, LOG and exact CRRA (~1 h)',
     },
-    # --- The UK as host under the chosen design (appendix app:UKUS): France's characteristics at the UK's
-    # own cost parameter, France cut at the UK's groups. LOG reads the UK's own lambda off escCountry.csv
-    # (seconds); CRRA reads the exact escCalibrationCRRAUK.csv of stage (i) --prepub (~1 h per rho).
-    'escShocksUK': {
-        'part':    'main',
-        'script':  'runESC.py',
-        'args':    ['--stage', 'shocks', '--host', 'UK'] + ESCSPEC + ESCVARIANT,
-        'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksUK.csv')],
-        'requires': lambda: [os.path.join(C.ESCDIR, 'escCountry.csv')],
-        'note':    'acute ageing and French characteristics on the UK, endogenous theta, LOG',
-    },
-    'escShocksCRRAUK': {
-        'part':    'prepub',
-        'script':  'runESCcrra.py',
-        'args':    (['--exact', '--host', 'UK', '--stage', 'shocks', '--rho'] + ESCRHO + ESCSPEC
-                    + ['--ns', str(ESC['ns2D']), '--nCand2D', str(ESC['nCand2D']), '--scenarios']
-                    + ESC['uk']['scenarios'] + ESCVARIANT + ESCLAYER),
-        'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksCRRAUK.csv')],
-        'complete': lambda: _hasExactRows(os.path.join(C.ESCDIR, 'escShocksCRRAUK.csv')),
-        'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibrationCRRAUK.csv')],
-        'note':    'acute ageing and French characteristics on the UK, endogenous theta, CRRA, EXACT',
-    },
-    'escExperimentsUK': {
-        'part':    'both',
-        'always':  True,
-        'script':  'collectESCexperiments.py',
-        'args':    ['--host', 'UK'],
-        'outputs': lambda: [os.path.join(C.ESCDIR, 'escExperimentsUK.csv')],
-        'requires': lambda: [os.path.join(C.ESCDIR, 'escShocksUK.csv')],
-        'note':    'merge the UK-host LOG and CRRA legs',
-    },
     # The cost variants' ageing table (section 7, A8): the paper's csvs and the Costs-tagged ones merged.
     'escAgeingCosts': {
         'part':    'both',
@@ -434,9 +378,11 @@ def status(name):
     return os.path.exists(script), have, lack
 
 
-def command(name):
+def commands(name):
+    """ The entry's commands: one per argument list of its 'argSets' (a callable), else the one of its 'args'. """
     e = EXPERIMENTS[name]
-    return [C.PYTHON, os.path.join(C.USDIR, e['script'])] + list(e['args'])
+    sets = e['argSets']() if 'argSets' in e else [e['args']]
+    return [[C.PYTHON, os.path.join(C.USDIR, e['script'])] + list(a) for a in sets]
 
 
 def main():
@@ -459,7 +405,8 @@ def main():
                 EXPERIMENTS[name]['part'], name, EXPERIMENTS[name]['note'], 'yes' if ok else 'MISSING',
                 n - len(lack), n, '  (no exact rows yet)' if any('no exact' in l for l in lack) else ''))
             if a.dry and ok:
-                print('    ' + ' '.join(command(name)))
+                for cmd in commands(name):
+                    print('    ' + ' '.join(cmd))
         return
 
     for name in names:
@@ -474,13 +421,13 @@ def main():
         if need:
             print('SKIP {}: needs {} first.'.format(name, ', '.join(os.path.relpath(p, C.REPO) for p in need)))
             continue
-        cmd = command(name)
-        print('\n' + '='*94 + '\n{} [{}]: {}\n  {}\n'.format(name, EXPERIMENTS[name]['part'],
-                                                             EXPERIMENTS[name]['note'], ' '.join(cmd))
-              + '='*94)
-        r = subprocess.run(cmd, cwd = C.REPO)
-        if r.returncode:
-            raise SystemExit('{} exited {}'.format(EXPERIMENTS[name]['script'], r.returncode))
+        for cmd in commands(name):
+            print('\n' + '='*94 + '\n{} [{}]: {}\n  {}\n'.format(name, EXPERIMENTS[name]['part'],
+                                                                 EXPERIMENTS[name]['note'], ' '.join(cmd))
+                  + '='*94)
+            r = subprocess.run(cmd, cwd = C.REPO)
+            if r.returncode:
+                raise SystemExit('{} exited {}'.format(EXPERIMENTS[name]['script'], r.returncode))
 
 
 if __name__ == '__main__':

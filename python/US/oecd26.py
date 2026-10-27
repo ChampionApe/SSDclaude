@@ -1,5 +1,5 @@
-r""" The model of section 7 (ModelESC, the 'size' cost of Eq esc:AB, log preferences) built from one OECD
-country's data: the loader of the cross-country test (python/US/runOECD26.py -> results/oecd26/).
+r""" The model of section 7 (ModelESC, a proportional cost of Eq esc:AB or none, log preferences) built from one
+OECD country's data: the loader of the cross-country test (python/US/runOECD26.py -> results/oecd26/).
 
     import oecd26
     inp = oecd26.countryInputs('GBR')                 # turnout 'cps' (default) or 'cses'
@@ -26,11 +26,14 @@ Inputs per country (`countryInputs`):
   μ_i     'cps': the U.S. workbook's CPS propensities to vote, in every country (the U.S. percentiles are the
           CPS groups' cuts); 'cses': the country's own CSES turnout averaged over the same groups
           (mu1-3_usPct; none for Luxembourg, which raises NoTurnout).
-  β       imposed, never calibrated: the U.S. calibration without the cost at ρ = 1 in the common-X variant
+  β       betaRule 'common': imposed, the U.S. calibration without the cost at ρ = 1 in the common-X variant
           (`usBeta`, results/calibration/US_rhoGridCommonX.csv), as appendix G.1 imposes it on the UK and France.
+          betaRule 'commonR': calibrated so that R_{t0} is db['R0'], the anchor's 2020 return (build's R0).
 
-ModelOECD calibrates ω alone against τ_{t0} (model.py eq:calibration with R dropped, as modelFR.ModelFR),
-with θ exogenous at the datum and the cost installed; the cost parameter λ (the 'p' slot) is calibrated by
+ModelOECD calibrates, with θ exogenous at the datum and the cost installed, under betaRule 'common' ω alone
+against τ_{t0} (model.py eq:calibration with R dropped, as modelFR.ModelFR); under 'commonR' (β, ω) against
+(R_{t0}, τ_{t0}) (model.py eq:calibration), or β alone against R_{t0} when ω is held (calibrateω False). The cost
+parameter (the 'p' slot: λ under 'size', the λ of λ·Π_t/R_t under 'sizePiR') is calibrated by
 ModelESC.calibrateWedge to eq esc:calibration (the design in force in 2020 on the freely simulated path is the
 datum).
 `closedFormTax` is the log tax at θ ≡ 1, archive/notes/reviewResponse_2026-10/theory_closedForm.md eq (1.4): at θ = 1 the cost vanishes with
@@ -58,6 +61,7 @@ DATES = pd.Index([1960, 1990, 2020, 2050, 2080, 2110] + [2110 + 30*k for k in ra
 T0YEAR = 2020
 GS = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}     # runESC.GS
 TURNOUT = ('cps', 'cses')
+BETARULES = ('common', 'commonR')
 
 
 class NoTurnout(ValueError):
@@ -145,12 +149,23 @@ def usBeta(path = USSWEEP, ρ = 1.0):
 
 
 class ModelOECD(ModelESC):
-    """ ModelESC on one country's OECD inputs: θ from figure 1.1's index, β imposed, ω calibrated against τ_{t0}
-    alone (R is a prediction). The cost must be proportional ('size' or 'scale', or none), under which it
-    cancels from the replacement-rate ratio and I = 1/(2 - θ) holds; under 'flat' it does not. """
+    """ ModelESC on one country's OECD inputs: θ from figure 1.1's index. The cost must be proportional ('size',
+    'sizePiR' or 'scale', or none), under which it cancels from the replacement-rate ratio and I = 1/(2 - θ)
+    holds; under 'flat' it does not.
 
-    _calPars = ('ω',)
-    _calBounds = {k: (0., np.inf) for k in _calPars}
+    betaRule 'common': β imposed by `build`, _calPars ('ω',) against τ_{t0} (R is a prediction). 'commonR':
+    _calPars ('β', 'ω') against (R_{t0}/R0 - 1, τ_{t0} - τ0), ModelUS's eq:calibration, or ('β',) against
+    R_{t0}/R0 - 1 alone when calibrateω is False (ω held at the value `build` installed). Under 'sizePiR'
+    ModelESC.calibrate wraps either root in the π iteration. """
+
+    _calBounds = {k: (0., np.inf) for k in ('β', 'ω')}
+
+    def __init__(self, *args, betaRule = 'common', calibrateω = True, **kwargs):
+        if betaRule not in BETARULES:
+            raise ValueError('ModelOECD: betaRule must be one of {}, got {!r}'.format(BETARULES, betaRule))
+        self.betaRule = betaRule
+        self._calPars = (('β',) if betaRule == 'commonR' else ()) + (('ω',) if calibrateω else ())
+        super().__init__(*args, **kwargs)
 
     def getθ(self):
         if self.db.get('wedgeSpec') == 'flat':
@@ -158,25 +173,36 @@ class ModelOECD(ModelESC):
         return thetaFromIndex(self.db['RR0'])
 
     def _calSetPars(self, pars):
-        """ ω only: β is installed once by `build` and never written from `pars`. """
-        self.db.update(self.adjPar('ω', pars['ω']))
+        """ The parameters of _calPars, each through adjPar: under 'common' β is installed once by `build` and
+        never written from `pars`. """
+        for k in self._calPars:
+            self.db.update(self.adjPar(k, pars[k]))
         self.updateAuxPars()
 
     def _calResidual(self, report):
-        return np.array([report['τ'] - self.db['τ0']])
+        """ One entry per element of _calPars, same order: R_{t0}/R0 - 1 for β, τ_{t0} - τ0 for ω. """
+        return np.array(([report['R']/self.db['R0'] - 1] if 'β' in self._calPars else [])
+                        + ([report['τ'] - self.db['τ0']] if 'ω' in self._calPars else []))
 
 
-def build(inp, β, ω, λ = None, spec = 'size', phi = 0.5, gs = None, nθ = 41, nθCand = 121):
-    """ A ModelOECD on `inp` (countryInputs) at the imposed β, with ω and the cost parameter λ (the 'p' slot;
-    None = no cost), the LOG grid `gs` (GS by default) installed. Calendar DATES, t0 = 2020. """
+def build(inp, β, ω, λ = None, spec = 'size', phi = 0.5, gs = None, nθ = 41, nθCand = 121, betaRule = 'common',
+          R0 = None, calibrateω = True):
+    """ A ModelOECD on `inp` (countryInputs) at β (imposed under betaRule 'common', the root's start under
+    'commonR'), with ω and the cost parameter λ (the 'p' slot; None = no cost), the LOG grid `gs` (GS by default)
+    installed. R0: the 2020 return 'commonR' calibrates β to, required there; NaN otherwise, so that a stray R
+    target fails. calibrateω: ModelOECD's. Calendar DATES, t0 = 2020. """
+    if betaRule == 'commonR' and R0 is None:
+        raise ValueError("build: betaRule 'commonR' needs the target R0")
     T = len(DATES)
     pars = {'α': inp['α'], 'ξ': inp['ξ'], 'ν': np.array(inp['ν'], dtype = float), 'τ0': inp['τ0'],
-            'RR0': inp['index'], 'R0': np.nan, 'Ushare0': 0., 't0': DATES.get_loc(T0YEAR),
+            'RR0': inp['index'], 'R0': np.nan if R0 is None else float(R0), 'Ushare0': 0.,
+            't0': DATES.get_loc(T0YEAR),
             'γj': np.r_[0., inp['γ']], 'μj': np.r_[1., inp['μ']], 'Xj': 1, 'zxj': np.ones(4),
             'zηj': np.r_[inp['y'][0], inp['y']],    # the zero-mass slot cloned off type 1: finite, unused
             'h0': inp['workweek']/(7*12), 'ρ': 1., 'β': float(β), 'ω': float(ω)}
     wedge = None if λ is None else {'spec': spec, 'phi': phi, 'p': float(λ)}
-    m = ModelOECD(pars = pars, wedge = wedge, nθ = nθ, nθCand = nθCand, commonX = True, nj = 4, T = T)
+    m = ModelOECD(pars = pars, wedge = wedge, nθ = nθ, nθCand = nθCand, commonX = True, nj = 4, T = T,
+                  betaRule = betaRule, calibrateω = calibrateω)
     m.db['dates'], m.db['workweek'], m.db['country'] = DATES, inp['workweek'], inp['iso3']
     m.LOG.initGS(GS if gs is None else gs)
     return m

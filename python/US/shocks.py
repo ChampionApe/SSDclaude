@@ -1,9 +1,8 @@
 r""" The US counterfactuals: pension design (theta), ageing, and French characteristics.
 
-Machinery only -- runShocksUS.py is the driver. Written for the US as the host economy; since 2026-09-22
-the same shocks run on a calibrated ModelFR of the UK (runShocksUS.py --host UK|UKUS), with France's
-groups cut at the host's percentiles. "US" below then reads "host": the only place the host's identity
-enters is ηLevel, which preserves the host's own Gamma_h.
+Machinery only -- runShocksUS.py is the driver, with the US as the host economy and France's groups cut at
+the US percentiles. The only place the host's identity enters is ηLevel, which preserves the host's own
+Gamma_h.
 
 Every experiment is a NEW EQUILIBRIUM PATH: the shocked
 parameters hold over the WHOLE horizon (1960-2200, not from t0 onward), the economy starts from its own
@@ -127,8 +126,8 @@ def ηLevel(mt0, ηFR):
     model equals the host's own. Evaluated at db['t0'], BEFORE the swap (X must still be the host's).
 
     The host's Gamma_h is read off db, not assumed to be 1: it is 1 on a ModelUS, but a calibrated
-    vector-X ModelFR (the UK as host) carries Gamma_h = lambda, the hours rescaling that put its workweek
-    on the US-referenced target (modelFR.py), and a swap that reset it to 1 would undo that calibration.
+    vector-X ModelFR carries Gamma_h = lambda, the hours rescaling that put its workweek on the
+    US-referenced target (modelFR.py), and a swap that reset it to 1 would undo that calibration.
 
     Why a level has to be chosen at all. The model is invariant to the JOINT scale (eta, X) -> (c eta, c X)
     -- that is what Gamma_h = 1 normalises away -- but eta -> c eta at FIXED X is not a normalisation:

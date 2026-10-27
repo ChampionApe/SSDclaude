@@ -27,14 +27,12 @@ book:
     - part: oecd.qmd
       chapters:
         - oecd-ies.qmd
-        - oecd-countries.qmd
         - oecd-parameters.qmd
         - oecd-leisure.qmd
         - oecd-medicare.qmd
     - part: esc.qmd
       chapters:
         - esc-paths.qmd
-        - esc-countries.qmd
         - esc-costs.qmd
         - esc-parameters.qmd
         - esc-timing.qmd

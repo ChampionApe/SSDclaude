@@ -22,6 +22,12 @@ class MissingInput(Exception):
                          + ', '.join(os.path.relpath(p, C.REPO) for p in self.paths))
 
 
+class StaleInput(ValueError):
+    """ A results/ file exists but its rows were computed at other inputs than the current ones (an anchor of an
+    earlier U.S. calibration or grid, a layer row of another anchor; crossCuttingFindings #13). A ValueError, so a
+    caller that treats it as fatal need not know it. """
+
+
 def _need(path):
     if not os.path.exists(path):
         raise MissingInput(path)
@@ -318,7 +324,7 @@ US_SR = 'srOverY'    # the US shock csv column the tables read: s/Y. `sr` is s/(
 
 def usShocks(commonX = None, freeTheta = False, host = 'US'):
     """ python/US/runShocksUS.py's long csv: one row per (rho, family, scenario, effect). `host` is the
-    economy the characteristics were imposed on, 'US' or 'UK' (config.usShockCsv).
+    economy the characteristics were imposed on, 'US' or its Medicare reading 'USMedicare' (config.usShockCsv).
 
     `effect` is 'baseline' | 'full' | 'ee'. tau, sr and srOverY are fractions -- `sr` is s/(w h),
     `srOverY` is s/Y, the paper's savings rate (US_SR); `workweek` is already in hours,
@@ -385,17 +391,22 @@ def escCornerSlope(commonX = None, spec = None):
 
 
 def escCountry(commonX = None, spec = None):
-    """ python/US/runESC.stageCountry's csv: France, the UK and the UK regrouped at US income percentiles
-    ('UKUS') under the ESC cost, at the requested variant, spec (config.US['esc']['spec'] by default) and
-    phi. Two readings per economy, `wedgeFrom` 'US' (the US-calibrated parameter imposed; `choice` is
-    what that electorate then picks, `τ` its observed 2020 tax rate) and 'own' (the parameter calibrated
-    to re-elect the economy's own design; only converged rows are kept, so an economy whose observed
-    design no finite value reaches has no 'own' row). `Vtilde` is present on rows written since the
+    """ python/US/runESC.stageCountry's csv: France and the UK under the ESC cost, at the requested variant,
+    spec (config.US['esc']['spec'] by default) and phi; rows of the UK regrouped at US income percentiles
+    ('UKUS'), on disk from earlier runs, are returned with the rest and no builder prints them. Two readings
+    per economy, `wedgeFrom` 'US' (the US-calibrated parameter imposed; `choice` is what that electorate then
+    picks, `τ` its observed 2020 tax rate) and 'own' (the parameter calibrated to re-elect the economy's own
+    design; only converged rows are kept, so an economy whose observed design no finite value reaches has no
+    'own' row). `Vtilde` is present on rows written since the
     'size' spec. The stage runs under LOG only, and the csv carries no rho column, so rho = 1 is stamped
-    on here rather than read -- a CRRA country stage would have to write the column itself. """
+    on here rather than read -- a CRRA country stage would have to write the column itself. The spec of
+    config.US['esc']['costVariants'] ('sizePiR') is read from its tagged csv (escCountryCosts.csv), where
+    runESC.py --tag writes it; every other spec from escCountry.csv. """
     commonX = C.US['commonX'] if commonX is None else commonX
     spec = C.US['esc']['spec'] if spec is None else spec
-    df = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCountry.csv')))
+    cv = C.US['esc']['costVariants']
+    df = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCountry' + (cv['tag'] if spec == cv['spec'] else '')
+                                        + '.csv')))
     keep = [i for i, rec in enumerate(df.to_dict('records'))
             if _escVariant(rec, commonX) and rec['spec'] == spec
             and np.isclose(float(rec['phi']), C.US['esc']['phi'])
@@ -465,6 +476,22 @@ def escCalibration(commonX = None):
     return out
 
 
+def escCalibrationLOG(spec, commonX = None):
+    """ The converged LOG (rho = 1) cost calibration of the U.S. under `spec`, one record (p, θStar, β, ω, Vtilde,
+    ...; 'ΠR' under 'sizePiR'): from escCalibration.csv, or for config.US['esc']['costVariants']'s spec from its
+    tagged csv (escCalibrationCosts.csv), where runESC.py --tag writes it. 'none' is the row without the cost. """
+    commonX = C.US['commonX'] if commonX is None else commonX
+    cv = C.US['esc']['costVariants']
+    path = os.path.join(C.ESCDIR, 'escCalibration' + (cv['tag'] if spec == cv['spec'] else '') + '.csv')
+    df = pd.read_csv(_need(path))
+    keep = [rec for rec in df.to_dict('records')
+            if _escVariant(rec, commonX) and rec['spec'] == spec
+            and (spec == 'none' or (bool(rec['converged']) and np.isclose(float(rec['phi']), C.US['esc']['phi'])))]
+    if len(keep) != 1:
+        raise MissingInput('{} ({} converged {} rows at commonX={})'.format(path, len(keep), spec, commonX))
+    return keep[0]
+
+
 def _col(rec, k):
     """ A float column that may be absent, or blank (NaN) on a row written before it existed: None then. """
     v = rec.get(k, None)
@@ -511,7 +538,7 @@ def escCalibrationHost(host = 'UK', commonX = None, spec = None):
     return out
 
 
-def escExperiments(host = 'US'):
+def escExperiments():
     """ collectESCexperiments.py's merged long csv: one row per (rho, spec, scenario, reading), with the
     design, tax, savings rate and workweek at t0 AND t0+1. `θpinned` True is the exogenous-theta reading
     (design held at the shocked model's own exogenous value), False the endogenous one.
@@ -520,10 +547,9 @@ def escExperiments(host = 'US'):
     parameters hold over the whole horizon and the political choice binds from the first period -- so
     theta_{t0} is an equilibrium outcome and 2020 already carries the design response. (Under the
     superseded copy-from-2020 convention it did not, and the tables read t0+1.) The scenario 'France' is France's own calibrated path, not a shock on the US
-    model, and carries only the pinned reading. host 'UK' reads escExperimentsUK.csv: the French
-    scenarios on the UK at its own cost parameter (collectESCexperiments.py --host UK). """
-    df = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escExperiments' + ('' if host == 'US' else host) + '.csv')))
-    df.attrs['source'] = 'results/esc/escExperiments' + ('' if host == 'US' else host) + '.csv'
+    model, and carries only the pinned reading. """
+    df = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escExperiments.csv')))
+    df.attrs['source'] = 'results/esc/escExperiments.csv'
     return df
 
 
@@ -592,43 +618,58 @@ def oecd26Path(layer):
     return os.path.join(OECD26DIR, 'anchor.csv' if layer == 0 else 'layer{}.csv'.format(layer))
 
 
-def _oecd26Rows(layer, turnout):
+def _oecd26Variant(turnout = None, spec = None, betaRule = None):
+    """ (turnout, spec, betaRule), each config.US['oecd26']'s where None. """
+    v = C.US['oecd26']
+    return (v['turnout'] if turnout is None else turnout, v['spec'] if spec is None else spec,
+            v['betaRule'] if betaRule is None else betaRule)
+
+
+def _oecd26Rows(layer, turnout = None, spec = None, betaRule = None):
+    """ The rows of anchor.csv (layer 0) or layer<1|2>.csv at one turnout, spec and β rule (config.US['oecd26']'s
+    where None), at config phi and calibration variant. A csv without the betaRule column, or a blank cell in it,
+    is a 'common' row: the one rule before the column existed (runOECD26.LEGACY). """
+    turnout, spec, betaRule = _oecd26Variant(turnout, spec, betaRule)
     path = oecd26Path(layer)
     df = pd.read_csv(_need(path), dtype = {'inputsKey': str, 'anchorKey': str})
-    sel = ((df['turnout'] == turnout) & (df['spec'] == C.US['esc']['spec'])
+    rule = df['betaRule'].fillna('common') if 'betaRule' in df.columns else pd.Series('common', index = df.index)
+    sel = ((df['turnout'] == turnout) & (df['spec'] == spec) & (rule == betaRule)
            & np.isclose(df['phi'].astype(float), C.US['esc']['phi'])
            & (df['commonX'].astype(bool) == bool(C.US['commonX'])))
     return _noDuplicates(df[sel], ['turnout'] + ([] if layer == 0 else ['iso3']), path), path
 
 
-def oecd26Anchor(turnout = 'cps'):
-    """ The calibrated anchor (the U.S. at the OECD inputs) of one turnout reading at the paper's cost and variant,
-    as a dict: β, ω, `p` (λ), its readouts, `inputsKey` and `grid`. Refused unless it was solved on the fine grid
-    and at the β the U.S. calibration without the cost has now at ρ = 1 (usSweep): an anchor computed before a
-    recalibration of the U.S. is stale, and so is everything layered on it (#13). """
-    df, path = _oecd26Rows(0, turnout)
+def oecd26Anchor(turnout = None, spec = None):
+    """ The calibrated anchor (the U.S. at the OECD inputs) of one turnout reading and cost spec (config.US['oecd26']'s
+    where None; the anchor's β rule is always 'common'), as a dict: β, ω, `p` (λ under 'size', the λ of λ·Π/R under
+    'sizePiR', NaN under 'none', which has none), its readouts, `inputsKey` and `grid`. Refused unless it was solved
+    on the fine grid and at the β the U.S. calibration without the cost has now at ρ = 1 (usSweep): an anchor
+    computed before a recalibration of the U.S. is stale, and so is everything layered on it (#13): StaleInput. """
+    turnout, spec, _ = _oecd26Variant(turnout, spec)
+    df, path = _oecd26Rows(0, turnout, spec, 'common')
     ok = df[df['status'] == 'ok']
     if ok.empty:
-        raise MissingInput(path + ' (no calibrated {} anchor)'.format(turnout))
+        raise MissingInput(path + ' (no calibrated {} {} anchor)'.format(spec, turnout))
     a = ok.iloc[0].to_dict()
     sweep = usSweep('US')
     β = float(sweep.loc[np.isclose(sweep['ρ'], 1.0), 'β'].iloc[0])
     if a['grid'] != 'fine' or not np.isclose(float(a['β']), β, rtol = 1e-12, atol = 0):
-        raise ValueError('{}: the {} anchor was solved at β = {!r} on the {} grid; the U.S. calibration has β = {!r}: '
+        raise StaleInput('{}: the {} anchor was solved at β = {!r} on the {} grid; the U.S. calibration has β = {!r}: '
                          'rerun python/US/runOECD26.py'.format(os.path.relpath(path, C.REPO), turnout, a['β'],
                                                                a['grid'], β))
     return a
 
 
-def oecd26Layer(layer, turnout = 'cps'):
-    """ Layer 1 or 2 of one turnout reading, indexed on ISO3. Every row must have been computed against the anchor
-    on disk (its `anchorKey` is the anchor's `inputsKey`) on the anchor's grid: a row of an earlier anchor is an
-    error, never mixed in (crossCuttingFindings #13). """
-    a = oecd26Anchor(turnout)
-    df, path = _oecd26Rows(layer, turnout)
+def oecd26Layer(layer, turnout = None, spec = None, betaRule = None):
+    """ Layer 1 or 2 of one turnout reading, cost spec and β rule (config.US['oecd26']'s where None), indexed on ISO3.
+    Every row must have been computed against the anchor of its spec on disk (its `anchorKey` is the anchor's
+    `inputsKey`) on the anchor's grid: a row of an earlier anchor is StaleInput, never mixed in (crossCuttingFindings
+    #13). """
+    a = oecd26Anchor(turnout, spec)
+    df, path = _oecd26Rows(layer, turnout, spec, betaRule)
     stale = (df['anchorKey'] != a['inputsKey']) | (df['grid'] != a['grid'])
     if stale.any():
-        raise ValueError('{}: rows computed against another anchor or grid: {}'.format(
+        raise StaleInput('{}: rows computed against another anchor or grid: {}'.format(
             os.path.relpath(path, C.REPO), ', '.join(df.loc[stale, 'iso3'])))
     return df.set_index('iso3')
 
@@ -816,8 +857,10 @@ def strategicTerm():
 def selectionCsvs():
     """ The results csvs the registered outputs read that a politico-economic solve wrote, for the
     equilibrium counts (NUM_Selection): [(arm, label, [paths])], one entry per file or per rho-grid family.
-    The endogenous-design experiments appear through the csvs escExperiments{,UK}.csv merges, since the
-    merge drops the counts (python/US/collectESCexperiments.py). """
+    The endogenous-design experiments appear through the csvs escExperiments.csv merges, since the merge
+    drops the counts (python/US/collectESCexperiments.py). The cross-country test's csvs (results/oecd26, labelled
+    'oecd26/<file>') carry -1 on the rows without a solve (status 'noTurnout': Luxembourg at own turnout), which
+    countSummary leaves uncounted, as it does a failed cost calibration's. """
     arg, us = [], []
     for cx in (C.ARG['commonX'], not C.ARG['commonX']):
         arg.append(('ARG', os.path.basename(C.argSweepCsv(cx)), [C.argSweepCsv(cx)]))
@@ -834,14 +877,15 @@ def selectionCsvs():
     for cx in (C.US['commonX'], not C.US['commonX']):
         for country in ('US', 'UK', 'FR'):
             us.append(('US', os.path.basename(C.usSweepCsv(country, cx)), [C.usSweepCsv(country, cx)]))
-        for host in ('US', C.US['ukHost']):
-            us.append(('US', os.path.basename(C.usShockCsv(host, cx)), [C.usShockCsv(host, cx)]))
-    uk = C.US['ukHost']
-    for f in ('escCalibration.csv', 'escCalibrationCRRA.csv', 'escCalibrationCRRA' + uk + '.csv', 'escCountry.csv',
-              'escShocks.csv', 'escShocksCRRA.csv', 'escShocks' + uk + '.csv', 'escShocksCRRA' + uk + '.csv',
+        us.append(('US', os.path.basename(C.usShockCsv('US', cx)), [C.usShockCsv('US', cx)]))
+    for f in ('escCalibration.csv', 'escCalibrationCosts.csv', 'escCalibrationCRRA.csv', 'escCalibrationCRRAUK.csv',
+              'escCountry.csv', 'escCountryCosts.csv', 'escShocks.csv', 'escShocksCRRA.csv',
               'escPath.csv', 'escPathCRRA.csv', 'escXiRobustness.csv', 'escPermanent.csv',
               'escPermanentCRRA.csv', 'escSequentialCRRA.csv'):
         us.append(('US', f, [os.path.join(C.ESCDIR, f)]))
+    for layer in (0, 1, 2):
+        p = oecd26Path(layer)
+        us.append(('US', 'oecd26/' + os.path.basename(p), [p]))
     for f in ('US_stationaryApprox.csv', 'US_ESC_stationaryApprox.csv') + HORIZONCSVS['US'] + ('US_derivativeScheme.csv',):
         us.append(('US', f, [os.path.join(C.NUMDIR, f)]))
     return arg + us

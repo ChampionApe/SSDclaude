@@ -12,10 +12,6 @@ no reason. What it asserts instead are the things that must hold whatever the da
     quietly targeting the US interest rate that ModelUS's defaults would otherwise supply.
   * beta is the US sweep's value at that rho, held exactly through the search.
   * hbar lands on hbarTarget(), and Gamma_h ends at lambda rather than 1.
-  * the UK's own income groups and its US-percentile regrouping are NOT interchangeable.
-  * a French income profile swapped onto a calibrated vector-X ModelFR keeps Gamma_h at lambda, not 1
-    (shocks.ηLevel preserves the host's own level -- the UK-as-host exercise depends on it), and the
-    France workbook's UK regrouping loads.
 """
 import os, sys
 import numpy as np
@@ -23,17 +19,15 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 import testEU
-import test as testmod
 from model import ModelUS
 
 from gridsearch.testing import check, report
 
-CASES = (('FR', None), ('UK', None), ('UK', 'US'))
 usRef = testEU.usReference()
 
-for country, grouping in CASES:
-    tag = country + (grouping or '')
-    m = testEU.model(country, grouping = grouping)
+for country in ('FR', 'UK'):
+    tag = country
+    m = testEU.model(country)
     t0 = m.db['t'][m.db['t0']]
 
     check('[{}] workbook loads with 3 formal types plus the zero-mass slot'.format(tag),
@@ -83,48 +77,5 @@ try:
     check('and _checkConverged rejects it rather than reading NaN as converged', False)
 except RuntimeError:
     check('and _checkConverged rejects it rather than reading NaN as converged', True)
-
-# ---- the UK's two groupings are different models, not two views of one
-mUK, mUKus = testEU.model('UK'), testEU.model('UK', grouping = 'US')
-tUK = mUK.db['t'][mUK.db['t0']]
-check('[UK] the two groupings carry different replacement-rate ratios',
-      not np.isclose(mUK.db['RR0'], mUKus.db['RR0'], rtol = 1e-3),
-      '-> RR0={:.6f} (own groups) vs {:.6f} (US percentiles)'.format(mUK.db['RR0'], mUKus.db['RR0']))
-check('[UK] and therefore different theta -- they are not interchangeable',
-      not np.isclose(float(mUK.db['θ'].xs(tUK)), float(mUKus.db['θ'].xs(tUK)), rtol = 1e-3),
-      '-> theta={:.6f} vs {:.6f}'.format(float(mUK.db['θ'].xs(tUK)), float(mUKus.db['θ'].xs(tUK))))
-check('[UK] the US regrouping reproduces the US population shares',
-      np.allclose(mUKus.db['γi'].xs(tUK).values.astype(float),
-                  testmod.pars['γj'][1:], rtol = 1e-6),
-      '-> {}'.format(np.round(mUKus.db['γi'].xs(tUK).values.astype(float), 6)))
-
-
-
-# ---- the shock machinery on a ModelFR host: the income swap must preserve Gamma_h = lambda, not reset it
-import shocks as sh
-mHost = testEU.model('UK', grouping = 'US')
-calHost = mHost.calibrate(preferences = 'LOG')
-t0 = mHost.db['t'][mHost.db['t0']]
-Γh0 = float(np.asarray(mHost.db['Γh'])[mHost.db['t0']])
-mFR = testEU.model('FR')
-mFR.calibrate(preferences = 'LOG')
-ηFR = mFR.db['ηi'].xs(mFR.db['t'][mFR.db['t0']]).values.astype(float)
-mS, c = sh.shockedCopy(mHost, 'frIncome', {'ηFR': ηFR})
-Γh1 = float(np.asarray(mS.db['Γh'])[mS.db['t0']])
-check('[UKUS host] Gamma_h is lambda, not 1, before the swap',
-      abs(Γh0 - 1) > 1e-3 and np.isclose(Γh0, calHost['pars']['λ'], rtol = 1e-9),
-      '-> Gamma_h={:.6f}'.format(Γh0))
-check("[UKUS host] France's income profile swapped in leaves Gamma_h at the host's lambda",
-      np.isclose(Γh1, Γh0, rtol = 1e-10), '-> {:.10f} vs {:.10f}, scale c={:.4f}'.format(Γh1, Γh0, c))
-check('[UKUS host] the swap pins theta at the host design',
-      np.isclose(float(mS.db['θ'].xs(t0)), float(mHost.db['θ'].xs(t0)), rtol = 1e-12))
-
-# ---- France at the UK's cuts (sheets heterogeneityUK/calibrationUK), the UK host's France
-try:
-    testEU.load('FR', grouping = 'UK')
-    frukLoads, msg = True, 'the sheet pair exists'
-except KeyError as e:
-    frukLoads, msg = False, str(e)
-check("[FRUK] load('FR', grouping='UK') loads", frukLoads, '-> ' + msg[:90])
 
 report()

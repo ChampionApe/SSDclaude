@@ -30,9 +30,7 @@ France's income distribution is imposed through the productivities and its leisu
 for leisure, so these are the rows the treatment of leisure moves, with the row that imposes all of France's
 characteristics at once. On the U.S. the vector $X_i$ strengthens the
 effect of France's income distribution at every IES and makes that of its leisure preferences on hours a little
-smaller. On the UK the effect of France's income distribution on the tax rate changes sign. The vector $X_i$ read part
-of the observed income dispersion off relative hours, which are much flatter in the UK than in France, so at the UK's
-income cuts France's productivity spread falls below the UK's, where under the common $X$ it lies above.
+smaller.
 
 ::: {.oa-explorer}
 {{< include _generated/exhibits/OECD_LeisureRows-head.qmd >}}
@@ -41,9 +39,8 @@ income cuts France's productivity spread falls below the UK's, where under the c
 //| echo: false
 import {counterfactuals, control, RHO, GIVEN_OUTCOMES} from "./assets/oa.js"
 oecd = FileAttachment("_generated/data/OECD_Counterfactuals.csv").csv({typed: true})
-viewof b4Host = control("radio", [["U.S.", "US"], ["UK", "UK"]], {key: "host", label: "Host", value: "US"})
 viewof b4Out = control("radio", GIVEN_OUTCOMES, {key: "outcome", label: "Outcome", value: "tau"})
-counterfactuals(oecd.filter(d => d.source === "main" && d.effect === "full" && d.host === b4Host),
+counterfactuals(oecd.filter(d => d.source === "main" && d.effect === "full" && d.host === "US"),
   {rows: [{label: "French income distr.", scenario: "income"}, {label: "French leisure", scenario: "leisure"},
           {label: "All French characteristics", scenario: "frall"}],
    series: RHO, outcome: b4Out, width,

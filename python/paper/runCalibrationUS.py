@@ -16,12 +16,12 @@ pre-publication part is the EXACT CRRA wedge calibration (runESCcrra.py --exact,
 
 Two things happen, and only the first is expensive:
 
-  1. The rho sweeps. Delegated to python/US/calibrateRhoGrid.py (the US, which calibrates beta and omega
-     against R and tau) and python/US/calibrateRhoGridEU.py (France, the UK, and the UK regrouped at US
-     percentiles, which IMPOSE the US beta at the same rho and calibrate omega alone). This file is the
-     DECLARATION of what the paper calibrates, not a second implementation of it. ~4.5 min per country
-     per variant; all four are resumable and return already-solved rho from their own csv, so a re-run
-     with nothing to do costs seconds.
+  1. The rho sweeps. Delegated to python/US/calibrateRhoGrid.py (the US and its Medicare reading, which
+     calibrate beta and omega against R and tau) and python/US/calibrateRhoGridEU.py (France and the UK,
+     which IMPOSE the US beta at the same rho and calibrate omega alone). This file is the DECLARATION of
+     what the paper calibrates, not a second implementation of it. ~4.5 min per country per variant; all
+     are resumable and return already-solved rho from their own csv, so a re-run with nothing to do costs
+     seconds.
 
      ORDER MATTERS HERE, unlike in the Argentina arm. calibrateRhoGridEU.py reads the US sweep csv for
      beta and hbar at each rho and refuses to interpolate, so the US sweep must be complete over the
@@ -52,7 +52,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import config as C
 
 # US first -- see the docstring; the readings (config.US['readings']) are US calibrations of their own
-SWEEPS = ('US',) + tuple(C.US['readings']) + C.US['countries'][1:] + C.US['extraSweeps']
+SWEEPS = ('US',) + tuple(C.US['readings']) + C.US['countries'][1:]
 
 
 def sweepCmd(country, commonX = False, force = False):
@@ -69,10 +69,7 @@ def sweepCmd(country, commonX = False, force = False):
         cmd = ([C.PYTHON, os.path.join(C.USDIR, 'calibrateRhoGrid.py')] + common
                + ['--medicare', str(C.US['readings'][country]['medicare'])])
     else:
-        # A regrouped country is its workbook plus the grouping suffix: 'UKUS', 'FRUK' (config.usCalendar).
-        base, grouping = country[:2], country[2:]
-        cmd = ([C.PYTHON, os.path.join(C.USDIR, 'calibrateRhoGridEU.py'), '--country', base]
-               + (['--grouping', grouping] if grouping else []) + common)
+        cmd = [C.PYTHON, os.path.join(C.USDIR, 'calibrateRhoGridEU.py'), '--country', country] + common
     return cmd + (['--commonX'] if commonX else []) + (['--force'] if force else [])
 
 
@@ -125,7 +122,7 @@ def escMissing(part = 'main', force = False, strict = True):
     'prepub': the EXACT CRRA calibrations at every rho the ESC tables print under the paper's spec and the
     comparison spec (method = 'exact' rows -- the path iteration's rows in the same csv do not count), one
     command per (rho, spec) with its own scan bracket from config.escBracket, the cost variant's in its
-    tagged csv, the UK's own, and the LOG calibrations at PHIROBUST. `force` lists them all. A placeholder
+    tagged csv, the UK's own (the deep test), and the LOG calibrations at PHIROBUST. `force` lists them all. A placeholder
     bracket raises unless `strict` is False (the --dry listing), which prints it as `--bracket <unset>
     <unset>` instead. """
     esc = C.US['esc']
@@ -175,8 +172,8 @@ def escMissing(part = 'main', force = False, strict = True):
                     xt = [v for k, v in esc.get('xtol', {}).get(sp, {}).items() if np.isclose(float(k), ρ)]
                     cmds.append(exact + ['--rho', str(ρ), '--bracket'] + [str(b) for b in brackets[ρ]] + opts
                                 + (['--xtol', str(xt[0])] if xt and not tag else []))
-        # The UK's own exact CRRA cost (appendix app:UKUS), one command per missing rho, its bracket and
-        # scan grid from esc['uk'].
+        # The UK's own exact CRRA cost (the deep test, UK_ESC_Calibration), one command per missing rho, its
+        # bracket and scan grid from esc['uk'].
         uk = esc['uk']
         pathUK = os.path.join(C.ESCDIR, 'escCalibrationCRRAUK.csv')
         haveUK = set()
@@ -298,10 +295,6 @@ def main():
                 if not todo:
                     print('{:<14} all {} rho already solved.'.format(label, len(C.US['ρGrid'])))
                     continue
-                if not C.usHasSheets(c):
-                    print('{:<14} SKIPPED: the workbook has no calibration sheet for this regrouping yet.'
-                          .format(label))
-                    continue
                 # The US sweep is the reference every European one reads beta and hbar from, and
                 # calibrateRhoGridEU refuses to interpolate it -- so an incomplete US sweep must stop the
                 # run here rather than fail per-point halfway through a march.
@@ -330,8 +323,8 @@ def main():
 
     # Both variants, always: the paper's headline outputs read one and their robustness twins the
     # other, so a summary carrying only one of them blocks half the build (config.US['commonX']).
-    # A regrouping whose sweep does not exist yet (no workbook sheets) is left out of the summary rather
-    # than failing it; its tables report MissingInput in stage (iii).
+    # A sweep that does not exist yet is left out of the summary rather than failing it; its tables
+    # report MissingInput in stage (iii).
     recs = [summarise(c, a.rho, cx) for cx in (False, True) for c in SWEEPS
             if os.path.exists(C.usSweepCsv(c, cx))]
     os.makedirs(C.PAPERDIR, exist_ok = True)

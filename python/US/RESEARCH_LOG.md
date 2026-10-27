@@ -122,3 +122,14 @@ num_esc's permanent timing at `test_escTiming.py`'s pins (p = 0.4: 0.753 pinned,
 `universal_match` csvs) and `c5Numbers.py strategic`; `data/README.md` the Argentine ν copies. `oecd29Data.py`'s two
 French notes rerun offline from `logs/oecd29_raw/`: only the `note` columns of `oecd29_{population,sources}.csv` moved.
 `NUM_Residuals` already described the least-squares cubic; rebuilt identical. build 51, --site, --map (table unchanged), checkPaper OK.
+
+## 2026-10-27 — C14: the cross-section driver's variants (branch `review-2026-10`, `notes/plan_byObject.md` C14)
+`runOECD26.py --spec size|sizePiR|none --betaRule common|commonR` (each in turn; defaults read from `config.US['oecd26']`).
+`betaRule` is in both keys and in `inputsKey` only when not 'common', so the on-disk rows keep theirs; a csv without the
+column reads and is migrated as 'common' (`migrate`). `ModelOECD(betaRule, calibrateω)`: 'commonR' sets β to the anchor's
+R2020 (layer 1; with ω to τ0 in layer 2). Under 'sizePiR' `readouts` reads the design off `solveLeaded`'s own π fixed point
+and τ2020/R2020 off `solvePEE_LOG`'s, plus `ΠR2020`, `λEff2020`, `ΠRgap`; 'none' reads no design. `runESC.usWedgeRow`: the
+country stage's U.S.-cost row, which raised under 'sizePiR'. GBR's rows bitwise old vs new code; fine-grid row times (GBR)
+sizePiR 47.8/42.4 s, commonR 9.5/8.6 s (layers 1/2). python/paper: `config.US['oecd26']`, readers and OECD26 builders take
+spec/betaRule, stage (ii)'s `oecd26` runs its `variants`, `escCountry('sizePiR')` reads escCountryCosts.csv. test_oecd26
+45/45 (N, Q, Π, K, M new), paper test_oecd26 9/9, test_oecd26Anchor 5/5, fast suites 29/29. Logs `logs/C14/`.

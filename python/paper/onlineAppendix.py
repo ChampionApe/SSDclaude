@@ -50,6 +50,13 @@ class Ex:
 
 
 E = Ex
+# What the notes of page C6's three figures share; each adds its variant. The cost parameter carried to every country
+# is appendix C.2's Harberger elasticity, \varepsilon, never \epsilon (the universal pension of section 2).
+OECD26LAYER1 = (r'Layer 1 of the cross-country test of section \ref{{sec:esc:crossSection}}: every country at the '
+                r'U.S.\ $\beta$, $\omega$ and cost parameter, with its own workers per retiree, income distribution '
+                r'and observed design. The model\textquotesingle s index is $1/(2-\theta)$ of the design in force in '
+                r'2020 on the freely simulated path, its spending $\tau(1-\alpha)$ at the observed design; the lines '
+                r'are least-squares fits (table \ref{{table:OECD26:{table}}}).')
 EXHIBITS = {
     # A1
     'ARG_LOG_FourInOne': E('figure', 'ARG_LOG_FourInOne',
@@ -79,26 +86,14 @@ EXHIBITS = {
                r'against the same targets, $\beta$ calibrated for the U.S.\ and imposed on the UK and France; the '
                r'savings rate, and the interest factor of the UK and France, are predictions. $\rho = 1$ is the '
                r'paper\textquotesingle s calibration.'),
-    # B2
-    'OECD_Hosts': E('explorer', 'OECD_Counterfactuals',
-        caption = r'What shapes pensions, savings and labor supply in the U.S.\ and the UK',
-        note = r'Each bar is the change against the host\textquotesingle s own baseline at the same $\rho$, in 2020. '
-               r'In the design row the full color is $\theta = 0$ and the light tone $\theta = 1$; in the ageing '
-               r'row the bar is acute ageing and the tick mild ageing. France\textquotesingle s income groups are cut '
-               r'at the host\textquotesingle s income percentiles. Log preferences at $\rho = 1$, CRRA otherwise.'),
-    'OECD_Regroupings': E('table', 'OECD_Regroupings'),
-    'UKUS_householdheterogeneity': E('table', 'UKUS_householdheterogeneity'),
-    'FRUK_householdheterogeneity': E('table', 'FRUK_householdheterogeneity'),
-    'OECD_Groupings': E('explorer', 'OECD_Counterfactuals',
-        caption = r'The UK at its own and at the U.S.\ income groups',
-        note = r'As figure \ref{oa:OECD_Hosts}, for the UK at its own income groups, France cut at the same groups, '
-               r'and for the UK regrouped at the U.S.\ income groups, France at the U.S.\ groups as in the paper. Each '
-               r'bar is the change against that economy\textquotesingle s own baseline.'),
     # B3
     'OECD_Frisch': E('explorer', 'OECD_Counterfactuals',
         caption = r'The counterfactuals of the U.S.\ across the intertemporal and the Frisch elasticity',
-        note = r'As figure \ref{oa:OECD_Hosts}, for the U.S. Across $\xi$ the U.S.\ and France are recalibrated at '
-               r'each value under log preferences ($\rho = 1$), the targets unchanged.'),
+        note = r'Each bar is the change against the U.S.\ baseline at the same $\rho$ and $\xi$, in 2020. In the '
+               r'design row the full color is $\theta = 0$ and the light tone $\theta = 1$; in the ageing row the bar '
+               r'is acute ageing and the tick mild ageing. France\textquotesingle s income groups are cut at the '
+               r'U.S.\ income percentiles. Log preferences at $\rho = 1$, CRRA otherwise. Across $\xi$ the U.S.\ and '
+               r'France are recalibrated at each value under log preferences ($\rho = 1$), the targets unchanged.'),
     'US_TaxState': E('figure', 'US_TaxState',
         caption = r'The U.S.\ tax rate in 2020 against the savings the economy inherits',
         note = r'The tax policy of 2020, the tax rate the 2020 electorate chooses at each level of the savings '
@@ -119,7 +114,7 @@ EXHIBITS = {
     'OECD_Medicare': E('table', 'OECD_Medicare'),
     'OECD_MedicareRows': E('explorer', 'OECD_Counterfactuals',
         caption = r'The counterfactuals of the U.S.\ with pensions alone and with Medicare',
-        note = r'As figure \ref{oa:OECD_Hosts}, for the U.S.\ under the paper\textquotesingle s calibration, '
+        note = r'As figure \ref{oa:OECD_Frisch}, for the U.S.\ under the paper\textquotesingle s calibration, '
                r'pensions alone, and under the calibration with Medicare among the transfers to the old (table '
                r'\ref{table:OA:OECD_Medicare}). Each bar is the change against the baseline of the same calibration '
                r'and $\rho$; France\textquotesingle s households are cut at the U.S.\ income percentiles in both.'),
@@ -134,51 +129,56 @@ EXHIBITS = {
         caption = r'The baseline path with the design chosen and with it pinned',
         note = r'Log preferences ($\rho = 1$). Pinned holds the design at the country\textquotesingle s observed '
                r'value throughout, under the same cost.'),
-    # C2
-    'ESC_Hosts': E('explorer', 'ESC_Counterfactuals',
-        caption = r'What shapes the pension design in the U.S.\ and the UK',
-        note = r'Each host at its own cost parameter. An open marker is the reading with the design pinned at the '
-               r'host\textquotesingle s observed value, a filled one the reading with the design chosen; the design '
-               r'is a level, the other outcomes the change against the baseline of the same reading and $\rho$, in '
-               r'2020. The vertical line in the design panel is the host\textquotesingle s observed design.'),
     # C3
     'ESC_Costs': E('explorer', 'ESC_Counterfactuals',
         caption = r'The counterfactuals under the two cost specifications, U.S.',
-        note = r'As figure \ref{oa:ESC_Hosts}, for the U.S.\ under the paper\textquotesingle s cost and under a cost '
-               r'on the design, each calibrated at each $\rho$ (table \ref{table:OA:ESC_CostCalibration}).'),
+        note = r'The U.S.\ under the paper\textquotesingle s cost and under a cost on the design, each calibrated at '
+               r'each $\rho$ (table \ref{table:OA:ESC_CostCalibration}). An open marker is the reading with the '
+               r'design pinned at the observed value, a filled one the reading with the design chosen; the design is '
+               r'a level, the other outcomes the change against the baseline of the same reading and $\rho$, in '
+               r'2020. The vertical line in the design panel is the observed design.'),
     'ESC_CostCalibration': E('table', 'ESC_CostCalibration'),
     # C4
     'ESC_Frisch': E('explorer', 'ESC_Counterfactuals',
         caption = r'The endogenous design across the intertemporal and the Frisch elasticity, U.S.',
-        note = r'As figure \ref{oa:ESC_Hosts}, for the U.S. Across $\xi$ the model is recalibrated at each value '
-               r'under log preferences ($\rho = 1$), the cost parameter included; only acute ageing is computed there.'),
+        note = r'As figure \ref{oa:ESC_Costs}, under the paper\textquotesingle s cost. Across $\xi$ the model is '
+               r'recalibrated at each value under log preferences ($\rho = 1$), the cost parameter included; only '
+               r'acute ageing is computed there.'),
     'ESC_PathsParameters': E('explorer', 'ESC_Paths',
         caption = r'The baseline path across the intertemporal and the Frisch elasticity, U.S.',
         note = r'The paper\textquotesingle s cost, recalibrated at each value. Under CRRA preferences the workweek with '
                r'the design pinned is not stored.'),
     # C5
     'ESC_Timing': E('table', 'ESC_Timing'),
-    # C6
-    'OECD26_Layer1_29': E('figure', 'OECD26_Layer1_29',
-        caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, every country of '
-                  r'the figure',
-        note = r'Layer 1 of the cross-country test of section \ref{sec:esc} on every country of figure '
-               r'\ref{fig:US:OECDdata}, Korea, Mexico and Turkey included: each country at the U.S.\ $\beta$, '
-               r'$\omega$ and $\lambda$, with its own workers per retiree, income distribution and observed design. '
-               r'The model\textquotesingle s index is $1/(2-\theta)$ of the design in force in 2020 on the freely '
-               r'simulated path, its spending $\tau(1-\alpha)$ at the observed design. The lines are least-squares '
-               r'fits (table \ref{table:OECD26:slopes_29}).'),
-    'OECD26_Slopes_29': E('table', 'OECD26_Slopes_29'),
-    'OECD26_Omega_29': E('table', 'OECD26_Omega_29'),
+    # C6, in the page's order of the variants
+    'OECD26_Layer1_size': E('figure', 'OECD26_Layer1_size',
+        caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, the U.S.\ $\lambda$ '
+                  r'in every country',
+        note = OECD26LAYER1.format(table = 'slopes_size')
+               + r' The cost parameter is the U.S.\ $\lambda$ itself in every country, in place of the '
+               r'paper\textquotesingle s $\varepsilon$ with $\lambda_i = \varepsilon\,\Pi_i/R_i$, so that no '
+               r'country\textquotesingle s cost moves with its $\Pi/R$; the U.S.\ anchor is recalibrated under it.'),
+    'OECD26_Slopes_size': E('table', 'OECD26_Slopes_size'),
+    'OECD26_Omega_size': E('table', 'OECD26_Omega_size'),
     'OECD26_Layer1_cses': E('figure', 'OECD26_Layer1_cses',
         caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, each country at '
                   r'its own turnout',
-        note = r'As figure \ref{oa:OECD26_Layer1_29}, on the paper\textquotesingle s sample, with each '
-               r'country\textquotesingle s propensities to vote by income group from the CSES in place of the U.S.\ '
-               r'CPS ones; the U.S.\ anchor is recalibrated at its own CSES turnout. Luxembourg, with no CSES '
-               r'election, is left out of data and model alike (table \ref{table:OECD26:slopes_cses}).'),
+        note = OECD26LAYER1.format(table = 'slopes_cses')
+               + r' The cost parameter is the paper\textquotesingle s $\varepsilon$, $\lambda_i = '
+               r'\varepsilon\,\Pi_i/R_i$. Each country\textquotesingle s propensities to vote by income group are '
+               r'from the CSES in place of the U.S.\ CPS ones, and the U.S.\ anchor is recalibrated at its own CSES '
+               r'profile. Luxembourg, with no CSES election, is left out of data and model alike.'),
     'OECD26_Slopes_cses': E('table', 'OECD26_Slopes_cses'),
     'OECD26_Omega_cses': E('table', 'OECD26_Omega_cses'),
+    'OECD26_Layer1_29': E('figure', 'OECD26_Layer1_29',
+        caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, every country of '
+                  r'the figure',
+        note = OECD26LAYER1.format(table = 'slopes_29')
+               + r' The cost parameter is the paper\textquotesingle s $\varepsilon$, $\lambda_i = '
+               r'\varepsilon\,\Pi_i/R_i$, and every country of figure \ref{fig:US:OECDdata} is in, Korea, Mexico and '
+               r'Turkey included.'),
+    'OECD26_Slopes_29': E('table', 'OECD26_Slopes_29'),
+    'OECD26_Omega_29': E('table', 'OECD26_Omega_29'),
     # D1
     'OECDdata': E('figure', 'OECDdata'),
     'OECD_Countries': E('table', 'OECD_Countries'),
@@ -191,13 +191,16 @@ EXHIBITS = {
     'NUM_HorizonPaths': E('table', 'NUM_HorizonPaths'),
 }
 
-# Keys of the site before 2026-10-09, which drafts of the paper cite: each is defined as an alias of its new page.
+# Retired keys, which drafts of the paper cite, each defined as an alias of a live page: the site's before
+# 2026-10-09, and those of the pages B2 (oecd-countries) and C2 (esc-countries), retired with the UK as host.
 OLDKEYS = {'arg-calibration': 'arg-leisure', 'arg-reform': 'arg-ies', 'arg-rho': 'arg-ies', 'arg-rhogrid': 'arg-ies',
-           'oecd-us': 'oecd', 'oecd-calibration': 'oecd-regroup', 'oecd-vectorx': 'oecd-leisure',
-           'oecd-rhogrid': 'oecd-ies', 'oecd-uk': 'oecd-countries',
-           'esc-calibration': 'esc', 'esc-us': 'esc-countries', 'esc-uk': 'esc-countries', 'esc-path': 'esc-paths',
+           'oecd-us': 'oecd', 'oecd-calibration': 'oecd-ies', 'oecd-vectorx': 'oecd-leisure',
+           'oecd-rhogrid': 'oecd-ies', 'oecd-uk': 'oecd',
+           'esc-calibration': 'esc', 'esc-us': 'esc', 'esc-uk': 'esc', 'esc-path': 'esc-paths',
            'esc-scale': 'esc-costs', 'data-countries': 'data', 'data-correlations': 'data',
-           'num-stationary': 'num', 'num-selection': 'num'}
+           'num-stationary': 'num', 'num-selection': 'num',
+           'oecd-countries': 'oecd', 'oecd-hosts': 'oecd', 'oecd-regroup': 'oecd',
+           'esc-countries': 'esc', 'esc-hosts': 'esc'}
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -389,7 +392,7 @@ def writeMacros(pgs):
              r'\newcommand{\oahome}{\href{\oaurl}{\nolinkurl{' + SITE_URL.split('//')[1] + r'}}\xspace}']
     for key, (target, code) in keys.items():
         lines.append(r'\oadef{' + key + '}{' + target.replace('#', r'\#') + '}{' + code + '}')
-    lines.append(r'%% Retired keys (the site before 2026-10-09), defined as their new pages.')
+    lines.append(r'%% Retired keys, defined as the live pages that replace them.')
     for old, new in OLDKEYS.items():
         if new in keys and old not in keys:
             target, code = keys[new]
