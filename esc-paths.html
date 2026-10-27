@@ -71,7 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./esc-countries.html" rel="next">
+<link href="./esc-costs.html" rel="next">
 <link href="./esc.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -231,11 +231,6 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./oecd-countries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B2. Other countries</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./oecd-parameters.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B3. Other parameters</span></a>
   </div>
 </li>
@@ -263,11 +258,6 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./esc-paths.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">C1. The path in levels</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./esc-countries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C2. Other countries</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -355,7 +345,7 @@ window.Quarto = {
 </header>
 
 
-<p>The calibration targets the design of 2020 only; every other design along the path is an outcome of the model, chosen one period ahead. The figures follow the three countries from 1990, whose electorate sets the design of 2020, to 2110; the demography is constant from 2080. Each country keeps its own calibration and demography. Its cost parameter is either the one calibrated on the U.S., the cross-country test of appendix G along the path, or its own, the parameter at which its electorate re-elects its observed design. France has no own parameter, since no value of it re-elects France’s fully Bismarckian design.</p>
+<p>The calibration targets the design of 2020 only; every other design along the path is an outcome of the model, chosen one period ahead. The figures follow the three countries from 1990, whose electorate sets the design of 2020, to 2110; the demography is constant from 2080. Each country keeps its own calibration and demography. Its cost parameter is either the U.S. λ, the deep test of section 7.3 under λ along the path, or its own, the parameter at which its electorate re-elects its observed design. France has no own parameter, since no value of it re-elects France’s fully Bismarckian design.</p>
 <section id="esc-paths-countries" class="level2 page-columns page-full">
 <h2 class="anchored" data-anchor-id="esc-paths-countries">By country</h2>
 <p>In every country the chosen design moves against the number of workers per retiree. As the population ages, the electorate ties benefits more closely to earnings, and the design levels off when the demography does. Under the U.S. cost parameter the three countries’ designs keep their observed order in 2020: the UK’s lowest, France’s highest, the U.S. in between. France’s design stays above the U.S. one, but from 2050 by much less, since France’s population is already old in 2020 and ages least afterwards. The UK’s workers per retiree rise until 2020 before they fall, and its design moves against them, falling and then rising. At its own parameter the UK’s design passes through its observed value in 2020 and follows the same pattern. The tax rate rises with ageing everywhere.</p>
@@ -479,7 +469,7 @@ window.Quarto = {
 </div>
 </div>
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
-<div class="oa-note"><em>Note:</em> Log preferences (<span class="math inline">\(\rho = 1\)</span>). Each country keeps its own calibration and demography; the cost parameter is the U.S. one or the country’s own, as selected, and France has no own parameter. A design chosen at one date applies from the following one. Open markers are the observed designs.</div><div class="oa-links">Data: <a href="_generated/data/ESC_Paths.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/esc/escCalibration.csv</code></li><li><code>results/esc/escCalibrationCRRA.csv</code></li><li><code>results/esc/escPath.csv</code></li><li><code>results/esc/escPathCRRA.csv</code></li><li><code>results/esc/escPathHost.csv</code></li><li><code>results/esc/escXiRobustness.csv</code></li><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>siteData.escPaths</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d5f0ef6/python/paper">python/paper</a>) at commit <code>d5f0ef6</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only ESC_Paths</code>, then <code>build.py --site</code>.</p></details></div>
+<div class="oa-note"><em>Note:</em> Log preferences (<span class="math inline">\(\rho = 1\)</span>). Each country keeps its own calibration and demography; the cost parameter is the U.S. one or the country’s own, as selected, and France has no own parameter. A design chosen at one date applies from the following one. Open markers are the observed designs.</div><div class="oa-links">Data: <a href="_generated/data/ESC_Paths.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/esc/escCalibration.csv</code></li><li><code>results/esc/escCalibrationCRRA.csv</code></li><li><code>results/esc/escPath.csv</code></li><li><code>results/esc/escPathCRRA.csv</code></li><li><code>results/esc/escPathHost.csv</code></li><li><code>results/esc/escXiRobustness.csv</code></li><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>siteData.escPaths</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/8267f10/python/paper">python/paper</a>) at commit <code>8267f10</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only ESC_Paths</code>, then <code>build.py --site</code>.</p></details></div>
 </div>
 </section>
 <section id="esc-paths-readings" class="level2 page-columns page-full">
@@ -537,7 +527,7 @@ window.Quarto = {
 </div>
 </div>
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
-<div class="oa-note"><em>Note:</em> Log preferences (<span class="math inline">\(\rho = 1\)</span>). Pinned holds the design at the country’s observed value throughout, under the same cost.</div><div class="oa-links">Data: <a href="_generated/data/ESC_Paths.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/esc/escCalibration.csv</code></li><li><code>results/esc/escCalibrationCRRA.csv</code></li><li><code>results/esc/escPath.csv</code></li><li><code>results/esc/escPathCRRA.csv</code></li><li><code>results/esc/escPathHost.csv</code></li><li><code>results/esc/escXiRobustness.csv</code></li><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>siteData.escPaths</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d5f0ef6/python/paper">python/paper</a>) at commit <code>d5f0ef6</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only ESC_Paths</code>, then <code>build.py --site</code>.</p></details></div>
+<div class="oa-note"><em>Note:</em> Log preferences (<span class="math inline">\(\rho = 1\)</span>). Pinned holds the design at the country’s observed value throughout, under the same cost.</div><div class="oa-links">Data: <a href="_generated/data/ESC_Paths.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/esc/escCalibration.csv</code></li><li><code>results/esc/escCalibrationCRRA.csv</code></li><li><code>results/esc/escPath.csv</code></li><li><code>results/esc/escPathCRRA.csv</code></li><li><code>results/esc/escPathHost.csv</code></li><li><code>results/esc/escXiRobustness.csv</code></li><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>siteData.escPaths</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/8267f10/python/paper">python/paper</a>) at commit <code>8267f10</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only ESC_Paths</code>, then <code>build.py --site</code>.</p></details></div>
 </div>
 
 
@@ -967,8 +957,8 @@ window._ojs.runtime.interpretFromScriptTags();
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./esc-countries.html" class="pagination-link" aria-label="C2. Other countries">
-        <span class="nav-page-text"><span class="chapter-title">C2. Other countries</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./esc-costs.html" class="pagination-link" aria-label="C3. Other cost specifications">
+        <span class="nav-page-text"><span class="chapter-title">C3. Other cost specifications</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

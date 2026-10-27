@@ -231,11 +231,6 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./oecd-countries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B2. Other countries</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./oecd-parameters.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B3. Other parameters</span></a>
   </div>
 </li>
@@ -263,11 +258,6 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./esc-paths.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C1. The path in levels</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./esc-countries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C2. Other countries</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -373,7 +363,7 @@ window.Quarto = {
 </tbody></table>
 <div class="oa-notes">
 <p><em>Note:</em> Common <span class="math inline">\(X\)</span>. Both calibrations target the same 30-year interest factor and average workweek at the same income groups. With Medicare, 2.9% of GDP, added to pension spending, 7.37% of GDP, the tax rate in 2020 is 14.67% against 10.52%; Medicare is paid as a flat benefit, so the design is <span class="math inline">\(\theta = (1-m)\,\theta_P = 0.522\)</span>, with <span class="math inline">\(m = 0.282\)</span> Medicare’s share of the transfers and <span class="math inline">\(\theta_P = 0.728\)</span> the pension design read off the replacement rates.</p>
-</div></div><div class="oa-links">Data: <a href="_generated/data/results/calibration/USMedicare_rhoGridCommonX.csv" download="">USMedicare_rhoGridCommonX.csv</a> · <a href="_generated/data/results/calibration/US_rhoGridCommonX.csv" download="">US_rhoGridCommonX.csv</a> · <a href="_generated/data/results/paper/usCalibrationSummary.csv" download="">usCalibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>data/USMain_test.xlsx</code></li><li><code>results/calibration/USMedicare_rhoGridCommonX.csv</code></li><li><code>results/calibration/US_rhoGridCommonX.csv</code></li><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>tablesOA.oecdMedicare</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d5f0ef6/python/paper">python/paper</a>) at commit <code>d5f0ef6</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Medicare</code>, then <code>build.py --site</code>.</p></details></div></div>
+</div></div><div class="oa-links">Data: <a href="_generated/data/results/calibration/USMedicare_rhoGridCommonX.csv" download="">USMedicare_rhoGridCommonX.csv</a> · <a href="_generated/data/results/calibration/US_rhoGridCommonX.csv" download="">US_rhoGridCommonX.csv</a> · <a href="_generated/data/results/paper/usCalibrationSummary.csv" download="">usCalibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>data/USMain_test.xlsx</code></li><li><code>results/calibration/USMedicare_rhoGridCommonX.csv</code></li><li><code>results/calibration/US_rhoGridCommonX.csv</code></li><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>tablesOA.oecdMedicare</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/8267f10/python/paper">python/paper</a>) at commit <code>8267f10</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Medicare</code>, then <code>build.py --site</code>.</p></details></div></div>
 </section>
 <section id="oecd-medicare-rows" class="level2">
 <h2 class="anchored" data-anchor-id="oecd-medicare-rows">The counterfactuals</h2>
@@ -426,7 +416,7 @@ window.Quarto = {
 </div>
 </div>
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
-<div class="oa-note"><em>Note:</em> As figure <a href="oecd-countries.html#ex-OECD_Hosts">B2.1</a>, for the U.S. under the paper’s calibration, pensions alone, and under the calibration with Medicare among the transfers to the old (table <a href="#ex-OECD_Medicare">B5.1</a>). Each bar is the change against the baseline of the same calibration and <span class="math inline">\(\rho\)</span>; France’s households are cut at the U.S. income percentiles in both.</div><div class="oa-links">Data: <a href="_generated/data/OECD_Counterfactuals.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li><li><code>results/shocks/UKUS_shocks.csv</code></li><li><code>results/shocks/UKUS_shocksCommonX.csv</code></li><li><code>results/shocks/UK_shocks.csv</code></li><li><code>results/shocks/UK_shocksCommonX.csv</code></li><li><code>results/shocks/USMedicare_shocks.csv</code></li><li><code>results/shocks/USMedicare_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocks.csv</code></li><li><code>results/shocks/US_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocksXiCommonX.csv</code></li></ul><p>Built by <code>siteData.oecdCounterfactuals</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d5f0ef6/python/paper">python/paper</a>) at commit <code>d5f0ef6</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Counterfactuals</code>, then <code>build.py --site</code>.</p></details></div>
+<div class="oa-note"><em>Note:</em> As figure <a href="oecd-parameters.html#ex-OECD_Frisch">B3.1</a>, for the U.S. under the paper’s calibration, pensions alone, and under the calibration with Medicare among the transfers to the old (table <a href="#ex-OECD_Medicare">B5.1</a>). Each bar is the change against the baseline of the same calibration and <span class="math inline">\(\rho\)</span>; France’s households are cut at the U.S. income percentiles in both.</div><div class="oa-links">Data: <a href="_generated/data/OECD_Counterfactuals.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li><li><code>results/shocks/USMedicare_shocks.csv</code></li><li><code>results/shocks/USMedicare_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocks.csv</code></li><li><code>results/shocks/US_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocksXiCommonX.csv</code></li></ul><p>Built by <code>siteData.oecdCounterfactuals</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/8267f10/python/paper">python/paper</a>) at commit <code>8267f10</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Counterfactuals</code>, then <code>build.py --site</code>.</p></details></div>
 </div>
 
 

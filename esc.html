@@ -76,6 +76,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="assets/oa.css">
 </head>
@@ -165,11 +194,6 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./oecd-countries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B2. Other countries</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./oecd-parameters.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B3. Other parameters</span></a>
   </div>
 </li>
@@ -197,11 +221,6 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./esc-paths.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C1. The path in levels</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./esc-countries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C2. Other countries</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -282,14 +301,13 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Section 7 of the paper lets the electorate choose the design θ as well as the tax rate, under a deadweight cost of redistribution whose parameter λ is calibrated so that the U.S. electorate re-elects its observed design. Appendix C derives the cost and appendix G holds further results. This part follows the design along each country’s projected demography, compares the UK with the U.S., sets a second cost specification against the paper’s, varies the elasticities, reports the checks of the timing of the choice, and repeats the cross-country test on all the countries and at each country’s own turnout.</p>
+<p>Section 7 of the paper lets the electorate choose the design θ as well as the tax rate, under a deadweight cost of redistribution whose parameter λ is calibrated so that the U.S. electorate re-elects its observed design. Appendix C derives the cost and appendix G holds further results. This part follows the design along each country’s projected demography, sets a second cost specification against the paper’s, varies the elasticities, reports the checks of the timing of the choice, and repeats the cross-country test under other maintained assumptions and on all the countries.</p>
 <ul>
 <li><a href="./esc-paths.html">C1. The path in levels</a>: the design, the tax rate, savings and hours as the U.S., the UK and France age, with the design chosen and with it pinned.</li>
-<li><a href="./esc-countries.html">C2. Other countries</a>: what shapes the design in the U.S. and the UK.</li>
 <li><a href="./esc-costs.html">C3. Other cost specifications</a>: the paper’s cost against a cost attached to the design itself.</li>
 <li><a href="./esc-parameters.html">C4. Other parameters</a>: the U.S. across the intertemporal and the Frisch elasticity.</li>
 <li><a href="./esc-timing.html">C5. The timing of the choice</a>: the corner the design reaches without the cost, under each timing.</li>
-<li><a href="./esc-oecd26.html">C6. The cross-country test</a>: the test of section 7 on every country of figure 1.1 and with each country’s own propensities to vote.</li>
+<li><a href="./esc-oecd26.html">C6. The cross-country test</a>: the test of section 7.4 with the U.S. cost parameter carried as <span class="math inline">\(\lambda\)</span> rather than <span class="math inline">\(\varepsilon\)</span>, with each country’s own propensities to vote, and on every country of figure 1.1.</li>
 </ul>
 
 

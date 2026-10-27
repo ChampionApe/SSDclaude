@@ -72,7 +72,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./oecd-leisure.html" rel="next">
-<link href="./oecd-countries.html" rel="prev">
+<link href="./oecd-ies.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -231,11 +231,6 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./oecd-countries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B2. Other countries</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./oecd-parameters.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">B3. Other parameters</span></a>
   </div>
 </li>
@@ -263,11 +258,6 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./esc-paths.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C1. The path in levels</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./esc-countries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C2. Other countries</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -408,14 +398,14 @@ window.Quarto = {
 </div>
 </div>
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
-<div class="oa-note"><em>Note:</em> As figure <a href="oecd-countries.html#ex-OECD_Hosts">B2.1</a>, for the U.S. Across <span class="math inline">\(\xi\)</span> the U.S. and France are recalibrated at each value under log preferences (<span class="math inline">\(\rho = 1\)</span>), the targets unchanged.</div><div class="oa-links">Data: <a href="_generated/data/OECD_Counterfactuals.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li><li><code>results/shocks/UKUS_shocks.csv</code></li><li><code>results/shocks/UKUS_shocksCommonX.csv</code></li><li><code>results/shocks/UK_shocks.csv</code></li><li><code>results/shocks/UK_shocksCommonX.csv</code></li><li><code>results/shocks/USMedicare_shocks.csv</code></li><li><code>results/shocks/USMedicare_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocks.csv</code></li><li><code>results/shocks/US_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocksXiCommonX.csv</code></li></ul><p>Built by <code>siteData.oecdCounterfactuals</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d5f0ef6/python/paper">python/paper</a>) at commit <code>d5f0ef6</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Counterfactuals</code>, then <code>build.py --site</code>.</p></details></div>
+<div class="oa-note"><em>Note:</em> Each bar is the change against the U.S. baseline at the same <span class="math inline">\(\rho\)</span> and <span class="math inline">\(\xi\)</span>, in 2020. In the design row the full color is <span class="math inline">\(\theta = 0\)</span> and the light tone <span class="math inline">\(\theta = 1\)</span>; in the ageing row the bar is acute ageing and the tick mild ageing. France’s income groups are cut at the U.S. income percentiles. Log preferences at <span class="math inline">\(\rho = 1\)</span>, CRRA otherwise. Across <span class="math inline">\(\xi\)</span> the U.S. and France are recalibrated at each value under log preferences (<span class="math inline">\(\rho = 1\)</span>), the targets unchanged.</div><div class="oa-links">Data: <a href="_generated/data/OECD_Counterfactuals.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li><li><code>results/shocks/USMedicare_shocks.csv</code></li><li><code>results/shocks/USMedicare_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocks.csv</code></li><li><code>results/shocks/US_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocksXiCommonX.csv</code></li></ul><p>Built by <code>siteData.oecdCounterfactuals</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/8267f10/python/paper">python/paper</a>) at commit <code>8267f10</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Counterfactuals</code>, then <code>build.py --site</code>.</p></details></div>
 </div>
 </section>
 <section id="oecd-state" class="level2">
 <h2 class="anchored" data-anchor-id="oecd-state">The tax rate and inherited savings</h2>
 <p>The tax rate of the Markov equilibrium is a function of the state the economy inherits, the savings of the previous period’s young. The figure shows the U.S. tax policy of 2020 at inherited savings below and above their value on the equilibrium path, each IES at its own calibration. Under log preferences the tax rate does not depend on the state (section 3). Away from log preferences it does: at an IES of one half the tax rate falls as inherited savings rise, and at an IES of two it rises, less steeply.</p>
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
-<div class="oa-exhibit oa-figure" id="ex-US_TaxState"><div class="oa-caption"><span class="oa-num">Figure B3.2.</span> The U.S. tax rate in 2020 against the savings the economy inherits</div><img src="_generated/figs/US_TaxState.svg" alt="The U.S. tax rate in 2020 against the savings the economy inherits"><div class="oa-note"><em>Note:</em> The tax policy of 2020, the tax rate the 2020 electorate chooses at each level of the savings inherited from the previous period, given the policies of the later electorates; the savings as a multiple of their value on the equilibrium path, the vertical line. The design is given and each <span class="math inline">\(\rho\)</span> is at its own calibration, so every line passes through the calibrated tax rate there.</div><div class="oa-links">Data: <a href="_generated/data/results/numerical/C5_taxPolicyState.csv" download="">C5_taxPolicyState.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/numerical/C5_taxPolicyState.csv</code></li></ul><p>Built by <code>figuresOA.usTaxState</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d5f0ef6/python/paper">python/paper</a>) at commit <code>d5f0ef6</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only US_TaxState</code>, then <code>build.py --site</code>.</p></details></div></div>
+<div class="oa-exhibit oa-figure" id="ex-US_TaxState"><div class="oa-caption"><span class="oa-num">Figure B3.2.</span> The U.S. tax rate in 2020 against the savings the economy inherits</div><img src="_generated/figs/US_TaxState.svg" alt="The U.S. tax rate in 2020 against the savings the economy inherits"><div class="oa-note"><em>Note:</em> The tax policy of 2020, the tax rate the 2020 electorate chooses at each level of the savings inherited from the previous period, given the policies of the later electorates; the savings as a multiple of their value on the equilibrium path, the vertical line. The design is given and each <span class="math inline">\(\rho\)</span> is at its own calibration, so every line passes through the calibrated tax rate there.</div><div class="oa-links">Data: <a href="_generated/data/results/numerical/C5_taxPolicyState.csv" download="">C5_taxPolicyState.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/numerical/C5_taxPolicyState.csv</code></li></ul><p>Built by <code>figuresOA.usTaxState</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/8267f10/python/paper">python/paper</a>) at commit <code>8267f10</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only US_TaxState</code>, then <code>build.py --site</code>.</p></details></div></div>
 <p>Because the tax rate depends on the state, the 2020 electorate’s choice reaches the 2050 tax rate through the savings it leaves: a higher tax lowers what the young save, and the 2050 electorate’s policy responds to those savings. Voters in the Markov equilibrium take this into account. The table gives the size of that strategic term at the equilibrium path, the elasticity of savings to the tax times the slope of the 2050 policy function. It is small at both values of the IES. At one half, a higher tax in 2020 raises the 2050 tax by a small fraction of a percentage point per point, since the policy falls with savings; at two, it lowers it, by less.</p>
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
 <div class="oa-exhibit oa-tablebox"><div class="oa-scroll"><table class="oa-table" id="ex-US_Strategic">
@@ -430,7 +420,7 @@ window.Quarto = {
 </tbody></table>
 <div class="oa-notes">
 <p><em>Note:</em> At the equilibrium path, the design given. The savings response is the economic equilibrium’s at the savings inherited in 2020, given the policies of the later electorates; the policy slope is that of the 2050 tax policy at the savings carried into 2050. The strategic term, their product in levels, is the change in the 2050 tax rate, in percentage points, when the 2020 electorate raises its tax rate by one percentage point. Under log preferences the tax rate does not depend on the state and the term is zero.</p>
-</div></div><div class="oa-links">Data: <a href="_generated/data/results/numerical/C5_strategicTerm.csv" download="">C5_strategicTerm.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/numerical/C5_strategicTerm.csv</code></li></ul><p>Built by <code>tablesOA.usStrategic</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d5f0ef6/python/paper">python/paper</a>) at commit <code>d5f0ef6</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only US_Strategic</code>, then <code>build.py --site</code>.</p></details></div></div>
+</div></div><div class="oa-links">Data: <a href="_generated/data/results/numerical/C5_strategicTerm.csv" download="">C5_strategicTerm.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/numerical/C5_strategicTerm.csv</code></li></ul><p>Built by <code>tablesOA.usStrategic</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/8267f10/python/paper">python/paper</a>) at commit <code>8267f10</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only US_Strategic</code>, then <code>build.py --site</code>.</p></details></div></div>
 
 
 </section>
@@ -854,8 +844,8 @@ window._ojs.runtime.interpretFromScriptTags();
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./oecd-countries.html" class="pagination-link" aria-label="B2. Other countries">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">B2. Other countries</span></span>
+      <a href="./oecd-ies.html" class="pagination-link" aria-label="B1. Calibration">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">B1. Calibration</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
