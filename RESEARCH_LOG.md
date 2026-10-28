@@ -75,3 +75,15 @@ round-trip exact. Overleaf pulled before the writing (RKB's abstract and introdu
 tool's sed or heredocs, which mangle backslashes (a `\v` became a vertical tab); scripts written with Write instead.
 Commits e14e556, 8267f10; `runTests.py --all` 35/35 in 3068 s; the online appendix published from 8267f10 (gh-pages 4281a38). Open: RKB's Overleaf review (the Conde-Ruiz sentence's new place in the
 introduction, the ε letter), W17, C13, C12, D2, W14.
+
+## 2026-10-28 — RKB's review on Overleaf (W22): table 8 out, sections 6 and 7 on synthetic countries
+
+RKB edited on Overleaf (abstract, introduction, sections 4 and 5); pulled before every change, pushed twice. On RKB's requests:
+table 8 (equilibrium counts) to the online appendix only, appendix D and section 4's footnote in words; typos; the transported
+cost's country index is n (λ_{n,t}, style guide §4); section 5's Ruffo comparison and IES paragraph cut. Then the paper leans less
+on the UK and France: section 6 takes the counterfactuals from France and ends with the cross-section as 26 synthetic countries
+(the U.S. model with each country's demography, income distribution and design); the UK/France deep test moved from 7.3 to
+appendix G.1; 7.3 is the cross-section, introducing ε, with fewer numbers; conclusion and references follow; figure 1 highlights
+the U.S. and France. 82 pages (86 yesterday); commit 1f8a955, the online appendix published from it (gh-pages b2d53ad). Traps:
+`build.py --list`/`--map` re-save figure PDFs that differ only in CreationDate (`git checkout` them); the Read tool cannot open
+`main.pdf` ("password-protected"), `pdftoppm`/`pdftotext` can. Open: TODO W22, RKB reviews on 2026-10-29.

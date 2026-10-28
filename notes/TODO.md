@@ -9,7 +9,14 @@ some of them; new items continue the numbering.
 
 ## Plan in progress
 
-**W22. RKB's review of the by-object draft on Overleaf** (2026-10-28): the draft of 2026-10-27 (`archive/notes/byObject_2026-10/plan_byObject.md`, its decisions and status). Points left for RKB: the Conde-Ruiz sentence now sits in the introduction's design-literature paragraph (W20); the transported cost parameter is written ε (`\varepsilon`), distinct from the universal pension ϵ, and a different letter is RKB's call (referee pass); section 7.4 and appendix H grew by about half.
+**W22. RKB's review of the draft on Overleaf** (started 2026-10-28, RKB continues on 2026-10-29). Done on 2026-10-28
+(commit `1f8a955`, root log): table 8 to the online appendix, typos, the country index n, section 5's cuts, sections 6 and 7
+rebuilt around 26 synthetic countries with the UK and France moved to appendix G.1, figure 1 highlighting the U.S. and France;
+Overleaf and the online appendix match the commit. Points left for RKB: the transported cost parameter is written ε
+(`\varepsilon`), distinct from the universal pension ϵ, and a different letter is RKB's call; the introduction's timing footnote
+calls the one-period-ahead timing "alternative", although section 7 uses it; section 4 gives the horizon as $T = 2200$, Argentina's
+being 2190; the Conde-Ruiz sentence's place in the introduction (W20). Small: `US_ESC_Country`'s header row overruns by 8pt;
+`review-2026-10` is not on GitHub, so the online appendix's footer link to its commit is dead.
 
 ## Candidates, not scheduled
 

@@ -138,3 +138,11 @@ and `data/README.md` follow; the stale `FRUK_`/`UKUS_householdheterogeneity` cop
 inputs 24), `--map`, `--site`, test_onlineAppendix 10/10, test_oecd26 13/13, checkPaper OK; `logs/W21/`. The site's paper numbers
 wait for a fresh `writing/Paper/main.aux` (2026-10-26's lacks `sec:esc:deepTest`): rerun `--site` after V's latexmk.
 Addendum: `selectionCsvs` covers `escCalibrationCosts`, `escCountryCosts` and `results/oecd26` (a new group, Luxembourg's `noTurnout` rows uncounted); `NUM_Selection` endogenous design 14/313/164, cross-country 3/586/576, maxima unchanged, no prose number moves.
+
+## 2026-10-28 — W22: the builders follow RKB's review (branch `review-2026-10`)
+`NUM_Selection` joins `ONLINE_ONLY`: appendix D states the counts in words and page D2 keeps both count tables; its copy left
+`writing/Paper`. The transported cost's country index prints as n (`λ_n = ε Π_{n,2020}/R_{n,2020}`) in the notes of `tablesOECD26`,
+`tablesUS` and `onlineAppendix`, with `test_oecd26`'s assertion; `NUM_Residuals` spells "centers"; `OECD26_Spending`'s note calls
+the model section 6's synthetic countries; `oecdFigure1.HIGHLIGHT` is the U.S. and France (legend "calibrated in section 6"), which
+`OECD_Countries` bolds. README counts: paper inputs 23, online-only 31. test_oecd26 13/13, test_onlineAppendix 10/10, `--map`,
+`--site`; commit 1f8a955, the site published from it.
