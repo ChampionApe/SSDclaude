@@ -262,16 +262,6 @@
    "row": "tur"
   },
   {
-   "id": "OECDdata--spending_growth--fra",
-   "label": "France",
-   "series": "",
-   "panel": "Pension spending, % of GDP against Population 2020 / 1990",
-   "value": 14.437,
-   "text": "population 2020/1990: 1.19; pension spending: 14.4% of GDP",
-   "table": "OECD_Countries",
-   "row": "fra"
-  },
-  {
    "id": "OECDdata--spending_growth--gbr",
    "label": "United Kingdom",
    "series": "",
@@ -280,6 +270,16 @@
    "text": "population 2020/1990: 1.17; pension spending: 7.8% of GDP",
    "table": "OECD_Countries",
    "row": "gbr"
+  },
+  {
+   "id": "OECDdata--spending_growth--fra",
+   "label": "France",
+   "series": "",
+   "panel": "Pension spending, % of GDP against Population 2020 / 1990",
+   "value": 14.437,
+   "text": "population 2020/1990: 1.19; pension spending: 14.4% of GDP",
+   "table": "OECD_Countries",
+   "row": "fra"
   },
   {
    "id": "OECDdata--spending_growth--usa",
@@ -552,16 +552,6 @@
    "row": "tur"
   },
   {
-   "id": "OECDdata--spending_gini--fra",
-   "label": "France",
-   "series": "",
-   "panel": "Pension spending, % of GDP against Gini, disposable income",
-   "value": 14.437,
-   "text": "Gini: 0.321; pension spending: 14.4% of GDP",
-   "table": "OECD_Countries",
-   "row": "fra"
-  },
-  {
    "id": "OECDdata--spending_gini--gbr",
    "label": "United Kingdom",
    "series": "",
@@ -570,6 +560,16 @@
    "text": "Gini: 0.329; pension spending: 7.8% of GDP",
    "table": "OECD_Countries",
    "row": "gbr"
+  },
+  {
+   "id": "OECDdata--spending_gini--fra",
+   "label": "France",
+   "series": "",
+   "panel": "Pension spending, % of GDP against Gini, disposable income",
+   "value": 14.437,
+   "text": "Gini: 0.321; pension spending: 14.4% of GDP",
+   "table": "OECD_Countries",
+   "row": "fra"
   },
   {
    "id": "OECDdata--spending_gini--usa",
@@ -842,16 +842,6 @@
    "row": "tur"
   },
   {
-   "id": "OECDdata--spending_index--fra",
-   "label": "France",
-   "series": "",
-   "panel": "Pension spending, % of GDP against Bismarckian index",
-   "value": 14.437,
-   "text": "Bismarckian index: 1.000; pension spending: 14.4% of GDP",
-   "table": "OECD_Countries",
-   "row": "fra"
-  },
-  {
    "id": "OECDdata--spending_index--gbr",
    "label": "United Kingdom",
    "series": "",
@@ -860,6 +850,16 @@
    "text": "Bismarckian index: 0.694; pension spending: 7.8% of GDP",
    "table": "OECD_Countries",
    "row": "gbr"
+  },
+  {
+   "id": "OECDdata--spending_index--fra",
+   "label": "France",
+   "series": "",
+   "panel": "Pension spending, % of GDP against Bismarckian index",
+   "value": 14.437,
+   "text": "Bismarckian index: 1.000; pension spending: 14.4% of GDP",
+   "table": "OECD_Countries",
+   "row": "fra"
   },
   {
    "id": "OECDdata--spending_index--usa",
@@ -1132,16 +1132,6 @@
    "row": "tur"
   },
   {
-   "id": "OECDdata--index_growth--fra",
-   "label": "France",
-   "series": "",
-   "panel": "Bismarckian index against Population 2020 / 1990",
-   "value": 1.0,
-   "text": "population 2020/1990: 1.19; Bismarckian index: 1.000",
-   "table": "OECD_Countries",
-   "row": "fra"
-  },
-  {
    "id": "OECDdata--index_growth--gbr",
    "label": "United Kingdom",
    "series": "",
@@ -1150,6 +1140,16 @@
    "text": "population 2020/1990: 1.17; Bismarckian index: 0.694",
    "table": "OECD_Countries",
    "row": "gbr"
+  },
+  {
+   "id": "OECDdata--index_growth--fra",
+   "label": "France",
+   "series": "",
+   "panel": "Bismarckian index against Population 2020 / 1990",
+   "value": 1.0,
+   "text": "population 2020/1990: 1.19; Bismarckian index: 1.000",
+   "table": "OECD_Countries",
+   "row": "fra"
   },
   {
    "id": "OECDdata--index_growth--usa",
@@ -1422,16 +1422,6 @@
    "row": "tur"
   },
   {
-   "id": "OECDdata--index_gini--fra",
-   "label": "France",
-   "series": "",
-   "panel": "Bismarckian index against Gini, disposable income",
-   "value": 1.0,
-   "text": "Gini: 0.321; Bismarckian index: 1.000",
-   "table": "OECD_Countries",
-   "row": "fra"
-  },
-  {
    "id": "OECDdata--index_gini--gbr",
    "label": "United Kingdom",
    "series": "",
@@ -1440,6 +1430,16 @@
    "text": "Gini: 0.329; Bismarckian index: 0.694",
    "table": "OECD_Countries",
    "row": "gbr"
+  },
+  {
+   "id": "OECDdata--index_gini--fra",
+   "label": "France",
+   "series": "",
+   "panel": "Bismarckian index against Gini, disposable income",
+   "value": 1.0,
+   "text": "Gini: 0.321; Bismarckian index: 1.000",
+   "table": "OECD_Countries",
+   "row": "fra"
   },
   {
    "id": "OECDdata--index_gini--usa",

@@ -397,7 +397,7 @@ def test_country_table_both_transports():
     assert rows['gbr'][1:] == ['0.560', '0.223', '0.529', '0.690', '7.700', '0.670', '14.000']
     assert rows['fra'][1:] == ['1.000', '0.218', '0.432', '0.795', '--', '0.740', '--']
     assert tex.count('Bismarckian corner') == 1 and r'$\varepsilon = 20.445$' in tex and r'$\lambda = 11.345$' in tex
-    assert r'\epsilon' not in tex and r'$\lambda_i = \varepsilon\,\Pi_{i,2020}/R_{i,2020}$' in tex
+    assert r'\epsilon' not in tex and r'$\lambda_n = \varepsilon\,\Pi_{n,2020}/R_{n,2020}$' in tex
     assert r'the U.S.\ ratio is $0.555$, at which the U.S.\ $\varepsilon$ and $\lambda$ are the same cost' in tex
     assert _table(TU.escCountryTable(specs = ('size',)))['gbr'][1:] == ['0.560', '0.223', '0.690', '7.700']
     _deepTest(ratioUS = 0.6)

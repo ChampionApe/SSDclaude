@@ -1,7 +1,7 @@
 r""" Appendix D's tables (app:T): the horizon and the terminal condition (NUM_Horizon), and the first order
 condition's residuals off the policy functions' grids (NUM_Residuals); and the online appendix's date-by-date
-detail of the first (NUM_HorizonPaths). The candidate counts are tablesOA.numSelection (NUM_Selection), which
-appendix D and the online appendix share.
+detail of the first (NUM_HorizonPaths). The candidate counts are tablesOA.numSelection (NUM_Selection), on the
+online appendix's page D2; appendix D states them in words.
 
 Inputs: results/numerical/{US_horizon,US_horizonDesign,US_residuals,US_derivativeScheme}.csv
 (python/US/runHorizon.py) and ARG_horizon_commonX.csv, ARG_residuals_commonX.csv
@@ -254,8 +254,8 @@ def numResiduals():
     note = (r'\textit{Note:} Each cell is the largest (or 99th percentile) absolute difference, in percentage '
             r'points of the tax rate, between the root of the first order condition at a state and the policy '
             r'function there, over the periods of the paper' + "'" + r's horizon: at the state the equilibrium '
-            r'path enters each period with, at the centres of the state grid' + "'" + r's cells within the range '
-            r'the path visits (padded by a fifth), and at the centres of all its cells. The grid column gives the '
+            r'path enters each period with, at the centers of the state grid' + "'" + r's cells within the range '
+            r'the path visits (padded by a fifth), and at the centers of all its cells. The grid column gives the '
             r'nodes of the state grid. The root is located by the selection of every period, without the smoothing '
             r'of the policy, against the solved continuation. The first four columns evaluate the condition as '
             r'the solver does; the last four with its derivatives in the tax converged, on a tax grid of '

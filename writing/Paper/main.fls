@@ -693,12 +693,6 @@ INPUT ./Figs/US_ESC_overview.pdf
 INPUT ./Figs/US_ESC_overview.pdf
 INPUT ./Figs/US_ESC_overview.pdf
 INPUT ./Figs/US_ESC_overview.pdf
-INPUT ./Tables/US_ESC_Country.tex
-INPUT ./Tables/US_ESC_Country.tex
-INPUT ./Tables/US_ESC_Country.tex
-INPUT ./Tables/US_ESC_Country.tex
-INPUT Tables/US_ESC_Country.tex
-INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
 INPUT ./Figs/OECD26_Layer1.pdf
 INPUT ./Figs/OECD26_Layer1.pdf
 INPUT ./Figs/OECD26_Layer1.pdf
@@ -743,6 +737,7 @@ INPUT ./Tables/NUM_Horizon.tex
 INPUT ./Tables/NUM_Horizon.tex
 INPUT ./Tables/NUM_Horizon.tex
 INPUT Tables/NUM_Horizon.tex
+INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
 INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/lm/rm-lmbx10.tfm
 INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/lm/rm-lmbx7.tfm
 INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/lm/rm-lmbx5.tfm
@@ -752,11 +747,6 @@ INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/lm/lmmib5.tfm
 INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/lm/lmbsy10.tfm
 INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/lm/lmbsy7.tfm
 INPUT c:/texlive/2026/texmf-dist/fonts/tfm/public/lm/lmbsy5.tfm
-INPUT ./Tables/NUM_Selection.tex
-INPUT ./Tables/NUM_Selection.tex
-INPUT ./Tables/NUM_Selection.tex
-INPUT ./Tables/NUM_Selection.tex
-INPUT Tables/NUM_Selection.tex
 INPUT ./Tables/NUM_Residuals.tex
 INPUT ./Tables/NUM_Residuals.tex
 INPUT ./Tables/NUM_Residuals.tex
@@ -797,6 +787,11 @@ INPUT ./Appendix/EndogenousDesignResults.tex
 INPUT ./Appendix/EndogenousDesignResults.tex
 INPUT ./Appendix/EndogenousDesignResults.tex
 INPUT Appendix/EndogenousDesignResults.tex
+INPUT ./Tables/US_ESC_Country.tex
+INPUT ./Tables/US_ESC_Country.tex
+INPUT ./Tables/US_ESC_Country.tex
+INPUT ./Tables/US_ESC_Country.tex
+INPUT Tables/US_ESC_Country.tex
 INPUT ./Tables/UK_ESC_Calibration.tex
 INPUT ./Tables/UK_ESC_Calibration.tex
 INPUT ./Tables/UK_ESC_Calibration.tex

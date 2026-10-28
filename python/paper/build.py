@@ -77,9 +77,9 @@ OUTPUTS = {
     'OECD26_Omega':           ('table', tablesOECD26.oecd26Omega,     'Tables/OECD26_Omega.tex'),
     'OECD26_Robustness':      ('table', tablesOECD26.oecd26Robustness, 'Tables/OECD26_Robustness.tex'),
     'OECD26_Reconcile':       ('table', tablesOECD26.oecd26Reconcile, 'Tables/OECD26_Reconcile.tex'),
-    # Appendix D (app:T): the horizon and the terminal condition, the first order condition's residuals off the
-    # grid (python/{US,InformalSavings}/runHorizon.py), and the candidate counts grouped by solve, which the online
-    # appendix shows too, beside its file-by-file list (NUM_SelectionFiles).
+    # Appendix D (app:T): the horizon and the terminal condition and the first order condition's residuals off the
+    # grid (python/{US,InformalSavings}/runHorizon.py). The candidate counts grouped by solve are the online
+    # appendix's alone, beside its file-by-file list (NUM_SelectionFiles); appendix D states them in words.
     'NUM_Horizon':            ('table', tablesHorizon.numHorizon,     'Tables/NUM_Horizon.tex'),
     'NUM_Residuals':          ('table', tablesHorizon.numResiduals,   'Tables/NUM_Residuals.tex'),
     'NUM_Selection':          ('table', tablesOA.numSelection,        'Tables/NUM_Selection.tex'),
@@ -128,7 +128,8 @@ OUTPUTS = {
 ONLINE_ONLY = ({'OECD_Countries', 'OECD_Sources', 'OECD_Correlations', 'ARG_RhoGrid', 'OECD_RhoGrid',
                 'ESC_Timing', 'NUM_Stationary', 'ARG_LeisureCalibration', 'ARG_LeisureRho',
                 'OECD_LeisureCalibration', 'OECD_LeisureGroups', 'ESC_CostCalibration',
-                'OECD_Medicare', 'US_TaxState', 'US_Strategic', 'NUM_HorizonPaths', 'NUM_SelectionFiles'}
+                'OECD_Medicare', 'US_TaxState', 'US_Strategic', 'NUM_HorizonPaths', 'NUM_Selection',
+                'NUM_SelectionFiles'}
                | {n for n in OUTPUTS if n.startswith('OECD26_') and n.endswith(('_29', '_cses', '_size'))}
                | {n for n, e in OUTPUTS.items() if e[0] == 'data'})
 

@@ -1,6 +1,6 @@
 r""" Table builders for the online appendix (writing/OnlineAppendix; archive/notes/brief_onlineAppendix_2026-10-06.md,
 section 2.3). Each returns the complete tex body of one file in results/paper/Tables/, which is not copied
-into writing/Paper, except numSelection (NUM_Selection), which appendix D shares. Layout as tablesUS: tables.BANNER and tablesUS._xwrap, label `table:OA:<Name>`, a note
+into writing/Paper. Layout as tablesUS: tables.BANNER and tablesUS._xwrap, label `table:OA:<Name>`, a note
 in the house form.
 
 Every body row ends with ` % row: <key>`, the last thing on its line; block titles, sub-headers and rules
@@ -98,7 +98,7 @@ ROLEFMT = {'spending': lambda v: C.num(v, 1), 'growth': lambda v: C.num(v, 3),
 def oecdCountries():
     r""" Figure 1's cross-section, one row per country: the four variables oecdFigure1.PLOT draws, each
     followed by the year it is read at where that varies by country (data/oecdFigure1.csv). Rows keyed on
-    lowercase ISO3; the economies sections 6-7 calibrate (oecdFigure1.HIGHLIGHT) set in bold. """
+    lowercase ISO3; the economies section 6 calibrates (oecdFigure1.HIGHLIGHT) set in bold. """
     df = D.oecdFigure1Data()
     cols = []                                         # (header, csv column, formatter)
     for role in ROLES:
@@ -429,12 +429,12 @@ ARMWORDS = (('ARG', 'Argentina'), ('US', 'The U.S., the UK and France'))
 
 
 def numSelection():
-    r""" Appendix D's count table: datasets.selectionCsvs' files grouped by arm and by the results directory that
-    holds them (SOLVEGROUPS), the tax rule first and then the design layer of the exact CRRA recursion over every
-    file that records it; per group the files, the rows, the rows that record counts, and over them the largest
-    number of equilibria and of candidates and the total of fallback states (datasets.countSummary over the
-    group's files). The split of the other rows and the file-by-file list are numSelectionFiles' (the online
-    appendix). Rows keyed `<layer>_<arm>_<dir>`. """
+    r""" The count table by solve (page D2; appendix D states it in words): datasets.selectionCsvs' files grouped
+    by arm and by the results directory that holds them (SOLVEGROUPS), the tax rule first and then the design layer
+    of the exact CRRA recursion over every file that records it; per group the files, the rows, the rows that
+    record counts, and over them the largest number of equilibria and of candidates and the total of fallback
+    states (datasets.countSummary over the group's files). The split of the other rows and the file-by-file list
+    are numSelectionFiles'. Rows keyed `<layer>_<arm>_<dir>`. """
     entries = D.selectionCsvs()
     stats = {(lab, layer): D.countSummary(ps, layer) for _, lab, ps in entries for layer in ('tax', 'design')}
     num = lambda v: '--' if v is None else str(v)
@@ -487,8 +487,8 @@ def numSelectionFiles():
     recursion of writing/US/num_esc.tex (nEqθMax, nBrθMax, nFallbackθ), whose candidates are brackets. A csv
     that records no count of a layer prints '--' in its statistics; the design block lists only the csvs that
     record that layer. The note names every counted row with more than one equilibrium or a fallback
-    (datasets.countExceptions). Rows keyed `<layer>_<file>`. The online appendix's; appendix D prints the
-    grouped numSelection. """
+    (datasets.countExceptions). Rows keyed `<layer>_<file>`. The online appendix's, beside the grouped
+    numSelection. """
     entries = D.selectionCsvs()
     stats = {(lab, layer): D.countSummary(ps, layer) for _, lab, ps in entries for layer in ('tax', 'design')}
     num = lambda v: '--' if v is None else str(v)

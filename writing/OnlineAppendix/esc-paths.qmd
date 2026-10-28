@@ -3,8 +3,8 @@
 The calibration targets the design of 2020 only; every other design along the path is an outcome of the model,
 chosen one period ahead. The figures follow the three countries from 1990,
 whose electorate sets the design of 2020, to 2110; the demography is constant from 2080. Each country keeps
-its own calibration and demography. Its cost parameter is either the U.S. λ, the deep test of section
-{{< var p.sec_esc_deepTest >}} under λ along the path, or its own, the parameter at which its electorate
+its own calibration and demography. Its cost parameter is either the U.S. λ, the deep test of appendix
+{{< var p.app_escResults_countries >}} under λ along the path, or its own, the parameter at which its electorate
 re-elects its observed design. France has no own parameter, since no value of it re-elects France's fully
 Bismarckian design.
 

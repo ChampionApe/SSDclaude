@@ -3,8 +3,8 @@
 Section {{< var p.sec_oecd >}} of the paper calibrates the model without informal households to the U.S. and France
 and changes the U.S. calibration one characteristic at a time: its pension design, its demography, and the
 income distribution, voting patterns and taste for leisure that set France apart. Appendix {{< var p.app_US >}} gives
-the data, the household heterogeneity and the UK's calibration, which the deep test of section
-{{< var p.sec_esc_deepTest >}} uses. This part shows the three calibrations across the IES, the U.S. counterfactuals
+the data, the household heterogeneity and the UK's calibration, which the deep test of appendix
+{{< var p.app_escResults_countries >}} uses. This part shows the three calibrations across the IES, the U.S. counterfactuals
 across the Frisch elasticity and the tax rate against inherited savings, what changes when the taste for leisure is identified
 group by group, and the U.S. with Medicare among the transfers to the old.
 

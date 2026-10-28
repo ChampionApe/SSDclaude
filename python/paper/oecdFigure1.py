@@ -66,7 +66,7 @@ LABEL = {'pensionSpending': 'Pension spending, % of GDP',
          'bbIndex': 'Bismarckian index', 'bbIndex_mean': 'Bismarckian index',
          'gini': 'Gini, disposable income', 'gini_widPretax': 'Gini, pre-tax income',
          'gini_wiidMarket': 'Gini, market income'}
-HIGHLIGHT = {'USA': 'US', 'GBR': 'UK', 'FRA': 'FR'}   # the economies sections 6-7 calibrate
+HIGHLIGHT = {'USA': 'US', 'FRA': 'FR'}   # the economies section 6 calibrates (the UK's calibration is appendix F's)
 # A mark's name for each variable and how its text prints the value.
 MARKFMT = {'spending': ('pension spending', '{:.1f}% of GDP'), 'growth': ('population 2020/1990', '{:.2f}'),
            'index': ('Bismarckian index', '{:.3f}'), 'gini': ('Gini', '{:.3f}')}
@@ -462,7 +462,7 @@ def figure(plot = None):
                                     markeredgecolor = '#fcfcfb', markeredgewidth = 0.6)
     axes[1, 2].axis('off')
     leg = axes[1, 2].legend([dot(SERIES[0]), dot(SERIES[1])],
-                            ['OECD members before 2000', 'calibrated in the paper:\nU.S., UK, France'],
+                            ['OECD members before 2000', 'calibrated in section 6:\nU.S., France'],
                             loc = 'center', frameon = False, fontsize = 7, labelcolor = INK['secondary'],
                             title = ('{} countries in every panel'.format(ns.pop()) if len(ns) == 1
                                      else 'countries per panel: see the footnote'), title_fontsize = 7)

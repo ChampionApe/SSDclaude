@@ -3,7 +3,7 @@
 Section {{< var p.sec_esc_crossSection >}} of the paper tests the model on 26 OECD countries of figure
 {{< var p.fig_US_OECDdata >}} in one main variant: every country keeps its own workers per retiree, income
 distribution and observed design, and takes from the U.S. the cost of redistribution as the elasticity
-$\varepsilon$, so that it faces $\lambda_i = \varepsilon\,\Pi_i/R_i$ at its own ratio of the pay-as-you-go return
+$\varepsilon$, so that country $n$ faces $\lambda_n = \varepsilon\,\Pi_n/R_n$ at its own ratio of the pay-as-you-go return
 to the market return, the discount factor $\beta$ and the propensities to vote by income group. The test holds
 these, the preferences and, in layer 1, the political weight of the old $\omega$ common to all countries (layer 2
 calibrates each country's $\omega$ to its pension spending), and the sections below relax them one at a time and then
@@ -24,7 +24,7 @@ Every country takes the U.S. cost parameter $\lambda$ itself in place of $\varep
 with its ratio $\Pi/R$, and the U.S. anchor is recalibrated under it; at the U.S. ratio the two are the same cost.
 The ratio falls as a population ages, so a country whose ratio is below the U.S. one, as most are, faces a larger cost
 under $\lambda$ than under $\varepsilon$, and each of them chooses a more Bismarckian design, as the UK and France do in
-the deep test of section {{< var p.sec_esc_deepTest >}}. The index then falls more steeply with population growth in
+the deep test of appendix {{< var p.app_escResults_countries >}}. The index then falls more steeply with population growth in
 both layers, and spending rises a little less steeply with the index; the index's relation with the Gini keeps its
 sign and its significance, or its absence, in each layer.
 
@@ -49,7 +49,7 @@ steeply in layer 1 as in the data on these countries, and rises with the index i
 with population growth in both layers. On the Gini, where the data show no significant relation, layer 1's slope of
 the index nearly vanishes and layer 2's takes the data's sign, neither significantly, while layer 1's slope of
 spending keeps the sign opposite to the data's. In layer 2 the UK, which the paper's variant places above the U.S.
-design, falls below it, on the side where the deep test of section {{< var p.sec_esc_deepTest >}} places it, and
+design, falls below it, on the side where the deep test of appendix {{< var p.app_escResults_countries >}} places it, and
 France's design moves toward the one the deep test gives it (table {{< var x.OECD26_Omega_cses >}}).
 
 {{< include _generated/exhibits/OECD26_Layer1_cses.qmd >}}

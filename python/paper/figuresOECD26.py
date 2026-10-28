@@ -139,10 +139,11 @@ def oecd26Spending(turnout = None, sample = None):
             r'spending on population growth ' + pair(SPENDING[0]) + ', on the Gini ' + pair(SPENDING[1]) + '; '
             + str(len(p)) + ' countries' + (' (without ' + ', '.join(dropped) + ', which has no turnout data)'
                                             if dropped else '')
-            + r'. The model is the first layer of the cross-country test of section \ref{sec:esc:crossSection}, '
-              r'without the cost: every country at the U.S.\ $\beta = '
-            + C.num(float(a['β']), 3) + r'$ and $\omega = ' + C.num(float(a['ω']), 3) + r'$, with its own workers per '
-            r'retiree, income distribution and observed design; its spending is $\tau(1-\alpha)$ in 2020.'
+            + r'. The model\textquotesingle s countries are the synthetic countries of section \ref{sec:oecd}, '
+              r'without the cost of section \ref{sec:esc}: the U.S.\ model at its $\beta = '
+            + C.num(float(a['β']), 3) + r'$ and $\omega = ' + C.num(float(a['ω']), 3) + r'$, each with one country'
+            r'\textquotesingle s workers per retiree, income distribution and observed design; its spending is '
+            r'$\tau(1-\alpha)$ in 2020.'
             + (r' Turnout: each country\textquotesingle s own.' if variant(turnout)['turnout'] == 'cses' else ''))
     path = os.path.join(C.PAPERDIR, 'Figs', name + '_note.tex')
     with open(path, 'w', encoding = 'utf-8', newline = '\n') as f:

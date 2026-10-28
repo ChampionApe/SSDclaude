@@ -3,10 +3,10 @@
 Section {{< var p.sec_numerical >}} of the paper computes date-specific Markov policy functions by backward induction
 along the demographic transition, and tests every candidate equilibrium at each state; the technical documentation
 [@BergGE26doc] gives the algorithms. The first table compares the date-specific solution with a time-invariant policy
-function, the approximation of much of the quantitative politico-economic literature, at the same dates. The second,
-appendix {{< var p.app_T >}}'s, counts by the solves that wrote them, and the third for every file of results that
-records them, the equilibria and the candidates found at any state, and the states at which no candidate passed the
-test. There the solver falls back on a rule of the technical documentation: it ranks the candidate taxes by the
+function, the approximation of much of the quantitative politico-economic literature, at the same dates. The second
+counts, by the solves that wrote them, and the third, for every file of results that records them, the equilibria and
+the candidates found at any state, and the states at which no candidate passed the test; appendix
+{{< var p.app_T >}} of the paper states these counts for the paper's results. There the solver falls back on a rule of the technical documentation: it ranks the candidate taxes by the
 integral of the first order condition, and the designs by the political objective with each design at its own
 consistent distribution of savings. The tables record a fallback only in the choice of the design. A single
 equilibrium at every state means that the selection rule of section {{< var p.sec_numerical >}} never had to choose.

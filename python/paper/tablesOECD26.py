@@ -12,7 +12,8 @@ Every builder takes
   reading  'inForce' (the design in force in 2020 on the freely simulated path, chosen in 1990: the reading of the
            cost parameter's target and of appendix G.1) | 'chosen' (the design chosen in 2020 at the observed
            design, in force from 2050);
-  spec     the cost transported from the U.S. anchor: 'sizePiR' (λ_i = ε Π_i/R_i, the anchor's ε in the csvs' `p`),
+  spec     the cost transported from the U.S. anchor: 'sizePiR' (λ_n = ε Π_n/R_n for country n, the anchor's ε in
+           the csvs' `p`),
            'size' (the anchor's λ) | 'none' (no cost; the model then reads no design);
   betaRule 'common' (the anchor's β in every country) | 'commonR' (each country's β set so that its 2020 return is
            the anchor's);
@@ -45,7 +46,7 @@ YTEX = {'spending': 'Pension spending', 'index': 'Bismarckian index'}
 XTEX = {'growth': 'population growth', 'gini': 'the Gini', 'index': 'the Bismarckian index'}
 # What a caption adds for a cost or β rule other than the paper's.
 SPECCAPTION = {'size': r'the U.S.\ $\lambda$ in every country',
-               'sizePiR': r'the U.S.\ $\varepsilon$ in every country, $\lambda_i = \varepsilon\,\Pi_i/R_i$',
+               'sizePiR': r'the U.S.\ $\varepsilon$ in every country, $\lambda_n = \varepsilon\,\Pi_n/R_n$',
                'none': 'without the cost'}
 BETACAPTION = {'common': r'the U.S.\ $\beta$ in every country',
                'commonR': r'each country\textquotesingle s $\beta$ set to the U.S.\ 2020 return'}
@@ -183,7 +184,7 @@ def _layersText(a, v):
         + ([COSTSYMBOL[v['spec']][:-1] + ' = ' + C.num(float(a['p']), 3) + '$'] if v['spec'] in COSTSYMBOL else [])
     shared = items[0] if len(items) == 1 else ', '.join(items[:-1]) + ' and ' + items[-1]
     tail = {'size': '', 'none': ', without the cost',
-            'sizePiR': r', each at its cost $\lambda_i = \varepsilon\,\Pi_{i,2020}/R_{i,2020}$'}[v['spec']] \
+            'sizePiR': r', each at its cost $\lambda_n = \varepsilon\,\Pi_{n,2020}/R_{n,2020}$'}[v['spec']] \
         + (r', with the $\beta$ that sets its 2020 return to the U.S.\ one' if v['betaRule'] == 'commonR' else '')
     calibrated = r'$\omega$' if v['betaRule'] == 'common' else r'$\beta$ and $\omega$'
     return (r'Layer 1: every country at the U.S.\ ' + shared + tail + '; layer 2: ' + calibrated
@@ -251,7 +252,7 @@ def oecd26Omega(turnout = None, sample = None, reading = None, spec = None, beta
                   (r'$\beta$ and $\omega$ are calibrated to the U.S.\ 2020 return and to spending', ' at '))
     cost = {'size': join + r'the U.S.\ $\lambda = ' + C.num(float(a['p']), 3) + '$',
             'sizePiR': join + r'the U.S.\ $\varepsilon = ' + C.num(float(a['p']), 3)
-                       + r'$, $\lambda_i = \varepsilon\,\Pi_{i,2020}/R_{i,2020}$',
+                       + r'$, $\lambda_n = \varepsilon\,\Pi_{n,2020}/R_{n,2020}$',
             'none': ', without the cost'}[v['spec']]
     anchor = (r' $^{\ast}$The U.S.\ is the anchor, where ' + COSTSYMBOL[v['spec']] + ' is calibrated.'
               if v['spec'] in COSTSYMBOL else r' $^{\ast}$The U.S.\ is the anchor.')
@@ -298,7 +299,7 @@ def _variantSlopes(turnout, sample, reading, spec, betaRule):
 
 def oecd26Robustness(sample = None, reading = None):
     r""" The slopes of the design relations (ROBUST) in layers 1 and 2 under each cost transported (the U.S. λ, or
-    its ε with λ_i = ε Π_i/R_i) and β rule (ROBUSTVARIANTS), one panel per turnout, the data's slopes on top of each
+    its ε with λ_n = ε Π_n/R_n) and β rule (ROBUSTVARIANTS), one panel per turnout, the data's slopes on top of each
     panel. A variant whose rows are missing or stale prints `--`. The data's slopes are the same in every variant
     of a turnout (one set of countries), which is checked. """
     v = variant(sample = sample, reading = reading)
@@ -340,7 +341,7 @@ def oecd26Robustness(sample = None, reading = None):
             r'figure \ref{fig:US:OECDdata}, the model\textquotesingle s index is $1/(2-\theta)$ of ' + design
             + r', and its spending is $\tau(1-\alpha)$ at the observed design. Rows: the cost parameter carried from '
             r'the U.S.\ anchor to every country, its $\lambda$ or its $\varepsilon$ with '
-            r'$\lambda_i = \varepsilon\,\Pi_{i,2020}/R_{i,2020}$, and $\beta$, the U.S.\ value in every country '
+            r'$\lambda_n = \varepsilon\,\Pi_{n,2020}/R_{n,2020}$, and $\beta$, the U.S.\ value in every country '
             r'(common $\beta$) or set so that each country\textquotesingle s 2020 return is the U.S.\ one (common '
             r'$R$, with $\beta$ and $\omega$ calibrated together in layer 2). Own turnout: every '
             r'country\textquotesingle s propensities to vote from the CSES, the U.S.\ anchor recalibrated at its '
@@ -458,7 +459,7 @@ def oecd26Reconcile(turnout = None, reading = None):
             r'country\textquotesingle s spending at the U.S.\ $\beta$ and cost parameter'
             + (r', each country at its own turnout' if v['turnout'] == 'cses' else '')
             + r'. The design chosen is the one ' + design + r' on the freely simulated path; under $\varepsilon$, '
-            r'$\lambda_i = \varepsilon\,\Pi_{i,2020}/R_{i,2020}$. --: not computed.')
+            r'$\lambda_n = \varepsilon\,\Pi_{n,2020}/R_{n,2020}$. --: not computed.')
     sfx = suffix(turnout = turnout, reading = reading)
     return _xwrap('OECD26_Reconcile' + sfx,
                   'results/paper/usCalibrationSummary.csv; results/esc/escCalibration{,Costs}.csv, '

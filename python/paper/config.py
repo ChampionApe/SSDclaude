@@ -265,7 +265,7 @@ US = {
     # THE CROSS-COUNTRY TEST (python/US/runOECD26.py, results/oecd26/), the one place its paper variant lives:
     # the builders (tablesOECD26.PAPER, figuresOECD26) and the readers (datasets.oecd26*) default to it, and
     # runOECD26.py's --spec/--betaRule defaults are read from here.
-    #   spec      the cost transported from the U.S. anchor: 'sizePiR' (lambda_i = epsilon Pi_i/R_i, epsilon
+    #   spec      the cost transported from the U.S. anchor: 'sizePiR' (lambda_n = epsilon Pi_n/R_n, epsilon
     #             the U.S. one), 'size' (lambda itself), 'none' (no cost)
     #   betaRule  'common' (the U.S. beta in every country) | 'commonR' (each country's beta set so that its
     #             2020 return is the U.S. anchor's)

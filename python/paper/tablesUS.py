@@ -271,7 +271,7 @@ def escCalibrationTable(spec = None):
 # income groups ('UKUS') stays in the csvs and is not printed.
 COUNTRYROWS = (('UK', 'UK', 'gbr'), ('FR', 'France', 'fra'))
 # The deep test's transports of the U.S. cost parameter, in the table's order, and the parameter's symbol: the
-# paper's 'size' (λ) and config.US['esc']['costVariants']'s 'sizePiR' (ε, the cost λ_i = ε Π_i/R_i). ε is appendix
+# paper's 'size' (λ) and config.US['esc']['costVariants']'s 'sizePiR' (ε, the cost λ_n = ε Π_n/R_n). ε is appendix
 # C.2's Harberger elasticity and prints as \varepsilon: \epsilon is the paper's universal pension.
 TRANSPORTS = ('size', C.US['esc']['costVariants']['spec'])
 COSTSYMBOL = {'size': r'\lambda', 'sizePiR': r'\varepsilon', 'scale': 'p'}
@@ -348,7 +348,7 @@ def escCountryTable(specs = TRANSPORTS):
                              .format(pUS[pir]*rUS, pUS['size']))
         ratio = (r' $\Pi/R$ is the ratio of the pay-as-you-go return factor to the market return in 2020 on the '
                  r'economy\textquotesingle s own path under the U.S.\ $' + COSTSYMBOL[pir] + r'$, at which it faces '
-                 r'$\lambda_i = ' + COSTSYMBOL[pir] + r'\,\Pi_{i,2020}/R_{i,2020}$; the U.S.\ ratio is $'
+                 r'$\lambda_n = ' + COSTSYMBOL[pir] + r'\,\Pi_{n,2020}/R_{n,2020}$; the U.S.\ ratio is $'
                  + C.num(rUS, 3) + '$' + (r', at which the U.S.\ $' + COSTSYMBOL[pir] + r'$ and $\lambda$ are the same '
                                          r'cost' if 'size' in specs else '') + '.')
     ncol = 2 + hasV + hasR

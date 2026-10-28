@@ -156,7 +156,7 @@ EXHIBITS = {
                   r'in every country',
         note = OECD26LAYER1.format(table = 'slopes_size')
                + r' The cost parameter is the U.S.\ $\lambda$ itself in every country, in place of the '
-               r'paper\textquotesingle s $\varepsilon$ with $\lambda_i = \varepsilon\,\Pi_i/R_i$, so that no '
+               r'paper\textquotesingle s $\varepsilon$ with $\lambda_n = \varepsilon\,\Pi_n/R_n$, so that no '
                r'country\textquotesingle s cost moves with its $\Pi/R$; the U.S.\ anchor is recalibrated under it.'),
     'OECD26_Slopes_size': E('table', 'OECD26_Slopes_size'),
     'OECD26_Omega_size': E('table', 'OECD26_Omega_size'),
@@ -164,8 +164,8 @@ EXHIBITS = {
         caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, each country at '
                   r'its own turnout',
         note = OECD26LAYER1.format(table = 'slopes_cses')
-               + r' The cost parameter is the paper\textquotesingle s $\varepsilon$, $\lambda_i = '
-               r'\varepsilon\,\Pi_i/R_i$. Each country\textquotesingle s propensities to vote by income group are '
+               + r' The cost parameter is the paper\textquotesingle s $\varepsilon$, $\lambda_n = '
+               r'\varepsilon\,\Pi_n/R_n$. Each country\textquotesingle s propensities to vote by income group are '
                r'from the CSES in place of the U.S.\ CPS ones, and the U.S.\ anchor is recalibrated at its own CSES '
                r'profile. Luxembourg, with no CSES election, is left out of data and model alike.'),
     'OECD26_Slopes_cses': E('table', 'OECD26_Slopes_cses'),
@@ -174,8 +174,8 @@ EXHIBITS = {
         caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, every country of '
                   r'the figure',
         note = OECD26LAYER1.format(table = 'slopes_29')
-               + r' The cost parameter is the paper\textquotesingle s $\varepsilon$, $\lambda_i = '
-               r'\varepsilon\,\Pi_i/R_i$, and every country of figure \ref{fig:US:OECDdata} is in, Korea, Mexico and '
+               + r' The cost parameter is the paper\textquotesingle s $\varepsilon$, $\lambda_n = '
+               r'\varepsilon\,\Pi_n/R_n$, and every country of figure \ref{fig:US:OECDdata} is in, Korea, Mexico and '
                r'Turkey included.'),
     'OECD26_Slopes_29': E('table', 'OECD26_Slopes_29'),
     'OECD26_Omega_29': E('table', 'OECD26_Omega_29'),

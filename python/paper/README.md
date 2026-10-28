@@ -55,7 +55,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `config.py` | paths, the `ARG` and `US` specifications, calendars, unit conversions; imports nothing from the models |
 | `datasets.py` | the only module that knows the `results/` layout and column names, both arms |
 | `tables.py`, `figures.py` | Argentina builders, one function per output; `figures` owns the house style |
-| `tablesUS.py`, `figuresUS.py` | US/France/UK builders: the calibration (`USUKFRCalibration`; `USFRCalibration`, the U.S. and France), section 7's `US_ESC_Calibration`, `US_ESC_overview`, the deep test `US_ESC_Country` (the UK and France under the U.S. λ and ε, with each one's Π/R; the note's U.S. ratio checked to make ε and λ one cost), `UK_ESC_Calibration` |
+| `tablesUS.py`, `figuresUS.py` | US/France/UK builders: the calibration (`USUKFRCalibration`; `USFRCalibration`, the U.S. and France), section 7's `US_ESC_Calibration`, `US_ESC_overview`, appendix G's deep test `US_ESC_Country` (the UK and France under the U.S. λ and ε, with each one's Π/R; the note's U.S. ratio checked to make ε and λ one cost), `UK_ESC_Calibration` |
 | `build.py` | stage (iii): the output registry for both arms, the copy into `writing/Paper` (not for `ONLINE_ONLY`; a figure's `_note.tex` beside its pdf) |
 | `tablesOA.py`, `figuresOA.py` | the online appendix's own exhibits; `figuresOA.escPathPaper` is the paper's `US_ESC_Path` |
 | `siteData.py` | the datasets of the site's interactive figures (kind `data`), each checked against the file it duplicates |
@@ -70,10 +70,10 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 
 Every generated `.tex` carries a `%% Source:` banner; `--list` reports what is buildable now. Every table row ends
 in a `% row: <key>` comment (`tables.rowKey`) and every figure writes `.svg` and `.marks.json` (`figures._save`),
-which tie the site's datasets to the paper's figures. The paper inputs 24 outputs; the online appendix's 38 exhibits
-read 33 outputs, of which the 30 `ONLINE_ONLY` (the `data` outputs, the `OECD26_*_29`, `_cses` and `_size`
-variants, `OECD_Medicare`, `US_TaxState`, `US_Strategic`, `NUM_HorizonPaths`, `NUM_SelectionFiles`) are never copied
-into `writing/Paper`. The 59 outputs retired on 2026-10-09 went with their builders, and so did the UK-host three of
+which tie the site's datasets to the paper's figures. The paper inputs 23 outputs; the online appendix's 38 exhibits
+read 33 outputs, of which the 31 `ONLINE_ONLY` (the `data` outputs, the `OECD26_*_29`, `_cses` and `_size`
+variants, `OECD_Medicare`, `US_TaxState`, `US_Strategic`, `NUM_HorizonPaths`, `NUM_Selection`, `NUM_SelectionFiles`)
+are never copied into `writing/Paper`; appendix D states the counts in words (2026-10-28). The 59 outputs retired on 2026-10-09 went with their builders, and so did the UK-host three of
 2026-10-27 (`FRUK_`/`UKUS_householdheterogeneity`, `OECD_Regroupings`; their last builds archived).
 
 ## Traps
