@@ -98,3 +98,14 @@ D1: λ constant for the U.S. and ε carried across countries, both explained. D2
 the OECD data. D3: cost parameters at two decimals everywhere. PDF links fixed (`\theHequation`; setspace before hyperref,
 which had broken every footnote link). Commit `fa0335f`; Overleaf force-pushed by RKB; the online appendix published from
 `fa0335f` (gh-pages `a47bb03`). Open: TODO W22 (φ_t, mkvss08, page anchors); next a coarse review round in a fresh session.
+
+## 2026-10-29 (afternoon) — AI review round 2 (W23)
+
+The 2026-10-22 coarse round archived (`archive/notes/reviewResponse_2026-10/coarseReview_2026-10-22/`, INDEX line). New
+round on `fa0335f`: `coarse-output/coarse_review_29102026.md`, 12 overall and 19 detailed comments, major revision. Run on a
+`latexpand` flattening of `writing/Paper/main.tex` (OpenRouter had no credit for PDF OCR; no Docling): the reviewer saw no
+reference list and its appendix numbers are off. Two read-only checks against the draft and W16 gave first-pass verdicts:
+`notes/reviewResponse_2026-10-29.md`; as a page with the reviewer's full text beside each response:
+https://claude.ai/artifact/LdBZr2X8KMxShSDnFXhLcP. Main new finding: under the cost the layer-1 tax rises at the chosen
+design whichever way θ moves (24–26 of 26), against section 7.3's "more Bismarckian lowers the tax". Several W16 decisions
+(A8, A10, A1's intro sentence, W6's marginal loss) are not in the draft. Open: RKB's decisions in the note's last section.

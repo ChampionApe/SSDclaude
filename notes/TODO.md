@@ -15,8 +15,11 @@ match `fa0335f`. Left for RKB: appendix B's φ_t = 0.971 is the solver's value w
 gives 0.972 (add a clause, or switch to the formula); section 6 sets the 4.0 p.p. rise in the tax rate against mkvss08's 3.6 p.p.
 rise in spending (model spending is τ(1−α), about 2.8 p.p. of GDP; their measure can't be checked from the repo); the 35
 duplicate page anchors from restarting the appendix pages at 1 (fix: number them A1, A2, …); the ε letter and the
-Conde-Ruiz sentence's place (W20). Next: another coarse review round, in a fresh session; archive the previous round's
-`coarse-output/` first.
+Conde-Ruiz sentence's place (W20).
+
+**W23. The AI review of 2026-10-29** (`coarse-output/coarse_review_29102026.md`; the 2026-10-22 round archived).
+First-pass verdicts and the questions for RKB: `notes/reviewResponse_2026-10-29.md` (as a page with the reviewer's text:
+https://claude.ai/artifact/LdBZr2X8KMxShSDnFXhLcP). Nothing decided yet; resume 2026-10-30 with RKB going through "For RKB".
 
 ## Candidates, not scheduled
 

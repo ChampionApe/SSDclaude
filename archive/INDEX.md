@@ -78,6 +78,7 @@ Where the reasoning behind each choice the paper rests on is written down.
 - What was agreed with RKB on each of the review's 11 overall and 25 detailed comments (A1–A14, 1–25):
   `paper_reviewResponse.md`; the execution plan, its principles and the package status table, including every
   "for RKB" question and its answer: `plan_reviewResponse.md`.
+- The review itself (coarse, 2026-10-22, two runs): `coarseReview_2026-10-22/`.
 - Proposition 2 at the fixed point for J types, the ν condition, B.1's young term: `theory_prop2.md` (T1). The
   log-HtM uniqueness proof, the CRRA corner threshold $(c_i/c_j)^{1/\rho}$, C.2's corner holding only locally:
   `theory_uniqueness.md` (T2). The J = 1 closed form against Gonzalez-Eiras and Niepelt (2008), $I = 1/(2-\theta)$,
