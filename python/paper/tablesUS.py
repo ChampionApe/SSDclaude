@@ -62,7 +62,7 @@ def _xwrap(name, src, caption, label, colspec, header, body, note = None, width 
 # ---------------------------------------------------------------------------------------------------
 # LaTeX: column headers, captions, block titles. figuresOA draws the US, UK and FR entries as plain text.
 COUNTRYNAME = {'US': 'U.S.', 'UK': 'UK', 'FR': 'France'}
-CAPTIONNAME = dict(COUNTRYNAME, US = 'the U.S.')    # "Household heterogeneity -- the U.S."
+CAPTIONNAME = dict(COUNTRYNAME, US = 'the U.S.', UK = 'the UK')    # "Household heterogeneity -- the U.S."
 
 
 # The calibration table's countries, in its column order, and as its note names the ones other than the U.S.
@@ -119,7 +119,7 @@ def usukfrCalibration(commonX = None, countries = CALIBCOUNTRIES):
         return keyed(' & '.join([label, cell, target]) + r' \\', key)
 
     rows = [
-        row('theta', r'$\theta$', 'Replacement rate dispersion', lambda r: C.num(r['θ'])),
+        row('theta', r'$\theta$', 'Replacement rate dispersion', lambda r: C.num(r['θ'], 3)),
         row('omega', r'$\omega$',
             ', '.join(r'$\tau^{' + k + '} = ' + C.pct(c[k]['τ0'], 1) + '$' for k in cols),
             lambda r: C.num(r['ω'])),
@@ -218,7 +218,7 @@ def _wedgeSymbol(spec = None):
 
 def _costRows(recs, spec):
     """ The rows of a cost-calibration table, {rho: record} -> (body, thetaStar, Vtilde): rho, the cost
-    parameter, omega and the shares of revenue lost at the observed design and at theta = 0
+    parameter and omega at two decimals, and the shares of revenue lost at the observed design and at theta = 0
     (datasets.escWedge), in percent at one decimal. theta* and Vtilde are the same at every rho -- the cost
     cancels from the replacement-rate ratio, and Vtilde is a function of relative incomes alone -- so the
     note prints them once; a row that disagrees is an error in the csvs, not a cell to print. """
@@ -228,7 +228,7 @@ def _costRows(recs, spec):
         w = D.escWedge(r, spec)
         θs.append(float(r['θStar']))
         Vs.append(w['Vtilde'])
-        rows.append(keyed(' & '.join([C.num(ρ, 1), C.num(float(r['p']), 3), C.num(float(r['ω']), 2),
+        rows.append(keyed(' & '.join([C.num(ρ, 1), C.num(float(r['p']), 2), C.num(float(r['ω']), 2),
                                       C.pct(1 - w['fStar'], 1), C.pct(1 - w['f0'], 1)]) + r' \\',
                           rowKey('rho', ρ)))
     if max(θs) - min(θs) > 1e-6 or (None not in Vs and max(Vs) - min(Vs) > 1e-6):
@@ -242,8 +242,8 @@ def _costHeader(spec):
 
 def escCalibrationTable(spec = None):
     r""" Table \ref{table:US_ESC:calibration} (section sec:esc): the calibrated cost parameter per rho (lambda
-    under 'size', p under 'scale'), omega recalibrated with it, and the shares of revenue lost in 2020 at the
-    observed design and at theta = 0, both at the 2020 tax rate. `spec` defaults to the paper's
+    under 'size', p under 'scale'), omega recalibrated with it, and the shares of revenue lost in 2020
+    at the observed design and at theta = 0, both at the 2020 tax rate. `spec` defaults to the paper's
     (config.US['esc']['spec']); passing the comparison spec exercises the builder on its rows. """
     spec = C.US['esc']['spec'] if spec is None else spec
     cal = D.escCalibration()
@@ -260,11 +260,12 @@ def escCalibrationTable(spec = None):
         form = (r'The cost is $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = ' + C.num(C.US['esc']['phi'], 1)
                 + r'$ imposed, and $\theta^{\ast} = ' + C.num(θ, 3) + r'$ at every $\rho$')
     note = (r'\textit{Note:} ' + form + r'. $1 - f(\theta^{\ast})$ and $1 - f(0)$ are the shares of revenue lost '
-            r'in 2020 at the observed design and at a flat benefit, both at the 2020 tax rate. $\beta$ and '
-            r'$\omega$ are recalibrated with $' + _wedgeSymbol(spec) + r'$.' + C.variantNote(C.US['commonX']))
+            r'in 2020 at the observed design and at a flat benefit, both at the 2020 tax rate.'
+            + C.variantNote(C.US['commonX']))
     return _xwrap('US_ESC_Calibration', 'results/esc/escCalibration{,CRRA}.csv',
                   'The calibrated cost of redistribution for the U.S.',
-                  'table:US_ESC:calibration', 'YYYYY', _costHeader(spec), body, note, width = r'.8\textwidth')
+                  'table:US_ESC:calibration', 'YYYYY', _costHeader(spec), body, note,
+                  width = r'.8\textwidth')
 
 
 # escCountry.csv's economy keys, in the order the table prints them, their labels and row keys. The UK at U.S.
@@ -326,7 +327,7 @@ def escCountryTable(specs = TRANSPORTS):
             Vs.append(float(u['Vtilde']) if hasV else np.nan)
             own = dfs[spec][(dfs[spec]['country'] == key) & (dfs[spec]['wedgeFrom'] == 'own')]
             ownFR |= key == 'FR' and not own.empty
-            cells += [C.num(float(u['choice']), 3), '--' if own.empty else C.num(float(own.iloc[-1]['p']), 3)]
+            cells += [C.num(float(u['choice']), 3), '--' if own.empty else C.num(float(own.iloc[-1]['p']), 2)]
         if np.ptp(θs) > 1e-6 or (hasV and np.ptp(Vs) > 1e-6):
             raise ValueError('US_ESC_Country: {} has another observed design or Ṽ under {}: {} {}'.format(
                 key, specs, θs, Vs))
@@ -348,7 +349,7 @@ def escCountryTable(specs = TRANSPORTS):
                              .format(pUS[pir]*rUS, pUS['size']))
         ratio = (r' $\Pi/R$ is the ratio of the pay-as-you-go return factor to the market return in 2020 on the '
                  r'economy\textquotesingle s own path under the U.S.\ $' + COSTSYMBOL[pir] + r'$, at which it faces '
-                 r'$\lambda_n = ' + COSTSYMBOL[pir] + r'\,\Pi_{n,2020}/R_{n,2020}$; the U.S.\ ratio is $'
+                 r'$\lambda_{n,t} = ' + COSTSYMBOL[pir] + r'\,\Pi_{n,t}/R_{n,t}$; the U.S.\ ratio is $'
                  + C.num(rUS, 3) + '$' + (r', at which the U.S.\ $' + COSTSYMBOL[pir] + r'$ and $\lambda$ are the same '
                                          r'cost' if 'size' in specs else '') + '.')
     ncol = 2 + hasV + hasR
@@ -360,7 +361,7 @@ def escCountryTable(specs = TRANSPORTS):
                            + ([r'$\tilde V$'] if hasV else []) + ([r'$\Pi/R$'] if hasR else [])
                            + sum(([r'$\theta$ \textbf{chosen}', r'\textbf{Own} $' + COSTSYMBOL[spec] + '$']
                                   for spec in specs), [])))
-    pars = [r'U.S.\ $' + COSTSYMBOL[spec] + ' = ' + C.num(pUS[spec], 3) + '$' for spec in specs]
+    pars = [r'U.S.\ $' + COSTSYMBOL[spec] + ' = ' + C.num(pUS[spec], 2) + '$' for spec in specs]
     which = 'either parameter' if len(specs) > 1 else '$' + COSTSYMBOL[specs[0]] + '$'
     gap = (r' No value of ' + which + r' makes France re-elect its observed design, the Bismarckian corner '
            r'$\theta = 1$')
@@ -378,7 +379,7 @@ def escCountryTable(specs = TRANSPORTS):
     return _xwrap('US_ESC_Country', 'results/esc/escCountry.csv, escCountryCosts.csv, escCornerSlope.csv',
                   r'The UK and France under the U.S.\ cost of redistribution',
                   'table:US_ESC:country', 'l' + 'Y'*(ncol - 1 + 2*len(specs)), header, '\n'.join(rows), note,
-                  width = r'\textwidth')
+                  width = r'\textwidth', size = r'\setlength{\tabcolsep}{3pt}')
 
 
 def ukEscCalibrationTable(spec = None):

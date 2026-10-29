@@ -77,7 +77,7 @@ def argentinaCalibration(commonX = None):
     nDated = len(C.calendar()['dates'])   # the tail is the steady-state pad and has no calendar meaning
     rows = [
         [r'$\epsilon$ (\textit{pre}-reform)', '$' + C.num(c['ε']) + '$', r'Basic pension, 70\% of the minimum, discounted'],
-        [r'$\theta$',   '$' + C.num(c['θ']) + '$', 'Replacement rate dispersion'],
+        [r'$\theta$',   '$' + C.num(c['θ'], 3) + '$', 'Replacement rate dispersion'],
         [r'$\alpha$',   '$' + C.num(c['α']) + '$', 'Factor income shares'],
         [r'$\nu_t$',    '$' + C.vec([ν[0], ν[nDated-1]], 2) + '$', '30-year gross population growth rates'],
         [r'$\xi$',      '$' + C.num(c['ξ']) + '$', 'Elasticity of labor supply'],

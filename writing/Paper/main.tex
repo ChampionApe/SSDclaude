@@ -39,6 +39,8 @@ category=cited]
 \begin{appendices}
 \setcounter{page}{1}
 \renewcommand{\theequation}{\thesection.\arabic{equation}}
+\renewcommand{\theHequation}{\thesection.\arabic{equation}}
+\AddToHook{env/subequations/after}{\renewcommand{\theHequation}{\thesection.\arabic{equation}}}% cleveref's subequations resets \theHequation globally
 \input{Appendix/EconomicEquilibrium}
 \input{Appendix/PoliticoEconomicEquilibrium}
 \input{Appendix/EndogenousDesign}

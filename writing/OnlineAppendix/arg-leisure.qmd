@@ -12,8 +12,7 @@ $\sum_{i>0}\gamma_i\eta_i^{1+\xi}/X_i^{\xi}$, which both calibrations normalize 
 ## The calibration {#arg-leisure-calibration}
 
 Four rows of the paper's calibration table differ. In the survey, hours rise less with income than the common $X$
-predicts: the top quartile works fewer hours than predicted, as section {{< var p.sec_argentina >}} notes, and the
-others a little more. The vector $X_i$ take those hours as data, so the taste for leisure rises with income, and the
+predicts: the top quartile works fewer hours than predicted, and the others a little more. The vector $X_i$ take those hours as data, so the taste for leisure rises with income, and the
 productivities spread further apart to reproduce the same relative incomes. The informal productivity and taste for leisure are measured against
 the formal average and move with it.
 

@@ -84,7 +84,10 @@ The smaller U.S. numbers of the review response are written to `results/numerica
 0.5` and `--rho 2.0` (about an hour each), `a13` (the 2020 tax against inherited capital, `C5_taxPolicyState.csv`,
 read by the online appendix's `US_TaxState`) and `strategic` (the strategic term of the 2020 choice,
 $\partial\tau_{2050}/\partial s_{2020}\cdot\partial s_{2020}/\partial\tau_{2020}$, `C5_strategicTerm.csv`, read by the
-online appendix's `US_Strategic`); no other output reads them. `a9` also reads the U.S. counterfactuals at the other $\rho$ of
+online appendix's `US_Strategic`); no other output reads them. The paper quotes two of them in prose: the split of
+the U.S. design choice into the saving on the loss and the response of the anticipated tax (the 70%/30% of the footnote on
+the design choice in section 7.1, `design`, `C5_designDecomp.csv`) and the three-step decomposition of France's income
+distribution (the footnote in section 7.2, `design`/`designCRRA`, `C5_designDecomp*.csv`). `a9` also reads the U.S. counterfactuals at the other $\rho$ of
 the sweep, `python\US\runShocksUS.py --commonX --rho 1.0 0.6 0.7 0.8 0.9 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9
 --noFrance --out <repo>\results\numerical\C5_US_shocksRhoGridCommonX.csv` (about 30 minutes; the path must be
 absolute, since the script runs from `python\US`).

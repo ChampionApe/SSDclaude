@@ -1,4 +1,4 @@
-\section{Economic Equilibrium}\label{app:EE}\setcounter{equation}{0}
+\section{Economic equilibrium}\label{app:EE}\setcounter{equation}{0}
 The appendix derives results for the economic equilibrium with CRRA-GHH and log-GHH preferences and where informal workers' endowment is tied to wages in the formal sector absent taxes. 
 \subsection{With CRRA-GHH preferences}\label{app:EE:CRRA}
 \smalltitle{Household solutions.}
@@ -42,7 +42,7 @@ The only type-specific term is $(\eta_i/X_i)^{\xi}$; this shows that the ratio $
 
 Next, we can use the individual labor decision and wage rates to write 
 \begin{align*}
-    (1-\alpha)(1-\tau_t)h_t^{1-\alpha}\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha} = \frac{h_t^{\frac{1+\xi}{\xi}}}{\Gamma_{h}^{1/\xi}} - \dfrac{1-\alpha}{\alpha}\dfrac{\theta}{1+\gamma_0\epsilon} s_t\tau_{t+1},
+    (1-\alpha)(1-\tau_t)h_t^{1-\alpha}\left(\dfrac{s_{t-1}}{\nu_t}\right)^{\alpha} = \frac{h_t^{\frac{1+\xi}{\xi}}}{\Gamma_{h}^{1/\xi}} - \dfrac{1-\alpha}{\alpha}\dfrac{\theta}{1+\gamma_0\epsilon} s_t\tau_{t+1}.
 \end{align*}
 Using this and the discounted pension benefits in equilibrium, we have that
 \begin{align}
@@ -93,7 +93,7 @@ It is straightforward to derive relevant equilibrium consumption functions ($c_{
 
 When informal households save using informal technology, equilibrium consumption functions are given by
 \begin{align}
-    \tilde{c}_{1,t}^0 =& \frac{1}{1+\xi}\frac{\eta_{0}^{1+\xi}}{X_{0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}+\frac{1}{1+B_{t+1}^0}\frac{1-\alpha}{r_0 \alpha}\frac{\epsilon\tau_{t+1}}{1+\gamma_0\epsilon} s_t \\ 
+    \tilde{c}_{1,t}^0 =& \frac{1}{1+B_{t+1}^0}\left[\frac{1}{1+\xi}\frac{\eta_{0}^{1+\xi}}{X_{0}^{\xi}}\left(\frac{1-\alpha}{\Gamma_{h}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}+\frac{1-\alpha}{r_0 \alpha}\frac{\epsilon\tau_{t+1}}{1+\gamma_0\epsilon} s_t\right] \\
     c_{2,t}^0 =& r_0\alpha \nu_t\left(\frac{s_{t-1}}{\nu_t}\right)^{\alpha}h_t^{1-\alpha}\left(\frac{s_{t-1,0}}{s_{t-1}}+\frac{1-\alpha}{r_0\alpha} \frac{\epsilon\tau_t}{1+\gamma_0\epsilon }\right).
 \end{align}
 
@@ -107,7 +107,7 @@ When informal households are hand-to-mouth, relevant equilibrium consumption fun
 
 
 \subsection{With log-GHH preferences}\label{app:EE:LOG}
-With log-preferences, the economic equilibrium is identical to the CRRA equations outlined in appendix \ref{app:EE:CRRA}, except for the discount function $B_t =B^0_t= \beta$. All relevant variables $x_t\in \lbrace s_t, h_t, s_{t,i}, h_{t,j}, \tilde{c}_{1,t}^j, c_{2,t}^i, \tilde{c}_{2,t}^0, c_{2,t+1}^i, \tilde{c}_{2,t+1}^0\rbrace$ can be written on the form $x_t = \Theta_{x,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\sigma_x}$ where $\sigma_x$ are parameter functions
+With log-preferences, the economic equilibrium is identical to the CRRA equations outlined in appendix \ref{app:EE:CRRA}, except for the discount function $B_t =B^0_t= \beta$. All relevant variables $x_t\in \lbrace s_t, h_t, s_{t,i}, h_{t,j}, \tilde{c}_{1,t}^j, c_{2,t}^i, \tilde{c}_{2,t}^0, c_{2,t+1}^i, \tilde{c}_{2,t+1}^0\rbrace$ can be written in the form $x_t = \Theta_{x,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\sigma_x}$ where $\sigma_x$ are parameter functions
 \begin{align*}
     \sigma_{h} &= \sigma_{h}^j = \dfrac{\alpha \xi}{1+\alpha \xi} \\ 
     \sigma_{\tilde{c}_1,t}^j &= \sigma_{c_2,t}^i = \sigma_{\tilde{c}_2,t}^0 = \sigma_{s,t} = \sigma_{s,t}^i =\dfrac{\alpha(1+\xi)}{1+\alpha\xi} \\
@@ -146,7 +146,7 @@ As before the sign of this derivative can be shown to be the same as the sign of
 \begin{align*}
 \frac{1}{1+\alpha \xi}\frac{\theta \beta(1+\beta)}{1+\beta +\frac{1-\alpha}{\alpha}\frac{\tau_{t+1}}{1+\gamma_0 \epsilon}(1+\theta \beta \frac{\xi}{1+\xi})}-(1+\theta \beta).
  \end{align*}
-This is basically the same term (with different sign) as before. Thus, for all values of $\theta$ and $\tau_{t+1}$ we have that an increase in $\tau_{t+1}$ reduces savings. 
+This is the negative of the term above. Thus, for all values of $\theta$ and $\tau_{t+1}$ we have that an increase in $\tau_{t+1}$ reduces savings. 
 
 
 
@@ -155,7 +155,7 @@ Taking the derivative with respect to $\theta$, we see a similar condition as wi
     \dfrac{\partial \ln\left(h_t\right)}{\partial \theta} &= \frac{\xi}{1+\alpha\xi} \frac{\frac{1-\alpha}{\alpha}\frac{\tau_{t+1} \Gamma_{s,t}}{1+\gamma_0\epsilon}}{\Gamma_h-\frac{1-\alpha}{\alpha}\frac{\theta \tau_{t+1}}{1+\gamma_0\epsilon}\Gamma_{s,t}}\left(1+\theta\frac{\partial \ln\left(\Gamma_{s,t}\right)}{\partial \theta}  \right) \geq 0, \\
     \theta \dfrac{\partial \ln\left(\Gamma_{s,t}\right)}{\partial \theta} &= - \frac{\frac{1-\alpha}{\alpha}\frac{\tau_{t+1}\theta \beta}{1+\gamma_0\epsilon}}{1+\beta+\frac{1-\alpha}{\alpha}\frac{\tau_{t+1}(1+\theta \beta)}{1+\gamma_0\epsilon}} \in (-1,0]. 
 \end{align*}
-This shows that labor supply is increasing in $\theta$. For the savings rate, we have: 
+This shows that labor supply is increasing in $\theta$. For savings, we have:
 \begin{align*}
 \dfrac{\partial \ln\left(s_t\right)}{\partial \theta} = \frac{1+\xi}{\xi}\dfrac{\partial \ln\left(h_t\right)}{\partial \theta}+ \frac{\partial \ln\left(\Gamma_{s,t}\right)}{\partial \theta}.
 \end{align*}

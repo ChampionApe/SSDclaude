@@ -219,7 +219,7 @@ def test_variant_suffix_and_caption():
     tex = T.oecd26Slopes(spec = 'size', betaRule = 'commonR')
     assert '--only OECD26_Slopes_size_commonR\n' in tex and r'\label{table:OECD26:slopes_size_commonR}' in tex
     assert T.SPECCAPTION['size'] in tex and T.BETACAPTION['commonR'] in tex
-    assert r'$\beta$ and $\omega$ calibrated' in tex and r'$\lambda = 10.500$' in tex
+    assert r'$\beta$ and $\omega$ calibrated' in tex and r'$\lambda = 10.50$' in tex
     TT.parse(tex).html(TT.Context(strict = True))
     paths = F.oecd26Figure(1, spec = 'size', betaRule = 'commonR')
     assert any(os.path.basename(q).startswith('OECD26_Layer1_size_commonR.') for q in paths)
@@ -279,7 +279,7 @@ def test_spending_slopes_exact_and_note():
     for k in T.SPENDING:
         for side in ('data', 'layer1'):
             assert T._cell(s.loc[k, side]) in note, (k, side)
-    assert r'$\omega = 1.230$' in note and '26 countries' in note
+    assert r'\omega' not in note and 'countries' not in note           # the sample and anchor are section 6's
     marks = json.load(open([q for q in paths if q.endswith('.marks.json')][0], encoding = 'utf-8'))['marks']
     assert len(marks) == 2*(2*26 + 2)
 
@@ -394,12 +394,12 @@ def test_country_table_both_transports():
     tex = TU.escCountryTable()
     rows = _table(tex)
     assert list(rows) == ['gbr', 'fra']
-    assert rows['gbr'][1:] == ['0.560', '0.223', '0.529', '0.690', '7.700', '0.670', '14.000']
+    assert rows['gbr'][1:] == ['0.560', '0.223', '0.529', '0.690', '7.70', '0.670', '14.00']
     assert rows['fra'][1:] == ['1.000', '0.218', '0.432', '0.795', '--', '0.740', '--']
-    assert tex.count('Bismarckian corner') == 1 and r'$\varepsilon = 20.445$' in tex and r'$\lambda = 11.345$' in tex
-    assert r'\epsilon' not in tex and r'$\lambda_n = \varepsilon\,\Pi_{n,2020}/R_{n,2020}$' in tex
+    assert tex.count('Bismarckian corner') == 1 and r'$\varepsilon = 20.45$' in tex and r'$\lambda = 11.35$' in tex
+    assert r'\epsilon' not in tex and r'$\lambda_{n,t} = \varepsilon\,\Pi_{n,t}/R_{n,t}$' in tex
     assert r'the U.S.\ ratio is $0.555$, at which the U.S.\ $\varepsilon$ and $\lambda$ are the same cost' in tex
-    assert _table(TU.escCountryTable(specs = ('size',)))['gbr'][1:] == ['0.560', '0.223', '0.690', '7.700']
+    assert _table(TU.escCountryTable(specs = ('size',)))['gbr'][1:] == ['0.560', '0.223', '0.690', '7.70']
     _deepTest(ratioUS = 0.6)
     try:
         TU.escCountryTable()

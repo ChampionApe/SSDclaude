@@ -1,6 +1,6 @@
 \section{The Model}\label{sec:model}
 \subsection{Demographics, Inequality, and Institutions}\label{sec:model:Demo}
-We consider an economy populated by overlapping generations of workers and retirees. Within each generational cohort, we consider $J+1$ household types indexed $j = 0, \dots, J$. The $j>0$ household types allocate time between labor and leisure, pay taxes on labor income, consume, and save. When they reach retirement, they spend the return on their savings and any social security benefits they may receive, and die. Type $j=0$ households similarly allocate time between labor and leisure, consume, and save for retirement. However, they supply labor to an informal labor market, thus not subject to labor income taxes, and they save for retirement using an informal savings technology. The distribution of the formal household types $j>0$ is given by $\gamma_j$ with $\sum_{j>0} \gamma_j = 1$, and each cohort has $\gamma_0$ informal households, of type $j=0$, per formal household, a share $\gamma_0/(1+\gamma_0)$ of the cohort. The ratio of formal workers to formal retirees in period $t$ follows a deterministic process, and is given by $\nu_t$; since $\gamma_0$ is constant, it is also the ratio of all workers to all retirees.
+We consider an economy populated by overlapping generations of workers and retirees. Within each generational cohort, we consider $J+1$ household types indexed $j = 0, \dots, J$. The $j>0$ household types allocate time between labor and leisure, pay taxes on labor income, consume, and save. When they reach retirement, they spend the return on their savings and any social security benefits they may receive, and die. Type $j=0$ households similarly allocate time between labor and leisure, consume, and save for retirement. However, they supply labor to an informal labor market and are thus not subject to labor income taxes, and they save for retirement using an informal savings technology. The distribution of the formal household types $j>0$ is given by $\gamma_j$ with $\sum_{j>0} \gamma_j = 1$, and each cohort has $\gamma_0$ informal households, of type $j=0$, per formal household, a share $\gamma_0/(1+\gamma_0)$ of the cohort. The ratio of formal workers to formal retirees in period $t$ follows a deterministic process, and is given by $\nu_t$; since $\gamma_0$ is constant, it is also the ratio of all workers to all retirees.
 
 
 The government runs a pay-as-you-go (PAYG) pension system with a balanced budget. Each period, the government imposes a tax on labor supplied in the formal sector and transfers the collected amount directly to retirees. We consider social security systems that differ along two dimensions: whether workers need to qualify to receive full benefits or not and the type of benefits provided, either tied to earnings or flat-rate. We describe the different systems in section \ref{sec:model:socialSecurity}. 
@@ -13,7 +13,7 @@ In the formal sector, a continuum of competitive firms transform aggregate capit
 \begin{align}
     H_t =& N_th_t, & h_t&\equiv \sum_{i>0}\gamma_{i}\eta_{i}h_{t,i}, 
 \end{align}
-where $N_t$ is the number of formal workers at time $t$, $h_{t,i}$ is time allocated to labor by household type $i$, and $\eta_i$ is their labor productivity, normalized such that $\sum_{i>0}\gamma_{i}\eta_{i}=1$. Capital is owned by formal retirees and fully depreciates after a period. The economy-wide capital stock per formal worker, $k_t$, therefore corresponds to the economy-wide per capita savings of formal workers in the previous period, $s_{t-1}$, normalized by $\nu_t$. We define the aggregate capital stock from
+where $N_t$ is the number of formal workers at time $t$, $h_{t,i}$ is time allocated to labor by household type $i$, and $\eta_i$ is their labor productivity. Capital is owned by formal retirees and fully depreciates after a period. The economy-wide capital stock per formal worker, $k_t$, therefore corresponds to the economy-wide per capita savings of formal workers in the previous period, $s_{t-1}$, normalized by $\nu_t$. We define the aggregate capital stock from
 \begin{align}
     K_t =& N_{t-1} s_{t-1}, & s_{t-1}&\equiv \sum_{i>0}\gamma_{i}s_{t-1,i}.
 \end{align}
@@ -29,12 +29,12 @@ In equilibrium this implies the following factor prices:
     R_t = \alpha \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha-1}, \qquad w_t = (1-\alpha) \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha}.
 \end{align}
 
-Informal households produce with a linear technology, and we index its factor prices to the formal sector's: the informal wage $w_t^0$ is the formal wage that would prevail at the same capital per formal worker, $s_{t-1}/\nu_t$, without the pension system, and the return on informal savings is proportional to the formal return, $R_t^0 = r_0R_t$ (appendix \ref{app:EE}). At a given capital stock the informal wage therefore does not respond to taxes: a payroll tax that lowers formal hours raises the formal wage, but not informal earnings or the old-age endowment of the hand-to-mouth informal households of section \ref{sec:LOG}.
+Informal households produce with a linear technology, and we index their factor prices to the formal sector's: the informal wage $w_t^0$ is the formal wage that would prevail at the same capital per formal worker, $s_{t-1}/\nu_t$, without the pension system, and the return on informal savings is proportional to the formal return, $R_t^0 = r_0R_t$ (appendix \ref{app:EE}). At a given capital stock the informal wage therefore does not respond to taxes: a payroll tax that lowers formal hours raises the formal wage, but not informal earnings or the old-age endowment of the hand-to-mouth informal households of section \ref{sec:LOG}.
 
 
 \subsection{Preferences and Household Choices}
 
-Households value consumption and leisure, and discount the future at factor $\beta \in(0,1)$. Representing utility by function $u(c,h)$ with $u'_c\geq 0, u'_h\leq 0, u''_{cc}\leq 0, u''_{hh}\leq0$, the welfare of a young household of type $i$ born in period $t$ is defined by
+Households value consumption and leisure, and discount the future at factor $\beta \in(0,1)$. Representing utility by a function $u(c,h)$ with $u'_c\geq 0, u'_h\leq 0, u''_{cc}\leq 0, u''_{hh}\leq0$, the welfare of a young household of type $i$ born in period $t$ is defined by
 \begin{align}
     u \left(c_{1,t}^i, h_{t,i} \right) +\beta u \left(c_{2,t+1}^i, 0\right).
 \end{align}
@@ -58,7 +58,7 @@ Optimization yields the first order conditions that represent a leisure/consumpt
     -\dfrac{\partial u_i}{\partial h_{t,i} } &= \dfrac{\partial u_i}{\partial c_{1,t}^i}\left(w_t(1-\tau_t)\eta_i+\dfrac{\partial b_{t+1}^i/\partial h_{t,i} }{R_{t+1}}\right), \ \ \ \  i>0 \\ 
     -\dfrac{\partial u_0}{\partial h_{t,0} } &= \dfrac{\partial u_0}{\partial c_{1,t}^0}\left(w^0_t \eta_0+\dfrac{\partial b_{t+1}^0/\partial h_{t,0} }{R^0_{t+1}}\right),  \\
     \dfrac{\partial u_i}{\partial c_{1,t}^i} &= \beta R_{t+1}\dfrac{\partial u_{i}}{\partial c_{2,t+1}^i}, \ \ \ \ i>0 \\
-    \dfrac{\partial u_0}{\partial c_{1,t}^0} &= \beta R^0_{t+1}\dfrac{\partial u_0}{\partial c_{2,t+1}^0}.\label{6d}
+    \dfrac{\partial u_0}{\partial c_{1,t}^0} &= \beta R^0_{t+1}\dfrac{\partial u_0}{\partial c_{2,t+1}^0}.\label{eq:model:informalEuler}
 \end{align}
 \end{subequations}
 
@@ -87,13 +87,13 @@ Benefits are thus given by:
     b_t^i =& \left[\theta h_{t-1,i} \eta_{i}+(1-\theta)h_{t-1}\right] \overline{b}_t \\
     b_t^0 =& \epsilon h_{t-1} \overline{b}_t
 \end{align}
-where $\epsilon$ determines the level of universal pensions received by informal workers, $\theta$ measures how Bismarckian the benefits of formal workers are, and $\overline{b}_t$ is the pension rate per unit of past effective labor, so that the average formal pension is $h_{t-1}\overline{b}_t$. With $\epsilon=0$ the system is purely contributive and there are no pensions for informal workers. With $\epsilon = 1-\theta$ they receive the basic common pension of formal workers, and with $\epsilon = 1-\theta+\theta \eta_1 h_{t-1,1}/h_{t-1}$ the system is purely universal in the sense that informal workers receive the same pensions as the type of formal working household with lowest productivity.  
+where $\epsilon$ determines the level of universal pensions received by informal workers, $\theta$ measures how Bismarckian the benefits of formal workers are, and $\overline{b}_t$ is the pension rate per unit of past effective labor, so that the average formal pension is $h_{t-1}\overline{b}_t$. With $\epsilon=0$ the system is purely contributive and there are no pensions for informal workers. With $\epsilon = 1-\theta$ they receive the basic common pension of formal workers, and with $\epsilon = 1-\theta+\theta \eta_1 h_{t-1,1}/h_{t-1}$ the system is purely universal in the sense that informal workers receive the same pensions as the type of formal working household with the lowest productivity.  
 
 The balanced budget requirement implies that 
 \begin{align*}
     \nu_t w_t\tau_th_t = \sum_{j \geq 0} \gamma_j b_t^j
 \end{align*}
-This implies that the pension rate $\overline{b}_t$ is:% is defined only in terms aggregate states:
+This implies that the pension rate $\overline{b}_t$ is:
 \begin{align}
     \overline{b}_t = \dfrac{\nu_tw_th_t\tau_t}{h_{t-1}(1+\gamma_0 \epsilon)}.
 \end{align}
@@ -103,12 +103,12 @@ This implies that the pension rate $\overline{b}_t$ is:% is defined only in term
 
 \subsection{Elections}
 
-Elections take place at the beginning of each period. We assume that preferences are aggregated through probabilistic voting.\footnote{See \textcite{LindbeckW87a1}.} Thus, policy maximizes a convex combination of the objective functions of all groups of voters, where the weights reflect the groups' sizes and their responsiveness to policy changes. We allow for age related variation in responsiveness, reflected in a per capita political influence weight of unity for young voters and a per capita weight of $\omega \geq 0$ for retired voters. 
+Elections take place at the beginning of each period. We assume that preferences are aggregated through probabilistic voting.\footnote{See \textcite{LindbeckW87a1}.} Thus, policy maximizes a convex combination of the objective functions of all groups of voters, where the weights reflect the groups' sizes and their responsiveness to policy changes. We allow for age-related variation in responsiveness, reflected in a per capita political influence weight of unity for young voters and a per capita weight of $\omega \geq 0$ for retired voters. 
 
 
 \subsection{Equilibrium}\label{sec:model:equilibrium}
 
-\smalltitle{Competitive Equilibrium.} 
+\smalltitle{Economic equilibrium.}
 In economic equilibrium, firms and households optimize given factor prices, policies, and a vector of aggregate states $z_t$, which includes exogenous demographics as well as the distribution of states $\lbrace s_{t-1,j}, h_{t-1,j}\rbrace_j$. In a rational expectations equilibrium, the path of policies $\left\lbrace \tau_s\right\rbrace_{t\leq s \leq T}$ fully determines an allocation and price system. 
 
 Conditional on some initial states $z_0$ and a policy sequence $\lbrace \tau_t\rbrace_{0\leq t\leq T}$, a competitive equilibrium is given by an allocation and price system such that
@@ -120,7 +120,7 @@ Conditional on some initial states $z_0$ and a policy sequence $\lbrace \tau_t\r
 
 
 \smalltitle{Politico-economic equilibrium.}
-In politico-economic equilibrium political decision makers optimally choose tax rates, taking all implications of their actions into account and forming rational expectations about future policy choices. We assume that these choices are Markov, i.e.\ they are functions of the fundamental state variables. The decision maker at date $t$ takes the distribution of states $\lbrace s_{t-1,j}, h_{t-1,j} \rbrace$ as well as the continuation policy $\tau^{+1}_t(z_t)$ as given. Furthermore, given the continuation tax function, the policymaker takes as given the following law of motion for the state variables as a function of current policy choices:
+In politico-economic equilibrium political decision makers optimally choose tax rates, taking all implications of their actions into account and forming rational expectations about future policy choices. We assume that these choices are Markov, i.e.\ they are functions of the fundamental state variables. The decision maker at date $t$ takes the distribution of states $\lbrace s_{t-1,j}, h_{t-1,j} \rbrace$ as well as the continuation policy $\tau^{+1}_t(z_{t+1})$ as given. Furthermore, given the continuation tax function, the policymaker takes as given the following law of motion for the state variables as a function of current policy choices:
 \begin{align}\label{eq:model:lawOfMotion_General}
     z_{t+1} = \zeta_t\left(z_t, \tau_t, \tau_t^{+1}\right).
 \end{align}
@@ -137,14 +137,14 @@ A \emph{politico-economic equilibrium} as of period $t$ conditional on $z_t$ con
     \begin{align*}
         \tau_{\iota}(z_{\iota}) \in \arg \max_{\tau_{\iota}} \mathcal{W}_{\iota} (z_{\iota},\tau_{\iota};\tau_{\iota}^{+1}(\cdot)) \ \mathrm{for\ all} \ z_{\iota}, \ \mathrm{s.t.} \ \eqref{eq:factorPrices}, \eqref{eq:model:governmentBudget}, \eqref{eq:model:lawOfMotion_General}, \ \iota \geq t;
     \end{align*}
-    \item continuation tax functions are consistent with tax functions:\footnote{With a finite horizon, $\tau^{T+1}( z_{T})=\emptyset$.}
+    \item continuation tax functions are consistent with tax functions:\footnote{With a finite horizon, $\tau^{+1}_T(\cdot)=\emptyset$.}
     \begin{align*}
-        \tau_{\iota-1}^{+1}(z_{\iota}) = \tau_{\iota}\left(z_{\iota}, \tau_{\iota}^{+1}(z_{\iota+1}(\cdot))\right)  \mathrm{for\ all} \ z_{\iota} , \iota \geq t ;
+        \tau_{\iota-1}^{+1}(z_{\iota}) = \tau_{\iota}\left(z_{\iota}, \tau_{\iota}^{+1}(z_{\iota+1}(\cdot))\right) \ \mathrm{for\ all} \ z_{\iota}, \ \iota \geq t;
     \end{align*}
     \item laws of motion are consistent with the policy and continuation policy functions according to \eqref{eq:model:lawOfMotion_General};
     \item equilibrium tax choices are generated by the continuation tax function,
     \begin{align*}
-        \{\tau^{\star}_{\iota} \}_{\iota \geq t} =\tau_{\iota-1}^{+1}(z_{\iota}) ,
+        \tau^{\star}_{\iota} = \tau_{\iota-1}^{+1}(z_{\iota}) \ \mathrm{for\ all} \ \iota \geq t,
     \end{align*}
     and $\{\tau^{\star}_{\iota} \}_{ \iota \geq t} $ implements a competitive equilibrium allocation.
 \end{enumerate}

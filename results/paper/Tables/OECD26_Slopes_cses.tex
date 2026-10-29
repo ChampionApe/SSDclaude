@@ -11,16 +11,16 @@
 \toprule
 \textbf{Relation} & \textbf{Data} & \textbf{Layer 1} & \textbf{Layer 2} \\
 \midrule 
-Pension spending on population growth & $-16.74$ $(4.00)$ & $-16.87$ $(0.49)$ & \textit{targeted} \\ % row: spending_growth
-Pension spending on the Gini & $18.67$ $(24.67)$ & $-6.81$ $(16.65)$ & \textit{targeted} \\ % row: spending_gini
-Pension spending on the Bismarckian index & $16.39$ $(3.75)$ & $66.59$ $(5.45)$ & $61.94$ $(6.94)$ \\ % row: spending_index
-Bismarckian index on population growth & $-0.62$ $(0.18)$ & $-0.22$ $(0.02)$ & $-0.27$ $(0.05)$ \\ % row: index_growth
-Bismarckian index on the Gini & $0.87$ $(1.01)$ & $0.06$ $(0.23)$ & $0.40$ $(0.35)$ \\ % row: index_gini
+Pension spending on population growth & $-16.74$\newline$(4.00)$ & $-16.87$\newline$(0.49)$ & \textit{targeted} \\ % row: spending_growth
+Pension spending on the Gini & $18.67$\newline$(24.67)$ & $-6.81$\newline$(16.65)$ & \textit{targeted} \\ % row: spending_gini
+Pension spending on the Bismarckian index & $16.39$\newline$(3.75)$ & $66.59$\newline$(5.45)$ & $61.94$\newline$(6.94)$ \\ % row: spending_index
+Bismarckian index on population growth & $-0.62$\newline$(0.18)$ & $-0.22$\newline$(0.02)$ & $-0.27$\newline$(0.05)$ \\ % row: index_growth
+Bismarckian index on the Gini & $0.87$\newline$(1.01)$ & $0.06$\newline$(0.23)$ & $0.40$\newline$(0.35)$ \\ % row: index_gini
 \bottomrule
 \end{tabularx}
 \begin{tablenotes}[flushleft]
 \footnotesize
-\item[] \textit{Note:} Least-squares slopes with standard errors in parentheses, 25 countries (without LUX, which has no turnout data). The regressors are those of figure \ref{fig:US:OECDdata} in data and model alike; the model\textquotesingle s index is $1/(2-\theta)$ of the design in force in 2020 on the freely simulated path, chosen in 1990 (for the U.S.\ its observed design, the target of $\varepsilon$), and its spending is $\tau(1-\alpha)$ at the observed design. Layer 1: every country at the U.S.\ $\beta = 0.655$, $\omega = 1.287$ and $\varepsilon = 24.215$, each at its cost $\lambda_n = \varepsilon\,\Pi_{n,2020}/R_{n,2020}$; layer 2: $\omega$ calibrated to each country\textquotesingle s spending, which it then matches. Turnout: each country\textquotesingle s own.
+\item[] \textit{Note:} Least-squares slopes with standard errors in parentheses, 25 countries (without LUX, which has no turnout data). The regressors are those of figure \ref{fig:US:OECDdata} in data and model alike. Layer 1: every country at the U.S.\ $\beta = 0.66$, $\omega = 1.29$ and $\varepsilon = 24.21$, each at its cost $\lambda_{n,t} = \varepsilon\,\Pi_{n,t}/R_{n,t}$; layer 2: $\omega$ calibrated to each country\textquotesingle s spending. Turnout: each country\textquotesingle s own.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}

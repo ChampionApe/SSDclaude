@@ -129,25 +129,25 @@ When considering a marginal change in $\tau_t$, the policymaker takes into accou
 
 With the endogenous state $s_{t-1,0}/s_{t-1}$, the politico-economic equilibrium is now characterized by the first order condition:
 \begin{align*}
-    \omega\Bigg[\sum_{i\geq0}\gamma_i \overbrace{\dfrac{d \ln\left(c_{2,t}^i\right)}{d \tau_t}}^{= \mathcal{E}_{2,t}^i}\Bigg]+
-  \nu_t\Bigg\lbrace \sum_{i\geq 0}\gamma_i\underbrace{\left(\dfrac{d \ln\left(\tilde{c}_{1,t}^i\right)}{d \tau_t}+\beta\dfrac{d \ln\left(c_{2,t+1}^i\right)}{d \tau_t}\right)}_{= \mathcal{E}_{1,t}^i}\Bigg\rbrace \leq 0,
+    \omega\Bigg[\sum_{i\geq0}\gamma_i\mu_i \overbrace{\dfrac{d \ln\left(c_{2,t}^i\right)}{d \tau_t}}^{= \mathcal{E}_{2,t}^i}\Bigg]+
+  \nu_t\Bigg\lbrace \sum_{i\geq 0}\gamma_i\mu_i\underbrace{\left(\dfrac{d \ln\left(\tilde{c}_{1,t}^i\right)}{d \tau_t}+\beta\dfrac{d \ln\left(c_{2,t+1}^i\right)}{d \tau_t}\right)}_{= \mathcal{E}_{1,t}^i}\Bigg\rbrace \leq 0,
 \end{align*}
 Using equilibrium consumption functions from appendix \ref{app:EE:CRRA}, we have the derivatives of indirect utility for retired households:
 \begin{align}
     \mathcal{E}_{2,t}^0 & = (1-\alpha)\dfrac{d\ln\left(h_t\right)}{d\tau_t}+\frac{\frac{1-\alpha}{r_0\alpha}\frac{\epsilon}{1+\gamma_0\epsilon}}{\frac{s_{t-1,0}}{s_{t-1}}+\frac{1-\alpha}{r_0\alpha}\frac{\epsilon\tau_t}{1+\gamma_0\epsilon}} \\ 
-    \mathcal{E}_{2,t}^i &=(1-\alpha)\frac{d\ln\left(h_t\right)}{d\tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{1}{1+\gamma_0\epsilon}\left(1+\theta_t\left[\frac{\eta_{i}^{1+\xi}}{X_{i}^{\xi}}\frac{1}{\Gamma_{h}}-1\right]\right)}{\frac{s_{t-1,i}}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{\tau_t}{1+\gamma_0\epsilon}\left(1+\theta\left[\frac{\eta_{i}^{1+\xi}}{X_{i}^{\xi}}\frac{1}{\Gamma_{h}}-1\right]\right)}.
+    \mathcal{E}_{2,t}^i &=(1-\alpha)\frac{d\ln\left(h_t\right)}{d\tau_t}+\frac{\frac{1-\alpha}{\alpha}\frac{1}{1+\gamma_0\epsilon}\left(1+\theta_t\left[\frac{\eta_{i}^{1+\xi}}{X_{i}^{\xi}}\frac{1}{\Gamma_{h}}-1\right]\right)}{\frac{s_{t-1,i}}{s_{t-1}}+\frac{1-\alpha}{\alpha}\frac{\tau_t}{1+\gamma_0\epsilon}\left(1+\theta_t\left[\frac{\eta_{i}^{1+\xi}}{X_{i}^{\xi}}\frac{1}{\Gamma_{h}}-1\right]\right)}.
 \end{align}
 We note that the marginal effect for formal retirees is the same as when continuation policies were independent of state variables. The only difference is that the change in the aggregate labor supply, $\frac{d\ln\left(h_t\right)}{d\tau_t}$, now includes strategic effects through future policies. 
 
 For the formal, working households, we can use the Euler equation to write the indirect utility as $\ln\left(\tilde{c}_{1,t}^i\right)\left(1+\beta\right)+\beta\ln\left(\beta R_{t+1}\right)$. The marginal effect on indirect utility then consists of the two terms:
 \begin{align*}
     \mathcal{E}_{1,t}^i =& (1+\beta)\dfrac{d\ln\left(\tilde{c}_{1,t}^i\right)}{d\tau_t} + \beta \dfrac{d \ln\left(R_{t+1}\right)}{d\tau_t} \\
-    \dfrac{d\ln\left(\tilde{c}_{1,t}^i\right)}{d\tau_t} =& \frac{1+\xi}{\xi}\dfrac{d\ln\left(h_t\right)}{d\tau_t}+\frac{\Gamma_{s,t}\frac{1-\alpha}{\alpha}\frac{1-\theta_{t+1}}{1+\gamma_0\epsilon}\left(\frac{d\tau_{t+1}}{d\tau_t}+\tau_{t+1}\frac{d\ln\left(\Gamma_{s,t}\right)}{d\tau_t}\right)}{\frac{\eta_{i}^{1+\xi}}{X_{i}^{\xi}}\frac{1}{1+\xi}+\Gamma_{s,t}\frac{1-\alpha}{\alpha}\frac{\tau_{t+1}(1-\theta)}{1+\gamma_0\epsilon}} \\ 
+    \dfrac{d\ln\left(\tilde{c}_{1,t}^i\right)}{d\tau_t} =& \frac{1+\xi}{\xi}\dfrac{d\ln\left(h_t\right)}{d\tau_t}+\frac{\Gamma_{s,t}\frac{1-\alpha}{\alpha}\frac{1-\theta_{t+1}}{1+\gamma_0\epsilon}\left(\frac{d\tau_{t+1}}{d\tau_t}+\tau_{t+1}\frac{d\ln\left(\Gamma_{s,t}\right)}{d\tau_t}\right)}{\frac{\eta_{i}^{1+\xi}}{X_{i}^{\xi}}\frac{1}{1+\xi}+\Gamma_{s,t}\frac{1-\alpha}{\alpha}\frac{\tau_{t+1}(1-\theta_{t+1})}{1+\gamma_0\epsilon}} \\ 
     \dfrac{d \ln\left(R_{t+1}\right)}{d\tau_t} =& (1-\alpha)\left(\frac{d\ln\left(h_{t+1}\right)}{d\ln\left(s_t\right)}-1\right)\frac{d\ln\left(s_t\right)}{d\tau_t}.
 \end{align*}
 where we use the shorthand $d\tau_{t+1}/d\tau_t = \frac{d \tau_t^{+1}}{d (s_{t,0}/s_t)}\frac{d (s_{t,0}/s_t)}{d\tau_t}$ to define the total effect of a change in the tax rate on future taxes. The technical documentation gives the computation of these derivatives in the numerical application \parencite[section \textit{Informal Savings Model}]{BergGE26doc}.
 
-For the informal, working households, a similar Euler condition applies such that we can write indirect utility as $\ln\left(\tilde{c}_{1,t}^0\right)\left(1+\beta\right)+\beta \ln\left(\beta R_{t+1}^0\right)$
+For the informal, working households, a similar Euler condition applies such that we can write indirect utility as $\ln\left(\tilde{c}_{1,t}^0\right)\left(1+\beta\right)+\beta \ln\left(\beta R_{t+1}^0\right)$.
 The marginal effect on indirect utility is then characterized by
 \begin{align*}
     \mathcal{E}_{1,t}^0 =& (1+\beta)\dfrac{d\ln\left(\tilde{c}_{1,t}^0\right)}{d\tau_t} + \beta\dfrac{d \ln\left(R_{t+1}^0\right)}{d\tau_t} \\
@@ -161,14 +161,14 @@ The marginal effect on indirect utility is then characterized by
 
 With CRRA preferences it is no longer the case that future policy is independent of the capital stock. But conditional on this state variable, with GHH preferences it is still the case that the distribution of savings for formal workers, $\{s_{t-1,i}/s_{t-1}\}_{i>0}$, remains a function of $s_{t-1}$ and $\tau_t$ and is thus not an independent state variable. Thus, the policy function can be written as a function of two endogenous states: $s_{t-1}$ and $s_{t-1,0}/s_{t-1}$. 
 
-Compared to the log-GHH case, we adjust the definition of the politico-economic equilibria derivative $dx_t/d\tau_t$ to include the effect through both states such that 
+Compared to the log-GHH case, we adjust the definition of the politico-economic equilibrium derivative $dx_t/d\tau_t$ to include the effect through both states such that 
 \begin{align*}
     \dfrac{d x_t}{d \tau_t} = \dfrac{\partial x_t}{\partial \tau_t}+\frac{\partial x_t}{\partial \tau_{t+1}}\left(\frac{\partial \tau_t^{+1}}{\partial s_t}\frac{d s_t}{d \tau_t}+\frac{\partial \tau_t^{+1}}{\partial (s_{t,0}/s_t)}\frac{ d (s_{t,0}/s_t)}{d\tau_t}\right).
 \end{align*}
 
 The first order condition identifying the politico-economic choice $\tau_t$ is now given by
 \begin{align*}
-    &\omega \sum_{j\geq 0} \gamma_j\underbrace{ \left(c_{2,t}^j\right)^{\frac{\rho-1}{\rho}}\frac{d\ln\left(c_{2,t}^j\right)}{d\tau_t}}_{\equiv \mathcal{E}_{2,t}^j} \\+&\nu_t\sum_{j\geq0}\gamma_j\underbrace{\left(\left(\tilde{c}_{1,t}^j\right)^{\frac{\rho-1}{\rho}}\frac{d\ln\left(\tilde{c}_{1,t}^j\right)}{d\tau_t}+\beta \left(c_{2,t+1}^j\right)^{\frac{\rho-1}{\rho}}\frac{d\ln\left(c_{2,t+1}^j\right)}{d\tau_t}\right)}_{\equiv \mathcal{E}_{1,t}^j}
+    &\omega \sum_{j\geq 0} \gamma_j\mu_j\underbrace{ \left(c_{2,t}^j\right)^{\frac{\rho-1}{\rho}}\frac{d\ln\left(c_{2,t}^j\right)}{d\tau_t}}_{\equiv \mathcal{E}_{2,t}^j} \\+&\nu_t\sum_{j\geq0}\gamma_j\mu_j\underbrace{\left(\left(\tilde{c}_{1,t}^j\right)^{\frac{\rho-1}{\rho}}\frac{d\ln\left(\tilde{c}_{1,t}^j\right)}{d\tau_t}+\beta \left(c_{2,t+1}^j\right)^{\frac{\rho-1}{\rho}}\frac{d\ln\left(c_{2,t+1}^j\right)}{d\tau_t}\right)}_{\equiv \mathcal{E}_{1,t}^j}
     \leq 0,
 \end{align*}
 
@@ -178,13 +178,13 @@ For formal working households, we use the Euler equation to write indirect utili
 \begin{align*}
     v_{1,t}^i =& (1+B_{t+1})\frac{\Big(\tilde{c}_{1,t}^i\Big)^{1-1/\rho}}{1-1/\rho} = \frac{\left(\hat{c}_{1,t}^i\right)^{1-1/\rho}}{1-1/\rho} \\
     \hat{c}_{1,t}^i =& \left(\frac{h_t}{\Gamma_h}\right)^{\frac{1+\xi}{\xi}}(1+B_{t+1})^{\frac{1}{\rho-1}}\mathcal{C}_{1,t}^i \\ 
-    \mathcal{C}_{1,t}^i =& \frac{\eta_i^{1+\xi}}{X_i^{\xi}}\frac{1}{1+\xi}+\Gamma_{s,t}\frac{1-\alpha}{\alpha}\frac{\tau_{t+1}(1-\theta)}{1+\gamma_0\epsilon}
+    \mathcal{C}_{1,t}^i =& \frac{\eta_i^{1+\xi}}{X_i^{\xi}}\frac{1}{1+\xi}+\Gamma_{s,t}\frac{1-\alpha}{\alpha}\frac{\tau_{t+1}(1-\theta_{t+1})}{1+\gamma_0\epsilon}
 \end{align*}
 The marginal effect of taxes can then be summed up by
 \begin{align}
     \frac{dv_{1,t}^i}{d\tau_t}=& \left(\hat{c}_{1,t}^i\right)^{1-1/\rho} \frac{d\ln\left(\hat{c}_{1,t}^i\right)}{d\tau_t} \\
     \frac{d\ln\left(\hat{c}_{1,t}^i\right)}{d\tau_t} =& \frac{1+\xi}{\xi}\dfrac{d\ln\left(h_t\right)}{d\tau_t}+\frac{B_{t+1}}{1+B_{t+1}}(1-\alpha)\left(\frac{d\ln\left(h_{t+1}\right)}{d\ln\left(s_t\right)}-1\right)\frac{d\ln\left(s_t\right)}{d\tau_t} \notag\\
-    &+\frac{\Gamma_{s,t}\frac{1-\alpha}{\alpha}\frac{1-\theta}{1+\gamma_0\epsilon}\left(\frac{d\tau_{t+1}}{d\tau_t}+\tau_{t+1}\frac{d\ln\left(\Gamma_{s,t}\right)}{d\tau_t}\right)}{\frac{\eta_i^{1+\xi}}{X_i^{\xi}}\frac{1}{1+\xi}+\Gamma_{s,t}\frac{1-\alpha}{\alpha}\frac{\tau_{t+1}(1-\theta)}{1+\gamma_0\epsilon}} 
+    &+\frac{\Gamma_{s,t}\frac{1-\alpha}{\alpha}\frac{1-\theta_{t+1}}{1+\gamma_0\epsilon}\left(\frac{d\tau_{t+1}}{d\tau_t}+\tau_{t+1}\frac{d\ln\left(\Gamma_{s,t}\right)}{d\tau_t}\right)}{\frac{\eta_i^{1+\xi}}{X_i^{\xi}}\frac{1}{1+\xi}+\Gamma_{s,t}\frac{1-\alpha}{\alpha}\frac{\tau_{t+1}(1-\theta_{t+1})}{1+\gamma_0\epsilon}} 
 \end{align}
 
 

@@ -23,7 +23,7 @@ index's scale, I = 1/(2 - θ), the inverse of the loader's θ = 2 - 1/I; spendin
 inverse of the calibration's τ0. Both sides of every slope use figure 1.1's regressors (OECD population growth
 2020/1990, the WIID Gini) and the same countries.
 """
-import os
+import os, re
 import numpy as np, pandas as pd
 
 import config as C
@@ -172,24 +172,32 @@ def spendingSlopes(turnout = None, sample = None):
                   layers = (1,))
 
 
-def _cell(o, digits = 2):
-    return '$' + C.num(o['slope'], digits) + '$ $(' + C.num(o['se'], digits) + ')$'
+def _cell(o, digits = 2, stack = False):
+    r""" A slope and its standard error; `stack` puts the error on a line of its own (\newline), so that every cell of
+    a narrow column breaks alike. """
+    return '$' + C.num(o['slope'], digits) + '$' + (r'\newline' if stack else ' ') + '$(' + C.num(o['se'], digits) + ')$'
 
 
-def _layersText(a, v):
+def _dashNote(body):
+    r""" The note's key to `--`, only when a cell of `body` (rows of a table) prints one. """
+    return ' --: not computed.' if any(re.search(r'(&\s*--\s*(&|\\\\))|\{--\}', b) for b in body) else ''
+
+
+def _layersText(a, v, matches = True):
     r""" The note's sentence on what the layers share with the anchor `a` and what layer 2 calibrates, at the
-    variant `v`. """
-    items = ([r'$\beta = ' + C.num(float(a['β']), 3) + '$'] if v['betaRule'] == 'common' else []) \
-        + [r'$\omega = ' + C.num(float(a['ω']), 3) + '$'] \
-        + ([COSTSYMBOL[v['spec']][:-1] + ' = ' + C.num(float(a['p']), 3) + '$'] if v['spec'] in COSTSYMBOL else [])
+    variant `v`; `matches` adds that layer 2 then matches spending. """
+    items = ([r'$\beta = ' + C.num(float(a['β']), 2) + '$'] if v['betaRule'] == 'common' else []) \
+        + [r'$\omega = ' + C.num(float(a['ω']), 2) + '$'] \
+        + ([COSTSYMBOL[v['spec']][:-1] + ' = ' + C.num(float(a['p']), 2) + '$'] if v['spec'] in COSTSYMBOL else [])
     shared = items[0] if len(items) == 1 else ', '.join(items[:-1]) + ' and ' + items[-1]
     tail = {'size': '', 'none': ', without the cost',
-            'sizePiR': r', each at its cost $\lambda_n = \varepsilon\,\Pi_{n,2020}/R_{n,2020}$'}[v['spec']] \
+            'sizePiR': r', each at its cost $\lambda_{n,t} = \varepsilon\,\Pi_{n,t}/R_{n,t}$'}[v['spec']] \
         + (r', with the $\beta$ that sets its 2020 return to the U.S.\ one' if v['betaRule'] == 'commonR' else '')
     calibrated = r'$\omega$' if v['betaRule'] == 'common' else r'$\beta$ and $\omega$'
     return (r'Layer 1: every country at the U.S.\ ' + shared + tail + '; layer 2: ' + calibrated
             + r' calibrated to each country\textquotesingle s spending'
-            + (r' and the U.S.\ 2020 return' if v['betaRule'] == 'commonR' else '') + ', which it then matches.')
+            + (r' and the U.S.\ 2020 return' if v['betaRule'] == 'commonR' else '')
+            + (', which it then matches.' if matches else '.'))
 
 
 def oecd26Slopes(turnout = None, sample = None, reading = None, spec = None, betaRule = None):
@@ -201,19 +209,16 @@ def oecd26Slopes(turnout = None, sample = None, reading = None, spec = None, bet
     body = []
     for _, r in s.iterrows():
         label = YTEX[r['y']] + ' on ' + XTEX[r['x']]
-        cells = [label, _cell(r['data']), _cell(r['layer1']),
-                 r'\textit{targeted}' if r['targeted2'] else _cell(r['layer2'])]
+        cells = [label, _cell(r['data'], stack = True), _cell(r['layer1'], stack = True),
+                 r'\textit{targeted}' if r['targeted2'] else _cell(r['layer2'], stack = True)]
         body.append(' & '.join(cells) + r' \\ % row: ' + rowKey(r['y'] + '_' + r['x']))
-    target = (r' (for the U.S.\ its observed design, the target of ' + COSTSYMBOL[v['spec']] + ')'
-              if v['spec'] in COSTSYMBOL else '')
-    design = (r'the design chosen in 2020, which binds from 2050' if v['reading'] == 'chosen' else
-              r'the design in force in 2020 on the freely simulated path, chosen in 1990' + target)
+    design = (r' The model\textquotesingle s index is that of the design chosen in 2020, which binds from 2050.'
+              if v['reading'] == 'chosen' else '')
     dropped = s.attrs['dropped']
     note = (r'\textit{Note:} Least-squares slopes with standard errors in parentheses, ' + str(s.attrs['n'])
             + ' countries' + (' (without ' + ', '.join(dropped) + ', which has no turnout data)' if dropped else '')
-            + r'. The regressors are those of figure \ref{fig:US:OECDdata} in data and model alike; the model\textquotesingle s '
-            r'index is $1/(2-\theta)$ of ' + design + r', and its spending is $\tau(1-\alpha)$ at the observed '
-            r'design. ' + _layersText(a, v)
+            + r'. The regressors are those of figure \ref{fig:US:OECDdata} in data and model alike.' + design + ' '
+            + _layersText(a, v, matches = False)
             + (r' Turnout: each country\textquotesingle s own.' if v['turnout'] == 'cses' else ''))
     sfx = suffix(**v)
     return _xwrap('OECD26_Slopes' + sfx,
@@ -247,12 +252,12 @@ def oecd26Omega(turnout = None, sample = None, reading = None, spec = None, beta
         body.append(' & '.join(cells) + r' \\ % row: ' + c.lower())
     design = ('chosen in 2020, in force from 2050' if v['reading'] == 'chosen' else
               'in force in 2020 on the freely simulated path, chosen in 1990')
-    head, join = ((r'$\omega$ is calibrated to spending at $\beta = ' + C.num(float(a['β']), 3) + '$', ' and ')
+    head, join = ((r'$\omega$ is calibrated to spending at $\beta = ' + C.num(float(a['β']), 2) + '$', ' and ')
                   if v['betaRule'] == 'common' else
                   (r'$\beta$ and $\omega$ are calibrated to the U.S.\ 2020 return and to spending', ' at '))
-    cost = {'size': join + r'the U.S.\ $\lambda = ' + C.num(float(a['p']), 3) + '$',
-            'sizePiR': join + r'the U.S.\ $\varepsilon = ' + C.num(float(a['p']), 3)
-                       + r'$, $\lambda_n = \varepsilon\,\Pi_{n,2020}/R_{n,2020}$',
+    cost = {'size': join + r'the U.S.\ $\lambda = ' + C.num(float(a['p']), 2) + '$',
+            'sizePiR': join + r'the U.S.\ $\varepsilon = ' + C.num(float(a['p']), 2)
+                       + r'$, $\lambda_{n,t} = \varepsilon\,\Pi_{n,t}/R_{n,t}$',
             'none': ', without the cost'}[v['spec']]
     anchor = (r' $^{\ast}$The U.S.\ is the anchor, where ' + COSTSYMBOL[v['spec']] + ' is calibrated.'
               if v['spec'] in COSTSYMBOL else r' $^{\ast}$The U.S.\ is the anchor.')
@@ -341,12 +346,12 @@ def oecd26Robustness(sample = None, reading = None):
             r'figure \ref{fig:US:OECDdata}, the model\textquotesingle s index is $1/(2-\theta)$ of ' + design
             + r', and its spending is $\tau(1-\alpha)$ at the observed design. Rows: the cost parameter carried from '
             r'the U.S.\ anchor to every country, its $\lambda$ or its $\varepsilon$ with '
-            r'$\lambda_n = \varepsilon\,\Pi_{n,2020}/R_{n,2020}$, and $\beta$, the U.S.\ value in every country '
+            r'$\lambda_{n,t} = \varepsilon\,\Pi_{n,t}/R_{n,t}$, and $\beta$, the U.S.\ value in every country '
             r'(common $\beta$) or set so that each country\textquotesingle s 2020 return is the U.S.\ one (common '
             r'$R$, with $\beta$ and $\omega$ calibrated together in layer 2). Own turnout: every '
             r'country\textquotesingle s propensities to vote from the CSES, the U.S.\ anchor recalibrated at its '
             r'own CSES profile' + (' (' + ', '.join(dropped) + ', with no CSES election, left out)' if dropped else '')
-            + r'. $^{\ast}$The paper\textquotesingle s specification. --: not computed.')
+            + r'. $^{\ast}$The paper\textquotesingle s specification.' + _dashNote(body))
     header = (' & ' + ' & '.join(r'\multicolumn{2}{c}{\textbf{' + SHORT[k] + '}}' for k in ROBUST) + r' \\' + '\n'
               + ''.join(r'\cmidrule(lr){%d-%d}' % (2 + 2*i, 3 + 2*i) for i in range(len(ROBUST))) + '\n'
               + r'\textbf{Cost, rule} & ' + ' & '.join(['Layer 1', 'Layer 2']*len(ROBUST)))
@@ -459,7 +464,7 @@ def oecd26Reconcile(turnout = None, reading = None):
             r'country\textquotesingle s spending at the U.S.\ $\beta$ and cost parameter'
             + (r', each country at its own turnout' if v['turnout'] == 'cses' else '')
             + r'. The design chosen is the one ' + design + r' on the freely simulated path; under $\varepsilon$, '
-            r'$\lambda_n = \varepsilon\,\Pi_{n,2020}/R_{n,2020}$. --: not computed.')
+            r'$\lambda_{n,t} = \varepsilon\,\Pi_{n,t}/R_{n,t}$.' + _dashNote(body))
     sfx = suffix(turnout = turnout, reading = reading)
     return _xwrap('OECD26_Reconcile' + sfx,
                   'results/paper/usCalibrationSummary.csv; results/esc/escCalibration{,Costs}.csv, '

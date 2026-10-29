@@ -126,24 +126,18 @@ def oecd26Spending(turnout = None, sample = None):
     dot = lambda colour, marker: plt.Line2D([], [], linestyle = '-', linewidth = 1.2, marker = marker,
                                             markersize = 3.6, color = colour, markeredgecolor = '#fcfcfb',
                                             markeredgewidth = 0.5)
-    leg = legendAx.legend([dot(SERIES[0], 'o'), dot(SERIES[1], 'D')], ['data', 'model, no cost'], loc = 'center',
+    leg = legendAx.legend([dot(SERIES[0], 'o'), dot(SERIES[1], 'D')], ['data', 'model'], loc = 'center',
                           frameon = False, fontsize = 7, labelcolor = INK['secondary'],
                           title = '{} countries, fitted lines'.format(len(p)), title_fontsize = 7)
     leg.get_title().set_color(INK['secondary'])
     out = _save(fig, name, marks)
-    a = D.oecd26Anchor(turnout, spec)
     cell = lambda o: '$' + C.num(o['slope'], 2) + r'$ $(' + C.num(o['se'], 2) + ')$'
     pair = lambda k: cell(s.loc[k, 'data']) + ' and ' + cell(s.loc[k, 'layer1'])
     dropped = [D.oecdFigure1Data().at[c, 'country'] for c in p.attrs['dropped']]
     note = (r'\textit{Note:} Least-squares slopes with standard errors in parentheses, data and model: pension '
-            r'spending on population growth ' + pair(SPENDING[0]) + ', on the Gini ' + pair(SPENDING[1]) + '; '
-            + str(len(p)) + ' countries' + (' (without ' + ', '.join(dropped) + ', which has no turnout data)'
-                                            if dropped else '')
-            + r'. The model\textquotesingle s countries are the synthetic countries of section \ref{sec:oecd}, '
-              r'without the cost of section \ref{sec:esc}: the U.S.\ model at its $\beta = '
-            + C.num(float(a['β']), 3) + r'$ and $\omega = ' + C.num(float(a['ω']), 3) + r'$, each with one country'
-            r'\textquotesingle s workers per retiree, income distribution and observed design; its spending is '
-            r'$\tau(1-\alpha)$ in 2020.'
+            r'spending on population growth ' + pair(SPENDING[0]) + ', on the Gini ' + pair(SPENDING[1])
+            + ('; ' + str(len(p)) + ' countries (without ' + ', '.join(dropped) + ', which has no turnout data)'
+               if dropped else '') + '.'
             + (r' Turnout: each country\textquotesingle s own.' if variant(turnout)['turnout'] == 'cses' else ''))
     path = os.path.join(C.PAPERDIR, 'Figs', name + '_note.tex')
     with open(path, 'w', encoding = 'utf-8', newline = '\n') as f:
