@@ -87,3 +87,14 @@ appendix G.1; 7.3 is the cross-section, introducing ε, with fewer numbers; conc
 the U.S. and France. 82 pages (86 yesterday); commit 1f8a955, the online appendix published from it (gh-pages b2d53ad). Traps:
 `build.py --list`/`--map` re-save figure PDFs that differ only in CreationDate (`git checkout` them); the Read tool cannot open
 `main.pdf` ("password-protected"), `pdftoppm`/`pdftotext` can. Open: TODO W22, RKB reviews on 2026-10-29.
+
+## 2026-10-29 — RKB's review continued (W22): read-through and decisions D1–D11
+
+RKB's Overleaf edits pulled (abstract, sections 5–7, and the notes of tables 4 and 5 and figure 6.2, which carry the
+pipeline banner and were carried into `tablesUS`, `tablesOECD26`, `figuresOECD26`). Abstract and conclusion shortened;
+table 4 at two decimals (β added, then cut on RKB's call); table 5's slopes and standard errors stacked. Full read-through
+by three reviewers, then RKB's decisions D1–D11 applied by three writers, one file set each (`notes/readThrough_2026-10-29.md`).
+D1: λ constant for the U.S. and ε carried across countries, both explained. D2: the cross-section's U.S. is measured from
+the OECD data. D3: cost parameters at two decimals everywhere. PDF links fixed (`\theHequation`; setspace before hyperref,
+which had broken every footnote link). Commit `fa0335f`; Overleaf force-pushed by RKB; the online appendix published from
+`fa0335f` (gh-pages `a47bb03`). Open: TODO W22 (φ_t, mkvss08, page anchors); next a coarse review round in a fresh session.
