@@ -1,0 +1,28 @@
+\section{Inputs and sources}\label{sec:data:inputs}
+This part documents the data behind the paper's OECD cross-section: 26 of the 29 OECD members before 2000. Mexico, Turkey and Korea are left out because informal employment exceeds a quarter of employment \parencite{ILOSTAT}. Every input is a csv under \texttt{data/}, written by a stage (0) script in \texttt{python/paper/}; \texttt{data/README.md} and the \texttt{*\_sources.csv} files give the URL and retrieval date of every column. \Cref{tab:data:inputs} lists the inputs. The pension design $\theta$ and the tax $\tau$ are built from the last four rows in \cref{sec:data:tiers,sec:data:variants}.
+
+\begin{table}[htbp]
+\centering
+\caption{Inputs of the OECD cross-section}\label{tab:data:inputs}
+\begin{spacing}{1.0}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{\dimexpr\linewidth-6.2cm-4\tabcolsep\relax}>{\raggedright\arraybackslash}p{3.6cm}@{}}
+\toprule
+Input & Source and vintage & Repository file \\
+\midrule
+Workers per retiree, $\nu_t$ & \textcite{UN_WPP2024}, medium variant: $\nu_t = P(t)/P(t-30)$, total population on 1 July, $t = 1990, 2020, 2050, 2080$; retrieved 2026-10-23 & \texttt{oecd29.csv}, \texttt{oecd29\_population.csv} \\
+Income groups, $\gamma_i$, $y_i$ & \textcite{OECD_Earnings}: decile ratios P50/P10 and P90/P50 of gross earnings of men in full-time employment, 2019 or nearest, through a two-piece lognormal; retrieved 2026-10-23 & \texttt{oecd29.csv}, \texttt{oecd29\_distribution.csv} \\
+Pension spending, $S$ (for $\tau$) & \textcite{OECD_SOCX}: public cash spending on old age and survivors (TP01), \% of GDP, 2020; retrieved 2026-09-30 & \texttt{oecdFigure1.csv} \\
+Replacement rates (paper's $\theta$) & \textcite[table 4.1]{OECD_PaG2021}: gross, mandatory schemes, men, at 0.5 and 1 times average earnings (AW), rules of 2020 & \texttt{oecdFigure1.csv} \\
+Turnout, $\mu_i$ & \textcite{CSES}: turnout by household-income quintile, one election per country nearest 2020 within 2015--22, averaged over each income group; Luxembourg is not in the CSES; retrieved 2026-10-23 & \texttt{oecd29.csv} \\
+Sample & \textcite{ILOSTAT}: informal employment above 25\% drops a country & \texttt{oecd26\_sample.csv} \\
+Pension tiers & \textcite{OECD_PaG2021,OECD_PaG2025}: tables 3.1, 3.2, 4.1, 4.2, 8.1; \textcite[table 4.19]{OECD_PaG2013}; \textcite{OECD_SOCX}, aggregate and programme level; \textcite{Eurostat_ESSPROS}; \textcite{OECD_GPS}; \textcite{OECD_NATable29}; 2019--20, retrieved 2026-10-30 & \texttt{oecd26\_pensionTiers\_\allowbreak harmonised.csv} \\
+Scheme rules & PaG 2021 country profiles and national administrative sources, one row per scheme, read by hand; retrieved 2026-10-30 & \texttt{oecd26\_pension\allowbreak Schemes\_A.csv}, \texttt{\_B.csv} \\
+Top-up spending, $s$ & National sources: \textcite{ItinerariPrev2022} (INPS data), \textcite{DREES2025,DREES2022}, \textcite{BMF2022UG22}, \textcite{Bundestag2024} and \textcite{Destatis2021}, \textcite{Rekenhof2020}, \textcite{CFP2021}; SOCX programme lines; 2019--20, retrieved 2026-10-30 & \texttt{oecd26\_topups.csv} \\
+$\theta$ and $\tau$ by variant & Derived (\cref{sec:data:variants}) by \texttt{python/paper/oecd26Theta.py} & \texttt{oecd26\_theta.csv} \\
+\bottomrule
+\end{tabular}
+\end{spacing}
+\end{table}
+
+The first six rows feed the paper's cross-country test (\texttt{python/US/oecd26.py}). The rest are drafts; \texttt{oecd26.py} reads a variant of the last file only when asked (its argument \texttt{thetaSource}). The three files on tiers, schemes and top-ups record every number with its source, URL and retrieval date; nothing is interpolated or filled. Average earnings (AW) are the OECD's full-time average worker earnings of PaG 2021.

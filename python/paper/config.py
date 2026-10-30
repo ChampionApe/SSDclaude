@@ -144,17 +144,16 @@ def argTaxTarget(wb):
 US = {
     'countries':  ('US', 'FR', 'UK'),        # the columns of USUKFRCalibration, in the paper's order
     'workbooks':  {'US': 'USMain_test.xlsx', 'FR': 'FRMain.xlsx', 'UK': 'UKMain.xlsx'},
-    'ρGrid':      [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0],
+    # THE PAPER'S MEASURE OF THE DESIGN: a variant of data/oecd26_theta.csv (notes/thetaTau_alternatives.md),
+    # imposed as theta0 on the U.S., France and the UK (their USA, FRA, GBR rows) and taken by every OECD country.
+    # Every U.S./France/UK/ESC/OECD command of stages (i) and (ii) carries --theta <this> --main, which writes the
+    # standard results/ paths (python/US/oecd26.thetaRoot); every reader of those paths keeps the rows at this
+    # thetaSource only (datasets.atTheta), a csv written without the column reading as 'index'.
+    'theta':      'C',
+    'ρGrid':      [0.5, 1.0, 2.0],            # the sweeps' points (calibrateRhoGrid*.py --rhos)
     'ρAnchor':    1.0,                        # the sole LOG point, and the sweeps' march anchor
     'ρBaseline':  1.0,                        # the headline specification: the LOG tables
     'ρTable':     [0.5, 1.0, 2.0],            # the rows the CRRA tables print
-    # READINGS of the U.S. workbook that are a switch rather than a sheet: name -> the driver flags of
-    # python/US/calibrateRhoGrid.py and runShocksUS.py. 'USMedicare' is the online appendix's 'transfers to
-    # the old': Medicare spending, 2.9% of GDP (MedPAC 2020 Data Book, data/README.md; the workbook's
-    # pre-2026-10-23 value), added to pension spending in tau0 and paid as a flat benefit, so theta =
-    # (1 - m) theta_P with m = 2.9/(7.366 + 2.9) (python/US/test.reading). Swept and shocked like the US,
-    # with France referenced to it; usCalendar derives its tau0 from the workbook's.
-    'readings': {'USMedicare': {'medicare': 0.029}},
     # WHICH CALIBRATION VARIANT THE PAPER LEADS WITH. True = the common scalar X of the docs' variant B,
     # where the hours unit is a calibration target and relative hours become a prediction; False = the
     # vector X_i of variant A, where relative hours are data and the LEVEL of hbar is not identified.
@@ -185,9 +184,9 @@ US = {
     #   'flat'  (only the flat component carries the cost) runs only in the permanent stage's comparison
     #           rows of escPermanent.csv, which no output prints.
     # The rho points of the pre-publication stationary-vs-date-specific check (runShocksUS.py 'stationary';
-    # rho = 1 is exact by the LOG decoupling and is not run). sec:numerical's footnote quotes the maximal gap
-    # over these points.
-    'ρStationary': [0.5, 0.7, 1.3, 1.5, 2.0],
+    # rho = 1 is exact by the LOG decoupling and is not run): the non-log points of ρGrid. sec:numerical's
+    # footnote quotes the maximal gap over these points.
+    'ρStationary': [0.5, 2.0],
     'esc': {
         'spec':           'size',      # the paper's cost specification
         'comparisonSpec': 'scale',     # the previous wedge, the online appendix's second cost (page C3)
@@ -199,23 +198,14 @@ US = {
         # The scan bracket of the EXACT CRRA calibration (runESCcrra.py --bracket), per spec and rho: the
         # required parameter falls steeply in rho, so one bracket cannot serve both. A rho absent from a
         # spec's dict leaves the bracket to runESCcrra.py's own default for that spec; a rho present with
-        # None is a PLACEHOLDER and stage (i) refuses to run it (config.escBracket). 'scale' keeps the
-        # child's default (its wide scan narrowed around a path-iteration p on file). 'size': set from the
-        # LOG lambda after WP4 -- [lambda/20, 3 lambda] at rho = 2, [lambda/3, 5 lambda] at rho = 0.5.
-        # 'sizePiR' (costVariants) the same way from its own LOG lambda; 'scale' from its LOG p, [p, 6p] at
-        # rho = 0.5 and [p/20, p] at rho = 2 (the exact p was 2.3 and 0.21 times the LOG one on 2026-09-24).
-        # Set 2026-10-23 from the LOG calibration at the pension-only workbook: lambda 11.563954 ('size'),
-        # p 0.414608 ('scale'), lambda 20.838898 ('sizePiR').
-        # 'scale' at rho = 2: narrowed to the sign change of the 2026-10-23 scan, whose node 0.0687 does not solve
-        # on the ns = 50 grid, and brentq to 1e-6 (xtol): p is ~0.09 there, so 2e-5 left the design 1.8e-4 off.
-        'bracket':        {'scale':   {0.5: (0.4146, 2.488), 2.0: (0.0377, 0.1251)},
-                           'size':    {0.5: (3.855, 57.82), 2.0: (0.5782, 34.69)},
-                           # 'sizePiR': lambda_size,CRRA/pi_2020 within a factor of 1.4 (the LOG ratio is
-                           # 0.999), scanned at ns2D (costVariants' nsScan: the ns = 50 tax solve has jumps of
-                           # ~1e-5 in tau at rho = 2 that stop the (beta, omega) root and the pi iteration)
-                           'sizePiR': {0.5: (30.0, 70.0), 2.0: (3.2, 8.0)}},
+        # None is a PLACEHOLDER and stage (i) refuses to run it (config.escBracket). 'size' (the paper's cost, the
+        # one exact calibration run): set from the LOG lambda after WP4 -- [lambda/20, 3 lambda] at rho = 2,
+        # [lambda/3, 5 lambda] at rho = 0.5 -- on 2026-10-23 from lambda 11.563954 at the pension-only workbook. At
+        # US['theta'] the LOG lambda is 6.247 (results/oecd26_theta_C/esc/escCalibration.csv), so at the exact/LOG
+        # ratios of 2026-10-25 (2.21 and 0.233) the roots expected, ~13.8 and ~1.46, lie inside both brackets.
+        'bracket':        {'size':    {0.5: (3.855, 57.82), 2.0: (0.5782, 34.69)}},
         # brentq's xtol on the cost parameter where runESCcrra.py's default (2e-5) is too coarse, per spec and rho.
-        'xtol':           {'scale': {2.0: 1e-6}},
+        'xtol':           {},
         # THE PUBLISHED CRRA METHOD. True: every CRRA ESC output is built from rows with method = 'exact'
         # (LeadedCRRA2D, python/US/runESCcrra.py --exact, the pre-publication part of stages (i)/(ii))
         # and a missing exact row is MissingInput -- never a fallback to the path iteration's rows, which
@@ -231,32 +221,25 @@ US = {
         # writing/US/num_esc.tex, the root in a, adopted on the pilot (python/US/RESEARCH_LOG.md, 2026-10-02).
         'designRule': 'root',
         'Ma':         5,
-        # The pre-publication timing checks: the permanent choice traced in rho under CRRA.
-        'ρPermanentCRRA': [1.1, 1.2, 1.3, 1.4, 1.5, 2.0],
         # The UK's OWN cost parameter per rho (the deep test, UK_ESC_Calibration), calibrated as the US one is:
         # LOG from escCountry.csv ('own'), CRRA by the exact recursion into escCalibrationCRRAUK.csv (stage (i)
         # --prepub, runESCcrra.py --host UK --stage calib). Brackets set from coarse probes (2026-09-29): the
         # UK's design is 0.23/0.57 at lambda 1.45/3.0 (rho = 2) and 0.46/0.71 at 12/25 (rho = 0.5). nsScan 0 at
         # rho = 0.5 scans at ns2D: the UK's (beta-imposed) calibration does not converge on the ns = 50 grid
         # there. Rescaled 2026-10-23 by the UK's LOG lambda at the pension-only workbooks (7.786 against 7.264)
-        # and widened: the exact lambda was 2.08 and 0.38 times the LOG one.
-        'uk': {'bracket':   {0.5: (11.5, 30.0), 2.0: (1.4, 5.5)},
+        # and widened: the exact lambda was 2.08 and 0.38 times the LOG one. Rescaled 2026-10-30 to the UK at its
+        # θ0 of US['theta'] (0.181): its LOG lambda 3.628 on the coarse smoke grid (logs/pipelineThetaC/smoke)
+        # against 7.740, so ~7.8 and ~1.45 expected at those ratios; widened, one scan node more.
+        'uk': {'bracket':   {0.5: (3.5, 16.0), 2.0: (0.55, 3.2)},
                'nsScan':    {0.5: 0, 2.0: 50},
-               'nScan':     4},
-        # THE COST VARIANTS OF SECTION 7 (A8 of archive/notes/reviewResponse_2026-10/paper_reviewResponse.md): the ageing counterfactuals
-        # under the paper's cost, the cost on the design (comparisonSpec) and the Pi-inclusive cost 'sizePiR'
-        # (python/US/modelESC.py: lambda*Pi_t/R_t, the factor the paper's cost absorbs into lambda, solved to
-        # the path's own Pi_t/R_t), at every rho of ρTable, both readings. 'sizePiR' is calibrated like the
-        # paper's cost and runs, with mild ageing under the other two at rho != 1, into the `tag`ged csvs
-        # (escCalibration{,CRRA}Costs, escPath{,CRRA}Costs, escShocks{,CRRA}Costs; mild ageing under the
-        # other two costs at rho != 1 in escShocksCRRACostsMild, its own file so the two runs never write one
-        # csv at once); collectESCexperiments.py --costs merges them with the paper's csvs into
-        # escAgeingCosts.csv.
-        'costVariants': {'spec': 'sizePiR', 'tag': 'Costs', 'scenarios': ['baseline', 'mild', 'acute'],
-                         'mildSpecs': ['size', 'scale'], 'mildTag': 'CostsMild',
-                         # the exact CRRA calibration: three scan nodes on the narrow bracket, on the ns2D grid,
-                         # brentq to 1e-3 in lambda (~1e-5 in the design); each node is two to three recursions
-                         'nScan': 3, 'nsScan': 0, 'xtol': 1e-3},
+               'nScan':     5},
+        # THE COST VARIANT OF SECTION 7 (A8 of archive/notes/reviewResponse_2026-10/paper_reviewResponse.md): the
+        # Pi-inclusive cost 'sizePiR' (python/US/modelESC.py: lambda*Pi_t/R_t, the factor the paper's cost absorbs
+        # into lambda, solved to the path's own Pi_t/R_t), calibrated like the paper's cost under LOG into the
+        # `tag`ged csv escCalibrationCosts.csv (its epsilon is the cross-section's), and acute ageing against its
+        # baseline under it at rho = 1 (escShocksCosts.csv); collectESCexperiments.py --costs merges it with the
+        # paper's csvs into escAgeingCosts.csv.
+        'costVariants': {'spec': 'sizePiR', 'tag': 'Costs', 'scenarios': ['baseline', 'acute']},
         # escExperiments.csv scenario keys -> the labels the appendix tables print.
         # 'frLeisure' is run and merged but no longer printed (dropped from the paper 2026-09-11).
         'scenarios': {'acute': 'Acute ageing', 'frIncome': 'Income distribution',
@@ -272,20 +255,61 @@ US = {
     #   turnout   'cps' (the U.S. CPS propensities in every country) | 'cses' (each country's own)
     #   reading   the model's design: 'inForce' (in force in 2020, chosen in 1990) | 'chosen' (chosen in 2020)
     #   spendingSpec  the cost of section 6's spending test at the observed designs
-    # `variants`: the runs stage (ii)'s entry 'oecd26' makes, one runOECD26.py command each, in this order (an
-    # anchor before the layers that read it); rows already current are reused, so a rerun costs seconds.
+    # `variants`: the runs stage (ii)'s entry 'oecd26' makes, one runOECD26.py command each (--theta US['theta']
+    # --main --inSample), in this order (an anchor before the layers that read it); rows already current are
+    # reused, so a rerun costs seconds. `thetaVariants`: the robustness measures of data/oecd26_theta.csv, each
+    # run by stage (ii)'s entry 'oecd26Variants' at the paper's variant (a U.S. sweep at rho = 1, then the
+    # cross-section) into its own results/oecd26_theta_<V>/; OECD26_ThetaVariants prints the five slopes under
+    # 'paper', these and US['theta'].
     'oecd26': {
         'spec': 'sizePiR', 'betaRule': 'common', 'turnout': 'cps', 'reading': 'inForce', 'spendingSpec': 'none',
         'variants': [
-            {'spec': ['size', 'sizePiR'], 'betaRule': ['common'], 'turnout': ['cps', 'cses'],
+            {'spec': ['sizePiR'], 'betaRule': ['common'], 'turnout': ['cps', 'cses'],
              'stage': ['anchor', 'layer1', 'layer2']},
             {'spec': ['none'], 'betaRule': ['common'], 'turnout': ['cps', 'cses'],
              'stage': ['anchor', 'layer1', 'layer2']},
-            {'spec': ['size', 'sizePiR'], 'betaRule': ['commonR'], 'turnout': ['cps', 'cses'],
-             'stage': ['layer1', 'layer2']},
         ],
+        'thetaVariants': ['A', 'A2pt', 'B'],
     },
 }
+
+THETAFILE = os.path.join(DATA, 'oecd26_theta.csv')
+ISO3 = {'US': 'USA', 'FR': 'FRA', 'UK': 'GBR'}
+
+
+def thetaFlags():
+    """ The flags every U.S./France/UK/ESC/OECD command of stages (i) and (ii) carries: --theta US['theta'] --main. """
+    return ['--theta', US['theta'], '--main']
+
+
+@functools.lru_cache(maxsize = None)
+def _thetaFile():
+    return pd.read_csv(THETAFILE, dtype = {'iso3': str, 'variant': str}, float_precision = 'round_trip')
+
+
+def theta0(country = 'US', variant = None):
+    """ θ0 of a workbook country ('US', 'FR', 'UK') or an ISO3 code under `variant` (US['theta'] by default): its row of
+    data/oecd26_theta.csv, as python/US/oecd26.thetaFromFile reads it. KeyError where there is none. """
+    variant = US['theta'] if variant is None else variant
+    d = _thetaFile()
+    r = d[(d['iso3'] == ISO3.get(country, country)) & (d['variant'] == variant)]
+    if r.empty or not np.isfinite(float(r['theta'].iloc[0])):
+        raise KeyError('{}: no θ for {} under variant {!r}'.format(THETAFILE, country, variant))
+    return float(r['theta'].iloc[0])
+
+
+def atTheta(df, variant = None, country = None, tol = 1e-12):
+    """ The rows of `df` at thetaSource `variant` (US['theta'] by default; a csv or cell without the column reads as
+    'index'), and with `country` also at its θ0 (the θ0 column, theta0). Every reader of a U.S.-arm csv under
+    results/{calibration,esc,shocks,oecd26} goes through this, so a row of another θ is never read (#13). """
+    variant = US['theta'] if variant is None else variant
+    ts = df['thetaSource'].fillna('index') if 'thetaSource' in df.columns else pd.Series('index', index = df.index)
+    keep = ts == variant
+    if country is not None and variant != 'index':
+        θ = pd.to_numeric(df['θ0'], errors = 'coerce') if 'θ0' in df.columns else pd.Series(np.nan, index = df.index)
+        keep &= (θ - theta0(country, variant)).abs().le(tol)
+    return df[keep]
+
 
 def escBracket(ρ, spec = None):
     """ The exact CRRA calibration's scan bracket at `rho` under `spec` (US['esc']['spec'] by default):
@@ -316,7 +340,7 @@ def usInstanceDir(country, commonX = False):
 
 
 def usShockCsv(host = 'US', commonX = False):
-    """ python/US/runShocksUS.py's long csv for `host` ('US' | 'USMedicare', the reading) and variant. """
+    """ python/US/runShocksUS.py's long csv for `host` ('US') and variant. """
     return os.path.join(SHOCKDIR, host + '_shocks' + ('CommonX' if commonX else '') + '.csv')
 
 
@@ -331,11 +355,7 @@ def usCalendar(country = 'US'):
     than absent -- it is present and stale (python/US/test_createCopyFromt0.py), which is the other
     reason nothing in this pipeline reads it.
 
-    A reading (US['readings']) is the US workbook with tau0 derived as python/US/test.reading derives it. """
-    if country in US['readings']:
-        cal = dict(usCalendar('US'))
-        S, M = cal['τ0']*(1 - cal['α']), US['readings'][country]['medicare']
-        return cal | {'τ0': (S + M)/(1 - cal['α']), 'Ushare': M/(S + M)}
+    """
     wb = pd.read_excel(os.path.join(DATA, US['workbooks'][country]), sheet_name = None, header = None)
     dft = pd.DataFrame(wb['population'].values)
     dates = pd.DataFrame(dft.iloc[1:, ].values, columns = dft.iloc[0, :]).set_index('t').index

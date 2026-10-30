@@ -109,3 +109,13 @@ reference list and its appendix numbers are off. Two read-only checks against th
 https://claude.ai/artifact/LdBZr2X8KMxShSDnFXhLcP. Main new finding: under the cost the layer-1 tax rises at the chosen
 design whichever way θ moves (24–26 of 26), against section 7.3's "more Bismarckian lowers the tax". Several W16 decisions
 (A8, A10, A1's intro sentence, W6's marginal loss) are not in the draft. Open: RKB's decisions in the note's last section.
+
+## 2026-10-30 — Technical note: a data part (OECD cross-section)
+
+Fourth part of `writing/main.tex` after the US model, `writing/data/` (`\subimport{data/}{main}`, "Data / The OECD
+cross-section"; `data` added to `overleaf.py`'s note include list): inputs and sources (table), the pension tiers mapped
+to θ and τ with the slope measure and s (eq:data:*), the variants paper/A/A2pt/B/C with C's rule and the data gaps
+(LUX, BEL, ITA, PRT bounds), three figures by `python/paper/figuresDataNote.py` (reads `data/oecd26_theta.csv` only).
+Own refsection and bibliography; 19 entries added to `writing/References.bib` (PaG 2013/2021/2025, SOCX, ESSPROS, GPS,
+table 29, WPP 2024, OECD earnings, CSES, ILOSTAT, national top-up sources). tabularx breaks under the note's preamble
+(even a minimal table): use tabular with p columns. Note builds: 134 pages, data part pp. 127-134, no undefined refs.

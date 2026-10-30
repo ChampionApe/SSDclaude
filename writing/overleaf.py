@@ -64,7 +64,7 @@ EXPORTS = os.path.join(HERE, 'exports')
 PROJECTS = {
     'note':  {'root': '.',     'main': 'main.tex',
               'include': ['main.tex', 'packages.tex', 'References.bib',
-                          'informalAnalytical', 'informalSavings', 'US']},
+                          'informalAnalytical', 'informalSavings', 'US', 'data']},
     # The paper's Overleaf project is https://da.overleaf.com/project/6a86b4569416ca8062f0b899 and the
     # note's https://da.overleaf.com/project/6a4b74c7259adae491b45669; each git URL (Menu > Git in the
     # project) is remembered under exports/ after the first push or pull.

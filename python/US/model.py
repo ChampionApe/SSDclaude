@@ -320,11 +320,26 @@ class ModelUS:
     ##########            2. Simple calibration methods         ###########
     #######################################################################
 
+    def θOverride(self):
+        """ db['θ0'], the design imposed as a datum (a variant of data/oecd26_theta.csv, oecd26.thetaFromFile),
+        as a float; None where the key is absent or not finite. Outside [0, 1] it raises. """
+        v = self.db.get('θ0')
+        if v is None or not np.isfinite(float(v)):
+            return None
+        if not 0. <= float(v) <= 1.:
+            raise ValueError(f"db['θ0'] = {v!r} is outside [0, 1]")
+        return float(v)
+
     def getθ(self):
         """ θ from the replacement-rate ratio RR0 of the groups RRGroups (calibration:theta): θ_P, the design
         of the pension formula, times 1 - Ushare0. A flat benefit paid outside the formula, a share m of all
         transfers to the old, makes the transfers' design (1 - m)θ_P exactly under the benefit formula
-        (eq:governmentBudget). Ushare0 = 0 returns θ_P bit for bit. """
+        (eq:governmentBudget). Ushare0 = 0 returns θ_P bit for bit.
+        With db['θ0'] present and finite (θOverride) θ is db['θ0'] itself, which Ushare0 does not scale; RR0 is
+        then not read. Every refresh re-installs it (#9). """
+        θ0 = self.θOverride()
+        if θ0 is not None:
+            return θ0
         i,ii = self.db['RRGroups'][0], self.db['RRGroups'][1]
         ξ= self.db['ξ'].xs(self.db['t0'])
         h1,h2 = (self.db['Γh']*self.db['Xi'][i]**ξ/self.db['ηi'][i]**(1+ξ)).xs(self.db['t0']), (self.db['Γh']*self.db['Xi'][ii]**ξ/self.db['ηi'][ii]**(1+ξ)).xs(self.db['t0'])

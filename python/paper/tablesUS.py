@@ -119,7 +119,10 @@ def usukfrCalibration(commonX = None, countries = CALIBCOUNTRIES):
         return keyed(' & '.join([label, cell, target]) + r' \\', key)
 
     rows = [
-        row('theta', r'$\theta$', 'Replacement rate dispersion', lambda r: C.num(r['θ'], 3)),
+        # θ is the replacement-rate ratio's closed form without a measure of the design (RR0), the measure's own
+        # value under config.US['theta'] (imposed as θ0)
+        row('theta', r'$\theta$', 'Replacement rate dispersion' if C.US.get('theta') in (None, 'index')
+            else 'Slope of the public pension on earnings', lambda r: C.num(r['θ'], 3)),
         row('omega', r'$\omega$',
             ', '.join(r'$\tau^{' + k + '} = ' + C.pct(c[k]['τ0'], 1) + '$' for k in cols),
             lambda r: C.num(r['ω'])),
@@ -272,9 +275,10 @@ def escCalibrationTable(spec = None):
 # income groups ('UKUS') stays in the csvs and is not printed.
 COUNTRYROWS = (('UK', 'UK', 'gbr'), ('FR', 'France', 'fra'))
 # The deep test's transports of the U.S. cost parameter, in the table's order, and the parameter's symbol: the
-# paper's 'size' (λ) and config.US['esc']['costVariants']'s 'sizePiR' (ε, the cost λ_n = ε Π_n/R_n). ε is appendix
-# C.2's Harberger elasticity and prints as \varepsilon: \epsilon is the paper's universal pension.
-TRANSPORTS = ('size', C.US['esc']['costVariants']['spec'])
+# paper's 'size' (λ); config.US['esc']['costVariants']'s 'sizePiR' (ε, the cost λ_n = ε Π_n/R_n) when asked for and its
+# country stage (escCountryCosts.csv) is on file. ε is appendix C.2's Harberger elasticity and prints as \varepsilon:
+# \epsilon is the paper's universal pension.
+TRANSPORTS = ('size',)
 COSTSYMBOL = {'size': r'\lambda', 'sizePiR': r'\varepsilon', 'scale': 'p'}
 
 
@@ -296,10 +300,12 @@ def _frenchCornerFalls(tol = 1e-6):
 
 def escCountryTable(specs = TRANSPORTS):
     r""" Table \ref{table:US_ESC:country}: the deep test of the cost. One row per economy of COUNTRYROWS -- the UK
-    and France -- with its observed design and Ṽ, and per transport of the U.S. parameter in `specs` (TRANSPORTS:
-    its λ, its ε) the design its electorate chooses under it and the parameter at which it re-elects its own
-    design (`--` where no finite value does: France's observed design is the corner theta = 1, which no
-    proportional cost reaches, escCornerSlope.csv under 'size'). Vtilde is printed when the csvs carry it (rows
+    and France, each at its observed design (its θ0 under the θ variant) -- with that design and Ṽ, and per transport
+    of the U.S. parameter in `specs` (TRANSPORTS: its λ; its ε when asked for) the design its electorate chooses
+    under it and the parameter at which it re-elects its own design (`--` where no finite value does). Where France's
+    observed design is the corner theta = 1, which no proportional cost reaches, the note says so and checks it
+    against escCornerSlope.csv under 'size' (_frenchCornerFalls); an economy observed below the corner may have its own
+    parameter, which is then printed. Vtilde is printed when the csvs carry it (rows
     written since the 'size' spec). With ε among `specs`, each economy's Π/R of 2020 on its path under the U.S. ε
     (escCountryCosts.csv's `ΠR`, the 'US' row; the 'size' rows carry none), and the note's U.S. ratio from the ε
     calibration (datasets.escCalibrationLOG), at which the U.S. ε and λ must be one cost (checked, 1e-3 relative).
@@ -313,7 +319,7 @@ def escCountryTable(specs = TRANSPORTS):
     hasR = pir in specs
     if hasR and ('ΠR' not in us[pir].columns or us[pir]['ΠR'].isna().any()):
         raise D.MissingInput('escCountry ({}): no ΠR on a U.S.-parameter row'.format(pir))
-    rows, pUS, ownFR = [], {}, False
+    rows, pUS, ownFR, θFR, noOwn = [], {}, False, None, []
     for key, name, rk in COUNTRYROWS:
         cells, θs, Vs = [], [], []
         for spec in specs:
@@ -327,16 +333,21 @@ def escCountryTable(specs = TRANSPORTS):
             Vs.append(float(u['Vtilde']) if hasV else np.nan)
             own = dfs[spec][(dfs[spec]['country'] == key) & (dfs[spec]['wedgeFrom'] == 'own')]
             ownFR |= key == 'FR' and not own.empty
+            if own.empty and name not in noOwn:
+                noOwn.append(name)
             cells += [C.num(float(u['choice']), 3), '--' if own.empty else C.num(float(own.iloc[-1]['p']), 2)]
         if np.ptp(θs) > 1e-6 or (hasV and np.ptp(Vs) > 1e-6):
             raise ValueError('US_ESC_Country: {} has another observed design or Ṽ under {}: {} {}'.format(
                 key, specs, θs, Vs))
+        if key == 'FR':
+            θFR = θs[0]
         lead = [name, C.num(θs[0], 3)] + (['--' if Vs[0] != Vs[0] else C.num(Vs[0], 3)] if hasV else [])
         if hasR:
             lead.append(C.num(float(us[pir][us[pir]['country'] == key].iloc[-1]['ΠR']), 3))
         rows.append(keyed(' & '.join(lead + cells) + r' \\', rk))
-    if ownFR:
-        raise ValueError("US_ESC_Country: France has an 'own' cost parameter, which the note says no value gives")
+    corner = θFR is not None and abs(θFR - 1.) < 1e-12           # France observed at the Bismarckian corner
+    if corner and ownFR:
+        raise ValueError("US_ESC_Country: France has an 'own' cost parameter at the corner, which no value gives")
     ratio = ''
     if hasR:
         cal = D.escCalibrationLOG(pir)
@@ -363,20 +374,25 @@ def escCountryTable(specs = TRANSPORTS):
                                   for spec in specs), [])))
     pars = [r'U.S.\ $' + COSTSYMBOL[spec] + ' = ' + C.num(pUS[spec], 2) + '$' for spec in specs]
     which = 'either parameter' if len(specs) > 1 else '$' + COSTSYMBOL[specs[0]] + '$'
-    gap = (r' No value of ' + which + r' makes France re-elect its observed design, the Bismarckian corner '
-           r'$\theta = 1$')
-    if 'size' in specs:
-        _frenchCornerFalls()
-        gap += (r': under log preferences neither the slope of the design objective at that corner nor the tax rate '
-                r'there depends on the cost parameter, and France\textquotesingle s slope there is negative.')
+    if corner:
+        gap = (r' No value of ' + which + r' makes France re-elect its observed design, the Bismarckian corner '
+               r'$\theta = 1$')
+        if 'size' in specs:
+            _frenchCornerFalls()
+            gap += (r': under log preferences neither the slope of the design objective at that corner nor the tax '
+                    r'rate there depends on the cost parameter, and France\textquotesingle s slope there is negative.')
+        else:
+            gap += '.'
     else:
-        gap += '.'
+        gap = (r' --: no value of ' + which + ' makes ' + ' or '.join(noOwn) + r' re-elect its observed design.'
+               if noOwn else '')
     note = (r'\textit{Note:} Each economy is its own calibration at $\rho = 1$, with the ' + ' or the '.join(pars)
             + '.' + ratio + ' ' + LQ + 'Chosen' + RQ
             + r' is the design in 2020 on the economy\textquotesingle s own freely simulated path under the '
             r'U.S.\ parameter, to be read against the observed one; ' + LQ + 'own' + RQ + r' is the value at '
             r'which that path re-elects the observed design.' + gap + C.variantNote(C.US['commonX']))
-    return _xwrap('US_ESC_Country', 'results/esc/escCountry.csv, escCountryCosts.csv, escCornerSlope.csv',
+    return _xwrap('US_ESC_Country', 'results/esc/escCountry.csv' + (', escCountryCosts.csv' if hasR else '')
+                  + (', escCornerSlope.csv' if corner and 'size' in specs else ''),
                   r'The UK and France under the U.S.\ cost of redistribution',
                   'table:US_ESC:country', 'l' + 'Y'*(ncol - 1 + 2*len(specs)), header, '\n'.join(rows), note,
                   width = r'\textwidth', size = r'\setlength{\tabcolsep}{3pt}')

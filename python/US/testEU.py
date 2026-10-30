@@ -16,7 +16,9 @@ protocol showing up in the data (see modelFR.py):
     the raw census ratio in the neighbouring column; the UK's does not need the adjustment.
 
 France's 'Replacement rate' is 1, and getTheta (getθ) returns exactly 1 at RR0 = 1 for ANY income
-grouping -- which is why France's groups can be cut at US percentiles. Nothing imposes theta = 1 in code.
+grouping -- which is why France's groups can be cut at US percentiles. Nothing imposes theta = 1 in code. Under a θ
+variant `model(..., θ0 = ...)` imposes θ as db['θ0'] instead (ModelUS.getθ; oecd26.countryθ0), which does not
+depend on the grouping either, so France stays at the US cuts with its ω recalibrated there.
 
 Only the 'population', 'heterogeneity' and 'calibration' sheets are read. The regrouped pairs in the
 workbooks (the UK at US percentiles, 'heterogeneityUS'/'calibrationUS'; France at the UK's cuts,
@@ -68,28 +70,31 @@ def load(country, t_ss = t_ss):
     return pars, kwargs, dates, workweek
 
 
-def usReference(commonX = False, h0US = None, variant = ''):
+def usReference(commonX = False, h0US = None, variant = '', csv = None):
     """ ModelFR's US reference as a callable of rho, read off the US rho sweep. h0US defaults to the US
     workbook's own average-hours input, loaded from test.py. variant: the US reading the sweep belongs to,
-    '' (the workbook) or 'Medicare' (test.reading's, results/calibration/USMedicare_rhoGrid*.csv). """
+    '' (the workbook) or 'Medicare' (test.reading's, results/calibration/USMedicare_rhoGrid*.csv). csv: the
+    sweep's path instead (a θ variant's own, calibrateRhoGrid.py --theta), which `variant` then does not name. """
     from modelFR import usRefFromCsv
     if h0US is None:
         import test as testmod
         h0US = testmod.pars['h0']
-    csv = os.path.join(DIR, '..', '..', 'results', 'calibration',
-                       'US' + variant + '_rhoGrid' + ('CommonX' if commonX else '') + '.csv')
+    if csv is None:
+        csv = os.path.join(DIR, '..', '..', 'results', 'calibration',
+                           'US' + variant + '_rhoGrid' + ('CommonX' if commonX else '') + '.csv')
     return usRefFromCsv(csv, h0US = h0US)
 
 
-def model(country, commonX = False, ρ = 1., ω = 2., usVariant = '', **over):
+def model(country, commonX = False, ρ = 1., ω = 2., usVariant = '', usCsv = None, θ0 = None, **over):
     """ A ready ModelFR on `country`'s workbook, with the US reference wired to the sweep of the matching
-    variant (and US reading, usVariant; see usReference). beta is NOT set here: setUSRef installs it from
-    the reference at db's rho when calibrate runs.
+    variant (and US reading, usVariant; or the sweep at usCsv; see usReference). beta is NOT set here: setUSRef
+    installs it from the reference at db's rho when calibrate runs. θ0: the design imposed as db['θ0']
+    (ModelUS.getθ); None leaves it to the workbook's RR0.
     """
     from modelFR import ModelFR
     pars, kwargs, dates, workweek = load(country)
-    pars.update({'ρ': ρ, 'ω': ω})
+    pars.update({'ρ': ρ, 'ω': ω} | ({} if θ0 is None else {'θ0': float(θ0)}))
     m = ModelFR(pars = pars | over, commonX = commonX,
-                usRef = usReference(commonX = commonX, variant = usVariant), **kwargs)
+                usRef = usReference(commonX = commonX, variant = usVariant, csv = usCsv), **kwargs)
     m.db['dates'], m.db['workweek'], m.db['country'] = dates, workweek, country
     return m

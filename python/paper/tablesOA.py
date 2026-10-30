@@ -96,10 +96,11 @@ ROLEFMT = {'spending': lambda v: C.num(v, 1), 'growth': lambda v: C.num(v, 3),
 
 
 def oecdCountries():
-    r""" Figure 1's cross-section, one row per country: the four variables oecdFigure1.PLOT draws, each
-    followed by the year it is read at where that varies by country (data/oecdFigure1.csv). Rows keyed on
-    lowercase ISO3; the economies section 6 calibrates (oecdFigure1.HIGHLIGHT) set in bold. """
-    df = D.oecdFigure1Data()
+    r""" Figure 1's cross-section, one row per country it plots (oecdFigure1.plotted: config.US['theta']'s measure's
+    countries): the four variables oecdFigure1.PLOT draws, each followed by the year it is read at where that varies
+    by country (data/oecdFigure1.csv; the index from data/oecd26_theta.csv). Rows keyed on lowercase ISO3; the
+    economies section 6 calibrates (oecdFigure1.HIGHLIGHT) set in bold. """
+    df = F1.plotted(D.oecdFigure1Data())
     cols = []                                         # (header, csv column, formatter)
     for role in ROLES:
         c = F1.PLOT[role]
@@ -113,7 +114,8 @@ def oecdCountries():
             name = r'\textbf{' + name + '}'
         lines.append(_row([name] + [_dash(r[c], f) for _, c, f in cols], _keyOf(iso)))
     note = (r'\textit{Note:} The ' + str(len(df)) + r' OECD members plotted in figure '
-            r'\ref{fig:US:OECDdata}. Each variable is read in ' + str(F1.YEAR)
+            r'\ref{fig:US:OECDdata}; the Bismarckian index is $1/(2-\theta)$ of the measure of the design in its note. '
+            r'Each variable is read in ' + str(F1.YEAR)
             + r' or the nearest year within ' + str(F1.WINDOW) + r' years of it (the year columns); population '
             r'growth is the population of ' + str(F1.YEAR) + r' over that of ' + str(F1.BASE) + r'. Sources in '
             r'table \ref{' + _label('OECD_Sources') + r'}. In bold the economies the paper calibrates.')
@@ -122,9 +124,8 @@ def oecdCountries():
                   _body(lines), note, width = r'\textwidth')
 
 
-# The tables' name of a variable where it is not oecdFigure1.LABEL's: the index is the ratio of replacement
-# rates, not the calibrated theta of the models.
-VARLABEL = {'index': 'Bismarckian--Beveridgean index'}
+# The tables' name of a variable where it is not oecdFigure1.LABEL's.
+VARLABEL = {}
 EPS = re.compile(r'\bEPS\b|eps_')
 
 
@@ -167,7 +168,8 @@ def oecdSources():
             lines.append(_row([_tex(r['column']), source, series, _tex(_withoutEPS(r['note'])) or '--'],
                               _keyOf(first(r['column']))))
     note = (r'\textit{Note:} The columns are those of data/oecdFigure1.csv; data/oecdFigure1\_sources.csv '
-            r'carries the URL of every source.')
+            r'carries the URL of every source. The figure\textquotesingle s Bismarckian index, $1/(2-\theta)$, is '
+            r'not among them: $\theta$ is from data/oecd26\_theta.csv (data/README.md).')
     rag = r'>{\raggedright\arraybackslash}'
     text = _xwrap('OECD_Sources', 'data/oecdFigure1_sources.csv', r'The sources of figure \ref{fig:US:OECDdata}',
                   _label('OECD_Sources'), rag + 'p{3.8cm}' + (rag + 'X')*3,
@@ -177,17 +179,16 @@ def oecdSources():
 
 
 def oecdCorrelations():
-    r""" The pairwise correlations of figure 1's variables in the concepts it plots (results/paper/
-    oecdCorrelations.csv, written by the OECDdata build, variant 'named' = oecdFigure1.NAMED): n, Pearson's r
-    and Spearman's rank correlation with their p-values. The csv's other concept sets, those of the figure's
-    previous version, are not printed (data/README.md). Rows keyed `named_<x role>_<y role>`. """
-    if F1.PLOT != F1.NAMED:
-        raise ValueError('OECD_Correlations prints the named concepts, and figure 1 no longer plots them')
+    r""" The pairwise correlations of figure 1's variables in the concepts and on the countries it plots
+    (results/paper/oecdCorrelations.csv, written by the OECDdata build, variant 'figure' = oecdFigure1.PLOT on
+    oecdFigure1.plotted): n, Pearson's r and Spearman's rank correlation with their p-values. The csv's other concept
+    sets, on the 29 (the named concepts, the figure's previous version), are not printed (data/README.md). Rows
+    keyed `named_<x role>_<y role>`. """
     df = D.oecdCorrelations()
-    sub = df[df['variant'] == 'named']
+    sub = df[df['variant'] == 'figure']
     if sub.empty:
-        raise D.MissingInput('results/paper/oecdCorrelations.csv (variant named)')
-    role = {v: k for k, v in F1.NAMED.items()}
+        raise D.MissingInput('results/paper/oecdCorrelations.csv (variant figure)')
+    role = {v: k for k, v in F1.PLOT.items()}
     label = lambda c: _tex(_varLabel(role[c], c))
     p = lambda v: r'$<0.001$' if float(v) < 0.0005 else C.num(float(v), 3)
     lines = [_row([label(r['x']) + ' and ' + label(r['y']), str(int(r['n'])),
@@ -259,73 +260,6 @@ def escPathCells(r):
     return [C.num(r['θ'], 3), C.pct(r['τ']), C.pct(r['τExo']), C.pp(r['τ'] - r['τExo'])]
 
 
-def escTiming():
-    r""" The three timings of the design choice without the cost (writing/US/model_esc.tex, Three timings;
-    writing/US/num_esc.tex, The permanent choice):
-
-      * chosen with the tax (sequential), rho of escSequentialCRRA.csv: the largest value over theta in [0, 1]
-        and over the dated periods of the costless first order condition eq:esc:seqFOC on the baseline path.
-        Negative at every node and date means the corner theta = 0, which is then printed as the choice.
-      * one period in advance (leaded), log preferences: the design in force at t0 (escPermanent.csv,
-        spec 'none', θLeaded).
-      * once and for all (permanent): the design chosen and the tax at it, under log preferences
-        (escPermanent.csv, spec 'none') and under CRRA at the rho of escPermanentCRRA.csv (wedge 'none').
-
-    The csvs' other columns are not printed: W0gap/W1gap and nTurning are not defined in the technical
-    documentation, and the previous cost forms' rows of escPermanent.csv concern a timing the paper does not
-    use with a cost. Rows keyed `sequential@<rho>`, `leaded@<rho>`, `permanent@<rho>`. """
-    seq = D.escSequentialCRRA()
-    perm = D.escPermanent()
-    permC = D.escPermanentCRRA()
-    none = perm[perm['spec'] == 'none']
-    if none.empty:
-        raise D.MissingInput('results/esc/escPermanent.csv (the costless row, spec none)')
-    none = none.iloc[-1]
-    permC = permC[permC['wedge'] == 'none'].sort_values('ρ')
-    ρLOG = C.US['ρAnchor']
-    cal = C.usCalendar()
-    year0, yearBefore = cal['year0'], cal['dates'][cal['t0'] - 1]
-    isTrue = lambda s: s.astype(str).isin(['True', 'true', '1', '1.0'])
-    sci = lambda v: '$' + '{:.3g}'.format(float(v)) + '$'
-    gap = r'[.5em]'
-    lines = []
-    for k, (ρ, sub) in enumerate(seq.groupby('ρ')):
-        neg = bool(isTrue(sub['negative']).all())
-        lines.append(_row(['With the tax' if k == 0 else '', C.num(ρ, 1), C.num(0., 3) if neg else '--', '--',
-                           sci(sub['focMax'].max())], 'sequential@' + _rhoKey(ρ)))
-    lines[-1] = lines[-1].replace(r' \\ % row:', r' \\' + gap + ' % row:')
-    lines.append(_row(['One period in advance', C.num(ρLOG, 1), C.num(float(none['θLeaded']), 3), '--', '--'],
-                      'leaded@' + _rhoKey(ρLOG), gap))
-    rows = [(ρLOG, none)] + [(float(r['ρ']), r) for _, r in permC.iterrows()]
-    for k, (ρ, r) in enumerate(rows):
-        lines.append(_row(['Once and for all' if k == 0 else '', C.num(ρ, 1), C.num(float(r['θPerm']), 3),
-                           C.pct(float(r['τAtChoice'])), '--'], 'permanent@' + _rhoKey(ρ)))
-    same = all(abs(float(r['θPerm']) - float(r['θPermIncumbent'])) < 1e-9 for _, r in rows)
-    dates = sorted(int(d) for d in seq['date'].unique())
-    note = (r'\textit{Note:} No cost of redistribution; $\rho = ' + C.num(ρLOG, 0) + r'$ is log preferences. '
-            r'With the tax: the largest value of the marginal effect of the design on the political objective, '
-            r'equation \eqref{eq:esc:seqFOC}, over a grid of $\theta_t$ on $[0,1]$ and the dates ' + str(dates[0]) + '--'
-            + str(dates[-1]) + r' of the baseline path'
-            + (r'; it is negative everywhere, so the choice is the corner $\theta_t = 0$ at every date. '
-               if bool(isTrue(seq['negative']).all()) else '. ')
-            + r'Its scale is that of the objective, which differs across $\rho$; the log case is checked in the '
-              r'regression suite of the code. '
-            + r'One period in advance: $\theta_{' + str(year0) + r'}$, the design chosen in ' + str(yearBefore)
-            + r', on the path where the choice binds from the first period. Once and for all: the design chosen in '
-            + str(year0) + r', with the '
-            r'savings of the period before made in anticipation of the vote, and the tax rate at that design.'
-            + (r' Pinning the savings ratio at the incumbent design instead, an unanticipated vote, gives the same '
-               r'design in every row.' if same else ''))
-    return _xwrap('ESC_Timing', 'results/esc/escPermanent.csv, escPermanentCRRA.csv, escSequentialCRRA.csv',
-                  'The timing of the design choice without a cost', _label('ESC_Timing'), 'lYYYY',
-                  [r'\textbf{Timing}', r'\textbf{CRRA} ($\rho$)', r'$\theta$ \textbf{chosen}',
-                   r'\textbf{Tax rate}', r'\textbf{Largest} $\partial \mathcal{W}_t/\partial\theta_t$'],
-                  _body(lines), note)
-
-
-# ---------------------------------------------------------------------------------------------------
-# Numerical checks (numerical.qmd)
-# ---------------------------------------------------------------------------------------------------
 def _stationaryBlocks():
     """ [(arm title, [(row label, key block, frame, gap column, formatter)])] of NUM_Stationary, each frame
     cut to the dated periods before the terminal one. """
@@ -660,50 +594,6 @@ def oecdLeisureGroups():
                   _label('OECD_LeisureGroups'), 'lYYYYYY', header, _body(lines), note, width = r'.9\textwidth')
 
 
-MEDICARE = 'USMedicare'        # config.US['readings']: the U.S. with Medicare among the transfers to the old
-
-
-def oecdMedicare():
-    r""" B5.1: the U.S. calibrated with Medicare among the transfers to the old (config.US['readings']), beside
-    the paper's pension-only calibration, at the rho of the paper's figures (config.US['ρTable']): beta, omega
-    and the common X, solved with the equilibrium path at each rho against the same interest factor and
-    workweek. The design and the tax rate, targets common to every rho, go in the note; the builder checks that
-    the Medicare design is the pension design scaled by the pension share of the transfers. """
-    c = D.usCalibrationSummary(True)
-    if MEDICARE not in c:
-        raise D.MissingInput('results/paper/usCalibrationSummary.csv (no {} row)'.format(MEDICARE))
-    us, med = c['US'], c[MEDICARE]
-    cal = C.usCalendar(MEDICARE)
-    if not np.isclose(float(med['θ']), (1 - cal['Ushare'])*float(us['θ']), rtol = 0, atol = 1e-9):
-        raise ValueError('OECD_Medicare: θ {} is not (1 - {}) × {}'.format(med['θ'], cal['Ushare'], us['θ']))
-    sw = {k: D.usSweep(k) for k in ('US', MEDICARE)}
-    lines = []
-    for ρ in C.US['ρTable']:
-        cells = [C.num(ρ, 1)]
-        for k in ('US', MEDICARE):
-            r = sw[k][np.isclose(sw[k]['ρ'], ρ)]
-            if r.empty:
-                raise D.MissingInput('{} (ρ = {})'.format(C.usSweepCsv(k, True), ρ))
-            r = r.iloc[-1]
-            cells += [C.num(float(r['β']), 3), C.num(float(r['ω']), 3), C.num(float(r['X']), 2)]
-        lines.append(_row(cells, 'rho@' + _rhoKey(ρ)))
-    year0, α = C.usCalendar()['year0'], float(us['α'])
-    head3 = r'$\beta$ & $\omega$ & $X$'
-    header = (r' & \multicolumn{3}{c}{\textbf{Pensions only, the paper\textquotesingle s}} & '
-              r'\multicolumn{3}{c}{\textbf{Pensions and Medicare}} \\' + '\n'
-              r'\cmidrule(lr){2-4}\cmidrule(lr){5-7}' + '\n'
-              r'\textbf{CRRA} ($\rho$) & ' + head3 + ' & ' + head3)
-    note = (r'\textit{Note:} Common $X$. Both calibrations target the same 30-year interest factor and average '
-            r'workweek at the same income groups. With Medicare, ' + C.num(100*C.US['readings'][MEDICARE]['medicare'], 1)
-            + r'\% of GDP, added to pension spending, ' + C.num(100*float(us['τ0'])*(1 - α), 2) + r'\% of GDP, the '
-            r'tax rate in ' + str(year0) + ' is ' + C.pct(float(med['τ0'])) + ' against ' + C.pct(float(us['τ0']))
-            + r'; Medicare is paid as a flat benefit, so the design is $\theta = (1-m)\,\theta_P = '
-            + C.num(float(med['θ']), 3) + r'$, with $m = ' + C.num(cal['Ushare'], 3) + r'$ Medicare\textquotesingle s'
-            + r' share of the transfers and $\theta_P = ' + C.num(float(us['θ']), 3) + r'$ the pension design '
-            r'read off the replacement rates.')
-    return _xwrap('OECD_Medicare', 'results/calibration/{US,USMedicare}_rhoGridCommonX.csv',
-                  r'The U.S.\ calibration with Medicare among the transfers to the old', _label('OECD_Medicare'),
-                  'YYYYYYY', header, _body(lines), note, width = r'.9\textwidth')
 
 
 def usStrategic():
@@ -735,36 +625,3 @@ def usStrategic():
                   r'The strategic term of the U.S.\ tax choice in ' + str(year0), _label('US_Strategic'),
                   'lYYY', header, _body(lines), note, width = r'.9\textwidth')
 
-
-def escCostCalibration():
-    r""" C3.1: the two cost specifications as calibrated per rho (config.US['esc']['ρTable']): the paper's
-    f = exp(-lambda tau Vtilde (1-theta)^2 / 2) and the cost on the design f = phi + (1-phi) theta^p, each with
-    its parameter and the shares of revenue lost in 2020 at the observed design and at theta = 0. """
-    cal = D.escCalibration()
-    spec, alt = C.US['esc']['spec'], C.US['esc']['comparisonSpec']
-    lines, phis = [], set()
-    for ρ in C.US['esc']['ρTable']:
-        cells = [C.num(ρ, 1)]
-        for s in (spec, alt):
-            if (ρ, s) not in cal:
-                raise D.MissingInput('escCalibration ({}, {})'.format(ρ, s))
-            r = cal[(ρ, s)]
-            w = D.escWedge(r, s)
-            if s == alt:
-                phis.add(round(float(r['phi']), 6))
-            cells += [C.num(float(r['p']), 3), C.pct(1 - w['fStar'], 1), C.pct(1 - w['f0'], 1)]
-        lines.append(_row(cells, 'rho@' + _rhoKey(ρ)))
-    if len(phis) != 1:
-        raise ValueError('ESC_CostCalibration: phi differs across rho: {}'.format(sorted(phis)))
-    share = [r'$1-f(\theta^{\ast})$', r'$1-f(0)$']
-    header = (r' & \multicolumn{3}{c}{\textbf{The paper\textquotesingle s cost}} & '
-              r'\multicolumn{3}{c}{\textbf{The cost on the design}} \\' + '\n'
-              r'\cmidrule(lr){2-4}\cmidrule(lr){5-7}' + '\n'
-              r'\textbf{CRRA} ($\rho$) & $\lambda$ & ' + ' & '.join(share) + ' & $p$ & ' + ' & '.join(share))
-    note = (r'\textit{Note:} The paper\textquotesingle s cost is that of equation \eqref{eq:esc:budget}; the cost on '
-            r'the design is $f(\theta) = \phi + (1-\phi)\theta^{p}$ with $\phi = ' + C.num(phis.pop(), 1)
-            + r'$ imposed. Each parameter is calibrated so that the U.S.\ electorate re-elects its observed design '
-            r'in 2020. The shares of revenue lost are those of 2020, at the observed design and at a flat benefit.')
-    return _xwrap('ESC_CostCalibration', 'results/esc/escCalibration{,CRRA}.csv',
-                  'The two cost specifications, calibrated', _label('ESC_CostCalibration'), 'YYYYYYY', header,
-                  _body(lines), note, width = r'.9\textwidth')

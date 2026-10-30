@@ -14,23 +14,25 @@ As in the Argentina arm, each entry declares WHAT the paper needs and which scri
 python/US/runShocksUS.py is the implementation and keeps its own CLI. This file records the settings the
 published numbers were produced at.
 
+THE θ VARIANT. Every command carries config.thetaFlags() (--theta config.US['theta'] --main: the U.S., France and
+the UK at the variant's θ0, the standard results/ paths), and an output counts as present only where it holds rows
+at that thetaSource (`_atTheta`). The robustness variants of config.US['oecd26']['thetaVariants'] run without
+--main into their own results/oecd26_theta_<V>/ (`oecd26Variants`).
+
 TWO PARTS. `part = 'main'` is what a routine rebuild runs: the exogenous-theta shocks in both variants and
-the LOG leg of the endogenous-theta appendix, all cheap. `part = 'prepub'` holds the heavy runs whose
-results move only when the model does, run once before submission: the exact CRRA ESC leg (the published
-method, config.US['esc']['exact']) and the timing checks. The merge (`escExperiments`) belongs
-to both. The two parts are selected on the command line, never mixed by default, so that a development
-rebuild can never turn into an overnight solve.
+the LOG leg of the endogenous-theta appendix, all cheap, and the cross-section. `part = 'prepub'` holds the
+heavy runs whose results move only when the model does, run once before submission: the exact CRRA ESC leg
+(the published method, config.US['esc']['exact']) and the stationary checks. The merges (`escAgeingCosts`,
+`escExperiments`) belong to both. The two parts are selected on the command line, never mixed by default, so
+that a development rebuild can never turn into an overnight solve.
 
 ONE SCRIPT PRODUCES ALL THREE TABLES' WORTH OF ROWS. python/US/runShocksUS.py writes one long csv --
 one row per (rho, family, scenario, effect) -- covering the theta, ageing and French-characteristic
 families at every rho in config.US['ρTable']. That is why the whole set costs one entry here rather than
 three: the families share a baseline solve per rho, and splitting them would re-solve it three times.
 
-Cost of the main part: ~30 s for the exogenous shocks, a few minutes for the LOG ESC leg. Every experiment
-there is cheap because none of them calibrates -- the expensive outer root already ran in stage (i). The
-`freeTheta` entry is a second reading of the French income-distribution counterfactual (theta re-derived
-from RR0 rather than held at the US design); see python/US/shocks.shockIncomeDistribution for why that
-choice is not incidental.
+Cost of the main part: a few minutes for the exogenous shocks and the LOG ESC leg, ~1.5 h for the
+cross-section from scratch (seconds when its rows are current), ~1.4 h per robustness variant.
 """
 import os, sys, argparse, subprocess
 import pandas as pd
@@ -41,6 +43,7 @@ import config as C
 for _s in (sys.stdout, sys.stderr):
     _s.reconfigure(encoding = 'utf-8')
 
+THETA = C.thetaFlags()
 RHOFLAGS = ['--rho'] + [str(r) for r in C.US['ρTable']]
 G = C.US['gridSettings']
 GRIDFLAGS = ['--n', str(G['n']), '--ns', str(G['ns']),
@@ -48,7 +51,7 @@ GRIDFLAGS = ['--n', str(G['n']), '--ns', str(G['ns']),
 # The ESC leg runs under the headline calibration variant only. It is the most expensive stage in the
 # pipeline, and unlike the exogenous-theta shocks -- where both variants are cheap and both are built --
 # a second variant here would double a multi-hour run for an appendix the paper does not read twice.
-ESCVARIANT = ['--commonX'] if C.US['commonX'] else []
+ESCVARIANT = (['--commonX'] if C.US['commonX'] else []) + THETA
 ESC = C.US['esc']
 # The paper's cost specification, for the CRRA legs and the stationary check (one spec each; the
 # stationary check follows the paper's spec so sec:numerical's footnote quotes the paper's own design).
@@ -62,22 +65,31 @@ ESCSPEC_LOG = (['--spec', ESC['spec']] + ([ESC['comparisonSpec']] if ESC.get('co
 ESCRHO = [str(r) for r in ESC['ρTable'] if r != C.US['ρAnchor']]
 # The exact recursion's design layer, forwarded to every runESCcrra.py command (config.US['esc']).
 ESCLAYER = ['--designRule', ESC['designRule'], '--Ma', str(ESC['Ma'])]
-# The exact recursion's grids, forwarded to every runESCcrra.py path/shocks command.
-ESCGRID = ['--ns', str(ESC['ns2D']), '--nsScan', str(ESC['nsScan']), '--nCand2D', str(ESC['nCand2D'])]
-# The cost variants of section 7 (config.US['esc']['costVariants']): the Pi-inclusive cost, in its tagged csvs.
+# The cost variant of section 7 (config.US['esc']['costVariants']): the Pi-inclusive cost, in its tagged csvs.
 CV = ESC['costVariants']
 CVSPEC = ['--spec', CV['spec'], '--phi', str(ESC['phi']), '--tag', CV['tag']]
+OECD = C.US['oecd26']
+
+
+def _read(path):
+    return pd.read_csv(path, dtype = {'inputsKey': str, 'anchorKey': str}) if os.path.exists(path) else None
+
+
+def _atTheta(path, variant = None):
+    """ Output check: the csv exists AND holds rows at thetaSource `variant` (config.US['theta'] by default). The
+    file's mere existence says nothing: a csv written before the variant holds index rows only. """
+    df = _read(path)
+    return df is not None and len(C.atTheta(df, variant)) > 0
 
 
 def _hasExactRows(path, ρs = None, spec = None):
     """ Output check for the exact CRRA leg: the csv exists AND carries method = 'exact' rows at every rho
-    the tables print, under the headline variant (and `spec`, if given). The file's mere existence says
-    nothing -- the path iteration's rows live in the same csv under method = 'path'. """
-    if not os.path.exists(path):
+    the tables print, under the headline variant and the θ variant (and `spec`, if given). The file's mere
+    existence says nothing -- the path iteration's rows live in the same csv under method = 'path'. """
+    df = _read(path)
+    if df is None or 'method' not in df.columns:
         return False
-    df = pd.read_csv(path)
-    if 'method' not in df.columns:
-        return False
+    df = C.atTheta(df)
     df = df[df['method'].fillna('path') == 'exact']
     if spec is not None:
         df = df[df['spec'] == spec]
@@ -87,16 +99,25 @@ def _hasExactRows(path, ρs = None, spec = None):
     return all(round(float(r), 6) in have for r in (ρs or [float(r) for r in ESCRHO]))
 
 
+def _usScript(name):
+    return [C.PYTHON, os.path.join(C.USDIR, name)]
+
+
+def _variantDir(V):
+    return os.path.join(C.RESULTS, 'oecd26_theta_' + V)
+
+
 EXPERIMENTS = {
     # Every family, every rho in the table grid, both readings (full effect and economic-equilibrium-only).
     # The VECTOR-X variant: with config.US['commonX'] = True this is the appendix's robustness twin, and
     # 'shocksCommonX' below carries the headline tables and figure. Both are built either way -- they cost
-    # 30 s each and the pair is a check on itself (see 'shocksCommonX').
+    # minutes each and the pair is a check on itself (see 'shocksCommonX').
     'shocks': {
         'part':    'main',
         'script':  'runShocksUS.py',
-        'args':    RHOFLAGS + GRIDFLAGS,
+        'args':    RHOFLAGS + GRIDFLAGS + THETA,
         'outputs': lambda: [os.path.join(C.SHOCKDIR, 'US_shocks.csv')],
+        'requires': lambda: [C.usSweepCsv('US', False)],
         'note':    'theta / ageing / French, all rho, both effects',
     },
     # The same set under the common-X calibration variant -- the HEADLINE one. Cheap and worth
@@ -108,47 +129,17 @@ EXPERIMENTS = {
     'shocksCommonX': {
         'part':    'main',
         'script':  'runShocksUS.py',
-        'args':    RHOFLAGS + GRIDFLAGS + ['--commonX'],
+        'args':    RHOFLAGS + GRIDFLAGS + ['--commonX'] + THETA,
         'outputs': lambda: [os.path.join(C.SHOCKDIR, 'US_shocksCommonX.csv')],
+        'requires': lambda: [C.usSweepCsv('US', True)],
         'note':    'the same set under common X',
-    },
-    # The same set on the U.S. under the 'transfers to the old' reading (config.US['readings']: Medicare in
-    # tau0 and as a flat share of theta), France referenced to that U.S.: the online appendix's Medicare page.
-    'shocksMedicare': {
-        'part':    'main',
-        'script':  'runShocksUS.py',
-        'args':    RHOFLAGS + GRIDFLAGS + ['--medicare', str(C.US['readings']['USMedicare']['medicare'])],
-        'outputs': lambda: [C.usShockCsv('USMedicare', False)],
-        'requires': lambda: [C.usSweepCsv('USMedicare', False)],
-        'note':    'the same set with Medicare in the transfers to the old',
-    },
-    'shocksMedicareCommonX': {
-        'part':    'main',
-        'script':  'runShocksUS.py',
-        'args':    RHOFLAGS + GRIDFLAGS + ['--medicare', str(C.US['readings']['USMedicare']['medicare']),
-                                           '--commonX'],
-        'outputs': lambda: [C.usShockCsv('USMedicare', True)],
-        'requires': lambda: [C.usSweepCsv('USMedicare', True)],
-        'note':    'the same with Medicare, under common X (the headline)',
-    },
-    # The alternative reading of the income-distribution counterfactual: theta RE-DERIVED from RR0 under
-    # France's eta instead of held at the US design. Not wired to a paper output; kept because the
-    # difference (tau 13.28% against the reported 12.83% at rho=1, vector X) is a modelling choice the
-    # table does not show, and re-deriving it later from memory is what this pipeline exists to avoid.
-    'freeTheta': {
-        'part':    'main',
-        'script':  'runShocksUS.py',
-        'args':    RHOFLAGS + GRIDFLAGS + ['--commonX', '--freeTheta', '--family', 'french',
-                                           '--out', os.path.join(C.SHOCKDIR, 'US_shocks_freeTheta.csv')],
-        'outputs': lambda: [os.path.join(C.SHOCKDIR, 'US_shocks_freeTheta.csv')],
-        'note':    'French income distribution with theta re-derived',
     },
     # The US counterfactuals at other Frisch elasticities, rho = 1, common X: the US and France recalibrated at
     # each xi inside the script (python/US/runShocksXi.py, whose first xi reproduces US_shocksCommonX.csv).
     'shocksXi': {
         'part':    'main',
         'script':  'runShocksXi.py',
-        'args':    [],
+        'args':    THETA,
         'outputs': lambda: [os.path.join(C.SHOCKDIR, 'US_shocksXiCommonX.csv')],
         'requires': lambda: [os.path.join(C.SHOCKDIR, 'US_shocksCommonX.csv')],
         'note':    'the US counterfactuals at xi = 0.2, 0.3, 0.4 (LOG, common X)',
@@ -163,6 +154,7 @@ EXPERIMENTS = {
         'script':  'runESC.py',
         'args':    ['--stage', 'path'] + ESCSPEC_LOG + ESCVARIANT,
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escPath.csv')],
+        'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibration.csv')],
         'note':    'endogenous-theta design path, LOG (rho = 1)',
     },
     # The counterfactuals on the LEADED-choice model at the calibrated cost, each run twice (theta
@@ -172,36 +164,28 @@ EXPERIMENTS = {
         'script':  'runESC.py',
         'args':    ['--stage', 'shocks'] + ESCSPEC_LOG + ESCVARIANT,
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocks.csv')],
+        'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibration.csv')],
         'note':    'endogenous-theta counterfactuals, LOG (rho = 1)',
     },
-    # The cost variant (section 7, A8): the design path and acute and mild ageing under the Pi-inclusive cost,
-    # LOG, at its own calibrated lambda (escCalibrationCosts.csv, stage (i)).
+    # The cost variant (section 7, A8): acute ageing and its baseline under the Pi-inclusive cost, LOG, at its own
+    # calibrated epsilon (escCalibrationCosts.csv, stage (i)).
     'escCosts': {
         'part':    'main',
         'script':  'runESC.py',
-        'args':    ['--stage', 'path', 'shocks'] + CVSPEC + ['--scenarios'] + CV['scenarios'] + ESCVARIANT,
-        'outputs': lambda: [os.path.join(C.ESCDIR, f) for f in ('escPathCosts.csv', 'escShocksCosts.csv')],
+        'args':    ['--stage', 'shocks'] + CVSPEC + ['--scenarios'] + CV['scenarios'] + ESCVARIANT,
+        'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksCosts.csv')],
         'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibrationCosts.csv')],
-        'note':    'the Pi-inclusive cost: design path, mild and acute ageing, LOG (rho = 1)',
+        'note':    'the Pi-inclusive cost: acute ageing against its baseline, LOG (rho = 1)',
     },
-    # The UK and France under the US parameter and under their own (Tables/US_ESC_Country.tex). The csv also
-    # holds rows of the UK at US income groups ('UKUS'), which the stage no longer writes and nothing prints.
+    # The UK and France under the US parameter and under their own (Tables/US_ESC_Country.tex), each at its θ0. The
+    # csv also holds rows of the UK at US income groups ('UKUS'), which the stage no longer writes and nothing prints.
     'escCountry': {
         'part':    'main',
         'script':  'runESC.py',
         'args':    ['--stage', 'country'] + ESCSPEC_LOG + ESCVARIANT,
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escCountry.csv')],
+        'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibration.csv')],
         'note':    'the UK and France under the ESC cost, LOG (rho = 1)',
-    },
-    # The same under the Pi-inclusive cost, at the U.S. epsilon and their own (escCountryCosts.csv): the epsilon
-    # columns of US_ESC_Country and OECD26_Reconcile.
-    'escCountryCosts': {
-        'part':    'main',
-        'script':  'runESC.py',
-        'args':    ['--stage', 'country'] + CVSPEC + ESCVARIANT,
-        'outputs': lambda: [os.path.join(C.ESCDIR, 'escCountryCosts.csv')],
-        'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibrationCosts.csv')],
-        'note':    'the UK and France under the Pi-inclusive cost, LOG (rho = 1)',
     },
     # The same path for France and the UK under the US-calibrated cost and their own (escCountry.csv): the
     # online appendix's paths by country (runESC.stagePathHost).
@@ -214,50 +198,40 @@ EXPERIMENTS = {
         'note':    'endogenous-theta design path of France and the UK, LOG (rho = 1)',
     },
     # The cross-country test (python/US/runOECD26.py, results/oecd26/): the U.S. at the OECD inputs (anchor), every
-    # country at its omega and cost parameter (layer 1) and with its own omega (layer 2), LOG; one command per
-    # variant of config.US['oecd26']['variants'] (costs, beta rules, turnout readings, stages), in its order. Its
-    # rows are keyed on their inputs, so the child decides what to recompute: always run.
+    # in-sample country of the θ variant at its omega and cost parameter (layer 1) and with its own omega (layer 2),
+    # LOG; one command per variant of config.US['oecd26']['variants'] (costs, turnout readings, stages), in its order.
+    # Its rows are keyed on their inputs, so the child decides what to recompute: always run.
     'oecd26': {
         'part':    'main',
         'always':  True,
         'script':  'runOECD26.py',
         'argSets': lambda: [['--spec'] + v['spec'] + ['--betaRule'] + v['betaRule'] + ['--turnout'] + v['turnout']
-                            + ['--stage'] + v['stage'] for v in C.US['oecd26']['variants']],
+                            + ['--stage'] + v['stage'] + ['--inSample'] + THETA for v in OECD['variants']],
         'outputs': lambda: [os.path.join(C.RESULTS, 'oecd26', f + '.csv') for f in ('anchor', 'layer1', 'layer2')],
         'requires': lambda: [C.usSweepCsv('US', True)],
         'note':    'the cross-country test, LOG (rho = 1)',
     },
-    # The timing checks. Permanent: the anticipated-vote fixed point under LOG at three phi and
-    # both specs (its reference numbers are also test_esc.py's), and under CRRA traced in rho (a corner
-    # at every rho, which is what the trace shows). Sequential: the costless FOC of eq:esc:seqFOC on the
-    # solved baseline at rho = 0.5 and 2 -- negative on all of [0,1] is the "three timings, one corner"
-    # claim; the LOG case is test_esc.py's.
-    'escPermanent': {
-        'part':    'prepub',
-        'script':  'runESC.py',
-        'args':    ['--stage', 'permanent', '--spec', 'scale', 'flat', '--phi', '0.25', '0.5', '0.75']
-                   + ESCVARIANT,
-        'outputs': lambda: [os.path.join(C.ESCDIR, 'escPermanent.csv')],
-        'note':    'permanent timing, LOG: own-p calibration at three phi, both specs (~15 min)',
-    },
-    'escPermanentCRRA': {
-        'part':    'prepub',
-        'script':  'runESCcrra.py',
-        'args':    ['--stage', 'permanent', '--rho'] + [str(r) for r in ESC['ρPermanentCRRA']]
-                   + ESCSPEC + ESCVARIANT + ESCLAYER,
-        'outputs': lambda: [os.path.join(C.ESCDIR, 'escPermanentCRRA.csv')],
-        'note':    'permanent timing, CRRA, traced in rho (~30 min)',
-    },
-    'escSequentialCRRA': {
-        'part':    'prepub',
-        'script':  'runESCcrra.py',
-        'args':    ['--stage', 'sequential', '--rho'] + ESCRHO + ESCVARIANT + ESCLAYER,
-        'outputs': lambda: [os.path.join(C.ESCDIR, 'escSequentialCRRA.csv')],
-        'note':    'sequential timing, CRRA: the costless FOC over theta (~2 min)',
+    # The cross-section under the robustness measures of the design (config.US['oecd26']['thetaVariants']), each at
+    # its own U.S. sweep at rho = 1 (calibrateRhoGrid.py --theta V, which resumes at its θ0) and the paper's variant
+    # of the cross-section, into results/oecd26_theta_<V>/ (OECD26_ThetaVariants). Always run, as 'oecd26'.
+    'oecd26Variants': {
+        'part':    'main',
+        'always':  True,
+        'commands': lambda: sum(([_usScript('calibrateRhoGrid.py') + ['--commonX', '--lo', '1', '--hi', '1',
+                                                                      '--theta', V],
+                                  _usScript('runOECD26.py') + ['--theta', V, '--inSample', '--spec', OECD['spec'],
+                                                               '--betaRule', OECD['betaRule'],
+                                                               '--turnout', 'cps', 'cses',
+                                                               '--stage', 'anchor', 'layer1', 'layer2']]
+                                 for V in OECD['thetaVariants']), []),
+        'outputs': lambda: [os.path.join(_variantDir(V), f + '.csv') for V in OECD['thetaVariants']
+                            for f in ('anchor', 'layer1', 'layer2')],
+        'atTheta': lambda p: os.path.basename(os.path.dirname(p))[len('oecd26_theta_'):],
+        'note':    'the cross-country test under the robustness measures of theta',
     },
     # --- PRE-PUBLICATION. The CRRA leg by the EXACT 2-D recursion (LeadedCRRA2D), the published method:
     # the design path and the counterfactuals at the exact-calibrated p from stage (i) --prepub. One full
-    # recursion per chosen-design reading, ~6 min each at ns = 150; ~1.5 h for the two rho. Rows carry
+    # recursion per chosen-design reading, ~6 min each at ns = 150; ~1 h for the two rho. Rows carry
     # method = 'exact' and sit beside the path iteration's rows (method = 'path'), which no paper output
     # reads (config.US['esc']['exact']); the output check therefore looks for exact rows, not the file.
     'escShocksCRRA': {
@@ -268,47 +242,10 @@ EXPERIMENTS = {
                        '--nCand2D', str(ESC['nCand2D'])] + ESCVARIANT + ESCLAYER),
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksCRRA.csv'),
                             os.path.join(C.ESCDIR, 'escPathCRRA.csv')],
-        'complete': lambda: all(_hasExactRows(os.path.join(C.ESCDIR, f))
+        'complete': lambda: all(_hasExactRows(os.path.join(C.ESCDIR, f), spec = ESC['spec'])
                                 for f in ('escShocksCRRA.csv', 'escPathCRRA.csv')),
+        'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibrationCRRA.csv')],
         'note':    'endogenous-theta path and counterfactuals, CRRA, EXACT 2-D recursion',
-    },
-    # The comparison cost under the exact recursion: the online appendix's second cost (C3) reads its paths,
-    # and its counterfactuals stand beside the paper's in escExperiments.csv.
-    'escShocksCRRAcomparison': {
-        'part':    'prepub',
-        'script':  'runESCcrra.py',
-        'args':    (['--exact', '--stage', 'path', 'shocks', '--rho'] + ESCRHO
-                    + ['--spec', ESC['comparisonSpec'], '--phi', str(ESC['phi'])] + ESCGRID + ESCVARIANT + ESCLAYER),
-        'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksCRRA.csv'),
-                            os.path.join(C.ESCDIR, 'escPathCRRA.csv')],
-        'complete': lambda: all(_hasExactRows(os.path.join(C.ESCDIR, f), spec = ESC['comparisonSpec'])
-                                for f in ('escShocksCRRA.csv', 'escPathCRRA.csv')),
-        'note':    'the comparison cost: path and counterfactuals, CRRA, EXACT',
-    },
-    # The cost variants of section 7 under the exact recursion: the Pi-inclusive cost's path and ageing
-    # counterfactuals, and mild ageing under the paper's and the comparison cost (acute is escShocksCRRA's).
-    'escShocksCRRACosts': {
-        'part':    'prepub',
-        'script':  'runESCcrra.py',
-        'args':    (['--exact', '--stage', 'path', 'shocks', '--rho'] + ESCRHO + CVSPEC
-                    + ['--scenarios'] + CV['scenarios'] + ESCGRID + ESCVARIANT + ESCLAYER),
-        'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksCRRACosts.csv'),
-                            os.path.join(C.ESCDIR, 'escPathCRRACosts.csv')],
-        'complete': lambda: all(_hasExactRows(os.path.join(C.ESCDIR, f), spec = CV['spec'])
-                                for f in ('escShocksCRRACosts.csv', 'escPathCRRACosts.csv')),
-        'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibrationCRRACosts.csv')],
-        'note':    'the Pi-inclusive cost: path, mild and acute ageing, CRRA, EXACT',
-    },
-    'escShocksCRRAMild': {
-        'part':    'prepub',
-        'script':  'runESCcrra.py',
-        'args':    (['--exact', '--stage', 'shocks', '--rho'] + ESCRHO + ['--spec'] + CV['mildSpecs']
-                    + ['--phi', str(ESC['phi']), '--tag', CV['mildTag'], '--scenarios', 'mild']
-                    + ESCGRID + ESCVARIANT + ESCLAYER),
-        'outputs': lambda: [os.path.join(C.ESCDIR, 'escShocksCRRA' + CV['mildTag'] + '.csv')],
-        'complete': lambda: all(_hasExactRows(os.path.join(C.ESCDIR, 'escShocksCRRA' + CV['mildTag'] + '.csv'),
-                                              spec = s) for s in CV['mildSpecs']),
-        'note':    "mild ageing under the paper's and the comparison cost, CRRA, EXACT",
     },
     # --- PRE-PUBLICATION. Stationary vs date-specific policy functions, the check behind sec:numerical's
     # literature paragraph: the exact date-specific recursion against a stationary policy function computed
@@ -323,8 +260,9 @@ EXPERIMENTS = {
         'script':  'stationaryApprox.py',
         'args':    (['--rho'] + [str(r) for r in C.US['ρStationary']]
                     + ['--n', str(G['n']), '--ns', str(G['ns']), '--smoothKnots', str(G['smoothKnots'])]
-                    + ([] if C.US['commonX'] else ['--vectorX'])),
+                    + ([] if C.US['commonX'] else ['--vectorX']) + THETA),
         'outputs': lambda: [os.path.join(C.NUMDIR, 'US_stationaryApprox.csv')],
+        'requires': lambda: [C.usSweepCsv('US', C.US['commonX'])],
         'note':    'stationary vs date-specific tax policies, CRRA (~2 min)',
     },
     'stationaryESC': {
@@ -333,14 +271,16 @@ EXPERIMENTS = {
         'args':    (['--rho'] + [str(r) for r in ESC['ρTable']] + ESCSPEC
                     + ['--ns', str(ESC['ns2D']), '--nCand2D', str(ESC['nCand2D'])] + ESCVARIANT),
         'outputs': lambda: [os.path.join(C.NUMDIR, 'US_ESC_stationaryApprox.csv')],
+        'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibrationCRRA.csv')],
         'note':    'stationary vs date-specific design policies, LOG and exact CRRA (~1 h)',
     },
-    # The cost variants' ageing table (section 7, A8): the paper's csvs and the Costs-tagged ones merged.
+    # The cost variant's ageing table (section 7, A8): the paper's csvs and the Costs-tagged one merged, at the θ
+    # variant only (collectESCexperiments.py --theta).
     'escAgeingCosts': {
         'part':    'both',
         'always':  True,
         'script':  'collectESCexperiments.py',
-        'args':    ['--costs'],
+        'args':    ['--costs', '--theta', C.US['theta']],
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escAgeingCosts.csv')],
         'requires': lambda: [os.path.join(C.ESCDIR, 'escShocksCosts.csv')],
         'note':    'merge the ageing counterfactuals under the three costs',
@@ -352,7 +292,7 @@ EXPERIMENTS = {
         'part':    'both',
         'always':  True,
         'script':  'collectESCexperiments.py',
-        'args':    [],
+        'args':    ['--theta', C.US['theta']],
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escExperiments.csv')],
         'note':    'merge the LOG and CRRA legs into one long table',
     },
@@ -366,21 +306,31 @@ def selected(prepub = False, all_ = False):
 
 
 def status(name):
+    """ (script exists, outputs present at the θ variant, outputs lacking). An 'always' entry is re-run whatever is
+    on disk (`run`), which says nothing about what is on disk: its present outputs still count as present. """
     e = EXPERIMENTS[name]
-    script = os.path.join(C.USDIR, e['script'])
+    script = os.path.join(C.USDIR, e['script']) if 'script' in e else None
     outs = e['outputs']()
-    have = [p for p in outs if os.path.exists(p)]
+    variantOf = e.get('atTheta', lambda p: None)
+    have = [p for p in outs if _atTheta(p, variantOf(p))]
     lack = [p for p in outs if p not in have]
     if not lack and 'complete' in e and not e['complete']():
         lack = [p + ' (no exact rows)' for p in outs]
-    if e.get('always'):
-        lack = lack or [p + ' (always re-run)' for p in outs]
-    return os.path.exists(script), have, lack
+    return script is None or os.path.exists(script), have, lack
+
+
+def run(name, force = False):
+    """ Does `name` run: anything lacking, --force, or an 'always' entry. """
+    _, _, lack = status(name)
+    return bool(lack) or force or bool(EXPERIMENTS[name].get('always'))
 
 
 def commands(name):
-    """ The entry's commands: one per argument list of its 'argSets' (a callable), else the one of its 'args'. """
+    """ The entry's commands: its 'commands' (a callable of full commands), else one per argument list of its
+    'argSets' (a callable), else the one of its 'args', each on its 'script'. """
     e = EXPERIMENTS[name]
+    if 'commands' in e:
+        return e['commands']()
     sets = e['argSets']() if 'argSets' in e else [e['args']]
     return [[C.PYTHON, os.path.join(C.USDIR, e['script'])] + list(a) for a in sets]
 
@@ -394,32 +344,44 @@ def main():
     p.add_argument('--list', action = 'store_true', help = 'report what exists and exit')
     p.add_argument('--force', action = 'store_true', help = 're-run even where output already exists')
     p.add_argument('--dry', action = 'store_true', help = 'print commands and exit')
+    p.add_argument('--keepGoing', action = 'store_true',
+                   help = 'after a failed entry, go on with the others (each still skips while its inputs lack rows '
+                          'at the θ variant); exit 1 at the end if any failed')
+    p.add_argument('--exclude', nargs = '+', choices = list(EXPERIMENTS), default = [],
+                   help = 'leave these entries out of the selection (e.g. oecd26Variants, run as its own step)')
     a = p.parse_args()
-    names = a.only if a.only else selected(a.prepub, a.all_)
+    names = [n for n in (a.only if a.only else selected(a.prepub, a.all_)) if n not in a.exclude]
 
     if a.list or a.dry:
+        print('θ variant {} (config.US[\'theta\']): an output is "had" where it holds rows at it'.format(C.US['theta']))
         for name in names:
             ok, have, lack = status(name)
             n = len(EXPERIMENTS[name]['outputs']())
-            print('{:<7} {:<18} {:<66} script:{}  have {}/{}{}'.format(
+            print('{:<7} {:<18} {:<66} script:{}  have {}/{}{}{}'.format(
                 EXPERIMENTS[name]['part'], name, EXPERIMENTS[name]['note'], 'yes' if ok else 'MISSING',
-                n - len(lack), n, '  (no exact rows yet)' if any('no exact' in l for l in lack) else ''))
+                len(have), n, '  (no exact rows yet)' if any('no exact' in l for l in lack) else '',
+                '  (always re-run)' if EXPERIMENTS[name].get('always') else ''))
             if a.dry and ok:
                 for cmd in commands(name):
                     print('    ' + ' '.join(cmd))
         return
 
+    failed = []
     for name in names:
         ok, have, lack = status(name)
         if not ok:
             print('SKIP {}: {} does not exist yet.'.format(name, EXPERIMENTS[name]['script']))
             continue
-        if not lack and not a.force:
+        if not run(name, a.force):
             print('SKIP {}: all {} output(s) present.'.format(name, len(have)))
             continue
-        need = [p for p in EXPERIMENTS[name].get('requires', lambda: [])() if not os.path.exists(p)]
+        # an input counts once it holds rows at the θ variant: a stale csv of another θ is not one
+        need = [p for p in EXPERIMENTS[name].get('requires', lambda: [])() if not _atTheta(p)]
         if need:
-            print('SKIP {}: needs {} first.'.format(name, ', '.join(os.path.relpath(p, C.REPO) for p in need)))
+            print('SKIP {}: needs {} at θ variant {} first.'.format(
+                name, ', '.join(os.path.relpath(p, C.REPO) for p in need), C.US['theta']))
+            if a.keepGoing:
+                failed.append(name + ' (inputs)')
             continue
         for cmd in commands(name):
             print('\n' + '='*94 + '\n{} [{}]: {}\n  {}\n'.format(name, EXPERIMENTS[name]['part'],
@@ -427,7 +389,13 @@ def main():
                   + '='*94)
             r = subprocess.run(cmd, cwd = C.REPO)
             if r.returncode:
-                raise SystemExit('{} exited {}'.format(EXPERIMENTS[name]['script'], r.returncode))
+                if not a.keepGoing:
+                    raise SystemExit('{} exited {}'.format(os.path.basename(cmd[1]), r.returncode))
+                print('FAILED {}: {} exited {}'.format(name, os.path.basename(cmd[1]), r.returncode))
+                failed.append(name)
+                break
+    if failed:
+        raise SystemExit('failed or skipped for lack of inputs: {}'.format(', '.join(failed)))
 
 
 if __name__ == '__main__':

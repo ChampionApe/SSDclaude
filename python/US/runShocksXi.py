@@ -4,6 +4,7 @@ recalibrated at each xi.
 
 Run:  .venv\Scripts\python.exe python\US\runShocksXi.py                 # xi = 0.3 (the check), then 0.2, 0.4
       ... --xi 0.2 0.4                                                   # without the check
+      ... --theta VARIANT --main                                         # the pipeline's main θ variant
 
 xi is the workbook's 'Labor supply elasticity' (0.3), replaced in the parameters both models are built from;
 the workbooks are never written. It has to reach the constructors: eta_i and X_i are derived from db['xi'] there
@@ -21,6 +22,11 @@ With the workbook xi first in --xi, its rows are checked against results/shocks/
 the published ones are not comparable with them.
 
 Writes results/shocks/US_shocksXiCommonX.csv: runShocksUS.py's columns plus 'ξ', one block per xi.
+
+--theta VARIANT --main (VARIANT = python/paper/config.py's US['theta'], oecd26.thetaRoot): the US at θ0 = the variant's
+U.S. row of data/oecd26_theta.csv and France at its FRA row (db['θ0'], ModelUS.getθ), seeded off results/calibration/'s
+sweep row at that θ0 (oecd26.usBeta); the check reads the published rows at the variant only, rows carry thetaSource
+and θ0, and rows on file at another θ are replaced. A variant's own directory is not supported (--main only).
 """
 import os, sys, argparse, time
 import numpy as np, pandas as pd
@@ -40,6 +46,7 @@ from modelFR import ModelFR, USReference
 from runShocksUS import FAMILIES, hostRow, effectRows
 
 OUT = os.path.join(REPO, 'results', 'shocks', 'US_shocksXiCommonX.csv')
+THETA = {'variant': None, 'θ0': None, 'θ0FR': None}     # the run's θ variant (main), set by main
 XI0 = float(testmod.pars['ξ'])        # the workbook's value
 CHECK_TOL = 1e-7                      # tau and s/Y as fractions, the workweek in hours
 GS = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}
@@ -53,8 +60,8 @@ def _assertXi(m, ξ, who):
 def usModel(ξ):
     """ The US at xi, calibrated (common X, LOG), seeded from the published rho = 1 sweep row. """
     row = hostRow(1.0, True, 'US')
-    m = ModelUS(pars = testmod.pars | {'ρ': 1.0, 'ξ': float(ξ), 'β': float(row['β']), 'ω': float(row['ω'])},
-                commonX = True, **testmod.kwargs)
+    m = ModelUS(pars = testmod.pars | {'ρ': 1.0, 'ξ': float(ξ), 'β': float(row['β']), 'ω': float(row['ω'])}
+                | ({} if THETA['θ0'] is None else {'θ0': THETA['θ0']}), commonX = True, **testmod.kwargs)
     m.db['dates'] = testmod.dates
     m.LOG.initGS(GS)
     _assertXi(m, ξ, 'usModel')
@@ -74,7 +81,9 @@ def usReferenceOf(m):
 def franceModel(ξ, ref):
     """ France (its own groups, the US percentiles) at xi, calibrated against the reference `ref`. """
     pars, kwargs, dates, workweek = testEU.load('FR')
-    mFR = ModelFR(pars = pars | {'ρ': 1.0, 'ω': 2.0, 'ξ': float(ξ)}, commonX = True, usRef = ref, **kwargs)
+    mFR = ModelFR(pars = pars | {'ρ': 1.0, 'ω': 2.0, 'ξ': float(ξ)} | ({} if THETA['θ0FR'] is None else
+                                                                    {'θ0': THETA['θ0FR']}),
+                  commonX = True, usRef = ref, **kwargs)
     mFR.db['dates'], mFR.db['workweek'], mFR.db['country'] = dates, workweek, 'FR'
     mFR.LOG.initGS(GS)
     _assertXi(mFR, ξ, 'franceModel')
@@ -124,13 +133,16 @@ def runXi(ξ, workweek):
     rows.append({'ξ': ξ, 'ρ': 1.0, 'preferences': 'LOG', 'family': 'french', 'scenario': 'France (own calibration)',
                  'effect': 'full', **f, 'θ': float(mFR.db['θ'].xs(tFR)), 'ω': float(mFR.db['ω'].xs(tFR))}
                 | multiplicityColumns(out.get('multiplicity')))
-    return pd.DataFrame(rows)
+    tag = {} if THETA['variant'] is None else {'thetaSource': THETA['variant'], 'θ0': THETA['θ0']}
+    return pd.DataFrame([r | tag for r in rows])
 
 
 def check(df):
     """ The workbook-xi rows against the published common-X shocks at rho = 1. """
     pub = pd.read_csv(os.path.join(REPO, 'results', 'shocks', 'US_shocksCommonX.csv'))
     pub = pub[np.isclose(pub['ρ'], 1.0)]
+    if THETA['variant'] is not None:
+        pub = pub[pub['thetaSource'] == THETA['variant']] if 'thetaSource' in pub.columns else pub.iloc[:0]
     worst = 0.
     for _, r in df.iterrows():
         hit = pub[(pub['scenario'] == r['scenario']) & (pub['effect'] == r['effect'])]
@@ -147,9 +159,26 @@ def main():
     p = argparse.ArgumentParser(description = 'US counterfactuals at other Frisch elasticities (LOG, common X).')
     p.add_argument('--xi', type = float, nargs = '*', default = [XI0, 0.2, 0.4])
     p.add_argument('--out', default = OUT)
+    p.add_argument('--theta', default = None, help = "the pipeline's main θ variant (with --main)")
+    p.add_argument('--main', action = 'store_true', help = "with --theta config.US['theta']: results/shocks/")
     a = p.parse_args()
+    if a.theta is not None or a.main:
+        import oecd26
+        if not (a.theta is not None and a.main):
+            raise SystemExit('--theta needs --main here (and --main --theta)')
+        try:
+            oecd26.thetaRoot(a.theta, main = True)
+            THETA.update({'variant': a.theta, 'θ0': oecd26.thetaFromFile('USA', a.theta),
+                          'θ0FR': oecd26.countryθ0('FR', a.theta)})
+            oecd26.usBeta(oecd26.USSWEEP, 1.0, thetaSource = a.theta)
+        except (ValueError, FileNotFoundError, KeyError) as e:
+            raise SystemExit('--theta {}: {}'.format(a.theta, e))
+        print('θ variant {!r}: θ0 = {!r}, France {!r}'.format(a.theta, THETA['θ0'], THETA['θ0FR']))
     workweek = float(testmod.workweek)
     have = pd.read_csv(a.out) if os.path.exists(a.out) else pd.DataFrame()
+    if len(have) and THETA['variant'] is not None and not (
+            'thetaSource' in have.columns and (have['thetaSource'] == THETA['variant']).all()):
+        have = pd.DataFrame()               # rows at another θ are replaced, not mixed in (#13)
     for ξ in a.xi:
         df = runXi(ξ, workweek)
         if np.isclose(ξ, XI0):

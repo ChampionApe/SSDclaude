@@ -33,7 +33,9 @@ Under vector X the target is hit by moving every X_i by the same proportion -- t
 
 France additionally has theta = 1, but that needs no code: ModelUS.getTheta (getθ) returns exactly 1 when
 the workbook's RR0 = 1, for ANY income grouping -- which is precisely why France's groups may be cut at US
-percentiles. So this class serves the UK unchanged too; only the workbook differs.
+percentiles. So this class serves the UK unchanged too; only the workbook differs. A design imposed as db['θ0']
+(a θ variant, oecd26.countryθ0) is returned by the same getθ and is grouping-free as well; calibrate re-derives
+nothing from RR0 then, and initProductivity/updateAuxPars re-install θ0 (#9).
 
 Needs, beyond a ModelUS's inputs: db['h0'] (the observed workweek in the model's time unit, as in
 test.py) and a US reference -- see setUSRef and usRefFromCsv.

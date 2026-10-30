@@ -4,6 +4,14 @@ Run:  .venv\Scripts\python.exe python\US\calibrateRhoGridEU.py --country FR
       ... --country UK                        the UK on its own income groups
       ... --commonX                           the common-X variant (its own csv and pickle directory)
       ... --force                             re-solve points already in the csv
+      ... --rhos 0.5 1 2                      the grid as a list (calibrateRhoGrid.rhoGrid)
+      ... --theta VARIANT [--root DIR | --main]   theta imposed as db['θ0'] = the country's row of
+                                              data/oecd26_theta.csv under VARIANT (oecd26.countryθ0: FRA, GBR),
+                                              against the U.S. sweep of the same variant (calibrateRhoGrid.py
+                                              --theta, at the variant's U.S. θ0 at every rho, oecd26.usBeta);
+                                              csv and pickles under DIR/calibration/ (DIR the variant's directory,
+                                              oecd26.thetaDir), results/calibration/ under --main (the pipeline's
+                                              main variant, oecd26.thetaRoot); rows carry thetaSource and θ0.
 
 Same march as calibrateRhoGrid.py (read that first -- the anchor, the resume-from-csv contract, the
 pickle-is-a-cache rule and the note on how to read verifyResidual all carry over unchanged). Three
@@ -52,6 +60,7 @@ from gridsearch import continuation
 from policy import multiplicityColumns
 
 OUTDIR = os.path.join(REPO, 'results', 'calibration')
+THETACOLUMNS = ['thetaSource', 'θ0']      # appended under --theta only
 
 # Ordered as the US csv is: what was solved, what it cost, whether to believe it, then the answer.
 COLUMNS = ['ρ', 'preferences', 'requested', 'residual', 'verifyResidual', 'hoursDrift',
@@ -92,6 +101,33 @@ def readDone(path):
     return done, df
 
 
+def thetaRun(variant, country, commonX, out = None, pkldir = None, root = None, main = False, rhos = ()):
+    """ --theta VARIANT: (θ0 of `country`, csv path, pickle directory, the U.S. sweep it is referenced to), all
+    under root/calibration/ (oecd26.thetaRoot(variant, main) unless `root`, a relative path the repo's). The U.S.
+    sweep's rows at every rho of `rhos` must be at the variant's U.S. θ0 (oecd26.usBeta). SystemExit for --main with
+    --root, a variant without the country's or the U.S.'s θ, a U.S. sweep missing or at another θ0, or, without
+    --main, a path under results/calibration/. """
+    import oecd26
+    if main and root is not None:
+        raise SystemExit('--main writes results/calibration/: not with --root')
+    try:
+        θ0 = oecd26.countryθ0(country, variant)
+        top = oecd26.thetaRoot(variant, main) if root is None else os.path.join(REPO, root)
+        cal = os.path.join(top, 'calibration')
+        usCsv = os.path.join(cal, 'US_rhoGrid' + ('CommonX' if commonX else '') + '.csv')
+        for ρ in rhos:
+            oecd26.usBeta(usCsv, float(ρ), thetaSource = variant)
+    except (ValueError, FileNotFoundError, KeyError) as e:          # NoTheta is a ValueError
+        raise SystemExit('--theta {}: {}'.format(variant, e))
+    out = out or os.path.join(cal, country + '_rhoGrid' + ('CommonX' if commonX else '') + '.csv')
+    pkldir = pkldir or os.path.join(cal, 'instances' + country + ('CommonX' if commonX else ''))
+    for q in (out, pkldir):
+        if not main and os.path.normcase(os.path.abspath(q)).startswith(os.path.normcase(OUTDIR + os.sep)):
+            raise SystemExit('--theta {}: {} is under results/calibration/, which holds the main θ variant '
+                             '(--main) only'.format(variant, q))
+    return θ0, out, pkldir, usCsv
+
+
 def main():
     p = argparse.ArgumentParser(description = 'Calibrate the France/UK model across a grid of rho.')
     p.add_argument('--country', default = 'FR', choices = ('FR', 'UK'))
@@ -114,15 +150,33 @@ def main():
     p.add_argument('--force', action = 'store_true')
     p.add_argument('--out', default = None)
     p.add_argument('--pkldir', default = None)
+    p.add_argument('--rhos', type = float, nargs = '*', default = None,
+                   help = 'the grid as a list of rho (overrides --lo/--hi/--step); must contain --anchor')
+    p.add_argument('--theta', default = None,
+                   help = "a variant of data/oecd26_theta.csv: θ imposed at the country's row (db['θ0'])")
+    p.add_argument('--root', default = None, help = "the variant's directory (default results/oecd26_theta_<variant>)")
+    p.add_argument('--main', action = 'store_true',
+                   help = "with --theta config.US['theta']: results/calibration/ (the paper's)")
     a = p.parse_args()
 
-    tag = a.country + '_rhoGrid' + ('CommonX' if a.commonX else '')
-    out = a.out or os.path.join(OUTDIR, tag + '.csv')
-    pkldir = a.pkldir or os.path.join(OUTDIR, 'instances' + a.country + ('CommonX' if a.commonX else ''))
-    os.makedirs(OUTDIR, exist_ok = True)
+    from calibrateRhoGrid import rhoGrid
+    grid = rhoGrid(a)
+    if round(a.anchor, 6) not in set(grid):
+        raise SystemExit('the anchor rho={} is not on the grid {}'.format(a.anchor, list(grid)))
+    if a.theta is None:
+        if a.root is not None or a.main:
+            raise SystemExit('--root and --main need --theta VARIANT')
+        tag = a.country + '_rhoGrid' + ('CommonX' if a.commonX else '')
+        out = a.out or os.path.join(OUTDIR, tag + '.csv')
+        pkldir = a.pkldir or os.path.join(OUTDIR, 'instances' + a.country + ('CommonX' if a.commonX else ''))
+        θ0, usCsv, columns, extra = None, None, COLUMNS, {}
+        os.makedirs(OUTDIR, exist_ok = True)
+    else:
+        θ0, out, pkldir, usCsv = thetaRun(a.theta, a.country, a.commonX, a.out, a.pkldir, a.root, a.main, grid)
+        columns, extra = COLUMNS + THETACOLUMNS, {'thetaSource': a.theta, 'θ0': θ0}
+        os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok = True)
     os.makedirs(pkldir, exist_ok = True)
 
-    grid = np.round(np.arange(a.lo, a.hi + 0.5*a.step, a.step), 6)
     commit = gitCommit()
     wp = {'smoothKnots': a.smoothKnots if a.smoothKnots else None, 'interpKind': a.interpKind}
     gridSettings = {'CRRA': {'n': a.n, 'ns': a.ns} | wp, 'LOG': {'n': a.n} | wp}
@@ -130,7 +184,7 @@ def main():
               if a.verify else None)
 
     # Fail before the march, not during it: every rho on the grid needs a row in the US sweep csv.
-    ref = testEU.usReference(commonX = a.commonX)
+    ref = testEU.usReference(commonX = a.commonX, csv = usCsv)
     missing = []
     for ρ in grid:
         try:
@@ -144,10 +198,19 @@ def main():
         return 2
 
     done, df = ({}, pd.DataFrame(columns = COLUMNS)) if a.force else readDone(out)
+    if extra and len(df):                 # a resumed variant csv must be at this θ0 (#13)
+        same = ((df['thetaSource'] == a.theta) & (pd.to_numeric(df['θ0']) - θ0).abs().le(1e-12)
+                if set(THETACOLUMNS) <= set(df.columns) else pd.Series(False, index = df.index))
+        if not same.all():
+            raise SystemExit('{}: rows at another thetaSource or θ0 than {} {!r}: rerun with --force'.format(
+                out, a.theta, θ0))
     rows = {} if a.force else {round(float(r['ρ']), 6): r for r in df.to_dict('records')}
 
     print('country: {},  variant: {}'.format(a.country, 'common X' if a.commonX else 'vector X_i'))
-    print('grid: {} points, {} to {} step {}'.format(len(grid), grid[0], grid[-1], a.step))
+    print('grid: {} points, {}'.format(len(grid), ', '.join('{:g}'.format(v) for v in grid)))
+    if extra:
+        print('theta imposed: θ0={!r} (variant {!r}; RR0 not read), U.S. reference {}'.format(
+            θ0, a.theta, os.path.relpath(usCsv, REPO)))
     print('anchor rho={},  tau nodes {},  state nodes {},  verify at {}/{}'.format(
         a.anchor, a.n, a.ns, a.verifyN, a.verify or 'off'))
     print('out: {}'.format(os.path.relpath(out, REPO)))
@@ -155,10 +218,10 @@ def main():
         print('resuming: {} of {} points already present'.format(
             sum(round(float(v), 6) in done for v in grid), len(grid)))
 
-    m = testEU.model(a.country, commonX = a.commonX, ρ = float(a.anchor))
+    m = testEU.model(a.country, commonX = a.commonX, ρ = float(a.anchor), usCsv = usCsv, θ0 = θ0)
 
     def write():
-        (pd.DataFrame(list(rows.values())).reindex(columns = COLUMNS).sort_values('ρ')
+        (pd.DataFrame(list(rows.values())).reindex(columns = columns).sort_values('ρ')
            .to_csv(out, index = False))
 
     def solve(ρ, x0):
@@ -189,7 +252,7 @@ def main():
             return
         if r['result'].get('cached'):
             return
-        rows[key] = toRow(r['result'], r['requested'], commit)
+        rows[key] = toRow(r['result'], r['requested'], commit) | extra
         write()
         with open(os.path.join(pkldir, 'rho_{:.4f}.pkl'.format(r['value'])), 'wb') as f:
             pickle.dump(m, f)
@@ -203,7 +266,7 @@ def main():
         rows[round(float(r['value']), 6)] = {
             'ρ': round(float(r['value']), 6), 'requested': r['requested'], 'commit': commit,
             'residual': np.nan, 'preferences': 'FAILED: ' + r['error'][:120],
-            'timestamp': datetime.datetime.now().isoformat(timespec = 'seconds')}
+            'timestamp': datetime.datetime.now().isoformat(timespec = 'seconds')} | extra
     write()
 
     ok = len(grid)-len(hardFails)

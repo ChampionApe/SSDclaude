@@ -67,7 +67,8 @@ def rows(ρ, method, m, ν, θE, θA, θAatE, τE, τA, τAatE, sE_, sA_, conv, 
 
 
 def runLOG(spec, phi, commonX):
-    calib = pd.read_csv(os.path.join(ESCDIR, 'escCalibration.csv'))
+    path = os.path.join(ESCDIR, 'escCalibration.csv')
+    calib = runESC.checkCalib(pd.read_csv(path), path, [spec], [phi], commonX)      # under a θ variant, its rows
     hit = pickCalib(calib, spec, phi, commonX)
     if hit.empty:
         raise KeyError(f'no converged LOG wedge calibration for ({spec}, {phi}, commonX={commonX})')
@@ -171,11 +172,24 @@ def main():
     p.add_argument('--ns', type = int, default = GSC['ns'])
     p.add_argument('--nCand2D', type = int, default = 41)
     p.add_argument('--out', default = OUT)
+    p.add_argument('--theta', default = None,
+                   help = "the pipeline's main θ variant (with --main): runESC.setTheta's θ0, rows carry it")
+    p.add_argument('--main', action = 'store_true', help = "with --theta config.US['theta']")
     a = p.parse_args()
+    if a.theta is not None or a.main:
+        if not (a.theta is not None and a.main):
+            raise SystemExit('--theta needs --main here (and --main --theta)')
+        runESC.setTheta(a.theta, None, ('calib',), False, a.commonX, a.rho[0], main = True)
+        import oecd26
+        try:
+            for ρ in a.rho:
+                oecd26.usBeta(runESC.usSweep(a.commonX), ρ, thetaSource = a.theta)
+        except (FileNotFoundError, ValueError, KeyError) as e:
+            raise SystemExit('--theta {}: {}'.format(a.theta, e))
     allRows = []
     for ρ in a.rho:
-        allRows += (runLOG(a.spec, a.phi, a.commonX) if np.isclose(ρ, 1)
-                    else runCRRA(ρ, a.spec, a.phi, a.commonX, a.ns, a.nCand2D))
+        allRows += [r | runESC.thetaColumns() for r in (runLOG(a.spec, a.phi, a.commonX) if np.isclose(ρ, 1)
+                    else runCRRA(ρ, a.spec, a.phi, a.commonX, a.ns, a.nCand2D))]
         df = pd.DataFrame(allRows)
         os.makedirs(os.path.dirname(a.out), exist_ok = True)
         df.to_csv(a.out, index = False)                     # after every rho: a long run is readable as it goes

@@ -73,8 +73,9 @@ def test_converter_vocabulary():
 
 def test_pages_keys_and_registry():
     r""" Every page of _quarto.yml exists and opens with a keyed heading; keys and section codes are unique; every
-    retired key points at a live one; every exhibit a page includes is registered, and every registered one is
-    included on exactly one page; every registered output is one build.py builds, of the matching kind. """
+    retired key points at a live one; every exhibit a page includes is registered or retired (OA.RETIRED, whose
+    outputs build.py no longer builds), and every registered one is included on exactly one page; every registered
+    output is one build.py builds, of the matching kind. """
     pgs = OA.pages()
     assert len(pgs) == len(OA.pageFiles()) >= 20
     keys, codes, seen = {}, [], []
@@ -91,8 +92,10 @@ def test_pages_keys_and_registry():
     for old, new in OA.OLDKEYS.items():
         assert new in keys, (old, new)
     assert len(seen) == len(set(seen)), 'an exhibit is included on two pages'
-    assert set(seen) == set(OA.EXHIBITS), set(seen) ^ set(OA.EXHIBITS)
+    assert set(seen) - set(OA.RETIRED) == set(OA.EXHIBITS), (set(seen) - set(OA.RETIRED)) ^ set(OA.EXHIBITS)
+    assert not set(OA.RETIRED) & set(OA.EXHIBITS)
     import build
+    assert not set(OA.RETIRED) & set(build.OUTPUTS), 'a retired output is built'
     for i, ex in OA.EXHIBITS.items():
         assert ex.output in build.OUTPUTS, (i, ex.output)
         assert build.OUTPUTS[ex.output][0] == {'explorer': 'data'}.get(ex.kind, ex.kind), i
@@ -175,11 +178,12 @@ def test_esc_paths_are_figure_G1():
 
 def test_datasets_are_complete():
     r""" Every host, calibration, rho and scenario the pages draw is in the datasets, and the only missing values
-    are the pinned workweek of the CRRA paths, which escPathCRRA.csv does not store. """
+    are the pinned workweek of the CRRA paths, which escPathCRRA.csv does not store. The hosts are siteData's. """
+    import siteData as SD
     o = _data('OECD_Counterfactuals')
     m = o[o['source'] == 'main']
-    assert set(m['host']) == {'US', 'USMedicare'} and set(m['calibration']) == {'commonX', 'vectorX'}
-    for h in ('US', 'USMedicare'):
+    assert set(SD.OECDHOSTS) <= set(m['host']) and set(m['calibration']) == {'commonX', 'vectorX'}
+    for h in SD.OECDHOSTS:
         sub = m[(m['host'] == h) & (m['effect'] == 'full')]
         for ρ in (0.5, 1.0, 2.0):
             have = set(sub[np.isclose(sub['rho'], ρ)]['scenario'])

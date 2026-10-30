@@ -65,18 +65,18 @@ OUTPUTS = {
     'US_ESC_Path':            ('figure', figuresOA.escPathPaper,      'Figs/US_ESC_Path.pdf'),
     # Figure 1 (fig:US:OECDdata) from stage (0)'s data/oecdFigure1.csv; also writes oecdCorrelations.csv.
     'OECDdata':               ('figure', oecdFigure1.figure,          'Figs/OECDdata.pdf'),
-    # The cross-country test at config.US['oecd26']'s variant: section 6's spending at the observed designs without
-    # the cost (OECD26_Spending, which also writes its note, Figs/OECD26_Spending_note.tex); figure 1.1's relations
-    # with the model's layer 1 beside the data, the slopes of the data and both layers, and each country's
-    # calibrated omega (layer 2), at the design in force in 2020; appendix H's design slopes under the other costs,
-    # beta rules and turnouts, and the U.S., the UK and France measured as in the deep test and in the
-    # cross-section. Inputs: python/US/runOECD26.py (results/oecd26/) and stage (0)'s oecd26Sample.py.
+    # The cross-country test at config.US['oecd26']'s variant, on the θ variant's in-sample countries (config.US
+    # ['theta']): section 6's spending at the observed designs without the cost (OECD26_Spending, which also writes
+    # its note, Figs/OECD26_Spending_note.tex); figure 1.1's relations with the model's layer 1 beside the data, the
+    # slopes of the data and both layers, and each country's calibrated omega (layer 2), at the design in force in
+    # 2020; the five slopes under each measure of the design (OECD26_ThetaVariants, not yet input by the paper).
+    # Inputs: python/US/runOECD26.py (results/oecd26/, results/oecd26_theta_<V>/), data/oecd26_theta.csv and stage
+    # (0)'s oecd26Sample.py.
     'OECD26_Spending':        ('figure', figuresOECD26.oecd26Spending, 'Figs/OECD26_Spending.pdf'),
     'OECD26_Layer1':          ('figure', figuresOECD26.oecd26Figure,  'Figs/OECD26_Layer1.pdf'),
     'OECD26_Slopes':          ('table', tablesOECD26.oecd26Slopes,    'Tables/OECD26_Slopes.tex'),
     'OECD26_Omega':           ('table', tablesOECD26.oecd26Omega,     'Tables/OECD26_Omega.tex'),
-    'OECD26_Robustness':      ('table', tablesOECD26.oecd26Robustness, 'Tables/OECD26_Robustness.tex'),
-    'OECD26_Reconcile':       ('table', tablesOECD26.oecd26Reconcile, 'Tables/OECD26_Reconcile.tex'),
+    'OECD26_ThetaVariants':   ('table', tablesOECD26.oecd26ThetaVariants, 'Tables/OECD26_ThetaVariants.tex'),
     # Appendix D (app:T): the horizon and the terminal condition and the first order condition's residuals off the
     # grid (python/{US,InformalSavings}/runHorizon.py). The candidate counts grouped by solve are the online
     # appendix's alone, beside its file-by-file list (NUM_SelectionFiles); appendix D states them in words.
@@ -90,32 +90,22 @@ OUTPUTS = {
     'OECD_Correlations':      ('table', tablesOA.oecdCorrelations,    'Tables/OECD_Correlations.tex'),
     'ARG_RhoGrid':            ('figure', figuresOA.argRhoGrid,        'Figs/ARG_RhoGrid.pdf'),
     'OECD_RhoGrid':           ('figure', figuresOA.oecdRhoGrid,       'Figs/OECD_RhoGrid.pdf'),
-    'ESC_Timing':             ('table', tablesOA.escTiming,           'Tables/ESC_Timing.tex'),
     'NUM_Stationary':         ('table', tablesOA.numStationary,       'Tables/NUM_Stationary.tex'),
-    # The two calibrations of the taste for leisure side by side and the two costs.
+    # The two calibrations of the taste for leisure side by side.
     'ARG_LeisureCalibration': ('table', tablesOA.argLeisureCalibration, 'Tables/ARG_LeisureCalibration.tex'),
     'ARG_LeisureRho':         ('table', tablesOA.argLeisureRho,         'Tables/ARG_LeisureRho.tex'),
     'OECD_LeisureCalibration': ('table', tablesOA.oecdLeisureCalibration, 'Tables/OECD_LeisureCalibration.tex'),
     'OECD_LeisureGroups':     ('table', tablesOA.oecdLeisureGroups,     'Tables/OECD_LeisureGroups.tex'),
-    'ESC_CostCalibration':    ('table', tablesOA.escCostCalibration,    'Tables/ESC_CostCalibration.tex'),
-    # The U.S. with Medicare among the transfers to the old (config.US['readings']); the 2020 tax against
-    # inherited savings and the strategic term (python/US/c5Numbers.py a13, strategic); NUM_Horizon date by date; NUM_Selection file by file.
-    'OECD_Medicare':          ('table', tablesOA.oecdMedicare,          'Tables/OECD_Medicare.tex'),
+    # The 2020 tax against inherited savings and the strategic term (python/US/c5Numbers.py a13, strategic);
+    # NUM_Horizon date by date; NUM_Selection file by file.
     'US_TaxState':            ('figure', figuresOA.usTaxState,          'Figs/US_TaxState.pdf'),
     'US_Strategic':           ('table', tablesOA.usStrategic,           'Tables/US_Strategic.tex'),
     'NUM_HorizonPaths':       ('table', tablesHorizon.numHorizonPaths,  'Tables/NUM_HorizonPaths.tex'),
     'NUM_SelectionFiles':     ('table', tablesOA.numSelectionFiles,     'Tables/NUM_SelectionFiles.tex'),
-    # The cross-country test on all 29 countries of figure 1.1, with each country's own (CSES) turnout, and with the
-    # U.S. lambda in every country (the 'size' transport).
-    'OECD26_Layer1_29':       ('figure', partial(figuresOECD26.oecd26Figure, 1, sample = '29'), 'Figs/OECD26_Layer1_29.pdf'),
-    'OECD26_Slopes_29':       ('table', partial(tablesOECD26.oecd26Slopes, sample = '29'),       'Tables/OECD26_Slopes_29.tex'),
-    'OECD26_Omega_29':        ('table', partial(tablesOECD26.oecd26Omega, sample = '29'),        'Tables/OECD26_Omega_29.tex'),
+    # The cross-country test with each country's own (CSES) turnout.
     'OECD26_Layer1_cses':     ('figure', partial(figuresOECD26.oecd26Figure, 1, turnout = 'cses'), 'Figs/OECD26_Layer1_cses.pdf'),
     'OECD26_Slopes_cses':     ('table', partial(tablesOECD26.oecd26Slopes, turnout = 'cses'),    'Tables/OECD26_Slopes_cses.tex'),
     'OECD26_Omega_cses':      ('table', partial(tablesOECD26.oecd26Omega, turnout = 'cses'),     'Tables/OECD26_Omega_cses.tex'),
-    'OECD26_Layer1_size':     ('figure', partial(figuresOECD26.oecd26Figure, 1, spec = 'size'), 'Figs/OECD26_Layer1_size.pdf'),
-    'OECD26_Slopes_size':     ('table', partial(tablesOECD26.oecd26Slopes, spec = 'size'),       'Tables/OECD26_Slopes_size.tex'),
-    'OECD26_Omega_size':      ('table', partial(tablesOECD26.oecd26Omega, spec = 'size'),        'Tables/OECD26_Omega_size.tex'),
     # The datasets of the online appendix's interactive figures (siteData), csv in results/paper/Data.
     'ARG_ReformPaths':        ('data', siteData.argReformPaths,       'Data/ARG_ReformPaths.csv'),
     'OECD_Counterfactuals':   ('data', siteData.oecdCounterfactuals,  'Data/OECD_Counterfactuals.csv'),
@@ -126,11 +116,11 @@ OUTPUTS = {
 # Registered outputs that belong to the online appendix alone: built into results/paper, never copied
 # into writing/Paper.
 ONLINE_ONLY = ({'OECD_Countries', 'OECD_Sources', 'OECD_Correlations', 'ARG_RhoGrid', 'OECD_RhoGrid',
-                'ESC_Timing', 'NUM_Stationary', 'ARG_LeisureCalibration', 'ARG_LeisureRho',
-                'OECD_LeisureCalibration', 'OECD_LeisureGroups', 'ESC_CostCalibration',
-                'OECD_Medicare', 'US_TaxState', 'US_Strategic', 'NUM_HorizonPaths', 'NUM_Selection',
+                'NUM_Stationary', 'ARG_LeisureCalibration', 'ARG_LeisureRho',
+                'OECD_LeisureCalibration', 'OECD_LeisureGroups',
+                'US_TaxState', 'US_Strategic', 'NUM_HorizonPaths', 'NUM_Selection',
                 'NUM_SelectionFiles'}
-               | {n for n in OUTPUTS if n.startswith('OECD26_') and n.endswith(('_29', '_cses', '_size'))}
+               | {n for n in OUTPUTS if n.startswith('OECD26_') and n.endswith('_cses')}
                | {n for n, e in OUTPUTS.items() if e[0] == 'data'})
 
 

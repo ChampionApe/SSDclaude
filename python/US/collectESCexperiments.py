@@ -2,6 +2,8 @@ r""" Collect the endogenous-theta counterfactual runs across rho into one table.
 
 Run:  .venv\Scripts\python.exe python\US\collectESCexperiments.py
       ... --costs        the ageing counterfactuals under the three costs -> escAgeingCosts.csv (see costs())
+      ... --theta V      only the rows at thetaSource V (a csv or row without the column reads as 'index'), which
+                         the merged csv then carries; without it every row, as written (atTheta)
 
 Inputs (results/esc/): escShocks.csv (rho = 1, LOG, runESC.py) and escShocksCRRA.csv (rho != 1, CRRA,
 runESCcrra.py --stage shocks). Writes results/esc/escExperiments.csv (long form, one row per
@@ -25,7 +27,16 @@ REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 ESC = os.path.join(REPO, 'results', 'esc')
 
 COLUMNS = ('ρ', 'preferences', 'spec', 'phi', 'commonX', 'method', 'p', 'scenario', 'θpinned',
-           'θ_tm1', 'θ_t0', 'θ_t1', 'τ_t0', 'sr_t0', 'ww_t0', 'τ_t1', 'sr_t1', 'ww_t1')
+           'θ_tm1', 'θ_t0', 'θ_t1', 'τ_t0', 'sr_t0', 'ww_t0', 'τ_t1', 'sr_t1', 'ww_t1', 'thetaSource', 'θ0')
+
+
+def atTheta(d, theta):
+    """ The rows of frame `d` at thetaSource `theta` (a missing column or cell reads as 'index'); `d` itself when
+    theta is None. """
+    if theta is None or d is None:
+        return d
+    ts = d['thetaSource'].fillna('index') if 'thetaSource' in d.columns else pd.Series('index', index = d.index)
+    return d[ts == theta]
 
 
 def merge(log, crra):
@@ -90,7 +101,8 @@ def costs(frames):
     for c in OUTCOMES:
         d['d' + c] = d[c].values - base[c].reindex(at).values
     cols = (['ρ', 'spec', 'p', 'scenario', 'θpinned', 'method', 'source'] + list(OUTCOMES)
-            + ['d' + c for c in OUTCOMES] + (['ΠR'] if 'ΠR' in d.columns else []))
+            + ['d' + c for c in OUTCOMES] + (['ΠR'] if 'ΠR' in d.columns else [])
+            + [c for c in ('thetaSource', 'θ0') if c in d.columns])
     return d[cols].sort_values(['spec', 'ρ', 'scenario', 'θpinned']).reset_index(drop = True)
 
 
@@ -99,10 +111,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--costs', action = 'store_true',
                     help = "write escAgeingCosts.csv from the paper's csvs and the --tag Costs runs instead")
+    ap.add_argument('--theta', default = None, help = "keep the rows at this thetaSource only (atTheta)")
     args = ap.parse_args()
     if args.costs:
         stems = ('escShocks', 'escShocksCRRA', 'escShocksCosts', 'escShocksCRRACosts', 'escShocksCRRACostsMild')
-        frames = {st: pd.read_csv(os.path.join(ESC, st + '.csv')) for st in stems
+        frames = {st: atTheta(pd.read_csv(os.path.join(ESC, st + '.csv')), args.theta) for st in stems
                   if os.path.exists(os.path.join(ESC, st + '.csv'))}
         d = costs(frames)
         out = os.path.join(ESC, 'escAgeingCosts.csv')
@@ -115,7 +128,8 @@ def main():
             print('--- {}: changes at 2020 against the baseline of the same reading ---'.format(lab))
             print(piv.round(4).to_string(), '\n')
         return
-    d = merge(pd.read_csv(os.path.join(ESC, 'escShocks.csv')), pd.read_csv(os.path.join(ESC, 'escShocksCRRA.csv')))
+    d = merge(atTheta(pd.read_csv(os.path.join(ESC, 'escShocks.csv')), args.theta),
+              atTheta(pd.read_csv(os.path.join(ESC, 'escShocksCRRA.csv')), args.theta))
     out = os.path.join(ESC, 'escExperiments.csv')
     d.to_csv(out, index = False)
     print(f'-> {os.path.relpath(out, REPO)}  ({len(d)} rows)\n')

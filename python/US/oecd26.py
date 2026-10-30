@@ -3,6 +3,7 @@ OECD country's data: the loader of the cross-country test (python/US/runOECD26.p
 
     import oecd26
     inp = oecd26.countryInputs('GBR')                 # turnout 'cps' (default) or 'cses'
+    inp = oecd26.countryInputs('GBR', thetaSource = 'C')   # θ from data/oecd26_theta.csv's variant 'C'
     β, ωSeed, src = oecd26.usBeta()
     m = oecd26.build(inp, β, ω = 1.5, λ = 10.)        # a ModelOECD, LOG grid installed
 
@@ -15,12 +16,18 @@ Inputs per country (`countryInputs`):
           oecd_earnings_men_ft, convention usPct. y_i enters as z^η_i of the common-X calibration
           (model.initProductivity_commonX), so Base.hηRatio = y_i and Base.Vtilde (Eq esc:Vtilde) is the
           file's Vtilde_usPct.
-  θ       eq calibration:thetaSimple of writing/US, θ = 2 - 1/I, with I = grr100_men/grr050_men (figure 1.1's
-          index, PaG 2021), clipped to [0, 1] (`thetaFromIndex`; its inverse I = 1/(2 - θ) is exact under the
-          benefit formula and any proportional cost, archive/notes/reviewResponse_2026-10/theory_closedForm.md section 2). Not getθ on the
+  θ       thetaSource 'index' (the default): eq calibration:thetaSimple of writing/US, θ = 2 - 1/I, with I =
+          grr100_men/grr050_men (figure 1.1's index, PaG 2021), clipped to [0, 1] (`thetaFromIndex`; its inverse
+          I = 1/(2 - θ) is exact under the benefit formula and any proportional cost, archive/notes/reviewResponse_2026-10/theory_closedForm.md section 2). Not getθ on the
           group means (eq calibration:theta): ModelOECD.getθ re-derives the same value at every refresh, so no
           updateAuxPars can undo it (crossCuttingFindings #9).
-  τ0      figure 1.1's cash pension spending over the labour share, pensionSpending/100/(1 - α).
+          thetaSource a variant name: θ is the variant's row of data/oecd26_theta.csv (columns iso3, variant,
+          theta, inSample, spending; `thetaFromFile`), the datum I = 1/(2 - θ), so that getθ returns θ to rounding,
+          and θRaw = θ. A missing row, or θ NaN or outside [0, 1], raises NoTheta.
+  τ0      spending over the labour share, spending/100/(1 - α): under 'index' figure 1.1's cash pension spending
+          (pensionSpending); under a variant the file's `spending` column (`spendingFromFile`), which for the
+          variants of SPENDINGASFIGURE must equal pensionSpending to 1e-9 (ValueError otherwise); B's is public plus
+          mandatory and quasi-mandatory private spending.
   α, ξ    the U.S. workbook's (data/USMain_test.xlsx through test.py), and its workweek for h0 (hours levels
           move no rate under log preferences).
   μ_i     'cps': the U.S. workbook's CPS propensities to vote, in every country (the U.S. percentiles are the
@@ -28,6 +35,9 @@ Inputs per country (`countryInputs`):
           (mu1-3_usPct; none for Luxembourg, which raises NoTurnout).
   β       betaRule 'common': imposed, the U.S. calibration without the cost at ρ = 1 in the common-X variant
           (`usBeta`, results/calibration/US_rhoGridCommonX.csv), as appendix G.1 imposes it on the UK and France.
+          Under a θ variant the sweep is the variant's own (`sweepPath`, calibrateRhoGrid.py --theta; under --main,
+          `thetaRoot`, results/calibration/'s), the U.S. at θ0 = the variant's U.S. θ, the same number as the
+          anchor's. France and the UK take their θ0 from the same file (`countryθ0`).
           betaRule 'commonR': calibrated so that R_{t0} is db['R0'], the anchor's 2020 return (build's R0).
 
 ModelOECD calibrates, with θ exogenous at the datum and the cost installed, under betaRule 'common' ω alone
@@ -48,8 +58,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 DATA = os.path.join(REPO, 'data')
 FILES = {'main': os.path.join(DATA, 'oecd29.csv'), 'pop': os.path.join(DATA, 'oecd29_population.csv'),
-         'dist': os.path.join(DATA, 'oecd29_distribution.csv'), 'sample': os.path.join(DATA, 'oecd26_sample.csv')}
+         'dist': os.path.join(DATA, 'oecd29_distribution.csv'), 'sample': os.path.join(DATA, 'oecd26_sample.csv'),
+         'theta': os.path.join(DATA, 'oecd26_theta.csv')}
 USSWEEP = os.path.join(REPO, 'results', 'calibration', 'US_rhoGridCommonX.csv')
+RESULTS = os.path.join(REPO, 'results')
+PAPERCONFIG = os.path.join(REPO, 'python', 'paper', 'config.py')
+INDEX = 'index'                           # thetaSource of figure 1.1's index; reserved, no variant of the file
+SPENDINGASFIGURE = ('paper', 'A', 'A2pt', 'C')     # variants whose `spending` is figure 1.1's pensionSpending
+SPENDINGTOL = 1e-9
+ISO3 = {'US': 'USA', 'FR': 'FRA', 'UK': 'GBR'}     # the workbooks' countries in data/oecd26_theta.csv
 
 import test as testmod                    # the U.S. workbook: α, ξ, the CPS turnout, the workweek
 from modelESC import ModelESC
@@ -66,6 +83,118 @@ BETARULES = ('common', 'commonR')
 
 class NoTurnout(ValueError):
     """ The country has no CSES election in data/oecd29.csv (Luxembourg). """
+
+
+class NoTheta(ValueError):
+    """ The country has no θ in [0, 1] under the variant of data/oecd26_theta.csv (no row, or NaN or out of range). """
+
+
+def readTheta(path = None):
+    """ data/oecd26_theta.csv (FILES['theta'] unless `path`): iso3, variant, theta (float), inSample (bool). A
+    duplicate (iso3, variant) or a variant named 'index' raises (#8). """
+    path = FILES['theta'] if path is None else path
+    if not os.path.exists(path):
+        raise FileNotFoundError('{}: no θ variants (the stage (0) file is written separately)'.format(path))
+    d = pd.read_csv(path, dtype = {'iso3': str, 'variant': str}, float_precision = 'round_trip')   # θ as written
+    lack = {'iso3', 'variant', 'theta', 'inSample'} - set(d.columns)
+    if lack:
+        raise ValueError('{}: no column {}'.format(path, sorted(lack)))
+    d['theta'] = pd.to_numeric(d['theta'], errors = 'coerce')
+    d['inSample'] = d['inSample'].astype(str).str.strip().str.lower().isin(('true', '1', '1.0'))
+    if (d['variant'] == INDEX).any():
+        raise ValueError("{}: the variant name {!r} is reserved for figure 1.1's index".format(path, INDEX))
+    dup = d[d.duplicated(['iso3', 'variant'], keep = False)]
+    if len(dup):
+        raise ValueError('{}: duplicate rows {}'.format(path, sorted(set(zip(dup['iso3'], dup['variant'])))))
+    return d
+
+
+def thetaVariants(path = None):
+    """ The variant names of data/oecd26_theta.csv, in the file's order. """
+    return list(dict.fromkeys(readTheta(path)['variant']))
+
+
+def thetaFromFile(iso3, variant, path = None):
+    """ θ of `iso3` under `variant` of data/oecd26_theta.csv. An unknown variant raises ValueError; a missing row,
+    or θ NaN or outside [0, 1], NoTheta. """
+    d = readTheta(path)
+    if variant not in set(d['variant']):
+        raise ValueError('{}: no variant {!r} (variants: {})'.format(path or FILES['theta'], variant,
+                                                                    list(dict.fromkeys(d['variant']))))
+    r = d[(d['iso3'] == iso3) & (d['variant'] == variant)]
+    if r.empty:
+        raise NoTheta('{}: no row for {} under variant {!r}'.format(path or FILES['theta'], iso3, variant))
+    θ = float(r['theta'].iloc[0])
+    if not 0. <= θ <= 1.:                 # NaN fails too
+        raise NoTheta('{}: θ = {!r} for {} under variant {!r}, not in [0, 1]'.format(
+            path or FILES['theta'], θ, iso3, variant))
+    return θ
+
+
+def spendingFromFile(iso3, variant, path = None):
+    """ Pension spending, % of GDP, of `iso3` under `variant` of data/oecd26_theta.csv (its `spending` column). A file
+    without the column raises ValueError; a missing row or a NaN, NoTheta. """
+    d = readTheta(path)
+    if 'spending' not in d.columns:
+        raise ValueError('{}: no column spending'.format(path or FILES['theta']))
+    r = d[(d['iso3'] == iso3) & (d['variant'] == variant)]
+    if r.empty or not np.isfinite(pd.to_numeric(r['spending'], errors = 'coerce').iloc[0]):
+        raise NoTheta('{}: no spending for {} under variant {!r}'.format(path or FILES['theta'], iso3, variant))
+    return float(r['spending'].iloc[0])
+
+
+def countryθ0(country, variant, path = None):
+    """ θ0 of a workbook country ('US', 'FR', 'UK'; ISO3) under `variant`: thetaFromFile of its ISO3 row. """
+    return thetaFromFile(ISO3[country], variant, path)
+
+
+def paperTheta():
+    """ python/paper/config.py's US['theta'], the pipeline's main θ variant, read from the file. """
+    import importlib.util
+    sp = importlib.util.spec_from_file_location('_paperConfigθ', PAPERCONFIG)
+    mod = importlib.util.module_from_spec(sp)
+    sp.loader.exec_module(mod)
+    return mod.US.get('theta')
+
+
+def thetaRoot(variant, main = False):
+    """ The directory a θ variant's run reads and writes (calibration/, esc/, shocks/ below it): results/ under
+    `main`, which must be the pipeline's main variant (paperTheta; ValueError otherwise), thetaDir(variant)
+    without it. """
+    if main:
+        if variant is None or variant == INDEX or variant != paperTheta():
+            raise ValueError("--main writes results/ for the pipeline's main θ variant, config.US['theta'] = {!r}; "
+                             'got --theta {!r}'.format(paperTheta(), variant))
+        return RESULTS
+    return thetaDir(variant)
+
+
+def isStandard(path):
+    """ Is `path` under results/{calibration,esc,shocks,oecd26}/, the paper's directories? """
+    p = os.path.normcase(os.path.abspath(path))
+    return any(p == os.path.normcase(os.path.join(RESULTS, d)) or p.startswith(os.path.normcase(os.path.join(RESULTS, d)) + os.sep)
+               for d in ('calibration', 'esc', 'shocks', 'oecd26'))
+
+
+def thetaSample(variant, path = None):
+    """ The countries with inSample True under `variant`, in data/oecd29.csv's order, the U.S. always included. """
+    d = readTheta(path)
+    d = d[d['variant'] == variant]
+    if d.empty:
+        raise ValueError('{}: no variant {!r}'.format(path or FILES['theta'], variant))
+    keep = set(d.loc[d['inSample'], 'iso3']) | {'USA'}
+    return [c for c in countries() if c in keep]
+
+
+def thetaDir(variant):
+    """ results/oecd26_theta_<variant>/, a θ variant's own directory: the layers' csvs, calibration/ (its U.S.
+    sweep) and esc/ (its cost calibration). """
+    return os.path.join(REPO, 'results', 'oecd26_theta_' + variant)
+
+
+def sweepPath(root):
+    """ The U.S. sweep of a variant's directory `root`: calibration/US_rhoGridCommonX.csv. """
+    return os.path.join(root, 'calibration', 'US_rhoGridCommonX.csv')
 
 
 def thetaFromIndex(I):
@@ -99,8 +228,9 @@ def countries():
     return list(pd.read_csv(FILES['main'], usecols = ['iso3'])['iso3'])
 
 
-def countryInputs(iso3, turnout = 'cps', data = None):
-    """ One country's inputs (module docstring) as a dict; `data` a readData() triple to reuse. """
+def countryInputs(iso3, turnout = 'cps', data = None, thetaSource = INDEX):
+    """ One country's inputs (module docstring) as a dict; `data` a readData() triple to reuse. thetaSource
+    'index' (figure 1.1's index) or a variant of data/oecd26_theta.csv (NoTheta where it has no θ). """
     if turnout not in TURNOUT:
         raise ValueError('turnout must be one of {}, got {!r}'.format(TURNOUT, turnout))
     main, dist, sample = readData() if data is None else data
@@ -116,28 +246,48 @@ def countryInputs(iso3, turnout = 'cps', data = None):
         if np.isnan(μ).any():
             raise NoTurnout('{}: no CSES turnout in {}'.format(iso3, FILES['main']))
     nu4 = d[['nu_{}'.format(t) for t in NUYEARS]].to_numpy(float)
-    return inputsFrom(iso3, d['country'], nuPath(nu4), γ, y, μ, float(d['pensionSpending']),
-                      float(d['grr100_men'])/float(d['grr050_men']), turnout = turnout,
-                      sample26 = bool(sample.at[iso3, 'sample26']))
+    spending = float(d['pensionSpending'])
+    if thetaSource == INDEX:
+        index, θRaw = float(d['grr100_men'])/float(d['grr050_men']), None
+    else:
+        θRaw = thetaFromFile(iso3, thetaSource)
+        index = float(indexFromTheta(θRaw))
+        sFile = spendingFromFile(iso3, thetaSource)
+        if thetaSource in SPENDINGASFIGURE and not abs(sFile - spending) <= SPENDINGTOL:
+            raise ValueError('{}: spending {!r} under variant {!r} is not figure 1.1\'s pensionSpending {!r}'.format(
+                iso3, sFile, thetaSource, spending))
+        spending = sFile
+    inp = inputsFrom(iso3, d['country'], nuPath(nu4), γ, y, μ, spending, index,
+                     turnout = turnout, sample26 = bool(sample.at[iso3, 'sample26']), thetaSource = thetaSource)
+    if θRaw is not None:
+        inp['θRaw'] = θRaw
+    return inp
 
 
-def inputsFrom(iso3, country, ν, γ, y, μ, spending, index, turnout = 'cps', sample26 = None):
+def inputsFrom(iso3, country, ν, γ, y, μ, spending, index, turnout = 'cps', sample26 = None, thetaSource = INDEX):
     """ The inputs dict of countryInputs from its parts: ν over DATES (T,), γ_i and y_i (3,), μ_i (3,), spending
-    in % of GDP and the replacement-rate ratio I; α, ξ and the workweek from the U.S. workbook. """
+    in % of GDP and the replacement-rate ratio I; α, ξ and the workweek from the U.S. workbook. thetaSource is
+    recorded only (countryInputs reads θ). """
     α, ξ = float(testmod.pars['α']), float(testmod.pars['ξ'])
     γ, y, ν = np.array(γ, dtype = float), np.array(y, dtype = float), np.array(ν, dtype = float)   # copies
     if ν.shape != (len(DATES),):
         raise ValueError('{}: ν must have one value per date of DATES ({}), got {}'.format(iso3, len(DATES), ν.shape))
-    return {'iso3': iso3, 'country': country, 'turnout': turnout, 'sample26': sample26, 'ν': ν, 'γ': γ, 'y': y,
+    return {'iso3': iso3, 'country': country, 'turnout': turnout, 'thetaSource': thetaSource, 'sample26': sample26,
+            'ν': ν, 'γ': γ, 'y': y,
             'μ': np.array(μ, dtype = float), 'Vtilde': float(np.sum(γ*(y - 1)**2/y)), 'spending': float(spending),
             'τ0': float(spending)/100/(1 - α), 'index': float(index), 'θ': thetaFromIndex(index),
             'θRaw': 2. - 1./float(index), 'α': α, 'ξ': ξ, 'workweek': float(testmod.workweek)}
 
 
-def usBeta(path = USSWEEP, ρ = 1.0):
+def usBeta(path = USSWEEP, ρ = 1.0, thetaSource = INDEX):
     """ (β, ω, source) of the U.S. calibration without the cost at `ρ` (the sweep's row, finite residual): β is
     imposed on every economy here, ω only seeds a root. `source` names the file and the row's commit and
-    timestamp, which the drivers record so a row computed before a recalibration is recognisable (#13). """
+    timestamp, which the drivers record so a row computed before a recalibration is recognisable (#13).
+    Under a θ variant `path` is the variant's own sweep (sweepPath; FileNotFoundError while it is absent), whose
+    row must carry that thetaSource and θ0 = the variant's U.S. θ (ValueError otherwise); `source` adds both. """
+    if thetaSource != INDEX and not os.path.exists(path):
+        raise FileNotFoundError('{}: no U.S. sweep for θ variant {!r}: run calibrateRhoGrid.py --commonX --theta {} '
+                                '--lo 1 --hi 1 first'.format(path, thetaSource, thetaSource))
     df = pd.read_csv(path)
     df = df[np.isclose(df['ρ'].astype(float), ρ) & np.isfinite(pd.to_numeric(df['residual'], errors = 'coerce'))]
     if df.empty:
@@ -145,11 +295,19 @@ def usBeta(path = USSWEEP, ρ = 1.0):
     r = df.iloc[-1]
     src = '{} rho={:g} commit={} {}'.format(os.path.relpath(path, REPO).replace(os.sep, '/'), ρ,
                                             r.get('commit', ''), r.get('timestamp', ''))
+    if thetaSource != INDEX:
+        θ = thetaFromFile('USA', thetaSource)
+        if r.get('thetaSource') != thetaSource or not abs(float(r.get('θ0', np.nan)) - θ) <= 1e-12:
+            raise ValueError('{}: the row at rho = {} was calibrated at thetaSource {!r}, θ0 {!r}; variant {!r} has '
+                             'U.S. θ {!r}: rerun calibrateRhoGrid.py --theta {} --force'.format(
+                                 path, ρ, r.get('thetaSource'), r.get('θ0'), thetaSource, θ, thetaSource))
+        src += ' theta={} θ0={!r}'.format(thetaSource, θ)
     return float(r['β']), float(r['ω']), src
 
 
 class ModelOECD(ModelESC):
-    """ ModelESC on one country's OECD inputs: θ from figure 1.1's index. The cost must be proportional ('size',
+    """ ModelESC on one country's OECD inputs: θ from the datum RR0 = I (figure 1.1's index, or 1/(2 - θ) of a θ
+    variant), never from db['θ0'] (ModelUS.θOverride), which getθ refuses. The cost must be proportional ('size',
     'sizePiR' or 'scale', or none), under which it cancels from the replacement-rate ratio and I = 1/(2 - θ)
     holds; under 'flat' it does not.
 
@@ -170,6 +328,9 @@ class ModelOECD(ModelESC):
     def getθ(self):
         if self.db.get('wedgeSpec') == 'flat':
             raise NotImplementedError("ModelOECD: θ = 2 - 1/I needs a proportional cost; 'flat' is not one.")
+        if self.θOverride() is not None:
+            raise ValueError("ModelOECD: θ enters through RR0 = 1/(2 - θ) (countryInputs' thetaSource); "
+                             "db['θ0'] is not read here.")
         return thetaFromIndex(self.db['RR0'])
 
     def _calSetPars(self, pars):

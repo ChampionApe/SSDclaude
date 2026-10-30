@@ -85,15 +85,13 @@ def _oecdBlock(df, source, host, calibration, ξ):
     return rows
 
 
-OECDHOSTS = ('US', 'USMedicare')
+OECDHOSTS = ('US',)
 
 
 def oecdCounterfactuals():
-    """ OECD_Counterfactuals: every counterfactual of section 6 on the U.S. and on the U.S. with Medicare among
-    the transfers to the old (config.US['readings']; France referenced to that U.S.), under both calibrations of
-    the taste for leisure and at the three rho of the paper ('main'); and on the U.S. at three Frisch
-    elasticities, rho = 1, common X ('xi'; python/US/runShocksXi.py). Both effects: 'full' and 'ee' (the tax
-    held at its baseline path). """
+    """ OECD_Counterfactuals: every counterfactual of section 6 on the U.S., under both calibrations of the taste for
+    leisure and at the three rho of the paper ('main'); and on the U.S. at three Frisch elasticities, rho = 1, common
+    X ('xi'; python/US/runShocksXi.py). Both effects: 'full' and 'ee' (the tax held at its baseline path). """
     ξ0 = _workbookXi()
     rows = []
     for host in OECDHOSTS:
@@ -132,9 +130,9 @@ def _escRows(source, host, spec, ξ, ρ, scenario, pinned, lev, base):
 def escCounterfactuals():
     """ ESC_Counterfactuals: section 7's counterfactuals on the U.S. under both cost specifications, each read
     with the design pinned and chosen, at the three rho of the paper ('main'); and acute ageing on the U.S. at
-    three Frisch elasticities, rho = 1 ('xi'; escXiRobustness.csv, whose baselines are its path rows in 2020).
-    The design is a level; the tax rate, savings over GDP and the workweek are also changes against the
-    baseline of the same reading. """
+    three Frisch elasticities, rho = 1 ('xi'; escXiRobustness.csv, whose baselines are its path rows in 2020), where
+    that csv holds rows at the θ variant (python/US/runESCxi.py, not a stage (ii) entry). The design is a level; the
+    tax rate, savings over GDP and the workweek are also changes against the baseline of the same reading. """
     ξ0 = _workbookXi()
     rows = []
     for host in ('US',):
@@ -152,7 +150,10 @@ def escCounterfactuals():
                         except D.MissingInput:          # France has no chosen reading; mild ageing is rho = 1 only
                             continue
                         rows += _escRows('main', host, spec, ξ0, ρ, key, pinned, _escLevels(r), base)
-    xi = D.escXi()
+    try:
+        xi = D.escXi()
+    except D.MissingInput:
+        return pd.DataFrame(rows)
     year0 = C.usCalendar()['year0']
     for ξ in sorted(xi['xi'].unique()):
         sub = xi[np.isclose(xi['xi'], ξ)]
@@ -204,18 +205,24 @@ def _pathRows(df, source, country, wedges, spec, ρ, ξ, θStar, years):
 
 def escPaths():
     """ ESC_Paths: the baseline path with the design chosen and with it pinned at the observed design. The
-    U.S. at the three rho of the paper under both cost specifications ('main') and at three Frisch
-    elasticities, rho = 1 ('xi'); the UK and France at rho = 1 under the U.S. cost parameter and the UK also
-    under its own ('host'; escPathHost.csv). The U.S. rows go under both wedgeFrom labels, its own parameter
-    being the U.S. one. Under CRRA the pinned workweek is not stored (escPathCRRA.csv): NaN. """
+    U.S. at the three rho of the paper under the paper's cost and under the comparison cost where it is calibrated
+    (rho = 1; 'main') and at three Frisch elasticities, rho = 1 ('xi', where escXiRobustness.csv holds rows at the θ
+    variant); the UK and France at rho = 1 under the U.S. cost parameter and under their own where they have one
+    ('host'; escPathHost.csv). The U.S. rows go under both wedgeFrom labels, its own parameter being the U.S. one.
+    Under CRRA the pinned workweek is not stored (escPathCRRA.csv): NaN. """
     years, ξ0 = _pathYears(), _workbookXi()
     calib = D.escCalibration()
     rows = []
     for spec in (C.US['esc']['spec'], C.US['esc']['comparisonSpec']):
         for ρ in C.US['esc']['ρTable']:
+            if spec != C.US['esc']['spec'] and (float(ρ), spec) not in calib:
+                continue                                # the comparison cost is calibrated under log only
             θStar = float(calib[(float(ρ), spec)]['θStar'])
             rows += _pathRows(D.escPath(ρ, spec = spec), 'main', 'US', ('US', 'own'), spec, ρ, ξ0, θStar, years)
-    xi = D.escXi()
+    try:
+        xi = D.escXi()
+    except D.MissingInput:
+        xi = pd.DataFrame(columns = ['xi', 'kind', 'pos'])
     # A stale row (crossCuttingFindings #13): the workbook-xi path must be escPath.csv's rho = 1 path.
     own = xi[np.isclose(xi['xi'], ξ0) & (xi['kind'] == 'path')].sort_values('pos')
     if not own.empty:

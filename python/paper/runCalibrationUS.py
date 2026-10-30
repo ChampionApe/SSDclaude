@@ -3,7 +3,7 @@ rest on. The Argentina arm is runCalibration.py; the two are separate entry poin
 to different sweep scripts, and share config.py and results/paper/.
 
 Run:  .venv\Scripts\python.exe python\paper\runCalibrationUS.py       the MAIN part: check what exists, solve what does not
-      ... --prepub                                                     the PRE-PUBLICATION part only (the exact CRRA wedge, the phi runs)
+      ... --prepub                                                     the PRE-PUBLICATION part only (the exact CRRA wedge)
       ... --all                                                        both parts
       ... --force                                                      re-solve every point
       ... --summaryOnly                                                skip solving; just rebuild the summary
@@ -11,16 +11,21 @@ Run:  .venv\Scripts\python.exe python\paper\runCalibrationUS.py       the MAIN p
       ... --dry                                                        print the commands and exit
 
 TWO PARTS, as runShocksUS.py: the main part is the sweeps, the LOG wedge calibration and the summary; the
-pre-publication part is the EXACT CRRA wedge calibration (runESCcrra.py --exact, the published method,
-~1.2 h per rho from scratch) and the phi-robustness wedge calibrations under LOG (the phi footnote).
+pre-publication part is the EXACT CRRA wedge calibration of the paper's cost and the UK's own (runESCcrra.py
+--exact, the published method, ~2.5 h per rho from scratch).
+
+THE θ VARIANT. Every command carries config.thetaFlags() (--theta config.US['theta'] --main): the U.S., France and
+the UK at the variant's θ0 (data/oecd26_theta.csv), written to the standard results/ paths. A sweep point or a cost
+calibration counts as present only at that thetaSource and θ0 (config.atTheta); a sweep csv holding rows of another
+θ is re-solved whole (--force to the child, which refuses to resume across a θ0).
 
 Two things happen, and only the first is expensive:
 
-  1. The rho sweeps. Delegated to python/US/calibrateRhoGrid.py (the US and its Medicare reading, which
-     calibrate beta and omega against R and tau) and python/US/calibrateRhoGridEU.py (France and the UK,
+  1. The rho sweeps at config.US['ρGrid'] (--rhos). Delegated to python/US/calibrateRhoGrid.py (the US, which
+     calibrates beta and omega against R and tau) and python/US/calibrateRhoGridEU.py (France and the UK,
      which IMPOSE the US beta at the same rho and calibrate omega alone). This file is the DECLARATION of
-     what the paper calibrates, not a second implementation of it. ~4.5 min per country per variant; all
-     are resumable and return already-solved rho from their own csv, so a re-run with nothing to do costs
+     what the paper calibrates, not a second implementation of it. A few minutes per country per variant;
+     all are resumable and return already-solved rho from their own csv, so a re-run with nothing to do costs
      seconds.
 
      ORDER MATTERS HERE, unlike in the Argentina arm. calibrateRhoGridEU.py reads the US sweep csv for
@@ -30,10 +35,10 @@ Two things happen, and only the first is expensive:
   2. The endogenous-theta (sec:esc) cost calibrations: the cost parameter per (rho, spec) such that the
      leaded choice at 2020 reproduces the observed design, at config.US['esc']'s phi. Delegated to
      python/US/runESC.py (LOG, rho = 1 -- the paper's spec AND the comparison spec, also the no-wedge
-     corner row) and python/US/runESCcrra.py (CRRA, the other rho in the esc table grid, both specs, with
-     config.escBracket's scan bracket per rho and spec), and the same for the cost variant of section 7
-     (config.US['esc']['costVariants'], the Pi-inclusive cost, into its --tag csvs). EXPENSIVE where missing (~45 min per CRRA
-     (rho, spec): each trial value recalibrates (beta, omega) and runs the exact recursion), which is why
+     corner row, and the cost variant of section 7, config.US['esc']['costVariants'], the Pi-inclusive cost,
+     into its --tag csv) and python/US/runESCcrra.py (CRRA, the other rho in the esc table grid, the paper's
+     spec and the UK's own, with config.escBracket's scan bracket per rho). EXPENSIVE where missing (~2.5 h
+     per CRRA rho: each trial value recalibrates (beta, omega) and runs the exact recursion), which is why
      the check is per-(rho, spec) and the drivers merge into their csvs rather than overwriting them.
 
   3. The summary, results/paper/usCalibrationSummary.csv -- one row per country. Stage (iii) builds the
@@ -51,47 +56,54 @@ import numpy as np, pandas as pd
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import config as C
 
-# US first -- see the docstring; the readings (config.US['readings']) are US calibrations of their own
-SWEEPS = ('US',) + tuple(C.US['readings']) + C.US['countries'][1:]
+# US first -- see the docstring
+SWEEPS = ('US',) + C.US['countries'][1:]
 
 
 def sweepCmd(country, commonX = False, force = False):
-    """ The command that produces `country`'s sweep csv, at config.US's grid and settings. """
+    """ The command that produces `country`'s sweep csv, at config.US's grid and settings and its θ variant.
+    --force also where the csv holds rows of another θ (stale), which the child would refuse to resume. """
     g, ρ = C.US['gridSettings'], C.US['ρGrid']
-    step = round(ρ[1] - ρ[0], 10)
-    common = ['--lo', str(min(ρ)), '--hi', str(max(ρ)), '--step', str(step),
-              '--anchor', str(C.US['ρAnchor']), '--n', str(g['n']), '--ns', str(g['ns']),
-              '--verify', str(g['verify']), '--verifyN', str(g['verifyN']),
-              '--interpKind', g['interpKind'], '--smoothKnots', str(g['smoothKnots'])]
+    common = (['--rhos'] + [str(r) for r in ρ]
+              + ['--anchor', str(C.US['ρAnchor']), '--n', str(g['n']), '--ns', str(g['ns']),
+                 '--verify', str(g['verify']), '--verifyN', str(g['verifyN']),
+                 '--interpKind', g['interpKind'], '--smoothKnots', str(g['smoothKnots'])] + C.thetaFlags())
     if country == 'US':
         cmd = [C.PYTHON, os.path.join(C.USDIR, 'calibrateRhoGrid.py')] + common
-    elif country in C.US['readings']:
-        cmd = ([C.PYTHON, os.path.join(C.USDIR, 'calibrateRhoGrid.py')] + common
-               + ['--medicare', str(C.US['readings'][country]['medicare'])])
     else:
         cmd = [C.PYTHON, os.path.join(C.USDIR, 'calibrateRhoGridEU.py'), '--country', country] + common
-    return cmd + (['--commonX'] if commonX else []) + (['--force'] if force else [])
+    return cmd + (['--commonX'] if commonX else []) + (['--force'] if force or stale(country, commonX) else [])
+
+
+def _sweep(country, commonX = False):
+    """ `country`'s sweep csv, or None while absent. """
+    path = C.usSweepCsv(country, commonX)
+    return pd.read_csv(path) if os.path.exists(path) else None
+
+
+def stale(country, commonX = False):
+    """ Does `country`'s sweep csv hold a row of another θ than config.US['theta'] and its θ0? """
+    df = _sweep(country, commonX)
+    return df is not None and len(C.atTheta(df, country = country)) < len(df)
 
 
 def missing(country, commonX = False):
-    """ rho in the paper's grid that `country`'s sweep csv does not already carry. """
-    path = C.usSweepCsv(country, commonX)
-    if not os.path.exists(path):
+    """ rho in the paper's grid that `country`'s sweep csv does not already carry at the θ variant. """
+    df = _sweep(country, commonX)
+    if df is None:
         return list(C.US['ρGrid'])
-    df = pd.read_csv(path)
+    df = C.atTheta(df, country = country)
     have = set(np.round(df.loc[np.isfinite(pd.to_numeric(df['residual'], errors = 'coerce')), 'ρ'], 6))
     return [ρ for ρ in C.US['ρGrid'] if round(ρ, 6) not in have]
 
 
-PHIROBUST = [0.25, 0.75]      # the phi footnote in sec:esc: LOG wedge calibrations at phi != esc['phi']
-
-
 def _escLogRows(phis, name = 'escCalibration.csv'):
-    """ {(spec, phi)} of converged LOG wedge calibrations in results/esc/`name`, under the headline variant. """
+    """ {(spec, phi)} of converged LOG wedge calibrations in results/esc/`name`, under the headline variant and
+    the θ variant (config.atTheta at the U.S. θ0, which every ESC row records). """
     path = os.path.join(C.ESCDIR, name)
     if not os.path.exists(path):
         return set()
-    df = pd.read_csv(path)
+    df = C.atTheta(pd.read_csv(path), country = 'US')
     ok = df[df['converged'].astype(bool)]
     if 'commonX' in ok.columns:
         ok = ok[ok['commonX'].astype(bool) == bool(C.US['commonX'])]
@@ -103,7 +115,7 @@ def _exactRows(path, phi):
     """ {(rho, spec)} of converged exact CRRA cost calibrations in `path` at `phi`, headline variant. """
     if not os.path.exists(path):
         return set()
-    df = pd.read_csv(path)
+    df = C.atTheta(pd.read_csv(path), country = 'US')
     if 'method' not in df.columns:
         df['method'] = 'path'
     ok = df[df['converged'].astype(bool) & np.isclose(df['phi'], phi) & (df['method'].fillna('path') == 'exact')]
@@ -118,21 +130,20 @@ def escMissing(part = 'main', force = False, strict = True):
     into their csvs (runESC.mergeWrite), so partial re-runs are safe.
 
     'main': the LOG calibrations at esc['phi'] under the paper's spec and the comparison spec (about 80 s
-    each; also the no-wedge row), and the cost variant's (esc['costVariants'], its own --tag csvs).
-    'prepub': the EXACT CRRA calibrations at every rho the ESC tables print under the paper's spec and the
-    comparison spec (method = 'exact' rows -- the path iteration's rows in the same csv do not count), one
-    command per (rho, spec) with its own scan bracket from config.escBracket, the cost variant's in its
-    tagged csv, the UK's own (the deep test), and the LOG calibrations at PHIROBUST. `force` lists them all. A placeholder
-    bracket raises unless `strict` is False (the --dry listing), which prints it as `--bracket <unset>
-    <unset>` instead. """
+    each; also the no-wedge row), and the cost variant's (esc['costVariants'], its own --tag csv).
+    'prepub': the EXACT CRRA calibrations of the paper's spec at every rho the ESC tables print (method = 'exact'
+    rows -- the path iteration's rows in the same csv do not count), one command per rho with its own scan bracket
+    from config.escBracket, and the UK's own (the deep test). `force` lists them all. Every command carries
+    config.thetaFlags() and only rows at the θ variant count. A placeholder bracket raises unless `strict` is False
+    (the --dry listing), which prints it as `--bracket <unset> <unset>` instead. """
     esc = C.US['esc']
     spec, phi = esc['spec'], esc['phi']
     specsL = [spec] + ([esc['comparisonSpec']] if esc.get('comparisonSpec') else [])
     cv = esc['costVariants']
     # The ESC leg runs under the headline calibration variant only -- see paper/runShocksUS.ESCVARIANT.
-    variant = ['--commonX'] if C.US['commonX'] else []
+    variant = (['--commonX'] if C.US['commonX'] else []) + C.thetaFlags()
     cmds = []
-    haveL = set() if force else _escLogRows([phi] + PHIROBUST)
+    haveL = set() if force else _escLogRows([phi])
     lackL = [s for s in specsL if (s, round(phi, 6)) not in haveL]
     if part in ('main', 'all') and lackL:
         cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESC.py'), '--stage', 'calib',
@@ -145,13 +156,11 @@ def escMissing(part = 'main', force = False, strict = True):
         exact = [C.PYTHON, os.path.join(C.USDIR, 'runESCcrra.py'), '--exact', '--stage', 'calib']
         # the exact recursion's design layer (config.US['esc']), on every runESCcrra.py command below
         layer = ['--designRule', esc['designRule'], '--Ma', str(esc['Ma'])]
-        # (spec, tag): the paper's and the comparison spec into escCalibrationCRRA.csv, the cost variant
-        # into its tagged csv.
-        for sp, tag in [(s, '') for s in specsL] + [(cv['spec'], cv['tag'])]:
+        # the paper's spec into escCalibrationCRRA.csv
+        for sp, tag in [(spec, '')]:
             have = set() if force else _exactRows(os.path.join(C.ESCDIR, 'escCalibrationCRRA' + tag + '.csv'), phi)
             lackρ = [ρ for ρ in esc['ρTable'] if ρ != C.US['ρAnchor'] and (round(ρ, 6), sp) not in have]
-            scan = (['--nsScan', str(cv['nsScan']), '--nScan', str(cv['nScan']), '--xtol', str(cv['xtol'])] if tag
-                    else ['--nsScan', str(esc['nsScan'])])
+            scan = ['--nsScan', str(esc['nsScan'])]
             opts = (['--spec', sp, '--phi', str(phi), '--ns', str(esc['ns2D'])] + scan
                     + ['--nCand2D', str(esc['nCand2D'])] + (['--tag', tag] if tag else []) + variant + layer)
             # A rho with its own bracket gets its own command (the bracket is one pair); the rest share one
@@ -178,7 +187,7 @@ def escMissing(part = 'main', force = False, strict = True):
         pathUK = os.path.join(C.ESCDIR, 'escCalibrationCRRAUK.csv')
         haveUK = set()
         if os.path.exists(pathUK) and not force:
-            df = pd.read_csv(pathUK)
+            df = C.atTheta(pd.read_csv(pathUK), country = 'US')
             ok = df[df['converged'].astype(bool) & (df['method'] == 'exact') & (df['spec'] == spec)
                     & (df['commonX'].astype(bool) == bool(C.US['commonX']))]
             haveUK = {round(float(r), 6) for r in ok['ρ']}
@@ -191,13 +200,16 @@ def escMissing(part = 'main', force = False, strict = True):
                         + ['--nScan', str(uk['nScan']), '--spec', spec, '--phi', str(phi),
                            '--ns', str(esc['ns2D']), '--nsScan', str(uk['nsScan'][ρ]),
                            '--nCand2D', str(esc['nCand2D'])] + variant + layer)
-        # phi is a parameter of f only under 'scale'/'flat'; under 'size' it is a dummy key and a
-        # run at another phi would reproduce the esc['phi'] calibration under a different key.
-        lackφ = [p for p in PHIROBUST if spec in ('scale', 'flat') and (spec, round(p, 6)) not in haveL]
-        if lackφ:
-            cmds.append([C.PYTHON, os.path.join(C.USDIR, 'runESC.py'), '--stage', 'calib',
-                         '--spec', spec, '--phi'] + [str(p) for p in lackφ] + variant)
     return cmds
+
+
+def laneOf(cmd):
+    """ The csv a cost-calibration command of escMissing writes (its stem): escCalibration<tag> (runESC.py) or
+    escCalibrationCRRA<host><tag> (runESCcrra.py). Commands of one lane must run in turn. """
+    opt = lambda k: cmd[cmd.index(k) + 1] if k in cmd else ''
+    host = opt('--host')
+    crra = os.path.basename(cmd[1]) == 'runESCcrra.py'
+    return 'escCalibration' + ('CRRA' + ('' if host in ('', 'US') else host) if crra else '') + opt('--tag')
 
 
 def summarise(country, ρ = None, commonX = False):
@@ -240,14 +252,17 @@ def summarise(country, ρ = None, commonX = False):
     # beta/omega/lambda come from the sweep csv, not the pickle: the csv is the record of the calibration
     # and is what every other paper number is read against, so the table must not be able to disagree
     # with it. theta is on the instance only -- it is derived, not searched.
-    df = pd.read_csv(C.usSweepCsv(country, commonX))
+    df = C.atTheta(pd.read_csv(C.usSweepCsv(country, commonX)), country = country)
     row = df.loc[np.isclose(df['ρ'], ρ)]
     if row.empty:
-        raise SystemExit('rho={} is not in {} -- run the sweep first.'
-                         .format(ρ, os.path.relpath(C.usSweepCsv(country, commonX), C.REPO)))
+        raise SystemExit('rho={} at θ variant {} is not in {} -- run the sweep first.'
+                         .format(ρ, C.US['theta'], os.path.relpath(C.usSweepCsv(country, commonX), C.REPO)))
     row = row.iloc[-1]
+    if not np.isclose(rec['θ'], float(row['θ0']), rtol = 0, atol = 1e-12):
+        raise SystemExit('{}: the pickle at rho={} has θ {} but its sweep row θ0 {}: pickle and csv from different '
+                         'runs'.format(country, ρ, rec['θ'], row['θ0']))
     for k in ('β', 'ω', 'λ', 'X', 'R', 'τ', 'sr', 'h', 'hbar', 'residual', 'verifyResidual',
-              'hoursDrift', 'commit', 'timestamp'):
+              'hoursDrift', 'thetaSource', 'θ0', 'commit', 'timestamp'):
         rec[k] = row[k] if k in row.index else np.nan
     # The workweek and the tax target are inputs, and tau is a target: a mismatch here means the pickle
     # and the csv row came from different runs, or that the workbook moved under the sweep.
@@ -272,10 +287,23 @@ def main():
     p.add_argument('--dry', action = 'store_true', help = 'print the sweep commands and exit')
     p.add_argument('--rho', type = float, default = None, help = 'summarise a rho other than the baseline')
     p.add_argument('--prepub', action = 'store_true',
-                   help = 'the pre-publication part only: the exact CRRA wedge and the phi runs, no sweeps')
+                   help = 'the pre-publication part only: the exact CRRA wedge, no sweeps')
     p.add_argument('--all', dest = 'all_', action = 'store_true', help = 'both parts')
+    p.add_argument('--lanes', default = None, metavar = 'LOGDIR',
+                   help = 'run the cost calibrations that write different csvs side by side (one process per csv, '
+                          "each csv's commands in turn; laneOf), each lane logging to LOGDIR/escLane_<csv>.log")
+    p.add_argument('--keepGoing', action = 'store_true',
+                   help = 'after a failed sweep or cost calibration, go on with the others and the summary; exit 1 '
+                          'at the end if any failed')
     a = p.parse_args()
     part = 'all' if a.all_ else ('prepub' if a.prepub else 'main')
+    failed = []
+
+    def fail(msg):
+        if not a.keepGoing:
+            raise SystemExit(msg)
+        print('FAILED ' + msg)
+        failed.append(msg)
 
     variants = [False] + ([True] if a.commonX else [])
     if a.dry:
@@ -299,14 +327,15 @@ def main():
                 # calibrateRhoGridEU refuses to interpolate it -- so an incomplete US sweep must stop the
                 # run here rather than fail per-point halfway through a march.
                 if c != 'US' and missing('US', cx):
-                    raise SystemExit('The US sweep is incomplete at {}; France/UK impose its beta and '
-                                     'cannot be swept first.'.format(missing('US', cx)))
+                    fail('The US sweep is incomplete at {}; France/UK impose its beta and '
+                         'cannot be swept first ({}).'.format(missing('US', cx), label))
+                    continue
                 print('\n{}: calibrating {} point(s)'.format(label, len(todo)))
                 cmd = sweepCmd(c, cx, a.force)
                 print('  ' + ' '.join(cmd))
                 r = subprocess.run(cmd, cwd = C.REPO)
                 if r.returncode:
-                    raise SystemExit('sweep for {} exited {}'.format(label, r.returncode))
+                    fail('sweep for {} exited {}'.format(label, r.returncode))
 
     if not a.summaryOnly:
         # --- the ESC cost calibrations (sec:esc). Per-(rho, spec, method) check, so a complete
@@ -315,18 +344,40 @@ def main():
         cmds = escMissing(part, a.force)
         if not cmds:
             print('ESC cost ({}): every combination already calibrated.'.format(part))
+        if a.lanes:
+            # one lane per csv the commands write (laneOf), each lane's commands in turn, the lanes side by side:
+            # no two processes ever merge into one csv (runESC.mergeWrite reads, then writes)
+            lanes = {}
+            for cmd in cmds:
+                lanes.setdefault(laneOf(cmd), []).append(cmd)
+            os.makedirs(a.lanes, exist_ok = True)
+            script = ('import subprocess, sys, json\ncmds = json.loads(sys.argv[1])\nbad = 0\n'
+                      'for c in cmds:\n    print("ESC cost: " + " ".join(c), flush = True)\n'
+                      '    bad += subprocess.run(c).returncode != 0\nsys.exit(1 if bad else 0)\n')
+            procs = {}
+            for lane, cs in lanes.items():
+                log = open(os.path.join(a.lanes, 'escLane_{}.log'.format(lane)), 'w', encoding = 'utf-8')
+                print('ESC cost lane {} ({} command(s)) -> {}'.format(lane, len(cs), log.name))
+                procs[lane] = (subprocess.Popen([C.PYTHON, '-c', script, json.dumps(cs)], cwd = C.REPO,
+                                                stdout = log, stderr = subprocess.STDOUT), log)
+            for lane, (pr, log) in procs.items():
+                if pr.wait():
+                    fail('ESC calibration lane {} exited {} ({})'.format(lane, pr.returncode, log.name))
+                log.close()
+            cmds = []
         for cmd in cmds:
             print('\nESC cost: ' + ' '.join(cmd))
             r = subprocess.run(cmd, cwd = C.REPO)
             if r.returncode:
-                raise SystemExit('ESC calibration exited {}'.format(r.returncode))
+                fail('ESC calibration exited {}: {}'.format(r.returncode, ' '.join(cmd[1:])))
 
     # Both variants, always: the paper's headline outputs read one and their robustness twins the
     # other, so a summary carrying only one of them blocks half the build (config.US['commonX']).
     # A sweep that does not exist yet is left out of the summary rather than failing it; its tables
     # report MissingInput in stage (iii).
     recs = [summarise(c, a.rho, cx) for cx in (False, True) for c in SWEEPS
-            if os.path.exists(C.usSweepCsv(c, cx))]
+            if os.path.exists(C.usSweepCsv(c, cx))
+            and (C.US['ρBaseline'] if a.rho is None else a.rho) not in missing(c, cx)]
     os.makedirs(C.PAPERDIR, exist_ok = True)
     out = os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv')
     pd.DataFrame(recs).to_csv(out, index = False)
@@ -342,6 +393,8 @@ def main():
             continue
         print('  {:<8} {:8.4f} {:8.4f} {:8.4f} {:8.2f} {:8.3f} {:8.3f}'.format(
             r['country'], r['θ'], r['ω'], r['β'], r['Xbar'], r['ηHηL'], r['ν2020']))
+    if failed:
+        raise SystemExit('failed: ' + ' | '.join(failed))
 
 
 if __name__ == '__main__':

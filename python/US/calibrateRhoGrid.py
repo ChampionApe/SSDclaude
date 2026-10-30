@@ -7,6 +7,15 @@ Run:  .venv\Scripts\python.exe python\US\calibrateRhoGrid.py [options]
       ... --medicare 0.029                    the 'transfers to the old' reading (test.reading): Medicare
                                               spending, share of GDP, in tau0 and as a flat share of theta;
                                               its own csv and pickle directory (USMedicare_rhoGrid*)
+      ... --rhos 0.5 1 2                      the grid as a list (instead of --lo/--hi/--step)
+      ... --theta VARIANT [--root DIR]        theta imposed as db['θ0'] = the U.S. row of data/oecd26_theta.csv
+                                              under VARIANT (ModelUS.getθ, oecd26.thetaFromFile); csv and pickles
+                                              under DIR/calibration/, DIR the variant's directory (default
+                                              results/oecd26_theta_<variant>/, oecd26.thetaDir),
+                                              never results/calibration/; its rows carry thetaSource and θ0, and
+                                              a csv of another θ0 is refused unless --force. Not with --medicare.
+      ... --theta VARIANT --main              the pipeline's main variant (python/paper/config.py US['theta'],
+                                              oecd26.thetaRoot): the same rows into results/calibration/.
 
 The march is anchored at rho=1, where the LOG solver applies and no warm start is needed, and walks
 outward in both directions (gridsearch.continuation.marchGrid). Each CRRA point is a full backward
@@ -40,7 +49,7 @@ Read it as a level across points -- a point an order of magnitude above its neig
 at -- not as an error bar on beta.
 
 Note what is NOT swept here. beta and omega are the only calibrated parameters; theta is closed-form from
-the replacement-rate ratio and does not depend on rho, and under --commonX the hours-unit parameter X is
+the replacement-rate ratio (or imposed, --theta) and does not depend on rho, and under --commonX the hours-unit parameter X is
 recovered after the root rather than inside it (docs eq:calibration:Xsolve). So the columns that move
 across rho are beta, omega and the untargeted savings rate -- R and tau are targets and must not move.
 """
@@ -71,6 +80,7 @@ COLUMNS = ['ρ', 'preferences', 'requested', 'residual', 'verifyResidual',
            'R', 'τ', 'sr', 'h', 'hbar', 'nfev', 'time', 'n', 'ns', 'smoothKnots', 'interpKind',
            'nEqMax', 'nCandMax', 'nFallback',
            'x0', 'x1', 'commit', 'timestamp']
+THETACOLUMNS = ['thetaSource', 'θ0']      # appended under --theta only (oecd26.usBeta reads them)
 # R and τ are targets, so they are constants down the csv by construction -- kept anyway, because a column
 # that is supposed to be constant is the cheapest possible check that a point converged to the right thing
 # rather than merely converged. sr/h/hbar are the untargeted quantities and are what actually vary.
@@ -109,6 +119,39 @@ def readDone(path):
     return done, df
 
 
+def thetaRun(variant, commonX, medicare = None, out = None, pkldir = None, root = None, main = False):
+    """ --theta VARIANT: (θ0, csv path, pickle directory), the last two by default under root/calibration/, root
+    the variant's directory (oecd26.thetaDir(variant) by default; a relative path is the repo's), results/ under
+    `main` (oecd26.thetaRoot: VARIANT must be the pipeline's main variant). SystemExit with --medicare (Ushare0 does
+    not scale θ0, ModelUS.getθ), with --main and --root, where the variant has no U.S. θ, or, without --main, for a
+    path under results/calibration/. """
+    import oecd26
+    if medicare is not None:
+        raise SystemExit('--theta imposes θ0, which Ushare0 does not scale: not with --medicare')
+    if main and root is not None:
+        raise SystemExit('--main writes results/calibration/: not with --root')
+    try:
+        θ0 = oecd26.thetaFromFile('USA', variant)
+        top = oecd26.thetaRoot(variant, main) if root is None else os.path.join(REPO, root)
+    except (ValueError, FileNotFoundError) as e:          # NoTheta is a ValueError
+        raise SystemExit('--theta {}: {}'.format(variant, e))
+    root = os.path.join(top, 'calibration')
+    out = out or os.path.join(root, 'US' + ('_rhoGridCommonX' if commonX else '_rhoGrid') + '.csv')
+    pkldir = pkldir or os.path.join(root, 'instancesUS' + ('CommonX' if commonX else ''))
+    for q in (out, pkldir):
+        if not main and os.path.normcase(os.path.abspath(q)).startswith(os.path.normcase(OUTDIR + os.sep)):
+            raise SystemExit('--theta {}: {} is under results/calibration/, which holds the main θ variant '
+                             '(--main) only'.format(variant, q))
+    return θ0, out, pkldir
+
+
+def rhoGrid(a):
+    """ The sweep's grid: --rhos when given, else --lo to --hi by --step; rounded to 6 dp (the csv's key). """
+    if a.rhos:
+        return np.round(np.array(sorted(set(a.rhos)), dtype = float), 6)
+    return np.round(np.arange(a.lo, a.hi + 0.5*a.step, a.step), 6)
+
+
 def main():
     p = argparse.ArgumentParser(description = 'Calibrate the US model across a grid of rho.')
     p.add_argument('--lo', type = float, default = 0.5)
@@ -141,19 +184,36 @@ def main():
     p.add_argument('--medicare', type = float, default = None,
                    help = "Medicare spending as a share of GDP: the 'transfers to the old' reading "
                           '(test.reading), written to USMedicare_rhoGrid*.csv and instancesUSMedicare*')
+    p.add_argument('--theta', default = None,
+                   help = "a variant of data/oecd26_theta.csv: θ imposed at the U.S. row's value (db['θ0'])")
+    p.add_argument('--root', default = None,
+                   help = "the variant's directory (default results/oecd26_theta_<variant>); writes calibration/")
+    p.add_argument('--main', action = 'store_true',
+                   help = "with --theta config.US['theta']: results/calibration/ (the paper's), oecd26.thetaRoot")
+    p.add_argument('--rhos', type = float, nargs = '*', default = None,
+                   help = 'the grid as a list of rho (overrides --lo/--hi/--step); must contain --anchor')
     p.add_argument('--out', default = None)
     p.add_argument('--pkldir', default = None, help = 'where the per-point pickled instances go')
     a = p.parse_args()
 
     country = 'US' if a.medicare is None else 'USMedicare'
     tag = country + ('_rhoGridCommonX' if a.commonX else '_rhoGrid')
-    out = a.out or os.path.join(OUTDIR, tag + '.csv')
-    pkldir = a.pkldir or os.path.join(OUTDIR, 'instances' + country + ('CommonX' if a.commonX else ''))
-    pars = testmod.reading(a.medicare)
-    os.makedirs(OUTDIR, exist_ok = True)
+    if a.theta is None:
+        if a.root is not None or a.main:
+            raise SystemExit('--root and --main need --theta VARIANT')
+        out = a.out or os.path.join(OUTDIR, tag + '.csv')
+        pkldir = a.pkldir or os.path.join(OUTDIR, 'instances' + country + ('CommonX' if a.commonX else ''))
+        pars, columns, extra = testmod.reading(a.medicare), COLUMNS, {}
+        os.makedirs(OUTDIR, exist_ok = True)
+    else:
+        θ0, out, pkldir = thetaRun(a.theta, a.commonX, a.medicare, a.out, a.pkldir, a.root, a.main)
+        pars, columns, extra = testmod.reading() | {'θ0': θ0}, COLUMNS + THETACOLUMNS, {'thetaSource': a.theta, 'θ0': θ0}
+        os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok = True)
     os.makedirs(pkldir, exist_ok = True)
 
-    grid = np.round(np.arange(a.lo, a.hi + 0.5*a.step, a.step), 6)
+    grid = rhoGrid(a)
+    if round(a.anchor, 6) not in set(grid):
+        raise SystemExit('the anchor rho={} is not on the grid {}'.format(a.anchor, list(grid)))
     commit = gitCommit()
     # Keyed by solver: 'ns' sizes a state grid the LOG solver does not have, and passing it there would
     # be silently ignored rather than rejected. 'n' is shared -- both solvers grid tau. smoothKnots and
@@ -166,17 +226,26 @@ def main():
               if a.verify else None)
 
     done, df = ({}, pd.DataFrame(columns = COLUMNS)) if a.force else readDone(out)
+    if extra and len(df):                 # a resumed variant csv must be at this θ0 (#13)
+        same = (df['thetaSource'] == a.theta) & (pd.to_numeric(df['θ0']) - θ0).abs().le(1e-12) \
+            if set(THETACOLUMNS) <= set(df.columns) else pd.Series(False, index = df.index)
+        if not same.all():
+            raise SystemExit('{}: rows at another thetaSource or θ0 than {} {!r}: rerun with --force'.format(
+                out, a.theta, θ0))
     # Keyed by rho, not a list: marchGrid reports one record per *attempt*, so a point that fails on the
     # extrapolated start and succeeds on the carried one arrives twice, and a resumed run revisits values
     # already in the csv. Keying makes every write idempotent and lets a success overwrite a failure.
     rows = {} if a.force else {round(float(r['ρ']), 6): r for r in df.to_dict('records')}
 
-    print('grid: {} points, {} to {} step {}'.format(len(grid), grid[0], grid[-1], a.step))
+    print('grid: {} points, {}'.format(len(grid), ', '.join('{:g}'.format(v) for v in grid)))
     print('variant: {},  anchor rho={},  tau nodes {},  state nodes {},  verify at {}/{}'.format(
         'common X' if a.commonX else 'vector X_i', a.anchor, a.n, a.ns, a.verifyN, a.verify or 'off'))
     print('targets: tau0={:.6f}  RR0={:.6f}  Ushare0={:.6f}{}'.format(
         pars['τ0'], pars['RR0'], pars['Ushare0'],
         '' if a.medicare is None else '   (Medicare {} of GDP)'.format(a.medicare)))
+    if extra:
+        import oecd26
+        print('theta imposed: θ0={!r} (variant {!r} of {}; RR0 not read)'.format(θ0, a.theta, oecd26.FILES['theta']))
     print('out: {}'.format(os.path.relpath(out, REPO)))
     if done:
         print('resuming: {} of {} points already present'.format(
@@ -185,7 +254,7 @@ def main():
     m = ModelUS(pars = pars | {'ρ': float(a.anchor)}, commonX = a.commonX, **testmod.kwargs)
 
     def write():
-        (pd.DataFrame(list(rows.values())).reindex(columns = COLUMNS).sort_values('ρ')
+        (pd.DataFrame(list(rows.values())).reindex(columns = columns).sort_values('ρ')
            .to_csv(out, index = False))
 
     def solve(ρ, x0):
@@ -219,7 +288,7 @@ def main():
             return
         if r['result'].get('cached'):
             return
-        rows[key] = toRow(r['result'], r['requested'], commit)
+        rows[key] = toRow(r['result'], r['requested'], commit) | extra
         write()
         with open(os.path.join(pkldir, 'rho_{:.4f}.pkl'.format(r['value'])), 'wb') as f:
             pickle.dump(m, f)
@@ -237,7 +306,7 @@ def main():
         rows[round(float(r['value']), 6)] = {
             'ρ': round(float(r['value']), 6), 'requested': r['requested'], 'commit': commit,
             'residual': np.nan, 'preferences': 'FAILED: ' + r['error'][:120],
-            'timestamp': datetime.datetime.now().isoformat(timespec = 'seconds')}
+            'timestamp': datetime.datetime.now().isoformat(timespec = 'seconds')} | extra
     write()
 
     ok = len(grid)-len(hardFails)

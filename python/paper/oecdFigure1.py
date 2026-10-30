@@ -59,8 +59,11 @@ AS_EPS = {'spending': 'pensionSpending_cashInKind', 'growth': 'popGrowth_wb', 'i
           'gini': 'gini_widPretax'}
 EPSCOL = {'spending': 'eps_pensionSpending', 'growth': 'eps_popGrowth', 'index': 'eps_bbIndex',
           'gini': 'eps_gini'}
-PLOT = NAMED                     # gate 1 (archive/notes/paper_presentationPlan.md §8): NAMED or AS_EPS
-LABEL = {'pensionSpending': 'Pension spending, % of GDP',
+# What the figure plots: the named spending, growth and Gini, and the design's index under config.US['theta']'s
+# measure, I = 1/(2 - θ) from data/oecd26_theta.csv (column THETAINDEX of `plotted`), on that measure's countries.
+THETAINDEX = 'thetaIndex'
+PLOT = NAMED | {'index': THETAINDEX}
+LABEL = {'pensionSpending': 'Pension spending, % of GDP', THETAINDEX: 'Bismarckian index',
          'pensionSpending_cashInKind': 'Old-age spending, % of GDP',
          'popGrowth': 'Population 2020 / 1990', 'popGrowth_wb': 'Population 2020 / 1990',
          'bbIndex': 'Bismarckian index', 'bbIndex_mean': 'Bismarckian index',
@@ -363,13 +366,28 @@ def collect():
 
 
 # --- stage (iii): the figure and the correlations, from the committed csv only -------------------------------
-def correlations(df):
-    """ Pairwise Pearson and Spearman correlations of the four variables, pairwise complete, per concept set. """
+def plotted(df = None):
+    """ The figure's data: data/oecdFigure1.csv's rows (`df`, read when None) of the countries of config.US['theta']'s
+    measure of the design (datasets.oecd26SampleOf: inSample and a finite θ), in the footnote's order, with the
+    design's index I = 1/(2 - θ) of that measure as column THETAINDEX. """
+    df = pd.read_csv(D._need(OUT), index_col = 'iso3') if df is None else df
+    keep = D.oecd26SampleOf()
+    out = df.loc[keep].copy()
+    out[THETAINDEX] = D.thetaVariant().loc[keep, 'index'].astype(float)
+    return out
+
+
+def correlations(df, fig = None):
+    """ Pairwise Pearson and Spearman correlations of the four variables, pairwise complete, per concept set: on the
+    csv's countries `df` for the named concepts, the EPS's and its readings, and on the plotted frame `fig` (variant
+    'figure', PLOT's concepts) when given. """
     from scipy import stats
     rows = []
-    for variant, cols in (('named', NAMED), ('asEPS', AS_EPS), ('epsReadings', EPSCOL)):
+    sets = [('named', NAMED, df), ('asEPS', AS_EPS, df), ('epsReadings', EPSCOL, df)] + (
+        [('figure', PLOT, fig)] if fig is not None else [])
+    for variant, cols, frame in sets:
         for a, b in itertools.combinations(('spending', 'growth', 'index', 'gini'), 2):
-            x, y = df[cols[a]].astype(float), df[cols[b]].astype(float)
+            x, y = frame[cols[a]].astype(float), frame[cols[b]].astype(float)
             ok = x.notna() & y.notna()
             pr, sr = stats.pearsonr(x[ok], y[ok]), stats.spearmanr(x[ok], y[ok])
             rows.append({'variant': variant, 'x': cols[a], 'y': cols[b], 'n': int(ok.sum()),
@@ -412,13 +430,15 @@ def _labels(ax, x, y, size = 6.5):
 def figure(plot = None):
     r""" Figure \ref{fig:US:OECDdata}, 2x3: rows are spending and the Bismarckian index, columns population
     growth and the Gini; the third column holds spending against the index (the size-design relation of
-    sec:esc) above the legend. Equal panels keep one aspect ratio, so slopes compare across panels.
-    Also writes results/paper/oecdCorrelations.csv. Every dot is a mark linked to its country's row
-    (lowercase ISO3) of OECD_Countries. """
+    sec:esc) above the legend. Equal panels keep one aspect ratio, so slopes compare across panels. The countries
+    and the index are config.US['theta']'s measure's (`plotted`), the other variables data/oecdFigure1.csv's.
+    Also writes results/paper/oecdCorrelations.csv and the note OECDdata_note.tex (the measure and the sample).
+    Every dot is a mark linked to its country's row (lowercase ISO3) of OECD_Countries. """
     plot = PLOT if plot is None else plot
-    df = pd.read_csv(D._need(OUT), index_col = 'iso3')
+    full = pd.read_csv(D._need(OUT), index_col = 'iso3')
+    df = plotted(full)
     os.makedirs(C.PAPERDIR, exist_ok = True)
-    correlations(df).to_csv(CORR, index = False)
+    correlations(full, df).to_csv(CORR, index = False)
 
     fig, axes = plt.subplots(2, 3, figsize = (5.91, 3.9), constrained_layout = True)
     cells = [(0, 0, 'growth', 'spending'), (0, 1, 'gini', 'spending'), (0, 2, 'index', 'spending'),
@@ -467,7 +487,30 @@ def figure(plot = None):
                             title = ('{} countries in every panel'.format(ns.pop()) if len(ns) == 1
                                      else 'countries per panel: see the footnote'), title_fontsize = 7)
     leg.get_title().set_color(INK['secondary'])
-    return _save(fig, 'OECDdata', marks) + [CORR]
+    return _save(fig, 'OECDdata', marks) + [CORR, writeNote(full, df)]
+
+
+def writeNote(full, df):
+    r""" results/paper/Figs/OECDdata_note.tex: the figure's measure of the design and its countries, from the data
+    (the paper inputs it beside the figure once placed). """
+    from tables import BANNER
+    smp = D.oecd26Sample()
+    informal = [full.at[c, 'country'] for c in full.index if not bool(smp.at[c, 'sample26'])]
+    funded = [full.at[c, 'country'] for c in full.index if bool(smp.at[c, 'sample26']) and c not in df.index]
+    note = (r'\textit{Note:} ' + str(len(df)) + r' OECD members before 2000: those with informal employment below '
+            + '{:g}'.format(float(smp['informalMax'].iloc[0])) + r'\% of employment (left out: ' + ', '.join(informal)
+            + r') where one public pay-as-you-go system pays the bulk of retirement benefits, that is, funded tiers pay '
+            r'less than a quarter of mandatory benefits in 2020 and the public pension is not tested against them '
+            r'(left out: ' + ', '.join(funded) + r'). The '
+            r'Bismarckian index is $I = 1/(2-\theta)$, with $\theta$ the least-squares slope of the public pension on '
+            r'earnings at 0.5, 1 and 2 times average earnings (Pensions at a Glance 2021) times one minus the share '
+            r'of spending on minimum top-ups and tested benefits. Pension spending is public cash spending on old age '
+            r'and survivors, ' + str(YEAR) + r', in \% of GDP; population growth is the population of ' + str(YEAR)
+            + ' over that of ' + str(BASE) + '; the Gini is that of disposable income.')
+    path = os.path.join(C.PAPERDIR, 'Figs', 'OECDdata_note.tex')
+    with open(path, 'w', encoding = 'utf-8', newline = '\n') as f:
+        f.write(BANNER.format(name = 'OECDdata', src = 'data/oecdFigure1.csv, data/oecd26_theta.csv') + note + '\n')
+    return path
 
 
 def main():

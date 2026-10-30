@@ -379,19 +379,27 @@ check("K: under 'size' the row's choice and counts are the earlier sequence's bi
 
 # ==== P: the results on disk are current ======================================================================
 def production():
-    """ results/oecd26's three csvs, betaRule 'common' where the column is absent or blank (runOECD26.LEGACY), or
-    None while a file is absent. """
+    """ results/oecd26's three csvs, each key column of runOECD26.LEGACY at its value where the column is absent or
+    blank (betaRule 'common', thetaSource 'index'), or None while a file is absent. """
     try:
         f = {n: pd.read_csv(os.path.join(R.OUTDIR, n + '.csv'), dtype = {'inputsKey': str, 'anchorKey': str},
                             float_precision = 'round_trip') for n in ('anchor', 'layer1', 'layer2')}
     except (OSError, pd.errors.ParserError, pd.errors.EmptyDataError):
         return None
     for d in f.values():
-        d['betaRule'] = d['betaRule'].fillna('common') if 'betaRule' in d.columns else 'common'
-    return f
+        for k, v in R.LEGACY.items():
+            d[k] = d[k].fillna(v) if k in d.columns else v
+    return {n: d[d['thetaSource'] == oecd26.INDEX].reset_index(drop = True) for n, d in f.items()}
 
 
-prod = production()
+# P and M check the 'index' rows against the U.S. sweep they were computed at; once results/calibration/ holds the main θ
+# variant's sweep (--theta C --main) that sweep is in the snapshot of logs/, not on disk, and P and M do not apply.
+_sw = pd.read_csv(oecd26.USSWEEP)
+indexSweep = 'thetaSource' not in _sw.columns or set(_sw['thetaSource'].fillna(oecd26.INDEX)) == {oecd26.INDEX}
+prod = production() if indexSweep else None
+if not indexSweep:
+    print("NOTE  P and M skipped: results/calibration/'s U.S. sweep is at θ variant {}, not the index rows'".format(
+        sorted(set(_sw['thetaSource'].dropna()))))
 current = {}                      # ('anchor', spec) or (layer, spec, betaRule) -> complete and keyed on now
 nC = len(oecd26.countries())
 if prod is None:

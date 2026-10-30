@@ -17,25 +17,25 @@ endogenous-design details and every status measurement: `archive/readmes/US_READ
 | `policyESCpilot.py` | sandbox: the first-order-condition design layer (`esc:crra2Dfoc`, not adopted: finding #19), run by `test_designChoicePilot.py` |
 | `test.py`, `testEU.py` | workbook loaders: `USMain_test.xlsx`; `testEU.model('FR'\|'UK')` (each workbook's own sheets; the regrouped pairs are not read); `test.reading(M)`, the Medicare reading |
 | `calibrateRhoGrid.py`, `calibrateRhoGridEU.py`, `runShocksUS.py`, `runShocksXi.py`, `runESC.py`, `runESCcrra.py`, `runESCxi.py`, `collectESCexperiments.py` | drivers |
-| `oecd26.py`, `runOECD26.py` | the cross-country test: `ModelOECD(ModelESC)` from `data/oecd29*.csv`; anchor, layer 1 (anchor's `ω`, cost), layer 2 (own `ω`), turnout `cps`/`cses`, cost `size`/`sizePiR`/`none`, β `common`/`commonR` (set to the anchor's `R2020`), rows keyed on an inputs hash -> `results/oecd26/` |
+| `oecd26.py`, `runOECD26.py` | the cross-country test: `ModelOECD(ModelESC)` from `data/oecd29*.csv`; anchor, layer 1 (anchor's `ω`, cost), layer 2 (own `ω`), turnout `cps`/`cses`, cost `size`/`sizePiR`/`none`, β `common`/`commonR` (set to the anchor's `R2020`), θ figure 1.1's index or a variant of `data/oecd26_theta.csv` (`--theta`), rows keyed on an inputs hash -> `results/oecd26/` |
 | `stationaryApprox.py`, `stationaryApproxESC.py` | prepub: stationary against date-specific policy functions (taxes; the design) -> `results/numerical/` |
 | `runHorizon.py` | appendix D, not wired: other horizons and the steady-state terminal condition, FOC residuals off the grid, a jump scan, converged τ-derivatives -> `results/numerical/US_{horizon,horizonDesign,residuals,jumps,derivativeScheme}.csv` |
 | `c5Numbers.py` | the review response's smaller numbers -> `results/numerical/C5_*.csv` (`US_TaxState` and `US_Strategic` read two) |
 
-Tests, registered in `python/runTests.py`: twelve fast suites (`test_ee`, `test_invariance`, `test_crra`,
-`test_calibration`, `test_fr`, `test_eu`, `test_esc`, `test_frozenSelection`, `test_designChoicePilot`, `test_counts`,
-`test_oecd26`, `test_gridConvergence`) and three slow ones (`test_escTiming`, `test_escCRRA`, `test_oecd26Anchor`).
+Tests (`python/runTests.py`): fast `test_ee`, `test_invariance`, `test_crra`, `test_calibration`, `test_fr`, `test_eu`,
+`test_esc`, `test_frozenSelection`, `test_designChoicePilot`, `test_counts`, `test_oecd26`, `test_oecd26Theta`,
+`test_gridConvergence`; slow `test_escTiming`, `test_escCRRA`, `test_oecd26Anchor`.
 
 ## Running it
 
 ```
-python\US\calibrateRhoGrid.py [--commonX] [--medicare 0.029] ; calibrateRhoGridEU.py --country FR|UK [--commonX]
+python\US\calibrateRhoGrid.py [--commonX] [--rhos 0.5 1 2] [--theta V [--main]] ; calibrateRhoGridEU.py --country FR|UK [same]
 python\US\runShocksUS.py [--commonX] [--family theta] [--rho 1] [--medicare 0.029] ; runShocksXi.py [--xi 0.2 0.4]
 python\US\runESC.py | runESCcrra.py --exact [--commonX]   # LOG | exact CRRA; --host UK --stage calib: the UK's own cost
 python\US\runESC.py --stage pathHost|corner --spec size --phi 0.5 --commonX     # escPathHost.csv | escCornerSlope.csv
 python\US\runESC.py --stage calib path shocks --spec sizePiR --tag Costs --scenarios baseline mild acute --commonX
 python\US\collectESCexperiments.py [--costs]                                   # -> escExperiments.csv | escAgeingCosts.csv
-python\US\runOECD26.py [--stage ...] [--turnout cps cses] [--spec size sizePiR none] [--betaRule common commonR] [--coarse]
+python\US\runOECD26.py [--stage ...] [--turnout cps cses] [--spec size sizePiR none] [--betaRule common commonR] [--coarse] [--theta V [--inSample]]
 python\US\c5Numbers.py selfcheck|a1|a9|loss|lambda|index|design|a13|strategic ; designCRRA --rho 0.5
 ```
 
@@ -71,8 +71,12 @@ ESC drivers merge into their csvs (`runESC.mergeWrite`, keyed on `spec`, `phi`, 
   solvers iterate `π`, the others refuse it; a driver reads each object off the solve that iterated to it:
   `runOECD26.readouts`, `runESC.usWedgeRow`); `f` takes the τ of its own date; `commonX` and `spec` are in every
   merge key (#13).
-- **The cross-country csvs** are keyed on (turnout, spec, phi, commonX, betaRule[, iso3]); the anchor is always
-  `'common'`; a csv without `betaRule` is read, and migrated at its next write, as `'common'` (`runOECD26.migrate`).
+- **The cross-country csvs** are keyed on (turnout, spec, phi, commonX, betaRule, thetaSource[, iso3]); the anchor is
+  always `'common'`; a csv without `betaRule`/`thetaSource` is read, and migrated, as `'common'`/`'index'` (`migrate`).
+- **θ imposed**: `db['θ0']` (`ModelUS.θOverride`) is θ, `RR0` unread; `'flat'`, `ModelOECD` refuse it. `--theta V` puts
+  the U.S., France, the UK at their rows of `data/oecd26_theta.csv` (`oecd26.countryθ0`) under `results/oecd26_theta_V/`,
+  or `results/` with `--main` for `config.US['theta']` (`oecd26.thetaRoot`); rows carry `thetaSource`, `θ0`.
+- **τ0 under a variant** is the file's `spending`; for paper, A, A2pt, C it must be figure 1.1's to 1e-9 (B's adds private).
 - **`LeadedCRRA2D`**: 13 θ-state nodes with Catmull-Rom policies along θ (`Interp2D`; linear is 0.011 off, #19), 41
   candidates (`config.US['esc']['nCand2D']`), which set the design's third decimal; the `s` grid does not.
 - **Permanent timing** pins the savings ratio at the fixed point `θ*`, not at the incumbent (#11/#11b).
@@ -80,20 +84,19 @@ ESC drivers merge into their csvs (`runESC.mergeWrite`, keyed on `spec`, `phi`, 
 ## Status
 
 Implemented and tested: EE, LOG and CRRA PEE, both calibration variants, `ModelFR`, ρ sweeps of the US, its Medicare
-reading, France and the UK in both variants, three counterfactual families in both readings, the endogenous `θ` (LOG
+reading (no longer run), France and the UK in both variants, three counterfactual families in both readings, the endogenous `θ` (LOG
 leaded, exact 2-D CRRA, path iteration, permanent timing), the Π-inclusive cost, the cross-country test (its `sizePiR`,
 `none` and `commonR` variants run 2026-10-27, R6), appendix D's checks and the `python/paper/` wiring. The UK as a
 second host retired 2026-10-27 (R7, `archive/results/ukHost_2026-10/`); it keeps its sweep, own cost and deep-test rows.
 
-The results are C6's reruns of 2026-10-25 on the pension-only calibration of 2026-10-23 (C1), under the converged
-CRRA τ-derivatives and design grids (`test_gridConvergence.py`); every row that reads France's `ν` is C7's rerun of
-2026-10-26 (`logs/C7/`). Numbers, old → new: `archive/notes/reviewResponse_2026-10/ledger_C{1..7}.md`. At ρ = 1: `θ*` =
-0.7278, `λ` = 11.345 (`'size'`; 25.082 and 2.643 at ρ = 0.5 and 2), the UK's own 7.74; France has no interior crossing.
+The results on disk are C6's reruns of 2026-10-25 at the workbook θ (C1's calibration, C7's French ν; ledgers in
+`archive/notes/reviewResponse_2026-10/`): at ρ = 1 `θ*` 0.7278, `λ` 11.345, the UK's own 7.74, France at the corner.
 
 ## Open
 
 - The path iteration (`method = path`) and the flat-only variant's leaded calibration were last run on 2026-10-03
   at the earlier calibration (`θ*` = 0.738); they are cross-checks no exhibit prints (`num_esc.tex`, checks).
-- One design-layer fallback state: `escShocksCRRA.csv`, ρ = 0.5, `'scale'`, French leisure, design chosen.
 - A13's myopic/Markov split needs a new model function (deferred; TODO C13).
 - Data caveats of the UK and France: `data/README.md`.
+- θ variant C (U.S. 0.5445, France 0.8219, UK 0.1812) is the paper's measure since 2026-10-30 (`config.US['theta']`); its
+  results are `logs/overnight_2026-10-30/run.sh`'s, not run yet (coarse smoke: `logs/pipelineThetaC/smoke/`).

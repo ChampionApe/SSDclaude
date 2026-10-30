@@ -133,3 +133,29 @@ country stage's U.S.-cost row, which raised under 'sizePiR'. GBR's rows bitwise 
 sizePiR 47.8/42.4 s, commonR 9.5/8.6 s (layers 1/2). python/paper: `config.US['oecd26']`, readers and OECD26 builders take
 spec/betaRule, stage (ii)'s `oecd26` runs its `variants`, `escCountry('sizePiR')` reads escCountryCosts.csv. test_oecd26
 45/45 (N, Q, Π, K, M new), paper test_oecd26 9/9, test_oecd26Anchor 5/5, fast suites 29/29. Logs `logs/C14/`.
+
+## 2026-10-30 — O5: θ from a variant file, and the U.S. at a given θ (`notes/brief_oecd26ThetaSource.md`, both extensions)
+`oecd26.countryInputs(thetaSource)`: 'index' unchanged; a variant reads `data/oecd26_theta.csv` (iso3, variant, theta, inSample), RR0 = 1/(2-θ), NoTheta -> 'noTheta' rows. `runOECD26 --theta V [--inSample]`: thetaSource in both keys (LEGACY 'index'), in inputsKey only when not 'index', the anchor's adding the variant's U.S. sweep source.
+`ModelUS.getθ` returns `db['θ0']` when finite (`θOverride`); ModelESC passes it through except under 'flat', ModelOECD refuses it (keeps RR0). `--theta V` in calibrateRhoGrid (rows carry thetaSource, θ0; usBeta checks them), runESC (calib, path, shocks, country, corner; module context `THETA`; France and the UK referenced to the variant's sweep) and runShocksUS, all under `results/oecd26_theta_V/`, `results/{calibration,esc,shocks,oecd26}/` refused.
+Index path against the unchanged code: 708 keys, 57 data-column rows, 58 input dicts identical; `test_oecd26` P on results/oecd26/ passes. Tests: test_oecd26Theta 22/22 (new), fast suites 30/30. Coarse smoke on a fixture (USA 0.54, GBR 0.18, CAN 0.32), `logs/thetaSource/smoke/`: U.S. β 0.651382, ω 1.17330 at θ0; ESC calib λ 6.1739, ε 11.1288; sizePiR anchor ω 1.268065, ε 10.65569, θInForce USA 0.5400, GBR 0.6737, CAN 0.5811. The real data/oecd26_theta.csv (written meanwhile) parses: variants paper, A, A2pt, B, C.
+
+## 2026-10-30 — θ variant C against the paper at ρ = 1 (`notes/thetaC_comparison.md`)
+Read-only, no solve: `logs/thetaC/compare.py` reads both sides with python/paper's readers and builders (results paths patched
+to `results/oecd26_theta_C/`; data side I = 1/(2 − θ_C) on the 21), `tables.py`, `checks.py` -> `logs/thetaC/compare_out.json`.
+Self-check: five builders rebuild `writing/Paper/Tables` byte for byte; figures 6.1/7.1's ρ = 1 marks exact; appendix H's 17/25.
+Found: λ 11.345 -> 6.247, ε 20.445 -> 11.260 (anchor 20.01 -> 10.78); the θ = 0 workweek gap 1.7 -> 1.3 h; design responses to
+ageing ×1.6; the UK chooses 0.472, below the U.S. 0.544, against its workbook 0.560 (G.1's ordering fails: the UK and France keep
+workbook θ in the deep test, C has 0.181, 0.822); on the same 21 the index–growth slope steepens (L1 −0.23 -> −0.31), spending–index
+flattens (39.8 -> 28.9); layer-2 side count 13/20 against a base of 12. No failed row: the p = 200/400 inner failures are top scan
+nodes. Not run under C: `none`, the ε country stage, CRRA, appendix H's other variants.
+
+## 2026-10-30 — θ variant C as the paper's measure: the drivers (`notes/brief_pipelineThetaC.md`)
+`--theta V` now puts France and the UK at their FRA/GBR rows too (`oecd26.countryθ0`; `buildEU`, both `frenchData`,
+`franceReference`, `testEU.model(θ0)`), with ω recalibrated at the U.S. cuts; new in `calibrateRhoGridEU` and `runESCcrra`
+(calib/path/shocks), `pathHost` a variant stage, `checkCalib` checks only the rows a stage reads. `--main` (V =
+`config.US['theta']`, `oecd26.thetaRoot`) writes the standard `results/` paths; `runShocksXi`, `stationaryApprox{,ESC}` take
+`--theta C --main` only; `--rhos` in both sweeps; under a variant τ0 is the file's `spending` (= figure 1.1's for paper/A/A2pt/C,
+asserted to 1e-9); `collectESCexperiments --theta`; the corner stage skips a ρ it cannot calibrate. Index path bitwise: FR/UK ω at
+ρ = 1 (1.4457073912138274, 1.1028388390028443) and GBR τ0 identical before and after. test_oecd26Theta 32/32, fast suites 30/30. Coarse smoke
+(`logs/pipelineThetaC/smoke/`): France at θ0 0.82188 ω 1.39230, own λ 13.594 (U.S. λ 6.247 makes it choose 0.645); UK at 0.181208
+ω 1.04162, own λ 3.628, chooses 0.493; the corner stage's UK row at λ = 100 fails to calibrate.

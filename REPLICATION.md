@@ -34,8 +34,8 @@ Argentine arm runs on `python/InformalSavings/`, the U.S., France and UK arm on 
 | Stage | Argentina | U.S. / France / UK | Writes |
 |---|---|---|---|
 | (0) data | `python\paper\dataTargets.py` (Penn World Table, through FRED) | `python\paper\oecdFigure1.py` (the cross-section of figure 1) | `data/argentina_*.csv`, `data/oecdFigure1*.csv` |
-| (i) calibration | `python\paper\runCalibration.py` (about 3 h) | `python\paper\runCalibrationUS.py` (about an hour; `--prepub` adds the exact CRRA cost calibrations, many hours) | `results/calibration/`, `results/paper/*Summary.csv` |
-| (ii) experiments | `python\paper\runShocks.py` (about 1 h) | `python\paper\runShocksUS.py` (about an hour, and about four more cold for the deep test under ε and the cross-country variants; `--prepub` adds the CRRA endogenous-design runs, hours) | `results/shocks/`, `results/sweeps/`, `results/esc/`, `results/oecd26/` |
+| (i) calibration | `python\paper\runCalibration.py` (about 3 h) | `python\paper\runCalibrationUS.py --commonX` (about 45 min; `--prepub` adds the exact CRRA cost calibrations, 5 to 6.5 h with `--lanes`) | `results/calibration/`, `results/paper/*Summary.csv` |
+| (ii) experiments | `python\paper\runShocks.py` (about 1 h) | `python\paper\runShocksUS.py` (about 2 h cold, and about 4 more for the cross-section under the other measures of the design, `oecd26Variants`; `--prepub` adds the CRRA endogenous-design and stationary runs, about 2 h) | `results/shocks/`, `results/sweeps/`, `results/esc/`, `results/oecd26/`, `results/oecd26_theta_<V>/` |
 | (iii) build | `python\paper\build.py` | the same | `results/paper/{Tables,Figs}`, copied into `writing/Paper/` |
 
 Each stage is run as `.venv\Scripts\python.exe <script>` from the repository root, skips work whose output
@@ -44,26 +44,31 @@ published number are recorded in `python/paper/config.py`. `results/` is committ
 model instance per calibration point, so stage (iii) runs on the committed results without re-solving
 anything, and a solved instance can be loaded directly (see `python/<model>/README.md`).
 
-The cross-country test on 26 synthetic OECD countries of figure 1 (section 6's test of spending at the observed designs,
+The U.S. arm measures the pension design as variant `config.US['theta']` ('C') of `data/oecd26_theta.csv` (`data/README.md`):
+the U.S., France and the UK take their θ from its USA, FRA and GBR rows and every OECD country its own, on the countries
+it describes; every U.S. arm command of stages (i) and (ii) carries `--theta C --main`, which writes the standard
+`results/` paths, and every reader keeps the rows at that variant (`config.atTheta`). The ρ grid of the U.S. arm is 0.5,
+1 and 2. `logs/overnight_2026-10-30/run.sh` runs stages (i) to (iii) in their order of dependence.
+
+The cross-country test on the synthetic OECD countries of figure 1 (section 6's test of spending at the observed designs,
 without the cost, and section 7.3's test of the design, in which each country keeps its own demography, income distribution
 and observed design and takes the U.S. $\beta$, propensities to vote and cost of redistribution, the last carried as
 the elasticity $\varepsilon$, so that $\lambda_n = \varepsilon\,\Pi_n/R_n$ in country $n$) has two stage (0) scripts of its own, run by hand: `python\paper\oecd29Data.py`
 (network) and `python\paper\oecd26Sample.py` (the sample rule, no network) write `data/oecd29*.csv` and
 `data/oecd26_sample.csv`. Its runs belong to stage (ii): `runShocksUS.py`'s entry `oecd26` calls
-`python\US\runOECD26.py` once per variant of `config.US['oecd26']['variants']` (the costs $\varepsilon$, $\lambda$
-and none, each country's $\beta$ common or set to the U.S. return, U.S. and own turnout; about three hours cold) on
-every run, and the script recomputes only the rows whose inputs or U.S. calibration have changed, writing
-`results/oecd26/`. The paper's variant (`spec` `'sizePiR'`, `betaRule` `'common'`, `turnout` `'cps'`) and section 6's
-(`spendingSpec` `'none'`) are set in `config.US['oecd26']` alone.
+`python\US\runOECD26.py --inSample --theta C --main` once per variant of `config.US['oecd26']['variants']` (the costs
+$\varepsilon$ and none, the U.S. $\beta$, U.S. and own turnout; about 1.5 hours cold) on every run, and the script
+recomputes only the rows whose inputs or U.S. calibration have changed, writing `results/oecd26/`. The paper's variant
+(`spec` `'sizePiR'`, `betaRule` `'common'`, `turnout` `'cps'`) and section 6's (`spendingSpec` `'none'`) are set in
+`config.US['oecd26']` alone. The entry `oecd26Variants` runs the same test under the other measures of the design,
+`config.US['oecd26']['thetaVariants']`, each into its own `results/oecd26_theta_<V>/` with its own U.S. calibration at
+ρ = 1 (`calibrateRhoGrid.py --theta V`); `OECD26_ThetaVariants` prints them beside figure 1.1's index (the rows of
+`results/oecd26/` at thetaSource 'index').
 
-The U.S. stage scripts also run the online appendix's Medicare reading of the U.S. calibration
-(`config.US['readings']`: `results/calibration/USMedicare_rhoGrid*.csv`, `results/shocks/USMedicare_shocks*.csv`,
-read by `OECD_Medicare` and `OECD_Counterfactuals`) and the cost that keeps $\Pi_t/R_t$, whose parameter is
-$\varepsilon$ (`config.US['esc']['costVariants']`, the `Costs`-tagged csvs of `results/esc/`): stage (i) calibrates
-$\varepsilon$ on the U.S. (`escCalibrationCosts.csv`), and stage (ii)'s entry `escCountryCosts` runs the deep test of
-appendix G.1 under it, the U.S. $\varepsilon$ on the UK and France and the UK's own (`escCountryCosts.csv`, about an
-hour); both are read by `US_ESC_Country` and `OECD26_Reconcile`. The ageing runs under that cost (entry `escCosts`)
-are merged into `results/esc/escAgeingCosts.csv`, which no output reads.
+The U.S. stage scripts also run the cost that keeps $\Pi_t/R_t$, whose parameter is $\varepsilon$
+(`config.US['esc']['costVariants']`, the `Costs`-tagged csvs of `results/esc/`): stage (i) calibrates $\varepsilon$ on
+the U.S. (`escCalibrationCosts.csv`), the cross-section's anchor recalibrates it, and stage (ii)'s entry `escCosts` runs
+acute ageing under it, merged into `results/esc/escAgeingCosts.csv`, which no output reads.
 
 Two Argentine runs are not driven by the stage scripts, and no output reads them yet. The pre-reform
 $\epsilon = 0$ variant of the calibration and its reform, after stage (i), with the scripts' grid settings

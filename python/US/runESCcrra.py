@@ -58,6 +58,12 @@ STAGES
   sequential  the COSTLESS sequential FOC of eq:esc:seqFOC (ModelESC.sequentialFOC) on the solved
               no-wedge baseline at every dated period, escSequentialCRRA.csv: its sign over theta in
               [0,1] is the "three timings, one corner" claim under CRRA (the LOG case is test_esc.py's).
+
+--theta VARIANT [--root DIR | --main] (stages calib, path, sens, shocks; runESC.setTheta): the U.S. at θ0 = the
+variant's U.S. row of data/oecd26_theta.csv, France and the UK at theirs (runESC.countryθ0), seeded off the variant's
+sweeps in DIR/calibration/ (every rho asked for at the variant: oecd26.usBeta; the UK's for --host UK), the csvs in
+DIR/esc/ (results/ under --main, the pipeline's main variant), every row carrying thetaSource, θ0 and grid
+(solverColumns); a path or shocks stage reads only a calibration row at the same three (readCalibratedP).
 """
 import os, sys, argparse, time
 import numpy as np, pandas as pd
@@ -71,6 +77,7 @@ os.chdir(HERE)
 
 import test as testmod
 import shocks as sh
+import runESC
 from modelESC import ModelESC
 from runESC import SHOCKS_ESC, mergeWrite, buildEU, readout as escReadout, wedgeReadout, piColumn
 from runShocksUS import frenchData, hostRow
@@ -98,12 +105,14 @@ def buildUS(ρ, wedge = None, nθCandCRRA = 13, commonX = False, gs = None, nθC
     borrows them at solve time, so --ns reaches the exact solver through here. nθCand2D: the exact
     recursion's candidate grid for θ_{t+1} -- the objective is flat near its maximum (~1e-5 in W over
     ±0.01 in θ at the frVoting choice), so the grid sets the resolution of the reported design.
-    designRule, Ma: LeadedCRRA2D's design layer and the root layer's tabulation nodes. """
+    designRule, Ma: LeadedCRRA2D's design layer and the root layer's tabulation nodes. The sweep and θ0 are the
+    run's θ variant's (runESC.usSweep, runESC.THETA; results/calibration/ and the workbook's θ without one). """
     gs = GSC if gs is None else gs
-    row = pd.read_csv(os.path.join(REPO, 'results', 'calibration',
-                                   'US_rhoGridCommonX.csv' if commonX else 'US_rhoGrid.csv'))
+    row = pd.read_csv(runESC.usSweep(commonX))
     row = row.loc[(row['ρ'] - ρ).abs() < 1e-9].iloc[-1]
-    m = ModelESC(pars = testmod.pars | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])},
+    θ0 = runESC.THETA['θ0']
+    m = ModelESC(pars = testmod.pars | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])}
+                 | ({} if θ0 is None else {'θ0': float(θ0)}),
                  wedge = wedge, nθCandCRRA = nθCandCRRA, nθCand2D = nθCand2D, commonX = commonX,
                  designRule = designRule, Ma = Ma, **testmod.kwargs)
     m.db['dates'], m.db['workweek'] = testmod.dates, testmod.workweek
@@ -120,7 +129,7 @@ def buildHost(host, ρ, wedge = None, nθCandCRRA = 13, commonX = False, gs = No
         return buildUS(ρ, wedge, nθCandCRRA = nθCandCRRA, commonX = commonX, gs = gs, nθCand2D = nθCand2D,
                        designRule = designRule, Ma = Ma)
     gs = GSC if gs is None else gs
-    m = buildEU(host, wedge, ρ = ρ, commonX = commonX, ω = float(hostRow(ρ, commonX, host)['ω']),
+    m = buildEU(host, wedge, ρ = ρ, commonX = commonX, ω = float(hostRow(ρ, commonX, host, runESC.THETA['calibDir'])['ω']),
                 nθCandCRRA = nθCandCRRA, nθCand2D = nθCand2D, designRule = designRule, Ma = Ma)
     m.CRRA.initGS(gs)
     m.LOG.initGS({k: v for k, v in gs.items() if k != 'ns'})
@@ -234,6 +243,11 @@ def readCalibratedP(fCal, ρ, spec, phi, commonX, method):
     hit = hit[(hit['ρ'] == ρ) & (hit['spec'] == spec) & (hit['phi'] == phi)]
     if 'commonX' in hit.columns:
         hit = hit[hit['commonX'].astype(bool) == bool(commonX)]
+    want = runESC.thetaColumns()          # under a θ variant only a row at its thetaSource, θ0 and grid
+    if want:
+        hit = (hit[(hit['thetaSource'] == want['thetaSource']) & (hit['grid'] == want['grid'])
+                   & (pd.to_numeric(hit['θ0']) - want['θ0']).abs().le(1e-12)]
+               if all(c in hit.columns for c in want) else hit.iloc[:0])
     if 'method' not in hit.columns:
         hit = hit.assign(method = 'path')
     hit['method'] = hit['method'].fillna('path')
@@ -249,8 +263,9 @@ def solverColumns(designRule, Ma, mult):
     """ The non-key columns every row of this driver carries: the run's design-layer settings (designRule,
     Ma; LeadedCRRA2D under --exact) and the counts of the solve behind the row (policy.multiplicityColumns:
     nEqMax, nCandMax, nFallback for the tax rule, nEqθMax, nBrθMax, nFallbackθ for the root design layer,
-    -1 where that solve counted nothing). Never part of a merge key (finding #13). """
-    return {'designRule': designRule, 'Ma': int(Ma)} | multiplicityColumns(mult, design = True)
+    -1 where that solve counted nothing), and under a θ variant runESC.thetaColumns. Never part of a merge key
+    (finding #13). """
+    return {'designRule': designRule, 'Ma': int(Ma)} | multiplicityColumns(mult, design = True) | runESC.thetaColumns()
 
 
 def multiplicityOf(led):
@@ -337,9 +352,15 @@ def main():
     p.add_argument('--host', default = 'US', choices = ('US', 'UK'),
                    help = "'UK': calibrate the UK's OWN cost (the deep test), the calib stage only; the csv "
                           'name carries the host (escCalibrationCRRAUK.csv)')
+    p.add_argument('--theta', default = None,
+                   help = "a variant of data/oecd26_theta.csv: the U.S., France and the UK at its θ (db['θ0'])")
+    p.add_argument('--root', default = None, help = "the variant's directory (default results/oecd26_theta_<variant>)")
+    p.add_argument('--main', action = 'store_true',
+                   help = "with --theta config.US['theta']: read results/calibration/, write results/esc/")
     a = p.parse_args()
     if a.host != 'US' and set(a.stage) != {'calib'}:
         p.error('--host {} runs the calib stage only (--stage calib)'.format(a.host))
+    OUTDIR = setThetaCRRA(a)
     os.makedirs(OUTDIR, exist_ok = True)
     hs = '' if a.host == 'US' else a.host
     fCal = os.path.join(OUTDIR, f'escCalibrationCRRA{hs}{a.tag}.csv')
@@ -495,7 +516,9 @@ def main():
                     if any(n.startswith('fr') for n in a.scenarios):
                         if ρ not in frDataCache:
                             print('  calibrating France at rho={} for the French scenarios ...'.format(ρ))
-                            frDataCache[ρ] = frenchData(m, ρ, 'CRRA', gs = gs, commonX = a.commonX)
+                            frDataCache[ρ] = frenchData(
+                                m, ρ, 'CRRA', gs = gs, commonX = a.commonX, θ0FR = runESC.countryθ0('FR'),
+                                usCsv = None if runESC.THETA['calibDir'] is None else runESC.usSweep(a.commonX))
                         frData = frDataCache[ρ]
                     for name in a.scenarios:
                         for pin in (True, False):
@@ -573,6 +596,30 @@ def main():
                         print(f'  France FAILED {type(e).__name__}: {e}')
     print('\n-> {}'.format(os.path.relpath(OUTDIR, REPO)))
     return 0
+
+
+def setThetaCRRA(a):
+    """ runESC.setTheta for this driver's --theta/--root/--main, and the output directory (OUTDIR without a
+    variant). Under a variant: stages calib, path, sens, shocks only, the U.S. sweep at the variant at every rho of
+    --rho (oecd26.usBeta), and for --host UK the UK's sweep rows too. """
+    if a.theta is None:
+        runESC.setTheta(None, a.root, main = a.main)        # SystemExit for --root or --main alone
+        return OUTDIR
+    if set(a.stage) - {'calib', 'path', 'sens', 'shocks'}:
+        raise SystemExit('--theta: stages calib, path, sens, shocks only')
+    import oecd26
+    out = runESC.setTheta(a.theta, a.root, ('calib',), False, a.commonX, a.rho[0], a.main)
+    try:
+        for ρ in a.rho:
+            oecd26.usBeta(runESC.usSweep(a.commonX), ρ, thetaSource = a.theta)
+            if a.host != 'US':
+                r = hostRow(ρ, a.commonX, a.host, runESC.THETA['calibDir'])
+                if r.get('thetaSource') != a.theta or not abs(float(r.get('θ0', np.nan))
+                                                            - runESC.countryθ0(a.host)) <= 1e-12:
+                    raise ValueError('the {} sweep at rho = {} is not at variant {!r}'.format(a.host, ρ, a.theta))
+    except (FileNotFoundError, ValueError, KeyError) as e:
+        raise SystemExit('--theta {}: {}'.format(a.theta, e))
+    return out
 
 
 if __name__ == '__main__':

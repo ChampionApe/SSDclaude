@@ -1,0 +1,52 @@
+\section{Pension tiers and the model}\label{sec:data:tiers}
+In the model a retiree of relative earnings $z_i = y_i/\bar y$ receives
+\begin{align}
+    b_i = \left[\theta z_i + (1-\theta)\right]\bar b, \label{eq:data:benefit}
+\end{align}
+so $1-\theta$ is the share of pension spending not linked to own earnings and $\theta$ is the slope of relative benefits on relative earnings. The tax is the spending share of labour income,
+\begin{align}
+    \tau = \frac{S}{1-\alpha}, \qquad \alpha = 0.30, \label{eq:data:tau}
+\end{align}
+with $S$ pension spending in \% of GDP. One rule governs every measure below: the tiers in $\tau$ are the tiers whose design $\theta$ measures. \Cref{tab:data:tiers} maps each type of provision to the two.
+
+\begin{table}[htbp]
+\centering
+\caption{Types of provision, $\theta$ and $\tau$}\label{tab:data:tiers}
+\begin{spacing}{1.0}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{\dimexpr\linewidth-8.1cm-6\tabcolsep\relax}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{2.6cm}@{}}
+\toprule
+Provision & Examples & $\theta$ & $\tau$ \\
+\midrule
+Public earnings-related & DB, points and NDC schemes; state-run funded DC (SWE premium pension) and FIN's privately managed earnings-related scheme, which PaG and SOCX count as public & slope (A, B) & public (all) \\
+Flat or basic & residence or contribution-based: NZ Super, AOW, folkepension, JPN basic pension, UK basic State Pension & intercept of the slope & public (all) \\
+Minimum top-ups & integrazione al minimo, Ausgleichszulage, minima de pension, complementos & slope if reached at 0.5 AW, else $s$ & public (all) \\
+Tested benefits & ASPA, GRAPA, assegno sociale, SSI, Pension Credit, EL, guarantee pension & as top-ups; tested against private income: $\theta_A<0$ & public (all) \\
+Government employees & civil-service schemes, 1--4\% of GDP inside SOCX public & not measured & public (all) \\
+Mandatory funded & AUS SG, CHE BVG, ISL funds, NOR OTP & B (table 4.1) & B: SOCX mandatory private \\
+Quasi-mandatory occupational & collective agreements in NLD, DNK, SWE & B (table 4.1) & B: SOCX voluntary private for NLD, SWE \\
+Auto-enrolment & UK workplace pensions & B (table 4.1) & none (SOCX voluntary) \\
+Voluntary & personal and employer plans & none & none \\
+\bottomrule
+\end{tabular}
+\end{spacing}
+\end{table}
+
+\smalltitle{The measure.}
+PaG publishes the gross replacement rate $RR(z)$ of a full-career worker at $z = z_L, 1, 2$ times AW, with $z_L = 0.5$ ($0.6$ for NZL, the table's footnote). The pension in \% of AW is $P(z) = RR(z)\,z$. The least-squares line $P(z) \approx a + c z$ through the three points normalised at $z = 1$ gives the formula slope
+\begin{align}
+    \hat\theta = \frac{c}{a+c}, \qquad (a, c) = \arg\min_{a,c}\sum_{z\in\{z_L,1,2\}}\left(P(z) - a - cz\right)^2. \label{eq:data:slope}
+\end{align}
+By \cref{eq:data:benefit}, $P(z)/P(1) = \theta z + 1 - \theta$, so $\hat\theta = \theta$ when the formula is linear. The model's top income group has its mean at 1.5--2.0 AW, so 0.5--2 AW spans its groups, while 0.5--1 AW does not.
+
+PaG's worker never draws a minimum top-up or tested benefit that lies below his own pension at 0.5 AW, although many retirees do. That spending is flat. Let $T$ be 2020 spending on the top-ups and tested benefits that the worker at 0.5 AW does not reach and that SOCX books inside public old-age and survivors cash. "Reached" compares the public pension at 0.5 AW (PaG 2021, table 4.2) with the benefit's 2020 level (table 3.2), both in \% of AW. The flat share and the design are
+\begin{align}
+    s = \frac{T}{S}, \qquad \theta = \hat\theta\,(1-s). \label{eq:data:theta}
+\end{align}
+$s$ is largest in PRT (0.082), CHE (0.066), FIN (0.059), ESP (0.048), ITA (0.046), FRA (0.036) and SWE (0.033), and below 0.02 elsewhere. Minimum pensions that the worker reaches (NOR, POL) are already in $\hat\theta$, so $s = 0$ there.
+
+The paper's index uses two points of the mandatory replacement rate: with $I = RR(1)/RR(0.5)$, \cref{eq:data:benefit} gives $RR(0.5)/RR(1) = 2-\theta$, so
+\begin{align}
+    \theta_{\text{paper}} = 2 - \frac{1}{I}, \label{eq:data:thetaPaper}
+\end{align}
+clipped to $[0,1]$.

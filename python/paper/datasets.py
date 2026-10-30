@@ -270,6 +270,18 @@ def formalBenefitChange(ρ, which = 'reform', period = 0, rule = None, commonX =
 # US / France / UK
 # ---------------------------------------------------------------------------------------------------
 
+def _readUS(path, **kw):
+    """ A U.S.-arm csv (results/{calibration,esc,shocks,oecd26}, the U.S. stationary checks, the summary) at the θ
+    variant config.US['theta'] only (config.atTheta; a csv without thetaSource reads as 'index'): MissingInput when the
+    file is absent or holds no row at it. Every reader below goes through this, so a row of another θ is never read
+    (crossCuttingFindings #13). """
+    df = pd.read_csv(_need(path), **kw)
+    out = C.atTheta(df)
+    if out.empty:
+        raise MissingInput('{} (no row at θ variant {})'.format(path, C.US['theta']))
+    return out.copy()
+
+
 def usCalibrationSummary(commonX = None):
     """ runCalibrationUS.py's one-row-per-country record, keyed by country. Vector entries are JSON in
     the csv and come back as lists of float.
@@ -278,7 +290,7 @@ def usCalibrationSummary(commonX = None):
     takes it that way, so a builder that says nothing gets the headline calibration and a builder that
     wants the robustness twin has to ask for it by name. """
     commonX = C.US['commonX'] if commonX is None else commonX
-    df = pd.read_csv(_need(os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv')))
+    df = _readUS(os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv'))
     df = df[df['commonX'].astype(bool) == bool(commonX)]
     if df.empty:
         raise MissingInput(os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv'))
@@ -322,22 +334,19 @@ def escSavingsOverY(sr, commonX = None):
 US_SR = 'srOverY'    # the US shock csv column the tables read: s/Y. `sr` is s/(w h) and is NOT read.
 
 
-def usShocks(commonX = None, freeTheta = False, host = 'US'):
-    """ python/US/runShocksUS.py's long csv: one row per (rho, family, scenario, effect). `host` is the
-    economy the characteristics were imposed on, 'US' or its Medicare reading 'USMedicare' (config.usShockCsv).
+def usShocks(commonX = None, host = 'US'):
+    """ python/US/runShocksUS.py's long csv at the θ variant: one row per (rho, family, scenario, effect). `host` is
+    the economy the characteristics were imposed on, the U.S. (config.usShockCsv).
 
     `effect` is 'baseline' | 'full' | 'ee'. tau, sr and srOverY are fractions -- `sr` is s/(w h),
     `srOverY` is s/Y, the paper's savings rate (US_SR); `workweek` is already in hours,
     normalised against that rho's own baseline inside the experiment script -- stage (iii) must NOT
     re-derive it from hbar, which has no scale under vector X (see python/US/shocks.py).
 
-    commonX = None is the headline variant (config.US['commonX']). freeTheta selects the alternative
-    reading of the income-distribution counterfactual, where theta is re-derived from RR0 under France's
-    eta rather than held at the US design; that file covers the `french` family only. """
+    commonX = None is the headline variant (config.US['commonX']). """
     commonX = C.US['commonX'] if commonX is None else commonX
-    path = (os.path.join(C.SHOCKDIR, 'US_shocks_freeTheta.csv') if freeTheta
-            else C.usShockCsv(host, commonX))
-    df = pd.read_csv(_need(path))
+    path = C.usShockCsv(host, commonX)
+    df = _readUS(path)
     df.attrs['source'] = 'results/shocks/' + os.path.basename(path)
     return df
 
@@ -360,7 +369,7 @@ def usShocksXi():
     """ python/US/runShocksXi.py's csv: usShocks' columns at rho = 1, common X, plus the Frisch elasticity
     'ξ', the US and France recalibrated at each. """
     path = os.path.join(C.SHOCKDIR, 'US_shocksXiCommonX.csv')
-    df = pd.read_csv(_need(path))
+    df = _readUS(path)
     df.attrs['source'] = 'results/shocks/US_shocksXiCommonX.csv'
     return _noDuplicates(df, ['ξ', 'ρ', 'scenario', 'effect'], path)
 
@@ -368,7 +377,7 @@ def usShocksXi():
 def usSweep(country, commonX = None):
     """ One country's calibration sweep, deduplicated on rho keeping the last. """
     commonX = C.US['commonX'] if commonX is None else commonX
-    df = pd.read_csv(_need(C.usSweepCsv(country, commonX)))
+    df = _readUS(C.usSweepCsv(country, commonX))
     return df.drop_duplicates('ρ', keep = 'last').sort_values('ρ').reset_index(drop = True)
 
 
@@ -383,7 +392,7 @@ def escCornerSlope(commonX = None, spec = None):
     commonX = C.US['commonX'] if commonX is None else commonX
     spec = C.US['esc']['spec'] if spec is None else spec
     path = os.path.join(C.ESCDIR, 'escCornerSlope.csv')
-    df = pd.read_csv(_need(path))
+    df = _readUS(path)
     keep = [i for i, rec in enumerate(df.to_dict('records'))
             if _escVariant(rec, commonX) and rec['spec'] == spec
             and np.isclose(float(rec['phi']), C.US['esc']['phi'])]
@@ -401,12 +410,11 @@ def escCountry(commonX = None, spec = None):
     'size' spec. The stage runs under LOG only, and the csv carries no rho column, so rho = 1 is stamped
     on here rather than read -- a CRRA country stage would have to write the column itself. The spec of
     config.US['esc']['costVariants'] ('sizePiR') is read from its tagged csv (escCountryCosts.csv), where
-    runESC.py --tag writes it; every other spec from escCountry.csv. """
+    runESC.py --tag writes it; every other spec from escCountry.csv. Each economy at its θ0 under the θ variant. """
     commonX = C.US['commonX'] if commonX is None else commonX
     spec = C.US['esc']['spec'] if spec is None else spec
     cv = C.US['esc']['costVariants']
-    df = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCountry' + (cv['tag'] if spec == cv['spec'] else '')
-                                        + '.csv')))
+    df = _readUS(os.path.join(C.ESCDIR, 'escCountry' + (cv['tag'] if spec == cv['spec'] else '') + '.csv'))
     keep = [i for i, rec in enumerate(df.to_dict('records'))
             if _escVariant(rec, commonX) and rec['spec'] == spec
             and np.isclose(float(rec['phi']), C.US['esc']['phi'])
@@ -460,7 +468,7 @@ def escCalibration(commonX = None):
     commonX = C.US['commonX'] if commonX is None else commonX
     phi = C.US['esc']['phi']
     out = {}
-    log = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCalibration.csv')))
+    log = _readUS(os.path.join(C.ESCDIR, 'escCalibration.csv'))
     for rec in log.to_dict('records'):
         if not _escVariant(rec, commonX):
             continue
@@ -468,7 +476,7 @@ def escCalibration(commonX = None):
             out[(1.0, 'none')] = rec
         elif bool(rec['converged']) and np.isclose(float(rec['phi']), phi):
             out[(1.0, rec['spec'])] = rec
-    crra = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escCalibrationCRRA.csv')))
+    crra = _readUS(os.path.join(C.ESCDIR, 'escCalibrationCRRA.csv'))
     for rec in crra.to_dict('records'):
         if (_escVariant(rec, commonX) and _escMethodOK(rec) and bool(rec['converged'])
                 and np.isclose(float(rec['phi']), phi)):
@@ -483,7 +491,7 @@ def escCalibrationLOG(spec, commonX = None):
     commonX = C.US['commonX'] if commonX is None else commonX
     cv = C.US['esc']['costVariants']
     path = os.path.join(C.ESCDIR, 'escCalibration' + (cv['tag'] if spec == cv['spec'] else '') + '.csv')
-    df = pd.read_csv(_need(path))
+    df = _readUS(path)
     keep = [rec for rec in df.to_dict('records')
             if _escVariant(rec, commonX) and rec['spec'] == spec
             and (spec == 'none' or (bool(rec['converged']) and np.isclose(float(rec['phi']), C.US['esc']['phi'])))]
@@ -531,7 +539,7 @@ def escCalibrationHost(host = 'UK', commonX = None, spec = None):
         out[1.0] = own.iloc[-1].to_dict()
     path = os.path.join(C.ESCDIR, 'escCalibrationCRRA' + host + '.csv')
     if os.path.exists(path):
-        for rec in pd.read_csv(path).to_dict('records'):
+        for rec in C.atTheta(pd.read_csv(path)).to_dict('records'):
             if (_escVariant(rec, commonX) and _escMethodOK(rec) and bool(rec['converged'])
                     and rec['spec'] == spec and np.isclose(float(rec['phi']), phi)):
                 out[float(rec['ρ'])] = rec
@@ -548,7 +556,7 @@ def escExperiments():
     theta_{t0} is an equilibrium outcome and 2020 already carries the design response. (Under the
     superseded copy-from-2020 convention it did not, and the tables read t0+1.) The scenario 'France' is France's own calibrated path, not a shock on the US
     model, and carries only the pinned reading. """
-    df = pd.read_csv(_need(os.path.join(C.ESCDIR, 'escExperiments.csv')))
+    df = _readUS(os.path.join(C.ESCDIR, 'escExperiments.csv'))
     df.attrs['source'] = 'results/esc/escExperiments.csv'
     return df
 
@@ -613,9 +621,39 @@ def oecd26Sample():
     return pd.read_csv(_need(OECD26SAMPLE), index_col = 'iso3')
 
 
-def oecd26Path(layer):
-    """ results/oecd26/anchor.csv (layer 0) or layer<1|2>.csv. """
-    return os.path.join(OECD26DIR, 'anchor.csv' if layer == 0 else 'layer{}.csv'.format(layer))
+def thetaVariant(variant = None):
+    """ data/oecd26_theta.csv under `variant` (config.US['theta'] by default), indexed on ISO3: `theta`, `inSample`
+    (bool), `spending`, and `index` = 1/(2 - θ), the design on figure 1.1's scale (NaN where θ is). `sample` is the
+    variant's sample: inSample and a finite θ. """
+    variant = C.US['theta'] if variant is None else variant
+    d = pd.read_csv(_need(C.THETAFILE), dtype = {'iso3': str, 'variant': str}, float_precision = 'round_trip')
+    d = d[d['variant'] == variant].set_index('iso3')
+    if d.empty:
+        raise MissingInput('{} (no variant {!r})'.format(C.THETAFILE, variant))
+    d['theta'] = pd.to_numeric(d['theta'], errors = 'coerce')
+    d['inSample'] = d['inSample'].astype(str).str.strip().str.lower().isin(('true', '1', '1.0'))
+    d['index'] = 1/(2 - d['theta'])
+    d['sample'] = d['inSample'] & d['theta'].notna()
+    return d
+
+
+def oecd26SampleOf(variant = None):
+    """ The cross-section's countries under the θ variant, in figure 1.1's order: thetaVariant's `sample`. """
+    t = thetaVariant(variant)
+    return [c for c in oecdFigure1Data().index if c in t.index and bool(t.at[c, 'sample'])]
+
+
+def oecd26Dir(theta = None):
+    """ Where the cross-section's rows of thetaSource `theta` (config.US['theta'] by default) are: results/oecd26/ for
+    the main variant and for 'index' (the rows of figure 1.1's index, the paper's measure before the variant),
+    results/oecd26_theta_<theta>/ for a robustness variant (python/US/runOECD26.py --theta without --main). """
+    theta = C.US['theta'] if theta is None else theta
+    return OECD26DIR if theta in (C.US['theta'], 'index') else os.path.join(C.RESULTS, 'oecd26_theta_' + theta)
+
+
+def oecd26Path(layer, theta = None):
+    """ anchor.csv (layer 0) or layer<1|2>.csv of oecd26Dir(theta). """
+    return os.path.join(oecd26Dir(theta), 'anchor.csv' if layer == 0 else 'layer{}.csv'.format(layer))
 
 
 def _oecd26Variant(turnout = None, spec = None, betaRule = None):
@@ -625,13 +663,17 @@ def _oecd26Variant(turnout = None, spec = None, betaRule = None):
             v['betaRule'] if betaRule is None else betaRule)
 
 
-def _oecd26Rows(layer, turnout = None, spec = None, betaRule = None):
+def _oecd26Rows(layer, turnout = None, spec = None, betaRule = None, theta = None):
     """ The rows of anchor.csv (layer 0) or layer<1|2>.csv at one turnout, spec and β rule (config.US['oecd26']'s
-    where None), at config phi and calibration variant. A csv without the betaRule column, or a blank cell in it,
-    is a 'common' row: the one rule before the column existed (runOECD26.LEGACY). """
+    where None), at config phi and calibration variant, and at thetaSource `theta` (config.US['theta'] by default;
+    oecd26Dir). A csv without the betaRule column, or a blank cell in it, is a 'common' row: the one rule before the
+    column existed (runOECD26.LEGACY); one without thetaSource an 'index' row. """
     turnout, spec, betaRule = _oecd26Variant(turnout, spec, betaRule)
-    path = oecd26Path(layer)
-    df = pd.read_csv(_need(path), dtype = {'inputsKey': str, 'anchorKey': str})
+    theta = C.US['theta'] if theta is None else theta
+    path = oecd26Path(layer, theta)
+    df = C.atTheta(pd.read_csv(_need(path), dtype = {'inputsKey': str, 'anchorKey': str}), theta)
+    if df.empty:
+        raise MissingInput('{} (no row at θ variant {})'.format(path, theta))
     rule = df['betaRule'].fillna('common') if 'betaRule' in df.columns else pd.Series('common', index = df.index)
     sel = ((df['turnout'] == turnout) & (df['spec'] == spec) & (rule == betaRule)
            & np.isclose(df['phi'].astype(float), C.US['esc']['phi'])
@@ -639,19 +681,33 @@ def _oecd26Rows(layer, turnout = None, spec = None, betaRule = None):
     return _noDuplicates(df[sel], ['turnout'] + ([] if layer == 0 else ['iso3']), path), path
 
 
-def oecd26Anchor(turnout = None, spec = None):
+def oecd26Anchor(turnout = None, spec = None, theta = None):
     """ The calibrated anchor (the U.S. at the OECD inputs) of one turnout reading and cost spec (config.US['oecd26']'s
-    where None; the anchor's β rule is always 'common'), as a dict: β, ω, `p` (λ under 'size', the λ of λ·Π/R under
-    'sizePiR', NaN under 'none', which has none), its readouts, `inputsKey` and `grid`. Refused unless it was solved
-    on the fine grid and at the β the U.S. calibration without the cost has now at ρ = 1 (usSweep): an anchor
-    computed before a recalibration of the U.S. is stale, and so is everything layered on it (#13): StaleInput. """
+    where None; the anchor's β rule is always 'common') at thetaSource `theta` (config.US['theta'] by default), as a
+    dict: β, ω, `p` (λ under 'size', the λ of λ·Π/R under 'sizePiR', NaN under 'none', which has none), its readouts,
+    `inputsKey` and `grid`. Refused unless it was solved on the fine grid and at the β the U.S. calibration without
+    the cost has now at ρ = 1 at that θ (usSweep for the main variant, the variant's own sweep in oecd26Dir(theta)/
+    calibration/ for a robustness one): an anchor computed before a recalibration of the U.S. is stale, and so is
+    everything layered on it (#13): StaleInput. The 'index' rows (figure 1.1's index) have no live sweep since the
+    main variant replaced it in results/calibration/; their β is not checked. """
     turnout, spec, _ = _oecd26Variant(turnout, spec)
-    df, path = _oecd26Rows(0, turnout, spec, 'common')
+    theta = C.US['theta'] if theta is None else theta
+    df, path = _oecd26Rows(0, turnout, spec, 'common', theta)
     ok = df[df['status'] == 'ok']
     if ok.empty:
         raise MissingInput(path + ' (no calibrated {} {} anchor)'.format(spec, turnout))
     a = ok.iloc[0].to_dict()
-    sweep = usSweep('US')
+    if theta == 'index':
+        if a['grid'] != 'fine':
+            raise StaleInput('{}: the {} anchor was solved on the {} grid'.format(path, turnout, a['grid']))
+        return a
+    if theta == C.US['theta']:
+        sweep = usSweep('US')
+    else:
+        sp = os.path.join(oecd26Dir(theta), 'calibration', 'US_rhoGridCommonX.csv')
+        sweep = C.atTheta(pd.read_csv(_need(sp)), theta)
+        if sweep.empty:
+            raise MissingInput('{} (no row at θ variant {})'.format(sp, theta))
     β = float(sweep.loc[np.isclose(sweep['ρ'], 1.0), 'β'].iloc[0])
     if a['grid'] != 'fine' or not np.isclose(float(a['β']), β, rtol = 1e-12, atol = 0):
         raise StaleInput('{}: the {} anchor was solved at β = {!r} on the {} grid; the U.S. calibration has β = {!r}: '
@@ -660,13 +716,13 @@ def oecd26Anchor(turnout = None, spec = None):
     return a
 
 
-def oecd26Layer(layer, turnout = None, spec = None, betaRule = None):
-    """ Layer 1 or 2 of one turnout reading, cost spec and β rule (config.US['oecd26']'s where None), indexed on ISO3.
-    Every row must have been computed against the anchor of its spec on disk (its `anchorKey` is the anchor's
-    `inputsKey`) on the anchor's grid: a row of an earlier anchor is StaleInput, never mixed in (crossCuttingFindings
-    #13). """
-    a = oecd26Anchor(turnout, spec)
-    df, path = _oecd26Rows(layer, turnout, spec, betaRule)
+def oecd26Layer(layer, turnout = None, spec = None, betaRule = None, theta = None):
+    """ Layer 1 or 2 of one turnout reading, cost spec and β rule (config.US['oecd26']'s where None) at thetaSource
+    `theta` (config.US['theta'] by default), indexed on ISO3. Every row must have been computed against the anchor of
+    its spec on disk (its `anchorKey` is the anchor's `inputsKey`) on the anchor's grid: a row of an earlier anchor is
+    StaleInput, never mixed in (crossCuttingFindings #13). """
+    a = oecd26Anchor(turnout, spec, theta)
+    df, path = _oecd26Rows(layer, turnout, spec, betaRule, theta)
     stale = (df['anchorKey'] != a['inputsKey']) | (df['grid'] != a['grid'])
     if stale.any():
         raise StaleInput('{}: rows computed against another anchor or grid: {}'.format(
@@ -709,10 +765,10 @@ def escPath(ρ, commonX = None, spec = None):
     spec = C.US['esc']['spec'] if spec is None else spec
     if np.isclose(ρ, 1.0):
         path = os.path.join(C.ESCDIR, 'escPath.csv')
-        df = _escSelect(pd.read_csv(_need(path)), spec, commonX)
+        df = _escSelect(_readUS(path), spec, commonX)
     else:
         path = os.path.join(C.ESCDIR, 'escPathCRRA.csv')
-        df = pd.read_csv(_need(path))
+        df = _readUS(path)
         df = _escSelect(df[np.isclose(df['ρ'], ρ)], spec, commonX, method = True)
     if df.empty:
         raise MissingInput('{} (ρ={}, {}, commonX={}, method={})'.format(path, ρ, spec, commonX, escMethod()))
@@ -726,7 +782,7 @@ def escPathHost(commonX = None, spec = None):
     commonX = C.US['commonX'] if commonX is None else commonX
     spec = C.US['esc']['spec'] if spec is None else spec
     path = os.path.join(C.ESCDIR, 'escPathHost.csv')
-    df = _escSelect(pd.read_csv(_need(path)), spec, commonX)
+    df = _escSelect(_readUS(path), spec, commonX)
     if df.empty:
         raise MissingInput('{} ({}, commonX={})'.format(path, spec, commonX))
     return _noDuplicates(df, ['country', 'wedgeFrom', 'pos'], path).sort_values(['country', 'wedgeFrom', 'pos'])
@@ -740,7 +796,7 @@ def escXi(commonX = None, spec = None):
     commonX = C.US['commonX'] if commonX is None else commonX
     spec = C.US['esc']['spec'] if spec is None else spec
     path = os.path.join(C.ESCDIR, 'escXiRobustness.csv')
-    df = _escSelect(pd.read_csv(_need(path)), spec, commonX)
+    df = _escSelect(_readUS(path), spec, commonX)
     if df.empty:
         raise MissingInput('{} ({}, commonX={})'.format(path, spec, commonX))
     return _noDuplicates(df, ['xi', 'kind', 'pos'], path)
@@ -748,7 +804,7 @@ def escXi(commonX = None, spec = None):
 
 def _variantRows(path, commonX, key):
     commonX = C.US['commonX'] if commonX is None else commonX
-    df = pd.read_csv(_need(path))
+    df = _readUS(path)
     df = df.iloc[[i for i, rec in enumerate(df.to_dict('records')) if _escVariant(rec, commonX)]]
     if df.empty:
         raise MissingInput('{} (commonX={})'.format(path, commonX))
@@ -787,7 +843,8 @@ def stationaryApprox(which):
     name = {'US': 'US_stationaryApprox.csv', 'US_ESC': 'US_ESC_stationaryApprox.csv',
             'ARG': 'ARG_stationaryApprox' + C.argVariantTag(C.ARG['commonX']) + '.csv'}[which]
     path = os.path.join(C.NUMDIR, name)
-    return _noDuplicates(pd.read_csv(_need(path)), ['ρ', 't'], path).sort_values(['ρ', 't']).reset_index(drop = True)
+    df = pd.read_csv(_need(path)) if which == 'ARG' else _readUS(path)
+    return _noDuplicates(df, ['ρ', 't'], path).sort_values(['ρ', 't']).reset_index(drop = True)
 
 
 HORIZONCSVS = {'US': ('US_horizon.csv', 'US_horizonDesign.csv'),
@@ -879,13 +936,16 @@ def selectionCsvs():
             us.append(('US', os.path.basename(C.usSweepCsv(country, cx)), [C.usSweepCsv(country, cx)]))
         us.append(('US', os.path.basename(C.usShockCsv('US', cx)), [C.usShockCsv('US', cx)]))
     for f in ('escCalibration.csv', 'escCalibrationCosts.csv', 'escCalibrationCRRA.csv', 'escCalibrationCRRAUK.csv',
-              'escCountry.csv', 'escCountryCosts.csv', 'escShocks.csv', 'escShocksCRRA.csv',
-              'escPath.csv', 'escPathCRRA.csv', 'escXiRobustness.csv', 'escPermanent.csv',
-              'escPermanentCRRA.csv', 'escSequentialCRRA.csv'):
+              'escCountry.csv', 'escShocks.csv', 'escShocksCosts.csv', 'escShocksCRRA.csv', 'escPath.csv',
+              'escPathCRRA.csv', 'escPathHost.csv'):
         us.append(('US', f, [os.path.join(C.ESCDIR, f)]))
     for layer in (0, 1, 2):
         p = oecd26Path(layer)
         us.append(('US', 'oecd26/' + os.path.basename(p), [p]))
+    for V in C.US['oecd26']['thetaVariants']:
+        for layer in (0, 1, 2):
+            p = oecd26Path(layer, V)
+            us.append(('US', 'oecd26_theta_{}/{}'.format(V, os.path.basename(p)), [p]))
     for f in ('US_stationaryApprox.csv', 'US_ESC_stationaryApprox.csv') + HORIZONCSVS['US'] + ('US_derivativeScheme.csv',):
         us.append(('US', f, [os.path.join(C.NUMDIR, f)]))
     return arg + us
@@ -908,7 +968,7 @@ def countSummary(paths, layer = 'tax'):
         raise MissingInput(lack)
     cols, rows, parts, neg, blank = COUNTCOLUMNS[layer], 0, [], 0, 0
     for p in paths:
-        d = pd.read_csv(p)
+        d = _countFrame(p)
         rows += len(d)
         if all(c in d.columns for c in cols):
             sub = d[list(cols)].apply(pd.to_numeric, errors = 'coerce')
@@ -929,12 +989,32 @@ def countSummary(paths, layer = 'tax'):
 COUNTIDS = ('ρ', 'spec', 'scenario', 'θpinned', 'method', 'family', 'effect', 'terminal', 'tss', 'date')
 
 
+def thetaKeyed(path):
+    """ Is `path` a U.S.-arm csv of a run at the θ variant (the U.S., France and UK sweeps and shocks, results/esc,
+    results/oecd26, the U.S. stationary checks), whose rows are read at config.US['theta'] only? """
+    p, name = os.path.abspath(path), os.path.basename(path)
+    under = lambda d: os.path.normcase(p).startswith(os.path.normcase(os.path.abspath(d)) + os.sep)
+    return ((under(C.CALIBDIR) and name.startswith(('US_', 'FR_', 'UK_'))) or under(C.ESCDIR) or under(OECD26DIR)
+            or (under(C.SHOCKDIR) and name.startswith('US_'))
+            or name in ('US_stationaryApprox.csv', 'US_ESC_stationaryApprox.csv'))
+
+
+def _countFrame(p):
+    """ The rows of csv `p` the counts read: at the θ variant where the file is thetaKeyed, at its own variant in a
+    robustness variant's directory (results/oecd26_theta_<V>/), all of them otherwise. """
+    d = pd.read_csv(_need(p))
+    top = os.path.basename(os.path.dirname(os.path.abspath(p)))
+    if top.startswith('oecd26_theta_'):
+        return C.atTheta(d, top[len('oecd26_theta_'):])
+    return C.atTheta(d) if thetaKeyed(p) else d
+
+
 def countExceptions(paths, layer = 'tax'):
     """ The counted rows of `paths` with more than one equilibrium or a fallback at `layer`: [(file, {its
     identifying columns among COUNTIDS}, nEq max, fallbacks)]. """
     cols, out = COUNTCOLUMNS[layer], []
     for p in paths:
-        d = pd.read_csv(_need(p))
+        d = _countFrame(p)
         if not all(c in d.columns for c in cols):
             continue
         sub = d[list(cols)].apply(pd.to_numeric, errors = 'coerce')

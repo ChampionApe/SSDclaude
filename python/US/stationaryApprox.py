@@ -44,6 +44,10 @@ from model import ModelUS
 from policy import multiplicityColumns
 
 OUT = os.path.join(REPO, 'results', 'numerical', 'US_stationaryApprox.csv')
+# --theta VARIANT --main (the pipeline's main θ variant, oecd26.thetaRoot): θ0 = the variant's U.S. row of
+# data/oecd26_theta.csv imposed on every model here (db['θ0'], ModelUS.getθ), the sweep row read at that θ0
+# (oecd26.usBeta), and thetaSource, θ0 on every output row. Set by main.
+THETA = {'variant': None, 'θ0': None}
 
 
 def usRow(ρ, commonX):
@@ -52,13 +56,17 @@ def usRow(ρ, commonX):
     hit = df.loc[(df['ρ'] - ρ).abs() < 1e-9]
     if hit.empty:
         raise KeyError(f'No US calibration at ρ={ρ} in {csv}.')
+    if THETA['variant'] is not None:
+        import oecd26
+        oecd26.usBeta(csv, ρ, thetaSource = THETA['variant'])          # ValueError at another θ0
     return hit.iloc[-1]
 
 
 def build(row, ρ, commonX, gs, ν = None, T = None):
     """ The calibrated US model at ρ; with ν a scalar and T an int, the same economy with ν frozen at that
     value over a T-period horizon (the stationary problem). """
-    pars = dict(testmod.pars) | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])}
+    pars = (dict(testmod.pars) | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])}
+            | ({} if THETA['θ0'] is None else {'θ0': THETA['θ0']}))
     kwargs = dict(testmod.kwargs)
     if ν is not None:
         pars['ν'] = np.full(T, float(ν))
@@ -167,10 +175,23 @@ def main():
     p.add_argument('--smoothKnots', type = int, default = 4)
     p.add_argument('--vectorX', action = 'store_true', help = 'the vector-X calibration variant (headline is common X)')
     p.add_argument('--out', default = OUT)
+    p.add_argument('--theta', default = None, help = "the pipeline's main θ variant (with --main)")
+    p.add_argument('--main', action = 'store_true', help = "with --theta config.US['theta']")
     a = p.parse_args()
+    if a.theta is not None or a.main:
+        import oecd26
+        if not (a.theta is not None and a.main):
+            raise SystemExit('--theta needs --main here (and --main --theta)')
+        try:
+            oecd26.thetaRoot(a.theta, main = True)
+            THETA.update({'variant': a.theta, 'θ0': oecd26.thetaFromFile('USA', a.theta)})
+        except (ValueError, FileNotFoundError) as e:
+            raise SystemExit('--theta {}: {}'.format(a.theta, e))
     gs = {'n': a.n, 'ns': a.ns, 'smoothKnots': a.smoothKnots or None, 'interpKind': 'linear'}
     dfs = [runRho(ρ, not a.vectorX, gs, a.Tstat) for ρ in a.rho]
     df = pd.concat(dfs, ignore_index = True)
+    if THETA['variant'] is not None:
+        df = df.assign(thetaSource = THETA['variant'], θ0 = THETA['θ0'])
     os.makedirs(os.path.dirname(a.out), exist_ok = True)
     df.to_csv(a.out, index = False)
     pd.set_option('display.width', 200)

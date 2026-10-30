@@ -35,8 +35,21 @@ Four stages, each writing its own csv under results/esc/:
            and the tax there, for France, the U.S. and the UK at lambda = 0, the U.S. lambda and 100, the
            1990 and the 2020 electorate (app:esc:cost: under log both are free of lambda, so a negative slope
            means no lambda re-elects the corner) -> escCornerSlope.csv. Each row is recalibrated at its
-           lambda, so the slope is lambda-free only where the observed design is the corner (France): the
-           U.S. and the UK observe a design below it, where the cost moves omega and with it the slope.
+           lambda, so the slope is lambda-free only where the observed design is the corner (France at its
+           workbook θ = 1): an economy observed below it (the U.S. and the UK; France too under a θ variant, at
+           countryθ0) has omega, and with it the slope, move with the cost.
+
+--theta VARIANT [--root DIR | --main] [--coarse] (stages calib, path, pathHost, shocks, country, corner; `setTheta`):
+every U.S. model imposes theta as db['θ0'] = the U.S. row of data/oecd26_theta.csv under VARIANT (ModelUS.getθ,
+oecd26.thetaFromFile), so the calib stage puts that design in force in 2020, (beta, omega) recalibrated inside as
+always; France and the UK impose theirs, the FRA and GBR rows (oecd26.countryθ0, `buildEU`, `frenchData`), with omega
+recalibrated at it (France at the U.S. income cuts). The variant's directory DIR (default
+results/oecd26_theta_<variant>/, oecd26.thetaDir; results/ under --main, the pipeline's main variant,
+oecd26.thetaRoot) holds its U.S. sweep, DIR/calibration/ (calibrateRhoGrid.py --theta: required, at that θ0), which
+seeds the U.S. and is France's and the UK's U.S. reference (beta imposed, hours). The csvs go to DIR/esc/ (results/esc/
+only under --main), their rows adding thetaSource, θ0 (the U.S.'s) and grid, and a stage that reads
+escCalibration.csv or escCountry.csv refuses the rows it reads at another thetaSource, θ0 or grid (checkCalib).
+--coarse (variant only): GRIDS['coarse'].
 
 Spec 'sizePiR' (ModelESC: the 'size' cost with lambda*Pi_t/R_t, pi solved to the path's own) runs the calib,
 path, shocks and country stages; its rows carry 'ΠR', pi at the row's date (t0 for calib, shocks and country).
@@ -63,6 +76,20 @@ from policy import multiplicityColumns
 
 OUTDIR = os.path.join(REPO, 'results', 'esc')
 GS = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}
+# The tax grid's nodes and LeadedLOG's design state grid and candidates of buildUS/buildEU/frenchData.
+GRIDS = {'fine': {'n': 101, 'nθ': 41, 'nθCand': 121}, 'coarse': {'n': 51, 'nθ': 21, 'nθCand': 41}}
+# The run's θ variant, set by setTheta (main's --theta) and read by every builder here, so no stage can build a
+# U.S. at another θ: θ0 imposed on the U.S. (db['θ0']), calibDir the variant's U.S. sweep (buildUS's seed, France's
+# and the UK's U.S. reference), grid a GRIDS key. The defaults are the workbook's θ, results/calibration/, 'fine'.
+THETA = {'variant': None, 'θ0': None, 'calibDir': None, 'grid': 'fine', 'main': False}
+
+
+def countryθ0(country):
+    """ θ0 of France or the UK under the run's variant (oecd26.countryθ0), None without one. """
+    if THETA['variant'] is None:
+        return None
+    import oecd26
+    return oecd26.countryθ0(country, THETA['variant'])
 
 
 def mergeWrite(path, rows, key):
@@ -150,8 +177,27 @@ class ModelESCFR(ModelESC, ModelFR):
 
 # ---------------------------------------------------------------- builders
 
-def buildUS(wedge = None, ρ = 1.0, nθ = 41, nθCand = 121, commonX = False):
-    """ The US model under the wedge, with (beta, omega) SEEDED from the no-wedge sweep at this rho.
+def usSweep(commonX = False):
+    """ The U.S. sweep of this run: results/calibration/US_rhoGrid{,CommonX}.csv, or THETA['calibDir']'s. """
+    return os.path.join(THETA['calibDir'] or os.path.join(REPO, 'results', 'calibration'),
+                        'US_rhoGridCommonX.csv' if commonX else 'US_rhoGrid.csv')
+
+
+def _usRef(commonX):
+    """ France's and the UK's U.S. reference (testEU.usReference) off this run's U.S. sweep. """
+    return testEU.usReference(commonX = commonX, csv = None if THETA['calibDir'] is None else usSweep(commonX))
+
+
+def thetaColumns():
+    """ The columns a θ variant's rows add: thetaSource, θ0 and grid ({} without a variant). """
+    return {} if THETA['variant'] is None else {'thetaSource': THETA['variant'], 'θ0': THETA['θ0'],
+                                                 'grid': THETA['grid']}
+
+
+def buildUS(wedge = None, ρ = 1.0, nθ = None, nθCand = None, commonX = False, θ0 = None):
+    """ The US model under the wedge, with (beta, omega) SEEDED from the no-wedge sweep at this rho (usSweep).
+    θ0: the design imposed as db['θ0'] (ModelUS.getθ), THETA's by default; None derives it from the workbook's
+    RR0. nθ, nθCand and the tax grid: GRIDS[THETA['grid']] unless given.
 
     Only seeded: every stage that uses this calls calibrate() (or calibrateWedge, which calibrates
     inside), so the numbers on the csv are a starting point, not the calibration. What the variant
@@ -159,31 +205,38 @@ def buildUS(wedge = None, ρ = 1.0, nθ = 41, nθCand = 121, commonX = False):
     Under commonX the hours unit is a target rather than free, so the calibration adds h0 as a third
     condition and returns a scalar X; nothing here has to install it, calibrate() does.
     """
-    row = pd.read_csv(os.path.join(REPO, 'results', 'calibration',
-                                   'US_rhoGridCommonX.csv' if commonX else 'US_rhoGrid.csv'))
+    g = GRIDS[THETA['grid']]
+    θ0 = THETA['θ0'] if θ0 is None else θ0
+    row = pd.read_csv(usSweep(commonX))
     row = row.loc[(row['ρ'] - ρ).abs() < 1e-9].iloc[-1]
-    m = ModelESC(pars = testmod.pars | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])},
-                 wedge = wedge, nθ = nθ, nθCand = nθCand, commonX = commonX, **testmod.kwargs)
+    m = ModelESC(pars = testmod.pars | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])}
+                 | ({} if θ0 is None else {'θ0': float(θ0)}),
+                 wedge = wedge, nθ = g['nθ'] if nθ is None else nθ, nθCand = g['nθCand'] if nθCand is None else nθCand,
+                 commonX = commonX, **testmod.kwargs)
     m.db['dates'] = testmod.dates
     m.db['workweek'] = testmod.workweek
-    m.LOG.initGS(GS)
+    m.LOG.initGS(GS | {'n': g['n']})
     return m
 
 
-def buildEU(country, wedge = None, nθ = 41, nθCand = 121, ρ = 1.0, commonX = False, ω = 2., **escKw):
+def buildEU(country, wedge = None, nθ = None, nθCand = None, ρ = 1.0, commonX = False, ω = 2., **escKw):
     """ France or the UK under the wedge. commonX must MATCH the US model it is compared against: under
     commonX France's X_i is a single scalar and its eta_i inverts z^eta directly, so both characteristics
     differ from the vector-X calibration and a mismatched pair would put a France that does not exist in
     this run's units next to the US rows (runShocksUS.frenchData says the same about the shock data).
-    ω only seeds calibrate(); escKw goes to ModelESC (nθCandCRRA, nθCand2D). """
+    ω only seeds calibrate(); escKw goes to ModelESC (nθCandCRRA, nθCand2D). θ is the country's own: its RR0, or
+    under a θ variant db['θ0'] = countryθ0(country); the U.S. reference is this run's sweep (_usRef), the grids
+    GRIDS[THETA['grid']] unless given. """
+    g = GRIDS[THETA['grid']]
     pars, kwargs, dates, workweek = testEU.load(country)
-    pars.update({'ρ': float(ρ), 'ω': float(ω)})
+    θ0 = countryθ0(country)
+    pars.update({'ρ': float(ρ), 'ω': float(ω)} | ({} if θ0 is None else {'θ0': θ0}))
     # usReference must be read off the SAME variant's sweep: it carries hbar_US, and hbar differs
     # between vector X and common X by construction (python/US/README.md).
-    m = ModelESCFR(pars = pars, wedge = wedge, usRef = testEU.usReference(commonX = commonX), nθ = nθ,
-                   nθCand = nθCand, commonX = commonX, **escKw, **kwargs)
+    m = ModelESCFR(pars = pars, wedge = wedge, usRef = _usRef(commonX), nθ = g['nθ'] if nθ is None else nθ,
+                   nθCand = g['nθCand'] if nθCand is None else nθCand, commonX = commonX, **escKw, **kwargs)
     m.db['dates'], m.db['workweek'], m.db['country'] = dates, workweek, country
-    m.LOG.initGS(GS)
+    m.LOG.initGS(GS | {'n': g['n']})
     return m
 
 
@@ -238,6 +291,7 @@ def baselineRefs(m):
 def stageCalib(specs, phis, out, ρ = 1.0, commonX = False, bracket = None):
     """ bracket: the scan bracket for the wedge parameter, None = ModelESC.WEDGE_BRACKET[spec]. """
     rows = []
+    tagθ = thetaColumns()
     m = buildUS(None, ρ = ρ, commonX = commonX)
     m.calibrate()
     t0 = m.t0Year
@@ -245,7 +299,7 @@ def stageCalib(specs, phis, out, ρ = 1.0, commonX = False, bracket = None):
     rows.append({'spec': 'none', 'phi': np.nan, 'commonX': commonX, 'p': np.nan, 'converged': True,
                  'θStar': float(m.db['θ'].xs(t0)), 'choice': m.leadedDesignAtT0(sols),
                  'β': m.simpleβinv(), 'ω': float(m.db['ω'].xs(t0)), 'τDrift': np.nan, 'RDrift': np.nan}
-                | wedgeReadout(m, float(m.db['τ0'])) | multiplicityColumns(m.ESC.lastMultiplicity))
+                | wedgeReadout(m, float(m.db['τ0'])) | multiplicityColumns(m.ESC.lastMultiplicity) | tagθ)
     print('no wedge: θ*={θStar:.4f} -> choice {choice:.4f}  (Vtilde={Vtilde:.4f})'.format(**rows[-1]))
     mergeWrite(out, rows, KEYCAL)
 
@@ -259,7 +313,7 @@ def stageCalib(specs, phis, out, ρ = 1.0, commonX = False, bracket = None):
             except Exception as e:
                 print(f'  FAILED: {type(e).__name__}: {e}')
                 rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': np.nan,
-                             'converged': False} | multiplicityColumns(None))
+                             'converged': False} | multiplicityColumns(None) | tagθ)
                 mergeWrite(out, rows, KEYCAL); continue
             r = {'spec': spec, 'phi': phi, 'commonX': commonX, 'p': rec['p'],
                  'converged': rec['converged'],
@@ -274,7 +328,7 @@ def stageCalib(specs, phis, out, ρ = 1.0, commonX = False, bracket = None):
                       'choice': float(led['θ'].iloc[m.db['t0']]),
                       'choiceAtT0': float(led['θ'].iloc[m.db['t0']+1])}
                 r |= wedgeReadout(m, float(led['τ'].xs(m.t0Year)))
-            r |= multiplicityColumns(led['multiplicity'] if rec['converged'] else None)
+            r |= multiplicityColumns(led['multiplicity'] if rec['converged'] else None) | tagθ
             rows.append(r)
             print('  -> p={p}  θ*={θStar:.4f}  β={β:.4f} ω={ω:.4f}  Vtilde={Vtilde:.4f} f(θ*)={fStar} f(0)={f0}  ({:.0f}s)'
                   .format(time.time()-tic, **({'fStar': np.nan, 'f0': np.nan} | r)))
@@ -308,7 +362,7 @@ def stagePath(specs, phis, calib, out, ρ = 1.0, commonX = False):
                              'θ': float(led['θ'].xs(t)), 'τ': r['τ'], 'sr': r['sr'],
                              'workweek': r['workweek'], 'R': r['R'],
                              'τExo': rb['τ'], 'srExo': rb['sr'], 'workweekExo': rb['workweek']}
-                            | piColumn(m, t) | multiplicityColumns(led['multiplicity']))
+                            | piColumn(m, t) | multiplicityColumns(led['multiplicity']) | thetaColumns())
             mergeWrite(out, rows, KEYPATH)
             print('[{}, φ={}] θ path: {}'.format(spec, phi,
                   '  '.join('{:.3f}'.format(x) for x in led['θ'].values[:8])))
@@ -318,7 +372,8 @@ def stagePath(specs, phis, calib, out, ρ = 1.0, commonX = False):
 def stagePathHost(specs, phis, calib, country, out, ρ = 1.0, commonX = False):
     """ stagePath's design path for France and the UK, each on its own calibration and income groups (buildEU),
     under the US-calibrated cost ('US', escCalibration.csv) and under the country's own ('own',
-    escCountry.csv), where one exists: France has none, since no value re-elects theta = 1. The workweek is
+    escCountry.csv), where one exists: at its workbook design theta = 1 France has none, since no value re-elects
+    it (under a θ variant France's design is countryθ0's and may have one). The workweek is
     the country's own (its datum at the exogenous baseline in 2020); the *Exo columns pin the design at the
     country's observed theta*. `calib`, `country`: the two csvs' frames. """
     rows = []
@@ -350,7 +405,7 @@ def stagePathHost(specs, phis, calib, country, out, ρ = 1.0, commonX = False):
                                      'θ': float(led['θ'].xs(t)), 'τ': r['τ'], 'sr': r['sr'],
                                      'workweek': r['workweek'], 'R': r['R'],
                                      'τExo': rb['τ'], 'srExo': rb['sr'], 'workweekExo': rb['workweek']}
-                                    | multiplicityColumns(led['multiplicity']))
+                                    | multiplicityColumns(led['multiplicity']) | thetaColumns())
                     mergeWrite(out, rows, KEYPATHHOST)
                     print('[{}, φ={}] {} under the {} cost p={:.4f}: θ path {}'.format(
                         spec, phi, label, wedgeFrom, p, '  '.join('{:.3f}'.format(x) for x in led['θ'].values[:8])))
@@ -425,7 +480,8 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, scenarios = 
                                  'θpinned': pin, 'θ_tm1': r['θ_'], 'θ_t0': r['θ0'], 'θ_t1': r['θ1'],
                                  'τ_t0': r['t0']['τ'], 'sr_t0': r['t0']['sr'], 'ww_t0': r['t0']['workweek'],
                                  'τ_t1': r['t1']['τ'], 'sr_t1': r['t1']['sr'], 'ww_t1': r['t1']['workweek']}
-                                | piColumn(r['m'], r['m'].t0Year) | multiplicityColumns(r['multiplicity']))
+                                | piColumn(r['m'], r['m'].t0Year) | multiplicityColumns(r['multiplicity'])
+                                | thetaColumns())
                     print('  {:<10} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}'
                           '  (θ_t1={:.4f}, {:.0f}s)'
                           .format(name, str(pin), r['θ0'], r['t0']['τ'], r['t0']['sr'],
@@ -439,7 +495,7 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, scenarios = 
                 continue
             try:
                 f = franceRow(m, spec, phi, p, hbarRef, ρ = ρ, commonX = commonX)
-                rows.append(f | {'host': host})
+                rows.append(f | {'host': host} | thetaColumns())
                 print('  {:<10} pin={:<5} θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}'
                       .format('France', 'True', f['θ_t0'], f['τ_t0'], f['sr_t0'], f['ww_t0']))
                 mergeWrite(out, rows, KEYSHK)
@@ -510,12 +566,14 @@ def frenchData(m, commonX = False):
     """ France's characteristics in the form shocks.py wants (runShocksUS.frenchData, LOG only), France's
     households cut at the US percentiles. 'θUS' is the US design.
 
-    commonX must match the US model being shocked, for the reason buildEU gives. """
+    commonX must match the US model being shocked, for the reason buildEU gives. Under a θ variant France is
+    calibrated at its own θ0 (countryθ0); 'θUS' is still the U.S. one, which the income row holds. """
     parsFR, kwFR, datesFR, wwFR = testEU.load('FR')
-    mFR = ModelFR(pars = parsFR | {'ρ': 1., 'ω': 2.}, usRef = testEU.usReference(commonX = commonX),
+    θ0FR = countryθ0('FR')
+    mFR = ModelFR(pars = parsFR | {'ρ': 1., 'ω': 2.} | ({} if θ0FR is None else {'θ0': θ0FR}), usRef = _usRef(commonX),
                   commonX = commonX, **kwFR)
     mFR.db['dates'], mFR.db['workweek'] = datesFR, wwFR
-    mFR.LOG.initGS(GS)
+    mFR.LOG.initGS(GS | {'n': GRIDS[THETA['grid']]['n']})
     mFR.calibrate()
     t0FR, t0US = mFR.db['t'][mFR.db['t0']], m.t0Year
     XbarFR = float((mFR.db['γi'].xs(t0FR)*mFR.db['Xi'].xs(t0FR)).sum())
@@ -561,7 +619,7 @@ def stageCountry(specs, phis, calib, out, commonX = False):
                 try:
                     m = buildEU(country, {'spec': spec, 'phi': phi, 'p': pUS}, commonX = commonX)
                     m.calibrate()
-                    rows.append(usWedgeRow(m, spec, phi, commonX, label, pUS))
+                    rows.append(usWedgeRow(m, spec, phi, commonX, label, pUS) | thetaColumns())
                     θStar, ch = rows[-1]['θStar'], rows[-1]['choice']
                     print('[{}, φ={}] {:<5} US wedge p={:.4f}: θ*={:.4f} -> choice {:.4f}  (Vtilde={:.4f})'
                           .format(spec, phi, label, pUS, θStar, ch, rows[-1]['Vtilde']))
@@ -579,7 +637,8 @@ def stageCountry(specs, phis, calib, out, commonX = False):
                                  'converged': rec['converged'],
                                  'ω': float(m.db['ω'].xs(m.t0Year))} | own
                                 # calibrateWedge's last recursion is the one at the calibrated p
-                                | multiplicityColumns(m.ESC.lastMultiplicity if rec['converged'] else None))
+                                | multiplicityColumns(m.ESC.lastMultiplicity if rec['converged'] else None)
+                                | thetaColumns())
                     print('[{}, φ={}] {:<5} own wedge: p={} θ*={:.4f} ({})'
                           .format(spec, phi, label, rec['p'], rec['θ'], rec['message']))
                 except Exception as e:
@@ -747,13 +806,17 @@ def stageCorner(specs, phis, calib, out, commonX = False):
                     wedge = None if λv == 0 else {'spec': spec, 'phi': phi, 'p': λv}
                     m = (buildUS(wedge, commonX = commonX) if country == 'US'
                          else buildEU(country, wedge, commonX = commonX))
-                    m.calibrate()
+                    try:
+                        m.calibrate()
+                    except RuntimeError as e:                 # a calibration that fails at this λ: no row
+                        print('[{}] {} λ={:8.3f}: calibration FAILED, no row ({})'.format(spec, country, λv, str(e)[:80]))
+                        continue
                     p0 = int(m.db['t'].get_loc(m.t0Year))
                     for vote in (p0 - 1, p0):
                         r = cornerSlope(m, vote)
                         rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'country': country,
                                      'λ': λv, 'λFrom': 'US' if λ is None else 'fixed', 'vote': vote,
-                                     'θStar': float(m.db['θ'].xs(m.t0Year))} | r)
+                                     'θStar': float(m.db['θ'].xs(m.t0Year))} | r | thetaColumns())
                         print('[{}] {} λ={:8.3f} vote {}: slope at θ=1 {:+.6f}, T(1) {:.6f}'
                               .format(spec, country, λv, r['date'], r['slope'], r['τ1Corner']))
                     mergeWrite(out, rows, KEYCORNER)
@@ -785,21 +848,32 @@ def main():
                    help = 'the scan bracket for the wedge parameter (p, or lambda under size); default per '
                           'spec, ModelESC.WEDGE_BRACKET. Applies to every spec asked for in one run.')
     p.add_argument('--tag', default = '')
+    p.add_argument('--theta', default = None,
+                   help = "a variant of data/oecd26_theta.csv: every U.S. model at that θ (db['θ0']); stages "
+                          + ', '.join(THETASTAGES))
+    p.add_argument('--root', default = None,
+                   help = "the variant's directory (default results/oecd26_theta_<variant>): reads calibration/, "
+                          "writes esc/. A relative path is the repo's.")
+    p.add_argument('--coarse', action = 'store_true', help = "GRIDS['coarse'], under --theta only")
+    p.add_argument('--main', action = 'store_true',
+                   help = "with --theta config.US['theta']: read results/calibration/, write results/esc/")
     a = p.parse_args()
-    os.makedirs(OUTDIR, exist_ok = True)
-    f = lambda n: os.path.join(OUTDIR, f'{n}{a.tag}.csv')
+    outdir = setTheta(a.theta, a.root, a.stage, a.coarse, a.commonX, a.rho, a.main)
+    os.makedirs(outdir, exist_ok = True)
+    f = lambda n: os.path.join(outdir, f'{n}{a.tag}.csv')
 
     calib = None
     if 'calib' in a.stage:
         calib = stageCalib(a.spec, a.phi, f('escCalibration'), ρ = a.rho, commonX = a.commonX,
                            bracket = None if a.bracket is None else tuple(a.bracket))
     else:
-        calib = pd.read_csv(f('escCalibration'))
+        calib = checkCalib(pd.read_csv(f('escCalibration')), f('escCalibration'), a.spec, a.phi, a.commonX)
     if 'path' in a.stage:
         stagePath(a.spec, a.phi, calib, f('escPath'), ρ = a.rho, commonX = a.commonX)
     if 'pathHost' in a.stage:
-        stagePathHost(a.spec, a.phi, calib, pd.read_csv(f('escCountry')), f('escPathHost'), ρ = a.rho,
-                      commonX = a.commonX)
+        cty = pd.read_csv(f('escCountry'))
+        cty = checkCalib(cty[cty['country'].isin(['UK', 'FR'])], f('escCountry'), a.spec, a.phi, a.commonX)
+        stagePathHost(a.spec, a.phi, calib, cty, f('escPathHost'), ρ = a.rho, commonX = a.commonX)
     if 'shocks' in a.stage:
         stageShocks(a.spec, a.phi, calib, f('escShocks'), ρ = a.rho, commonX = a.commonX,
                     scenarios = a.scenarios)
@@ -811,8 +885,76 @@ def main():
         stageCorner(a.spec, a.phi, calib, f('escCornerSlope'), commonX = a.commonX)
     if 'permanent' in a.stage:
         stagePermanent(a.spec, a.phi, f('escPermanent'), ρ = a.rho, commonX = a.commonX)
-    print('\n-> {}'.format(os.path.relpath(OUTDIR, REPO)))
+    print('\n-> {}'.format(os.path.relpath(outdir, REPO)))
     return 0
+
+
+THETASTAGES = ('calib', 'path', 'pathHost', 'shocks', 'country', 'corner')     # the stages a θ variant runs
+
+
+def setTheta(theta = None, root = None, stages = ('calib',), coarse = False, commonX = True, ρ = 1.0, main = False):
+    """ Install a run's θ variant in THETA and return its output directory: results/esc without one (THETA left at
+    its defaults); under VARIANT, root/esc with root the variant's directory (oecd26.thetaDir by default; a
+    relative path is the repo's; results/ under `main`, oecd26.thetaRoot), θ0 its U.S. θ and calibDir
+    root/calibration, whose U.S. sweep at ρ must be at that θ0 (oecd26.usBeta). SystemExit for --root, --coarse or
+    --main without a variant, --main with --root or with another variant than config.US['theta'], a stage outside
+    THETASTAGES, a variant without a U.S. θ, a missing or other-θ0 sweep, or results/esc/ as the output without
+    --main. """
+    if theta is None:
+        if root is not None or coarse or main:
+            raise SystemExit('--root, --coarse and --main need --theta VARIANT')
+        return OUTDIR
+    import oecd26
+    if set(stages) - set(THETASTAGES):
+        raise SystemExit('--theta {}: stages {} only, not {}'.format(theta, THETASTAGES,
+                                                                    sorted(set(stages) - set(THETASTAGES))))
+    if main and root is not None:
+        raise SystemExit('--main reads results/calibration/ and writes results/esc/: not with --root')
+    try:
+        θ0 = oecd26.thetaFromFile('USA', theta)
+        root = oecd26.thetaRoot(theta, main) if root is None else os.path.join(REPO, root)
+    except (ValueError, FileNotFoundError) as e:          # NoTheta is a ValueError
+        raise SystemExit('--theta {}: {}'.format(theta, e))
+    outdir = os.path.join(root, 'esc')
+    if not main and os.path.normcase(os.path.abspath(outdir)) == os.path.normcase(OUTDIR):
+        raise SystemExit('--theta {}: results/esc/ holds the main variant\'s runs (--main) only; use another '
+                         '--root'.format(theta))
+    calibDir = os.path.join(root, 'calibration')
+    try:
+        oecd26.usBeta(os.path.join(calibDir, 'US_rhoGridCommonX.csv' if commonX else 'US_rhoGrid.csv'), ρ,
+                      thetaSource = theta)
+    except (FileNotFoundError, ValueError, KeyError) as e:
+        raise SystemExit('--theta {}: {}'.format(theta, e))
+    THETA.update({'variant': theta, 'θ0': θ0, 'calibDir': calibDir, 'grid': 'coarse' if coarse else 'fine',
+                  'main': bool(main)})
+    print('θ variant {!r}: θ0 = {!r}, U.S. sweep {}, grid {}'.format(theta, θ0, usSweep(commonX), THETA['grid']))
+    return outdir
+
+
+def checkCalib(calib, path, specs = None, phis = None, commonX = None):
+    """ escCalibration.csv's (or escCountry.csv's) frame, refused under a θ variant unless every row a stage reads --
+    spec in `specs`, phi in `phis`, the run's commonX (all rows where None) -- is at THETA's thetaSource, θ0 and grid
+    (#13: the cost a later stage imposes was calibrated at that θ). Rows of other keys, which mergeWrite keeps beside
+    a run's own, are not read and not checked. """
+    want = thetaColumns()
+    if not want:
+        return calib
+    read = pd.Series(True, index = calib.index)
+    if specs is not None:
+        read &= calib['spec'].isin(list(specs))
+    if phis is not None:
+        read &= np.isclose(pd.to_numeric(calib['phi'], errors = 'coerce').values[:, None],
+                           np.asarray(list(phis), dtype = float)[None, :]).any(axis = 1)
+    if commonX is not None and 'commonX' in calib.columns:
+        read &= calib['commonX'].astype(bool) == bool(commonX)
+    rows = calib[read]
+    ok = all(c in calib.columns for c in want) and bool(
+        ((rows['thetaSource'] == want['thetaSource']) & (rows['grid'] == want['grid'])
+         & (pd.to_numeric(rows['θ0']) - want['θ0']).abs().le(1e-12)).all())
+    if not ok:
+        raise SystemExit('{}: rows at another thetaSource, θ0 or grid than {}: rerun --stage calib (or country)'
+                         .format(path, want))
+    return calib
 
 
 if __name__ == '__main__':

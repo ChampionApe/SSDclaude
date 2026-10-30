@@ -110,20 +110,12 @@ EXHIBITS = {
                r'the vector $X_i$, each the change against the baseline of the same calibration and $\rho$. The '
                r'design, ageing and voting rows are the same under the two. All French characteristics imposes France\textquotesingle s '
                r'income distribution, leisure preferences and voting patterns at once.'),
-    # B5
-    'OECD_Medicare': E('table', 'OECD_Medicare'),
-    'OECD_MedicareRows': E('explorer', 'OECD_Counterfactuals',
-        caption = r'The counterfactuals of the U.S.\ with pensions alone and with Medicare',
-        note = r'As figure \ref{oa:OECD_Frisch}, for the U.S.\ under the paper\textquotesingle s calibration, '
-               r'pensions alone, and under the calibration with Medicare among the transfers to the old (table '
-               r'\ref{table:OA:OECD_Medicare}). Each bar is the change against the baseline of the same calibration '
-               r'and $\rho$; France\textquotesingle s households are cut at the U.S.\ income percentiles in both.'),
     # C1
     'ESC_PathsCountries': E('explorer', 'ESC_Paths',
         caption = r'The baseline path with the design chosen, by country',
         note = r'Log preferences ($\rho = 1$). Each country keeps its own calibration and demography; the cost '
-               r'parameter is the U.S.\ one or the country\textquotesingle s own, as selected, and France has no own '
-               r'parameter. A design chosen at one date applies from the following one. Open markers are the '
+               r'parameter is the U.S.\ one or the country\textquotesingle s own, as selected, where one re-elects its '
+               r'observed design. A design chosen at one date applies from the following one. Open markers are the '
                r'observed designs.'),
     'ESC_PathsReadings': E('explorer', 'ESC_Paths',
         caption = r'The baseline path with the design chosen and with it pinned',
@@ -132,34 +124,24 @@ EXHIBITS = {
     # C3
     'ESC_Costs': E('explorer', 'ESC_Counterfactuals',
         caption = r'The counterfactuals under the two cost specifications, U.S.',
-        note = r'The U.S.\ under the paper\textquotesingle s cost and under a cost on the design, each calibrated at '
-               r'each $\rho$ (table \ref{table:OA:ESC_CostCalibration}). An open marker is the reading with the '
+        note = r'The U.S.\ under the paper\textquotesingle s cost, calibrated at each $\rho$, and under a cost on the '
+               r'design, calibrated under log preferences ($\rho = 1$) only. An open marker is the reading with the '
                r'design pinned at the observed value, a filled one the reading with the design chosen; the design is '
                r'a level, the other outcomes the change against the baseline of the same reading and $\rho$, in '
                r'2020. The vertical line in the design panel is the observed design.'),
-    'ESC_CostCalibration': E('table', 'ESC_CostCalibration'),
     # C4
     'ESC_Frisch': E('explorer', 'ESC_Counterfactuals',
         caption = r'The endogenous design across the intertemporal and the Frisch elasticity, U.S.',
         note = r'As figure \ref{oa:ESC_Costs}, under the paper\textquotesingle s cost. Across $\xi$ the model is '
-               r'recalibrated at each value under log preferences ($\rho = 1$), the cost parameter included; only '
-               r'acute ageing is computed there.'),
+               r'recalibrated at each value under log preferences ($\rho = 1$), the cost parameter included, where '
+               r'that run is on file at the paper\textquotesingle s measure of the design; only acute ageing is '
+               r'computed there.'),
     'ESC_PathsParameters': E('explorer', 'ESC_Paths',
         caption = r'The baseline path across the intertemporal and the Frisch elasticity, U.S.',
-        note = r'The paper\textquotesingle s cost, recalibrated at each value. Under CRRA preferences the workweek with '
+        note = r'The paper\textquotesingle s cost, recalibrated at each value (across $\xi$ where that run is on file '
+               r'at the paper\textquotesingle s measure of the design). Under CRRA preferences the workweek with '
                r'the design pinned is not stored.'),
-    # C5
-    'ESC_Timing': E('table', 'ESC_Timing'),
     # C6, in the page's order of the variants
-    'OECD26_Layer1_size': E('figure', 'OECD26_Layer1_size',
-        caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, the U.S.\ $\lambda$ '
-                  r'in every country',
-        note = OECD26LAYER1.format(table = 'slopes_size')
-               + r' The cost parameter is the U.S.\ $\lambda$ itself in every country, in place of the '
-               r'paper\textquotesingle s $\varepsilon$ with $\lambda_n = \varepsilon\,\Pi_n/R_n$, so that no '
-               r'country\textquotesingle s cost moves with its $\Pi/R$; the U.S.\ anchor is recalibrated under it.'),
-    'OECD26_Slopes_size': E('table', 'OECD26_Slopes_size'),
-    'OECD26_Omega_size': E('table', 'OECD26_Omega_size'),
     'OECD26_Layer1_cses': E('figure', 'OECD26_Layer1_cses',
         caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, each country at '
                   r'its own turnout',
@@ -170,15 +152,6 @@ EXHIBITS = {
                r'profile. Luxembourg, with no CSES election, is left out of data and model alike.'),
     'OECD26_Slopes_cses': E('table', 'OECD26_Slopes_cses'),
     'OECD26_Omega_cses': E('table', 'OECD26_Omega_cses'),
-    'OECD26_Layer1_29': E('figure', 'OECD26_Layer1_29',
-        caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, every country of '
-                  r'the figure',
-        note = OECD26LAYER1.format(table = 'slopes_29')
-               + r' The cost parameter is the paper\textquotesingle s $\varepsilon$, $\lambda_n = '
-               r'\varepsilon\,\Pi_n/R_n$, and every country of figure \ref{fig:US:OECDdata} is in, Korea, Mexico and '
-               r'Turkey included.'),
-    'OECD26_Slopes_29': E('table', 'OECD26_Slopes_29'),
-    'OECD26_Omega_29': E('table', 'OECD26_Omega_29'),
     # D1
     'OECDdata': E('figure', 'OECDdata'),
     'OECD_Countries': E('table', 'OECD_Countries'),
@@ -190,6 +163,15 @@ EXHIBITS = {
     'NUM_SelectionFiles': E('table', 'NUM_SelectionFiles'),
     'NUM_HorizonPaths': E('table', 'NUM_HorizonPaths'),
 }
+
+# Exhibits retired from the registry whose outputs were dropped with their runs (notes/brief_pipelineThetaC.md,
+# 2026-10-30), id -> what replaced them, while a page still includes them: build() writes a notice in their place, so
+# that no earlier build of theirs is left to render, and reports them.
+RETIRED = {i: 'its runs were dropped when the paper moved to the measure of the design of data/oecd26_theta.csv '
+              '(config.US[\'theta\'])'
+           for i in ('OECD_Medicare', 'OECD_MedicareRows', 'ESC_CostCalibration', 'ESC_Timing',
+                     'OECD26_Layer1_size', 'OECD26_Slopes_size', 'OECD26_Omega_size',
+                     'OECD26_Layer1_29', 'OECD26_Slopes_29', 'OECD26_Omega_29')}
 
 # Retired keys, which drafts of the paper cite, each defined as an alias of a live page: the site's before
 # 2026-10-09, and those of the pages B2 (oecd-countries) and C2 (esc-countries), retired with the UK as host.
@@ -619,6 +601,9 @@ def build(verbose = True):
     for p in pgs:
         k = {'figure': 0, 'table': 0}
         for i in p['exhibits']:
+            if i in RETIRED:
+                report.append('{} includes {}, retired: {}'.format(p['file'], i, RETIRED[i]))
+                continue
             if i not in EXHIBITS:
                 report.append('{} includes {}, which the registry does not hold'.format(p['file'], i))
                 continue
@@ -642,6 +627,12 @@ def build(verbose = True):
     refs = Refs(paper, pgs, numbers, labels)
     for p in pgs:
         for i in p['exhibits']:
+            if i in RETIRED:
+                notice = '<p class="oa-missing">This exhibit ({}) is retired: {}.</p>'.format(i, html.escape(RETIRED[i]))
+                for part, text in (('whole', notice), ('head', notice), ('foot', '')):
+                    write(os.path.join(GEN, 'exhibits', i + ('' if part == 'whole' else '-' + part) + '.qmd'),
+                          include(text))
+                continue
             if i not in EXHIBITS:
                 continue
             b = block(i, EXHIBITS[i], numbers[i], paper, refs, prov, p['page'], report)

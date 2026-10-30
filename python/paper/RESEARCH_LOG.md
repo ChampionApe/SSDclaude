@@ -146,3 +146,13 @@ Addendum: `selectionCsvs` covers `escCalibrationCosts`, `escCountryCosts` and `r
 the model section 6's synthetic countries; `oecdFigure1.HIGHLIGHT` is the U.S. and France (legend "calibrated in section 6"), which
 `OECD_Countries` bolds. README counts: paper inputs 23, online-only 31. test_oecd26 13/13, test_onlineAppendix 10/10, `--map`,
 `--site`; commit 1f8a955, the site published from it.
+
+## 2026-10-30 — the pipeline on θ variant C, reduced run list (`notes/brief_pipelineThetaC.md`, RKB's two rounds)
+`config.US['theta']` = 'C', ρ grid 0.5/1/2, ρStationary 0.5/2; every U.S. arm command carries `--theta C --main`; outputs count
+only at that thetaSource and every reader filters on it (`config.atTheta`, `datasets._readUS`). Dropped from the declarations:
+PHIROBUST, Medicare, freeTheta, escCountryCosts, the timing checks, the comparison/Π-inclusive costs under CRRA, the `size` and
+`commonR` cross-sections; escCosts is acute ageing; new entry `oecd26Variants` (A, A2pt, B), `--keepGoing`, `--exclude`, stage (i)
+`--lanes`; the UK's exact brackets rescaled (smoke λ 3.628). `--list`'s 0/N for always-run entries fixed (`status`). Builders: the
+cross-section's data side and figure 1.1 on C's 21 (`OECDdata_note.tex`), new `OECD26_ThetaVariants` ('paper' reproduces table 5),
+`US_ESC_Country` on λ with France's own λ; 11 outputs removed, 10 site exhibits `RETIRED`. test_oecd26 12/12, test_onlineAppendix
+10/10, fast suites 30/30. Overnight: `logs/overnight_2026-10-30/run.sh` (not run); `--map` is its step 5.

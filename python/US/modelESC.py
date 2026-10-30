@@ -238,10 +238,16 @@ class ModelESC(ModelUS):
 
         The root is bracketed by a scan rather than handed straight to brentq: (1-x)/x is decreasing and
         f(x) increasing, so the product need not be monotone, and a silently-picked second root would be
-        a different calibration wearing the same number. """
+        a different calibration wearing the same number.
+
+        db['θ0'] (ModelUS.θOverride) is the design itself and is returned under every spec but 'flat', which
+        refuses it: there the datum is B/A, not θ. """
         θ = super().getθ()
         if self.db.get('wedgeSpec') != 'flat':
             return θ
+        if self.θOverride() is not None:
+            raise NotImplementedError("getθ: db['θ0'] imposes θ, but under 'flat' the datum is B/A = "
+                                      "(1-θ)f(θ)/θ; the override is defined for the proportional costs only.")
         if not (0. < θ < 1.):
             raise ValueError(f'getθ: the no-wedge inversion gives θ={θ}, outside (0,1); B/A is not identified.')
         r = (1-θ)/θ

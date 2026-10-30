@@ -1,14 +1,17 @@
 r""" The cross-country test of section 7's model (python/US/runOECD26.py, results/oecd26/): the panel data shared
 with figuresOECD26, the slopes of figure 1.1's relations in the data and in the model (all five, OECD26_Slopes; the
 two of section 6's spending test at the observed designs without the cost, spendingSlopes), the calibrated political
-weights (OECD26_Omega), appendix H's design slopes under the other costs, beta rules and turnouts
-(OECD26_Robustness), and the U.S., the UK and France measured as in the deep test and as in the cross-section
-(OECD26_Reconcile).
+weights (OECD26_Omega), and the five slopes under each measure of the design (OECD26_ThetaVariants).
+
+THE DESIGN'S MEASURE (`theta`, config.US['theta'] by default): the data side's index is I = 1/(2 - θ) of that variant
+of data/oecd26_theta.csv and its spending the variant's, on its countries (datasets.oecd26SampleOf: inSample and a
+finite θ); the model's rows are the variant's (datasets.oecd26Dir). `theta` 'paper' is figure 1.1's index on
+data/oecd26_sample.csv's sample26, with the 'index' rows of results/oecd26/.
 
 Every builder takes
   turnout  'cps' (every economy at the U.S. CPS propensities to vote) | 'cses' (each its own; Luxembourg has none
            and drops out of data and model alike);
-  sample   '26' (data/oecd26_sample.csv's sample26) | '29' (figure 1.1's countries);
+  sample   '26', the sample of the design's measure (above);
   reading  'inForce' (the design in force in 2020 on the freely simulated path, chosen in 1990: the reading of the
            cost parameter's target and of appendix G.1) | 'chosen' (the design chosen in 2020 at the observed
            design, in force from 2050);
@@ -51,6 +54,11 @@ SPECCAPTION = {'size': r'the U.S.\ $\lambda$ in every country',
 BETACAPTION = {'common': r'the U.S.\ $\beta$ in every country',
                'commonR': r'each country\textquotesingle s $\beta$ set to the U.S.\ 2020 return'}
 COSTSYMBOL = {'size': r'$\lambda$', 'sizePiR': r'$\varepsilon$'}                # the anchor's `p`
+# The design's measure as the notes state it: config.US['theta']'s, θ the slope of public pension benefits on
+# earnings (notes/thetaTau_alternatives.md, variant C), and the index on figure 1.1's scale.
+MEASURENOTE = (r'$\theta$, the least-squares slope of the public pension on earnings at 0.5, 1 and 2 times average '
+               r'earnings, times one minus the share of spending on minimum top-ups and tested benefits, and '
+               r'$I = 1/(2-\theta)$, the Bismarckian index.')
 
 
 def variant(turnout = None, sample = None, reading = None, spec = None, betaRule = None):
@@ -78,23 +86,38 @@ def variantCaption(turnout = None, sample = None, reading = None, spec = None, b
 
 
 def _check(v):
-    if (v['turnout'] not in ('cps', 'cses') or v['sample'] not in ('26', '29') or v['reading'] not in READINGS
+    if (v['turnout'] not in ('cps', 'cses') or v['sample'] != '26' or v['reading'] not in READINGS
             or v['spec'] not in SPECCAPTION or v['betaRule'] not in BETACAPTION):
-        raise ValueError('turnout cps|cses, sample 26|29, reading chosen|inForce, spec size|sizePiR|none, betaRule '
+        raise ValueError('turnout cps|cses, sample 26, reading chosen|inForce, spec size|sizePiR|none, betaRule '
                          'common|commonR; got {}'.format(v))
 
 
-def panelData(layer, turnout = None, sample = None, reading = None, spec = None, betaRule = None):
+def dataSide(theta = None):
+    """ (countries, index, spending) of the data side under the design's measure `theta` (module docstring): figure
+    1.1's order, I and spending (% of GDP) as Series on ISO3. """
+    theta = C.US['theta'] if theta is None else theta
+    fig = D.oecdFigure1Data()
+    if theta == 'paper':
+        smp = D.oecd26Sample()
+        return ([c for c in fig.index if bool(smp.at[c, 'sample26'])], fig[F1.NAMED['index']].astype(float),
+                fig[F1.NAMED['spending']].astype(float))
+    t = D.thetaVariant(theta)
+    return D.oecd26SampleOf(theta), t['index'].astype(float), t['spending'].astype(float)
+
+
+def panelData(layer, turnout = None, sample = None, reading = None, spec = None, betaRule = None, theta = None):
     r""" One row per country of the sample with a model row: figure 1.1's x variables (`growth`, `gini`), the
-    data's `spendingData`, `indexData`, and the model's `spendingModel`, `θModel`, `indexModel` = 1/(2 - θ),
-    from layer `layer` (1 | 2). Countries whose model row is 'noTurnout' (cses) are dropped from both sides and
-    listed in `.attrs['dropped']`; a sample country with no row is MissingInput, a failed row an error. """
+    data's `spendingData`, `indexData` under the design's measure `theta` (dataSide), and the model's `spendingModel`,
+    `θModel`, `indexModel` = 1/(2 - θ), from layer `layer` (1 | 2) of that measure. Countries whose model row is
+    'noTurnout' (cses) are dropped from both sides and listed in `.attrs['dropped']`; a sample country with no row is
+    MissingInput, a failed row an error. """
     v = variant(turnout, sample, reading, spec, betaRule)
     _check(v)
+    theta = C.US['theta'] if theta is None else theta
     fig = D.oecdFigure1Data()
     smp = D.oecd26Sample()
-    model = D.oecd26Layer(layer, v['turnout'], v['spec'], v['betaRule'])
-    isos = [c for c in fig.index if v['sample'] == '29' or bool(smp.at[c, 'sample26'])]
+    model = D.oecd26Layer(layer, v['turnout'], v['spec'], v['betaRule'], 'index' if theta == 'paper' else theta)
+    isos, index, spending = dataSide(theta)
     lack = [c for c in isos if c not in model.index]
     if lack:
         raise D.MissingInput('{} (layer {}, {} {} {}: no row for {})'.format(
@@ -113,8 +136,7 @@ def panelData(layer, turnout = None, sample = None, reading = None, spec = None,
     out = pd.DataFrame({'country': fig.loc[keep, 'country'],
                         'growth': fig.loc[keep, F1.NAMED['growth']].astype(float),
                         'gini': fig.loc[keep, F1.NAMED['gini']].astype(float),
-                        'spendingData': fig.loc[keep, F1.NAMED['spending']].astype(float),
-                        'indexData': fig.loc[keep, F1.NAMED['index']].astype(float),
+                        'spendingData': spending.loc[keep], 'indexData': index.loc[keep],
                         'spendingModel': m.loc[keep, 'spending2020'].astype(float),
                         'θModel': θ, 'indexModel': 1/(2 - θ)}, index = pd.Index(keep, name = 'iso3'))
     out.attrs['dropped'] = dropped
@@ -143,12 +165,13 @@ def _xy(p, yRole, xRole, side):
 
 
 def slopes(turnout = None, sample = None, reading = None, spec = None, betaRule = None, relations = RELATIONS,
-           layers = (1, 2)):
+           layers = (1, 2), theta = None):
     """ One row per relation of `relations` (RELATIONS by default): OLS of the data and of each layer of `layers`
     (`data`, `layer1`, `layer2`, each an ols dict, None for a layer not asked for), on the countries every layer
-    asked for covers. Layer 2 matches spending by construction, so its spending-on-regressor rows are flagged
-    `targeted2`. Under spec 'none' no row has a design: ask for the spending relations only (SPENDING). """
-    ps = {k: panelData(k, turnout, sample, reading, spec, betaRule) for k in layers}
+    asked for covers, under the design's measure `theta` (panelData). Layer 2 matches spending by construction, so its
+    spending-on-regressor rows are flagged `targeted2`. Under spec 'none' no row has a design: ask for the spending
+    relations only (SPENDING). """
+    ps = {k: panelData(k, turnout, sample, reading, spec, betaRule, theta) for k in layers}
     common = ps[layers[0]].index
     for k in layers[1:]:
         common = common.intersection(ps[k].index)
@@ -262,8 +285,7 @@ def oecd26Omega(turnout = None, sample = None, reading = None, spec = None, beta
     anchor = (r' $^{\ast}$The U.S.\ is the anchor, where ' + COSTSYMBOL[v['spec']] + ' is calibrated.'
               if v['spec'] in COSTSYMBOL else r' $^{\ast}$The U.S.\ is the anchor.')
     note = (r'\textit{Note:} $\nu_{2020}$, workers per retiree; $\tilde V$, the dispersion of relative incomes at '
-            r'the U.S.\ income percentiles; spending in \% of GDP; $I$, the Bismarckian index, and $\theta = 2 - 1/I$ '
-            r'clipped to $[0,1]$. ' + head + cost + r'; the last two columns are the '
+            r'the U.S.\ income percentiles; spending in \% of GDP; ' + MEASURENOTE + ' ' + head + cost + r'; the last two columns are the '
             r'model\textquotesingle s design, ' + design + r', and its index.' + anchor
             + (r' $^{\dagger}$Outside the paper\textquotesingle s sample: informal employment above '
                + '{:g}'.format(float(smp['informalMax'].iloc[0])) + r'\% of employment.' if outside else '')
@@ -282,194 +304,64 @@ def oecd26Omega(turnout = None, sample = None, reading = None, spec = None, beta
 
 
 # ---------------------------------------------------------------------------------------------------
-# Appendix H: the robustness of the design relations across the cost transported, the β rule and turnout, and the
-# U.S., the UK and France measured as in the deep test and as in the cross-section.
-ROBUSTVARIANTS = (('size', 'common'), ('size', 'commonR'), ('sizePiR', 'common'), ('sizePiR', 'commonR'))
-VARIANTTEX = {('size', 'common'): r'$\lambda$, common $\beta$', ('size', 'commonR'): r'$\lambda$, common $R$',
-              ('sizePiR', 'common'): r'$\varepsilon$, common $\beta$',
-              ('sizePiR', 'commonR'): r'$\varepsilon$, common $R$'}
+# The five slopes under each measure of the design (OECD26_ThetaVariants): the paper's index and the variants of
+# data/oecd26_theta.csv, at both turnouts.
+MEASURES = ('paper', 'A', 'A2pt', 'B', 'C')
+MEASURETEX = {'paper': r'Figure \ref{fig:US:OECDdata}\textquotesingle s index', 'A': 'A', 'A2pt': 'A, two points',
+              'B': 'B', 'C': 'C'}
 TURNOUTTEX = {'cps': r'U.S.\ turnout', 'cses': r'Own turnout'}
-SHORT = {('index', 'growth'): 'Index on growth', ('index', 'gini'): 'Index on the Gini',
-         ('spending', 'index'): 'Spending on the index'}
 
 
-def _variantSlopes(turnout, sample, reading, spec, betaRule):
-    """ slopes() of ROBUST at one variant, or None when its rows are missing or stale (MissingInput, StaleInput):
-    a variant not run, or run against another anchor, prints `--`, never a stale value. Anything else raises. """
+def _measureSlopes(measure, turnout):
+    """ slopes() of RELATIONS at the paper's variant of the cross-section under `measure` (MEASURES; 'paper' the rows of
+    figure 1.1's index), or None while its rows are missing or stale (MissingInput, StaleInput): `--`, never a stale
+    value. Anything else raises. """
     try:
-        return slopes(turnout, sample, reading, spec, betaRule, relations = ROBUST)
+        return slopes(turnout, theta = measure)
     except (D.MissingInput, D.StaleInput):
         return None
 
 
-def oecd26Robustness(sample = None, reading = None):
-    r""" The slopes of the design relations (ROBUST) in layers 1 and 2 under each cost transported (the U.S. λ, or
-    its ε with λ_n = ε Π_n/R_n) and β rule (ROBUSTVARIANTS), one panel per turnout, the data's slopes on top of each
-    panel. A variant whose rows are missing or stale prints `--`. The data's slopes are the same in every variant
-    of a turnout (one set of countries), which is checked. """
-    v = variant(sample = sample, reading = reading)
-    _check(v)
-    ncol = 1 + 2*len(ROBUST)
-    body, counts = [], {}
-    for turnout in TURNOUTTEX:
-        res = {sb: _variantSlopes(turnout, v['sample'], v['reading'], *sb) for sb in ROBUSTVARIANTS}
-        got = [r for r in res.values() if r is not None]
-        data = None
-        if got:
-            data = got[0].set_index(['y', 'x'])['data']
-            for r in got[1:]:
-                other = r.set_index(['y', 'x'])['data']
-                if any(abs(other[k]['slope'] - data[k]['slope']) > 1e-12 or other[k]['n'] != data[k]['n']
-                       for k in ROBUST):
-                    raise ValueError('OECD26_Robustness: the data slopes differ across the variants of turnout {}'
-                                     .format(turnout))
-            counts[turnout] = (got[0].attrs['n'], got[0].attrs['dropped'])
-        title = TURNOUTTEX[turnout] + ('' if data is None else ', {} countries'.format(counts[turnout][0]))
-        body.append(r'\multicolumn{%d}{l}{\textit{%s}} \\' % (ncol, title))
-        cells = [r'\multicolumn{2}{c}{' + ('--' if data is None else _cell(data[k])) + '}' for k in ROBUST]
-        body.append(keyed(' & '.join(['Data'] + cells) + r' \\', turnout + '_data'))
-        for sb in ROBUSTVARIANTS:
-            r = res[sb]
-            paper = (turnout, sb[0], sb[1]) == (PAPER['turnout'], PAPER['spec'], PAPER['betaRule'])
-            if r is None:
-                cells = ['--']*(2*len(ROBUST))
-            else:
-                t = r.set_index(['y', 'x'])
-                cells = [_cell(t.loc[k, 'layer{}'.format(L)]) for k in ROBUST for L in (1, 2)]
-            body.append(keyed(' & '.join([VARIANTTEX[sb] + (r'$^{\ast}$' if paper else '')] + cells) + r' \\',
-                              '_'.join((turnout,) + sb)))
-    design = ('the design chosen in 2020' if v['reading'] == 'chosen' else
-              'the design in force in 2020 on the freely simulated path, chosen in 1990')
-    names = D.oecdFigure1Data()['country']
-    dropped = [names[c] for c in sorted({c for n, d in counts.values() for c in d})]
-    note = (r'\textit{Note:} Least-squares slopes with standard errors in parentheses; the regressors are those of '
-            r'figure \ref{fig:US:OECDdata}, the model\textquotesingle s index is $1/(2-\theta)$ of ' + design
-            + r', and its spending is $\tau(1-\alpha)$ at the observed design. Rows: the cost parameter carried from '
-            r'the U.S.\ anchor to every country, its $\lambda$ or its $\varepsilon$ with '
-            r'$\lambda_{n,t} = \varepsilon\,\Pi_{n,t}/R_{n,t}$, and $\beta$, the U.S.\ value in every country '
-            r'(common $\beta$) or set so that each country\textquotesingle s 2020 return is the U.S.\ one (common '
-            r'$R$, with $\beta$ and $\omega$ calibrated together in layer 2). Own turnout: every '
-            r'country\textquotesingle s propensities to vote from the CSES, the U.S.\ anchor recalibrated at its '
-            r'own CSES profile' + (' (' + ', '.join(dropped) + ', with no CSES election, left out)' if dropped else '')
-            + r'. $^{\ast}$The paper\textquotesingle s specification.' + _dashNote(body))
-    header = (' & ' + ' & '.join(r'\multicolumn{2}{c}{\textbf{' + SHORT[k] + '}}' for k in ROBUST) + r' \\' + '\n'
-              + ''.join(r'\cmidrule(lr){%d-%d}' % (2 + 2*i, 3 + 2*i) for i in range(len(ROBUST))) + '\n'
-              + r'\textbf{Cost, rule} & ' + ' & '.join(['Layer 1', 'Layer 2']*len(ROBUST)))
-    sfx = suffix(sample = sample, reading = reading)
-    return _xwrap('OECD26_Robustness' + sfx,
-                  'results/oecd26/layer1.csv, layer2.csv, anchor.csv; data/oecdFigure1.csv, oecd26_sample.csv',
-                  r'The design relations under other maintained assumptions' + variantCaption(sample = sample,
-                                                                                              reading = reading),
-                  'table:OECD26:robustness' + sfx, 'l' + 'Y'*(2*len(ROBUST)), header, '\n'.join(body), note,
+def oecd26ThetaVariants():
+    r""" The slopes of figure 1.1's relations (OECD26_Slopes's five) in the data and in layers 1 and 2 under each
+    measure of the design (MEASURES): figure 1.1's index (results/oecd26/, thetaSource 'index', on the paper's
+    sample of data/oecd26_sample.csv) and the variants of data/oecd26_theta.csv, each on its own in-sample countries,
+    the data's index 1/(2 - θ) of the variant and its spending; config.US['theta']'s from results/oecd26/, the others
+    from results/oecd26_theta_<V>/ (stage (ii)'s oecd26Variants). One panel per turnout. A measure whose rows are
+    missing or stale prints `--`. """
+    ncol = 1 + 3*len(TURNOUTTEX)
+    res = {(m, t): _measureSlopes(m, t) for m in MEASURES for t in TURNOUTTEX}
+    body = []
+    for yRole, xRole in RELATIONS:
+        body.append(r'\multicolumn{%d}{l}{\textit{%s}} \\' % (ncol, YTEX[yRole] + ' on ' + XTEX[xRole]))
+        for m in MEASURES:
+            cells = [MEASURETEX[m] + (r'$^{\ast}$' if m == C.US['theta'] else '')]
+            for t in TURNOUTTEX:
+                r = res[(m, t)]
+                if r is None:
+                    cells += ['--']*3
+                    continue
+                row = r.set_index(['y', 'x']).loc[(yRole, xRole)]
+                cells += [_cell(row['data']), _cell(row['layer1']),
+                          r'\textit{targeted}' if row['targeted2'] else _cell(row['layer2'])]
+            body.append(keyed(' & '.join(cells) + r' \\', '_'.join((yRole, xRole, m))))
+    ns = ', '.join('{} {}'.format(MEASURETEX[m] if m != 'paper' else 'the index', res[(m, 'cps')].attrs['n'])
+                   for m in MEASURES if res[(m, 'cps')] is not None)
+    note = (r'\textit{Note:} Least-squares slopes with standard errors in parentheses, the regressors those of figure '
+            r'\ref{fig:US:OECDdata}. Each measure of the design $\theta$ is its own cross-section: the data\textquotesingle s '
+            r'index $1/(2-\theta)$ and spending under it, on its countries'
+            + (r' (at U.S.\ turnout: ' + ns + ')' if ns else '')
+            + r', and the model calibrated to them, the U.S.\ anchor included. Layer 1: every country at its '
+            r'anchor\textquotesingle s $\beta$, $\omega$ and $\varepsilon$, at its cost '
+            r'$\lambda_{n,t} = \varepsilon\,\Pi_{n,t}/R_{n,t}$; layer 2: $\omega$ calibrated to each '
+            r'country\textquotesingle s spending. Own turnout: every country\textquotesingle s CSES propensities to '
+            r'vote, the anchor recalibrated at its own. $^{\ast}$The paper\textquotesingle s measure.' + _dashNote(body))
+    header = (' & ' + ' & '.join(r'\multicolumn{3}{c}{\textbf{' + TURNOUTTEX[t] + '}}' for t in TURNOUTTEX) + r' \\'
+              + '\n' + ''.join(r'\cmidrule(lr){%d-%d}' % (2 + 3*i, 4 + 3*i) for i in range(len(TURNOUTTEX))) + '\n'
+              + r'\textbf{Measure} & ' + ' & '.join(['Data', 'Layer 1', 'Layer 2']*len(TURNOUTTEX)))
+    return _xwrap('OECD26_ThetaVariants',
+                  'results/oecd26/, results/oecd26_theta_<V>/ layer1.csv, layer2.csv, anchor.csv; data/oecd26_theta.csv, '
+                  'oecdFigure1.csv, oecd26_sample.csv',
+                  r'Figure \ref{fig:US:OECDdata}\textquotesingle s relations under each measure of the design',
+                  'table:OECD26:thetaVariants', 'l' + 'Y'*(3*len(TURNOUTTEX)), header, '\n'.join(body), note,
                   width = r'\textwidth', size = r'\footnotesize\setlength{\tabcolsep}{3pt}')
-
-
-# The three economies of the deep test: usCalibrationSummary's key, the cross-section's ISO3, the label.
-RECONCILE = (('US', 'USA', r'U.S.'), ('UK', 'GBR', 'UK'), ('FR', 'FRA', 'France'))
-RECONCILESPECS = ('none', 'size', 'sizePiR')
-
-
-def _anchorAndLayer2(turnout, spec):
-    """ (anchor, layer 2) of the cross-section at `turnout`, `spec` and the β rule 'common', or (None, None) when
-    either is missing or stale. """
-    try:
-        return D.oecd26Anchor(turnout, spec), D.oecd26Layer(2, turnout, spec, 'common')
-    except (D.MissingInput, D.StaleInput):
-        return None, None
-
-
-def oecd26Reconcile(turnout = None, reading = None):
-    r""" The U.S., the UK and France measured twice: as in the deep test (each country's own calibration, the U.S. in
-    section 6 and the UK and France in appendix F, usCalibrationSummary.csv: θ*, ν_2020 and ω without the cost; the
-    test of the UK and France,
-    escCountry{,Costs}.csv, and the U.S. cost calibrations, escCalibration{,Costs}.csv: Ṽ, ω and the design chosen
-    at the U.S. λ and ε) and as in the cross-section (results/oecd26: the anchor for the U.S., layer 2 at the β rule
-    'common' for the UK and France, at `turnout`, under no cost, λ and ε). The U.S.'s chosen design is the one its
-    cost is calibrated to re-elect (the deep test's θ*) and the anchor's. `--` where a quantity is not on file. """
-    v = variant(turnout = turnout, reading = reading)
-    _check(v)
-    col = READINGS[v['reading']]
-    summ = D.usCalibrationSummary()
-    lack = [c for c, _, _ in RECONCILE if c not in summ]
-    if lack:
-        raise D.MissingInput(os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv') + ' (no {} row)'.format(lack))
-    esc = {}
-    for spec in ('size', 'sizePiR'):
-        try:
-            cal, cty = D.escCalibrationLOG(spec), D.escCountry(spec = spec)
-        except D.MissingInput:
-            continue
-        if abs(float(cal['θStar']) - float(summ['US']['θ'])) > 1e-6:
-            raise ValueError('OECD26_Reconcile: the {} cost calibration has θ* {} where usCalibrationSummary.csv has '
-                             '{}: a stale calibration'.format(spec, cal['θStar'], summ['US']['θ']))
-        us = cty[cty['wedgeFrom'] == 'US'].set_index('country')
-        esc[spec] = {'US': {'Vtilde': cal['Vtilde'], 'ω': cal['ω'], 'chosen': cal['θStar']}}
-        for c in ('UK', 'FR'):
-            if c in us.index:
-                r = us.loc[c]
-                esc[spec][c] = {'Vtilde': r['Vtilde'], 'ω': r['ω'], 'chosen': r['choice']}
-    cross = {spec: _anchorAndLayer2(v['turnout'], spec) for spec in RECONCILESPECS}
-
-    def deep(c, q, spec = None):
-        """ The deep test's `q` of country `c`: from usCalibrationSummary.csv (θ, ν2020; ω without the cost) or
-        from the cost calibration and the country test of `spec` (any spec on file for Ṽ, which is data). """
-        if q in ('θ', 'ν2020'):
-            return float(summ[c][q])
-        if spec == 'none':
-            return float(summ[c]['ω'])
-        for s in ([spec] if spec else ['size', 'sizePiR']):
-            x = esc.get(s, {}).get(c, {}).get(q, np.nan)
-            if x == x:
-                return float(x)
-        return None
-
-    def crossCell(iso, q, spec = None):
-        """ The cross-section's `q` of `iso`: the anchor's for the U.S., layer 2's otherwise, under `spec` (the
-        first on file of the paper's, 'size', 'none' for the data columns, the same under every spec). """
-        for s in ([spec] if spec else [v['spec'], 'size', 'none']):
-            a, lay = cross[s]
-            if a is None:
-                continue
-            r = a if iso == 'USA' else (lay.loc[iso].to_dict() if iso in lay.index else {})
-            x = r.get(q, np.nan)
-            if x == x:
-                return float(x)
-        return None
-
-    rows = [('theta', r'$\theta$ observed', 3, lambda c: deep(c, 'θ'), lambda i: crossCell(i, 'θData')),
-            ('vtilde', r'$\tilde V$', 3, lambda c: deep(c, 'Vtilde'), lambda i: crossCell(i, 'Vtilde')),
-            ('nu', r'$\nu_{2020}$', 2, lambda c: deep(c, 'ν2020'), lambda i: crossCell(i, 'ν2020')),
-            ('omega_none', r'$\omega$, no cost', 3, lambda c: deep(c, 'ω', 'none'),
-             lambda i: crossCell(i, 'ω', 'none'))]
-    for spec, sym in (('size', r'\lambda'), ('sizePiR', r'\varepsilon')):
-        rows += [('omega_' + spec, r'$\omega$, U.S.\ $' + sym + '$', 3,
-                  lambda c, s = spec: deep(c, 'ω', s), lambda i, s = spec: crossCell(i, 'ω', s)),
-                 ('chosen_' + spec, r'$\theta$ chosen, U.S.\ $' + sym + '$', 3,
-                  lambda c, s = spec: deep(c, 'chosen', s), lambda i, s = spec: crossCell(i, col, s))]
-    fmt = lambda x, d: '--' if x is None else C.num(x, d)
-    body = [keyed(' & '.join([label] + [fmt(fd(c), d) for c, _, _ in RECONCILE]
-                             + [fmt(fc(i), d) for _, i, _ in RECONCILE]) + r' \\', key)
-            for key, label, d, fd, fc in rows]
-    n = len(RECONCILE)
-    header = (r' & \multicolumn{%d}{c}{\textbf{Deep test}} & \multicolumn{%d}{c}{\textbf{Cross-section}} \\' % (n, n)
-              + '\n' + r'\cmidrule(lr){2-%d}\cmidrule(lr){%d-%d}' % (1 + n, 2 + n, 1 + 2*n) + '\n'
-              + ' & '.join([''] + [r'\textbf{' + name + '}' for _, _, name in RECONCILE]*2))
-    design = ('chosen in 2020' if v['reading'] == 'chosen' else 'in force in 2020, chosen in 1990,')
-    note = (r'\textit{Note:} Deep test: each country\textquotesingle s own calibration, the U.S.\ in section '
-            r'\ref{sec:oecd} and the UK and France in appendix \ref{app:US} ($\theta$, $\nu_{2020}$ and $\omega$ '
-            r'without the cost), and $\tilde V$, $\omega$ and the design chosen at the U.S.\ $\lambda$ and '
-            r'$\varepsilon$ from the test of table \ref{table:US_ESC:country}; for the U.S.\ from the calibration of '
-            r'its cost, which re-elects its observed design. Cross-section: the OECD '
-            r'data of appendix \ref{app:oecd26}, the U.S.\ anchor and the second layer, $\omega$ calibrated to each '
-            r'country\textquotesingle s spending at the U.S.\ $\beta$ and cost parameter'
-            + (r', each country at its own turnout' if v['turnout'] == 'cses' else '')
-            + r'. The design chosen is the one ' + design + r' on the freely simulated path; under $\varepsilon$, '
-            r'$\lambda_{n,t} = \varepsilon\,\Pi_{n,t}/R_{n,t}$.' + _dashNote(body))
-    sfx = suffix(turnout = turnout, reading = reading)
-    return _xwrap('OECD26_Reconcile' + sfx,
-                  'results/paper/usCalibrationSummary.csv; results/esc/escCalibration{,Costs}.csv, '
-                  'escCountry{,Costs}.csv; results/oecd26/anchor.csv, layer2.csv',
-                  r'The U.S., the UK and France in the deep test and in the cross-section'
-                  + variantCaption(turnout = turnout, reading = reading),
-                  'table:OECD26:reconcile' + sfx, 'l' + 'Y'*(2*n), header, '\n'.join(body), note,
-                  width = r'\textwidth')
