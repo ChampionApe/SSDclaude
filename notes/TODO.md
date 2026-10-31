@@ -19,7 +19,9 @@ Conde-Ruiz sentence's place (W20).
 
 **W23. The AI review of 2026-10-29** (`coarse-output/coarse_review_29102026.md`; the 2026-10-22 round archived).
 First-pass verdicts and the questions for RKB: `notes/reviewResponse_2026-10-29.md` (as a page with the reviewer's text:
-https://claude.ai/artifact/LdBZr2X8KMxShSDnFXhLcP). Nothing decided yet; resume 2026-10-30 with RKB going through "For RKB".
+https://claude.ai/artifact/LdBZr2X8KMxShSDnFXhLcP). O5 decided 2026-10-30: θ variant C is the paper's measure, pipeline
+switched (commit `7694434`), overnight run done 2026-10-31 (all OK, results committed). Next: the text pass for
+the stale numbers (list in `notes/brief_pipelineThetaC.md`'s report, root log 2026-10-30), then the rest of "For RKB".
 
 ## Candidates, not scheduled
 

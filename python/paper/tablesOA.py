@@ -358,6 +358,7 @@ def _countVerdict(entries, stats):
 
 SOLVEGROUPS = {'calibration': 'Calibrations', 'shocks': 'Experiments', 'sweeps': 'Equilibria over designs',
                'esc': 'Endogenous design', 'oecd26': 'Cross-country test',
+               **{'oecd26_theta_' + v: r'Cross-country test, $\theta$ variant ' + v for v in C.US['oecd26']['thetaVariants']},
                'numerical': 'Numerical checks'}                                  # results/<dir>, in print order
 ARMWORDS = (('ARG', 'Argentina'), ('US', 'The U.S., the UK and France'))
 

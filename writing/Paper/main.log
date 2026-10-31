@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.10.6)  29 OCT 2026 12:46
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.10.6)  31 OCT 2026 02:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1676,19 +1676,15 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.35}) has
 l.11 
       [35] (./Tables/US_householdheterogeneity.tex) [36] (./Tables/FR_household
 heterogeneity.tex) (./Tables/UK_householdheterogeneity.tex)) (./Appendix/Endoge
-nousDesignResults.tex [37] (./Tables/US_ESC_Country.tex
-Overfull \hbox (1.50601pt too wide) in paragraph at lines 20--20
- []| 
- []
-
-) [38] (./Tables/UK_ESC_Calibration.tex) [39]
+nousDesignResults.tex [37] (./Tables/US_ESC_Country.tex) [38] (./Tables/UK_ESC_
+Calibration.tex) [39]
 <Figs/US_ESC_Path.pdf, id=1664, 427.11569pt x 166.22101pt>
 File: Figs/US_ESC_Path.pdf Graphic file (type pdf)
 <use Figs/US_ESC_Path.pdf>
 Package pdftex.def Info: Figs/US_ESC_Path.pdf  used on input line 27.
 (pdftex.def)             Requested size: 452.9679pt x 176.28978pt.
 ) (./Appendix/OECD26.tex [40 <./Figs/US_ESC_Path.pdf>] [41] (./Tables/OECD26_Om
-ega.tex) [42] [43] (./Tables/OECD26_Robustness.tex) [44] (./Tables/OECD26_Recon
+ega.tex) [42] (./Tables/OECD26_Robustness.tex) [43] [44] (./Tables/OECD26_Recon
 cile.tex)) [45] (./main.aux)
  ***********
 LaTeX2e <2026-06-01>
@@ -1703,7 +1699,7 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 Here is how much of TeX's memory you used:
  39812 strings out of 467050
  759235 string characters out of 5410550
- 1661945 words of memory out of 5000000
+ 1661944 words of memory out of 5000000
  68094 multiletter control sequences out of 15000+600000
  741155 words of font info for 126 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1729,10 +1725,10 @@ pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy7.pfb><c:/texlive/202
 type1/public/lm/lmtt10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lm
 tt12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10
 .pfb>
-Output written on main.pdf (80 pages, 988505 bytes).
+Output written on main.pdf (80 pages, 967115 bytes).
 PDF statistics:
- 2009 PDF objects out of 2073 (max. 8388607)
- 1495 compressed objects within 15 object streams
+ 2018 PDF objects out of 2073 (max. 8388607)
+ 1503 compressed objects within 16 object streams
  344 named destinations out of 1000 (max. 500000)
  477 words of extra memory for PDF output out of 10000 (max. 10000000)
 

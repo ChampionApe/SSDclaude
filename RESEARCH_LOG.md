@@ -119,3 +119,23 @@ to θ and τ with the slope measure and s (eq:data:*), the variants paper/A/A2pt
 Own refsection and bibliography; 19 entries added to `writing/References.bib` (PaG 2013/2021/2025, SOCX, ESSPROS, GPS,
 table 29, WPP 2024, OECD earnings, CSES, ILOSTAT, national top-up sources). tabularx breaks under the note's preamble
 (even a minimal table): use tabular with p columns. Note builds: 134 pages, data part pp. 127-134, no undefined refs.
+
+## 2026-10-30 — O5: θ re-measured, the pipeline switched to variant C (W23)
+
+Data search for the 26 (PaG 2021 tiers, first-tier and top-up spending, SOCX programmes, ESSPROS, pension funds):
+`notes/data_thetaTau*.md`. Three alternatives and the recommendation: `notes/thetaTau_alternatives.md` (page
+https://claude.ai/artifact/3qiHJFtYmEXtHpoaZUNnGw). RKB chose C: θ the public-tier slope at 0.5–2 AW times (1 − s), 21
+countries (U.S. 0.5445, FRA 0.8219, GBR 0.1812), `data/oecd26_theta.csv`. Test run at ρ = 1: `notes/thetaC_comparison.md`
+(page https://claude.ai/artifact/PU9QdCpkCKAxUNRH3ftoxL); λ halves, the UK deep test's ordering breaks, slopes move to the
+data. Pipeline on C with RKB's reduced run list (`notes/brief_pipelineThetaC.md`), commit `7694434`. Overnight run started
+18:17 (`logs/overnight_2026-10-30/run.sh`, status.log; old results in `logs/results_snapshot_preC_2026-10-30/`). Open: check
+the run (UK CRRA brackets the main risk), then the text pass (stale numbers listed in the brief's report), B's results.
+
+## 2026-10-31 — The overnight run on variant C
+
+`logs/overnight_2026-10-30/run.sh`, 18:17–02:29, every solve step OK (status.log); the build failed on NUM_Selection's
+missing labels for `results/oecd26_theta_{A,A2pt,B}` (fixed in `tablesOA.SOLVEGROUPS`), rerun: 45 built, 0 skipped, site
+and map written. All calibrations converged (bracket-top probes only); UK exact CRRA λ 7.57 (ρ 0.5), 1.45 (ρ 2); U.S. 13.47,
+6.25, 1.41. Main outputs reproduce the C test run exactly. `OECD26_ThetaVariants`: A and B as C, A2pt as the paper's index.
+Paper 80 pages, checkPaper OK, test_oecd26 12/12, test_onlineAppendix OK. Not done: quarto render of the online appendix;
+the text pass (stale numbers, root log 2026-10-30); placing `OECD26_ThetaVariants` and `OECDdata_note`.
