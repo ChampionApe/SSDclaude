@@ -6,6 +6,13 @@ Run:  .venv\Scripts\python.exe python\US\runHorizon.py --stage horizon --rho 0.5
       ... --stage residuals --rho 0.5 2 --ns 150 50
       ... --stage jumps --rho 2 --ns 50 150   # tau_2020 along a fine scan of omega (finding #5's tell)
       ... --stage scheme --rho 0.5 2          # whole solves under converged tau-derivatives
+      ... --theta C --main                    # every stage at theta variant C (the paper's), as below
+
+THE THETA VARIANT. --theta VARIANT --main (VARIANT = python/paper/config.py's US['theta'], oecd26.thetaRoot): every
+model at theta0 = the variant's U.S. row of data/oecd26_theta.csv (db['θ0'], ModelUS.getθ), every calibration row
+read (the sweep, the cost, the design path of the self-checks) kept at that thetaSource and theta0 (_at), every row
+written carrying both. A csv holds one theta: a merge drops the rows on disk at another (mergeWrite). Without the
+flags the workbook's theta.
 
 HORIZON. The calibrated economy (results/calibration/US_rhoGridCommonX.csv; the cost lambda from
 results/esc/escCalibration{,CRRA}.csv) with every parameter held at its calibrated value, re-solved with the
@@ -81,6 +88,38 @@ HORIZONS = (1, 3, 6)            # T = 2140, 2200, 2290
 KEY = ['block', 'preferences', 'ρ', 'terminal', 'tss', 'date']
 WEDGE = {'spec': 'size', 'phi': 0.5}           # the paper's cost (config.US['esc'])
 N_CAND_2D = 41                                 # config.US['esc']['nCand2D']
+# The run's theta variant (main's --theta V --main): theta0 imposed on every model, rows read and written at it.
+THETA = {'variant': None, 'θ0': None}
+
+
+def _at(df):
+    """ The rows of df at the run's theta: thetaSource THETA['variant'] and θ0 THETA['θ0'] (1e-12); without a
+    variant the rows without a thetaSource (or 'index'), the workbook's theta. """
+    ts = df['thetaSource'] if 'thetaSource' in df.columns else pd.Series(np.nan, index = df.index)
+    if THETA['variant'] is None:
+        return df[ts.isna() | (ts == 'index')]
+    θ = pd.to_numeric(df['θ0'], errors = 'coerce') if 'θ0' in df.columns else pd.Series(np.nan, index = df.index)
+    return df[(ts == THETA['variant']) & (θ - THETA['θ0']).abs().le(1e-12)]
+
+
+def _tag():
+    """ The columns every row written carries under a variant: thetaSource, θ0 ({} without one). """
+    return {} if THETA['variant'] is None else {'thetaSource': THETA['variant'], 'θ0': THETA['θ0']}
+
+
+def setTheta(theta, main):
+    """ --theta V --main: V must be config.US['theta'] (results/numerical/ holds the paper's variant only). SystemExit
+    for one flag without the other or another variant; the sweep rows are checked where they are read (sweepRow). """
+    if theta is None and not main:
+        return
+    if theta is None or not main:
+        raise SystemExit('--theta needs --main here (and --main --theta)')
+    import oecd26
+    try:
+        oecd26.thetaRoot(theta, main = True)
+        THETA.update({'variant': theta, 'θ0': oecd26.thetaFromFile('USA', theta)})
+    except (ValueError, FileNotFoundError) as e:
+        raise SystemExit('--theta {}: {}'.format(theta, e))
 
 
 # ------------------------------------------------------------------------------------------------- set-up
@@ -93,17 +132,19 @@ def horizon(tss):
 
 
 def sweepRow(ρ):
-    df = pd.read_csv(os.path.join(CALDIR, 'US_rhoGridCommonX.csv'))
+    """ The common-X U.S. sweep's last row at rho, at the run's theta (_at). """
+    df = _at(pd.read_csv(os.path.join(CALDIR, 'US_rhoGridCommonX.csv')))
     hit = df.loc[(df['ρ'] - ρ).abs() < 1e-9]
     if hit.empty:
-        raise KeyError(f'No common-X US calibration at ρ={ρ}.')
+        raise KeyError(f'No common-X US calibration at ρ={ρ} at θ {THETA}.')
     return hit.iloc[-1]
 
 
 def build(ρ, β, ω, X, tss, gs = GS, cls = ModelUS, **kw):
     """ The common-X US model at (rho, beta, omega, X) on the horizon tss, every other input the workbook's. """
     T, ν, dates = horizon(tss)
-    pars = dict(testmod.pars) | {'ρ': float(ρ), 'β': float(β), 'ω': float(ω), 'ν': ν}
+    pars = (dict(testmod.pars) | {'ρ': float(ρ), 'β': float(β), 'ω': float(ω), 'ν': ν}
+            | ({} if THETA['θ0'] is None else {'θ0': THETA['θ0']}))
     m = cls(pars = pars, commonX = True, T = T, nj = testmod.kwargs['nj'], **kw)
     m.db['dates'], m.db['workweek'] = dates, testmod.workweek
     m.CRRA.initGS(gs)
@@ -130,7 +171,7 @@ def readRows(m, τ, report, θ, ids, extra = None):
         rows.append(ids | {'pos': pos, 'date': int(m.db['dates'][pos]), 'ν': float(m.db['ν'].xs(t)),
                            'τ': float(np.asarray(τ, dtype = float)[pos]), 'θ': float(np.asarray(θ, dtype = float)[pos]),
                            'srOverY': sY, 'sr': sY/(1-α), 'R': float(report['R'].xs(t)), 'h': float(h)}
-                    | (extra or {}))
+                    | (extra or {}) | _tag())
     return rows
 
 
@@ -147,16 +188,40 @@ def statGap(m, sols, report, pos):
     return float(np.nanmax(np.abs(a.values - b.values)[vis]))
 
 
+@contextmanager
+def _locked(path, wait = 600.):
+    """ An exclusive lock file beside `path` (path + '.lock'), so that processes merging into one csv (the design
+    stage per rho) never interleave a read and a write. RuntimeError after `wait` seconds. """
+    lock, tic = path + '.lock', time.time()
+    while True:
+        try:
+            fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            break
+        except FileExistsError:
+            if time.time() - tic > wait:
+                raise RuntimeError(f'{lock} held for {wait:.0f}s: remove it if no run is writing {path}')
+            time.sleep(0.5)
+    try:
+        yield
+    finally:
+        os.close(fd)
+        os.remove(lock)
+
+
 def mergeWrite(path, rows, key):
-    """ Replace the rows of `path` whose key is among `rows`' and write. """
+    """ Replace the rows of `path` whose key is among `rows`' and write; rows on disk at another theta than the
+    run's (_at) are dropped, so a csv holds one theta. """
     new = pd.DataFrame(rows)
-    if os.path.exists(path):
-        old = pd.read_csv(path)
-        k = lambda df: df[key].astype(str).agg('|'.join, axis = 1)
-        old = old[~k(old).isin(set(k(new)))]
-        new = pd.concat([old, new], ignore_index = True)
     os.makedirs(os.path.dirname(path), exist_ok = True)
-    new.to_csv(path, index = False)
+    with _locked(path):
+        if os.path.exists(path):
+            old = pd.read_csv(path)
+            keep = _at(old)
+            if len(keep) < len(old):
+                print(f'  {os.path.relpath(path, REPO)}: {len(old) - len(keep)} rows at another θ dropped')
+            k = lambda df: df[key].astype(str).agg('|'.join, axis = 1)
+            new = pd.concat([keep[~k(keep).isin(set(k(new)))], new], ignore_index = True)
+        new.to_csv(path, index = False)
 
 
 def horizonList(kSS):
@@ -194,21 +259,21 @@ def escLambda(ρ, method):
     """ The calibrated cost lambda of the paper's spec, common X: LOG from escCalibration.csv, the exact CRRA
     recursion's from escCalibrationCRRA.csv (method = 'exact'). """
     if method == 'LOG':
-        df = pd.read_csv(os.path.join(ESCDIR, 'escCalibration.csv'))
+        df = _at(pd.read_csv(os.path.join(ESCDIR, 'escCalibration.csv')))
         hit = df[(df['spec'] == WEDGE['spec']) & (df['phi'] == WEDGE['phi']) & df['commonX'].astype(bool)]
     else:
-        df = pd.read_csv(os.path.join(ESCDIR, 'escCalibrationCRRA.csv'))
+        df = _at(pd.read_csv(os.path.join(ESCDIR, 'escCalibrationCRRA.csv')))
         hit = df[(df['spec'] == WEDGE['spec']) & (df['phi'] == WEDGE['phi']) & df['commonX'].astype(bool)
                  & ((df['ρ'] - ρ).abs() < 1e-9) & (df['method'] == method)]
     if hit.empty:
-        raise KeyError(f'No {method} calibration of {WEDGE} at ρ={ρ}.')
+        raise KeyError(f'No {method} calibration of {WEDGE} at ρ={ρ} at θ {THETA}.')
     return hit.iloc[-1]
 
 
 def escPathRow(ρ, method):
     """ The published design path's 2020 row (escPath.csv / escPathCRRA.csv), for the self-check. """
     f = 'escPath.csv' if method == 'LOG' else 'escPathCRRA.csv'
-    df = pd.read_csv(os.path.join(ESCDIR, f))
+    df = _at(pd.read_csv(os.path.join(ESCDIR, f)))
     hit = df[(df['spec'] == WEDGE['spec']) & (df['phi'] == WEDGE['phi']) & df['commonX'].astype(bool) & (df['pos'] == 2)]
     if method != 'LOG':
         hit = hit[((hit['ρ'] - ρ).abs() < 1e-9) & (hit['method'] == method)]
@@ -374,14 +439,14 @@ def stageResiduals(ρs, nss, refine, out):
                         rows.append({'model': 'US', 'preferences': 'CRRA', 'ρ': ρ, 'ns': ns, 'nTau': len(τGrid),
                                      'refine': refine, 'date': date, 'set': setName, 'region': region}
                                     | {f'{k}': v for k, v in stats(res[''][sel]).items()}
-                                    | {f'{k}Ref': v for k, v in stats(res['Ref'][sel]).items()})
+                                    | {f'{k}Ref': v for k, v in stats(res['Ref'][sel]).items()} | _tag())
             for (setName, region, tag), v in pool.items():
                 if tag:
                     continue
                 st, stF = stats(np.concatenate(v)), stats(np.concatenate(pool[(setName, region, 'Ref')]))
                 rows.append({'model': 'US', 'preferences': 'CRRA', 'ρ': ρ, 'ns': ns, 'nTau': len(τGrid),
                              'refine': refine, 'date': 'all', 'set': setName, 'region': region}
-                            | st | {f'{k}Ref': w for k, w in stF.items()})
+                            | st | {f'{k}Ref': w for k, w in stF.items()} | _tag())
                 print(f'  ρ={ρ} ns={ns} {setName:<4} {region:<7}: max {100*st["max"]:.2e} p.p., p99 '
                       f'{100*st["p99"]:.2e}; reference FOC max {100*stF["max"]:.2e}, p99 {100*stF["p99"]:.2e}')
             print(f'  ρ={ρ} ns={ns}: {time.time()-tic:.0f}s')
@@ -400,7 +465,7 @@ def stageJumps(ρs, nss, nScan, width, out):
                 m = build(ρ, row['β'], ω, row['X'], BASE_TSS, GS | {'ns': ns})
                 outp = m.solvePEE_CRRA()
                 rows.append({'ρ': ρ, 'ns': ns, 'k': k, 'ω': ω, 'ωCal': float(row['ω']), 'τ2020': float(outp['τ'].values[2]),
-                             'τ2050': float(outp['τ'].values[3])} | multiplicityColumns(outp['multiplicity']))
+                             'τ2050': float(outp['τ'].values[3])} | multiplicityColumns(outp['multiplicity']) | _tag())
             d = pd.DataFrame([r for r in rows if r['ρ'] == ρ and r['ns'] == ns])
             d2 = np.diff(d['τ2020'].values, 2)
             print(f'  ρ={ρ} ns={ns}: max |second difference of τ_2020| {np.abs(d2).max():.2e}, median '
@@ -451,7 +516,11 @@ def main():
     p.add_argument('--refine', type = int, default = 8, help = 'residuals, scheme: the reference tax-grid refinement')
     p.add_argument('--nScan', type = int, default = 41)
     p.add_argument('--width', type = float, default = 1e-3)
+    p.add_argument('--theta', default = None, help = "the pipeline's main θ variant, config.US['theta'] (with --main)")
+    p.add_argument('--main', action = 'store_true', help = "with --theta config.US['theta']")
     a = p.parse_args()
+    setTheta(a.theta, a.main)
+    print(f"θ variant {THETA['variant']!r}: θ0 = {THETA['θ0']!r}")
     for st in a.stage:
         tic = time.time()
         print(f'\n=== stage {st} ===')

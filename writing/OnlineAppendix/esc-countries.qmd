@@ -1,0 +1,36 @@
+# C7. The UK and France calibrated in full {#esc-countries}
+
+Besides the U.S., the UK and France are the countries of the paper's cross-country test with the household data to
+calibrate the model in full: France in appendix {{< var p.app_US >}} of the paper, the UK in [B6](oecd-uk.qmd). Each
+is calibrated under log preferences to its own pension spending, demography and design, with its own propensities to
+vote, the UK's households grouped at its own income cuts and France's at the U.S. income percentiles. This deep test
+gives each country the U.S. cost parameter λ itself (table {{< var p.table_US_ESC_calibration >}} of the paper), not
+the elasticity $\varepsilon$ that the cross-country test carries across countries (appendix
+{{< var p.app_esc_cost >}} of the paper), recalibrates its political weight of the old under that cost and reads the
+design its electorate chooses for 2020. It also calibrates each country's own λ, the value at which its electorate
+re-elects its observed design.
+
+## The design under the U.S. cost {#esc-countries-test}
+
+Under the U.S. λ both electorates choose designs between their observed ones and the U.S. design: the UK's well above
+its observed design, France's below its own. The three designs keep their observed order, the UK's lowest and
+France's highest, with the U.S. one between them. The U.S. parameter thus reproduces the direction in which each
+country departs from the U.S. design and part of the distance, a smaller part for the UK than for France. The own
+parameters rank as the observed designs do, the UK's below the U.S. one and France's above it, at more than twice the
+U.S. value. A higher parameter, under which flat benefits lose more revenue, moves the design away from the
+Beveridgean corner: the U.S. λ is above the UK's own and below France's, and it raises the UK's design and lowers
+France's.
+
+{{< include _generated/exhibits/US_ESC_Country.qmd >}}
+
+## The UK's cost parameter {#esc-countries-uk}
+
+Table {{< var x.UK_ESC_Calibration >}} calibrates the UK's own λ at each IES, as table
+{{< var p.table_US_ESC_calibration >}} of the paper does for the U.S. As in the U.S., the parameter falls steeply as the
+IES rises; it lies well below the U.S. value at the two lower elasticities and slightly above it at the highest. Under
+log preferences the UK's observed design, much flatter than the U.S. one, loses about the same share of its revenue,
+but a flat benefit would lose far less than in the U.S.: the UK's dispersion of relative incomes is about half the U.S.
+one and its cost parameter lower, although its system is slightly larger. As in the U.S., the cost raises the
+calibrated political weight of the old at every IES (figure {{< var x.OECD_RhoGrid >}}).
+
+{{< include _generated/exhibits/UK_ESC_Calibration.qmd >}}

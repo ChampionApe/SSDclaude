@@ -1,0 +1,1365 @@
+{
+ "figure": "OECD26_ThetaFitGrid",
+ "marks": [
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--fit",
+   "label": "fitted line, without the U.S.",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.07655066733383432,
+   "text": "slope 0.08",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--aut",
+   "label": "Austria",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.7034636530019495,
+   "text": "observed θ 0.736; predicted θ 0.703",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--bel",
+   "label": "Belgium",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.7987918148078056,
+   "text": "observed θ 0.376; predicted θ 0.799",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--can",
+   "label": "Canada",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.5855459854381994,
+   "text": "observed θ 0.318; predicted θ 0.586",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--cze",
+   "label": "Czech Republic",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.7427894730517095,
+   "text": "observed θ 0.342; predicted θ 0.743",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--fin",
+   "label": "Finland",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.8325237214300306,
+   "text": "observed θ 0.941; predicted θ 0.833",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--fra",
+   "label": "France",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.7123202007928147,
+   "text": "observed θ 0.822; predicted θ 0.712",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--deu",
+   "label": "Germany",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.7570551705489259,
+   "text": "observed θ 0.714; predicted θ 0.757",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--grc",
+   "label": "Greece",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.6978407161141217,
+   "text": "observed θ 0.833; predicted θ 0.698",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--hun",
+   "label": "Hungary",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.7096066626781322,
+   "text": "observed θ 0.997; predicted θ 0.710",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--irl",
+   "label": "Ireland",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.4964409435643052,
+   "text": "observed θ 0.000; predicted θ 0.496",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--ita",
+   "label": "Italy",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.7653089723415811,
+   "text": "observed θ 0.954; predicted θ 0.765",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--jpn",
+   "label": "Japan",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.7797895620166978,
+   "text": "observed θ 0.662; predicted θ 0.780",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--lux",
+   "label": "Luxembourg",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.1869597404089109,
+   "text": "observed θ 0.820; predicted θ 0.187",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--nzl",
+   "label": "New Zealand",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.5059614353604627,
+   "text": "observed θ 0.003; predicted θ 0.506",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--nor",
+   "label": "Norway",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.7584317684386518,
+   "text": "observed θ 0.313; predicted θ 0.758",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--pol",
+   "label": "Poland",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.7036384019570447,
+   "text": "observed θ 0.962; predicted θ 0.704",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--prt",
+   "label": "Portugal",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.6838488616361579,
+   "text": "observed θ 0.879; predicted θ 0.684",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--esp",
+   "label": "Spain",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.6569866379695127,
+   "text": "observed θ 0.859; predicted θ 0.657",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--swe",
+   "label": "Sweden",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.845787487696711,
+   "text": "observed θ 0.383; predicted θ 0.846",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--gbr",
+   "label": "United Kingdom",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.6770824161541749,
+   "text": "observed θ 0.181; predicted θ 0.677",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--usa",
+   "label": "United States (anchor)",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.5444959999915324,
+   "text": "observed θ 0.544; predicted θ 0.544",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer1--stats",
+   "label": "Pearson r, without the U.S.",
+   "series": "model",
+   "panel": "cps_layer1",
+   "value": 0.17074267808983942,
+   "text": "r 0.17; RMSE 0.34, at the mean 0.32",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--fit",
+   "label": "fitted line, without the U.S.",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.21811211764018584,
+   "text": "slope 0.22",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--aut",
+   "label": "Austria",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.7880186904788872,
+   "text": "observed θ 0.736; predicted θ 0.788",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--bel",
+   "label": "Belgium",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.8439060503538566,
+   "text": "observed θ 0.376; predicted θ 0.844",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--can",
+   "label": "Canada",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.6004057960374866,
+   "text": "observed θ 0.318; predicted θ 0.600",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--cze",
+   "label": "Czech Republic",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.6801225953749611,
+   "text": "observed θ 0.342; predicted θ 0.680",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--fin",
+   "label": "Finland",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.8693582450296191,
+   "text": "observed θ 0.941; predicted θ 0.869",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--fra",
+   "label": "France",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.789656970569315,
+   "text": "observed θ 0.822; predicted θ 0.790",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--deu",
+   "label": "Germany",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.7490467166028273,
+   "text": "observed θ 0.714; predicted θ 0.749",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--grc",
+   "label": "Greece",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.7625217369069894,
+   "text": "observed θ 0.833; predicted θ 0.763",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--hun",
+   "label": "Hungary",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.6006191146154565,
+   "text": "observed θ 0.997; predicted θ 0.601",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--irl",
+   "label": "Ireland",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.2175707719289474,
+   "text": "observed θ 0.000; predicted θ 0.218",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--ita",
+   "label": "Italy",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.8450209874726242,
+   "text": "observed θ 0.954; predicted θ 0.845",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--jpn",
+   "label": "Japan",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.739983330709919,
+   "text": "observed θ 0.662; predicted θ 0.740",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--lux",
+   "label": "Luxembourg",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.6672300992297426,
+   "text": "observed θ 0.820; predicted θ 0.667",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--nzl",
+   "label": "New Zealand",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.5839093885640373,
+   "text": "observed θ 0.003; predicted θ 0.584",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--nor",
+   "label": "Norway",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.7642534749707128,
+   "text": "observed θ 0.313; predicted θ 0.764",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--pol",
+   "label": "Poland",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.6883757919490086,
+   "text": "observed θ 0.962; predicted θ 0.688",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--prt",
+   "label": "Portugal",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.7051330061801736,
+   "text": "observed θ 0.879; predicted θ 0.705",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--esp",
+   "label": "Spain",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.7375399884802506,
+   "text": "observed θ 0.859; predicted θ 0.738",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--swe",
+   "label": "Sweden",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.8489054717786656,
+   "text": "observed θ 0.383; predicted θ 0.849",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--gbr",
+   "label": "United Kingdom",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.6488047934998106,
+   "text": "observed θ 0.181; predicted θ 0.649",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--usa",
+   "label": "United States (anchor)",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.5444959999618864,
+   "text": "observed θ 0.544; predicted θ 0.544",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cps_layer2--stats",
+   "label": "Pearson r, without the U.S.",
+   "series": "model",
+   "panel": "cps_layer2",
+   "value": 0.502862523158425,
+   "text": "r 0.50; RMSE 0.30, at the mean 0.32",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--fit",
+   "label": "fitted line, without the U.S.",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.22406854961560702,
+   "text": "slope 0.22",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--aut",
+   "label": "Austria",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.5126296646410483,
+   "text": "observed θ 0.736; predicted θ 0.513",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--bel",
+   "label": "Belgium",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.5493110083512184,
+   "text": "observed θ 0.376; predicted θ 0.549",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--can",
+   "label": "Canada",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.3848280986523056,
+   "text": "observed θ 0.318; predicted θ 0.385",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--cze",
+   "label": "Czech Republic",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.6056049276524579,
+   "text": "observed θ 0.342; predicted θ 0.606",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--fin",
+   "label": "Finland",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.5600757293943746,
+   "text": "observed θ 0.941; predicted θ 0.560",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--fra",
+   "label": "France",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.5289784427372847,
+   "text": "observed θ 0.822; predicted θ 0.529",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--deu",
+   "label": "Germany",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.5806181437654759,
+   "text": "observed θ 0.714; predicted θ 0.581",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--grc",
+   "label": "Greece",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.579013234096879,
+   "text": "observed θ 0.833; predicted θ 0.579",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--hun",
+   "label": "Hungary",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.6323556767157534,
+   "text": "observed θ 0.997; predicted θ 0.632",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--irl",
+   "label": "Ireland",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.3749725309387953,
+   "text": "observed θ 0.000; predicted θ 0.375",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--ita",
+   "label": "Italy",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.6172479239918784,
+   "text": "observed θ 0.954; predicted θ 0.617",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--jpn",
+   "label": "Japan",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.6127947643962991,
+   "text": "observed θ 0.662; predicted θ 0.613",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--nzl",
+   "label": "New Zealand",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.2466815798373514,
+   "text": "observed θ 0.003; predicted θ 0.247",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--nor",
+   "label": "Norway",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.4451316966279478,
+   "text": "observed θ 0.313; predicted θ 0.445",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--pol",
+   "label": "Poland",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.625851483741498,
+   "text": "observed θ 0.962; predicted θ 0.626",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--prt",
+   "label": "Portugal",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.5980393368391245,
+   "text": "observed θ 0.879; predicted θ 0.598",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--esp",
+   "label": "Spain",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.5154967406099975,
+   "text": "observed θ 0.859; predicted θ 0.515",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--swe",
+   "label": "Sweden",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.4836022809414414,
+   "text": "observed θ 0.383; predicted θ 0.484",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--gbr",
+   "label": "United Kingdom",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.5529680036687169,
+   "text": "observed θ 0.181; predicted θ 0.553",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--usa",
+   "label": "United States (anchor)",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.5444960000533255,
+   "text": "observed θ 0.544; predicted θ 0.544",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer1--stats",
+   "label": "Pearson r, without the U.S.",
+   "series": "model",
+   "panel": "cses_layer1",
+   "value": 0.739838243248087,
+   "text": "r 0.74; RMSE 0.27, at the mean 0.33",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--fit",
+   "label": "fitted line, without the U.S.",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.3886806887982986,
+   "text": "slope 0.39",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--aut",
+   "label": "Austria",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.6120470469103118,
+   "text": "observed θ 0.736; predicted θ 0.612",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--bel",
+   "label": "Belgium",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.6050310918599742,
+   "text": "observed θ 0.376; predicted θ 0.605",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--can",
+   "label": "Canada",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.3636222604387247,
+   "text": "observed θ 0.318; predicted θ 0.364",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--cze",
+   "label": "Czech Republic",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.5137672467687785,
+   "text": "observed θ 0.342; predicted θ 0.514",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--fin",
+   "label": "Finland",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.6185593069526417,
+   "text": "observed θ 0.941; predicted θ 0.619",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--fra",
+   "label": "France",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.62560345268066,
+   "text": "observed θ 0.822; predicted θ 0.626",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--deu",
+   "label": "Germany",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.5661304492192782,
+   "text": "observed θ 0.714; predicted θ 0.566",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--grc",
+   "label": "Greece",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.6487208033354845,
+   "text": "observed θ 0.833; predicted θ 0.649",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--hun",
+   "label": "Hungary",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.5222144660703815,
+   "text": "observed θ 0.997; predicted θ 0.522",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--irl",
+   "label": "Ireland",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.0,
+   "text": "observed θ 0.000; predicted θ 0.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--ita",
+   "label": "Italy",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.7100822788544211,
+   "text": "observed θ 0.954; predicted θ 0.710",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--jpn",
+   "label": "Japan",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.5512901701276788,
+   "text": "observed θ 0.662; predicted θ 0.551",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--nzl",
+   "label": "New Zealand",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.2729857447362555,
+   "text": "observed θ 0.003; predicted θ 0.273",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--nor",
+   "label": "Norway",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.4283761910650465,
+   "text": "observed θ 0.313; predicted θ 0.428",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--pol",
+   "label": "Poland",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.6110241513938064,
+   "text": "observed θ 0.962; predicted θ 0.611",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--prt",
+   "label": "Portugal",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.6206637220920119,
+   "text": "observed θ 0.879; predicted θ 0.621",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--esp",
+   "label": "Spain",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.6108570400368163,
+   "text": "observed θ 0.859; predicted θ 0.611",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--swe",
+   "label": "Sweden",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.4702748636350977,
+   "text": "observed θ 0.383; predicted θ 0.470",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--gbr",
+   "label": "United Kingdom",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.5034540367564172,
+   "text": "observed θ 0.181; predicted θ 0.503",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--usa",
+   "label": "United States (anchor)",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.544496000028011,
+   "text": "observed θ 0.544; predicted θ 0.544",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--cses_layer2--stats",
+   "label": "Pearson r, without the U.S.",
+   "series": "model",
+   "panel": "cses_layer2",
+   "value": 0.794474488912204,
+   "text": "r 0.79; RMSE 0.23, at the mean 0.33",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--fit",
+   "label": "fitted line, without the U.S.",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.15637129112889905,
+   "text": "slope 0.16",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--aut",
+   "label": "Austria",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.5330515526157966,
+   "text": "observed θ 0.736; predicted θ 0.533",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--bel",
+   "label": "Belgium",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.5010312332476842,
+   "text": "observed θ 0.376; predicted θ 0.501",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--can",
+   "label": "Canada",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.4068821512483766,
+   "text": "observed θ 0.318; predicted θ 0.407",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--cze",
+   "label": "Czech Republic",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.5959978005136619,
+   "text": "observed θ 0.342; predicted θ 0.596",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--fin",
+   "label": "Finland",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.574788412119183,
+   "text": "observed θ 0.941; predicted θ 0.575",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--fra",
+   "label": "France",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.5384042698385607,
+   "text": "observed θ 0.822; predicted θ 0.538",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--deu",
+   "label": "Germany",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.5881592282926524,
+   "text": "observed θ 0.714; predicted θ 0.588",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--grc",
+   "label": "Greece",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.5917188913233322,
+   "text": "observed θ 0.833; predicted θ 0.592",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--hun",
+   "label": "Hungary",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.6217737499151164,
+   "text": "observed θ 0.997; predicted θ 0.622",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--irl",
+   "label": "Ireland",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.3798686299979195,
+   "text": "observed θ 0.000; predicted θ 0.380",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--ita",
+   "label": "Italy",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.5877811867980387,
+   "text": "observed θ 0.954; predicted θ 0.588",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--jpn",
+   "label": "Japan",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.5999965305015841,
+   "text": "observed θ 0.662; predicted θ 0.600",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--lux",
+   "label": "Luxembourg",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.015477019109845,
+   "text": "observed θ 0.820; predicted θ 0.015",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--nzl",
+   "label": "New Zealand",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.2576164967096457,
+   "text": "observed θ 0.003; predicted θ 0.258",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--nor",
+   "label": "Norway",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.4717230973529252,
+   "text": "observed θ 0.313; predicted θ 0.472",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--pol",
+   "label": "Poland",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.608677643067638,
+   "text": "observed θ 0.962; predicted θ 0.609",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--prt",
+   "label": "Portugal",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.5900244899623582,
+   "text": "observed θ 0.879; predicted θ 0.590",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--esp",
+   "label": "Spain",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.5080385752413011,
+   "text": "observed θ 0.859; predicted θ 0.508",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--swe",
+   "label": "Sweden",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.5230852435197151,
+   "text": "observed θ 0.383; predicted θ 0.523",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--gbr",
+   "label": "United Kingdom",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.5270796213354753,
+   "text": "observed θ 0.181; predicted θ 0.527",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--usa",
+   "label": "United States (anchor)",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.5444960000533255,
+   "text": "observed θ 0.544; predicted θ 0.544",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer1--stats",
+   "label": "Pearson r, without the U.S.",
+   "series": "model",
+   "panel": "pooled_layer1",
+   "value": 0.35445873091151553,
+   "text": "r 0.35; RMSE 0.32, at the mean 0.32",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--fit",
+   "label": "fitted line, without the U.S.",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.36507175983399176,
+   "text": "slope 0.37",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--aut",
+   "label": "Austria",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.6312648253681483,
+   "text": "observed θ 0.736; predicted θ 0.631",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--bel",
+   "label": "Belgium",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.5561559434177659,
+   "text": "observed θ 0.376; predicted θ 0.556",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--can",
+   "label": "Canada",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.3923213449795638,
+   "text": "observed θ 0.318; predicted θ 0.392",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--cze",
+   "label": "Czech Republic",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.5013585226210177,
+   "text": "observed θ 0.342; predicted θ 0.501",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--fin",
+   "label": "Finland",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.6322830050384908,
+   "text": "observed θ 0.941; predicted θ 0.632",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--fra",
+   "label": "France",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.6342079452655597,
+   "text": "observed θ 0.822; predicted θ 0.634",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--deu",
+   "label": "Germany",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.5741659004611913,
+   "text": "observed θ 0.714; predicted θ 0.574",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--grc",
+   "label": "Greece",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.6608162538752491,
+   "text": "observed θ 0.833; predicted θ 0.661",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--hun",
+   "label": "Hungary",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.5106710198587093,
+   "text": "observed θ 0.997; predicted θ 0.511",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--irl",
+   "label": "Ireland",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.0,
+   "text": "observed θ 0.000; predicted θ 0.000",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--ita",
+   "label": "Italy",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.6837066197900377,
+   "text": "observed θ 0.954; predicted θ 0.684",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--jpn",
+   "label": "Japan",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.5364275793604765,
+   "text": "observed θ 0.662; predicted θ 0.536",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--lux",
+   "label": "Luxembourg",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.4709348699032045,
+   "text": "observed θ 0.820; predicted θ 0.471",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--nzl",
+   "label": "New Zealand",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.2888376833975669,
+   "text": "observed θ 0.003; predicted θ 0.289",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--nor",
+   "label": "Norway",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.4590386767229891,
+   "text": "observed θ 0.313; predicted θ 0.459",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--pol",
+   "label": "Poland",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.593376413874538,
+   "text": "observed θ 0.962; predicted θ 0.593",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--prt",
+   "label": "Portugal",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.6126470721193611,
+   "text": "observed θ 0.879; predicted θ 0.613",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--esp",
+   "label": "Spain",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.6039534398672667,
+   "text": "observed θ 0.859; predicted θ 0.604",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--swe",
+   "label": "Sweden",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.513831435270491,
+   "text": "observed θ 0.383; predicted θ 0.514",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--gbr",
+   "label": "United Kingdom",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.4698772566211129,
+   "text": "observed θ 0.181; predicted θ 0.470",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--usa",
+   "label": "United States (anchor)",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.544496000028011,
+   "text": "observed θ 0.544; predicted θ 0.544",
+   "table": null,
+   "row": null
+  },
+  {
+   "id": "OECD26_ThetaFitGrid--pooled_layer2--stats",
+   "label": "Pearson r, without the U.S.",
+   "series": "model",
+   "panel": "pooled_layer2",
+   "value": 0.7769447580891138,
+   "text": "r 0.78; RMSE 0.24, at the mean 0.32",
+   "table": null,
+   "row": null
+  }
+ ]
+}

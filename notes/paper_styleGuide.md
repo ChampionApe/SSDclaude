@@ -115,6 +115,16 @@ These rules are indicative, adjust if the context warrants it:
   one anchors it and the rest say "the cost specification and the units are those of table X"
   (`tablesUS.ESCANCHOR`). Figure notes live in the `.tex` beside the `\includegraphics`, not drawn
   inside the PDF, and cite a table for baseline levels rather than repeating the numbers.
+- **What a note holds** (guidelines, following the practice of Econometrica, the JPE and the QJE;
+  depart from them where an exhibit needs it). A note lets a reader who has not read the text read the
+  exhibit: what is plotted or tabulated and in what units, the sample, the data source, and conventions
+  (what parentheses, open markers, dashes or stars mean). It is usually a few sentences, roughly
+  30–80 words for a figure and up to about 100 for a table. It does not report results, so no fit
+  statistics, slopes or calibrated parameters of other variants: those belong in the text, a table, or
+  the online appendix. It does not interpret, and it does not restate a specification the text has just
+  defined (the layers, the anchor, $\lambda_{n,t}$); it names it and points to the section or table
+  that defines it. A label that recurs across exhibits is defined once, in the first exhibit or the
+  text, and later notes refer back. A source note, when there is one, goes last.
 - **Rules.** Booktabs everywhere: `\toprule`/`\midrule`/`\bottomrule`, no vertical rules and no
   full-width `\hline`. The one exception, deliberate and confined to the two calibration tables
   `table:US:Calib{,_vectorX}`, is a hairline at 25% black on each side of the three country columns,

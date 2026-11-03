@@ -94,7 +94,7 @@ def argentinaCalibration(commonX = None):
     ]
     # The relative-hours prediction (c['zxPredicted'] against c['zxi']) is quoted in the text of
     # Sections/Argentina.tex since 2026-09-18, not in this note; keep the two in step if it moves.
-    note = r'\textit{Note:} Our default specification relies on $\rho=' + C.num(c['ρ'], 0) + r'$.'
+    note = r'\textit{Note:} The baseline is $\rho = ' + C.num(c['ρ'], 0) + r'$.'
     note += C.variantNote(commonX, full = True, arm = 'ARG')
     keys = ['epsilon', 'theta', 'alpha', 'nu', 'xi', 'beta', 'X', 'eta', 'gamma0', 'omega', 'eta0', 'X0']
     return _wrap('ArgentinaCalibration' + sfx, 'results/paper/calibrationSummary.csv',
@@ -130,13 +130,10 @@ def argentinaUniversal(commonX = None):
     rows = [['Baseline',             C.pct(ee['τ_base']),    C.pct(srBase), C.num(C.workweekHours(ee['h_base'], hRef)), '--'],
             ['Economic Equilibrium', C.pct(ee['τ_ee']),      C.pct(srEE),   C.num(C.workweekHours(ee['h_ee'], hRef)), chg(bEE)],
             ['Full effect',          C.pct(ref['τ_reform']), C.pct(srRef),  C.num(C.workweekHours(ref['h_reform'], hRef)), chg(bRef)]]
-    note = (r'\textit{Note:} The reform permanently raises $\epsilon$ to $1-\theta + \theta \eta_1 h_1/h$ '
-            r'in the calibration year, unanticipated. The ' + LQ + 'Economic Equilibrium' + RQ +
-            r' scenario solves for the new economic equilibrium path with taxes as in the Baseline '
-            r'scenario, but with the new permanent $\epsilon$; the ' + LQ + 'Full effect' + RQ +
-            r' scenario lets taxes be determined by the politico-economic equilibrium. $\rho=' +
-            C.num(ρ, 0) + r"$. The savings rate is savings relative to GDP, formal plus informal output. "
-            r'Formal benefits: the change in the benefit of every formal retiree against the Baseline.'
+    note = (r'\textit{Note:} The reform of section \ref{sec:argentina}, $\rho = ' + C.num(ρ, 0) + r'$. Economic '
+            r'equilibrium: the new $\epsilon$ with taxes as in the baseline; full effect: taxes set in '
+            r'politico-economic equilibrium. The savings rate is savings relative to GDP, formal plus informal output; '
+            r'formal benefits are the change in the benefit of every formal retiree against the baseline.'
             + C.variantNote(commonX, arm = 'ARG'))
     return _wrap('ArgentinaUniversal' + sfx, 'results/shocks/{eeOnly,universal}_match_rho%.4f%s.csv' % (ρ, C.argVariantTag(commonX)),
                  'Pension system reform, year %d' % year + C.variantCaption(commonX, 'ARG'),

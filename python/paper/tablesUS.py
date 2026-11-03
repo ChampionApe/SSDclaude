@@ -75,10 +75,11 @@ def _andList(items):
     return items[0] if len(items) == 1 else ', '.join(items[:-1]) + ' and ' + items[-1]
 
 
-def usukfrCalibration(commonX = None, countries = CALIBCOUNTRIES):
-    r""" Table \ref{table:US:Calib}: the headline calibration for the three countries; with `countries` a subset
-    (the U.S. first, in CALIBCOUNTRIES' order), the same table for those alone, named and labelled by them
-    (('US', 'FR'): USFRCalibration, table:US:CalibUSFR).
+def usukfrCalibration(commonX = None, countries = CALIBCOUNTRIES, name = None, label = None):
+    r""" The headline calibration of `countries` (the U.S. first, then some of CALIBCOUNTRIES in its order), built as
+    output `name` with \label `label` (both before the variant's suffix; by default named and labelled by the countries,
+    'USFRCalibration' and table:US:CalibUSFR). build.py registers two: the paper's USFRCalibration (table:US:CalibUSFR)
+    and the online appendix's three countries, OECD_Calibration (table:US:CalibUSUKFR).
 
     `X` is the POPULATION-WEIGHTED MEAN of X_i -- the only summary of a vector whose level IS the hours
     unit, and the one the leisure counterfactual is matched on. The lower panel holds the parameters the
@@ -94,8 +95,8 @@ def usukfrCalibration(commonX = None, countries = CALIBCOUNTRIES):
     lack = [k for k in cols if k not in c]
     if lack:
         raise D.MissingInput(os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv') + ' (no {} row)'.format(lack))
-    full = tuple(cols) == CALIBCOUNTRIES
-    name = ''.join(cols) + 'Calibration'
+    name = ''.join(cols) + 'Calibration' if name is None else name
+    label = 'table:US:Calib' + ''.join(cols) if label is None else label
     others = [NOTENAME[k] for k in ('FR', 'UK') if k in cols]   # the note's order
     year0 = C.usCalendar()['year0']
     # Booktabs horizontals, plus the one deviation: a hairline at 25% black on each side of the value
@@ -122,7 +123,7 @@ def usukfrCalibration(commonX = None, countries = CALIBCOUNTRIES):
         # θ is the replacement-rate ratio's closed form without a measure of the design (RR0), the measure's own
         # value under config.US['theta'] (imposed as θ0)
         row('theta', r'$\theta$', 'Replacement rate dispersion' if C.US.get('theta') in (None, 'index')
-            else 'Slope of the public pension on earnings', lambda r: C.num(r['θ'], 3)),
+            else 'Earnings-linked share of the public pension', lambda r: C.num(r['θ'], 3)),
         row('omega', r'$\omega$',
             ', '.join(r'$\tau^{' + k + '} = ' + C.pct(c[k]['τ0'], 1) + '$' for k in cols),
             lambda r: C.num(r['ω'])),
@@ -155,7 +156,7 @@ def usukfrCalibration(commonX = None, countries = CALIBCOUNTRIES):
             + '\\begin{table}[!htb]\n\\centering\n\\begin{threeparttable}\n'
             + '\\caption{Calibration, ' + _andList([CAPTIONNAME[k] if k != 'UK' else 'the UK' for k in cols])
             + C.variantCaption(commonX) + '}\n'
-            + '\\label{table:US:Calib' + ('' if full else ''.join(cols)) + C.variantSuffix(commonX) + '}\n'
+            + '\\label{' + label + C.variantSuffix(commonX) + '}\n'
             + '\\renewcommand{\\arraystretch}{1.3}\n'
             + '\\begin{tabularx}{\\textwidth}{l' + rule + 'C{1.4cm}'*len(cols) + rule
             + '>{\\raggedright\\arraybackslash}X}\n\\toprule\n'

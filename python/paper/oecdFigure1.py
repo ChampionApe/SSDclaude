@@ -502,9 +502,8 @@ def writeNote(full, df):
             + r') where one public pay-as-you-go system pays the bulk of retirement benefits, that is, funded tiers pay '
             r'less than a quarter of mandatory benefits in 2020 and the public pension is not tested against them '
             r'(left out: ' + ', '.join(funded) + r'). The '
-            r'Bismarckian index is $I = 1/(2-\theta)$, with $\theta$ the least-squares slope of the public pension on '
-            r'earnings at 0.5, 1 and 2 times average earnings (Pensions at a Glance 2021) times one minus the share '
-            r'of spending on minimum top-ups and tested benefits. Pension spending is public cash spending on old age '
+            r'Bismarckian index is $I = 1/(2-\theta)$, with $\theta$ ' + C.THETADEF + r' (Pensions at a Glance 2021). '
+            r'Pension spending is public cash spending on old age '
             r'and survivors, ' + str(YEAR) + r', in \% of GDP; population growth is the population of ' + str(YEAR)
             + ' over that of ' + str(BASE) + '; the Gini is that of disposable income.')
     path = os.path.join(C.PAPERDIR, 'Figs', 'OECDdata_note.tex')

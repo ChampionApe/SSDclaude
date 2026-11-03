@@ -48,7 +48,7 @@ Two things happen, and only the first is expensive:
 
 WHY THE SUMMARY IS NOT JUST THE SWEEP CSVS: they carry the calibrated scalars (beta, omega, lambda, X)
 but not the per-type vectors eta_i, X_i, gamma_i, mu_i, nor theta -- and those are the whole of the two
-household-heterogeneity tables and three rows of USUKFRCalibration. They live on the instance.
+household-heterogeneity tables and three rows of the calibration tables (USFRCalibration, OECD_Calibration). They live on the instance.
 """
 import os, sys, argparse, subprocess, pickle, datetime, json
 import numpy as np, pandas as pd
@@ -240,7 +240,7 @@ def summarise(country, ρ = None, commonX = False):
                'preferences': m._calPreferences(), 't0': int(m.db['t0']), 'T': int(m.T),
                'θ': atT0('θ'), 'α': atT0('α'), 'ξ': atT0('ξ'), 'Γh': atT0('Γh'),
                'ν2020': float(νt[m.db['t0']]),
-               # The population-weighted mean X_i is the row USUKFRCalibration reports as `X`, and the
+               # The population-weighted mean X_i is the row the calibration tables report as `X`, and the
                # only summary of X_i a pure scale can be matched on (python/US/shocks.shockLeisure).
                'Xbar': float((γi*Xi).sum()),
                'ηHηL': float(ηi[-1]/ηi[0]),

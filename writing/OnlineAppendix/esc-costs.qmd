@@ -34,3 +34,17 @@ counterfactuals(esc.filter(d => d.source === "main" && d.host === "US"),
 
 {{< include _generated/exhibits/ESC_Costs-foot.qmd >}}
 :::
+
+## The tax against a pinned design {#esc-costs-pinned}
+
+The figure pins the U.S. design at one value on the whole path, with the calibration held at the observed design, and
+reads the tax rate of 2020 without the cost of redistribution and with the paper's cost. Both lines pass through the
+calibrated tax rate at the observed design. Without the cost the tax rate falls as the design becomes more
+Bismarckian, the comparative static of section {{< var p.sec_LOG >}} of the paper: a higher θ shifts benefits from
+low-income retirees, who with their higher marginal utility weigh more in the political objective, to high-income
+ones. With the cost the tax rate is
+hump-shaped in the design, with its peak close to the observed design, which the electorate re-elects. At flatter
+designs a more Bismarckian one raises the tax rate, since less of the revenue is lost; at more Bismarckian designs it
+lowers the tax rate, as without the cost. Section {{< var p.sec_esc >}} of the paper opens with this shape.
+
+{{< include _generated/exhibits/US_ESC_TauTheta.qmd >}}

@@ -1,7 +1,15 @@
 r""" Numbers for the review response (package C5): the U.S. block at the pension-only calibration, read off the
 calibrated csvs and, where a number needs a solve, the same builders and solvers the paper's drivers use.
 
-Run:  .venv\Scripts\python.exe python\US\c5Numbers.py <command> [--rho ...]
+Run:  .venv\Scripts\python.exe python\US\c5Numbers.py <command> [--rho ...] --theta C --main
+
+--theta VARIANT --main (VARIANT = python/paper/config.py's US['theta'], oecd26.thetaRoot; the paper's numbers): every
+U.S. model at theta0 = the variant's U.S. row of data/oecd26_theta.csv (db['θ0'], ModelUS.getθ; runESC.setTheta for
+the ESC builders, France at its FRA row), every csv read kept at that thetaSource and theta0 (_at: a run never reads a
+row of another theta, #13), every row written carrying both, and theta* = theta0. Without the flags the workbook's
+theta (rows without thetaSource). Where a CRRA row of the Pi-inclusive cost ('sizePiR', escCalibrationCRRACosts.csv)
+is missing at the run's theta, `loss` and `lambda` leave its CRRA entries out (NaN); `a9` reads
+C5_US_shocksRhoGridCommonX.csv only at the run's theta.
 
   selfcheck   the calibrated U.S. reproduced from its csv rows: the 2020 tax and the theta = 1 counterfactual at
               rho = 1 (runShocksUS's path) and the design in force in 2020 at the calibrated lambda (runESC's).
@@ -40,7 +48,8 @@ Run:  .venv\Scripts\python.exe python\US\c5Numbers.py <command> [--rho ...]
   strategic   the strategic term of the 2020 choice, dtau_2050/ds_2020 * ds_2020/dtau_2020 (the slope of the
               2050 policy function times the economic equilibrium's savings response). -> C5_strategicTerm.csv
 
-Nothing here writes a csv the paper reads; every output is results/numerical/C5_*.csv.
+Every output is results/numerical/C5_*.csv; no paper table reads them, the online appendix's US_TaxState and
+US_Strategic read C5_taxPolicyState.csv and C5_strategicTerm.csv.
 """
 import os, sys, argparse, time, json
 import numpy as np, pandas as pd
@@ -68,8 +77,60 @@ ESC = os.path.join(REPO, 'results', 'esc')
 RHOS = (0.5, 1.0, 2.0)
 GS = {'n': 101, 'ns': 150, 'smoothKnots': 4, 'interpKind': 'linear'}   # runShocksUS / runESCcrra defaults
 NCAND2D = 41                                                          # config.US['esc']['nCand2D']
-THETA_STAR = 0.727757                                                 # the observed U.S. design (escCalibration)
+THETA_WORKBOOK = 0.727757                  # the observed U.S. design at the workbook's theta (no variant)
 EPS = (0.1, 0.25, 0.4)                     # Chetty et al. (2011), Saez, Slemrod and Giertz (2012); 0.25 extensive
+# The run's theta variant, set by setTheta (main's --theta V --main): theta0 imposed on every U.S. model here and in
+# runESC/runESCcrra (runESC.THETA), the rows read and written at it. The defaults are the workbook's theta.
+THETA = {'variant': None, 'θ0': None}
+
+
+def θStar():
+    """ The observed U.S. design: the variant's theta0, the workbook's theta* without one. """
+    return THETA_WORKBOOK if THETA['θ0'] is None else THETA['θ0']
+
+
+def _at(df):
+    """ The rows of df at the run's theta: thetaSource THETA['variant'] and θ0 THETA['θ0'] (1e-12); without a
+    variant the rows without a thetaSource (or 'index'), the workbook's theta. """
+    ts = df['thetaSource'] if 'thetaSource' in df.columns else pd.Series(np.nan, index = df.index)
+    if THETA['variant'] is None:
+        return df[ts.isna() | (ts == 'index')]
+    θ = pd.to_numeric(df['θ0'], errors = 'coerce') if 'θ0' in df.columns else pd.Series(np.nan, index = df.index)
+    return df[(ts == THETA['variant']) & (θ - THETA['θ0']).abs().le(1e-12)]
+
+
+def _read(path):
+    """ A csv's rows at the run's theta (_at); ValueError when it has none. """
+    df = _at(pd.read_csv(path))
+    if df.empty:
+        raise ValueError('{}: no row at thetaSource {!r}, θ0 {!r}'.format(os.path.relpath(path, REPO),
+                                                                          THETA['variant'], THETA['θ0']))
+    return df
+
+
+def _tag(df):
+    """ df with the run's thetaSource and θ0 columns (unchanged without a variant). """
+    return df if THETA['variant'] is None else df.assign(thetaSource = THETA['variant'], θ0 = THETA['θ0'])
+
+
+def setTheta(theta, main):
+    """ --theta V --main: V must be config.US['theta'] (results/numerical/ holds the paper's variant only), the U.S.
+    sweep at every rho of RHOS at it (oecd26.usBeta). Installs THETA and runESC.THETA (runESC.setTheta). SystemExit
+    for one flag without the other, another variant, or a sweep at another theta. """
+    if theta is None and not main:
+        return
+    if theta is None or not main:
+        raise SystemExit('--theta needs --main here (and --main --theta)')
+    import oecd26
+    try:
+        oecd26.thetaRoot(theta, main = True)
+        θ0 = oecd26.thetaFromFile('USA', theta)
+        for ρ in RHOS:
+            oecd26.usBeta(oecd26.USSWEEP, ρ, thetaSource = theta)
+    except (ValueError, FileNotFoundError, KeyError) as e:
+        raise SystemExit('--theta {}: {}'.format(theta, e))
+    runESC.setTheta(theta, None, ('calib',), False, True, 1.0, True)
+    THETA.update({'variant': theta, 'θ0': θ0})
 
 
 def out(name):
@@ -83,10 +144,12 @@ def prefs(ρ):
 
 def usModel(ρ, cls = ModelESC):
     """ The no-cost U.S. at rho, common X, rebuilt from its sweep row as runShocksUS.hostModel does (ModelESC
-    with no wedge is ModelUS exactly; it adds sequentialFOC). """
+    with no wedge is ModelUS exactly; it adds sequentialFOC), at the run's theta0. """
     row = hostRow(ρ, True, 'US')
-    m = cls(pars = testmod.reading(None) | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])},
-            commonX = True, **testmod.kwargs)
+    if not _at(pd.DataFrame([row])).shape[0]:
+        raise ValueError(f'US_rhoGridCommonX.csv at ρ={ρ}: the row is not at θ {THETA}')
+    m = cls(pars = testmod.reading(None) | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])}
+            | ({} if THETA['θ0'] is None else {'θ0': THETA['θ0']}), commonX = True, **testmod.kwargs)
     m.db['dates'], m.db['workweek'] = testmod.dates, testmod.workweek
     gs = GS if ρ != 1 else {k: v for k, v in GS.items() if k != 'ns'}
     getattr(m, prefs(ρ)).initGS(gs)
@@ -97,23 +160,26 @@ def usModel(ρ, cls = ModelESC):
 
 def escRows():
     """ The paper's cost calibration at each rho: (lambda, beta, omega) of 'size' and lambda of 'sizePiR', common
-    X, at the pension-only theta* (LOG: escCalibration{,Costs}.csv; CRRA: the exact rows of
-    escCalibrationCRRA{,Costs}.csv). """
+    X, at theta* = θStar() (LOG: escCalibration{,Costs}.csv; CRRA: the exact rows of escCalibrationCRRA{,Costs}.csv),
+    every row at the run's theta (_at). A missing 'sizePiR' row gives NaN for λΠR and ΠR. """
+    def piR(cc):
+        return (float(cc.p.iloc[-1]), float(cc['ΠR'].iloc[-1])) if len(cc) else (np.nan, np.nan)
+
     rows = {}
-    c = pd.read_csv(os.path.join(ESC, 'escCalibration.csv'))
-    cc = pd.read_csv(os.path.join(ESC, 'escCalibrationCosts.csv'))
-    s = c[(c.spec == 'size') & c.commonX.astype(bool)].iloc[-1]
-    q = cc[(cc.spec == 'sizePiR') & cc.commonX.astype(bool)].iloc[-1]
+    c = _read(os.path.join(ESC, 'escCalibration.csv'))
+    cc = _at(pd.read_csv(os.path.join(ESC, 'escCalibrationCosts.csv')))
+    s = c[(c.spec == 'size') & c.commonX.astype(bool) & np.isclose(c['θStar'], θStar(), atol = 1e-6)].iloc[-1]
+    λΠR, ΠR = piR(cc[(cc.spec == 'sizePiR') & cc.commonX.astype(bool)])
     rows[1.0] = {'λ': float(s.p), 'β': float(s['β']), 'ω': float(s['ω']), 'τ0': float(s['τ0']),
-                 'Vtilde': float(s.Vtilde), 'θStar': float(s['θStar']), 'λΠR': float(q.p), 'ΠR': float(q['ΠR'])}
-    c = pd.read_csv(os.path.join(ESC, 'escCalibrationCRRA.csv'))
-    cc = pd.read_csv(os.path.join(ESC, 'escCalibrationCRRACosts.csv'))
+                 'Vtilde': float(s.Vtilde), 'θStar': float(s['θStar']), 'λΠR': λΠR, 'ΠR': ΠR}
+    c = _read(os.path.join(ESC, 'escCalibrationCRRA.csv'))
+    cc = _at(pd.read_csv(os.path.join(ESC, 'escCalibrationCRRACosts.csv')))
     for ρ in (0.5, 2.0):
         s = c[(c['ρ'] == ρ) & (c.spec == 'size') & (c.method == 'exact') & c.commonX.astype(bool)
-              & np.isclose(c['θStar'], THETA_STAR, atol = 1e-6)].iloc[-1]
-        q = cc[(cc['ρ'] == ρ) & (cc.spec == 'sizePiR') & (cc.method == 'exact')].iloc[-1]
+              & np.isclose(c['θStar'], θStar(), atol = 1e-6)].iloc[-1]
+        λΠR, ΠR = piR(cc[(cc['ρ'] == ρ) & (cc.spec == 'sizePiR') & (cc.method == 'exact')])
         rows[ρ] = {'λ': float(s.p), 'β': float(s['β']), 'ω': float(s['ω']), 'τ0': float(s['τ0']),
-                   'Vtilde': float(s.Vtilde), 'θStar': float(s['θStar']), 'λΠR': float(q.p), 'ΠR': float(q['ΠR'])}
+                   'Vtilde': float(s.Vtilde), 'θStar': float(s['θStar']), 'λΠR': λΠR, 'ΠR': ΠR}
     return rows
 
 
@@ -133,7 +199,7 @@ def escModel(ρ, wedge):
 def selfcheck(a):
     """ Two headline numbers from their own code paths: tau_2020 and the theta = 1 tax at rho = 1
     (US_shocksCommonX.csv), and theta_2020 = theta* at the calibrated lambda (escCalibration.csv). """
-    shk = pd.read_csv(os.path.join(SHK, 'US_shocksCommonX.csv'))
+    shk = _read(os.path.join(SHK, 'US_shocksCommonX.csv'))
     ref = shk[(shk['ρ'] == 1.0)]
     m, row = usModel(1.0)
     base = m.solvePEE_LOG()
@@ -152,8 +218,9 @@ def selfcheck(a):
     print(f"rho=1 lambda {e['λ']:.6f}: beta {mE.simpleβinv():.6f} vs {e['β']:.6f}, omega "
           f"{float(mE.db['ω'].xs(mE.t0Year)):.6f} vs {e['ω']:.6f}; theta_2020 {θ2020:.8f} vs theta* "
           f"{float(mE.db['θ'].xs(mE.t0Year)):.8f} ({time.time()-tic:.0f}s)")
-    ok = (abs(τ0 - τ0Ref) < 1e-9 and abs(τθ1 - τθ1Ref) < 1e-9 and abs(θ2020 - THETA_STAR) < 1e-5
+    ok = (abs(τ0 - τ0Ref) < 1e-9 and abs(τθ1 - τθ1Ref) < 1e-9 and abs(θ2020 - θStar()) < 1e-5
           and abs(mE.simpleβinv() - e['β']) < 1e-6)
+    print(f'theta variant {THETA["variant"]!r}, theta* {θStar()!r}')
     print('SELFCHECK', 'OK' if ok else 'FAILED')
     return 0 if ok else 1
 
@@ -182,7 +249,7 @@ def _critical(D, y, γ, w, ρ, hi = 20.):
 def a1(a):
     rows = []
     θg = np.linspace(0., 1., 2001)
-    shk = pd.read_csv(os.path.join(SHK, 'US_shocksCommonX.csv'))
+    shk = _read(os.path.join(SHK, 'US_shocksCommonX.csv'))
     for ρ in a.rho:
         tic = time.time()
         m, row = usModel(ρ)
@@ -211,7 +278,7 @@ def a1(a):
                 rows.append({'ρ': ρ, 'date': int(testmod.dates[pos]), 'pos': pos, 'tax': τLabel, 'τ': τUse,
                              'yL': y[iL], 'yM': float(np.median(y)), 'yH': y[iH], 'μL': μ[iL], 'μH': μ[iH],
                              'turnoutRatio': μ[iH]/μ[iL],
-                             'cRatioθ0': D[0, iH]/D[0, iL], 'cRatioθStar': float(np.interp(THETA_STAR, θg, D[:, iH]/D[:, iL])),
+                             'cRatioθ0': D[0, iH]/D[0, iL], 'cRatioθStar': float(np.interp(θStar(), θg, D[:, iH]/D[:, iL])),
                              'pairBoundθ0': (D[0, iH]/D[0, iL])**(1/ρ),
                              'maxSumObserved': float(S.max()), 'negativeEverywhere': bool(np.all(S < 0)),
                              'kCrit': k, 'ratioCrit_yk': (y[iH]/y[iL])**k if np.isfinite(k) else np.nan,
@@ -225,7 +292,7 @@ def a1(a):
               f"{r0['ratioCrit_yk']:.4f} (k={r0['kCrit']:.4f}), (mu^m) {r0['ratioCrit_μm']:.4f} (m={r0['mCrit']:.4f}); "
               f"pairwise bound {r0['pairBoundθ0']:.4f}; seqFOC<0 everywhere: {bool(np.all(foc < 0))}  "
               f"[{time.time()-tic:.0f}s]")
-    df = pd.DataFrame(rows)
+    df = _tag(pd.DataFrame(rows))
     df.to_csv(out('C5_criticalTurnout.csv'), index = False)
     print('->', os.path.relpath(out('C5_criticalTurnout.csv'), REPO))
     return 0
@@ -242,11 +309,13 @@ def a9(a):
     srcs = [('US', 'US_shocksCommonX.csv')]
     frames = []
     for host, f in srcs:
-        d = pd.read_csv(os.path.join(SHK, f)).assign(host = host, source = 'results/shocks/' + f)
+        d = _read(os.path.join(SHK, f)).assign(host = host, source = 'results/shocks/' + f)
         frames.append(d)
     grid = out('C5_US_shocksRhoGridCommonX.csv')
-    if os.path.exists(grid):
-        g = pd.read_csv(grid).assign(host = 'US', source = 'results/numerical/C5_US_shocksRhoGridCommonX.csv')
+    if os.path.exists(grid) and _at(pd.read_csv(grid)).empty:
+        print(f'{os.path.relpath(grid, REPO)}: no row at θ {THETA}, not read')
+    elif os.path.exists(grid):
+        g = _at(pd.read_csv(grid)).assign(host = 'US', source = 'results/numerical/C5_US_shocksRhoGridCommonX.csv')
         have = set(frames[0]['ρ'].round(6))
         frames.append(g[~g['ρ'].round(6).isin(have)])
         both = g[g['ρ'].round(6).isin(have)]
@@ -275,7 +344,7 @@ def a9(a):
                              'dτ_pp': 100*v, 'absdτ_pp': 100*abs(v),
                              'rank': order.index(key) + 1 if key in order else np.nan,
                              'baselineτ': b, 'source': g['source'].iloc[0]})
-    df = pd.DataFrame(rows)
+    df = _tag(pd.DataFrame(rows))
     df.to_csv(out('C5_ranking.csv'), index = False)
     acute = df[df.ageingScenario == 'acute']
     tab = acute.pivot_table(index = ['host', 'ρ'], columns = 'effect', values = 'dτ_pp')
@@ -302,11 +371,14 @@ def loss(a):
     T2020 = {}
     mE = escModel(1.0, {'spec': 'size', 'phi': 0.5, 'p': e[1.0]['λ']})
     t0 = mE.t0Year
-    for θ in (THETA_STAR - 0.2, THETA_STAR - 0.1, THETA_STAR - 0.05, THETA_STAR, 0.):
+    for θ in (θStar() - 0.2, θStar() - 0.1, θStar() - 0.05, θStar(), 0.):
         T2020[round(θ, 6)] = mE.ESC.τAt(t0, θ)          # T_2020(theta): the tax at the design in force
     for ρ in RHOS:
         r = e[ρ]
         for spec, λπ in (('size', r['λ']), ('sizePiR', r['λΠR']*r['ΠR'])):
+            if not np.isfinite(λπ):
+                print(f'rho={ρ}: no {spec} calibration at θ {THETA}, left out')
+                continue
             τ0, V, θs = r['τ0'], r['Vtilde'], r['θStar']
             base = {'ρ': ρ, 'spec': spec, 'λ': r['λ'] if spec == 'size' else r['λΠR'],
                     'π': 1. if spec == 'size' else r['ΠR'], 'τ0': τ0, 'Vtilde': V, 'θStar': θs}
@@ -321,7 +393,7 @@ def loss(a):
                     rows.append(base | {'Δθ': dθd, 'θ': θ, 'taxHeld': False, 'τ': τθ,
                                         'loss': 1 - _f(λπ, τθ, V, θ), 'lossθ0': 1 - _f(λπ, T2020[0.], V, 0.),
                                         'dLoss_dθ_atθStar': np.nan})
-    df = pd.DataFrame(rows)
+    df = _tag(pd.DataFrame(rows))
     df.to_csv(out('C5_marginalLoss.csv'), index = False)
     with pd.option_context('display.width', 250, 'display.max_columns', 20):
         print(df[['ρ', 'spec', 'λ', 'Δθ', 'taxHeld', 'τ', 'loss', 'dLoss_dθ_atθStar']].round(5).to_string())
@@ -365,7 +437,7 @@ def lam(a):
               f"{r['λ']:.3f} -> eps {r['λ']/π:.2f} (paper's mapping {r['λ']/Π:.2f}); Pi-incl. lambda {r['λΠR']:.3f}; "
               f"multiples of 0.1-0.4: {r['λ']/(0.4*π):.0f}-{r['λ']/(0.1*π):.0f} (paper's {r['λ']/(0.4*Π):.0f}-"
               f"{r['λ']/(0.1*Π):.0f})")
-    df = pd.DataFrame(rows)
+    df = _tag(pd.DataFrame(rows))
     df.to_csv(out('C5_lambdaElasticity.csv'), index = False)
     print('->', os.path.relpath(out('C5_lambdaElasticity.csv'), REPO))
     return 0
@@ -384,21 +456,21 @@ def index(a):
                      'I0': float(I(θ0)), 'I1': float(I(θ1)), 'ΔI': float(I(θ1) - I(θ0)),
                      'ΔI_firstOrder': float(I(θ0)**2*(θ1 - θ0)), 'source': source})
 
-    add('observed U.S. design (level)', np.nan, THETA_STAR, THETA_STAR, 'results/esc/escCalibration.csv')
-    add('Beveridgean corner vs U.S.', np.nan, THETA_STAR, 0., 'definition')
-    add('Bismarckian corner vs U.S.', np.nan, THETA_STAR, 1., 'definition')
+    add('observed U.S. design (level)', np.nan, θStar(), θStar(), 'results/esc/escCalibration.csv')
+    add('Beveridgean corner vs U.S.', np.nan, θStar(), 0., 'definition')
+    add('Bismarckian corner vs U.S.', np.nan, θStar(), 1., 'definition')
     add('theta 1 -> 0 (section 6)', np.nan, 1., 0., 'definition')
     # the design path, theta chosen (escPath LOG, escPathCRRA exact)
-    p = pd.read_csv(os.path.join(ESC, 'escPath.csv'))
+    p = _read(os.path.join(ESC, 'escPath.csv'))
     p = p[(p.spec == 'size') & p.commonX.astype(bool)].set_index('date')['θ']
-    pc = pd.read_csv(os.path.join(ESC, 'escPathCRRA.csv'))
+    pc = _read(os.path.join(ESC, 'escPathCRRA.csv'))
     for ρ in RHOS:
         s = p if ρ == 1 else pc[(pc['ρ'] == ρ) & (pc.spec == 'size') & (pc.method == 'exact')].set_index('date')['θ']
         src = 'results/esc/escPath.csv' if ρ == 1 else 'results/esc/escPathCRRA.csv'
         for d in (2050, 2080, 2110):
             add(f'design path 2020 -> {d}', ρ, float(s[2020]), float(s[d]), src)
     # figure 7.1 and the A8 costs: theta_2020 chosen, against the chosen baseline of the same rho
-    x = pd.read_csv(os.path.join(ESC, 'escExperiments.csv'))
+    x = _read(os.path.join(ESC, 'escExperiments.csv'))
     x = x[(x.spec == 'size') & x.commonX.astype(bool) & ((x.preferences == 'LOG') | (x.method == 'exact'))
           & ~x['θpinned'].astype(bool)]
     for ρ in RHOS:
@@ -407,29 +479,41 @@ def index(a):
             if scen in g:
                 add(f'{scen} (figure 7.1)', ρ, float(g['baseline']), float(g[scen]), 'results/esc/escExperiments.csv',
                     'chosen')
-    c = pd.read_csv(os.path.join(ESC, 'escAgeingCosts.csv'))
+    c = _read(os.path.join(ESC, 'escAgeingCosts.csv'))
     c = c[~c['θpinned'].astype(bool)]
     for _, r in c.iterrows():
         if r['scenario'] in ('mild', 'acute'):
             add(f"{r['scenario']} ageing, cost {r['spec']}", float(r['ρ']), float(r['θ_t0'] - r['dθ_t0']),
                 float(r['θ_t0']), 'results/esc/escAgeingCosts.csv', 'chosen')
     # the UK and France under the U.S. lambda (appendix G.1), against their observed designs and the U.S.
-    k = pd.read_csv(os.path.join(ESC, 'escCountry.csv'))
+    k = _read(os.path.join(ESC, 'escCountry.csv'))
     k = k[(k.spec == 'size') & k.commonX.astype(bool) & (k.wedgeFrom == 'US')]
     for _, r in k.iterrows():
         add(f"{r['country']} under the U.S. lambda vs observed", 1.0, float(r['θStar']), float(r['choice']),
             'results/esc/escCountry.csv', 'chosen')
-        add(f"{r['country']} under the U.S. lambda vs U.S. design", 1.0, THETA_STAR, float(r['choice']),
+        add(f"{r['country']} under the U.S. lambda vs U.S. design", 1.0, θStar(), float(r['choice']),
             'results/esc/escCountry.csv', 'chosen')
-    # data: figure 1.1's index, the U.S. and the UK observed, and the cross-section's range
-    f1 = pd.read_csv(os.path.join(REPO, 'data', 'oecdFigure1.csv')).set_index('iso3')['bbIndex']
+    # data: the U.S., the UK and France observed, and the cross-section's range (figure 1.1's index, theta = 2 - 1/I,
+    # without a variant; the variant's rows of data/oecd26_theta.csv, its inSample countries, with one)
+    if THETA['variant'] is None:
+        f1 = pd.read_csv(os.path.join(REPO, 'data', 'oecdFigure1.csv')).set_index('iso3')['bbIndex']
+        θdata, src, what = (2 - 1/f1).clip(0., 1.), 'data/oecdFigure1.csv', 'figure 1.1 index (theta = 2 - 1/I)'
+        rng = 'figure 1.1 range ({} countries)'.format(len(f1))
+    else:
+        import oecd26
+        v = oecd26.readTheta()
+        v = v[(v['variant'] == THETA['variant'])].set_index('iso3')
+        θdata, src, what = v['theta'], 'data/oecd26_theta.csv', f"theta, variant {THETA['variant']}"
+        inS = v.loc[v['inSample'], 'theta'].dropna()
+        rng = 'variant {} range ({} countries in sample)'.format(THETA['variant'], len(inS))
     for iso in ('USA', 'GBR', 'FRA'):
-        if iso in f1:
-            θd = 2 - 1/float(f1[iso])
-            add(f'{iso} figure 1.1 index (theta = 2 - 1/I)', np.nan, θd, θd, 'data/oecdFigure1.csv', 'data')
-    add('figure 1.1 range (29 countries)', np.nan, max(0., 2 - 1/float(f1.min())), min(1., 2 - 1/float(f1.max())),
-        'data/oecdFigure1.csv', 'data')
-    df = pd.DataFrame(rows)
+        if iso in θdata and np.isfinite(θdata[iso]):
+            add(f'{iso} {what}', np.nan, float(θdata[iso]), float(θdata[iso]), src, 'data')
+    lo, hi = ((float(θdata.min()), float(θdata.max())) if THETA['variant'] is None
+              else (float(inS.min()), float(inS.max())))
+    add(rng, np.nan, lo, hi, src, 'data')
+    df = pd.DataFrame(rows)        # θ0/θ1 here are the item's designs: only thetaSource tags the run's theta
+    df = df if THETA['variant'] is None else df.assign(thetaSource = THETA['variant'])
     df.to_csv(out('C5_indexUnits.csv'), index = False)
     with pd.option_context('display.width', 250, 'display.max_columns', 20, 'display.max_rows', 200):
         print(df[['item', 'ρ', 'θ0', 'θ1', 'Δθ', 'I0', 'I1', 'ΔI']].round(4).to_string())
@@ -586,7 +670,7 @@ def design(a):
     t0 = m.t0Year
     led = {k: mm.solveLeaded(pinAtT0 = False) for k, mm in (('US', m), ('FR', mFR))}
     V = {k: float(mm.B.Vtilde(t0)) for k, mm in (('US', m), ('FR', mFR))}
-    csv = pd.read_csv(os.path.join(ESC, 'escExperiments.csv'))
+    csv = _read(os.path.join(ESC, 'escExperiments.csv'))
     csv = csv[(csv.spec == 'size') & (csv.preferences == 'LOG') & ~csv['θpinned'].astype(bool)].set_index('scenario')
     for k, sc in (('US', 'baseline'), ('FR', 'frIncome')):
         print(f"{k}: theta_2020 {float(led[k]['θ'].xs(t0)):.6f} (csv {float(csv.loc[sc, 'θ_t0']):.6f}), tau_2020 "
@@ -646,7 +730,7 @@ def design(a):
         rows.append({'kind': 'choice', 'ρ': 1.0, 'case': label, 'experiment': key, 'θ2020': θ0, 'τ2020': τ0,
                      'π2020': float(π[m.db['t0']]), 'gap': gap, 'passes': k, 'θ2050': float(rec['θ'].iloc[m.db['t0']+1])})
         print(f'  {label:<48} theta_2020 {θ0:.6f}  tau_2020 {τ0:.6f}  pi_2020 {π[m.db["t0"]]:.5f}  ({k} passes)')
-    pd.DataFrame(rows).to_csv(out('C5_designDecomp.csv'), index = False)
+    _tag(pd.DataFrame(rows)).to_csv(out('C5_designDecomp.csv'), index = False)
     print('->', os.path.relpath(out('C5_designDecomp.csv'), REPO))
     return 0
 
@@ -661,16 +745,17 @@ def designCRRA(a):
         m = escModel(ρ, {'spec': 'size', 'phi': 0.5, 'p': e['λ']})
         print(f'rho={ρ}: calibrated (beta {m.simpleβinv():.6f} vs {e["β"]:.6f}, omega '
               f'{float(m.db["ω"].xs(m.t0Year)):.6f} vs {e["ω"]:.6f})  [{time.time()-tic:.0f}s]')
-        data = runShocksUS.frenchData(m, ρ, 'CRRA', gs = GS, commonX = True)
+        data = runShocksUS.frenchData(m, ρ, 'CRRA', gs = GS, commonX = True, θ0FR = runESC.countryθ0('FR'),
+                                      usCsv = None if runESC.THETA['calibDir'] is None else runESC.usSweep(True))
         mFR, _ = sh.shockedCopy(m, 'frIncome', data, runESC.SHOCKS_ESC)
         t0, pos0 = m.t0Year, m.db['t0']
         V = {'US': float(m.B.Vtilde(t0)), 'FR': float(mFR.B.Vtilde(t0))}
         # the U.S. free path's tax (escPathCRRA, exact) and a first guess for France's: its pinned path scaled
         # to the free 2020 value on file (escExperiments)
-        pc = pd.read_csv(os.path.join(ESC, 'escPathCRRA.csv'))
+        pc = _read(os.path.join(ESC, 'escPathCRRA.csv'))
         pc = pc[(pc['ρ'] == ρ) & (pc.spec == 'size') & (pc.method == 'exact')].sort_values('pos')
         τUS = np.append(pc['τ'].values.astype(float), pc['τ'].values[-1])          # terminal: last ratio
-        x = pd.read_csv(os.path.join(ESC, 'escExperiments.csv'))
+        x = _read(os.path.join(ESC, 'escExperiments.csv'))
         x = x[(x['ρ'] == ρ) & (x.spec == 'size') & (x.method == 'exact')].set_index(['scenario', 'θpinned'])
         pinUS = m.solvePEE_CRRA()['τ'].values.astype(float)
         pinFR = mFR.solvePEE_CRRA()['τ'].values.astype(float)
@@ -698,11 +783,15 @@ def designCRRA(a):
 
 
 def _mergeExperiments(rows, path):
-    """ One file per rho (two rho run as two processes): this run's experiments replace their rows on disk. """
-    df = pd.DataFrame(rows)
+    """ One file per rho (two rho run as two processes): this run's experiments replace their rows on disk, and a
+    row on disk at another theta than the run's (_at) is dropped. """
+    df = _tag(pd.DataFrame(rows))
     if os.path.exists(path):
         old = pd.read_csv(path)
-        df = pd.concat([old[~old['experiment'].isin(df['experiment'])], df], ignore_index = True)
+        keep = _at(old)
+        if len(keep) < len(old):
+            print(f'  {os.path.relpath(path, REPO)}: {len(old) - len(keep)} rows at another θ dropped')
+        df = pd.concat([keep[~keep['experiment'].isin(df['experiment'])], df], ignore_index = True)
     df.to_csv(path, index = False)
     print('->', os.path.relpath(path, REPO))
 
@@ -731,7 +820,7 @@ def a13(a):
         el = (np.log(r[1.05]) - np.log(r[0.95]))/(np.log(1.05) - np.log(0.95))
         print(f'rho={ρ}: tau_2020 {τ0:.6f} at s_2019 {s0:.6f}; at 0.5/1.5 s*: {r[0.5]:.6f}/{r[1.5]:.6f}; '
               f'elasticity d ln tau/d ln s {el:+.4f}')
-    pd.DataFrame(rows).to_csv(out('C5_taxPolicyState.csv'), index = False)
+    _tag(pd.DataFrame(rows)).to_csv(out('C5_taxPolicyState.csv'), index = False)
     print('->', os.path.relpath(out('C5_taxPolicyState.csv'), REPO))
     return 0
 
@@ -772,7 +861,7 @@ def strategic(a, δ = 0.005):
         print(f"rho={ρ}: s_{t0} {sAt:.6f} (path {sEq:.6f}); ds/dtau {dsdτ:+.5f} (el {r['elasticity s,τ']:+.3f}); "
               f"dtau_{t1}/ds {dτ1ds:+.5f} (el {r['elasticity τ1,s']:+.3f}); strategic dtau_{t1}/dtau_{t0} "
               f"{r['strategic']:+.5f}")
-    pd.DataFrame(rows).to_csv(out('C5_strategicTerm.csv'), index = False)
+    _tag(pd.DataFrame(rows)).to_csv(out('C5_strategicTerm.csv'), index = False)
     print('->', os.path.relpath(out('C5_strategicTerm.csv'), REPO))
     return 0
 
@@ -787,7 +876,11 @@ def main():
     p.add_argument('--rho', type = float, nargs = '*', default = list(RHOS))
     p.add_argument('--passes', type = int, default = 2, help = 'designCRRA: solves per experiment at most')
     p.add_argument('--only', nargs = '*', default = None, help = 'designCRRA: experiments to run (X1 X2)')
+    p.add_argument('--theta', default = None, help = "the pipeline's main θ variant, config.US['theta'] (with --main)")
+    p.add_argument('--main', action = 'store_true', help = "with --theta config.US['theta']")
     a = p.parse_args()
+    setTheta(a.theta, a.main)
+    print(f"θ variant {THETA['variant']!r}: θ* = {θStar()!r}")
     tic = time.time()
     rc = COMMANDS[a.command](a)
     print(f'[{a.command}: {time.time()-tic:.0f}s]')

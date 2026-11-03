@@ -3,9 +3,9 @@ condition's residuals off the policy functions' grids (NUM_Residuals); and the o
 detail of the first (NUM_HorizonPaths). The candidate counts are tablesOA.numSelection (NUM_Selection), on the
 online appendix's page D2; appendix D states them in words.
 
-Inputs: results/numerical/{US_horizon,US_horizonDesign,US_residuals,US_derivativeScheme}.csv
+Inputs: results/numerical/{US_horizon,US_horizonDesign,US_residuals}.csv
 (python/US/runHorizon.py) and ARG_horizon_commonX.csv, ARG_residuals_commonX.csv
-(python/InformalSavings/runHorizon.py), read through datasets.horizon/residuals/derivativeScheme. Layout as
+(python/InformalSavings/runHorizon.py), read through datasets.horizon/residuals (US_derivativeScheme.csv: appendix D's prose). Layout as
 tablesOA: tablesUS._xwrap, a note in the house form, every body row ending in ` % row: <key>`. Rates in
 percent to two decimals, their changes across horizons in p.p. to three, the design theta to three.
 """
@@ -77,28 +77,15 @@ def numHorizon():
         ('Savings rate (\\% of GDP)', 'tax', 'srGDP', pct, dpp, 'arg_savings'),
         ('Universal pension: change in the tax rate (p.p.)', 'tax', 'dτ', lambda v: _signed(100*v, 2), dpp,
          'arg_reform')])
-    Tus = {k: int(_pick(us, 'tax', 0.5, *k)['T'].iloc[0]) for k in (('finite', BASE_TSS), ('finite', 1), ('finite', 6))}
-    Targ = {k: int(_pick(arg, 'tax', 1.0, *k)['T'].iloc[0]) for k in (('finite', BASE_TSS), ('finite', 1), ('finite', 6))}
-    gaps = [float(_pick(df, b, ρ, 'steadyState', None)['statGap'].max())
-            for df, b in ((us, 'tax'), (arg, 'tax')) for ρ in RHOS if 'statGap' in df.columns
-            and np.isfinite(_pick(df, b, ρ, 'steadyState', None)['statGap']).any()]
-    kSS = int(_pick(us, 'tax', 0.5, 'steadyState', None)['tss'].iloc[0])
-    note = (r'\textit{Note:} Every parameter at its calibrated value at the paper' + "'" + r's horizon, $T = '
-            + str(Tus[('finite', BASE_TSS)]) + r'$ in the United States and $' + str(Targ[('finite', BASE_TSS)])
-            + r'$ in Argentina; the first two columns are the levels there. The other columns are the change '
-            r'against them at the same date: shorter, with the backward induction started two periods earlier ($T = '
-            + str(Tus[('finite', 1)]) + r'$ and $' + str(Targ[('finite', 1)]) + r'$); longer, three periods later ($T = '
-            + str(Tus[('finite', 6)]) + r'$ and $' + str(Targ[('finite', 6)]) + r'$); and under the steady-state '
-            r'terminal condition of appendix \ref{app:T}, population growth held at its last projected rate from '
-            r'the last projection date on and the policy functions stationary from there, computed as the finite '
-            r'horizon extended by ' + str(kSS) + r' periods (at the paper' + "'" + r's $T$ its tax policy '
-            r'differs from that of the period after by at most ' + _sci(max(gaps)) + r' over the states the '
-            r'path visits). Tax and savings rates in percent and their changes in percentage points, the '
-            r'design in units of $\theta$. Under log preferences ($\rho = 1$) the U.S.\ tax at every date '
-            r'and the design chosen at every date but $T - 1$ do not depend on the horizon. The design is '
-            r'chosen one period ahead under the paper' + "'" + r's cost, at its calibrated $\lambda$; in '
-            r'Argentina the universal pension is that of section \ref{sec:argentina}, its change against '
-            r'the baseline of the same horizon.')
+    Tus = int(_pick(us, 'tax', 0.5, 'finite', BASE_TSS)['T'].iloc[0])
+    Targ = int(_pick(arg, 'tax', 1.0, 'finite', BASE_TSS)['T'].iloc[0])
+    note = (r'\textit{Note:} The first two columns are levels at the paper' + "'" + r's horizon, $T = ' + str(Tus)
+            + r'$ in the U.S.\ and $' + str(Targ) + r'$ in Argentina; the others are changes against them at the same '
+            r'date, with the backward induction started two periods earlier, three periods later, or from the steady '
+            r'state of appendix \ref{app:T}. Tax and savings rates in percent, their changes in percentage points, '
+            r'the design in units of $\theta$. The design is chosen one period ahead at the calibrated cost; in '
+            r'Argentina the universal pension is that of section \ref{sec:argentina}, as a change against the '
+            r'baseline of the same horizon.')
     head = (r'\textbf{Outcome} & $\bm{\rho}$ & \multicolumn{2}{c}{\textbf{Paper' + "'" + r's $\bm{T}$}} & '
             r'\multicolumn{2}{c}{\textbf{Shorter}} & \multicolumn{2}{c}{\textbf{Longer}} & '
             r'\multicolumn{2}{c}{\textbf{Steady state}}')
@@ -240,41 +227,20 @@ def numResiduals():
         sub = arg[np.isclose(arg['ρ'], ρ)]
         grid = '45' + (r'$\times$45' if (sub['preferences'] == 'CRRA').all() else '')
         lines.append(_row([C.num(ρ, 1), grid] + _residualCells(arg, np.isclose(arg['ρ'], ρ)), 'arg@' + _rhoKey(ρ)))
-    sch = D.derivativeScheme()
-    gap = lambda s, ρ: (float(sch[(sch['scheme'] == s) & np.isclose(sch['ρ'], ρ) & (sch['scenario'] == 'theta0')
-                                  & (sch['date'] == C.usCalendar()['year0'])]['τ'].iloc[0])
-                        - float(sch[(sch['scheme'] == s) & np.isclose(sch['ρ'], ρ) & (sch['scenario'] == 'theta1')
-                                    & (sch['date'] == C.usCalendar()['year0'])]['τ'].iloc[0]))
-    base = lambda s, ρ, d: float(sch[(sch['scheme'] == s) & np.isclose(sch['ρ'], ρ) & (sch['scenario'] == 'baseline')
-                                     & (sch['date'] == d)]['τ'].iloc[0])
-    y0 = C.usCalendar()['year0']
-    ρs = sorted(sch['ρ'].unique())
-    nTau = lambda df: (int(df['nTau'].iloc[0]) - 1)*int(df['refine'].iloc[0]) + 1     # runHorizon.refined's nodes
-    both = lambda f: ' and '.join(f(ρ) for ρ in ρs)
     note = (r'\textit{Note:} Each cell is the largest (or 99th percentile) absolute difference, in percentage '
             r'points of the tax rate, between the root of the first order condition at a state and the policy '
             r'function there, over the periods of the paper' + "'" + r's horizon: at the state the equilibrium '
             r'path enters each period with, at the centers of the state grid' + "'" + r's cells within the range '
             r'the path visits (padded by a fifth), and at the centers of all its cells. The grid column gives the '
-            r'nodes of the state grid. The root is located by the selection of every period, without the smoothing '
-            r'of the policy, against the solved continuation. The first four columns evaluate the condition as '
-            r'the solver does; the last four with its derivatives in the tax converged, on a tax grid of '
-            + str(nTau(us)) + r' nodes in the U.S.\ and ' + str(nTau(arg)) + r' in Argentina. Both solvers '
-            r'differentiate along $\ln(1-\tau)$: the U.S.\ one with a least-squares cubic spline whose knots are '
-            + C.num(C.US['gridSettings']['gradKnotSpacing'], 2) + r' apart in the tax, Argentina' + "'" + r's with '
-            r'an interpolating spline. Solved at every period with converged derivatives and the calibrated parameters, '
-            r'the U.S.\ tax in ' + str(y0) + ' is ' + both(lambda ρ: C.num(100*base('reference', ρ, y0), 2) + r'\%')
-            + ' at $\\rho = ' + both(lambda ρ: C.num(ρ, 1)).replace(' and ', '$ and $') + r'$ (the calibration'
-            + "'" + r's ' + C.num(100*base('published', ρs[0], y0), 2) + r'\%), and the difference between '
-            r'$\theta = 0$ and $\theta = 1$ is ' + both(lambda ρ: C.num(100*gap('reference', ρ), 2))
-            + ' p.p. against ' + both(lambda ρ: C.num(100*gap('published', ρ), 2)) + r' p.p. Log preferences in '
-            r'the U.S.\ have no state.')
+            r'nodes of the state grid. The first four columns evaluate the condition as the solver does, the last '
+            r'four with its derivatives in the tax converged (appendix \ref{app:T}). Log preferences in the U.S.\ '
+            r'have no state.')
     head = (r'$\bm{\rho}$ & \textbf{Grid} & \multicolumn{4}{c}{\textbf{As solved}} & \multicolumn{4}{c}{\textbf{'
             r'Converged derivatives}} \\' + '\n'
             r'\cmidrule(lr){3-6}\cmidrule(lr){7-10}' + '\n'
             r' & & Path & Visited, max & Visited, 99\% & All, max & Path & Visited, max & Visited, 99\% & '
             r'All, max')
-    return _xwrap('NUM_Residuals', 'results/numerical/{US_residuals,US_derivativeScheme,ARG_residuals'
+    return _xwrap('NUM_Residuals', 'results/numerical/{US_residuals,ARG_residuals'
                   + C.argVariantTag(C.ARG['commonX']) + '}.csv',
                   'First order condition residuals off the grid', _label('Residuals'),
                   r'cc' + 'Y'*8, head, _body(lines), note, width = r'\textwidth', size = r'\footnotesize')

@@ -14,7 +14,8 @@ replication map (rep-map.qmd), the version stamp and the bibliography; and writi
 paper's \oa macros from the pages' headings (`# B4. Title {#key}`) with every retired key aliased to its page.
 
 EXHIBITS is the registry: id -> the output shown and, where neither the paper nor the output's own tex supplies
-them, its caption and note (LaTeX; no number is typed in them). Exhibits are numbered per page in the order the page
+them, its caption and note (LaTeX; no number is typed in them). A figure the paper does not input and whose
+registered note is None takes its builder's generated note, results/paper/Figs/<output>_note.tex (generatedNote). Exhibits are numbered per page in the order the page
 includes them (Figure A2.1, Table B4.2); one the paper inputs also carries its number in the paper (main.aux).
 Reads results/paper, the output map of REPLICATION.md (`build.py --map`), build.py's source, the paper's tex and
 git; imports no model code and runs no builder. A missing output is reported and its block says so, never fatal.
@@ -55,8 +56,8 @@ E = Ex
 OECD26LAYER1 = (r'Layer 1 of the cross-country test of section \ref{{sec:esc:crossSection}}: every country at the '
                 r'U.S.\ $\beta$, $\omega$ and cost parameter, with its own workers per retiree, income distribution '
                 r'and observed design. The model\textquotesingle s index is $1/(2-\theta)$ of the design in force in '
-                r'2020 on the freely simulated path, its spending $\tau(1-\alpha)$ at the observed design; the lines '
-                r'are least-squares fits (table \ref{{table:OECD26:{table}}}).')
+                r'2020 on the freely simulated path, its spending $\tau(1-\alpha)$ in 2020 on the path of the design it '
+                r'chooses; the lines are least-squares fits (table \ref{{table:OECD26:{table}}}).')
 EXHIBITS = {
     # A1
     'ARG_LOG_FourInOne': E('figure', 'ARG_LOG_FourInOne',
@@ -104,6 +105,9 @@ EXHIBITS = {
     # B4
     'OECD_LeisureCalibration': E('table', 'OECD_LeisureCalibration'),
     'OECD_LeisureGroups': E('table', 'OECD_LeisureGroups'),
+    # B6
+    'OECD_Calibration': E('table', 'OECD_Calibration'),
+    'UK_householdheterogeneity': E('table', 'UK_householdheterogeneity'),
     'OECD_LeisureRows': E('explorer', 'OECD_Counterfactuals',
         caption = r'The counterfactuals the treatment of the taste for leisure moves',
         note = r'France\textquotesingle s income distribution and leisure preferences under the common $X$ and '
@@ -121,6 +125,11 @@ EXHIBITS = {
         caption = r'The baseline path with the design chosen and with it pinned',
         note = r'Log preferences ($\rho = 1$). Pinned holds the design at the country\textquotesingle s observed '
                r'value throughout, under the same cost.'),
+    'US_ESC_Path': E('figure', 'US_ESC_Path',
+        caption = r'The design and the tax along the U.S.\ baseline path',
+        note = r'The paths start in 2020, the calibration year, under log preferences ($\rho = 1$), with the design '
+               r'chosen and with it pinned at its observed value; a design chosen at one date applies from the '
+               r'following one.'),
     # C3
     'ESC_Costs': E('explorer', 'ESC_Counterfactuals',
         caption = r'The counterfactuals under the two cost specifications, U.S.',
@@ -129,6 +138,9 @@ EXHIBITS = {
                r'design pinned at the observed value, a filled one the reading with the design chosen; the design is '
                r'a level, the other outcomes the change against the baseline of the same reading and $\rho$, in '
                r'2020. The vertical line in the design panel is the observed design.'),
+    # C3, the tax against a pinned design: its note is the figure's own (US_ESC_TauTheta_note.tex)
+    'US_ESC_TauTheta': E('figure', 'US_ESC_TauTheta',
+        caption = r'The U.S.\ tax rate against a design pinned on the whole path, with and without the cost'),
     # C4
     'ESC_Frisch': E('explorer', 'ESC_Counterfactuals',
         caption = r'The endogenous design across the intertemporal and the Frisch elasticity, U.S.',
@@ -142,16 +154,19 @@ EXHIBITS = {
                r'at the paper\textquotesingle s measure of the design). Under CRRA preferences the workweek with '
                r'the design pinned is not stored.'),
     # C6, in the page's order of the variants
-    'OECD26_Layer1_cses': E('figure', 'OECD26_Layer1_cses',
-        caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, each country at '
-                  r'its own turnout',
-        note = OECD26LAYER1.format(table = 'slopes_cses')
+    'OECD26_Layer1_cps': E('figure', 'OECD26_Layer1_cps',
+        caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, every country at '
+                  r'the U.S.\ turnout',
+        note = OECD26LAYER1.format(table = 'slopes_cps')
                + r' The cost parameter is the paper\textquotesingle s $\varepsilon$, $\lambda_n = '
-               r'\varepsilon\,\Pi_n/R_n$. Each country\textquotesingle s propensities to vote by income group are '
-               r'from the CSES in place of the U.S.\ CPS ones, and the U.S.\ anchor is recalibrated at its own CSES '
-               r'profile. Luxembourg, with no CSES election, is left out of data and model alike.'),
-    'OECD26_Slopes_cses': E('table', 'OECD26_Slopes_cses'),
-    'OECD26_Omega_cses': E('table', 'OECD26_Omega_cses'),
+               r'\varepsilon\,\Pi_n/R_n$. Every country\textquotesingle s propensities to vote by income group are '
+               r'the U.S.\ CPS ones in place of its own CSES ones, and the U.S.\ anchor is calibrated at them. '
+               r'Luxembourg, which has no CSES survey, enters.'),
+    'OECD26_Slopes_cps': E('table', 'OECD26_Slopes_cps'),
+    'OECD26_Omega_cps': E('table', 'OECD26_Omega_cps'),
+    # C7
+    'UK_ESC_Calibration': E('table', 'UK_ESC_Calibration'),
+    'US_ESC_Country': E('table', 'US_ESC_Country'),
     # D1
     'OECDdata': E('figure', 'OECDdata'),
     'OECD_Countries': E('table', 'OECD_Countries'),
@@ -174,15 +189,16 @@ RETIRED = {i: 'its runs were dropped when the paper moved to the measure of the 
                      'OECD26_Layer1_29', 'OECD26_Slopes_29', 'OECD26_Omega_29')}
 
 # Retired keys, which drafts of the paper cite, each defined as an alias of a live page: the site's before
-# 2026-10-09, and those of the pages B2 (oecd-countries) and C2 (esc-countries), retired with the UK as host.
+# 2026-10-09, and those of the pages B2 (oecd-countries) and C2 (retired with the UK as host). 'oecd-uk' and
+# 'esc-countries' are live again (pages B6 and C7, 2026-11-02).
 OLDKEYS = {'arg-calibration': 'arg-leisure', 'arg-reform': 'arg-ies', 'arg-rho': 'arg-ies', 'arg-rhogrid': 'arg-ies',
            'oecd-us': 'oecd', 'oecd-calibration': 'oecd-ies', 'oecd-vectorx': 'oecd-leisure',
-           'oecd-rhogrid': 'oecd-ies', 'oecd-uk': 'oecd',
+           'oecd-rhogrid': 'oecd-ies',
            'esc-calibration': 'esc', 'esc-us': 'esc', 'esc-uk': 'esc', 'esc-path': 'esc-paths',
            'esc-scale': 'esc-costs', 'data-countries': 'data', 'data-correlations': 'data',
            'num-stationary': 'num', 'num-selection': 'num',
            'oecd-countries': 'oecd', 'oecd-hosts': 'oecd', 'oecd-regroup': 'oecd',
-           'esc-countries': 'esc', 'esc-hosts': 'esc'}
+           'esc-hosts': 'esc'}
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -485,6 +501,15 @@ def dataFiles(ex, prov):
     return out
 
 
+def generatedNote(output):
+    r""" A figure's own note, results/paper/Figs/<output>_note.tex (its builder's, with the numbers), without the banner;
+    '' where there is none. """
+    p = os.path.join(FIGS, output + '_note.tex')
+    if not os.path.exists(p):
+        return ''
+    return '\n'.join(l for l in read(p).split('\n') if not l.startswith('%%')).strip()
+
+
 def block(i, ex, num, paper, refs, prov, here, report):
     """ {'whole': html} for a static exhibit, {'head': html, 'foot': html} for an explorer. """
     word, n, _ = num
@@ -504,7 +529,7 @@ def block(i, ex, num, paper, refs, prov, here, report):
             body, links(ex, prov, files))}
     if ex.kind == 'figure':
         fig = paper.figures.get(ex.output) if ex.output in paper.uses else None
-        cap, note = (fig['caption'], fig['note']) if fig else (ex.caption or ex.output, ex.note or '')
+        cap, note = (fig['caption'], fig['note']) if fig else (ex.caption or ex.output, ex.note or generatedNote(ex.output))
         svg = os.path.join(FIGS, ex.output + '.svg')
         if not os.path.exists(svg):
             report.append('missing figure {}'.format(ex.output))

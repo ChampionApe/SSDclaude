@@ -17,7 +17,8 @@ published numbers were produced at.
 THE θ VARIANT. Every command carries config.thetaFlags() (--theta config.US['theta'] --main: the U.S., France and
 the UK at the variant's θ0, the standard results/ paths), and an output counts as present only where it holds rows
 at that thetaSource (`_atTheta`). The robustness variants of config.US['oecd26']['thetaVariants'] run without
---main into their own results/oecd26_theta_<V>/ (`oecd26Variants`).
+--main into their own results/oecd26_theta_<V>/ (`oecd26Variants`); appendix H's stylized readings of the
+cross-section run at the main variant, on its U.S. sweep, into results/oecd26_stylized/ (`oecd26Stylized`).
 
 TWO PARTS. `part = 'main'` is what a routine rebuild runs: the exogenous-theta shocks in both variants and
 the LOG leg of the endogenous-theta appendix, all cheap, and the cross-section. `part = 'prepub'` holds the
@@ -32,7 +33,8 @@ families at every rho in config.US['ρTable']. That is why the whole set costs o
 three: the families share a baseline solve per rho, and splitting them would re-solve it three times.
 
 Cost of the main part: a few minutes for the exogenous shocks and the LOG ESC leg, ~1.5 h for the
-cross-section from scratch (seconds when its rows are current), ~1.4 h per robustness variant.
+cross-section from scratch (seconds when its rows are current), ~1.4 h per robustness variant, ~1.5 h for the
+stylized readings from scratch (53 min with the cses anchor and layer 2 on disk).
 """
 import os, sys, argparse, subprocess
 import pandas as pd
@@ -69,6 +71,8 @@ ESCLAYER = ['--designRule', ESC['designRule'], '--Ma', str(ESC['Ma'])]
 CV = ESC['costVariants']
 CVSPEC = ['--spec', CV['spec'], '--phi', str(ESC['phi']), '--tag', CV['tag']]
 OECD = C.US['oecd26']
+STYDIR = os.path.join(C.RESULTS, OECD['stylized']['dir'])
+TAUTHETA = C.US['tauTheta']
 
 
 def _read(path):
@@ -187,6 +191,19 @@ EXPERIMENTS = {
         'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibration.csv')],
         'note':    'the UK and France under the ESC cost, LOG (rho = 1)',
     },
+    # The U.S. tax of 2020 against a design pinned on the whole path, without the cost and at the calibrated lambda,
+    # LOG (python/US/runTauTheta.py; config.US['tauTheta']; US_ESC_TauTheta). Its rows are keyed on the run's
+    # calibration (beta, omega, lambda), so the child decides what to recompute: always run (seconds).
+    'escTauTheta': {
+        'part':    'main',
+        'always':  True,
+        'script':  'runTauTheta.py',
+        'args':    (['--grid'] + [repr(float(x)) for x in TAUTHETA['grid']] + ['--refine', repr(TAUTHETA['refine'])]
+                    + ESCVARIANT),
+        'outputs': lambda: [os.path.join(C.ESCDIR, 'escTauTheta.csv')],
+        'requires': lambda: [os.path.join(C.ESCDIR, 'escCalibration.csv')],
+        'note':    'the U.S. tax against a pinned design, with and without the cost, LOG (rho = 1)',
+    },
     # The same path for France and the UK under the US-calibrated cost and their own (escCountry.csv): the
     # online appendix's paths by country (runESC.stagePathHost).
     'escPathHost': {
@@ -210,6 +227,23 @@ EXPERIMENTS = {
         'outputs': lambda: [os.path.join(C.RESULTS, 'oecd26', f + '.csv') for f in ('anchor', 'layer1', 'layer2')],
         'requires': lambda: [C.usSweepCsv('US', True)],
         'note':    'the cross-country test, LOG (rho = 1)',
+    },
+    # Appendix H's stylized readings of the cross-section (config.US['oecd26']['stylized']; OECD26_Stylized,
+    # OECD26_ThetaFitGrid): the turnout 'pooled' and layer 1 at omegaRule 'mean', at the paper's variant and the main θ
+    # variant, on the main U.S. sweep (--usSweep) into results/oecd26_stylized/, whose cses anchor and layer 2 are then
+    # results/oecd26/'s (the same inputs keys). One runOECD26.py command per run of the declaration, in its order
+    # (layer 2 before the mean omega that reads it). Rows keyed on their inputs: always run, as 'oecd26'.
+    'oecd26Stylized': {
+        'part':    'main',
+        'always':  True,
+        'commands': lambda: [_usScript('runOECD26.py') + ['--theta', C.US['theta'], '--inSample', '--spec', OECD['spec'],
+                                                          '--betaRule', OECD['betaRule'],
+                                                          '--usSweep', C.usSweepCsv('US', True), '--outdir', STYDIR,
+                                                          '--turnout'] + r['turnout'] + ['--stage'] + r['stage']
+                             + ['--omegaRule', r['omegaRule']] for r in OECD['stylized']['runs']],
+        'outputs': lambda: [os.path.join(STYDIR, f + '.csv') for f in ('anchor', 'layer1', 'layer2')],
+        'requires': lambda: [C.usSweepCsv('US', True)],
+        'note':    "the cross-country test's stylized readings (pooled turnout, mean omega)",
     },
     # The cross-section under the robustness measures of the design (config.US['oecd26']['thetaVariants']), each at
     # its own U.S. sweep at rho = 1 (calibrateRhoGrid.py --theta V, which resumes at its θ0) and the paper's variant

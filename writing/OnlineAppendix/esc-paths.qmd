@@ -1,22 +1,21 @@
 # C1. The path in levels {#esc-paths}
 
 The calibration targets the design of 2020 only; every other design along the path is an outcome of the model,
-chosen one period ahead. The figures follow the three countries from 1990,
-whose electorate sets the design of 2020, to 2110; the demography is constant from 2080. Each country keeps
-its own calibration and demography. Its cost parameter is either the U.S. λ, the deep test of appendix
-{{< var p.app_escResults_countries >}} under λ along the path, or its own, the parameter at which its electorate
-re-elects its observed design. France has no own parameter, since no value of it re-elects France's fully
-Bismarckian design.
+chosen one period ahead. The first two figures follow the three countries from 1990, whose electorate sets the design
+of 2020, to 2110; the demography is constant from 2080. Each country keeps its own calibration and demography. Its
+cost parameter is either the U.S. λ, the deep test of [C7](esc-countries.qmd) along the path, or its own, the
+parameter at which its electorate re-elects its observed design.
 
 ## By country {#esc-paths-countries}
 
 In every country the chosen design moves against the number of workers per retiree. As the population ages, the
 electorate ties benefits more closely to earnings, and the design levels off when the demography does. Under the
-U.S. cost parameter the three countries' designs keep their observed order in 2020: the UK's lowest, France's
+U.S. cost parameter the three countries' designs keep their observed order from 2020 on: the UK's lowest, France's
 highest, the U.S. in between. France's design stays above the U.S. one, but from 2050 by much less, since France's
-population is already old in 2020 and ages least afterwards. The UK's workers per retiree rise until 2020 before they fall, and its design
-moves against them, falling and then rising. At its own parameter the UK's design passes through its observed value in 2020 and
-follows the same pattern. The tax rate rises with ageing everywhere.
+population is already old in 2020 and ages least afterwards. The UK's workers per retiree rise until 2020 before they
+fall, and its design moves against them, falling and then rising. At their own parameters the UK's and France's
+designs pass through their observed values in 2020 and follow the same patterns. The tax rate rises with ageing
+everywhere.
 
 ::: {.oa-explorer .column-page}
 {{< include _generated/exhibits/ESC_PathsCountries-head.qmd >}}
@@ -28,14 +27,9 @@ escPaths = FileAttachment("_generated/data/ESC_Paths.csv").csv({typed: true})
 PATHVARS = [["Pension design θ", "theta"], ["Tax rate", "tau"], ["Savings over GDP", "sr"], ["Workweek", "workweek"]]
 COSTS = [["the U.S. one for all", "US"], ["each country's own", "own"]]
 NAME = ({US: "U.S.", UK: "UK", FR: "France"})
-// One country's baseline path at rho = 1 under the paper's cost and the selected parameter. France has no own
-// parameter: under "own" it is shown with its design pinned at its observed value, where the cost is zero.
-countryPath = (country, cost) => {
-  const pinnedOnly = cost === "own" && country === "FR";
-  const rows = escPaths.filter(d => (d.source === "main" || d.source === "host") && d.country === country
-    && d.spec === "size" && d.rho === 1 && d.wedgeFrom === (pinnedOnly ? "US" : cost));
-  return {rows, pinnedOnly};
-}
+// One country's baseline path at rho = 1 under the paper's cost and the selected parameter, the U.S. one or its own.
+countryPath = (country, cost) => escPaths.filter(d => (d.source === "main" || d.source === "host")
+  && d.country === country && d.spec === "size" && d.rho === 1 && d.wedgeFrom === cost)
 series = (rows, variable, reading) => rows.filter(d => d.variable === variable)
   .map(d => ({year: d.year, value: d[reading]})).sort((a, b) => a.year - b.year)
 viewof c1Countries = checkboxes(COUNTRIES, {key: "countries", label: "Countries"})
@@ -43,17 +37,15 @@ viewof c1Var = control("select", PATHVARS, {key: "variable", label: "Beside work
 viewof c1Cost = control("radio", COSTS, {key: "cost", label: "Cost parameter", value: "US"})
 {
   const lines = v => c1Countries.map(c => {
-    const {rows, pinnedOnly} = countryPath(c, c1Cost);
     const st = countryStyle(c);
-    return {label: NAME[c] + (pinnedOnly && v !== "nu" ? ", design pinned" : ""), colour: st.colour, symbol: st.symbol,
-            dashed: pinnedOnly && v !== "nu", records: series(rows, v, pinnedOnly || v === "nu" ? "pinned" : "chosen")};
+    return {label: NAME[c], colour: st.colour, symbol: st.symbol,
+            records: series(countryPath(c, c1Cost), v, v === "nu" ? "pinned" : "chosen")};
   });
   const observed = c1Var === "theta" ? c1Countries.map(c => {
-    const r = countryPath(c, c1Cost).rows.find(d => d.variable === "theta" && d.year === 2020);
+    const r = countryPath(c, c1Cost).find(d => d.variable === "theta" && d.year === 2020);
     return r ? {year: 2020, value: r.pinned, colour: countryStyle(c).colour, text: `${NAME[c]}, observed design: ${r.pinned.toFixed(3)}`} : null;
   }).filter(d => d) : [];
-  const items = c1Countries.map(c => ({label: NAME[c] + (countryPath(c, c1Cost).pinnedOnly ? ", design pinned (no own parameter)" : ""),
-                                       colour: countryStyle(c).colour, shape: "line", dashed: countryPath(c, c1Cost).pinnedOnly}));
+  const items = c1Countries.map(c => ({label: NAME[c], colour: countryStyle(c).colour, shape: "line"}));
   if (observed.length) items.push({label: "observed design", colour: "#52514e", shape: "open"});
   return pathGrid([{title: "Workers per retiree ν", variable: "nu", lines: lines("nu"), rule: 2020, ruleLabel: "calibration"},
                    {title: OUTCOMES[c1Var].level, variable: c1Var, lines: lines(c1Var), rule: 2020,
@@ -68,12 +60,13 @@ viewof c1Cost = control("radio", COSTS, {key: "cost", label: "Cost parameter", v
 ## The design chosen and the design pinned {#esc-paths-readings}
 
 With the design pinned at its observed value, each country's path is that of section {{< var p.sec_oecd >}} with the
-cost in place. Choosing the design changes the tax rate little. In the U.S., and in the UK at its own parameter, the chosen design
-rises above the observed one after 2020 as the population ages, and the tax rate with it lies slightly above the
-pinned path, since a more earnings-related system loses less of its revenue. Under the U.S. parameter the UK's chosen
-design lies above its observed one throughout. In France the design chosen under the U.S. parameter stays below the
-observed corner, and the tax rate with it lies above the pinned path for the reason of section
-{{< var p.sec_oecd >}}: flatter benefits raise the tax rate.
+cost in place. After 2020 the tax rate with the design chosen lies above the pinned path in every country and under
+either parameter, consistent with the hump of [C3](esc-costs.qmd#esc-costs-pinned): at a given demography the tax
+rate peaks close to the design the electorate chooses, so a design pinned away from that choice, on either side,
+carries a lower one. At each country's own parameter, the U.S. included, the chosen design rises above the observed
+one after 2020 as the population ages, and the tax rate lies only slightly above the pinned path. Under the U.S.
+parameter the UK's chosen design lies above its observed one throughout and France's below it, and the gap in the tax
+rate is largest in the UK.
 
 ::: {.oa-explorer .column-page}
 {{< include _generated/exhibits/ESC_PathsReadings-head.qmd >}}
@@ -84,11 +77,11 @@ viewof c1bCountry = control("radio", COUNTRIES, {key: "country", label: "Country
 viewof c1bVar = control("select", PATHVARS, {key: "variable2", label: "Beside workers per retiree", value: "theta"})
 viewof c1bCost = control("radio", COSTS, {key: "cost2", label: "Cost parameter", value: "US"})
 {
-  const {rows, pinnedOnly} = countryPath(c1bCountry, c1bCost);
+  const rows = countryPath(c1bCountry, c1bCost);
   const st = countryStyle(c1bCountry);
   const both = v => [
-    ...(pinnedOnly ? [] : [{label: NAME[c1bCountry] + ", design chosen", colour: st.colour, symbol: st.symbol,
-                            records: series(rows, v, "chosen")}]),
+    {label: NAME[c1bCountry] + ", design chosen", colour: st.colour, symbol: st.symbol,
+     records: series(rows, v, "chosen")},
     {label: NAME[c1bCountry] + ", design pinned", colour: st.colour, symbol: st.symbol, dashed: true,
      records: series(rows, v, "pinned")}];
   const items = [{label: "design chosen", colour: st.colour, shape: "line"},
@@ -96,9 +89,21 @@ viewof c1bCost = control("radio", COSTS, {key: "cost2", label: "Cost parameter",
   return pathGrid([{title: "Workers per retiree ν", variable: "nu", rule: 2020, ruleLabel: "calibration",
                     lines: [{label: NAME[c1bCountry], colour: st.colour, symbol: st.symbol, records: series(rows, "nu", "chosen")}]},
                    {title: OUTCOMES[c1bVar].level, variable: c1bVar, lines: both(c1bVar), rule: 2020, ruleLabel: "calibration"}],
-                  pinnedOnly ? items.slice(1) : items, {width});
+                  items, {width});
 }
 ```
 
 {{< include _generated/exhibits/ESC_PathsReadings-foot.qmd >}}
 :::
+
+## The U.S. path from the calibration year {#esc-paths-us}
+
+The figure follows the U.S. from 2020, the calibration year, along its projected demography under log preferences,
+with the design chosen and with it pinned at its observed value: the U.S. path of the figures above, drawn beyond 2110.
+Since the calibration targets only the design of 2020, the path after 2020 is a prediction. The chosen design rises as
+the number of workers per retiree falls, most between 2020 and 2050, and settles one period after the demography does.
+The tax rate climbs with ageing and lies slightly above the path with the design pinned, since a more earnings-related
+system loses less of its revenue. [C4](esc-parameters.qmd#esc-paths-parameters) shows the path at the other values of
+the IES.
+
+{{< include _generated/exhibits/US_ESC_Path.qmd >}}

@@ -139,3 +139,36 @@ and map written. All calibrations converged (bracket-top probes only); UK exact 
 6.25, 1.41. Main outputs reproduce the C test run exactly. `OECD26_ThetaVariants`: A and B as C, A2pt as the paper's index.
 Paper 80 pages, checkPaper OK, test_oecd26 12/12, test_onlineAppendix OK. Not done: quarto render of the online appendix;
 the text pass (stale numbers, root log 2026-10-30); placing `OECD26_ThetaVariants` and `OECDdata_note`.
+
+## 2026-11-02 — The OECD part on variant C at own turnout (RKB's decisions, W23)
+
+RKB's decisions:
+- Section 7 is motivated by O3: without the cost a more Bismarckian design lowers the tax, while figure 1.1's
+  spending rises with the index.
+- The main specification is θ variant C at each country's own (CSES) turnout: 20 countries, layer 1 at the U.S. ω.
+- Design A (predicted against observed θ) is figure 7.3; design E is in the cross-section appendix, now G.
+- The measures are C, A and B only. H.5 is dropped; F.3 and the old G moved to the online appendix (B6, C7).
+
+Stylized readings, `results/oecd26_stylized`, read in `logs/variantCompare/summary_2026-11.md`:
+- an average ω moves levels only;
+- a pooled turnout matches own turnout on the same 20 countries.
+
+New:
+- spending at the chosen design in section 7;
+- the U.S. tax against a pinned θ (hump, peak 10.5% at θ 0.58);
+- C5's numbers and appendix D's U.S. checks rerun at C (`logs/c5rerun`).
+
+Text pass on every stale number (`notes/staleNumbers_2026-11-02.md`), audited after the pass. Note for Martin:
+https://claude.ai/artifact/67e2KSAyBbTksTJrZRZcuL. Checks: 80 pages, checkPaper OK, build 51/0, test_oecd26 and
+test_onlineAppendix pass. Both projects are pushed to Overleaf, the paper with --force by RKB over Martin's stray online edit
+(a typo plus line endings). Nothing committed.
+
+## 2026-11-03 — Appendices B and C cut, shorter exhibit notes
+
+RKB's Overleaf edits pulled (abstract, introduction, B.1 cut to "The design"). B.1's last three subsections rewritten
+without the removed auxiliaries (a, x_i, p_i, q_i, κ_t, D(y)), on RKB's D_{t,i}; appendix C in the same register (the
+cost is the substitution τ ↦ τf, so A, B and the restated equilibrium equations went; proofs shortened). Exhibit notes:
+the guideline "What a note holds" in `notes/paper_styleGuide.md`; per-exhibit cuts and RKB's decisions in
+`archive/notes/brief_exhibitNotes.md` (OECD26 notes point to figure 7.2 via `tablesOECD26.specText`; NUM_* details to
+appendix D's prose, sourced in REPLICATION.md §5). Paper 75 pages, checkPaper OK, build 51/0, test_oecd26 14/14,
+test_onlineAppendix OK. Overleaf pushed.

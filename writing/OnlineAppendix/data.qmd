@@ -1,9 +1,16 @@
 # D1. The OECD cross-section {#data}
 
-Figure {{< var p.fig_US_OECDdata >}} of the paper sets pension spending and the Bismarckian–Beveridgean index of the
-OECD countries against their population growth and their income inequality. The tabs below the figure give the values
-behind each marker with the year each refers to, the provider, dataset and series of every column with the date it
-was retrieved, and the pairwise correlations the paper's introduction describes.
+Figure {{< var p.fig_US_OECDdata >}} of the paper sets pension spending and the Bismarckian index of the OECD countries
+against their population growth and their income inequality. The countries are the OECD members before 2000 in which
+informal employment is low and one public pay-as-you-go system pays the bulk of retirement benefits. The index is
+$I = 1/(2-\theta)$ of the design θ: the earnings-linked share of the least-squares line through the public pension
+across earnings levels, for men under the rules of 2020 (*Pensions at a Glance 2021*), times one minus the share of
+public pension spending on minimum top-ups and tested benefits. Appendix {{< var p.app_oecd26_data >}} of the paper
+gives the rule and the measure. The
+cross-country test of section {{< var p.sec_esc_crossSection >}} runs on the same countries less Luxembourg, which has
+no CSES survey of the propensities to vote ([C6](esc-oecd26.qmd)). The tabs below the figure give the values behind
+each marker with the year each refers to, the provider, dataset and series of every column with the date it was
+retrieved, and the pairwise correlations the paper's introduction describes.
 
 {{< include _generated/exhibits/OECDdata.qmd >}}
 

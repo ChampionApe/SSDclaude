@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.10.6)  31 OCT 2026 02:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.10.6)  3 NOV 2026 21:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1390,15 +1390,15 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 {c:/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{c:/texlive/2026/
 texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{c:/texlive/2026/texmf-dist/fonts/enc/d
 vips/lm/lm-ts1.enc}]
-<Figs/OECDdata.pdf, id=235, 427.11569pt x 281.85298pt>
+<Figs/OECDdata.pdf, id=215, 427.11569pt x 281.85298pt>
 File: Figs/OECDdata.pdf Graphic file (type pdf)
 <use Figs/OECDdata.pdf>
 Package pdftex.def Info: Figs/OECDdata.pdf  used on input line 13.
 (pdftex.def)             Requested size: 452.9679pt x 298.92616pt.
-[2{c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}] [3 <./Figs/OEC
-Ddata.pdf>] [4]) (./Sections/Model.tex [5] [6{c:/texlive/2026/texmf-dist/fonts/
-enc/dvips/lm/lm-rm.enc}{c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathex
-.enc}{c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}] [7] [8] [9]
+[2] [3{c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{c:/texlive/
+2026/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/texlive/2026/texmf-dist/fonts/
+enc/dvips/lm/lm-mathsy.enc} <./Figs/OECDdata.pdf>] [4]) (./Sections/Model.tex [
+5] [6{c:/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}] [7] [8] [9]
 [10]) (./Sections/Log.tex [11] [12] [13]) (./Sections/Numerical.tex [14] [15]) 
 (./Sections/Argentina.tex
 Package epstopdf Info: Source file: <Figs/coverageArg.eps>
@@ -1411,47 +1411,54 @@ Package epstopdf Info: Source file: <Figs/coverageArg.eps>
 rted-to.pdf Figs/coverageArg.eps>
 (epstopdf)             \includegraphics on input line 10.
 Package epstopdf Info: Output file is already uptodate.
-<Figs/coverageArg-eps-converted-to.pdf, id=583, 397.485pt x 289.08pt>
+<Figs/coverageArg-eps-converted-to.pdf, id=564, 397.485pt x 289.08pt>
 File: Figs/coverageArg-eps-converted-to.pdf Graphic file (type pdf)
 <use Figs/coverageArg-eps-converted-to.pdf>
 Package pdftex.def Info: Figs/coverageArg-eps-converted-to.pdf  used on input l
 ine 10.
 (pdftex.def)             Requested size: 317.07614pt x 230.60707pt.
-[16] [17 <./Figs/coverageArg-eps-converted-to.pdf>] (./Tables/ArgentinaCalibrat
-ion.tex) (./Tables/ArgentinaUniversal.tex) [18] [19]
-<Figs/ARG_CRRA_LOG.pdf, id=650, 650.43pt x 462.52798pt>
+[16] (./Tables/ArgentinaCalibration.tex) [17 <./Figs/coverageArg-eps-converted-
+to.pdf>] (./Tables/ArgentinaUniversal.tex) [18]
+<Figs/ARG_CRRA_LOG.pdf, id=621, 650.43pt x 462.52798pt>
 File: Figs/ARG_CRRA_LOG.pdf Graphic file (type pdf)
 <use Figs/ARG_CRRA_LOG.pdf>
 Package pdftex.def Info: Figs/ARG_CRRA_LOG.pdf  used on input line 44.
 (pdftex.def)             Requested size: 452.9679pt x 322.11589pt.
-[20 <./Figs/ARG_CRRA_LOG.pdf>]) (./Sections/OECD.tex (./Tables/USFRCalibration.
-tex)
-<Figs/US_overview.pdf, id=734, 607.068pt x 325.215pt>
+[19]) (./Sections/OECD.tex [20 <./Figs/ARG_CRRA_LOG.pdf>] (./Tables/USFRCalibra
+tion.tex)
+<Figs/US_overview.pdf, id=715, 607.068pt x 325.215pt>
 File: Figs/US_overview.pdf Graphic file (type pdf)
 <use Figs/US_overview.pdf>
 Package pdftex.def Info: Figs/US_overview.pdf  used on input line 19.
 (pdftex.def)             Requested size: 452.9679pt x 242.66013pt.
-[21] [22] [23 <./Figs/US_overview.pdf>]
-<Figs/OECD26_Spending.pdf, id=845, 427.11569pt x 155.38051pt>
+[21] [22 <./Figs/US_overview.pdf>] [23]
+<Figs/OECD26_Spending.pdf, id=825, 427.11569pt x 155.38051pt>
 File: Figs/OECD26_Spending.pdf Graphic file (type pdf)
 <use Figs/OECD26_Spending.pdf>
 Package pdftex.def Info: Figs/OECD26_Spending.pdf  used on input line 46.
 (pdftex.def)             Requested size: 452.9679pt x 164.79263pt.
 (./Figs/OECD26_Spending_note.tex)) (./Sections/EndogenousTheta.tex [24 <./Figs/
 OECD26_Spending.pdf>] [25] [26] [27] (./Tables/US_ESC_Calibration.tex)
-<Figs/US_ESC_overview.pdf, id=963, 578.16pt x 549.25201pt>
+<Figs/US_ESC_overview.pdf, id=943, 578.16pt x 549.25201pt>
 File: Figs/US_ESC_overview.pdf Graphic file (type pdf)
 <use Figs/US_ESC_overview.pdf>
 Package pdftex.def Info: Figs/US_ESC_overview.pdf  used on input line 48.
 (pdftex.def)             Requested size: 452.9679pt x 430.3173pt.
 [28] [29 <./Figs/US_ESC_overview.pdf>]
-<Figs/OECD26_Layer1.pdf, id=1071, 427.11569pt x 281.85298pt>
+<Figs/OECD26_Layer1.pdf, id=1050, 427.11569pt x 281.85298pt>
 File: Figs/OECD26_Layer1.pdf Graphic file (type pdf)
 <use Figs/OECD26_Layer1.pdf>
 Package pdftex.def Info: Figs/OECD26_Layer1.pdf  used on input line 73.
 (pdftex.def)             Requested size: 452.9679pt x 298.92616pt.
-[30] (./Tables/OECD26_Slopes.tex)) (./Sections/Conclusion.tex [31 <./Figs/OECD2
-6_Layer1.pdf>] [32]) [33] [34] [35] (./Appendix/EconomicEquilibrium.tex
+(./Figs/OECD26_Layer1_note.tex) [30] (./Tables/OECD26_Slopes.tex) [31 <./Figs/O
+ECD26_Layer1.pdf>]
+<Figs/OECD26_ThetaFit.pdf, id=1137, 427.11569pt x 220.42351pt>
+File: Figs/OECD26_ThetaFit.pdf Graphic file (type pdf)
+<use Figs/OECD26_ThetaFit.pdf>
+Package pdftex.def Info: Figs/OECD26_ThetaFit.pdf  used on input line 93.
+(pdftex.def)             Requested size: 452.9679pt x 233.7756pt.
+(./Figs/OECD26_ThetaFit_note.tex)) (./Sections/Conclusion.tex [32] [33 <./Figs/
+OECD26_ThetaFit.pdf>]) [34] [35] [36] (./Appendix/EconomicEquilibrium.tex
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
@@ -1501,234 +1508,241 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.7}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.25 
-      [7]
+l.27 \end{align*}
+                  [7]
 pdfTeX warning (ext4): destination with the same identifier (name{page.8}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.41 
+l.48 
       [8]
 pdfTeX warning (ext4): destination with the same identifier (name{page.9}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.52 T
-      he argument carries over to the tax condition with the cost of section...
-[9]
+l.64 \end{align}
+                 [9]
 pdfTeX warning (ext4): destination with the same identifier (name{page.10}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.64 \end{align}
-                 [10]
+l.84 
+      [10]
 pdfTeX warning (ext4): destination with the same identifier (name{page.11}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.86 \end{align}
-                 [11]
+l.96 
+      [11]
 pdfTeX warning (ext4): destination with the same identifier (name{page.12}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.102 \end{align}
-                  [12]
+l.108 
+       [12]
 pdfTeX warning (ext4): destination with the same identifier (name{page.13}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.112 \begin{align}
-                   \label{eq:LOG:repAgentTax} [13]
+l.131 \end{align}
+                  [13]
 pdfTeX warning (ext4): destination with the same identifier (name{page.14}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.131 \begin{align*}
-                     [14]
+l.155 
+       [14]
 pdfTeX warning (ext4): destination with the same identifier (name{page.15}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.156 \end{align*}
-                   [15]
+l.180 \end{align}
+                  [15]) (./Appendix/EndogenousDesign.tex
 pdfTeX warning (ext4): destination with the same identifier (name{page.16}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.182 \end{align*}
-                   [16]) (./Appendix/EndogenousDesign.tex
+l.8 \end{align}
+                [16]
 pdfTeX warning (ext4): destination with the same identifier (name{page.17}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.4 \subsection{Costless redistribution}
-                                        \label{app:esc:corner} [17]
+l.21 
+      [17]
 pdfTeX warning (ext4): destination with the same identifier (name{page.18}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.25 F
-      irst, relative incomes average to one. By the definition of $\Gamma_h$...
-[18]
+l.34 
+      [18]
 pdfTeX warning (ext4): destination with the same identifier (name{page.19}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.42 
+l.38 
       [19]
+Overfull \hbox (36.66174pt too wide) in paragraph at lines 52--53
+\T1/lmr/bx/n/12 Identification of $\OML/lmm/m/it/12 ^^R$\T1/lmr/bx/n/12 .$[][]$
+ \T1/lmr/m/n/12 The ben-e-fit of type $\OML/lmm/m/it/12 j$ \T1/lmr/m/n/12 per u
+nit of mean past earn-ings, $\OT1/lmr/m/n/12 ^^E[]\OML/lmm/m/it/12 ^^\[]f []$\T
+1/lmr/m/n/12 ,
+ []
+
+
 pdfTeX warning (ext4): destination with the same identifier (name{page.20}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.52 
+l.53 
       [20]
 pdfTeX warning (ext4): destination with the same identifier (name{page.21}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.59 
-      [21]
+l.70 
+      [21]) (./Appendix/TerminalStates.tex
 pdfTeX warning (ext4): destination with the same identifier (name{page.22}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.71 
-      [22]
+l.16 \end{align}
+                 [22]
 pdfTeX warning (ext4): destination with the same identifier (name{page.23}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.87 \end{align}
-                 [23]
+l.41 
+      [23] (./Tables/NUM_Horizon.tex)
 pdfTeX warning (ext4): destination with the same identifier (name{page.24}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.104 
-       [24]
+l.46 
+      [24] (./Tables/NUM_Residuals.tex)
 pdfTeX warning (ext4): destination with the same identifier (name{page.25}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.115 
-       [25]) (./Appendix/TerminalStates.tex
+l.51 \FloatBarrier
+                   [25]) (./Appendix/HouseholdSurveyArg.tex
 pdfTeX warning (ext4): destination with the same identifier (name{page.26}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.16 \end{align}
-                 [26]
+l.13 ...he pre-reform $\epsilon$ as \begin{align*}
+                                                   [26]
 pdfTeX warning (ext4): destination with the same identifier (name{page.27}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.41 
-      [27] (./Tables/NUM_Horizon.tex) (./Tables/NUM_Residuals.tex)
+l.25 
+      [27]
 pdfTeX warning (ext4): destination with the same identifier (name{page.28}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.51 \FloatBarrier
-                   [28]
+l.31 \begin{align}
+                  \label{eq:calibration_eta} [28]
 pdfTeX warning (ext4): destination with the same identifier (name{page.29}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.51 \FloatBarrier
-                   [29]
+l.40 
+      [29]) (./Appendix/CalibrationOECD.tex
 pdfTeX warning (ext4): destination with the same identifier (name{page.30}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.51 \FloatBarrier
-                   [30]) (./Appendix/HouseholdSurveyArg.tex
+l.9 
+     [30] (./Tables/US_householdheterogeneity.tex)
 pdfTeX warning (ext4): destination with the same identifier (name{page.31}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.17     \begin{align*}
-                        [31
-
-]
+l.23 
+      [31] (./Tables/FR_householdheterogeneity.tex)) (./Appendix/OECD26.tex
 pdfTeX warning (ext4): destination with the same identifier (name{page.32}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.25 
-      [32]
+l.7 
+     [32]
 pdfTeX warning (ext4): destination with the same identifier (name{page.33}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.37 
-      [33]) (./Appendix/CalibrationOECD.tex
+l.11 
+      [33]
 pdfTeX warning (ext4): destination with the same identifier (name{page.34}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.4 
-     [34] (./Tables/USUKFRCalibration.tex)
+l.17 
+      [34] (./Tables/OECD26_Omega.tex)
 pdfTeX warning (ext4): destination with the same identifier (name{page.35}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.11 
-      [35] (./Tables/US_householdheterogeneity.tex) [36] (./Tables/FR_household
-heterogeneity.tex) (./Tables/UK_householdheterogeneity.tex)) (./Appendix/Endoge
-nousDesignResults.tex [37] (./Tables/US_ESC_Country.tex) [38] (./Tables/UK_ESC_
-Calibration.tex) [39]
-<Figs/US_ESC_Path.pdf, id=1664, 427.11569pt x 166.22101pt>
-File: Figs/US_ESC_Path.pdf Graphic file (type pdf)
-<use Figs/US_ESC_Path.pdf>
-Package pdftex.def Info: Figs/US_ESC_Path.pdf  used on input line 27.
-(pdftex.def)             Requested size: 452.9679pt x 176.28978pt.
-) (./Appendix/OECD26.tex [40 <./Figs/US_ESC_Path.pdf>] [41] (./Tables/OECD26_Om
-ega.tex) [42] (./Tables/OECD26_Robustness.tex) [43] [44] (./Tables/OECD26_Recon
-cile.tex)) [45] (./main.aux)
+l.22 
+      [35] (./Tables/OECD26_ThetaVariants.tex)
+pdfTeX warning (ext4): destination with the same identifier (name{page.36}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.26 
+      [36]
+<Figs/OECD26_ThetaFitGrid.pdf, id=1706, 427.11569pt x 610.68152pt>
+File: Figs/OECD26_ThetaFitGrid.pdf Graphic file (type pdf)
+<use Figs/OECD26_ThetaFitGrid.pdf>
+Package pdftex.def Info: Figs/OECD26_ThetaFitGrid.pdf  used on input line 32.
+(pdftex.def)             Requested size: 317.07614pt x 453.36954pt.
+(./Figs/OECD26_ThetaFitGrid_note.tex) (./Tables/OECD26_Stylized.tex)) [37] [38 
+<./Figs/OECD26_ThetaFitGrid.pdf>] [39] (./main.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2026-09-09>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 57F7F082568E5373021719C1883A88EF;10280.
+(rerunfilecheck)             Checksum: 9A8AACCC767E0C43FAAD108AD3FB33B6;9368.
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 39812 strings out of 467050
- 759235 string characters out of 5410550
- 1661944 words of memory out of 5000000
- 68094 multiletter control sequences out of 15000+600000
- 741155 words of font info for 126 fonts, out of 8000000 for 9000
+ 39761 strings out of 467050
+ 758062 string characters out of 5410550
+ 1650581 words of memory out of 5000000
+ 68071 multiletter control sequences out of 15000+600000
+ 754952 words of font info for 136 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 112i,21n,111p,2609b,1916s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 112i,21n,111p,2667b,2016s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmbx10.pfb><c:/texlive/2026
 /texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/texlive/2026/texmf-dist/fonts/
-type1/public/lm/lmex10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lm
-mi10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi12.pfb><c:/texli
-ve/2026/texmf-dist/fonts/type1/public/lm/lmmi5.pfb><c:/texlive/2026/texmf-dist/
-fonts/type1/public/lm/lmmi6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/
-lm/lmmi7.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi8.pfb><c:/te
-xlive/2026/texmf-dist/fonts/type1/public/lm/lmmib10.pfb><c:/texlive/2026/texmf-
-dist/fonts/type1/public/lm/lmr10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/pu
-blic/lm/lmr12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr17.pfb><
-c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr5.pfb><c:/texlive/2026/texm
-f-dist/fonts/type1/public/lm/lmr6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/p
-ublic/lm/lmr7.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr8.pfb><c
-:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmri10.pfb><c:/texlive/2026/tex
-mf-dist/fonts/type1/public/lm/lmri12.pfb><c:/texlive/2026/texmf-dist/fonts/type
-1/public/lm/lmsy10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy6.
-pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy7.pfb><c:/texlive/202
-6/texmf-dist/fonts/type1/public/lm/lmsy8.pfb><c:/texlive/2026/texmf-dist/fonts/
-type1/public/lm/lmtt10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lm
-tt12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10
-.pfb>
-Output written on main.pdf (80 pages, 967115 bytes).
+type1/public/lm/lmbx8.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lme
+x10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi10.pfb><c:/texliv
+e/2026/texmf-dist/fonts/type1/public/lm/lmmi12.pfb><c:/texlive/2026/texmf-dist/
+fonts/type1/public/lm/lmmi5.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/
+lm/lmmi6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi7.pfb><c:/te
+xlive/2026/texmf-dist/fonts/type1/public/lm/lmmi8.pfb><c:/texlive/2026/texmf-di
+st/fonts/type1/public/lm/lmmib10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/pu
+blic/lm/lmr10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr12.pfb><
+c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr17.pfb><c:/texlive/2026/tex
+mf-dist/fonts/type1/public/lm/lmr5.pfb><c:/texlive/2026/texmf-dist/fonts/type1/
+public/lm/lmr6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr7.pfb><
+c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr8.pfb><c:/texlive/2026/texm
+f-dist/fonts/type1/public/lm/lmri10.pfb><c:/texlive/2026/texmf-dist/fonts/type1
+/public/lm/lmri12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmri8.p
+fb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy10.pfb><c:/texlive/202
+6/texmf-dist/fonts/type1/public/lm/lmsy6.pfb><c:/texlive/2026/texmf-dist/fonts/
+type1/public/lm/lmsy7.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lms
+y8.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmtt10.pfb><c:/texlive
+/2026/texmf-dist/fonts/type1/public/lm/lmtt12.pfb><c:/texlive/2026/texmf-dist/f
+onts/type1/public/amsfonts/symbols/msam10.pfb>
+Output written on main.pdf (75 pages, 1014289 bytes).
 PDF statistics:
- 2018 PDF objects out of 2073 (max. 8388607)
- 1503 compressed objects within 16 object streams
- 344 named destinations out of 1000 (max. 500000)
- 477 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1996 PDF objects out of 2073 (max. 8388607)
+ 1408 compressed objects within 15 object streams
+ 318 named destinations out of 1000 (max. 500000)
+ 442 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -156,3 +156,29 @@ PHIROBUST, Medicare, freeTheta, escCountryCosts, the timing checks, the comparis
 cross-section's data side and figure 1.1 on C's 21 (`OECDdata_note.tex`), new `OECD26_ThetaVariants` ('paper' reproduces table 5),
 `US_ESC_Country` on λ with France's own λ; 11 outputs removed, 10 site exhibits `RETIRED`. test_oecd26 12/12, test_onlineAppendix
 10/10, fast suites 30/30. Overnight: `logs/overnight_2026-10-30/run.sh` (not run); `--map` is its step 5.
+
+## 2026-10-31 — The cross-section under every θ measure, compared outside the paper (`logs/variantCompare/`, gitignored)
+`logs/variantCompare/compare.py` reads results/ only and calls `tablesOECD26.slopes`/`panelData` for paper, A, A2pt, B, C × cps, cses
+(sizePiR, common β). It writes figure 7.2's layout per combination (layers 1 and 2, PNGs on common axes), `slopes.csv`, `fit.csv` (|z| against
+the data s.e., sign and 95%-interval counts, θ-prediction correlations/RMSE/same side of the U.S., mean ranks fixed in advance) and `summary.md`.
+Self-check: OECD26_Slopes, OECD26_ThetaVariants and the OECD26_Layer1 pdf all reproduce bit for bit. Reading: turnout matters more than the measure.
+cps fits the slopes best (C ≈ A ≈ B), cses predicts θ best (C ≈ A; layer-2 r 0.79 against 0.50 for C/cps), and spending-on-index is too steep
+in every combination (z 3 to 17). C is A without CHE and NLD. Dropping LUX under cses steepens the data's index-on-growth slope (−0.44 → −0.77).
+
+## 2026-11-02 — Section 7 at own turnout, the design figures, F.3/G to the site (`notes/brief_paperOECD_2026-11.md`)
+`config.US['oecd26']`: turnout 'cses' (20 countries), `spendingReading` 'chosen' (section 7's spending 100 τInForce (1−α), both
+layers; section 6 stays observed), thetaVariants A, B (A2pt off the declarations), `stylized`; `US['tauTheta']`. Notes give sample,
+turnout and anchor (β 0.65, ω 1.26, ε 13.09); OECD26_Layer1 writes its note. New: OECD26_ThetaFit, _ThetaFitGrid (+Index, built,
+not input; `tablesOECD26.thetaFit`), OECD26_Stylized, US_ESC_TauTheta; stage (ii) `oecd26Stylized` (results/oecd26_explore moved to
+results/oecd26_stylized: every row reused, identical) and `escTauTheta` (`python/US/runTauTheta.py`, 27 s; self-check 5e-14).
+ONLINE_ONLY: OECD_Calibration (appendix F's USUKFRCalibration is now the U.S. and France, `table:US:Calib`), UK_householdheterogeneity,
+UK_ESC_Calibration, US_ESC_Country, US_ESC_Path; pages B6 `oecd-uk`, C7 `esc-countries`, C1/C3 sections; the site shows a figure's
+generated note. NUM_Selection: A2pt out, stylized and escTauTheta in. build 52/52, `--map`, `--site` (22 pages, 34 exhibits),
+test_oecd26 14/14, test_onlineAppendix 11/11, fast suites 30/30, checkPaper OK. Logs `logs/paperOECD_2026-11/`.
+Follow-up (same day, after the writers' pass): OECD26_ThetaFit's note adds the standard deviations of predicted θ (0.10, 0.16)
+against observed (0.33), `thetaFit`'s `sdModel`/`sdData`; θ is defined once, `config.THETADEF` (earnings-linked share c/(a+c) of
+the least-squares line, times one minus the top-up share), in OECDdata's and OECD26_Omega's notes and the calibration table's cell;
+`USUKFRCalibration` unregistered, its copies deleted. `--map` not rerun: NUM_Horizon raises while results/numerical is being rerun.
+The pooled turnout's compulsory-voting countries are oecd26.COMPULSORY within the measure's sample (`datasets.compulsoryVoting`, read with ast): Belgium and Luxembourg under C.
+Closing (main session): datasets.horizon('US')/residuals('US')/derivativeScheme/taxPolicyState/strategicTerm read through
+`_readUS` (the rerun csvs carry thetaSource C); full build 51/0, `--map`, `--site`; date-only PDF rewrites of --map restored (README trap).

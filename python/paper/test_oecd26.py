@@ -3,10 +3,12 @@ r""" The stage (iii) builders of the cross-country test (tablesOECD26, figuresOE
 
 Run:  .venv\Scripts\python.exe python\paper\test_oecd26.py      (seconds; pytest collects the same test_ functions)
 
-The synthetic model makes every relation exact, so its slopes are known: layer 1's spending is 10 + 4 (growth - 1)
-+ 6 gini and its index 0.9 + b (growth - 1) on the design chosen (shifted by 0.1 on the design in force), b = -0.3
-at the paper's variant and another value at each other (spec, betaRule) and each other measure of the design
-(thetaSource); layer 2 matches the data's spending. The variants share one set of csvs, as runOECD26.py writes them,
+The synthetic model makes every relation exact, so its slopes are known: layer 1's spending at the observed design is
+10 + 4 (growth - 1) + 6 gini and its index 0.9 + b (growth - 1) on the design chosen (shifted by 0.1 on the design in
+force), b = -0.3 at the paper's variant and another value at each other (spec, betaRule) and each other measure of the
+design (thetaSource); layer 2 matches the data's spending at the observed design; in both layers the spending at the
+chosen design (τInForce/τ2020 times spending2020) is 5 + 10 I of the design in force. A stylized directory
+(results/oecd26_stylized/) holds layer 1 at omegaRule 'mean' beside 'anchor', at another b. The variants share one set of csvs, as runOECD26.py writes them,
 so a reader that mixed them would read the wrong b. The data side is config.US['theta']'s measure of
 data/oecd26_theta.csv (its in-sample countries, I = 1/(2 - θ), its spending), or figure 1.1's index on the paper's
 26 for the measure 'paper'. The deep test's csv (escCountry, escCornerSlope) is synthetic too, for US_ESC_Country.
@@ -52,16 +54,18 @@ def _slope(spec, betaRule, theta):
     return SLOPETHETA[theta] if theta != THETA and theta in SLOPETHETA else SLOPE.get((spec, betaRule), -0.3)
 
 
-def synthetic(turnout = 'cps', anchorKey = 'h000000000001', drop = (), lux = False, β = None, grid = 'fine',
-              spec = None, betaRule = None, legacy = False, theta = None):
+def synthetic(turnout = None, anchorKey = 'h000000000001', drop = (), lux = False, β = None, grid = 'fine',
+              spec = None, betaRule = None, legacy = False, theta = None, root = None, omegaRule = None, b = None):
     """ anchor.csv and layer{1,2}.csv for `turnout`, `spec`, `betaRule` (config.US['oecd26']'s where None) and the
     measure `theta` (config.US['theta'] by default; 'index' for figure 1.1's index) in datasets.oecd26Dir(theta),
     every country but `drop`, replacing the rows of the same turnout, spec, β rule (the anchor's always 'common') and
     thetaSource; a robustness measure also gets its U.S. sweep (oecd26_theta_<V>/calibration/). `lux` writes
     Luxembourg as 'noTurnout'; `legacy` writes no betaRule column, as the csvs before it. Under 'none' the anchor has
-    no cost parameter and no row a design. """
+    no cost parameter and no row a design. `root` writes into that directory instead (the stylized one), `omegaRule`
+    adds the column to the layer rows ('mean': layer 1 only, at slope `b`). """
+    turnout = V['turnout'] if turnout is None else turnout
     theta = THETA if theta is None else theta
-    root = D.oecd26Dir(theta)
+    root = D.oecd26Dir(theta) if root is None else root
     os.makedirs(root, exist_ok = True)
     spec = V['spec'] if spec is None else spec
     betaRule = V['betaRule'] if betaRule is None else betaRule
@@ -72,7 +76,7 @@ def synthetic(turnout = 'cps', anchorKey = 'h000000000001', drop = (), lux = Fal
             .to_csv(os.path.join(root, 'calibration', 'US_rhoGridCommonX.csv'), index = False)
     key = KEY | {'spec': spec, 'betaRule': betaRule, 'thetaSource': theta}
     g, gi = FIG['popGrowth'].astype(float), FIG['gini'].astype(float)
-    b = _slope(spec, betaRule, theta)
+    b = _slope(spec, betaRule, theta) if b is None else b
     idx = 0.9 + b*(g - 1)
     idxUS = 0.9 + _slope(spec, 'common', theta)*(g['USA'] - 1)
     index = FIG['bbIndex'] if theta == 'index' else D.thetaVariant(theta)['index'].reindex(FIG.index)
@@ -88,16 +92,22 @@ def synthetic(turnout = 'cps', anchorKey = 'h000000000001', drop = (), lux = Fal
                       'sample26': bool(SMP.at[c, 'sample26']), 'anchorKey': anchorKey, 'grid': grid,
                       'β': β, 'ωAnchor': 1.23, 'p': P[spec]}
         for layer in (1, 2):
+            rule = {} if omegaRule is None else {'omegaRule': omegaRule if layer == 1 else 'anchor'}
             if lux and c == 'LUX':
-                rows[layer].append(base | {'status': 'noTurnout'})
+                rows[layer].append(base | {'status': 'noTurnout'} | rule)
                 continue
             sp = 10 + 4*(g[c] - 1) + 6*gi[c] if layer == 1 else float(FIG.at[c, 'pensionSpending'])
-            design = ({'θChosen': np.nan, 'θInForce': np.nan} if spec == 'none' else
-                      {'θChosen': 2 - 1/idx[c], 'θInForce': 2 - 1/(idx[c] - 0.1)})
+            design = ({'θChosen': np.nan, 'θInForce': np.nan, 'τInForce': np.nan} if spec == 'none' else
+                      {'θChosen': 2 - 1/idx[c], 'θInForce': 2 - 1/(idx[c] - 0.1), 'τInForce': chosen(idx[c] - 0.1)/70})
             rows[layer].append(base | {'status': 'ok', 'ω': 1.23 if layer == 1 else 1 + 0.01*sp,
                                        'ν2020': g[c], 'Vtilde': 0.2, 'spendingData': FIG.at[c, 'pensionSpending'],
-                                       'indexData': index[c], 'θData': 0.5, 'spending2020': sp} | design)
+                                       'indexData': index[c], 'θData': 0.5, 'spending2020': sp, 'τ2020': sp/70}
+                               | design | rule)
+    if omegaRule == 'mean':
+        rows[2] = []
     for name, df in (('anchor', a), ('layer1', pd.DataFrame(rows[1])), ('layer2', pd.DataFrame(rows[2]))):
+        if df.empty:
+            continue
         old = os.path.join(root, name + '.csv')
         rule = 'common' if name == 'anchor' else betaRule
         if legacy:
@@ -107,12 +117,21 @@ def synthetic(turnout = 'cps', anchorKey = 'h000000000001', drop = (), lux = Fal
             prule = prev['betaRule'].fillna('common') if 'betaRule' in prev.columns else 'common'
             same = ((prev['turnout'] == turnout) & (prev['spec'] == spec) & (prule == rule)
                     & (prev['thetaSource'] == theta))
+            if name != 'anchor' and omegaRule is not None:
+                prevRule = prev['omegaRule'].fillna('anchor') if 'omegaRule' in prev.columns else 'anchor'
+                same &= prevRule == (omegaRule if name == 'layer1' else 'anchor')
             df = pd.concat([prev[~same], df], ignore_index = True)
         df.to_csv(old, index = False)
 
 
+def chosen(index):
+    """ The synthetic spending at the chosen design (% of GDP) at the index of the design in force. """
+    return 5 + 10*index
+
+
 def fresh():
     shutil.rmtree(D.OECD26DIR, ignore_errors = True)
+    shutil.rmtree(D.oecd26StylizedDir(), ignore_errors = True)
     for v in C.US['oecd26']['thetaVariants']:
         shutil.rmtree(D.oecd26Dir(v), ignore_errors = True)
 
@@ -162,8 +181,19 @@ def test_slopes_exact_and_data():
         assert s.loc[k, 'data']['n'] == len(SAMPLE)
     assert abs(s.loc[('index', 'growth'), 'layer1']['slope'] + 0.3) < 1e-10      # exact by construction
     assert s.loc[('index', 'growth'), 'layer1']['se'] < 1e-10
+    assert V['spendingReading'] == 'chosen'
     for k in (('spending', 'growth'), ('spending', 'gini')):
-        assert s.loc[k, 'targeted2']
+        assert not s.loc[k, 'targeted2']                                          # at the chosen design
+    for k in (1, 2):                                                              # 5 + 10 I, exact in both layers
+        assert abs(s.loc[('spending', 'index'), 'layer{}'.format(k)]['slope'] - 10) < 1e-10, k
+    so = T.slopes(spending = 'observed').set_index(['y', 'x'])
+    for k in (('spending', 'growth'), ('spending', 'gini')):
+        assert so.loc[k, 'targeted2']
+        assert abs(so.loc[k, 'layer2']['slope'] - so.loc[k, 'data']['slope']) < 1e-10
+    p, po = T.panelData(1), T.panelData(1, spending = 'observed')
+    assert np.allclose(p['spendingModel'], chosen(p['indexModel']), atol = 1e-12)
+    assert np.allclose(po['spendingModel'], p['spendingObserved'], atol = 0)
+    assert _raises(lambda: T.panelData(1, reading = 'chosen', spending = 'chosen'), ValueError)
     s2 = T.slopes(reading = 'inForce').set_index(['y', 'x'])
     assert abs(s2.loc[('index', 'growth'), 'layer1']['slope'] + 0.3) < 1e-10      # the in-force index is shifted
 
@@ -249,8 +279,9 @@ def test_none_anchor_without_cost():
 def test_variant_suffix_and_caption():
     """ OECD26_Slopes at a non-default variant carries the variant in its name, label and caption. """
     synthetic(spec = 'size', betaRule = 'commonR')
-    assert T.suffix() == '' and T.suffix(spec = 'size') == '_size'
-    assert T.suffix(turnout = 'cses', spec = 'none', betaRule = 'commonR') == '_cses_none_commonR'
+    assert T.suffix() == '' and T.suffix(spec = 'size') == '_size' and T.suffix(spending = 'observed') == '_observed'
+    assert T.suffix(turnout = 'cps', spec = 'none', betaRule = 'commonR') == '_cps_none_commonR'
+    assert V['turnout'] == 'cses' and T.suffix(turnout = 'cps') == '_cps'
     assert T.variantCaption() == ''
     tex = T.oecd26Slopes(spec = 'size', betaRule = 'commonR')
     assert '--only OECD26_Slopes_size_commonR\n' in tex and r'\label{table:OECD26:slopes_size_commonR}' in tex
@@ -273,7 +304,8 @@ def test_builders_write_and_convert():
         t.html(TT.Context(strict = True))
         keys = [l.split('% row: ')[1] for l in tex.splitlines() if '% row: ' in l]
         assert len(keys) == len(set(keys)) and len(keys) == (5 if name == 'OECD26_Slopes' else n), name
-    assert T.MEASURENOTE in T.oecd26Omega() and 'clipped' not in T.oecd26Omega()
+    # the paper's note points to appendix G.1 for θ; a variant's note states MEASURENOTE in full
+    assert r'\ref{app:oecd26:data}' in T.oecd26Omega() and 'clipped' not in T.oecd26Omega() and C.THETADEF in T.MEASURENOTE
     paths = F.oecd26Figure(1)
     with open([q for q in paths if q.endswith('.marks.json')][0], encoding = 'utf-8') as f:
         marks = json.load(f)['marks']
@@ -299,7 +331,8 @@ def _table(tex):
 def test_spending_slopes_exact_and_note():
     """ OECD26_Spending at spendingSpec ('none', no design on any row): the two spending slopes of layer 1 and of the
     data are the least-squares slopes of the synthetic numbers on the measure's countries, the index relations are
-    never asked for, and the figure's note carries both pairs as the table cells print them. """
+    never asked for, and the figure's note gives the sample, the anchor and the turnout but not the slopes, which
+    section 6's text quotes (notes/paper_styleGuide.md, "What a note holds"). """
     assert V['spendingSpec'] == 'none'
     fresh()
     synthetic(spec = 'none', betaRule = 'common')
@@ -316,39 +349,100 @@ def test_spending_slopes_exact_and_note():
     assert note.startswith('%% GENERATED') and '--only OECD26_Spending\n' in note
     for k in T.SPENDING:
         for side in ('data', 'layer1'):
-            assert T._cell(s.loc[k, side]) in note, (k, side)
-    assert r'\omega' not in note and 'countries' not in note           # the sample and anchor are section 6's
+            assert T._cell(s.loc[k, side]) not in note, (k, side)
+    a = D.oecd26Anchor(spec = 'none')                                    # the sample, the anchor, the turnout
+    assert ('{} countries'.format(len(SAMPLE)) in note and r'$\omega = ' + C.num(a['ω'], 2) + '$' in note
+            and T.TURNOUTNOTE[V['turnout']] in note and r'\varepsilon' not in note)
     marks = json.load(open([q for q in paths if q.endswith('.marks.json')][0], encoding = 'utf-8'))['marks']
     assert len(marks) == 2*(2*len(SAMPLE) + 2)
 
 
 def test_theta_variants_measures_and_dashes():
-    """ OECD26_ThetaVariants: each measure of the design prints its own slopes (index on growth, layer 1: the measure's
-    b) and its own data side (figure 1.1's index on the 26 for 'paper', the variant's 1/(2 - θ) on its countries
-    otherwise); a measure never run, and one whose anchor is of another U.S. calibration, print `--`; the star is on
-    config.US['theta']'s row only. """
+    """ OECD26_ThetaVariants: config.US['theta'] first, then the robustness measures of config.US['oecd26']
+    ['thetaVariants'] (not 'paper', not A2pt); each prints its own slopes (index on growth, layer 1: the measure's b) and
+    its own data side (the variant's 1/(2 - θ) on its countries); a measure whose anchor is of another U.S. calibration
+    prints `--`; the star is on config.US['theta']'s row only. """
     fresh()
-    synthetic()
-    synthetic(theta = 'index')
-    synthetic(theta = 'A')
-    synthetic(theta = 'B', β = BETA*(1 + 1e-6))                 # B's anchor off its own sweep: stale
+    synthetic('cps')
+    synthetic('cps', theta = 'A')
+    synthetic('cps', theta = 'B', β = BETA*(1 + 1e-6))          # B's anchor off its own sweep: stale
+    assert T.MEASURES == (THETA, 'A', 'B') and 'A2pt' not in C.US['oecd26']['thetaVariants']
     tex = T.oecd26ThetaVariants()
     assert '--only OECD26_ThetaVariants\n' in tex and r'\label{table:OECD26:thetaVariants}' in tex
     rows = _table(tex)
-    assert len(rows) == 5*len(T.MEASURES)
+    assert len(rows) == 5*len(T.MEASURES) and list(rows)[0] == 'spending_growth_' + THETA
     cell = lambda b: T._cell({'slope': b, 'se': 0.})
-    for m, b in (('paper', SLOPETHETA['index']), (THETA, -0.3), ('A', SLOPETHETA['A'])):
+    for m, b in ((THETA, -0.3), ('A', SLOPETHETA['A'])):
         assert rows['index_growth_' + m][2] == cell(b), (m, rows['index_growth_' + m])
         assert rows['index_growth_' + m][4:] == ['--']*3                          # no cses rows written
-    for m in ('A2pt', 'B'):
-        assert rows['index_growth_' + m][1:] == ['--']*6, m
-    keep26 = SMP.index[SMP['sample26']]
-    assert rows['index_growth_paper'][1] == T._cell(T.ols(FIG.loc[keep26, 'popGrowth'], FIG.loc[keep26, 'bbIndex']))
+    assert rows['index_growth_B'][1:] == ['--']*6
     tA = D.thetaVariant('A')
     sA = D.oecd26SampleOf('A')
     assert rows['index_growth_A'][1] == T._cell(T.ols(FIG.loc[sA, 'popGrowth'], tA.loc[sA, 'index']))
     assert rows['index_growth_' + THETA][0].endswith(r'$^{\ast}$') and not rows['index_growth_A'][0].endswith('$')
     assert r'\epsilon' not in tex and ' --: not computed.' in tex
+
+
+def test_stylized_readers_and_table():
+    """ results/oecd26_stylized/: layer 1 at omegaRule 'anchor' and 'mean' side by side, each read on its own (b -0.3
+    and -0.2), layer 2 read at 'anchor' only; OECD26_Stylized prints every reading's index-on-growth slope in layer 1,
+    the pooled reading on the 20 own-turnout countries without Luxembourg, and converts. """
+    fresh()
+    synthetic(lux = True)
+    sty = D.oecd26StylizedDir()
+    for t in ('cses', 'pooled'):
+        synthetic(t, lux = t == 'cses', root = sty, omegaRule = 'anchor')
+        synthetic(t, lux = t == 'cses', root = sty, omegaRule = 'mean', b = -0.2)
+    for rule, b in (('anchor', -0.3), ('mean', -0.2)):
+        s = T.slopes('pooled', omegaRule = rule, root = sty).set_index(['y', 'x'])
+        assert abs(s.loc[('index', 'growth'), 'layer1']['slope'] - b) < 1e-10, rule
+        assert abs(s.loc[('index', 'growth'), 'layer2']['slope'] + 0.3) < 1e-10, rule
+    assert _raises(lambda: D.oecd26Layer(2, 'pooled', root = sty, omegaRule = 'mean'), ValueError)
+    assert len(D.oecd26Layer(1, 'pooled', root = sty, omegaRule = 'mean')) == 29
+    rows = _table(T.oecd26Stylized())
+    assert list(rows) == ['data_own', 'cses', 'cses_mean', 'pooled_own', 'data_pooled', 'pooled', 'pooled_mean']
+    cell = lambda b: T._cell({'slope': b, 'se': 0.}, stack = True)
+    for k, b in (('cses', -0.3), ('cses_mean', -0.2), ('pooled', -0.3), ('pooled_mean', -0.2), ('pooled_own', -0.3)):
+        assert rows[k][4] == cell(b) and rows[k][5] == cell(-0.3), (k, rows[k][4:6])
+    n = len(SAMPLE)
+    assert [rows[k][1] for k in rows] == [str(n - 1)]*4 + [str(n)]*3
+    # the compulsory-voting countries the notes name: python/US/oecd26.py's COMPULSORY within the measure's sample
+    comp = D.compulsoryVoting()
+    assert set(comp) == {'AUS', 'BEL', 'LUX'} & set(SAMPLE) and comp == [c for c in SAMPLE if c in comp]
+    tex = T.oecd26Stylized()
+    assert T.compulsoryText() in T.turnoutNote('pooled') and r'\ref{app:oecd26:readings}' in tex
+    if THETA == 'C':
+        assert comp == ['BEL', 'LUX'] and 'Australia' not in tex
+
+
+def test_theta_fit_statistics_and_figures():
+    """ tablesOECD26.thetaFit: r, RMSE and the RMSE at the mean over the countries other than the U.S., in θ and in
+    index units, as computed here; OECD26_ThetaFit and OECD26_ThetaFitGrid write their marks (every dot, line and
+    statistic); the notes point to figure 7.2 and leave the statistics to the panels. """
+    fresh()
+    for t in ('cps', 'cses'):
+        synthetic(t, lux = t == 'cses')
+    sty = D.oecd26StylizedDir()
+    synthetic('pooled', root = sty, omegaRule = 'anchor')
+    for units, cols in (('theta', ('θData', 'θModel')), ('index', ('indexData', 'indexModel'))):
+        f = T.thetaFit(1, units = units)
+        h = T.panelData(1).drop(index = 'USA')
+        x, y = h[cols[0]].values, h[cols[1]].values
+        assert abs(f['r'] - np.corrcoef(x, y)[0, 1]) < 1e-12 and f['nStat'] == len(h) == f['n'] - 1
+        assert abs(f['rmse'] - np.sqrt(np.mean((y - x)**2))) < 1e-12
+        assert abs(f['rmseMean'] - np.std(x)) < 1e-12 and abs(f['sdData'] - f['rmseMean']) < 1e-12
+        assert abs(f['sdModel'] - np.std(y)) < 1e-12
+    paths = F.oecd26ThetaFit()
+    marks = json.load(open([q for q in paths if q.endswith('.marks.json')][0], encoding = 'utf-8'))['marks']
+    n = len(SAMPLE) - 1
+    assert len(marks) == 2*(n + 2)
+    note = open([q for q in paths if q.endswith('_note.tex')][0], encoding = 'utf-8').read()
+    f1 = T.thetaFit(1)
+    assert 'RMSE {}'.format(C.num(f1['rmse'], 2)) not in note and '$r = ' not in note
+    assert 'other {} countries'.format(f1['nStat']) in note and r'\ref{fig:OECD26:layer1}' in note
+    paths = F.oecd26ThetaFitGrid()
+    marks = json.load(open([q for q in paths if q.endswith('.marks.json')][0], encoding = 'utf-8'))['marks']
+    assert len(marks) == 2*(2*(n + 1 + 2) + (n + 2))
 
 
 def _deepTest(θFR = 0.82188, ownFR = 13.59, corner = False):

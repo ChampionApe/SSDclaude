@@ -160,8 +160,32 @@ def test_esc_counterfactuals_are_figure_7_1():
     assert n >= 40, n
 
 
+def test_online_only_figures_carry_their_notes():
+    r""" The appendices F.3 and G moved to the site are ONLINE_ONLY and on its pages; a figure exhibit the paper does
+    not input and whose registered note is None shows its builder's note (<output>_note.tex, OA.generatedNote) in its
+    block, as US_ESC_TauTheta does with its peak. """
+    import build
+    paper = OA.Paper()
+    pageIds = {i for p in OA.pages() for i in p['exhibits']}
+    for out in ('OECD_Calibration', 'UK_householdheterogeneity', 'UK_ESC_Calibration', 'US_ESC_Country', 'US_ESC_Path',
+                'US_ESC_TauTheta'):
+        assert out in build.ONLINE_ONLY and out in pageIds, out
+    n = 0
+    for i, ex in OA.EXHIBITS.items():
+        if ex.kind != 'figure' or ex.note is not None or ex.output in paper.uses:
+            continue
+        note = OA.generatedNote(ex.output)
+        assert note.startswith(r'\textit{Note:}'), i
+        text = OA.read(os.path.join(OA.GEN, 'exhibits', i + '.qmd'))
+        assert 'oa-note' in text and html.unescape(re.sub('<[^>]+>', '', text)).count('Note:') == 1, i
+        n += 1
+    assert n >= 1
+    assert 'peaks at' in OA.read(os.path.join(OA.GEN, 'exhibits', 'US_ESC_TauTheta.qmd'))
+
+
 def test_esc_paths_are_figure_G1():
-    r""" ESC_Paths: the U.S. path at rho = 1 is the paper's path figure (US_ESC_Path), year by year. """
+    r""" ESC_Paths: the U.S. path at rho = 1 is the site's path figure (US_ESC_Path, figure G.1 of the paper until
+    2026-11-02), year by year. """
     df = _data('ESC_Paths')
     df = df[(df['source'] == 'main') & (df['country'] == 'US') & (df['wedgeFrom'] == 'US')
             & (df['spec'] == C.US['esc']['spec']) & np.isclose(df['rho'], 1.0)]

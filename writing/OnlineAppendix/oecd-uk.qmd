@@ -1,0 +1,28 @@
+# B6. The UK {#oecd-uk}
+
+The UK is calibrated as the U.S. and France are in appendix {{< var p.app_US >}} of the paper, under log preferences,
+to its own pension spending, demography, design and average workweek, with the U.S. discount factor imposed. Its
+household data are the Harmonised British Household Panel Survey, wave 17, which refers to 2006–07 and is distributed
+by the UK Data Service; later waves were collected at least in part during the Great Recession. The income groups are
+cut as for the U.S., so that the mean incomes of the low and medium groups are half the mean and the mean. The cuts
+set the population shares and the productivities, not the design: θ is the slope of the public pension on earnings,
+measured as for every country of the paper's cross-country test (appendix {{< var p.app_oecd26_data >}} of the
+paper). The propensities to vote are from the Comparative Study of Electoral Systems (CSES). [B1](oecd-ies.qmd) gives
+the calibration at every IES of the grid, and [C7](esc-countries.qmd) lets the UK's electorate choose its design.
+
+Table {{< var x.OECD_Calibration >}} sets the UK beside the U.S. and France. Its design is the least Bismarckian of
+the three, and its population is older than the U.S. one and younger than France's. Its tax rate is a little above the
+U.S. one, while its calibrated political weight of the old is the lowest of the three: in the model an older population
+and flatter benefits both raise the tax rate the electorate chooses at a given weight (section {{< var p.sec_LOG >}}
+of the paper). The ratio of high to low productivity is close to the U.S. one and well above France's. The common
+taste for leisure, pinned by the UK's average workweek relative to the U.S. one, is the highest of the three, almost
+twice the U.S. level.
+
+{{< include _generated/exhibits/OECD_Calibration.qmd >}}
+
+In table {{< var x.UK_householdheterogeneity >}}, the UK's cuts put fewer households in the low group than the U.S.
+cuts do, and most of them in the medium group. The propensity to vote rises with income by less than in the U.S. and by
+more than in France, where it is nearly flat (tables {{< var p.table_a_US_CalibUS >}} and
+{{< var p.table_a_US_CalibFR >}} of the paper).
+
+{{< include _generated/exhibits/UK_householdheterogeneity.qmd >}}

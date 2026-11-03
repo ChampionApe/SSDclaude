@@ -21,7 +21,11 @@ Run:  .venv\Scripts\python.exe python\US\test_oecd26.py        (~4.5 min)
   D  The layers at coarse grids in a temporary directory against an anchor row at a given λ: three countries
      through both layers (the U.S., Australia at the clip θ = 0, Italy at θ = 1), the U.S. rows against the
      anchor, reuse of rows under an unchanged key, recomputation under force or a moved anchor, refusal of a
-     stale anchor row, and Luxembourg's 'noTurnout' row under cses.
+     stale anchor row, and Luxembourg's 'noTurnout' row under cses; the default layer key has no omegaRule.
+  X  The exploration readings: under turnout 'pooled' (not a default) the U.S. has the cses inputs but for the label,
+     AUS, BEL, LUX are flat and the rest at sample26's mean normalized CSES profile; omegaRule 'mean' (coarse, D's
+     three countries) puts every country at the mean of the layer-2 ω's under keys of its own, is reused on a rerun,
+     refuses a country without a current layer-2 row and layer 2; a csv without the column reads as 'anchor'.
   N  Spec 'none', coarse: the anchor calibrates ω to τ0 and reads no design (p, θChosen, θInForce, fStar, f0 NaN,
      status 'ok'); at θ_c = 1 (France, Austria) layer 1's τ_2020 is eq (1.4) at ν_2020.
   Q  betaRule 'commonR', coarse, at D's anchor: layer 1's R_2020 is the anchor's (the U.S. recovers the anchor's β),
@@ -280,6 +284,94 @@ except SystemExit:
 lux = R.stageLayer('layer1', 'cses', ['LUX'], tmp, a, cfg)
 check("D: Luxembourg under cses gets a 'noTurnout' row", len(lux) == 1 and lux[0]['status'] == 'noTurnout'
       and lux[0]['nEqMax'] == -1)
+check("D: the default (omegaRule 'anchor') layer key is the one before the rule: no omegaRule in it",
+      l1['USA']['inputsKey'] == oecd26.inputsKey('layer1', oecd26.modelInputs(inpUS), β, a['ω'], 10., cfg)
+      and l1['USA']['omegaRule'] == 'anchor' and l2['USA']['omegaRule'] == 'anchor')
+
+# ==== X: the exploration readings, 'pooled' turnout and omegaRule 'mean' =====================================
+dataX = oecd26.readData()
+prX, ofX = oecd26.pooledProfile('index', dataX)
+inX = {t: oecd26.countryInputs('USA', t, dataX) for t in ('cses', 'pooled')}
+smpX = [c for c in oecd26.countries() if bool(smp.at[c, 'sample26'])]
+check("X: 'pooled' is no default turnout; the U.S. under it has the cses inputs but for the label",
+      'pooled' not in oecd26.TURNOUT and 'pooled' in oecd26.TURNOUTS
+      and all(np.array_equal(inX['cses'][k], inX['pooled'][k]) if isinstance(inX['cses'][k], np.ndarray)
+              else inX['cses'][k] == inX['pooled'][k] for k in oecd26.modelInputs(inX['cses']) if k != 'turnout')
+      and inX['pooled']['turnout'] == 'pooled')
+want = main.loc[[c for c in smpX if c not in ('USA',) + oecd26.COMPULSORY and main.loc[c, oecd26.MU].notna().all()],
+                oecd26.MU].to_numpy(float)
+check("X: under 'pooled' AUS, BEL, LUX are flat and every other country (GBR, FRA; TUR, outside the sample) at the "
+      "mean of μ_c/μ_c,1 over sample26's voluntary non-U.S. countries with CSES (μ_1 = 1)",
+      all(np.array_equal(oecd26.countryInputs(c, 'pooled', dataX)['μ'], np.ones(3)) for c in ('AUS', 'BEL', 'LUX'))
+      and all(np.array_equal(oecd26.countryInputs(c, 'pooled', dataX)['μ'], prX) for c in ('GBR', 'FRA', 'TUR'))
+      and prX[0] == 1. and np.allclose(prX, (want/want[:, :1]).mean(axis = 0), rtol = 0, atol = 1e-15)
+      and len(ofX) == len(want), 'profile {} over {} countries'.format(np.round(prX, 4).tolist(), len(ofX)))
+tmpX = tempfile.mkdtemp(prefix = 'oecd26X_')
+shutil.copy(os.path.join(tmp, 'layer2.csv'), tmpX)
+ω̄ = float(np.mean([l2[c]['ω'] for c in isos]))
+x1 = {r['iso3']: r for r in R.stageLayer('layer1', 'cps', isos, tmpX, a, cfg, omegaRule = 'mean')}
+for r in x1.values():
+    counts.append(('X layer1 mean ' + r['iso3'], {k: r[k] for k in ('nEqMax', 'nCandMax', 'nFallback')}))
+dX = pd.read_csv(os.path.join(tmpX, 'layer1.csv'))
+check("X: omegaRule 'mean' puts every country at ω̄, the mean of the layer-2 ω's, with the anchor's β and cost; "
+      "its rows carry ωMean, nMean and keys of their own",
+      all(r['status'] == 'ok' and r['ω'] == ω̄ == r['ωMean'] and r['nMean'] == 3 and r['ωAnchor'] == a['ω']
+          and r['β'] == β and r['p'] == 10. and r['inputsKey'] != l1[c]['inputsKey'] for c, r in x1.items())
+      and set(dX['omegaRule']) == {'mean'} and len(dX) == 3,
+      'ω̄ {:.6f} (anchor {:.6f}); θInForce USA {:.4f} against {:.4f} at the anchor\'s ω'.format(
+          ω̄, a['ω'], x1['USA']['θInForce'], l1['USA']['θInForce']))
+check("X: a rerun under 'mean' reuses every row; the 'anchor' rows of the same file stay apart",
+      R.stageLayer('layer1', 'cps', isos, tmpX, a, cfg, omegaRule = 'mean') == []
+      and len(R.stageLayer('layer1', 'cps', ['USA'], tmpX, a, cfg)) == 1
+      and len(pd.read_csv(os.path.join(tmpX, 'layer1.csv'))) == 4)
+eX = [None, None]
+try:
+    R.stageLayer('layer1', 'cps', isos + ['GBR'], tmpX, a, cfg, omegaRule = 'mean')
+except SystemExit as e:
+    eX[0] = str(e)
+try:
+    R.stageLayer('layer2', 'cps', isos, tmpX, a, cfg, omegaRule = 'mean')
+except ValueError as e:
+    eX[1] = str(e)
+legX = os.path.join(tmpX, 'legacy.csv')
+R._read(os.path.join(tmp, 'layer2.csv')).drop(columns = 'omegaRule').to_csv(legX, index = False)
+hitX = R._onDisk(legX, R.KEYLAYER, ['cps', cfg['spec'], R.PHI, R.COMMONX, 'common', 'index', 'anchor', 'none',
+                                    'USA'])
+check("X: 'mean' refuses a country without a current layer-2 row (GBR) and layer 2; a csv without omegaRule reads "
+      "as 'anchor'", all(eX) and hitX is not None and hitX['ω'] == l2['USA']['ω'], ' | '.join(str(x) for x in eX))
+
+# ==== Y: the retirement-age correction of ν and the 'csesFlat' turnout =======================================
+dY, isoY = (main, dist, smp), oecd26.countries()
+posY = [oecd26.DATES.get_loc(t) for t in oecd26.NUYEARS]
+nuY = {r: {c: oecd26.countryInputs(c, 'cps', dY, retAge = r)['ν'] for c in isoY} for r in oecd26.RETAGES}
+nu0 = {c: oecd26.countryInputs(c, 'cps', dY)['ν'] for c in isoY}
+check("Y: retAge 'none' leaves every ν bitwise; the U.S. ν is bitwise under 'exit' and 'nra' (its gap is 0)",
+      all(np.array_equal(nuY['none'][c], nu0[c]) for c in isoY)
+      and all(np.array_equal(nuY[r]['USA'], nu0['USA']) for r in ('exit', 'nra')))
+nraY = pop[pop['definition'] == 'wpp2024_nraAdj'].pivot(index = 'iso3', columns = 'period', values = 'nu')
+check("Y: retAge 'nra' is data/oecd29_population.csv's wpp2024_nraAdj at the WPP dates (to its 8 digits); France's "
+      "2020 ν is appendix F's 1.04", all(np.allclose(nuY['nra'][c][posY], nraY.loc[c, list(oecd26.NUYEARS)]
+                                                     .to_numpy(float), rtol = 1e-7, atol = 0) for c in isoY)
+      and round(float(nuY['nra']['FRA'][posY[1]]), 3) == 1.039, 'FRA 2020 {:.6f}'.format(nuY['nra']['FRA'][posY[1]]))
+exY = oecd26.readExitAge()
+nu4Y = {c: main.loc[c, ['nu_{}'.format(t) for t in oecd26.NUYEARS]].to_numpy(float) for c in isoY}
+check("Y: retAge 'exit' is ν(30 - g)/(30 + ν g), (30ν - g)/(30 + g) for g < 0, at one gap per country, g = A_US - "
+      "A_c of data/oecd29_exitAge.csv (29 ages)", len(exY) == 29 and set(exY.index) == set(isoY)
+      and all(np.allclose(nuY['exit'][c][posY], nu4Y[c]*(30 - g)/(30 + nu4Y[c]*g) if g >= 0 else
+                          (30*nu4Y[c] - g)/(30 + g), rtol = 1e-15, atol = 0)
+              for c, g in ((c, exY['USA'] - exY[c]) for c in isoY))
+      and all(np.array_equal(oecd26.retAgeGaps(c, 'exit'), np.full(4, exY['USA'] - exY[c])) for c in isoY),
+      'FRA gap {:.3f}, ν2020 {:.4f}'.format(exY['USA'] - exY['FRA'], nuY['exit']['FRA'][posY[1]]))
+fY = {c: oecd26.countryInputs(c, 'csesFlat', dY) for c in isoY}
+sameY = lambda a, b: all(np.array_equal(a[k], b[k]) for k in oecd26.modelInputs(a) if k != 'turnout')
+check("Y: 'csesFlat' is 'cses' but for the label, Luxembourg flat (the one country without CSES); its anchor is "
+      "the 'cses' anchor", np.array_equal(fY['LUX']['μ'], np.ones(3))
+      and all(sameY(fY[c], oecd26.countryInputs(c, 'cses', dY)) for c in isoY if c != 'LUX')
+      and R.ANCHORTURNOUT['csesFlat'] == 'cses' and 'csesFlat' not in oecd26.TURNOUT)
+sY, eY = R.settings(coarse = True), R.settings(coarse = True, retAge = 'exit')
+check("Y: retAge 'none' adds nothing to the settings; another enters the layers' settings, not the anchor's",
+      'retAge' not in sY and eY['retAge'] == 'exit' and R.anchorSettings(eY) == R.anchorSettings(sY)
+      and R.retAgeOf(eY) == 'exit' and R.retAgeOf(sY) == 'none' and R.LEGACY['retAge'] == 'none')
 
 MULT = ('nEqMax', 'nCandMax', 'nFallback')
 
@@ -496,7 +588,7 @@ else:
     check('M: after the rewrite every row is reused again',
           R.stageLayer('layer1', 'cps', oecd26.countries(), tmpM, anchorsM['cps'], fineS) == [])
     shutil.rmtree(tmpM, ignore_errors = True)
-for d in (tmpN, tmpQ, tmpP):
+for d in (tmpN, tmpQ, tmpP, tmpX):
     shutil.rmtree(d, ignore_errors = True)
 
 # ==== U: uniqueness ===========================================================================================

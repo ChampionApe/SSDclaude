@@ -142,7 +142,7 @@ def argTaxTarget(wb):
 # numbers are, not a second implementation. See python/US/README.md for the model and the protocol.
 # ---------------------------------------------------------------------------------------------------
 US = {
-    'countries':  ('US', 'FR', 'UK'),        # the columns of USUKFRCalibration, in the paper's order
+    'countries':  ('US', 'FR', 'UK'),        # the columns of OECD_Calibration (the online appendix's)
     'workbooks':  {'US': 'USMain_test.xlsx', 'FR': 'FRMain.xlsx', 'UK': 'UKMain.xlsx'},
     # THE PAPER'S MEASURE OF THE DESIGN: a variant of data/oecd26_theta.csv (notes/thetaTau_alternatives.md),
     # imposed as theta0 on the U.S., France and the UK (their USA, FRA, GBR rows) and taken by every OECD country.
@@ -252,29 +252,56 @@ US = {
     #             the U.S. one), 'size' (lambda itself), 'none' (no cost)
     #   betaRule  'common' (the U.S. beta in every country) | 'commonR' (each country's beta set so that its
     #             2020 return is the U.S. anchor's)
-    #   turnout   'cps' (the U.S. CPS propensities in every country) | 'cses' (each country's own)
+    #   turnout   'cses' (each country's own CSES propensities to vote; Luxembourg has none and drops out, 20
+    #             countries under C) | 'cps' (the U.S. CPS propensities in every country, 21 countries)
     #   reading   the model's design: 'inForce' (in force in 2020, chosen in 1990) | 'chosen' (chosen in 2020)
+    #   spendingReading  the model's spending in section 7's test (OECD26_Layer1, OECD26_Slopes, OECD26_ThetaVariants,
+    #             OECD26_Stylized): 'chosen' (100 tauInForce (1 - alpha), the tax on the path whose design in force is
+    #             the chosen one, in both layers) | 'observed' (100 tau2020 (1 - alpha), the tax at the observed design,
+    #             which layer 2's omega matches). Section 6's spending test (OECD26_Spending) is always 'observed'.
     #   spendingSpec  the cost of section 6's spending test at the observed designs
     # `variants`: the runs stage (ii)'s entry 'oecd26' makes, one runOECD26.py command each (--theta US['theta']
     # --main --inSample), in this order (an anchor before the layers that read it); rows already current are
     # reused, so a rerun costs seconds. `thetaVariants`: the robustness measures of data/oecd26_theta.csv, each
     # run by stage (ii)'s entry 'oecd26Variants' at the paper's variant (a U.S. sweep at rho = 1, then the
     # cross-section) into its own results/oecd26_theta_<V>/; OECD26_ThetaVariants prints the five slopes under
-    # 'paper', these and US['theta'].
+    # US['theta'] and these (A2pt's runs, retired from the paper, stay in results/oecd26_theta_A2pt/).
+    # `stylized`: appendix H's stylized readings of the cross-section (OECD26_Stylized, OECD26_ThetaFitGrid), run by
+    # stage (ii)'s entry 'oecd26Stylized' into results/<dir>/ on the main variant's U.S. sweep (runOECD26.py
+    # --usSweep): the turnout 'pooled' (the U.S. at its own CSES profile, AUS, BEL and LUX flat, every other
+    # country at the mean profile of the voluntary non-U.S. countries) and layer 1 at omegaRule 'mean' (the mean
+    # layer-2 omega, beta and the cost parameter the anchor's), each a list of runOECD26.py stage sets, in order.
     'oecd26': {
-        'spec': 'sizePiR', 'betaRule': 'common', 'turnout': 'cps', 'reading': 'inForce', 'spendingSpec': 'none',
+        'spec': 'sizePiR', 'betaRule': 'common', 'turnout': 'cses', 'reading': 'inForce', 'spendingSpec': 'none',
+        'spendingReading': 'chosen',
         'variants': [
             {'spec': ['sizePiR'], 'betaRule': ['common'], 'turnout': ['cps', 'cses'],
              'stage': ['anchor', 'layer1', 'layer2']},
             {'spec': ['none'], 'betaRule': ['common'], 'turnout': ['cps', 'cses'],
              'stage': ['anchor', 'layer1', 'layer2']},
         ],
-        'thetaVariants': ['A', 'A2pt', 'B'],
+        'thetaVariants': ['A', 'B'],
+        'stylized': {
+            'dir': 'oecd26_stylized',
+            'runs': [{'turnout': ['cses', 'pooled'], 'stage': ['anchor', 'layer2'], 'omegaRule': 'anchor'},
+                     {'turnout': ['cses', 'pooled'], 'stage': ['layer1'], 'omegaRule': 'mean'},
+                     {'turnout': ['pooled'], 'stage': ['layer1'], 'omegaRule': 'anchor'}],
+        },
     },
+    # THE TAX AGAINST A PINNED DESIGN (python/US/runTauTheta.py, results/esc/escTauTheta.csv; US_ESC_TauTheta): the
+    # U.S. at rho = 1 without the cost and under US['esc']['spec'] at its calibrated lambda, theta pinned on the whole
+    # path at each point of `grid` and at theta0, and at `refine` steps within one grid cell of the costly economy's
+    # grid maximum.
+    'tauTheta': {'grid': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], 'refine': 0.01},
 }
 
 THETAFILE = os.path.join(DATA, 'oecd26_theta.csv')
 ISO3 = {'US': 'USA', 'FR': 'FRA', 'UK': 'GBR'}
+# US['theta']'s measure as every generated note states it, after "$\theta$": one wording for all of them
+# (python/paper/oecd26Theta.py, notes/thetaTau_alternatives.md, variant C).
+THETADEF = (r'the earnings-linked share of the least-squares line through the public pension at 0.5, 1 and 2 times '
+            r'average earnings ($c/(a+c)$ of $p(y) = a + c\,y$), times one minus the share of public spending on '
+            r'minimum top-ups and tested benefits')
 
 
 def thetaFlags():

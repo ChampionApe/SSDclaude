@@ -159,3 +159,29 @@ asserted to 1e-9); `collectESCexperiments --theta`; the corner stage skips a ρ 
 ρ = 1 (1.4457073912138274, 1.1028388390028443) and GBR τ0 identical before and after. test_oecd26Theta 32/32, fast suites 30/30. Coarse smoke
 (`logs/pipelineThetaC/smoke/`): France at θ0 0.82188 ω 1.39230, own λ 13.594 (U.S. λ 6.247 makes it choose 0.645); UK at 0.181208
 ω 1.04162, own λ 3.628, chooses 0.493; the corner stage's UK row at λ = 100 fails to calibrate.
+
+## 2026-11-02 — Two more readings of the cross-section on θ variant C (`notes/brief_oecdVariants.md`, exploration)
+`runOECD26.py --omegaRule mean`: layer 1 at ω̄, the mean of the run's current ok layer-2 ω's, β and ε the anchor's (`meanOmega`;
+key column `omegaRule`, LEGACY 'anchor', in inputsKey only when not 'anchor'). `--turnout pooled` (`oecd26.TURNOUTS`, no default): U.S.
+own CSES, `COMPULSORY` (AUS, BEL, LUX) flat, the rest `pooledProfile` over the θ source's voluntary non-U.S. sample (C: 18, (1, 1.047,
+1.076)). `--usSweep` puts another outdir on the main sweep; both readings are refused in results/oecd26/. Under the defaults every row
+there is reused without a solve (10 anchors, 734 rows); GBR's C/cses layer-1 row recomputes bitwise; μ against 0.9μ ≤ 1.4e-12.
+Runs (`logs/oecdVariants/run.sh`, 53 min) -> `results/oecd26_explore/`: pooled anchor = C/cses anchor bitwise, ω̄ 1.30556 (R1, 20) and
+1.32566 (R3, 21), every row ok, nEqMax 1. `logs/variantCompare/summary_2026-11.md`: ω̄ lifts θ 0.023 and spending 0.74 p.p., mean
+spending meets the data, correlations unchanged, slopes worse; pooled = cses on the common 20, Luxembourg (θ 0.016 at the anchor's ω)
+costs layer 1's Pearson on 21. test_oecd26 45/45 (X new), paper test_oecd26 12/12, fast suites 30/30.
+
+## 2026-11-02 — C5 numbers and appendix D's U.S. checks at θ variant C (`notes/staleNumbers_2026-11-02.md`)
+`c5Numbers.py`, `runHorizon.py --theta C --main` (config.US['theta'] only): θ0 0.544496 on every U.S. model (runESC.setTheta for the
+ESC builders, France at FRA), every csv read kept at C (`_at`), rows tagged thetaSource/θ0, a merge drops rows of another θ (one θ per
+csv; runHorizon's under a lock file, so the per-ρ/terminal design lanes share US_horizonDesign.csv). No CRRA 'sizePiR' row at C: `loss`,
+`lambda` leave it NaN; `a9` reads ρ 0.5/1/2 only (C5_US_shocksRhoGridCommonX.csv is pre-C, unread). Self-check: τ_2020, θ = 1 tax at
+ρ = 1 to 7e-17/4e-17, θ_2020 0.544496 at λ 6.246973; horizon self-checks 5.9e-13 (log), 2.4e-13/2.0e-11 (CRRA design). Run
+`logs/c5rerun/run.sh` (7 lanes, 2 h 04 min) and `run_X2rho05.sh` (X2 at ρ = 0.5 to 4 passes: 2 left a π·τ gap 2.5e-2, θ 0.742928 ->
+0.744085). Split 69/31; steps +0.200/−0.216/−0.045, +0.239/−0.188/−0.039, +0.371/−0.062/−0.007; X3 −0.278; critical ratios
+12.2/3.50/1.87 (1.80 from 2080), corner condition at every date and ρ. Not rerun: `jumps` (unread). test_oecd26Theta 33/33 (N new), fast 30/30.
+
+## 2026-11-02 — Retirement-age correction of ν and Luxembourg flat (`notes/brief_oecdRetAge.md`, exploration)
+`--retAge none|exit|nra` (`oecd26.retAgeGaps`, `retAgeNu`: ν(30 − g)/(30 + ν g), its mirror (30ν − g)/(30 + g) for g < 0 as `oecd29Data.nraRule`; exit ages `data/oecd29_exitAge.csv`, PaG 2021 fig. 6.14); key column `retAge` (LEGACY 'none', inputsKey only when not 'none'), the anchor unchanged (U.S. gap 0). Turnout `csesFlat`: the cses anchor (`ANCHORTURNOUT`), rows equal to cses copied (`_twin`, `copiedFrom`).
+Runs `logs/oecdRetAge/run.sh` -> `results/oecd26_retage/` (36 min; the mirror rerun 23 min): every row ok, nEqMax 1; defaults reproduce all 273 C keys on disk; FRA ν under nra 1.039. `logs/variantCompare/summary_retAge.md`: exit lowers ω̄ (1.306 -> 1.177) and makes Luxembourg harmless (L1 Pearson with LUX 0.362 -> 0.683; without 0.735 -> 0.688); layer 2 unchanged.
+One-sided rule (as the brief) put NZL (ν 1.98) at τ = 0: `summary_retAge_oneSided.md`. test_oecd26 50/50 (Y new).

@@ -11,6 +11,11 @@ Inputs per country (`countryInputs`):
 
   ν_t     data/oecd29.csv nu_1990..nu_2080 (UN WPP 2024, P(t)/P(t-30)), on the workbooks' calendar
           (`DATES`): 1960 repeats 1990, 2110 repeats 2080, the steady-state periods repeat the last (`nuPath`).
+          retAge 'exit' | 'nra' (not 'none', the default): appendix F's ν(30 - g)/(30 + ν g) at each WPP date,
+          its mirror image for g < 0 (`retAgeNu`), g = A_US - A_c (`retAgeGaps`): A the men's average effective age of labour-market exit
+          (data/oecd29_exitAge.csv, PaG 2021 figure 6.14, 2020) at every date, or nra_current_men at 1990, 2020
+          and nra_future_men at 2050, 2080 (= data/oecd29_population.csv's wpp2024_nraAdj). The U.S. gap is 0
+          and leaves its ν bitwise, so the anchor does not depend on retAge.
   groups  three income groups at the U.S. percentiles (cumulative shares 0.582266/0.757993): γ_i and
           relative income y_i (Σ_i γ_i y_i = 1) of data/oecd29_distribution.csv, role 'data', source
           oecd_earnings_men_ft, convention usPct. y_i enters as z^η_i of the common-X calibration
@@ -32,7 +37,14 @@ Inputs per country (`countryInputs`):
           move no rate under log preferences).
   μ_i     'cps': the U.S. workbook's CPS propensities to vote, in every country (the U.S. percentiles are the
           CPS groups' cuts); 'cses': the country's own CSES turnout averaged over the same groups
-          (mu1-3_usPct; none for Luxembourg, which raises NoTurnout).
+          (mu1-3_usPct; none for Luxembourg, which raises NoTurnout). 'pooled' (appendix H's stylized reading, not in
+          TURNOUT): the U.S. at its own CSES turnout; the countries of COMPULSORY flat, μ = (1, 1, 1); every other
+          country at `pooledProfile`, the mean of μ_c/μ_c,1 over the voluntary non-U.S. countries of the θ source's
+          sample with CSES turnout (`turnoutSample`), so Luxembourg enters. 'csesFlat' (not in TURNOUT): 'cses',
+          but a COMPULSORY country without CSES (Luxembourg) flat; every other country, the U.S. included, has its
+          'cses' inputs but for the label. Only the ratios of μ across groups
+          matter: μ_j multiplies retirees and workers alike in the political objective W_t of def:PEE
+          (writing/Paper/Sections/Model.tex), and the rows at μ and 0.9μ agree to the solver's tolerance.
   β       betaRule 'common': imposed, the U.S. calibration without the cost at ρ = 1 in the common-X variant
           (`usBeta`, results/calibration/US_rhoGridCommonX.csv), as appendix G.1 imposes it on the UK and France.
           Under a θ variant the sweep is the variant's own (`sweepPath`, calibrateRhoGrid.py --theta; under --main,
@@ -59,7 +71,7 @@ REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 DATA = os.path.join(REPO, 'data')
 FILES = {'main': os.path.join(DATA, 'oecd29.csv'), 'pop': os.path.join(DATA, 'oecd29_population.csv'),
          'dist': os.path.join(DATA, 'oecd29_distribution.csv'), 'sample': os.path.join(DATA, 'oecd26_sample.csv'),
-         'theta': os.path.join(DATA, 'oecd26_theta.csv')}
+         'theta': os.path.join(DATA, 'oecd26_theta.csv'), 'exit': os.path.join(DATA, 'oecd29_exitAge.csv')}
 USSWEEP = os.path.join(REPO, 'results', 'calibration', 'US_rhoGridCommonX.csv')
 RESULTS = os.path.join(REPO, 'results')
 PAPERCONFIG = os.path.join(REPO, 'python', 'paper', 'config.py')
@@ -77,7 +89,14 @@ T_SS = 3                                  # steady-state periods after 2110, as 
 DATES = pd.Index([1960, 1990, 2020, 2050, 2080, 2110] + [2110 + 30*k for k in range(1, T_SS + 1)])
 T0YEAR = 2020
 GS = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}     # runESC.GS
-TURNOUT = ('cps', 'cses')
+TURNOUT = ('cps', 'cses')                 # the paper's readings, runOECD26's default
+TURNOUTS = TURNOUT + ('pooled', 'csesFlat')   # with the exploration readings (module docstring, μ_i)
+RETAGES = ('none', 'exit', 'nra')         # the retirement-age correction of ν (module docstring, ν_t)
+PERIOD = 30.                              # years per model period, the 30 of retAgeNu
+MU = ['mu1_usPct', 'mu2_usPct', 'mu3_usPct']
+# Enforced compulsory voting around 2020 (International IDEA, Compulsory Voting database): flat turnout under
+# 'pooled'. Greece's compulsory voting is not enforced (voluntary here); Turkey lies outside every sample.
+COMPULSORY = ('AUS', 'BEL', 'LUX')
 BETARULES = ('common', 'commonR')
 
 
@@ -214,6 +233,40 @@ def nuPath(nu4):
     return np.array([n[0], n[0], n[1], n[2], n[3], n[3]] + [n[3]]*T_SS)
 
 
+def readExitAge(path = None):
+    """ data/oecd29_exitAge.csv's exitAge_men (men's average effective age of labour-market exit, 2020), on ISO3. """
+    d = pd.read_csv(FILES['exit'] if path is None else path, index_col = 'iso3', float_precision = 'round_trip')
+    return d['exitAge_men'].astype(float)
+
+
+def retAgeGaps(iso3, retAge, main = None):
+    """ g = A_US - A_c in years at NUYEARS, (4,): 'exit' readExitAge's at every date; 'nra' nra_current_men at 1990
+    and 2020, nra_future_men at 2050 and 2080 (`main` readData()[0]); 'none' zeros. A missing age raises. """
+    if retAge not in RETAGES:
+        raise ValueError('retAge must be one of {}, got {!r}'.format(RETAGES, retAge))
+    if retAge == 'none':
+        return np.zeros(4)
+    if retAge == 'exit':
+        A = readExitAge()
+        g = np.full(4, float(A['USA']) - float(A[iso3]))
+    else:
+        main = readData()[0] if main is None else main
+        cols = ['nra_current_men']*2 + ['nra_future_men']*2
+        g = main.loc['USA', cols].to_numpy(float) - main.loc[iso3, cols].to_numpy(float)
+    if not np.isfinite(g).all():
+        raise ValueError('{}: no retirement age under retAge {!r}'.format(iso3, retAge))
+    return g
+
+
+def retAgeNu(nu4, g):
+    """ Appendix F's ν(30 - g)/(30 + ν g) at each date of nu4 (PERIOD = 30) for a country retiring g > 0 years before
+    the U.S.; for one retiring |g| years later its mirror image (30ν + |g|)/(30 - |g|), the extra years worked by the
+    old cohort (python/paper/oecd29Data.nraRule, so 'nra' is data/oecd29_population.csv's wpp2024_nraAdj). A zero
+    gap leaves ν bitwise. """
+    ν, g = np.asarray(nu4, dtype = float), np.asarray(g, dtype = float)
+    return np.where(g == 0., ν, np.where(g > 0., ν*(PERIOD - g)/(PERIOD + ν*g), (PERIOD*ν - g)/(PERIOD + g)))
+
+
 def readData():
     """ The three data files the loader reads, and the sample of the data step (python/paper/oecd26Sample.py). """
     main = pd.read_csv(FILES['main'], index_col = 'iso3')
@@ -228,11 +281,32 @@ def countries():
     return list(pd.read_csv(FILES['main'], usecols = ['iso3'])['iso3'])
 
 
-def countryInputs(iso3, turnout = 'cps', data = None, thetaSource = INDEX):
+def turnoutSample(thetaSource = INDEX, data = None):
+    """ The countries `pooledProfile` averages over: the θ source's sample, thetaSample under a variant and
+    data/oecd26_sample.csv's sample26 under 'index', in data/oecd29.csv's order. """
+    if thetaSource != INDEX:
+        return thetaSample(thetaSource)
+    sample = (readData() if data is None else data)[2]
+    return [c for c in countries() if bool(sample.at[c, 'sample26'])]
+
+
+def pooledProfile(thetaSource = INDEX, data = None):
+    """ (μ (3,), countries): the mean of μ_c/μ_c,1 (mu1-3_usPct) over the countries of turnoutSample other than the
+    U.S. and COMPULSORY with CSES turnout; μ_1 = 1. """
+    main = (readData() if data is None else data)[0]
+    keep = [c for c in turnoutSample(thetaSource, data)
+            if c != 'USA' and c not in COMPULSORY and main.loc[c, MU].notna().all()]
+    μ = main.loc[keep, MU].to_numpy(float)
+    return (μ/μ[:, :1]).mean(axis = 0), keep
+
+
+def countryInputs(iso3, turnout = 'cps', data = None, thetaSource = INDEX, retAge = 'none'):
     """ One country's inputs (module docstring) as a dict; `data` a readData() triple to reuse. thetaSource
-    'index' (figure 1.1's index) or a variant of data/oecd26_theta.csv (NoTheta where it has no θ). """
-    if turnout not in TURNOUT:
-        raise ValueError('turnout must be one of {}, got {!r}'.format(TURNOUT, turnout))
+    'index' (figure 1.1's index) or a variant of data/oecd26_theta.csv (NoTheta where it has no θ). turnout one of
+    TURNOUTS; under 'pooled' μ depends on thetaSource's sample (pooledProfile). retAge one of RETAGES (ν's
+    correction, retAgeNu). """
+    if turnout not in TURNOUTS:
+        raise ValueError('turnout must be one of {}, got {!r}'.format(TURNOUTS, turnout))
     main, dist, sample = readData() if data is None else data
     d = main.loc[iso3]
     g = dist[dist['iso3'] == iso3].sort_values('group')
@@ -241,11 +315,17 @@ def countryInputs(iso3, turnout = 'cps', data = None, thetaSource = INDEX):
     γ, y = g['gamma'].to_numpy(float), g['y'].to_numpy(float)
     if turnout == 'cps':
         μ = np.asarray(testmod.pars['μj'], dtype = float)[1:]
-    else:
-        μ = d[['mu1_usPct', 'mu2_usPct', 'mu3_usPct']].to_numpy(float)
+    elif turnout == 'pooled' and iso3 in COMPULSORY:
+        μ = np.ones(3)
+    elif turnout == 'pooled' and iso3 != 'USA':
+        μ = pooledProfile(thetaSource, (main, dist, sample))[0]
+    elif turnout == 'csesFlat' and iso3 in COMPULSORY and d[MU].isna().any():
+        μ = np.ones(3)
+    else:                                 # 'cses', 'csesFlat', and the U.S. under 'pooled'
+        μ = d[MU].to_numpy(float)
         if np.isnan(μ).any():
             raise NoTurnout('{}: no CSES turnout in {}'.format(iso3, FILES['main']))
-    nu4 = d[['nu_{}'.format(t) for t in NUYEARS]].to_numpy(float)
+    nu4 = retAgeNu(d[['nu_{}'.format(t) for t in NUYEARS]].to_numpy(float), retAgeGaps(iso3, retAge, main))
     spending = float(d['pensionSpending'])
     if thetaSource == INDEX:
         index, θRaw = float(d['grr100_men'])/float(d['grr050_men']), None

@@ -334,6 +334,10 @@ Archived 2026-10-09:
   D1 to D6, data, site map, design, page by page, status, the handover to the paper), closed when the site was
   published and the unused outputs retired.
 
+Archived 2026-11-03:
+- `brief_exhibitNotes.md`: the per-exhibit cuts of the notes under tables and figures, with RKB's
+  decisions; the rule it applied is `notes/paper_styleGuide.md`, "What a note holds".
+
 ## Code
 
 Retired scripts, moved 2026-10-07; not runnable from here (they import their module by path):

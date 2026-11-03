@@ -47,36 +47,52 @@ OUTPUTS = {
     'ArgentinaUniversal':     ('table', tables.argentinaUniversal,    'Tables/ArgentinaUniversal.tex'),
     'ARG_LOG_FourInOne':      ('figure', figures.argLogFourInOne,     'Figs/ARG_LOG_FourInOne.pdf'),
     'ARG_CRRA_LOG':           ('figure', figures.argCrraLog,          'Figs/ARG_CRRA_LOG.pdf'),
-    # --- US / France / UK (section 6 and its appendix). ---
-    'USUKFRCalibration':      ('table', tablesUS.usukfrCalibration,   'Tables/USUKFRCalibration.tex'),
+    # --- US / France / UK (section 6 and its appendix). The paper's calibration table is the U.S. and France
+    # (USFRCalibration, table:US:CalibUSFR, which appendix F refers to); the three countries (OECD_Calibration) and the
+    # UK's groups are the online appendix's (B6). ---
     'USFRCalibration':        ('table', partial(tablesUS.usukfrCalibration, countries = ('US', 'FR')),
                                'Tables/USFRCalibration.tex'),
+    'OECD_Calibration':       ('table', partial(tablesUS.usukfrCalibration, name = 'OECD_Calibration',
+                                                label = 'table:US:CalibUSUKFR'),
+                               'Tables/OECD_Calibration.tex'),
     'US_householdheterogeneity':   ('table', tablesUS.usHouseholdHeterogeneity,   'Tables/US_householdheterogeneity.tex'),
     'FR_householdheterogeneity':   ('table', tablesUS.frHouseholdHeterogeneity,   'Tables/FR_householdheterogeneity.tex'),
     'UK_householdheterogeneity':   ('table', tablesUS.ukHouseholdHeterogeneity,   'Tables/UK_householdheterogeneity.tex'),
     'US_overview':            ('figure', figuresUS.usOverview,        'Figs/US_overview.pdf'),
-    # --- Endogenous system characteristics (section 7 and appendix G). Headline variant only. ---
+    # --- Endogenous system characteristics (section 7). Headline variant only. ---
     'US_ESC_overview':        ('figure', figuresUS.escOverview,       'Figs/US_ESC_overview.pdf'),
     'US_ESC_Calibration':     ('table', tablesUS.escCalibrationTable, 'Tables/US_ESC_Calibration.tex'),
-    # Appendix G: the UK's own cost per rho at its own income groups, the deep test -- the UK and France under
-    # the US parameter and their own, under both transports -- and the baseline path.
+    # The online appendix's (ONLINE_ONLY): the UK's own cost per rho at its own income groups and the deep test -- the
+    # UK and France under the US parameter and their own -- (page C7), the baseline path (C1), and the 2020 tax against
+    # a design pinned on the whole path, with and without the cost (C3; it writes its note, US_ESC_TauTheta_note.tex).
     'UK_ESC_Calibration':     ('table', tablesUS.ukEscCalibrationTable, 'Tables/UK_ESC_Calibration.tex'),
     'US_ESC_Country':         ('table', tablesUS.escCountryTable,     'Tables/US_ESC_Country.tex'),
     'US_ESC_Path':            ('figure', figuresOA.escPathPaper,      'Figs/US_ESC_Path.pdf'),
+    'US_ESC_TauTheta':        ('figure', figuresOA.escTauTheta,       'Figs/US_ESC_TauTheta.pdf'),
     # Figure 1 (fig:US:OECDdata) from stage (0)'s data/oecdFigure1.csv; also writes oecdCorrelations.csv.
     'OECDdata':               ('figure', oecdFigure1.figure,          'Figs/OECDdata.pdf'),
-    # The cross-country test at config.US['oecd26']'s variant, on the θ variant's in-sample countries (config.US
-    # ['theta']): section 6's spending at the observed designs without the cost (OECD26_Spending, which also writes
-    # its note, Figs/OECD26_Spending_note.tex); figure 1.1's relations with the model's layer 1 beside the data, the
-    # slopes of the data and both layers, and each country's calibrated omega (layer 2), at the design in force in
-    # 2020; the five slopes under each measure of the design (OECD26_ThetaVariants, not yet input by the paper).
-    # Inputs: python/US/runOECD26.py (results/oecd26/, results/oecd26_theta_<V>/), data/oecd26_theta.csv and stage
-    # (0)'s oecd26Sample.py.
+    # The cross-country test at config.US['oecd26']'s variant (own turnout), on the θ variant's in-sample countries
+    # (config.US['theta']): section 6's spending at the observed designs without the cost (OECD26_Spending); figure
+    # 1.1's relations with the model's layer 1 beside the data (spending at the chosen designs, config.US['oecd26']
+    # ['spendingReading']), the slopes of the data and both layers, and each country's calibrated omega (layer 2), at
+    # the design in force in 2020; the predicted against the observed design (OECD26_ThetaFit, section 7.3); appendix
+    # H's slopes under each measure of the design (OECD26_ThetaVariants), the stylized readings (OECD26_Stylized) and
+    # the predicted design under three turnouts (OECD26_ThetaFitGrid). Each figure writes its note
+    # (Figs/<name>_note.tex). The index versions of the design figures are built for discussion, not input.
+    # Inputs: python/US/runOECD26.py (results/oecd26/, results/oecd26_theta_<V>/, results/oecd26_stylized/),
+    # data/oecd26_theta.csv and stage (0)'s oecd26Sample.py.
     'OECD26_Spending':        ('figure', figuresOECD26.oecd26Spending, 'Figs/OECD26_Spending.pdf'),
     'OECD26_Layer1':          ('figure', figuresOECD26.oecd26Figure,  'Figs/OECD26_Layer1.pdf'),
     'OECD26_Slopes':          ('table', tablesOECD26.oecd26Slopes,    'Tables/OECD26_Slopes.tex'),
     'OECD26_Omega':           ('table', tablesOECD26.oecd26Omega,     'Tables/OECD26_Omega.tex'),
+    'OECD26_ThetaFit':        ('figure', figuresOECD26.oecd26ThetaFit, 'Figs/OECD26_ThetaFit.pdf'),
     'OECD26_ThetaVariants':   ('table', tablesOECD26.oecd26ThetaVariants, 'Tables/OECD26_ThetaVariants.tex'),
+    'OECD26_Stylized':        ('table', tablesOECD26.oecd26Stylized,  'Tables/OECD26_Stylized.tex'),
+    'OECD26_ThetaFitGrid':    ('figure', figuresOECD26.oecd26ThetaFitGrid, 'Figs/OECD26_ThetaFitGrid.pdf'),
+    'OECD26_ThetaFitIndex':   ('figure', partial(figuresOECD26.oecd26ThetaFit, units = 'index'),
+                               'Figs/OECD26_ThetaFitIndex.pdf'),
+    'OECD26_ThetaFitGridIndex': ('figure', partial(figuresOECD26.oecd26ThetaFitGrid, units = 'index'),
+                                 'Figs/OECD26_ThetaFitGridIndex.pdf'),
     # Appendix D (app:T): the horizon and the terminal condition and the first order condition's residuals off the
     # grid (python/{US,InformalSavings}/runHorizon.py). The candidate counts grouped by solve are the online
     # appendix's alone, beside its file-by-file list (NUM_SelectionFiles); appendix D states them in words.
@@ -102,10 +118,10 @@ OUTPUTS = {
     'US_Strategic':           ('table', tablesOA.usStrategic,           'Tables/US_Strategic.tex'),
     'NUM_HorizonPaths':       ('table', tablesHorizon.numHorizonPaths,  'Tables/NUM_HorizonPaths.tex'),
     'NUM_SelectionFiles':     ('table', tablesOA.numSelectionFiles,     'Tables/NUM_SelectionFiles.tex'),
-    # The cross-country test with each country's own (CSES) turnout.
-    'OECD26_Layer1_cses':     ('figure', partial(figuresOECD26.oecd26Figure, 1, turnout = 'cses'), 'Figs/OECD26_Layer1_cses.pdf'),
-    'OECD26_Slopes_cses':     ('table', partial(tablesOECD26.oecd26Slopes, turnout = 'cses'),    'Tables/OECD26_Slopes_cses.tex'),
-    'OECD26_Omega_cses':      ('table', partial(tablesOECD26.oecd26Omega, turnout = 'cses'),     'Tables/OECD26_Omega_cses.tex'),
+    # The cross-country test with the U.S. (CPS) turnout in every country.
+    'OECD26_Layer1_cps':      ('figure', partial(figuresOECD26.oecd26Figure, 1, turnout = 'cps'), 'Figs/OECD26_Layer1_cps.pdf'),
+    'OECD26_Slopes_cps':      ('table', partial(tablesOECD26.oecd26Slopes, turnout = 'cps'),    'Tables/OECD26_Slopes_cps.tex'),
+    'OECD26_Omega_cps':       ('table', partial(tablesOECD26.oecd26Omega, turnout = 'cps'),     'Tables/OECD26_Omega_cps.tex'),
     # The datasets of the online appendix's interactive figures (siteData), csv in results/paper/Data.
     'ARG_ReformPaths':        ('data', siteData.argReformPaths,       'Data/ARG_ReformPaths.csv'),
     'OECD_Counterfactuals':   ('data', siteData.oecdCounterfactuals,  'Data/OECD_Counterfactuals.csv'),
@@ -119,8 +135,9 @@ ONLINE_ONLY = ({'OECD_Countries', 'OECD_Sources', 'OECD_Correlations', 'ARG_RhoG
                 'NUM_Stationary', 'ARG_LeisureCalibration', 'ARG_LeisureRho',
                 'OECD_LeisureCalibration', 'OECD_LeisureGroups',
                 'US_TaxState', 'US_Strategic', 'NUM_HorizonPaths', 'NUM_Selection',
-                'NUM_SelectionFiles'}
-               | {n for n in OUTPUTS if n.startswith('OECD26_') and n.endswith('_cses')}
+                'NUM_SelectionFiles', 'OECD_Calibration', 'UK_householdheterogeneity', 'UK_ESC_Calibration',
+                'US_ESC_Country', 'US_ESC_Path', 'US_ESC_TauTheta'}
+               | {n for n in OUTPUTS if n.startswith('OECD26_') and n.endswith('_cps')}
                | {n for n, e in OUTPUTS.items() if e[0] == 'data'})
 
 

@@ -1,10 +1,11 @@
-r""" Figure builders for the online appendix, the calibrations across rho, and one of the paper's, escPathPaper
-(US_ESC_Path). House style from figures.py (_panel, SERIES, INK); drawn at the measure (5.91 in).
+r""" Figure builders for the online appendix: the calibrations across rho, the baseline path of the endogenous design
+(escPathPaper, US_ESC_Path), the tax against a pinned design (escTauTheta). House style from figures.py (_panel, SERIES, INK); drawn at the measure (5.91 in).
 
 Each writes results/paper/Figs/<name>.{pdf,png,svg} and <name>.marks.json through figures._save. Every data
 point is its own artist, tagged with figures.markId; the text of its mark is the value as the tables print it
 (tablesOA's formatters), with tex escapes removed. Lines are drawn untagged beneath the points.
 """
+import os
 import numpy as np
 
 import matplotlib
@@ -17,6 +18,7 @@ import datasets as D
 import tablesOA as T
 from tablesUS import COUNTRYNAME
 from figures import SERIES, INK, _panel, _save, markId
+from tables import BANNER
 
 MARKERS = ('o', 's', '^')
 SURFACE = '#fcfcfb'
@@ -250,3 +252,71 @@ def escPathPaper():
                          fontsize = 7, labelcolor = INK['secondary'], frameon = False)
     leg.set_zorder(6)
     return _save(fig, name, marks)
+
+
+# ---------------------------------------------------------------------------------------------------
+# The tax against a pinned design
+# ---------------------------------------------------------------------------------------------------
+def tauThetaPeaks(d):
+    """ For one frame of datasets.escTauTheta: (θ at the largest τ, that τ, τ at θ = 0, τ at θ = 1, whether τ falls
+    at every step), τ in percent. """
+    τ = 100*d['τ'].values.astype(float)
+    k = int(np.argmax(τ))
+    return float(d['θpin'].iloc[k]), float(τ[k]), float(τ[0]), float(τ[-1]), bool(np.all(np.diff(τ) < 0))
+
+
+def escTauTheta():
+    r""" US_ESC_TauTheta: the U.S. tax rate of 2020 against a design pinned on the whole path (datasets.escTauTheta,
+    python/US/runTauTheta.py), without the cost (section 6's calibration) and under the paper's cost at its calibrated
+    λ, each economy calibrated at the observed θ* (vertical rule); every point is a pinned design (the grid, θ*, and
+    the steps around the costly economy's peak). Also writes `US_ESC_TauTheta_note.tex`: the peak and the corners of
+    both curves. """
+    name = 'US_ESC_TauTheta'
+    spec = C.US['esc']['spec']
+    tt = D.escTauTheta()
+    year0 = C.usCalendar()['year0']
+    θstar = float(C.theta0())
+    fig, ax = plt.subplots(1, 1, figsize = (WIDTH*0.62, 2.6), constrained_layout = True)
+    _style(ax, '', 'Tax rate in {}, percent'.format(year0), r'Pension design $\theta$, pinned at every date')
+    ax.axvline(θstar, color = INK['secondary'], linewidth = 0.6, linestyle = (0, (2, 2)), zorder = 1)
+    marks, handles, labels = [], [], []
+    series = (('none', SERIES[0], 'o', 'without the cost'), (spec, SERIES[1], 's', 'with the cost'))
+    for which, colour, marker, label in series:
+        d = tt[which]
+        xs, ys = d['θpin'].values.astype(float), 100*d['τ'].values.astype(float)
+        ax.plot(xs, ys, color = colour, linewidth = 1.2, zorder = 3)
+        for x, y, kind in zip(xs, ys, d['kind']):
+            gid = markId(name, which, 'theta' + '{:.4f}'.format(x))
+            _point(ax, x, y, gid, colour, marker, ms = 3.2 if kind == 'grid' else 2.0)
+            marks.append(_mark(gid, 'θ = {:.3f}'.format(x), label, 'Tax rate in {}'.format(year0), y,
+                               C.num(y, 2) + '%'))
+        handles.append(Line2D([], [], color = colour, marker = marker, markersize = 3.2, linewidth = 1.2,
+                              markeredgecolor = SURFACE, markeredgewidth = 0.5))
+        labels.append(label)
+    handles.append(Line2D([], [], color = INK['secondary'], linewidth = 0.6, linestyle = (0, (2, 2))))
+    labels.append(r'observed $\theta^{\ast}$')
+    _key(handles, labels, ax, loc = 'upper right')
+    out = _save(fig, name, marks)
+    θ0n, peak0, lo0, hi0, falls0 = tauThetaPeaks(tt['none'])
+    θ1, peak1, lo1, hi1, falls1 = tauThetaPeaks(tt[spec])
+    lam = float(tt[spec]['p'].iloc[0])
+    pc = lambda v: C.num(v, 2) + r'\%'
+    first = ((r'Without the cost the tax rate falls with the design, from ' + pc(lo0) + r' at $\theta = 0$ to '
+              + pc(hi0) + r' at $\theta = 1$ (' + C.pp((hi0 - lo0)/100) + ').') if falls0 else
+             (r'Without the cost the tax rate is ' + pc(lo0) + r' at $\theta = 0$, peaks at ' + pc(peak0)
+              + r' at $\theta = ' + C.num(θ0n, 2) + '$ and is ' + pc(hi0) + r' at $\theta = 1$.'))
+    second = (r' With the cost it is ' + pc(lo1) + r' at $\theta = 0$, peaks at ' + pc(peak1) + r' at $\theta = '
+              + C.num(θ1, 2) + '$, against ' + pc(100*float(tt[spec].loc[np.isclose(tt[spec]['θpin'], θstar), 'τ'].iloc[0]))
+              + r' at $\theta^{\ast}$, and falls to ' + pc(hi1) + r' at $\theta = 1$.')
+    step = tt[spec].loc[tt[spec]['kind'] == 'refine', 'θpin']
+    note = (r'\textit{Note:} The U.S.\ in ' + str(year0) + r' under log preferences ($\rho = 1$), with the design '
+            r'pinned at the same $\theta$ at every date and the economy started from its own steady state; $\beta$, '
+            r'$\omega$ and $X$ stay at their calibration at the observed $\theta^{\ast} = ' + C.num(θstar, 3)
+            + r'$ (dashed line), without the cost as in section \ref{sec:oecd} and with the paper\textquotesingle s '
+            r'cost at $\lambda = ' + C.num(lam, 2) + r'$ (table \ref{table:US_ESC:calibration}). ' + first + second
+            + (r' The designs are $\theta = 0, 0.1, \dots, 1$, $\theta^{\ast}$ and, around the peak, steps of '
+               + C.num(float(np.diff(np.sort(step.values)).min()), 2) + '.' if len(step) > 1 else ''))
+    path = os.path.join(C.PAPERDIR, 'Figs', name + '_note.tex')
+    with open(path, 'w', encoding = 'utf-8', newline = '\n') as f:
+        f.write(BANNER.format(name = name, src = 'results/esc/escTauTheta.csv, escCalibration.csv') + note + '\n')
+    return out + [path]

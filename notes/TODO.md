@@ -20,8 +20,27 @@ Conde-Ruiz sentence's place (W20).
 **W23. The AI review of 2026-10-29** (`coarse-output/coarse_review_29102026.md`; the 2026-10-22 round archived).
 First-pass verdicts and the questions for RKB: `notes/reviewResponse_2026-10-29.md` (as a page with the reviewer's text:
 https://claude.ai/artifact/LdBZr2X8KMxShSDnFXhLcP). O5 decided 2026-10-30: θ variant C is the paper's measure, pipeline
-switched (commit `7694434`), overnight run done 2026-10-31 (all OK, results committed). Next: the text pass for
-the stale numbers (list in `notes/brief_pipelineThetaC.md`'s report, root log 2026-10-30), then the rest of "For RKB".
+switched (commit `7694434`), overnight run done 2026-10-31 (all OK, results committed). 2026-11-02: RKB's decisions
+on the OECD part applied and the text pass on every stale number done (root log 2026-11-02; briefs
+`notes/brief_oecdVariants.md`, `brief_paperOECD_2026-11.md`, `brief_textOECD_2026-11.md`, audit
+`staleNumbers_2026-11-02.md`; all to archive once RKB has reviewed). Left for RKB:
+- Review the uncommitted changes, among them:
+  - own turnout throughout the cross-section, section 6's spending test included;
+  - spending at the chosen design in section 7;
+  - the hump paragraph and figure 7.3;
+  - the softened inequality claims in the abstract, introduction and conclusion;
+  - the cross-section appendix, now G;
+  - the online appendix pages B6 and C7.
+- Overleaf: the note and the paper are pushed (2026-11-02). The paper went with `--force` over Martin's online edit, a stray "i c"
+  in `Sections/OECD.tex` plus line endings.
+- Option F, figures A and E in index units, is built (`OECD26_ThetaFitIndex`, `OECD26_ThetaFitGridIndex`) but not input;
+  to decide with Martin.
+- Online-appendix leftovers of the runs dropped on 2026-10-30:
+  - B5 (Medicare), C3's first section and C5 (timing) still include RETIRED exhibits and stale prose;
+  - C4's ξ statements have no ξ ≠ 0.3 rows behind them;
+  - `OECD_Sources` documents the old index;
+  - the style guide's §4 and `data/README.md` still cite the old appendix letters and "the deep test".
+- Then the rest of "For RKB" in the review response.
 
 ## Candidates, not scheduled
 

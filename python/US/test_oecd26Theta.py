@@ -38,6 +38,10 @@ Run:  .venv\Scripts\python.exe python\US\test_oecd26Theta.py        (~1 min)
      calibrateRhoGridEU.thetaRun: the country's θ0, the variant's U.S. sweep (refused at another θ0), the csv under
      root/calibration/. runESC.checkCalib reads only the rows a stage reads; runESCcrra.readCalibratedP keeps only
      the variant's rows; runESCcrra.buildUS and stationaryApprox.build carry θ0.
+  N  c5Numbers and runHorizon take --theta with --main only, for config.US['theta']; their row filter (_at) keeps the
+     variant's rows at θ0 (the rows without thetaSource without one); under C c5Numbers.usModel and runHorizon.build
+     carry θ0 and runESC.THETA is installed; runHorizon.mergeWrite and c5Numbers._mergeExperiments drop the rows at
+     another θ (a csv holds one θ), replace a key and tag their rows.
 """
 import os, sys, time, tempfile, shutil
 import numpy as np, pandas as pd
@@ -429,6 +433,64 @@ check("R: under setTheta France and the UK take the FRA and GBR rows (fixA 1, 0.
       okEU and okR and all(eR) and pV == (4.0, 'exact') and pI == (3.0, 'exact') and okC
       and float(np.max(np.abs(mSt.db['θ'].values - 0.544496))) == 0.,
       'variant p {}, index p {}; {}'.format(pV, pI, ' | '.join(str(x) for x in eR)))
+
+# ==== N: c5Numbers and runHorizon under --theta ===============================================================
+import c5Numbers, runHorizon
+c5Saved, hzSaved = dict(c5Numbers.THETA), dict(runHorizon.THETA)
+
+
+def argvExitN(mod, *argv):
+    old = sys.argv
+    sys.argv = ['x.py'] + list(argv)
+    try:
+        mod.main()
+        return False
+    except SystemExit as e:
+        return str(e) or 'exit'
+    finally:
+        sys.argv = old
+        runESC.THETA.update(saved)
+        c5Numbers.THETA.update(c5Saved)
+        runHorizon.THETA.update(hzSaved)
+
+
+eN = [argvExitN(c5Numbers, 'a1', '--theta', 'C'), argvExitN(c5Numbers, 'a1', '--main'),
+      argvExitN(c5Numbers, 'a1', '--theta', 'fixA', '--main'), argvExitN(runHorizon, '--stage', 'log', '--theta', 'C'),
+      argvExitN(runHorizon, '--stage', 'log', '--theta', 'fixA', '--main')]
+frame = pd.DataFrame({'k': [1, 2, 3, 4], 'thetaSource': ['C', 'C', np.nan, 'index'],
+                      'θ0': [0.544496, 0.5, np.nan, np.nan]})
+noVariant = [list(c5Numbers._at(frame)['k']), list(runHorizon._at(frame)['k'])]
+try:
+    c5Numbers.setTheta('C', True)
+    hzN = runHorizon.setTheta('C', True)
+    atC = [list(c5Numbers._at(frame)['k']), list(runHorizon._at(frame)['k'])]
+    mN, _ = c5Numbers.usModel(1.0)
+    mH = runHorizon.build(2.0, 0.6, 1.2, 4.0, runHorizon.BASE_TSS)
+    θN = [float(np.max(np.abs(m.db['θ'].values - 0.544496))) for m in (mN, mH)]
+    okEsc = runESC.THETA['variant'] == 'C' and runESC.THETA['θ0'] == 0.544496 and runESC.THETA['main']
+    fm = os.path.join(tmp, 'merge.csv')
+    pd.DataFrame([{'ρ': 0.5, 'date': 2020, 'τ': 1.}, {'ρ': 2.0, 'date': 2020, 'τ': 2.}]).to_csv(fm, index = False)
+    runHorizon.mergeWrite(fm, [{'ρ': 0.5, 'date': 2020, 'τ': 3.} | runHorizon._tag()], ['ρ', 'date'])
+    runHorizon.mergeWrite(fm, [{'ρ': 2.0, 'date': 2020, 'τ': 4.} | runHorizon._tag()], ['ρ', 'date'])
+    runHorizon.mergeWrite(fm, [{'ρ': 0.5, 'date': 2020, 'τ': 5.} | runHorizon._tag()], ['ρ', 'date'])
+    mg = pd.read_csv(fm).sort_values('ρ')
+    okMerge = (list(mg['τ']) == [5., 4.] and set(mg['thetaSource']) == {'C'} and not os.path.exists(fm + '.lock'))
+    fx = os.path.join(tmp, 'C5_x.csv')
+    pd.DataFrame([{'experiment': 'X1', 'θ2020': 0.7}, {'experiment': 'X2', 'θ2020': 0.8}]).to_csv(fx, index = False)
+    c5Numbers._mergeExperiments([{'experiment': 'X1', 'θ2020': 0.5}], fx)
+    mx = pd.read_csv(fx)
+    okX = list(mx['experiment']) == ['X1'] and list(mx['thetaSource']) == ['C'] and list(mx['θ0']) == [0.544496]
+finally:
+    runESC.THETA.update(saved)
+    c5Numbers.THETA.update(c5Saved)
+    runHorizon.THETA.update(hzSaved)
+check("N: c5Numbers and runHorizon take --theta with --main only and for config.US['theta']; _at keeps the run's θ "
+      "(C at θ0, or the rows without thetaSource without a variant); under C usModel and runHorizon.build impose θ0 on "
+      "every date, runESC.THETA is installed; runHorizon.mergeWrite drops the rows at another θ, replaces a key, "
+      "leaves no lock; c5Numbers._mergeExperiments drops the other θ's rows and tags its own",
+      all(eN) and noVariant == [[3, 4], [3, 4]] and atC == [[1], [1]] and θN == [0., 0.] and okEsc and okMerge
+      and okX and hzN is None and c5Numbers.THETA == c5Saved and runHorizon.THETA == hzSaved,
+      ' | '.join(str(x) for x in eN))
 
 shutil.rmtree(tmp, ignore_errors = True)
 print('\n({:.0f}s)'.format(time.time() - tic))
