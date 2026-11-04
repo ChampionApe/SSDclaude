@@ -18,7 +18,7 @@ endogenous-design details and every status measurement: `archive/readmes/US_READ
 | `test.py`, `testEU.py` | workbook loaders: `USMain_test.xlsx`; `testEU.model('FR'\|'UK')` (each workbook's own sheets; the regrouped pairs are not read); `test.reading(M)`, the Medicare reading |
 | `calibrateRhoGrid.py`, `calibrateRhoGridEU.py`, `runShocksUS.py`, `runShocksXi.py`, `runESC.py`, `runESCcrra.py`, `runESCxi.py`, `collectESCexperiments.py` | drivers |
 | `runTauTheta.py` | the U.S. 2020 tax with θ pinned on the whole path over a grid, without the cost and at the calibrated λ (runESC's pinned machinery) -> `results/esc/escTauTheta.csv` |
-| `oecd26.py`, `runOECD26.py` | the cross-country test: `ModelOECD(ModelESC)` from `data/oecd29*.csv`; anchor, layer 1 (anchor's `ω`, cost), layer 2 (own `ω`), turnout `cps`/`cses`, cost `size`/`sizePiR`/`none`, β `common`/`commonR` (set to the anchor's `R2020`), θ figure 1.1's index or a variant of `data/oecd26_theta.csv` (`--theta`), rows keyed on an inputs hash -> `results/oecd26/`; refused there, run into `results/oecd26_stylized/` with `--usSweep`: turnout `pooled` (U.S. own CSES, `COMPULSORY` flat, the rest the sample's mean profile) and `--omegaRule mean` (layer 1 at the mean layer-2 `ω`); exploration into `results/oecd26_retage/`: `--retAge exit|nra` (ν corrected for the gap to the U.S. retirement age, `data/oecd29_exitAge.csv`) and turnout `csesFlat` (cses, Luxembourg flat) |
+| `oecd26.py`, `runOECD26.py` | the cross-country test: `ModelOECD(ModelESC)` from `data/oecd29*.csv`; anchor, layer 1 (the anchor's `ω` or, `--omegaRule mean`, the mean layer-2 `ω`; cost), layer 2 (own `ω`), turnout `csesFlat` (cses, Luxembourg flat, on the cses anchor)/`cses`/`cps`, cost `size`/`sizePiR`/`none`, β `common`/`commonR` (set to the anchor's `R2020`), `--retAge nra|exit|none` (ν corrected for the gap to the U.S. statutory or effective exit age), θ figure 1.1's index or a variant of `data/oecd26_theta.csv` (`--theta`), rows keyed on an inputs hash -> `results/oecd26/`; turnout `pooled` (U.S. own CSES, `COMPULSORY` flat, the rest the sample's mean profile) is refused there |
 | `stationaryApprox.py`, `stationaryApproxESC.py` | prepub: stationary against date-specific policy functions (taxes; the design) -> `results/numerical/` |
 | `runHorizon.py` | appendix D, not wired: other horizons and the steady-state terminal condition, FOC residuals off the grid, a jump scan, converged τ-derivatives -> `results/numerical/US_{horizon,horizonDesign,residuals,jumps,derivativeScheme}.csv`; `--theta C --main`, one θ per csv |
 | `c5Numbers.py` | the review response's smaller numbers -> `results/numerical/C5_*.csv` (`US_TaxState` and `US_Strategic` read two); `--theta C --main`, rows read and written at C |
@@ -99,10 +99,10 @@ rerun at C on 2026-11-02, `logs/c5rerun/`): at ρ = 1 `θ*` 0.5445, `λ` 6.247. 
 
 ## Open
 
-- The cross-section's main specification since 2026-11-04 (`notes/brief_retAgeChoice.md`): own turnout with Luxembourg
+- The cross-section's main specification since 2026-11-04 (`archive/notes/brief_retAgeChoice.md`): own turnout with Luxembourg
   flat (`csesFlat`, now allowed into `results/oecd26/`; `pooled` still refused), layer 1 at the mean layer-2 ω, ν at
   the statutory correction (`nra`). The overnight rows of `results/oecd26_retage/` were merged into `results/oecd26/`
-  with `_write`; the folder and France's exit-age worktree `logs/wt_retAgeExit/` are records only.
+  (`_write`) and the folder deleted; the exit-age version of France and the UK is in `archive/results/retAgeExit_2026-11/`.
 - The path iteration (`method = path`) and the flat-only variant's leaded calibration were last run on 2026-10-03
   at the earlier calibration (`θ*` = 0.738); they are cross-checks no exhibit prints (`num_esc.tex`, checks).
 - A13's myopic/Markov split needs a new model function (deferred; TODO C13).
@@ -110,4 +110,4 @@ rerun at C on 2026-11-02, `logs/c5rerun/`): at ρ = 1 `θ*` 0.5445, `λ` 6.247. 
 - θ variant C (U.S. 0.5445, France 0.8219, UK 0.1812) is the paper's measure since 2026-10-30 (`config.US['theta']`); its
   results are `logs/overnight_2026-10-30/run.sh`'s (run 2026-10-30/31, commit bab1205).
 - The stylized readings on C (2026-11-02): retired from the paper on 2026-11-04 (layer 1 at ω̄ is now the main
-  specification; the `pooled` turnout dropped); `results/oecd26_stylized/` stays on disk, unread.
+  specification; the `pooled` turnout dropped); its rows are in `archive/results/oecd26_stylized/`.

@@ -209,7 +209,7 @@ US = {
         # None is a PLACEHOLDER and stage (i) refuses to run it (config.escBracket). 'size' (the paper's cost, the
         # one exact calibration run): set from the LOG lambda after WP4 -- [lambda/20, 3 lambda] at rho = 2,
         # [lambda/3, 5 lambda] at rho = 0.5 -- on 2026-10-23 from lambda 11.563954 at the pension-only workbook. At
-        # US['theta'] the LOG lambda is 6.247 (results/oecd26_theta_C/esc/escCalibration.csv), so at the exact/LOG
+        # US['theta'] the LOG lambda is 6.247 (results/esc/escCalibration.csv), so at the exact/LOG
         # ratios of 2026-10-25 (2.21 and 0.233) the roots expected, ~13.8 and ~1.46, lie inside both brackets.
         'bracket':        {'size':    {0.5: (3.855, 57.82), 2.0: (0.5782, 34.69)}},
         # brentq's xtol on the cost parameter where runESCcrra.py's default (2e-5) is too coarse, per spec and rho.
@@ -282,8 +282,8 @@ US = {
     # readings (`oaReadings`, each the parts that differ from the paper's: Luxembourg left out, layer 1 at the U.S.
     # omega). `thetaVariants`: appendix G's data variants, measures of data/oecd26_theta.csv (THETANAMES), each run by
     # stage (ii)'s entry 'oecd26Variants' at the paper's specification (a U.S. sweep at rho = 1, then the
-    # cross-section) into its own results/oecd26_theta_<V>/. Retired readings stay on disk, unread: the U.S. turnout
-    # (the cps rows), results/oecd26_stylized/ (pooled turnout) and results/oecd26_theta_A2pt/.
+    # cross-section) into its own results/oecd26_theta_<V>/. Retired: the U.S. turnout (the cps rows, unread in
+    # results/oecd26/); the pooled turnout and A2pt in archive/results/ (archive/INDEX.md).
     'oecd26': {
         'spec': 'sizePiR', 'betaRule': 'common', 'turnout': 'csesFlat', 'omegaRule': 'mean', 'reading': 'inForce',
         'spendingSpec': 'none', 'spendingReading': 'chosen', 'retAge': 'nra',

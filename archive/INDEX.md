@@ -106,6 +106,18 @@ Where the reasoning behind each choice the paper rests on is written down.
   closed (the UK 0.33, France 0.06 under ε; 0.23, 0.25 under λ), the reconcile rows, the counts, the wall times and
   the paper sentences the main variant changed, old → new with file:line: `ledger_R6.md`.
 
+**The OECD cross-section on θ variant C (sections 6 and 7.3, appendix G), archived 2026-11-04** — `notes/`
+- The measure of the design, θ variant C (2026-10-30): the pipeline on C and its run list,
+  `notes/brief_pipelineThetaC.md`; every country's θ from a variant file, `notes/brief_oecd26ThetaSource.md`; C against
+  the paper at ρ = 1, with its test run `results/oecd26_theta_C/`, `notes/thetaC_comparison.md`. The measures
+  themselves are live: `notes/thetaTau_alternatives.md`.
+- Own turnout, the stylized readings and the text pass of 2026-11-02: `notes/brief_oecdVariants.md`,
+  `notes/brief_paperOECD_2026-11.md`, `notes/brief_textOECD_2026-11.md` and the audit `notes/staleNumbers_2026-11-02.md`.
+- The retirement-age correction of ν and Luxembourg at a flat turnout (2026-11-02 to 04): the exploration,
+  `notes/brief_oecdRetAge.md`; RKB's decisions (statutory ν, own turnout with Luxembourg flat, layer 1 at the mean ω;
+  appendix G's population and data variants and their names; the online appendix's C6), with the runs and checks
+  behind them, `notes/brief_retAgeChoice.md`; the exit-age version not adopted, `results/retAgeExit_2026-11/`.
+
 ## Session logs
 
 `sessionLogs/RESEARCH_LOG_<log>.md`, one per live log, oldest first: verbatim through 2026-09-11, then a heading
@@ -338,6 +350,13 @@ Archived 2026-11-03:
 - `brief_exhibitNotes.md`: the per-exhibit cuts of the notes under tables and figures, with RKB's
   decisions; the rule it applied is `notes/paper_styleGuide.md`, "What a note holds".
 
+Archived 2026-11-04 (the cross-section's theme above):
+- `brief_pipelineThetaC.md`, `brief_oecd26ThetaSource.md`, `thetaC_comparison.md`: the switch to θ variant C.
+- `brief_oecdVariants.md`, `brief_paperOECD_2026-11.md`, `brief_textOECD_2026-11.md`, `staleNumbers_2026-11-02.md`: own
+  turnout, the stylized readings and the text pass of 2026-11-02.
+- `brief_oecdRetAge.md`, `brief_retAgeChoice.md`: the retirement-age correction of ν, the new main specification and
+  appendix G's variants.
+
 ## Code
 
 Retired scripts, moved 2026-10-07; not runnable from here (they import their module by path):
@@ -372,6 +391,20 @@ Outputs no builder reads, moved from `results/` on 2026-10-07 (same relative pat
   the UK at its own λ (`escShocksUK.csv`, `escShocksCRRAUK.csv`, merged in `escExperimentsUK.csv`); `paper/Tables/`
   the last builds of `FRUK_householdheterogeneity`, `UKUS_householdheterogeneity` and `OECD_Regroupings`. The
   `UKUS` rows of `results/esc/escCountry.csv` stay there, unprinted. All at the calibrations of C6/C7.
+- `results/oecd26_stylized/` (2026-11-04): appendix H's stylized readings of 2026-11-02 on θ variant C, the pooled
+  turnout and layer 1 at the mean ω, at uncorrected ν; retired when the mean ω became the main specification and the
+  pooled turnout was dropped (`notes/brief_retAgeChoice.md`).
+- `results/oecd26_theta_A2pt/` (2026-11-04): the cross-section under measure A2pt, retired from the paper on
+  2026-10-30, at cps and cses turnout and uncorrected ν, with its own U.S. sweep at ρ = 1.
+- `results/oecd26_theta_C/` (2026-11-04): the test run of θ variant C of 2026-10-30, into its own folder before C
+  became the paper's measure (`notes/thetaC_comparison.md`); the paper's rows are in `results/oecd26/`.
+- `results/retAgeExit_2026-11/` (2026-11-04): the exit-age correction of ν for France and the UK, run in full on
+  2026-11-03 and not adopted (RKB chose the statutory correction): the recalibrated sweeps (`calibration/`), the
+  French-characteristics counterfactuals (`shocks/`), the endogenous-design outputs (`esc/`), C5's numbers
+  (`numerical/`), the calibration summary (`paper/`), the overnight checks of statutory against exit (`summary.md`)
+  and that version's paper (`paper_exitAge.pdf`). It was the worktree `logs/wt_retAgeExit/` (branch
+  `retage-exit-2026-11`, both deleted); config.US['retAgeFR'] and ['retAgeUK'] at `'exit'` and stages (i) and (ii)
+  reproduce it. The cross-section's overnight readings, `results/oecd26_retage/`, were merged into `results/oecd26/`.
 
 ## Findings, long form
 

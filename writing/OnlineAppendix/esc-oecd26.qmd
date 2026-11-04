@@ -63,8 +63,8 @@ covers, close to the Beveridgean corner.
 
 ## Luxembourg left out {#esc-oecd26-luxembourg}
 
-The test on the 20 countries with a CSES survey. On these countries the data's index falls more steeply with population
-growth than on all 21, and the index of the model's first layer about two fifths as steeply as the data's.
+The test on the countries with a CSES survey, all but Luxembourg. Without Luxembourg the data's index falls more steeply
+with population growth than with it, and the index of the model's first layer falls much less steeply than the data's.
 
 {{< include _generated/exhibits/OECD26_Layer1_cses.qmd >}}
 

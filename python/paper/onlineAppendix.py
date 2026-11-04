@@ -207,7 +207,7 @@ EXHIBITS = {
     'NUM_HorizonPaths': E('table', 'NUM_HorizonPaths'),
 }
 
-# Exhibits retired from the registry whose outputs were dropped with their runs (notes/brief_pipelineThetaC.md,
+# Exhibits retired from the registry whose outputs were dropped with their runs (archive/notes/brief_pipelineThetaC.md,
 # 2026-10-30), id -> what replaced them, while a page still includes them: build() writes a notice in their place, so
 # that no earlier build of theirs is left to render, and reports them.
 RETIRED = {i: 'its runs were dropped when the paper moved to the measure of the design of data/oecd26_theta.csv '

@@ -39,7 +39,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
   cost `'sizePiR'` (`esc['costVariants']`: LOG calibration, acute ageing, `escAgeingCosts.csv`), the tax against a
   pinned design (`escTauTheta`, `python/US/runTauTheta.py`, `config.US['tauTheta']`, seconds). Dropped 2026-10-30:
   Medicare, `freeTheta`, the timing checks, the deep test under ε, the other costs under CRRA.
-- **The cross-country test** (A14, C14, R6; `notes/brief_retAgeChoice.md`): stage (ii)'s entry `oecd26` runs
+- **The cross-country test** (A14, C14, R6; `archive/notes/brief_retAgeChoice.md`): stage (ii)'s entry `oecd26` runs
   `python/US/runOECD26.py --inSample` per variant of `config.US['oecd26']['variants']` and per retAge of it (rows keyed
   on inputs and the U.S. β, #13) on the measure's 21 countries, data side I = 1/(2 - θ): the paper's specification
   with and without the cost, appendix G's population variants (ν uncorrected, at the exit age) and C6's readings
@@ -49,7 +49,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
   `retAge` 'nra'; design in force in 2020; section 7's spending at the chosen design, `spendingReading`) and section
   6's `spendingSpec` live in `config.US['oecd26']`; another carries its suffix (`_cses`, `_omegaUS`, `_nuNone`,
   `_thetaA`). Stale anchors or rows raise `StaleInput`. France's own ν is `config.US['retAgeFR']`'s (`testEU.load`;
-  `'nra'`, appendix F). Retired, on disk unread: the cps rows, `results/oecd26_stylized/`, `results/oecd26_theta_A2pt/`.
+  `'nra'`, appendix F). Retired: the cps rows (unread); the pooled turnout and A2pt in `archive/results/`.
 - **Argentina's GDP** is formal plus informal output, `Y + Y0` (#3): `datasets` reads savings and spending over it
   (`savingsRatePath`, `spendingPath`) and `config.argTaxTarget` checks the calibrated τ. Not wired: the pre-reform
   ε = 0 calibration and `reformDiagnostics.py` (`REPLICATION.md` §3).

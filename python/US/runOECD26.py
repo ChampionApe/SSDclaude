@@ -65,7 +65,7 @@ each row against the current anchor and inputs, a missing one refused), with β 
 anchor's. Under 'mean' layer 2 runs before layer 1; the rows carry `ωMean`, `nMean`. Layer 2's rows carry 'anchor':
 their ω is calibrated under either rule. 'mean' is the paper's since 2026-11-04 (python/paper/config.py
 US['oecd26']['omegaRule'], read by datasets.oecd26Layer's `omegaRule`). 'pooled' is not written into results/oecd26/
-(python/paper does not read it; the retired results/oecd26_stylized/ holds its rows).
+(python/paper does not read it; its retired rows are in archive/results/oecd26_stylized/).
 
 Readouts per row (`readouts`), all at 2020 (t0):
   τ2020, spending2020   the 2020 tax at θ_c and 100·τ2020·(1-α), % of GDP (the inverse of τ0's construction):
