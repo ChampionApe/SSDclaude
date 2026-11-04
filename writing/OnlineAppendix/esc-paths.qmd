@@ -3,7 +3,7 @@
 The calibration targets the design of 2020 only; every other design along the path is an outcome of the model,
 chosen one period ahead. The first two figures follow the three countries from 1990, whose electorate sets the design
 of 2020, to 2110; the demography is constant from 2080. Each country keeps its own calibration and demography. Its
-cost parameter is either the U.S. λ, the deep test of [C7](esc-countries.qmd) along the path, or its own, the
+cost parameter is either the U.S. λ, the deep test of [C6](esc-countries.qmd) along the path, or its own, the
 parameter at which its electorate re-elects its observed design.
 
 ## By country {#esc-paths-countries}
@@ -61,7 +61,7 @@ viewof c1Cost = control("radio", COSTS, {key: "cost", label: "Cost parameter", v
 
 With the design pinned at its observed value, each country's path is that of section {{< var p.sec_oecd >}} with the
 cost in place. After 2020 the tax rate with the design chosen lies above the pinned path in every country and under
-either parameter, consistent with the hump of [C3](esc-costs.qmd#esc-costs-pinned): at a given demography the tax
+either parameter, consistent with the hump of [C2](esc-costs.qmd#esc-costs-pinned): at a given demography the tax
 rate peaks close to the design the electorate chooses, so a design pinned away from that choice, on either side,
 carries a lower one. At each country's own parameter, the U.S. included, the chosen design rises above the observed
 one after 2020 as the population ages, and the tax rate lies only slightly above the pinned path. Under the U.S.
@@ -103,7 +103,7 @@ with the design chosen and with it pinned at its observed value: the U.S. path o
 Since the calibration targets only the design of 2020, the path after 2020 is a prediction. The chosen design rises as
 the number of workers per retiree falls, most between 2020 and 2050, and settles one period after the demography does.
 The tax rate climbs with ageing and lies slightly above the path with the design pinned, since a more earnings-related
-system loses less of its revenue. [C4](esc-parameters.qmd#esc-paths-parameters) shows the path at the other values of
+system loses less of its revenue. [C3](esc-parameters.qmd#esc-paths-parameters) shows the path at the other values of
 the IES.
 
 {{< include _generated/exhibits/US_ESC_Path.qmd >}}

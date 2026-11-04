@@ -195,3 +195,11 @@ tablesOECD26 (variant parts ω rule, retAge, measure), figuresOECD26, build, onl
 online appendix OK. Text pass (sections 6, 7.3, appendix G, introduction, conclusion, abstract, C6): the variants
 table also reports uncorrected ν without Luxembourg (RKB: Luxembourg alone drives that reading's poor fit, r 0.36
 against 0.74 on the 20). Paper 75 pp, checkPaper OK; state in `notes/brief_retAgeChoice.md`. Overleaf pushed; uncommitted.
+
+## 2026-11-04 (later) — Online appendix: page codes without gaps
+
+RKB: the pages B3–B6 and C3–C7 renamed B2–B5 and C2–C6, closing the gaps the retired B2 and C2 left (headings, the
+lists of the front and landing pages, link texts, code comments, `notes/TODO.md`, the site README's rule); the page
+keys are unchanged, so the paper's `\oa` links stand and only `onlineAppendix.tex`'s codes moved. The front page no
+longer names the authors in its opening sentence (they are printed above the title), and neither it nor part C's
+landing page still advertises the dropped U.S.-turnout reading. Rebuilt, test_onlineAppendix OK, published.

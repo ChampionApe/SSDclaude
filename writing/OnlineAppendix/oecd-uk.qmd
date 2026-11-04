@@ -1,4 +1,4 @@
-# B6. The UK {#oecd-uk}
+# B5. The UK {#oecd-uk}
 
 The UK is calibrated as the U.S. and France are in appendix {{< var p.app_US >}} of the paper, under log preferences,
 to its own pension spending, demography, design and average workweek, with the U.S. discount factor imposed. Its
@@ -8,7 +8,7 @@ cut as for the U.S., so that the mean incomes of the low and medium groups are h
 set the population shares and the productivities, not the design: θ is the slope of the public pension on earnings,
 measured as for every country of the paper's cross-country test (appendix {{< var p.app_oecd26_data >}} of the
 paper). The propensities to vote are from the Comparative Study of Electoral Systems (CSES). [B1](oecd-ies.qmd) gives
-the calibration at every IES of the grid, and [C7](esc-countries.qmd) lets the UK's electorate choose its design.
+the calibration at every IES of the grid, and [C6](esc-countries.qmd) lets the UK's electorate choose its design.
 
 Table {{< var x.OECD_Calibration >}} sets the UK beside the U.S. and France. Its design is the least Bismarckian of
 the three, and its population is older than the U.S. one and younger than France's. Its tax rate is a little above the

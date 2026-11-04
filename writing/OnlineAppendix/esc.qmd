@@ -4,17 +4,17 @@ Section {{< var p.sec_esc >}} of the paper lets the electorate choose the design
 deadweight cost of redistribution whose parameter λ is calibrated so that the U.S. electorate re-elects its observed
 design. Appendix {{< var p.app_esc >}} derives the cost. This part follows the design along each country's projected
 demography, sets the tax rate against a pinned design and a second cost specification against the paper's, varies the
-elasticities, reports the checks of the timing of the choice, repeats the cross-country test with every country at the
-U.S. propensities to vote, and calibrates the UK and France in full.
+elasticities, reports the checks of the timing of the choice, shows the cross-country test under each of its
+variants in full, and calibrates the UK and France in full.
 
 - [C1. The path in levels](esc-paths.qmd): the design, the tax rate, savings and hours as the U.S., the UK and
   France age, with the design chosen and with it pinned.
-- [C3. Other cost specifications](esc-costs.qmd): the paper's cost against a cost attached to the design itself, and
+- [C2. Other cost specifications](esc-costs.qmd): the paper's cost against a cost attached to the design itself, and
   the U.S. tax rate against a pinned design, with and without the cost.
-- [C4. Other parameters](esc-parameters.qmd): the U.S. across the intertemporal and the Frisch elasticity.
-- [C5. The timing of the choice](esc-timing.qmd): the corner the design reaches without the cost, under each timing.
-- [C6. The cross-country test](esc-oecd26.qmd): the test of section {{< var p.sec_esc_crossSection >}} under each
+- [C3. Other parameters](esc-parameters.qmd): the U.S. across the intertemporal and the Frisch elasticity.
+- [C4. The timing of the choice](esc-timing.qmd): the corner the design reaches without the cost, under each timing.
+- [C5. The cross-country test](esc-oecd26.qmd): the test of section {{< var p.sec_esc_crossSection >}} under each
   variant of appendix {{< var p.app_oecd26 >}} in full, with Luxembourg left out and with layer 1 at the U.S. political
   weight.
-- [C7. The UK and France calibrated in full](esc-countries.qmd): the deep test under the U.S. cost parameter, each
+- [C6. The UK and France calibrated in full](esc-countries.qmd): the deep test under the U.S. cost parameter, each
   country's own parameter, and the UK's at every IES.

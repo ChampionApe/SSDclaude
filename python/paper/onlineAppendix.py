@@ -51,7 +51,7 @@ class Ex:
 
 
 E = Ex
-# What the notes of page C6's figures share; each adds its variant: `omega` layer 1's political weight, `lux` how
+# What the notes of page C5's figures share; each adds its variant: `omega` layer 1's political weight, `lux` how
 # Luxembourg votes, `table` the label of the table with the slopes. The cost parameter carried to every country is
 # appendix C.2's Harberger elasticity, \varepsilon, never \epsilon (the universal pension of section 2).
 OECD26LAYER1 = (r'Layer 1 of the cross-country test of section \ref{{sec:esc:crossSection}}: every country at the '
@@ -92,7 +92,7 @@ EXHIBITS = {
                r'against the same targets, $\beta$ calibrated for the U.S.\ and imposed on the UK and France; the '
                r'savings rate, and the interest factor of the UK and France, are predictions. $\rho = 1$ is the '
                r'paper\textquotesingle s calibration.'),
-    # B3
+    # B2
     'OECD_Frisch': E('explorer', 'OECD_Counterfactuals',
         caption = r'The counterfactuals of the U.S.\ across the intertemporal and the Frisch elasticity',
         note = r'Each bar is the change against the U.S.\ baseline at the same $\rho$ and $\xi$, in 2020. In the '
@@ -107,10 +107,10 @@ EXHIBITS = {
                r'multiple of their value on the equilibrium path, the vertical line. The design is given and each '
                r'$\rho$ is at its own calibration, so every line passes through the calibrated tax rate there.'),
     'US_Strategic': E('table', 'US_Strategic'),
-    # B4
+    # B3
     'OECD_LeisureCalibration': E('table', 'OECD_LeisureCalibration'),
     'OECD_LeisureGroups': E('table', 'OECD_LeisureGroups'),
-    # B6
+    # B5
     'OECD_Calibration': E('table', 'OECD_Calibration'),
     'UK_householdheterogeneity': E('table', 'UK_householdheterogeneity'),
     'OECD_LeisureRows': E('explorer', 'OECD_Counterfactuals',
@@ -135,7 +135,7 @@ EXHIBITS = {
         note = r'The paths start in 2020, the calibration year, under log preferences ($\rho = 1$), with the design '
                r'chosen and with it pinned at its observed value; a design chosen at one date applies from the '
                r'following one.'),
-    # C3
+    # C2
     'ESC_Costs': E('explorer', 'ESC_Counterfactuals',
         caption = r'The counterfactuals under the two cost specifications, U.S.',
         note = r'The U.S.\ under the paper\textquotesingle s cost, calibrated at each $\rho$, and under a cost on the '
@@ -143,10 +143,10 @@ EXHIBITS = {
                r'design pinned at the observed value, a filled one the reading with the design chosen; the design is '
                r'a level, the other outcomes the change against the baseline of the same reading and $\rho$, in '
                r'2020. The vertical line in the design panel is the observed design.'),
-    # C3, the tax against a pinned design: its note is the figure's own (US_ESC_TauTheta_note.tex)
+    # C2, the tax against a pinned design: its note is the figure's own (US_ESC_TauTheta_note.tex)
     'US_ESC_TauTheta': E('figure', 'US_ESC_TauTheta',
         caption = r'The U.S.\ tax rate against a design pinned on the whole path, with and without the cost'),
-    # C4
+    # C3
     'ESC_Frisch': E('explorer', 'ESC_Counterfactuals',
         caption = r'The endogenous design across the intertemporal and the Frisch elasticity, U.S.',
         note = r'As figure \ref{oa:ESC_Costs}, under the paper\textquotesingle s cost. Across $\xi$ the model is '
@@ -158,7 +158,7 @@ EXHIBITS = {
         note = r'The paper\textquotesingle s cost, recalibrated at each value (across $\xi$ where that run is on file '
                r'at the paper\textquotesingle s measure of the design). Under CRRA preferences the workweek with '
                r'the design pinned is not stored.'),
-    # C6, in the page's order: appendix G's population and data variants in full (their slopes: the paper's
+    # C5, in the page's order: appendix G's population and data variants in full (their slopes: the paper's
     # table:OECD26:variants), Luxembourg left out, layer 1 at the U.S. omega
     'OECD26_Layer1_nuNone': E('figure', 'OECD26_Layer1_nuNone',
         caption = OECD26CAPTION + r'$\nu$ uncorrected',
@@ -192,7 +192,7 @@ EXHIBITS = {
         caption = OECD26CAPTION + r'layer 1 at the U.S.\ $\omega$',
         note = OECD26LAYER1.format(omega = USOMEGA, lux = FLATLUX, table = 'slopes_omegaUS')),
     'OECD26_Slopes_omegaUS': E('table', 'OECD26_Slopes_omegaUS'),
-    # C7
+    # C6
     'UK_ESC_Calibration': E('table', 'UK_ESC_Calibration'),
     'US_ESC_Country': E('table', 'US_ESC_Country'),
     # D1
@@ -217,8 +217,8 @@ RETIRED = {i: 'its runs were dropped when the paper moved to the measure of the 
                      'OECD26_Layer1_29', 'OECD26_Slopes_29', 'OECD26_Omega_29')}
 
 # Retired keys, which drafts of the paper cite, each defined as an alias of a live page: the site's before
-# 2026-10-09, and those of the pages B2 (oecd-countries) and C2 (retired with the UK as host). 'oecd-uk' and
-# 'esc-countries' are live again (pages B6 and C7, 2026-11-02).
+# 2026-10-09, and those of the pages B2 (oecd-countries) and C2 (retired with the UK as host; their codes passed on to the next pages on 2026-11-04). 'oecd-uk' and
+# 'esc-countries' are live again (pages B5 and C6).
 OLDKEYS = {'arg-calibration': 'arg-leisure', 'arg-reform': 'arg-ies', 'arg-rho': 'arg-ies', 'arg-rhogrid': 'arg-ies',
            'oecd-us': 'oecd', 'oecd-calibration': 'oecd-ies', 'oecd-vectorx': 'oecd-leisure',
            'oecd-rhogrid': 'oecd-ies',

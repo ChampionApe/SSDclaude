@@ -197,7 +197,7 @@ US = {
     'ρStationary': [0.5, 2.0],
     'esc': {
         'spec':           'size',      # the paper's cost specification
-        'comparisonSpec': 'scale',     # the previous wedge, the online appendix's second cost (page C3)
+        'comparisonSpec': 'scale',     # the previous wedge, the online appendix's second cost (page C2)
         # phi is a DUMMY KEY under 'size': f does not use it, but every ESC csv is merge-keyed on
         # (spec, phi, commonX) and the readers (runESC.pickCalib, datasets.escRow/escCalibration) filter on
         # it, so the 'size' rows are written and read at 0.5. Under 'scale' it is the imposed floor f(0).

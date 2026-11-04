@@ -1,4 +1,4 @@
-# B3. Other parameters {#oecd-parameters}
+# B2. Other parameters {#oecd-parameters}
 
 ## The U.S. across the intertemporal and the Frisch elasticity {#oecd-frisch}
 

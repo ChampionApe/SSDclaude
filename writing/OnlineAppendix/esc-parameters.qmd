@@ -1,4 +1,4 @@
-# C4. Other parameters {#esc-parameters}
+# C3. Other parameters {#esc-parameters}
 
 ## The counterfactuals across the intertemporal and the Frisch elasticity {#esc-frisch}
 

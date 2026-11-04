@@ -1,12 +1,12 @@
 # The online appendix {#home .unnumbered}
 
-This online appendix accompanies *Social Security Design and Its Political Support* by Rasmus K. S. Berg and
-Martín Gonzalez-Eiras. It extends the paper's three quantitative sections, on Argentina's pension reform, on the
+This online appendix accompanies *Social Security Design and Its Political Support*. It extends the paper's three
+quantitative sections, on Argentina's pension reform, on the
 rich economies with the pension design given and on the endogenous design. It shows the results across the
 intertemporal and the Frisch elasticity, the alternative calibration of the taste for leisure, Medicare among the
 transfers to the old, the UK's calibration, a second cost of redistribution and the tax rate against a pinned design,
 the paths behind the paper's readings in a single year, the UK and France calibrated in full, and the cross-country
-test with every country at the U.S. propensities to vote. Every number
+test under each of its variants. Every number
 is built by the paper's own pipeline from the model's results; none is typed.
 
 ::: {.oa-map}
@@ -27,10 +27,10 @@ The coverage reform of section {{< var p.sec_argentina >}}.
 The counterfactuals of section {{< var p.sec_oecd >}}.
 
 - [B1. Calibration](oecd-ies.qmd) <span>· across the intertemporal elasticity</span>
-- [B3. Other parameters](oecd-parameters.qmd) <span>· across ρ and ξ; the tax rate and inherited savings</span>
-- [B4. Identification of X](oecd-leisure.qmd) <span>· the two treatments of leisure</span>
-- [B5. Medicare among the transfers to the old](oecd-medicare.qmd) <span>· a larger, flatter U.S. system</span>
-- [B6. The UK](oecd-uk.qmd) <span>· its calibration and income groups</span>
+- [B2. Other parameters](oecd-parameters.qmd) <span>· across ρ and ξ; the tax rate and inherited savings</span>
+- [B3. Identification of X](oecd-leisure.qmd) <span>· the two treatments of leisure</span>
+- [B4. Medicare among the transfers to the old](oecd-medicare.qmd) <span>· a larger, flatter U.S. system</span>
+- [B5. The UK](oecd-uk.qmd) <span>· its calibration and income groups</span>
 :::
 
 ::: {.oa-card}
@@ -39,11 +39,11 @@ The counterfactuals of section {{< var p.sec_oecd >}}.
 The design chosen by the electorate, section {{< var p.sec_esc >}}.
 
 - [C1. The path in levels](esc-paths.qmd) <span>· the U.S., the UK and France as they age</span>
-- [C3. Other cost specifications](esc-costs.qmd) <span>· a cost on the design, the tax against a pinned design</span>
-- [C4. Other parameters](esc-parameters.qmd) <span>· across ρ and ξ</span>
-- [C5. The timing of the choice](esc-timing.qmd) <span>· the corner without the cost</span>
-- [C6. The cross-country test](esc-oecd26.qmd) <span>· the variants in full, Luxembourg left out, layer 1 at the U.S. weight</span>
-- [C7. The UK and France calibrated in full](esc-countries.qmd) <span>· the deep test, each country's own cost</span>
+- [C2. Other cost specifications](esc-costs.qmd) <span>· a cost on the design, the tax against a pinned design</span>
+- [C3. Other parameters](esc-parameters.qmd) <span>· across ρ and ξ</span>
+- [C4. The timing of the choice](esc-timing.qmd) <span>· the corner without the cost</span>
+- [C5. The cross-country test](esc-oecd26.qmd) <span>· the variants in full, Luxembourg left out, layer 1 at the U.S. weight</span>
+- [C6. The UK and France calibrated in full](esc-countries.qmd) <span>· the deep test, each country's own cost</span>
 :::
 
 ::: {.oa-card}

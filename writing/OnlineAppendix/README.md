@@ -46,13 +46,15 @@ run the interactive cells; check them in a visible window or in headless Chrome 
   `writing/Paper/onlineAppendix.tex` from them, with every retired key (the site's before 2026-10-09, the pages B2
   and C2 retired 2026-10-27) defined as an alias of a live page (`OLDKEYS`), and `writing/checkPaper.py` fails on a key the paper uses that is not defined. Renaming a
   heading's key breaks the paper's references to it unless the old key joins `OLDKEYS`. A page's code is typed in its
-  heading and in the lists of `index.qmd` and its part's landing page; the codes B2 and C2 stay unused, not reassigned.
+  heading and in the lists of `index.qmd` and its part's landing page. Codes run without gaps within a part: on
+  2026-11-04 B3–B6 and C3–C7 moved up to close the gaps of the retired B2 and C2; a page's key never changes with
+  its code.
 - No number is typed in the prose. The paper's and the site's exhibit, section and appendix numbers come from
   `{{< var p.<label> >}}` and `{{< var x.<id> >}}` (`_variables.yml`, the label's `:` written `_`). The prose says
   what an exhibit shows and how to read it; every sign and ranking it states is checked against the dataset.
 - A counterfactual chart stacks what it compares (one calibration over another, one cost over the other) on one x axis, drawn once
   under the last. Every chart draws at the width of its own box (`fitted` in `oa.js`): OJS's `width` is `main`'s,
-  which spans the page once the page holds a `.column-page` block. Only C1's and C4's path figures are page-wide.
+  which spans the page once the page holds a `.column-page` block. Only C1's and C3's path figures are page-wide.
 - An interactive figure opens at the paper's reading (ρ = 1, common X, the paper's cost, the U.S.), and its
   controls keep their state in the address (`#outcome=tau&...`), each under a key unique on its page.
 - `python/paper/test_onlineAppendix.py` checks the pages, keys and registry, converts every table, and ties each

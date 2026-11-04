@@ -31,14 +31,14 @@ push and the online appendix (`archive/notes/brief_retAgeChoice.md`). Left for R
   - the hump paragraph and figure 7.3;
   - the softened inequality claims in the abstract, introduction and conclusion;
   - the cross-section appendix, now G;
-  - the online appendix pages B6 and C7.
+  - the online appendix pages B5 and C6.
 - Overleaf: the note and the paper are pushed (2026-11-02). The paper went with `--force` over Martin's online edit, a stray "i c"
   in `Sections/OECD.tex` plus line endings.
 - Option F, figure 7.3 in index units, is built (`OECD26_ThetaFitIndex`) but not input;
   to decide with Martin.
 - Online-appendix leftovers of the runs dropped on 2026-10-30:
-  - B5 (Medicare), C3's first section and C5 (timing) still include RETIRED exhibits and stale prose;
-  - C4's ξ statements have no ξ ≠ 0.3 rows behind them;
+  - B4 (Medicare), C2's first section and C4 (timing) still include RETIRED exhibits and stale prose;
+  - C3's ξ statements have no ξ ≠ 0.3 rows behind them;
   - `OECD_Sources` documents the old index;
   - the style guide's §4 and `data/README.md` still cite the old appendix letters and "the deep test".
 - Then the rest of "For RKB" in the review response.

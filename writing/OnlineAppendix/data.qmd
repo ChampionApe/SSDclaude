@@ -8,7 +8,7 @@ across earnings levels, for men under the rules of 2020 (*Pensions at a Glance 2
 public pension spending on minimum top-ups and tested benefits. Appendix {{< var p.app_oecd26_data >}} of the paper
 gives the rule and the measure. The
 cross-country test of section {{< var p.sec_esc_crossSection >}} runs on the same countries, Luxembourg, which has no
-CSES survey of the propensities to vote, at a flat profile ([C6](esc-oecd26.qmd)). The tabs below the figure give the values behind
+CSES survey of the propensities to vote, at a flat profile ([C5](esc-oecd26.qmd)). The tabs below the figure give the values behind
 each marker with the year each refers to, the provider, dataset and series of every column with the date it was
 retrieved, and the pairwise correlations the paper's introduction describes.
 

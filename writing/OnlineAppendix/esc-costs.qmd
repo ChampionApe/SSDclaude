@@ -1,4 +1,4 @@
-# C3. Other cost specifications {#esc-costs}
+# C2. Other cost specifications {#esc-costs}
 
 ## A cost on the design {#esc-costs-design}
 

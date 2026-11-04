@@ -481,8 +481,8 @@ def numSelectionFiles():
 
 
 # ---------------------------------------------------------------------------------------------------
-# The two calibrations of the taste for leisure side by side (pages A3, B4) and the two cost specifications
-# (C3). Only what differs across the columns compared is printed; each builder checks that
+# The two calibrations of the taste for leisure side by side (pages A3, B3) and the two cost specifications
+# (C2). Only what differs across the columns compared is printed; each builder checks that
 # what it leaves out is the same, and the note says so.
 # ---------------------------------------------------------------------------------------------------
 VARIANTHEAD = (r'\textbf{Common} $\bm{X}$', r'\textbf{Vector} $\bm{X_i}$')
@@ -550,7 +550,7 @@ OECDCOLS = ('US', 'UK', 'FR')       # table 3's countries, in its order
 
 
 def oecdLeisureCalibration():
-    r""" B4.1: the rows of table \ref{table:US:Calib} that differ between the two calibrations: X (the common
+    r""" B3.1: the rows of table \ref{table:US:Calib} that differ between the two calibrations: X (the common
     value; under vector X_i the population-weighted mean of X_i) and the productivity spread. The other rows
     are checked to be the same. """
     c, v = D.usCalibrationSummary(True), D.usCalibrationSummary(False)
@@ -572,7 +572,7 @@ def oecdLeisureCalibration():
 
 
 def oecdLeisureGroups():
-    r""" B4.2: the taste for leisure X_i and the productivity eta_i by income group in the three countries under
+    r""" B3.2: the taste for leisure X_i and the productivity eta_i by income group in the three countries under
     the two calibrations (rho = 1). The population shares and the propensities to vote are data and the same
     under both, which this builder checks. """
     c, v = D.usCalibrationSummary(True), D.usCalibrationSummary(False)
@@ -599,7 +599,7 @@ def oecdLeisureGroups():
 
 
 def usStrategic():
-    r""" B3.1: the strategic term of the U.S. 2020 choice per rho (datasets.strategicTerm): the elasticity of the
+    r""" B2.1: the strategic term of the U.S. 2020 choice per rho (datasets.strategicTerm): the elasticity of the
     savings the 2020 young carry into 2050 to the 2020 tax, the elasticity of the 2050 tax to those savings (the
     slope of the 2050 policy function) and their product as the change of the 2050 tax per unit change of the
     2020 tax. Design given, each rho at its own calibration, at the equilibrium path. """

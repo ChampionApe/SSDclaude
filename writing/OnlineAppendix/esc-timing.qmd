@@ -1,4 +1,4 @@
-# C5. The timing of the choice {#esc-timing}
+# C4. The timing of the choice {#esc-timing}
 
 Appendix {{< var p.app_esc >}} of the paper shows that, without the cost of redistribution and at the U.S.
 calibration, each of the three timings it examines puts the design at a corner. A design chosen together with the tax rate re-splits benefits that current

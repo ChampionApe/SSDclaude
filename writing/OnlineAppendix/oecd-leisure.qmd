@@ -1,4 +1,4 @@
-# B4. Identification of X {#oecd-leisure}
+# B3. Identification of X {#oecd-leisure}
 
 As for Argentina ([A3](arg-leisure.qmd)), the paper takes the taste for leisure $X$ common to the income groups and
 pins its level by each country's average workweek; the alternative identifies one $X_i$ per group from the observed

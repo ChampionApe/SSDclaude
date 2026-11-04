@@ -49,7 +49,7 @@ OUTPUTS = {
     'ARG_CRRA_LOG':           ('figure', figures.argCrraLog,          'Figs/ARG_CRRA_LOG.pdf'),
     # --- US / France / UK (section 6 and its appendix). The paper's calibration table is the U.S. and France
     # (USFRCalibration, table:US:CalibUSFR, which appendix F refers to); the three countries (OECD_Calibration) and the
-    # UK's groups are the online appendix's (B6). ---
+    # UK's groups are the online appendix's (B5). ---
     'USFRCalibration':        ('table', partial(tablesUS.usukfrCalibration, countries = ('US', 'FR')),
                                'Tables/USFRCalibration.tex'),
     'OECD_Calibration':       ('table', partial(tablesUS.usukfrCalibration, name = 'OECD_Calibration',
@@ -63,8 +63,8 @@ OUTPUTS = {
     'US_ESC_overview':        ('figure', figuresUS.escOverview,       'Figs/US_ESC_overview.pdf'),
     'US_ESC_Calibration':     ('table', tablesUS.escCalibrationTable, 'Tables/US_ESC_Calibration.tex'),
     # The online appendix's (ONLINE_ONLY): the UK's own cost per rho at its own income groups and the deep test -- the
-    # UK and France under the US parameter and their own -- (page C7), the baseline path (C1), and the 2020 tax against
-    # a design pinned on the whole path, with and without the cost (C3; it writes its note, US_ESC_TauTheta_note.tex).
+    # UK and France under the US parameter and their own -- (page C6), the baseline path (C1), and the 2020 tax against
+    # a design pinned on the whole path, with and without the cost (C2; it writes its note, US_ESC_TauTheta_note.tex).
     'UK_ESC_Calibration':     ('table', tablesUS.ukEscCalibrationTable, 'Tables/UK_ESC_Calibration.tex'),
     'US_ESC_Country':         ('table', tablesUS.escCountryTable,     'Tables/US_ESC_Country.tex'),
     'US_ESC_Path':            ('figure', figuresOA.escPathPaper,      'Figs/US_ESC_Path.pdf'),
@@ -118,7 +118,7 @@ OUTPUTS = {
     'US_Strategic':           ('table', tablesOA.usStrategic,           'Tables/US_Strategic.tex'),
     'NUM_HorizonPaths':       ('table', tablesHorizon.numHorizonPaths,  'Tables/NUM_HorizonPaths.tex'),
     'NUM_SelectionFiles':     ('table', tablesOA.numSelectionFiles,     'Tables/NUM_SelectionFiles.tex'),
-    # Page C6, the cross-country test: appendix G's variants in full (figure 7.2 and table 10 at each population and
+    # Page C5, the cross-country test: appendix G's variants in full (figure 7.2 and table 10 at each population and
     # data variant; their slopes are OECD26_Variants's), Luxembourg left out and layer 1 at the U.S. omega (figure 7.2
     # and table 5 at each). Names: the builder's output name, OECD26_<base> + tablesOECD26.suffix.
     'OECD26_Layer1_nuNone':   ('figure', partial(figuresOECD26.oecd26Figure, 1, retAge = 'none', slopesTable = False),

@@ -42,7 +42,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 - **The cross-country test** (A14, C14, R6; `archive/notes/brief_retAgeChoice.md`): stage (ii)'s entry `oecd26` runs
   `python/US/runOECD26.py --inSample` per variant of `config.US['oecd26']['variants']` and per retAge of it (rows keyed
   on inputs and the U.S. β, #13) on the measure's 21 countries, data side I = 1/(2 - θ): the paper's specification
-  with and without the cost, appendix G's population variants (ν uncorrected, at the exit age) and C6's readings
+  with and without the cost, appendix G's population variants (ν uncorrected, at the exit age) and C5's readings
   (Luxembourg left out, layer 1 at the U.S. ω); `oecd26Variants` the data variants A, B (`config.THETANAMES`) into
   `results/oecd26_theta_<V>/`. The paper's variant (ε, printed `\varepsilon`; β 'common'; own turnout with Luxembourg
   flat, `csesFlat`, on the `cses` anchor; layer 1 at the mean layer-2 ω, `omegaRule`; ν at the statutory correction,
@@ -76,7 +76,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `oecd26SchemesA.py`, `oecd26SchemesB.py`, `oecd26Topups.py` | stage (0), not wired, drafts: scheme rules by country (`data/oecd26_pensionSchemes_A.csv`, `_B.csv`; no network, hand-read values typed in); top-up spending and the share s (`data/oecd26_topups.csv`, `notes/data_thetaTau.md` §G; checks every typed value against its raw file's text) |
 | `figuresDataNote.py` | not wired: the technical note's data part, three figures of the θ/τ variants from `data/oecd26_theta.csv` alone into `writing/data/figs/` |
 | `tablesHorizon.py` | appendix D: `NUM_Horizon` (`NUM_HorizonPaths` on the site), `NUM_Residuals`; the counts are `tablesOA.numSelection` |
-| `tablesOECD26.py`, `figuresOECD26.py` | the cross-country test (`results/oecd26/`, the measure's data side `tablesOECD26.dataSide`): section 6's spending at the observed designs without the cost (`OECD26_Spending`), layer 1 beside the data (`OECD26_Layer1`), the five slopes (`OECD26_Slopes`), the `ω`'s (`OECD26_Omega`), predicted against observed θ (`OECD26_ThetaFit`; `thetaFit`'s r and RMSE without the U.S.), appendix G's `OECD26_Variants` (population and data variants) and `OECD26_ThetaFitPopulation`, `OECD26_ThetaFitMeasure`, C6's exhibits by suffix; the index version `OECD26_ThetaFitIndex` is built, not input. Every figure writes `<name>_note.tex` with its numbers. `test_oecd26.py` checks them on synthetic csvs |
+| `tablesOECD26.py`, `figuresOECD26.py` | the cross-country test (`results/oecd26/`, the measure's data side `tablesOECD26.dataSide`): section 6's spending at the observed designs without the cost (`OECD26_Spending`), layer 1 beside the data (`OECD26_Layer1`), the five slopes (`OECD26_Slopes`), the `ω`'s (`OECD26_Omega`), predicted against observed θ (`OECD26_ThetaFit`; `thetaFit`'s r and RMSE without the U.S.), appendix G's `OECD26_Variants` (population and data variants) and `OECD26_ThetaFitPopulation`, `OECD26_ThetaFitMeasure`, C5's exhibits by suffix; the index version `OECD26_ThetaFitIndex` is built, not input. Every figure writes `<name>_note.tex` with its numbers. `test_oecd26.py` checks them on synthetic csvs |
 
 ## Outputs wired (51)
 

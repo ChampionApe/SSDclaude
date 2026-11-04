@@ -1,4 +1,4 @@
-# C6. The cross-country test {#esc-oecd26}
+# C5. The cross-country test {#esc-oecd26}
 
 Section {{< var p.sec_esc_crossSection >}} of the paper tests the model on the countries of figure
 {{< var p.fig_US_OECDdata >}}. Every country keeps its own workers per retiree, corrected for its gap to the U.S.

@@ -1,4 +1,4 @@
-# B5. Medicare among the transfers to the old {#oecd-medicare}
+# B4. Medicare among the transfers to the old {#oecd-medicare}
 
 The paper calibrates the U.S. to its public pensions alone, as it does the UK and France: the tax rate covers
 pension spending, and the design is read off the replacement rates of the public pension (appendix

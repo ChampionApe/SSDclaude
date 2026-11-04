@@ -1,7 +1,7 @@
-# C7. The UK and France calibrated in full {#esc-countries}
+# C6. The UK and France calibrated in full {#esc-countries}
 
 Besides the U.S., the UK and France are the countries of the paper's cross-country test with the household data to
-calibrate the model in full: France in appendix {{< var p.app_US >}} of the paper, the UK in [B6](oecd-uk.qmd). Each
+calibrate the model in full: France in appendix {{< var p.app_US >}} of the paper, the UK in [B5](oecd-uk.qmd). Each
 is calibrated under log preferences to its own pension spending, demography and design, with its own propensities to
 vote, the UK's households grouped at its own income cuts and France's at the U.S. income percentiles. This deep test
 gives each country the U.S. cost parameter λ itself (table {{< var p.table_US_ESC_calibration >}} of the paper), not
