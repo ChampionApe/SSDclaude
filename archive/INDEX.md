@@ -118,6 +118,12 @@ Where the reasoning behind each choice the paper rests on is written down.
   appendix G's population and data variants and their names; the online appendix's C6), with the runs and checks
   behind them, `notes/brief_retAgeChoice.md`; the exit-age version not adopted, `results/retAgeExit_2026-11/`.
 
+**The code and technical-note review (2026-11-04), archived 2026-11-04** — `notes/`
+- The brief (four code reviewers, triage, three note reviewers, edits on RKB's approval):
+  `brief_codeDocReview.md`; the ~80 findings triaged A–E with RKB's decisions and every follow-up, `codeReview_triage.md`;
+  the note's proposed edits D1–D3, `docReview_proposals.md`. Commits `dfccd4e`, `0253295`, `e0a0f02`; root log
+  2026-11-04 (evening, night). Left open: C15 in `notes/TODO.md`.
+
 ## Session logs
 
 `sessionLogs/RESEARCH_LOG_<log>.md`, one per live log, oldest first: verbatim through 2026-09-11, then a heading
@@ -356,6 +362,8 @@ Archived 2026-11-04 (the cross-section's theme above):
   turnout, the stylized readings and the text pass of 2026-11-02.
 - `brief_oecdRetAge.md`, `brief_retAgeChoice.md`: the retirement-age correction of ν, the new main specification and
   appendix G's variants.
+- `brief_codeDocReview.md`, `codeReview_triage.md`, `docReview_proposals.md`: the code and technical-note review
+  (its theme above).
 
 ## Code
 

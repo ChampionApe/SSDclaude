@@ -67,6 +67,11 @@ on ..."), with an inline pointer kept only where a claim rests on the page, and 
 Traps).
 
 
+**C15. `US_stationaryApprox.csv` has no `commonX` column** (code review of 2026-11-04,
+`archive/notes/codeReview_triage.md`). A `stationaryApprox --vectorX` run on part of the grid keeps the common-X rows
+of that part next to the new ones, with nothing to tell them apart. Add the column and key the merge on it before the
+first vector-X run.
+
 ## Data tasks
 
 **D2. Figure 5.1's data outside the pipeline.** `writing/Paper/Figs/coverageArg.eps` (beneficiaries of the

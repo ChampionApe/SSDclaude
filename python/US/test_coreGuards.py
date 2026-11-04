@@ -1,4 +1,4 @@
-r""" The model core's guards, and the CRRA permanent timing's path (notes/codeReview_triage.md, 2026-11-04).
+r""" The model core's guards, and the CRRA permanent timing's path (archive/notes/codeReview_triage.md, 2026-11-04).
 Each check fails on the code before the change it pins.
 
 Run:  .venv\Scripts\python.exe python\US\test_coreGuards.py        (~30 s)
