@@ -75,7 +75,9 @@ ESC drivers merge into their csvs (`runESC.mergeWrite`, keyed on `spec`, `phi`, 
   merge key (#13).
 - **The cross-country csvs** are keyed on (turnout, spec, phi, commonX, betaRule, thetaSource[, omegaRule, retAge, iso3]); the
   anchor is always `'common'`; a csv without `betaRule`/`thetaSource`/`omegaRule`/`retAge` is read, and migrated, as
-  `'common'`/`'index'`/`'anchor'`/`'none'`.
+  `'common'`/`'index'`/`'anchor'`/`'none'`. `--retAge` defaults to `config.US['oecd26']['retAge']`, which python/paper
+  selects on, so any reading may go into `results/oecd26/`; France's own ν is `testEU.load`'s under `config.US['retAgeFR']`
+  ('nra' the workbook's appendix-F column bitwise, 'exit' the WPP ratio at the exit-age gap, `testEU.frenchNu`).
 - **θ imposed**: `db['θ0']` (`ModelUS.θOverride`) is θ, `RR0` unread; `'flat'`, `ModelOECD` refuse it. `--theta V` puts
   the U.S., France, the UK at their rows of `data/oecd26_theta.csv` (`oecd26.countryθ0`) under `results/oecd26_theta_V/`,
   or `results/` with `--main` for `config.US['theta']` (`oecd26.thetaRoot`); rows carry `thetaSource`, `θ0`.
@@ -97,12 +99,15 @@ rerun at C on 2026-11-02, `logs/c5rerun/`): at ρ = 1 `θ*` 0.5445, `λ` 6.247. 
 
 ## Open
 
+- The cross-section's main specification since 2026-11-04 (`notes/brief_retAgeChoice.md`): own turnout with Luxembourg
+  flat (`csesFlat`, now allowed into `results/oecd26/`; `pooled` still refused), layer 1 at the mean layer-2 ω, ν at
+  the statutory correction (`nra`). The overnight rows of `results/oecd26_retage/` were merged into `results/oecd26/`
+  with `_write`; the folder and France's exit-age worktree `logs/wt_retAgeExit/` are records only.
 - The path iteration (`method = path`) and the flat-only variant's leaded calibration were last run on 2026-10-03
   at the earlier calibration (`θ*` = 0.738); they are cross-checks no exhibit prints (`num_esc.tex`, checks).
 - A13's myopic/Markov split needs a new model function (deferred; TODO C13).
 - Data caveats of the UK and France: `data/README.md`.
 - θ variant C (U.S. 0.5445, France 0.8219, UK 0.1812) is the paper's measure since 2026-10-30 (`config.US['theta']`); its
   results are `logs/overnight_2026-10-30/run.sh`'s (run 2026-10-30/31, commit bab1205).
-- The stylized readings on C (2026-11-02, `notes/brief_oecdVariants.md`): layer 1 at ω̄ and the `pooled` turnout, in
-  `results/oecd26_stylized/` since the paper reads them (appendix H's `OECD26_Stylized`, `OECD26_ThetaFitGrid`; stage
-  (ii)'s `oecd26Stylized`, every row reused on its keys after the move); compared in `logs/variantCompare/summary_2026-11.md`.
+- The stylized readings on C (2026-11-02): retired from the paper on 2026-11-04 (layer 1 at ω̄ is now the main
+  specification; the `pooled` turnout dropped); `results/oecd26_stylized/` stays on disk, unread.

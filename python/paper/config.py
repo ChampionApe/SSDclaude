@@ -150,6 +150,14 @@ US = {
     # standard results/ paths (python/US/oecd26.thetaRoot); every reader of those paths keeps the rows at this
     # thetaSource only (datasets.atTheta), a csv written without the column reading as 'index'.
     'theta':      'C',
+    # FRANCE'S nu IN ITS OWN CALIBRATION (python/US/testEU.load; every France run of stages (i) and (ii)):
+    # 'nra' the population sheet's 'Worker-to-retiree' (appendix F: the WPP ratio corrected for the gap to the
+    # U.S. men's normal retirement age) | 'exit' the WPP ratio ('Relative cohort sizes') corrected for the gap to the
+    # U.S. men's effective exit age (oecd26.retAgeNu), as the cross-section's FRA row under US['oecd26']['retAge'].
+    # 'retAgeUK' the same for the UK: 'nra' its sheet's column, the WPP ratio (its normal retirement ages are the
+    # U.S. ones, a gap of 0) | 'exit' that ratio at its gap in effective exit ages.
+    'retAgeFR':   'nra',
+    'retAgeUK':   'nra',
     'ρGrid':      [0.5, 1.0, 2.0],            # the sweeps' points (calibrateRhoGrid*.py --rhos)
     'ρAnchor':    1.0,                        # the sole LOG point, and the sweeps' march anchor
     'ρBaseline':  1.0,                        # the headline specification: the LOG tables
@@ -247,46 +255,51 @@ US = {
     },
     # THE CROSS-COUNTRY TEST (python/US/runOECD26.py, results/oecd26/), the one place its paper variant lives:
     # the builders (tablesOECD26.PAPER, figuresOECD26) and the readers (datasets.oecd26*) default to it, and
-    # runOECD26.py's --spec/--betaRule defaults are read from here.
+    # runOECD26.py's --spec/--betaRule/--retAge defaults are read from here.
     #   spec      the cost transported from the U.S. anchor: 'sizePiR' (lambda_n = epsilon Pi_n/R_n, epsilon
     #             the U.S. one), 'size' (lambda itself), 'none' (no cost)
     #   betaRule  'common' (the U.S. beta in every country) | 'commonR' (each country's beta set so that its
     #             2020 return is the U.S. anchor's)
-    #   turnout   'cses' (each country's own CSES propensities to vote; Luxembourg has none and drops out, 20
-    #             countries under C) | 'cps' (the U.S. CPS propensities in every country, 21 countries)
+    #   turnout   'csesFlat' (each country's own CSES propensities to vote; Luxembourg, which has no CSES survey and
+    #             enforces compulsory voting, flat: 21 countries under C; it stands on the 'cses' anchor) | 'cses'
+    #             (Luxembourg left out, 20 countries) | 'cps' (the U.S. CPS propensities: rows of before 2026-11-04)
+    #   omegaRule layer 1's omega: 'mean' (the mean of layer 2's; beta and the cost parameter the anchor's) |
+    #             'anchor' (the U.S. anchor's)
     #   reading   the model's design: 'inForce' (in force in 2020, chosen in 1990) | 'chosen' (chosen in 2020)
-    #   spendingReading  the model's spending in section 7's test (OECD26_Layer1, OECD26_Slopes, OECD26_ThetaVariants,
-    #             OECD26_Stylized): 'chosen' (100 tauInForce (1 - alpha), the tax on the path whose design in force is
-    #             the chosen one, in both layers) | 'observed' (100 tau2020 (1 - alpha), the tax at the observed design,
-    #             which layer 2's omega matches). Section 6's spending test (OECD26_Spending) is always 'observed'.
+    #   spendingReading  the model's spending in section 7's test (OECD26_Layer1, OECD26_Slopes, OECD26_Variants):
+    #             'chosen' (100 tauInForce (1 - alpha), the tax on the path whose design in force is the chosen one,
+    #             in both layers) | 'observed' (100 tau2020 (1 - alpha), the tax at the observed design, which layer
+    #             2's omega matches). Section 6's spending test (OECD26_Spending) is always 'observed'.
     #   spendingSpec  the cost of section 6's spending test at the observed designs
-    # `variants`: the runs stage (ii)'s entry 'oecd26' makes, one runOECD26.py command each (--theta US['theta']
-    # --main --inSample), in this order (an anchor before the layers that read it); rows already current are
-    # reused, so a rerun costs seconds. `thetaVariants`: the robustness measures of data/oecd26_theta.csv, each
-    # run by stage (ii)'s entry 'oecd26Variants' at the paper's variant (a U.S. sweep at rho = 1, then the
-    # cross-section) into its own results/oecd26_theta_<V>/; OECD26_ThetaVariants prints the five slopes under
-    # US['theta'] and these (A2pt's runs, retired from the paper, stay in results/oecd26_theta_A2pt/).
-    # `stylized`: appendix H's stylized readings of the cross-section (OECD26_Stylized, OECD26_ThetaFitGrid), run by
-    # stage (ii)'s entry 'oecd26Stylized' into results/<dir>/ on the main variant's U.S. sweep (runOECD26.py
-    # --usSweep): the turnout 'pooled' (the U.S. at its own CSES profile, AUS, BEL and LUX flat, every other
-    # country at the mean profile of the voluntary non-U.S. countries) and layer 1 at omegaRule 'mean' (the mean
-    # layer-2 omega, beta and the cost parameter the anchor's), each a list of runOECD26.py stage sets, in order.
+    #   retAge    nu's retirement-age correction in every country but the U.S. (python/US/oecd26.retAgeNu, appendix F's
+    #             rule): 'nra' (the gap to the U.S. men's normal retirement age, current at 1990 and 2020, future at
+    #             2050 and 2080; France's nu is then appendix F's) | 'none' (the WPP ratio) | 'exit' (the effective exit
+    #             age). A key column of the layers' rows (runOECD26.LEGACY 'none'); the anchor does not depend on it
+    # `variants`: the runs stage (ii)'s entry 'oecd26' makes into results/oecd26/, one runOECD26.py command per retAge
+    # of each (--theta US['theta'] --main --inSample), in this order (an anchor and layer 2 before the mean omega that
+    # reads them); rows already current are reused, so a rerun costs seconds. They are the paper's specification with
+    # and without the cost, appendix G's population variants (`populationVariants`) and the online appendix's
+    # readings (`oaReadings`, each the parts that differ from the paper's: Luxembourg left out, layer 1 at the U.S.
+    # omega). `thetaVariants`: appendix G's data variants, measures of data/oecd26_theta.csv (THETANAMES), each run by
+    # stage (ii)'s entry 'oecd26Variants' at the paper's specification (a U.S. sweep at rho = 1, then the
+    # cross-section) into its own results/oecd26_theta_<V>/. Retired readings stay on disk, unread: the U.S. turnout
+    # (the cps rows), results/oecd26_stylized/ (pooled turnout) and results/oecd26_theta_A2pt/.
     'oecd26': {
-        'spec': 'sizePiR', 'betaRule': 'common', 'turnout': 'cses', 'reading': 'inForce', 'spendingSpec': 'none',
-        'spendingReading': 'chosen',
+        'spec': 'sizePiR', 'betaRule': 'common', 'turnout': 'csesFlat', 'omegaRule': 'mean', 'reading': 'inForce',
+        'spendingSpec': 'none', 'spendingReading': 'chosen', 'retAge': 'nra',
         'variants': [
-            {'spec': ['sizePiR'], 'betaRule': ['common'], 'turnout': ['cps', 'cses'],
-             'stage': ['anchor', 'layer1', 'layer2']},
-            {'spec': ['none'], 'betaRule': ['common'], 'turnout': ['cps', 'cses'],
-             'stage': ['anchor', 'layer1', 'layer2']},
+            {'spec': ['sizePiR', 'none'], 'betaRule': ['common'], 'turnout': ['csesFlat'],
+             'stage': ['anchor', 'layer2', 'layer1'], 'omegaRule': 'mean', 'retAge': ['nra']},
+            {'spec': ['sizePiR'], 'betaRule': ['common'], 'turnout': ['csesFlat'],
+             'stage': ['layer2', 'layer1'], 'omegaRule': 'mean', 'retAge': ['none', 'exit']},
+            {'spec': ['sizePiR'], 'betaRule': ['common'], 'turnout': ['cses'],
+             'stage': ['anchor', 'layer2', 'layer1'], 'omegaRule': 'mean', 'retAge': ['nra']},
+            {'spec': ['sizePiR'], 'betaRule': ['common'], 'turnout': ['csesFlat'],
+             'stage': ['layer1'], 'omegaRule': 'anchor', 'retAge': ['nra']},
         ],
+        'populationVariants': ['none', 'exit'],
         'thetaVariants': ['A', 'B'],
-        'stylized': {
-            'dir': 'oecd26_stylized',
-            'runs': [{'turnout': ['cses', 'pooled'], 'stage': ['anchor', 'layer2'], 'omegaRule': 'anchor'},
-                     {'turnout': ['cses', 'pooled'], 'stage': ['layer1'], 'omegaRule': 'mean'},
-                     {'turnout': ['pooled'], 'stage': ['layer1'], 'omegaRule': 'anchor'}],
-        },
+        'oaReadings': [{'turnout': 'cses'}, {'omegaRule': 'anchor'}],
     },
     # THE TAX AGAINST A PINNED DESIGN (python/US/runTauTheta.py, results/esc/escTauTheta.csv; US_ESC_TauTheta): the
     # U.S. at rho = 1 without the cost and under US['esc']['spec'] at its calibrated lambda, theta pinned on the whole
@@ -302,6 +315,10 @@ ISO3 = {'US': 'USA', 'FR': 'FRA', 'UK': 'GBR'}
 THETADEF = (r'the earnings-linked share of the least-squares line through the public pension at 0.5, 1 and 2 times '
             r'average earnings ($c/(a+c)$ of $p(y) = a + c\,y$), times one minus the share of public spending on '
             r'minimum top-ups and tested benefits')
+# The names the paper gives the measures of the design (US['theta'], the paper's, and appendix G's data variants
+# US['oecd26']['thetaVariants']) and the readings of nu (US['oecd26']['retAge'] and appendix G's population variants).
+THETANAMES = {'C': 'public tier', 'A': 'public tier, 23 countries', 'B': 'all mandatory tiers'}
+RETAGENAMES = {'nra': 'statutory age', 'none': 'uncorrected', 'exit': 'exit age'}
 
 
 def thetaFlags():

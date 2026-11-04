@@ -13,7 +13,9 @@ protocol showing up in the data (see modelFR.py):
     loudly rather than quietly target the US interest rate.
   * The population sheet's 'Worker-to-retiree' is the column the model uses. France's is adjusted for its
     lower retirement age (1.5 years below the US in 1990 and 2020, 1 from 2050; PaG 2021, appendix F) and so differs from
-    the raw census ratio in the neighbouring column; the UK's does not need the adjustment.
+    the raw census ratio in the neighbouring column; the UK's does not need the adjustment. Under config.US['retAgeFR']
+    'exit' France's is instead its WPP ratio corrected for the gap in effective exit ages, and under
+    config.US['retAgeUK'] 'exit' the UK's (hostNu).
 
 France's 'Replacement rate' is 1, and getTheta (getθ) returns exactly 1 at RR0 = 1 for ANY income
 grouping -- which is why France's groups can be cut at US percentiles. Nothing imposes theta = 1 in code. Under a θ
@@ -30,7 +32,45 @@ import numpy as np, pandas as pd
 DIR = os.path.dirname(os.path.abspath(__file__))
 PATHS = {'FR': os.path.join(DIR, '..', '..', 'data', 'FRMain.xlsx'),
          'UK': os.path.join(DIR, '..', '..', 'data', 'UKMain.xlsx')}
+PAPERCONFIG = os.path.join(DIR, '..', 'paper', 'config.py')
 t_ss = 3   # number of periods in steady state, as in test.py
+RETAGESFR = ('nra', 'exit')
+HOSTKEY = {'FR': 'retAgeFR', 'UK': 'retAgeUK'}       # config.US's key of each country's own ν correction
+HOSTISO = {'FR': 'FRA', 'UK': 'GBR'}
+HOSTWPP = {'FR': 'Relative cohort sizes', 'UK': 'Worker-to-retiree'}   # the population sheet's WPP ratio
+
+
+def retAgeHost(country):
+    """ python/paper/config.py's US['retAgeFR'] or US['retAgeUK'] ('nra' where absent): which correction `country`'s
+    own ν carries. """
+    import importlib.util
+    sp = importlib.util.spec_from_file_location('_paperConfigHost', PAPERCONFIG)
+    mod = importlib.util.module_from_spec(sp)
+    sp.loader.exec_module(mod)
+    r = mod.US.get(HOSTKEY[country], 'nra')
+    if r not in RETAGESFR:
+        raise ValueError("config.US[{!r}] must be one of {}, got {!r}".format(HOSTKEY[country], RETAGESFR, r))
+    return r
+
+
+def retAgeFR():
+    return retAgeHost('FR')
+
+
+def hostNu(country, dft, retAge):
+    """ `country`'s ν at the population sheet's dates (dft, indexed on t) under `retAge`: 'nra' the sheet's
+    'Worker-to-retiree', bitwise (France's appendix-F column; the UK's WPP ratio, its normal retirement ages being the
+    U.S. ones); 'exit' the sheet's WPP ratio (HOSTWPP) corrected by oecd26.retAgeNu at the country's gap to the U.S.
+    men's effective exit age (one gap at every date, oecd26.retAgeGaps), the cross-section's row under retAge 'exit'. """
+    if retAge == 'nra':
+        return dft['Worker-to-retiree'].values.astype(float)
+    import oecd26                                   # lazily: oecd26 imports the U.S. workbook and the model
+    g = float(oecd26.retAgeGaps(HOSTISO[country], 'exit')[0])
+    return oecd26.retAgeNu(dft[HOSTWPP[country]].values.astype(float), np.full(len(dft), g))
+
+
+def frenchNu(dft, retAge):
+    return hostNu('FR', dft, retAge)
 
 
 def load(country, t_ss = t_ss):
@@ -43,7 +83,7 @@ def load(country, t_ss = t_ss):
 
     dft = sheet('population').set_index('t')
     datesLog = dft.index
-    νLog = dft['Worker-to-retiree'].values.astype(float)
+    νLog = hostNu(country, dft, retAgeHost(country))
     TLog = len(datesLog)
     dates = datesLog.union(pd.Index([datesLog[-1]+30*i for i in range(1, t_ss+1)]))
 

@@ -13,7 +13,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 |---|---|---|---|---|
 | (0) data targets | `dataTargets.py` | `oecdFigure1.py` (figure 1) | `data/argentina_*.csv`, `data/oecdFigure1*.csv` | seconds |
 | (i) calibration | `runCalibration.py` | `runCalibrationUS.py --commonX` | `results/calibration/`, `results/paper/*Summary.csv` | ~3.2 h / ~45 min |
-| (ii) experiments | `runShocks.py` | `runShocksUS.py` | `results/shocks/`, `results/sweeps/`, `results/esc/`, `results/oecd26/`, `results/oecd26_theta_<V>/`, `results/oecd26_stylized/` | ~50 min / ~2 h (+3 h variants, +1.5 h stylized) |
+| (ii) experiments | `runShocks.py` | `runShocksUS.py` | `results/shocks/`, `results/sweeps/`, `results/esc/`, `results/oecd26/`, `results/oecd26_theta_<V>/` | ~50 min / ~2 h (+3 h variants, +1.5 h stylized) |
 | (iii) build | `build.py` | `build.py` | `results/paper/{Tables,Figs}`, then `writing/Paper` | seconds |
 | online appendix | `build.py --site`, then `quarto render writing/OnlineAppendix` | the same | `writing/OnlineAppendix/{_generated,_book,_variables.yml}`, `writing/Paper/onlineAppendix.tex` | ~1 min |
 
@@ -39,14 +39,17 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
   cost `'sizePiR'` (`esc['costVariants']`: LOG calibration, acute ageing, `escAgeingCosts.csv`), the tax against a
   pinned design (`escTauTheta`, `python/US/runTauTheta.py`, `config.US['tauTheta']`, seconds). Dropped 2026-10-30:
   Medicare, `freeTheta`, the timing checks, the deep test under ε, the other costs under CRRA.
-- **The cross-country test** (A14, C14, R6): stage (ii)'s entry `oecd26` runs `python/US/runOECD26.py --inSample`
-  per variant of `config.US['oecd26']['variants']` ('sizePiR', 'none'; cps, cses; rows keyed on inputs and the U.S. β,
-  #13) on the measure's 21 countries (20 at own turnout), data side I = 1/(2 - θ); `oecd26Variants` under A, B into
-  `results/oecd26_theta_<V>/` (`OECD26_ThetaVariants`); `oecd26Stylized` the pooled turnout and layer 1 at the mean ω
-  into `results/oecd26_stylized/` (`OECD26_Stylized`, `OECD26_ThetaFitGrid`; readers' `root`, `omegaRule`). The paper's
-  variant (ε, printed `\varepsilon`; β 'common'; own turnout 'cses'; design in force in 2020; section 7's spending at
-  the chosen design, `spendingReading`) and section 6's `spendingSpec` live in `config.US['oecd26']`; another carries
-  its suffix (`_cps`, `_observed`). Stale anchors or rows raise `StaleInput`.
+- **The cross-country test** (A14, C14, R6; `notes/brief_retAgeChoice.md`): stage (ii)'s entry `oecd26` runs
+  `python/US/runOECD26.py --inSample` per variant of `config.US['oecd26']['variants']` and per retAge of it (rows keyed
+  on inputs and the U.S. β, #13) on the measure's 21 countries, data side I = 1/(2 - θ): the paper's specification
+  with and without the cost, appendix G's population variants (ν uncorrected, at the exit age) and C6's readings
+  (Luxembourg left out, layer 1 at the U.S. ω); `oecd26Variants` the data variants A, B (`config.THETANAMES`) into
+  `results/oecd26_theta_<V>/`. The paper's variant (ε, printed `\varepsilon`; β 'common'; own turnout with Luxembourg
+  flat, `csesFlat`, on the `cses` anchor; layer 1 at the mean layer-2 ω, `omegaRule`; ν at the statutory correction,
+  `retAge` 'nra'; design in force in 2020; section 7's spending at the chosen design, `spendingReading`) and section
+  6's `spendingSpec` live in `config.US['oecd26']`; another carries its suffix (`_cses`, `_omegaUS`, `_nuNone`,
+  `_thetaA`). Stale anchors or rows raise `StaleInput`. France's own ν is `config.US['retAgeFR']`'s (`testEU.load`;
+  `'nra'`, appendix F). Retired, on disk unread: the cps rows, `results/oecd26_stylized/`, `results/oecd26_theta_A2pt/`.
 - **Argentina's GDP** is formal plus informal output, `Y + Y0` (#3): `datasets` reads savings and spending over it
   (`savingsRatePath`, `spendingPath`) and `config.argTaxTarget` checks the calibrated τ. Not wired: the pre-reform
   ε = 0 calibration and `reformDiagnostics.py` (`REPLICATION.md` §3).
@@ -73,15 +76,15 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `oecd26SchemesA.py`, `oecd26SchemesB.py`, `oecd26Topups.py` | stage (0), not wired, drafts: scheme rules by country (`data/oecd26_pensionSchemes_A.csv`, `_B.csv`; no network, hand-read values typed in); top-up spending and the share s (`data/oecd26_topups.csv`, `notes/data_thetaTau.md` §G; checks every typed value against its raw file's text) |
 | `figuresDataNote.py` | not wired: the technical note's data part, three figures of the θ/τ variants from `data/oecd26_theta.csv` alone into `writing/data/figs/` |
 | `tablesHorizon.py` | appendix D: `NUM_Horizon` (`NUM_HorizonPaths` on the site), `NUM_Residuals`; the counts are `tablesOA.numSelection` |
-| `tablesOECD26.py`, `figuresOECD26.py` | the cross-country test (`results/oecd26/`, the measure's data side `tablesOECD26.dataSide`): section 6's spending at the observed designs without the cost (`OECD26_Spending`), layer 1 beside the data (`OECD26_Layer1`), the five slopes (`OECD26_Slopes`), the `ω`'s (`OECD26_Omega`), predicted against observed θ (`OECD26_ThetaFit`; `thetaFit`'s r and RMSE without the U.S.), appendix H's `OECD26_ThetaVariants` (C, A, B), `OECD26_Stylized`, `OECD26_ThetaFitGrid`; the index versions `*Index` are built, not input. Every figure writes `<name>_note.tex` with its numbers. `test_oecd26.py` checks them on synthetic csvs |
+| `tablesOECD26.py`, `figuresOECD26.py` | the cross-country test (`results/oecd26/`, the measure's data side `tablesOECD26.dataSide`): section 6's spending at the observed designs without the cost (`OECD26_Spending`), layer 1 beside the data (`OECD26_Layer1`), the five slopes (`OECD26_Slopes`), the `ω`'s (`OECD26_Omega`), predicted against observed θ (`OECD26_ThetaFit`; `thetaFit`'s r and RMSE without the U.S.), appendix G's `OECD26_Variants` (population and data variants) and `OECD26_ThetaFitPopulation`, `OECD26_ThetaFitMeasure`, C6's exhibits by suffix; the index version `OECD26_ThetaFitIndex` is built, not input. Every figure writes `<name>_note.tex` with its numbers. `test_oecd26.py` checks them on synthetic csvs |
 
 ## Outputs wired (51)
 
 Every generated `.tex` carries a `%% Source:` banner; `--list` reports what is buildable now. Every table row ends
 in a `% row: <key>` comment (`tables.rowKey`) and every figure writes `.svg` and `.marks.json` (`figures._save`),
-which tie the site's datasets to the paper's figures. Of the 23 outputs copied into `writing/Paper` the paper inputs 20
-(not `ARG_LOG_FourInOne` and the index versions `OECD26_ThetaFit{,Grid}Index`); the online appendix's 34 exhibits read
-30 outputs, 28 of them `ONLINE_ONLY` (never copied), appendix F.3's and G's among them since 2026-11-02;
+which tie the site's datasets to the paper's figures. Of the 22 outputs copied into `writing/Paper` the paper inputs 20
+(not `ARG_LOG_FourInOne` and the index version `OECD26_ThetaFitIndex`); the online appendix's 43 exhibits read
+39 outputs, 37 of them `ONLINE_ONLY` (never copied), appendix F.3's and G's among them since 2026-11-02;
 `onlineAppendix.RETIRED` holds the 10 exhibits whose runs were dropped on 2026-10-30, which the pages still include (a
 notice is written in their place). Figure 1.1 (`OECDdata`) plots the measure's index on its countries and writes
 `OECDdata_note.tex`; every note that defines θ says it as `config.THETADEF`. Removed 2026-10-30 with their runs:

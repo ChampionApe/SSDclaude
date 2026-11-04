@@ -661,18 +661,27 @@ def compulsoryVoting(theta = None):
 def oecd26Dir(theta = None, root = None):
     """ Where the cross-section's rows of thetaSource `theta` (config.US['theta'] by default) are: results/oecd26/ for
     the main variant and for 'index' (the rows of figure 1.1's index, the paper's measure before the variant),
-    results/oecd26_theta_<theta>/ for a robustness variant (python/US/runOECD26.py --theta without --main); `root`, a
-    directory, overrides both (oecd26StylizedDir: appendix H's stylized readings, at the main variant). """
+    results/oecd26_theta_<theta>/ for a data variant (python/US/runOECD26.py --theta without --main); `root`, a
+    directory, overrides both. """
     if root is not None:
         return root
     theta = C.US['theta'] if theta is None else theta
     return OECD26DIR if theta in (C.US['theta'], 'index') else os.path.join(C.RESULTS, 'oecd26_theta_' + theta)
 
 
-def oecd26StylizedDir():
-    """ results/<config.US['oecd26']['stylized']['dir']>/: the turnout 'pooled' and layer 1 at omegaRule 'mean' (stage
-    (ii)'s oecd26Stylized), on the main variant's U.S. sweep; its cses anchor and layer-2 rows equal results/oecd26/'s. """
-    return os.path.join(C.RESULTS, C.US['oecd26']['stylized']['dir'])
+# A turnout whose U.S. inputs are another's stands on that one's anchor (python/US/runOECD26.ANCHORTURNOUT, read here
+# without importing model code): Luxembourg's flat profile leaves the U.S. as it is.
+ANCHORTURNOUT = {'csesFlat': 'cses'}
+
+
+def oecd26OmegaRule(layer, omegaRule = None):
+    """ Layer `layer`'s ω rule: `omegaRule`, else config.US['oecd26']['omegaRule'] for layer 1; layer 2 calibrates each
+    country's ω and is always 'anchor' (a layer-1 rule asked of it is an error). """
+    if layer == 2:
+        if omegaRule not in (None, 'anchor'):
+            raise ValueError("layer 2 calibrates each country's ω: omegaRule 'anchor' only, got {!r}".format(omegaRule))
+        return 'anchor'
+    return C.US['oecd26']['omegaRule'] if omegaRule is None else omegaRule
 
 
 def oecd26Path(layer, theta = None, root = None):
@@ -687,14 +696,22 @@ def _oecd26Variant(turnout = None, spec = None, betaRule = None):
             v['betaRule'] if betaRule is None else betaRule)
 
 
-def _oecd26Rows(layer, turnout = None, spec = None, betaRule = None, theta = None, root = None, omegaRule = 'anchor'):
+def _oecd26Rows(layer, turnout = None, spec = None, betaRule = None, theta = None, root = None, omegaRule = None,
+                retAge = None):
     """ The rows of anchor.csv (layer 0) or layer<1|2>.csv at one turnout, spec and β rule (config.US['oecd26']'s
     where None), at config phi and calibration variant, at thetaSource `theta` (config.US['theta'] by default;
-    oecd26Dir, or `root`) and, for a layer, at `omegaRule` (layer 1's ω: 'anchor' or 'mean'; layer 2 is always
-    'anchor'). A csv without the betaRule column, or a blank cell in it, is a 'common' row: the one rule before the
-    column existed (runOECD26.LEGACY); one without thetaSource an 'index' row, one without omegaRule an 'anchor'
-    row. """
+    oecd26Dir, or `root`) and, for a layer, at `omegaRule` (oecd26OmegaRule: layer 1's ω, 'anchor' or 'mean',
+    config's where None; layer 2 is always 'anchor') and at ν's retirement-age correction `retAge`
+    (config.US['oecd26']['retAge'] where None; the anchor has none, the U.S. gap being 0). The anchor of a turnout
+    in ANCHORTURNOUT is that turnout's. A csv without the betaRule column, or a blank cell in it, is a 'common' row:
+    the one rule before the column existed (runOECD26.LEGACY); one without thetaSource an 'index' row, one without
+    omegaRule an 'anchor' row, one without retAge a 'none' row. """
     turnout, spec, betaRule = _oecd26Variant(turnout, spec, betaRule)
+    if layer == 0:
+        turnout = ANCHORTURNOUT.get(turnout, turnout)
+    else:
+        omegaRule = oecd26OmegaRule(layer, omegaRule)
+    retAge = C.US['oecd26']['retAge'] if retAge is None else retAge
     theta = C.US['theta'] if theta is None else theta
     path = oecd26Path(layer, theta, root)
     df = C.atTheta(pd.read_csv(_need(path), dtype = {'inputsKey': str, 'anchorKey': str}), theta)
@@ -706,7 +723,8 @@ def _oecd26Rows(layer, turnout = None, spec = None, betaRule = None, theta = Non
            & (df['commonX'].astype(bool) == bool(C.US['commonX'])))
     if layer != 0:
         om = df['omegaRule'].fillna('anchor') if 'omegaRule' in df.columns else pd.Series('anchor', index = df.index)
-        sel &= om == omegaRule
+        ra = df['retAge'].fillna('none') if 'retAge' in df.columns else pd.Series('none', index = df.index)
+        sel &= (om == omegaRule) & (ra == retAge)
     return _noDuplicates(df[sel], ['turnout'] + ([] if layer == 0 else ['iso3']), path), path
 
 
@@ -746,16 +764,16 @@ def oecd26Anchor(turnout = None, spec = None, theta = None, root = None):
     return a
 
 
-def oecd26Layer(layer, turnout = None, spec = None, betaRule = None, theta = None, root = None, omegaRule = 'anchor'):
+def oecd26Layer(layer, turnout = None, spec = None, betaRule = None, theta = None, root = None, omegaRule = None,
+                retAge = None):
     """ Layer 1 or 2 of one turnout reading, cost spec and β rule (config.US['oecd26']'s where None) at thetaSource
-    `theta` (config.US['theta'] by default) and, layer 1, at `omegaRule`, from oecd26Dir(theta, root), indexed on ISO3.
-    Every row must have been computed against the anchor of its spec on disk (its `anchorKey` is the anchor's
-    `inputsKey`) on the anchor's grid: a row of an earlier anchor is StaleInput, never mixed in
-    (crossCuttingFindings #13). """
-    if layer == 2 and omegaRule != 'anchor':
-        raise ValueError("layer 2 calibrates each country's ω: omegaRule 'anchor' only, got {!r}".format(omegaRule))
+    `theta` (config.US['theta'] by default), ν's retirement-age correction `retAge` (config's where None) and, layer 1,
+    at `omegaRule` (config's where None; oecd26OmegaRule), from oecd26Dir(theta, root), indexed on ISO3. Every row must
+    have been computed against the anchor of its spec on disk (its `anchorKey` is the anchor's `inputsKey`) on the
+    anchor's grid: a row of an earlier anchor is StaleInput, never mixed in (crossCuttingFindings #13). """
+    oecd26OmegaRule(layer, omegaRule)
     a = oecd26Anchor(turnout, spec, theta, root)
-    df, path = _oecd26Rows(layer, turnout, spec, betaRule, theta, root, omegaRule)
+    df, path = _oecd26Rows(layer, turnout, spec, betaRule, theta, root, omegaRule, retAge)
     stale = (df['anchorKey'] != a['inputsKey']) | (df['grid'] != a['grid'])
     if stale.any():
         raise StaleInput('{}: rows computed against another anchor or grid: {}'.format(
@@ -1011,9 +1029,6 @@ def selectionCsvs():
         for layer in (0, 1, 2):
             p = oecd26Path(layer, V)
             us.append(('US', 'oecd26_theta_{}/{}'.format(V, os.path.basename(p)), [p]))
-    for layer in (0, 1, 2):
-        p = oecd26Path(layer, root = oecd26StylizedDir())
-        us.append(('US', '{}/{}'.format(C.US['oecd26']['stylized']['dir'], os.path.basename(p)), [p]))
     for f in ('US_stationaryApprox.csv', 'US_ESC_stationaryApprox.csv') + HORIZONCSVS['US'] + ('US_derivativeScheme.csv',):
         us.append(('US', f, [os.path.join(C.NUMDIR, f)]))
     return arg + us
@@ -1063,7 +1078,6 @@ def thetaKeyed(path):
     p, name = os.path.abspath(path), os.path.basename(path)
     under = lambda d: os.path.normcase(p).startswith(os.path.normcase(os.path.abspath(d)) + os.sep)
     return ((under(C.CALIBDIR) and name.startswith(('US_', 'FR_', 'UK_'))) or under(C.ESCDIR) or under(OECD26DIR)
-            or under(oecd26StylizedDir())
             or (under(C.SHOCKDIR) and name.startswith('US_'))
             or name in ('US_stationaryApprox.csv', 'US_ESC_stationaryApprox.csv'))
 

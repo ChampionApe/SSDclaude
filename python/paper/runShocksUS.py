@@ -16,9 +16,8 @@ published numbers were produced at.
 
 THE θ VARIANT. Every command carries config.thetaFlags() (--theta config.US['theta'] --main: the U.S., France and
 the UK at the variant's θ0, the standard results/ paths), and an output counts as present only where it holds rows
-at that thetaSource (`_atTheta`). The robustness variants of config.US['oecd26']['thetaVariants'] run without
---main into their own results/oecd26_theta_<V>/ (`oecd26Variants`); appendix H's stylized readings of the
-cross-section run at the main variant, on its U.S. sweep, into results/oecd26_stylized/ (`oecd26Stylized`).
+at that thetaSource (`_atTheta`). Appendix G's data variants, config.US['oecd26']['thetaVariants'], run without
+--main into their own results/oecd26_theta_<V>/ (`oecd26Variants`).
 
 TWO PARTS. `part = 'main'` is what a routine rebuild runs: the exogenous-theta shocks in both variants and
 the LOG leg of the endogenous-theta appendix, all cheap, and the cross-section. `part = 'prepub'` holds the
@@ -32,9 +31,9 @@ one row per (rho, family, scenario, effect) -- covering the theta, ageing and Fr
 families at every rho in config.US['ρTable']. That is why the whole set costs one entry here rather than
 three: the families share a baseline solve per rho, and splitting them would re-solve it three times.
 
-Cost of the main part: a few minutes for the exogenous shocks and the LOG ESC leg, ~1.5 h for the
-cross-section from scratch (seconds when its rows are current), ~1.4 h per robustness variant, ~1.5 h for the
-stylized readings from scratch (53 min with the cses anchor and layer 2 on disk).
+Cost of the main part: a few minutes for the exogenous shocks and the LOG ESC leg, ~2.5 h for the
+cross-section from scratch (its readings in results/oecd26/; seconds when its rows are current), ~40 min per data
+variant on its U.S. sweep and anchor.
 """
 import os, sys, argparse, subprocess
 import pandas as pd
@@ -71,7 +70,6 @@ ESCLAYER = ['--designRule', ESC['designRule'], '--Ma', str(ESC['Ma'])]
 CV = ESC['costVariants']
 CVSPEC = ['--spec', CV['spec'], '--phi', str(ESC['phi']), '--tag', CV['tag']]
 OECD = C.US['oecd26']
-STYDIR = os.path.join(C.RESULTS, OECD['stylized']['dir'])
 TAUTHETA = C.US['tauTheta']
 
 
@@ -216,38 +214,24 @@ EXPERIMENTS = {
     },
     # The cross-country test (python/US/runOECD26.py, results/oecd26/): the U.S. at the OECD inputs (anchor), every
     # in-sample country of the θ variant at its omega and cost parameter (layer 1) and with its own omega (layer 2),
-    # LOG; one command per variant of config.US['oecd26']['variants'] (costs, turnout readings, stages), in its order.
-    # Its rows are keyed on their inputs, so the child decides what to recompute: always run.
+    # LOG; one command per variant of config.US['oecd26']['variants'] (costs, turnout, layer 1's omega, stages) and per
+    # retAge of it, in its order: the paper's specification, appendix G's population variants, the online appendix's
+    # readings. Its rows are keyed on their inputs, so the child decides what to recompute: always run.
     'oecd26': {
         'part':    'main',
         'always':  True,
         'script':  'runOECD26.py',
         'argSets': lambda: [['--spec'] + v['spec'] + ['--betaRule'] + v['betaRule'] + ['--turnout'] + v['turnout']
-                            + ['--stage'] + v['stage'] + ['--inSample'] + THETA for v in OECD['variants']],
+                            + ['--stage'] + v['stage'] + ['--inSample', '--omegaRule', v['omegaRule'], '--retAge', r]
+                            + THETA
+                            for v in OECD['variants'] for r in v['retAge']],
         'outputs': lambda: [os.path.join(C.RESULTS, 'oecd26', f + '.csv') for f in ('anchor', 'layer1', 'layer2')],
         'requires': lambda: [C.usSweepCsv('US', True)],
         'note':    'the cross-country test, LOG (rho = 1)',
     },
-    # Appendix H's stylized readings of the cross-section (config.US['oecd26']['stylized']; OECD26_Stylized,
-    # OECD26_ThetaFitGrid): the turnout 'pooled' and layer 1 at omegaRule 'mean', at the paper's variant and the main θ
-    # variant, on the main U.S. sweep (--usSweep) into results/oecd26_stylized/, whose cses anchor and layer 2 are then
-    # results/oecd26/'s (the same inputs keys). One runOECD26.py command per run of the declaration, in its order
-    # (layer 2 before the mean omega that reads it). Rows keyed on their inputs: always run, as 'oecd26'.
-    'oecd26Stylized': {
-        'part':    'main',
-        'always':  True,
-        'commands': lambda: [_usScript('runOECD26.py') + ['--theta', C.US['theta'], '--inSample', '--spec', OECD['spec'],
-                                                          '--betaRule', OECD['betaRule'],
-                                                          '--usSweep', C.usSweepCsv('US', True), '--outdir', STYDIR,
-                                                          '--turnout'] + r['turnout'] + ['--stage'] + r['stage']
-                             + ['--omegaRule', r['omegaRule']] for r in OECD['stylized']['runs']],
-        'outputs': lambda: [os.path.join(STYDIR, f + '.csv') for f in ('anchor', 'layer1', 'layer2')],
-        'requires': lambda: [C.usSweepCsv('US', True)],
-        'note':    "the cross-country test's stylized readings (pooled turnout, mean omega)",
-    },
-    # The cross-section under the robustness measures of the design (config.US['oecd26']['thetaVariants']), each at
-    # its own U.S. sweep at rho = 1 (calibrateRhoGrid.py --theta V, which resumes at its θ0) and the paper's variant
-    # of the cross-section, into results/oecd26_theta_<V>/ (OECD26_ThetaVariants). Always run, as 'oecd26'.
+    # Appendix G's data variants (config.US['oecd26']['thetaVariants']), each at its own U.S. sweep at rho = 1
+    # (calibrateRhoGrid.py --theta V, which resumes at its θ0) and the paper's specification of the cross-section
+    # (turnout, layer 1's omega, retAge), into results/oecd26_theta_<V>/ (OECD26_Variants). Always run, as 'oecd26'.
     'oecd26Variants': {
         'part':    'main',
         'always':  True,
@@ -255,8 +239,10 @@ EXPERIMENTS = {
                                                                       '--theta', V],
                                   _usScript('runOECD26.py') + ['--theta', V, '--inSample', '--spec', OECD['spec'],
                                                                '--betaRule', OECD['betaRule'],
-                                                               '--turnout', 'cps', 'cses',
-                                                               '--stage', 'anchor', 'layer1', 'layer2']]
+                                                               '--turnout', OECD['turnout'],
+                                                               '--stage', 'anchor', 'layer2', 'layer1',
+                                                               '--omegaRule', OECD['omegaRule'],
+                                                               '--retAge', OECD['retAge']]]
                                  for V in OECD['thetaVariants']), []),
         'outputs': lambda: [os.path.join(_variantDir(V), f + '.csv') for V in OECD['thetaVariants']
                             for f in ('anchor', 'layer1', 'layer2')],

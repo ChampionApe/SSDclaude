@@ -1,11 +1,11 @@
 r""" Figure 1.1's panels with the model beside the data (python/US/runOECD26.py, results/oecd26/): the data's
 countries and fitted line in the first series colour, the model's in the second, one panel per relation of
 tablesOECD26.RELATIONS. Layer 1 draws all five panels; layer 2 draws the two panels of the index. The arguments
-(turnout, sample, reading, spec, betaRule, spending) are tablesOECD26's, each None for the paper's variant. Section 6's
-spending test (`oecd26Spending`) draws the two spending panels of layer 1 without the cost
+(turnout, sample, reading, spec, betaRule, spending, omegaRule, retAge, theta) are tablesOECD26's, each None for the
+paper's variant. Section 6's spending test (`oecd26Spending`) draws the two spending panels of layer 1 without the cost
 (config.US['oecd26']['spendingSpec']) at the observed designs. The predicted against the observed design
-(`oecd26ThetaFit`, `oecd26ThetaFitGrid`) draws tablesOECD26.thetaFit's panels. Each figure the paper inputs also writes
-`<name>_note.tex`, its note, which build.py copies beside the pdf.
+(`oecd26ThetaFit`; appendix G's `oecd26ThetaFitRows`, the population and the data variants) draws tablesOECD26.thetaFit's
+panels. Each figure the paper inputs also writes `<name>_note.tex`, its note, which build.py copies beside the pdf.
 """
 import os
 import numpy as np
@@ -35,13 +35,13 @@ def _note(name, src, text):
 
 
 def oecd26Figure(layer = 1, turnout = None, sample = None, reading = None, spec = None, betaRule = None,
-                 spending = None):
+                 spending = None, omegaRule = None, retAge = None, theta = None, slopesTable = True):
     r""" OECD26_Layer1 (layer 1) or its layer-2 counterpart OECD26_Layer2: 2x3 as figure 1.1, the legend in
     the sixth cell (layer 1), or 1x3 with the index panels (layer 2). Every dot and line is a mark; a dot is
-    linked to its country's row of OECD26_Omega (lowercase ISO3), a line carries its slope. Layer 1 also writes its
-    note (`OECD26_Layer1<suffix>_note.tex`): the sample, the model's index and spending, the anchor's values, the
-    turnout. """
-    v = variant(turnout, sample, reading, spec, betaRule, spending)
+    linked to its country's row of OECD26_Omega (lowercase ISO3), a line carries its slope and, `slopesTable`, the row
+    of the variant's OECD26_Slopes (False where that table is not built). Layer 1 also writes its note
+    (`OECD26_Layer1<suffix>_note.tex`): the sample, the model's index and spending, layer 1's values, the turnout. """
+    v = variant(turnout, sample, reading, spec, betaRule, spending, omegaRule, retAge, theta)
     p = panelData(layer, **v)
     sfx = suffix(**v)
     name = 'OECD26_Layer{}'.format(layer) + sfx
@@ -76,8 +76,9 @@ def oecd26Figure(layer = 1, turnout = None, sample = None, reading = None, spec 
             ln.set_gid(markId(name, yv + '_' + xv, side.lower(), 'fit'))
             marks.append(mark(ln.get_gid(), 'fitted line', o['slope'],
                               'slope {:.2f} (s.e. {:.2f})'.format(o['slope'], o['se']), series = side.lower(),
-                              panel = '{} against {}'.format(yn, xn), table = 'OECD26_Slopes' + sfx,
-                              row = yv + '_' + xv))
+                              panel = '{} against {}'.format(yn, xn),
+                              table = 'OECD26_Slopes' + sfx if slopesTable else None,
+                              row = yv + '_' + xv if slopesTable else None))
         if c == 0:
             ax.set_ylabel(F1.LABEL[F1.NAMED[yv]], color = INK['secondary'], fontsize = 7.5)
         if r == rows - 1 or (layer == 1 and c == 2):
@@ -102,16 +103,20 @@ def oecd26Figure(layer = 1, turnout = None, sample = None, reading = None, spec 
     out = _save(fig, name, marks)
     if layer != 1:
         return out
-    a = D.oecd26Anchor(v['turnout'], v['spec'])
+    a = D.oecd26Anchor(v['turnout'], v['spec'], T._thetaSource(v))
     if sfx == '':
         # the anchor of the OECD26 notes: the later exhibits point here (tablesOECD26.specText)
+        ω = T.layer1Omega(v)
+        shared = (r'every country at the U.S.\ $\beta$ and $\varepsilon$ and at the mean of the second '
+                  r'layer\textquotesingle s $\omega$, ' + C.num(ω, 2) if ω is not None else
+                  r'every country at the U.S.\ $\beta$, $\omega$ and $\varepsilon$')
         note = (r'\textit{Note:} ' + '{} countries'.format(n) + r', as in figure \ref{fig:OECD26:spending}, in the data '
-                r'and in the first layer of the model (section \ref{sec:esc:crossSection}): every country at the U.S.\ '
-                r'$\beta$, $\omega$ and $\varepsilon$, at its cost $\lambda_{n,t}$ and at its own CSES propensities to '
-                r'vote; in the second, $\omega$ is calibrated to each country\textquotesingle s spending at its observed '
-                r'design. The model\textquotesingle s index is $1/(2-\theta)$ of the design chosen in 1990 for 2020, its '
-                r'spending $\tau(1-\alpha)$ in 2020 on the path of that design. The lines are least-squares fits; table '
-                r'\ref{table:OECD26:slopes} reports their slopes.')
+                r'and in the first layer of the model (section \ref{sec:esc:crossSection}): ' + shared + r', at its cost '
+                r'$\lambda_{n,t}$ and at its own CSES propensities to vote, Luxembourg, which has none, at a flat '
+                r'profile; in the second, $\omega$ is calibrated to each country\textquotesingle s spending at its '
+                r'observed design. The model\textquotesingle s index is $1/(2-\theta)$ of the design chosen in 1990 for '
+                r'2020, its spending $\tau(1-\alpha)$ in 2020 on the path of that design. The lines are least-squares '
+                r'fits; table \ref{table:OECD26:slopes} reports their slopes.')
     else:
         note = (r'\textit{Note:} ' + sampleText(n, p.attrs['dropped']) + r' in the data and in layer 1 of the model, '
                 r'with the least-squares lines whose slopes table~\ref{table:OECD26:slopes' + sfx + '} reports. '
@@ -169,20 +174,39 @@ def oecd26Spending(turnout = None, sample = None):
     out = _save(fig, name, marks)
     v = variant(turnout, sample, None, spec, 'common', 'observed')
     a = D.oecd26Anchor(v['turnout'], spec)
+    ω = T.layer1Omega(v)
+    weight = (r'$ and at the mean of the second layer\textquotesingle s $\omega$, ' + C.num(ω, 2) if ω is not None
+              else r'$ and $\omega = ' + C.num(float(a['ω']), 2) + '$')
     note = (r'\textit{Note:} ' + sampleText(len(p), p.attrs['dropped']) + r'. The model\textquotesingle s spending is '
             r'$\tau(1-\alpha)$ in 2020 at the observed design, every country at the U.S.\ $\beta = '
-            + C.num(float(a['β']), 2) + r'$ and $\omega = ' + C.num(float(a['ω']), 2) + r'$, without the cost. '
-            + turnoutNote(v['turnout']) + ' The lines are least-squares fits.')
+            + C.num(float(a['β']), 2) + weight + ', without the cost. ' + turnoutNote(v['turnout'])
+            + ' The lines are least-squares fits.')
     return out + [_note(name, SRC.replace('layer2.csv, ', ''), note)]
 
 
 # ---------------------------------------------------------------------------------------------------
-# The predicted against the observed design (OECD26_ThetaFit, OECD26_ThetaFitGrid and their index versions).
-LAYERTITLE = {1: r'Layer 1: U.S. $\omega$', 2: r'Layer 2: own $\omega$'}
-TURNOUTTITLE = {'cps': 'U.S. turnout', 'cses': 'own turnout', 'pooled': 'pooled turnout'}
+# The predicted against the observed design (OECD26_ThetaFit and its index version; appendix G's
+# OECD26_ThetaFitPopulation and OECD26_ThetaFitMeasure).
 UNITS = {'theta': (r'$\theta$', (-0.04, 1.04), 'θ'), 'index': (r'index $1/(2-\theta)$', (0.47, 1.02), 'I')}
-# The rows of the grid: (turnout, results directory: None for results/oecd26/, 'stylized' for the stylized readings').
-GRIDROWS = (('cps', None), ('cses', None), ('pooled', 'stylized'))
+NUTITLE = {'none': r'$\nu$ uncorrected', 'nra': r'$\nu$ at the statutory age', 'exit': r'$\nu$ at the exit age'}
+
+
+def layerTitle(layer, omegaRule = None):
+    """ A panel's title: layer 1 at its ω rule (config.US['oecd26']'s where None), layer 2 at own ω. """
+    if layer == 2:
+        return r'Layer 2: own $\omega$'
+    rule = C.US['oecd26']['omegaRule'] if omegaRule is None else omegaRule
+    return r'Layer 1: mean $\omega$' if rule == 'mean' else r'Layer 1: U.S. $\omega$'
+
+
+def fitRows(kind):
+    """ The rows of appendix G's figure `kind` ('population' | 'measure'): (title, thetaFit's keywords), the paper's
+    marked: the readings of ν (tablesOECD26.populationRows) or the measures of the design (tablesOECD26.MEASURES). """
+    paper = lambda on: " (the paper's)" if on else ''
+    if kind == 'population':
+        return [(NUTITLE[r] + paper(r == T.PAPER['retAge']), {'retAge': r}) for r in T.populationRows()]
+    return [(C.THETANAMES[m][0].upper() + C.THETANAMES[m][1:] + paper(m == T.PAPER['theta']), {'theta': m})
+            for m in T.MEASURES]
 
 
 def _overlap(a, b):
@@ -287,7 +311,7 @@ def oecd26ThetaFit(units = 'theta'):
         f = fs[k]
         part = 'layer{}'.format(k)
         marks += _fitPanel(ax, f, name, part, units, lim)
-        ax.set_title(LAYERTITLE[k], fontsize = 7.5, color = INK['primary'], loc = 'left')
+        ax.set_title(layerTitle(k), fontsize = 7.5, color = INK['primary'], loc = 'left')
         ax.set_xlabel('Observed ' + unit, color = INK['secondary'], fontsize = 7)
         if k == 1:
             ax.set_ylabel('Predicted ' + unit, color = INK['secondary'], fontsize = 7)
@@ -296,47 +320,58 @@ def oecd26ThetaFit(units = 'theta'):
          plt.Line2D([], [], ls = 'none', marker = 'o', ms = 5.2, mfc = 'white', mec = INK['primary'], mew = 0.9),
          plt.Line2D([], [], color = SERIES[1], lw = 1.0), plt.Line2D([], [], color = INK['muted'], lw = 0.8,
                                                                     ls = (0, (3, 2)))]
-    fig.legend(h, ['country, model', 'U.S. (anchor, on the line by construction)', 'fitted line', '45° line'],
+    mean = C.US['oecd26']['omegaRule'] == 'mean'           # the U.S. then leaves the 45-degree line in layer 1
+    fig.legend(h, ['country, model', 'U.S. (anchor{})'.format('; on the line in layer 2 by construction' if mean else
+                                                             ', on the line by construction'),
+                   'fitted line', '45° line'],
                loc = 'lower center', ncol = 4, frameon = False, fontsize = 6.3, labelcolor = INK['secondary'],
                handlelength = 1.8, columnspacing = 1.4)
     out = _save(fig, name, marks)
     what = r'$\theta$' if units == 'theta' else r'index $1/(2-\theta)$'
     note = (r'\textit{Note:} The design ' + what + r' of each country\textquotesingle s model for 2020, chosen in 1990, against '
-            r'the observed one; model and layers as in figure \ref{fig:OECD26:layer1}. The U.S.\ is the anchor and lies '
-            r'on the $45^{\circ}$ line by construction; the solid line is the least-squares fit over the other '
-            + str(fs[1]['nStat']) + r' countries, and each panel reports, without the U.S., the correlation $r$ and '
-            r'the RMSE of the prediction, beside the RMSE of a prediction at the sample mean.')
+            r'the observed one; model and layers as in figure \ref{fig:OECD26:layer1}. The U.S.\ is the anchor'
+            + (r'; in the second layer it lies on the $45^{\circ}$ line by construction' if mean else
+               r' and lies on the $45^{\circ}$ line by construction')
+            + r'. The solid line is the least-squares fit over the other ' + str(fs[1]['nStat'])
+            + r' countries, and each panel reports, without the U.S., the correlation $r$ and the RMSE of the '
+            r'prediction, beside the RMSE of a prediction at the sample mean.')
     return out + [_note(name, SRC, note)]
 
 
-def oecd26ThetaFitGrid(units = 'theta'):
-    r""" OECD26_ThetaFitGrid (appendix H; `units` 'index': OECD26_ThetaFitGridIndex, built, not input): thetaFit's
-    panels without labels on common axes, one row per turnout of GRIDROWS (U.S. turnout and own turnout from
-    results/oecd26/, the pooled turnout from results/oecd26_stylized/, layer 1 at the anchor's ω), layer 1 | layer 2.
-    Writes its note: the three readings; the statistics are on the panels. """
-    name = 'OECD26_ThetaFitGrid' + ('' if units == 'theta' else 'Index')
+FITNOTE = {
+    'population': (r'with $\nu$ corrected for each country\textquotesingle s gap to the U.S.\ statutory retirement age '
+                   r'(the paper\textquotesingle s), uncorrected, or corrected for its gap in the effective age of '
+                   r'labor-market exit'),
+    'measure':    (r'under each measure of $\theta$ (appendix \ref{app:oecd26:readings}), each its own cross-section with '
+                   r'the U.S.\ anchor recalibrated under it, at the paper\textquotesingle s $\nu$')}
+
+
+def oecd26ThetaFitRows(kind, units = 'theta'):
+    r""" Appendix G's OECD26_ThetaFitPopulation (`kind` 'population') or OECD26_ThetaFitMeasure ('measure'):
+    thetaFit's panels without labels on common axes, one row per reading of fitRows(kind), the paper's among them,
+    layer 1 | layer 2 at the paper's other settings (a data variant from its results/oecd26_theta_<V>/). Writes its
+    note; the statistics are on the panels. """
+    name = 'OECD26_ThetaFit' + kind.capitalize() + ('' if units == 'theta' else 'Index')
     unit, lim, _ = UNITS[units]
-    rows = len(GRIDROWS)
-    H = 0.35 + 2.7*rows
-    fig, axes = plt.subplots(rows, 2, figsize = (5.91, H), sharex = True, sharey = True)
-    fig.subplots_adjust(left = 0.1, right = 0.99, bottom = 0.45/H, top = 1 - 0.2/H, wspace = 0.1, hspace = 0.16)
-    marks, stats = [], {}
-    for r, (turnout, where) in enumerate(GRIDROWS):
-        root = D.oecd26StylizedDir() if where == 'stylized' else None
-        stats[turnout] = {k: T.thetaFit(k, turnout, units = units, root = root) for k in (1, 2)}
+    rows = fitRows(kind)
+    H = 0.35 + 2.7*len(rows)
+    fig, axes = plt.subplots(len(rows), 2, figsize = (5.91, H), sharex = True, sharey = True, squeeze = False)
+    fig.subplots_adjust(left = 0.12, right = 0.99, bottom = 0.45/H, top = 1 - 0.2/H, wspace = 0.1, hspace = 0.16)
+    marks = []
+    for r, (title, kw) in enumerate(rows):
+        fs = {k: T.thetaFit(k, units = units, **kw) for k in (1, 2)}
+        part = '_'.join(str(x) for x in kw.values())
         for c, k in enumerate((1, 2)):
-            ax, f = axes[r, c], stats[turnout][k]
-            marks += _fitPanel(ax, f, name, '{}_layer{}'.format(turnout, k), units, lim, ms = 3.4, msUS = 5)
-            ax.set_title('{}, {}   (n = {})'.format(LAYERTITLE[k], TURNOUTTITLE[turnout], f['n']), fontsize = 7,
+            ax, f = axes[r, c], fs[k]
+            marks += _fitPanel(ax, f, name, '{}_layer{}'.format(part, k), units, lim, ms = 3.4, msUS = 5)
+            ax.set_title(layerTitle(k) + ('   (n = {})'.format(f['n']) if c == 0 else ''), fontsize = 7,
                          color = INK['primary'], loc = 'left')
-            if r == rows - 1:
+            if r == len(rows) - 1:
                 ax.set_xlabel('Observed ' + unit, color = INK['secondary'], fontsize = 7)
-            if c == 0:
-                ax.set_ylabel('Predicted ' + unit, color = INK['secondary'], fontsize = 7)
+            if c == 0:                              # the row's reading on the left, over the axis label
+                ax.set_ylabel(title + '\nPredicted ' + unit, color = INK['secondary'], fontsize = 7)
     out = _save(fig, name, marks)
     note = (r'\textit{Note:} As figure~\ref{fig:OECD26:thetaFit}' + ('' if units == 'theta' else r', in units of the index')
-            + r', under three readings of the propensities to vote by income group: the U.S.\ ones (CPS) in every '
-            r'country, each country\textquotesingle s own (CSES), the paper\textquotesingle s, and pooled (appendix '
-            r'\ref{app:oecd26:readings}). Each anchor is calibrated at its own reading. The U.S.\ is open; the solid '
-            r'lines are least-squares fits over the other countries.')
-    return out + [_note(name, SRC + '; results/oecd26_stylized/layer1.csv, layer2.csv, anchor.csv', note)]
+            + ', ' + FITNOTE[kind] + r'. The U.S.\ is open; the solid lines are least-squares fits over the other '
+            r'countries.')
+    return out + [_note(name, SRC + ('; results/oecd26_theta_<V>/' if kind == 'measure' else ''), note)]

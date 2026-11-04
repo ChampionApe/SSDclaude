@@ -11,7 +11,7 @@ Run:  .venv\Scripts\python.exe python\US\runOECD26.py                       ever
       ... --inSample                                                        the variant's inSample countries and the U.S.
       ... --theta VARIANT --main                                            the pipeline's main variant into results/oecd26/
       ... --omegaRule anchor|mean                                           layer 1's ω (default 'anchor')
-      ... --retAge none|exit|nra                                            ν's retirement-age correction (default 'none')
+      ... --retAge none|exit|nra                                            ν's retirement-age correction (default config's)
       ... --usSweep FILE                                                    the U.S. sweep β is read from (not with --main)
       ... --force                                                           recompute rows already on disk
       ... --outdir DIR                                                      default results/oecd26
@@ -49,23 +49,23 @@ design choice is the corner of proposition 4). `phi` is the dummy 0.5 under ever
 anchor included (each reading has its own anchor). Luxembourg has no CSES election: its 'cses' rows carry
 status 'noTurnout'. 'pooled' (appendix H's stylized reading, never a default; oecd26.countryInputs): the U.S. at its CSES turnout, so
 its anchor solves the 'cses' anchor's inputs under another key; the compulsory-voting countries flat; the others
-at the sample's mean CSES profile; Luxembourg enters. 'csesFlat' (exploration): 'cses' with Luxembourg flat; its
+at the sample's mean CSES profile; Luxembourg enters. 'csesFlat' (the paper's since 2026-11-04): 'cses' with Luxembourg flat; its
 anchor is the 'cses' anchor (`ANCHORTURNOUT`), and a layer row of a country whose inputs equal its 'cses' ones but
 for the label is copied from the current 'cses' row of the same key when there is one (`_twin`, column
 `copiedFrom`). Every row carries `sample26` from the data step (python/paper/oecd26Sample.py).
 
-`retAge` (exploration): ν corrected for the gap to the U.S. retirement age (oecd26.retAgeNu), 'exit' or 'nra'; a
-key column of the layers (LEGACY 'none'), in their inputsKey only when not 'none'. The U.S. gap is 0, so the anchor
-is retAge's 'none' anchor.
+`retAge`: ν corrected for the gap to the U.S. retirement age (oecd26.retAgeNu), 'exit' or 'nra' (the paper's since
+2026-11-03, config.US['oecd26']['retAge'], the CLI's default); a key column of the layers (LEGACY 'none'), in their
+inputsKey only when not 'none', which python/paper's readers select on (datasets._oecd26Rows), so any reading may be
+written into results/oecd26/. The U.S. gap is 0, so the anchor is retAge's 'none' anchor.
 
 `omegaRule`, layer 1's ω: 'anchor' (the default) the anchor's; 'mean' ω̄, the arithmetic mean of the ok layer-2 ω's of
 --outdir's layer2.csv at the same turnout, spec, betaRule and thetaSource over the run's countries (`meanOmega`;
 each row against the current anchor and inputs, a missing one refused), with β and the cost parameter still the
 anchor's. Under 'mean' layer 2 runs before layer 1; the rows carry `ωMean`, `nMean`. Layer 2's rows carry 'anchor':
-their ω is calibrated under either rule. None of 'pooled', 'csesFlat', omegaRule 'mean' or a retAge other than
-'none' is written into results/oecd26/; the
-paper's stylized readings run them into results/oecd26_stylized/ (python/paper/config.py US['oecd26']['stylized'],
-read by datasets.oecd26Layer's `root` and `omegaRule`).
+their ω is calibrated under either rule. 'mean' is the paper's since 2026-11-04 (python/paper/config.py
+US['oecd26']['omegaRule'], read by datasets.oecd26Layer's `omegaRule`). 'pooled' is not written into results/oecd26/
+(python/paper does not read it; the retired results/oecd26_stylized/ holds its rows).
 
 Readouts per row (`readouts`), all at 2020 (t0):
   τ2020, spending2020   the 2020 tax at θ_c and 100·τ2020·(1-α), % of GDP (the inverse of τ0's construction):
@@ -524,9 +524,10 @@ def main():
                    help = "with --theta config.US['theta']: results/oecd26/ and results/calibration/'s U.S. sweep")
     p.add_argument('--omegaRule', default = 'anchor', choices = OMEGARULES,
                    help = "layer 1's ω: the anchor's, or the mean of the layer-2 ω's (layer 2 runs first)")
-    p.add_argument('--retAge', default = 'none', choices = oecd26.RETAGES,
+    p.add_argument('--retAge', default = v.get('retAge', 'none'), choices = oecd26.RETAGES,
                    help = "ν corrected for the gap to the U.S. men's effective exit age ('exit') or normal "
-                          "retirement age ('nra'); the layers only, the anchor is unchanged")
+                          "retirement age ('nra'); the layers only, the anchor is unchanged (default: "
+                          "config.US['oecd26']['retAge'])")
     p.add_argument('--usSweep', default = None,
                    help = "the U.S. sweep β and the anchor's ω seed are read from (default: results/calibration/'s "
                           "under 'index', <outdir>/calibration/'s under --theta); not with --main")
@@ -549,9 +550,7 @@ def main():
     if variant and not a.main and os.path.normcase(a.outdir) == os.path.normcase(OUTDIR):
         raise SystemExit('--theta {}: results/oecd26/ holds the main θ variant (--main) only; use another '
                          '--outdir'.format(a.theta))
-    explore = ([x for x in a.turnout if x not in oecd26.TURNOUT]
-               + (['omegaRule ' + a.omegaRule] if a.omegaRule != 'anchor' else [])
-               + (['retAge ' + a.retAge] if a.retAge != 'none' else []))
+    explore = [x for x in a.turnout if x not in set(oecd26.TURNOUT) | {'csesFlat'}]
     if explore and os.path.normcase(a.outdir) == os.path.normcase(OUTDIR):
         raise SystemExit('{}: python/paper does not select on these readings; not into results/oecd26/ (use '
                          '--outdir)'.format(', '.join(explore)))

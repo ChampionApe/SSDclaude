@@ -51,13 +51,18 @@ class Ex:
 
 
 E = Ex
-# What the notes of page C6's three figures share; each adds its variant. The cost parameter carried to every country
-# is appendix C.2's Harberger elasticity, \varepsilon, never \epsilon (the universal pension of section 2).
+# What the notes of page C6's figures share; each adds its variant: `omega` layer 1's political weight, `lux` how
+# Luxembourg votes, `table` the label of the table with the slopes. The cost parameter carried to every country is
+# appendix C.2's Harberger elasticity, \varepsilon, never \epsilon (the universal pension of section 2).
 OECD26LAYER1 = (r'Layer 1 of the cross-country test of section \ref{{sec:esc:crossSection}}: every country at the '
-                r'U.S.\ $\beta$, $\omega$ and cost parameter, with its own workers per retiree, income distribution '
-                r'and observed design. The model\textquotesingle s index is $1/(2-\theta)$ of the design in force in '
-                r'2020 on the freely simulated path, its spending $\tau(1-\alpha)$ in 2020 on the path of the design it '
-                r'chooses; the lines are least-squares fits (table \ref{{table:OECD26:{table}}}).')
+                r'U.S.\ $\beta$ and $\varepsilon$, at its cost $\lambda_{{n,t}} = \varepsilon\,\Pi_{{n,t}}/R_{{n,t}}$, '
+                r'{omega}, with its own workers per retiree, income distribution, observed design and CSES propensities '
+                r'to vote{lux}. The model\textquotesingle s index is $1/(2-\theta)$ of the design in force in 2020 on the '
+                r'freely simulated path, its spending $\tau(1-\alpha)$ in 2020 on the path of the design it chooses; '
+                r'the lines are least-squares fits (table \ref{{table:OECD26:{table}}}).')
+MEANOMEGA, USOMEGA = r'at the mean of layer 2\textquotesingle s $\omega$', r'at the U.S.\ $\omega$'
+FLATLUX = r' (Luxembourg, which has none, at a flat profile)'
+OECD26CAPTION = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, '
 EXHIBITS = {
     # A1
     'ARG_LOG_FourInOne': E('figure', 'ARG_LOG_FourInOne',
@@ -153,17 +158,40 @@ EXHIBITS = {
         note = r'The paper\textquotesingle s cost, recalibrated at each value (across $\xi$ where that run is on file '
                r'at the paper\textquotesingle s measure of the design). Under CRRA preferences the workweek with '
                r'the design pinned is not stored.'),
-    # C6, in the page's order of the variants
-    'OECD26_Layer1_cps': E('figure', 'OECD26_Layer1_cps',
-        caption = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, every country at '
-                  r'the U.S.\ turnout',
-        note = OECD26LAYER1.format(table = 'slopes_cps')
-               + r' The cost parameter is the paper\textquotesingle s $\varepsilon$, $\lambda_n = '
-               r'\varepsilon\,\Pi_n/R_n$. Every country\textquotesingle s propensities to vote by income group are '
-               r'the U.S.\ CPS ones in place of its own CSES ones, and the U.S.\ anchor is calibrated at them. '
-               r'Luxembourg, which has no CSES survey, enters.'),
-    'OECD26_Slopes_cps': E('table', 'OECD26_Slopes_cps'),
-    'OECD26_Omega_cps': E('table', 'OECD26_Omega_cps'),
+    # C6, in the page's order: appendix G's population and data variants in full (their slopes: the paper's
+    # table:OECD26:variants), Luxembourg left out, layer 1 at the U.S. omega
+    'OECD26_Layer1_nuNone': E('figure', 'OECD26_Layer1_nuNone',
+        caption = OECD26CAPTION + r'$\nu$ uncorrected',
+        note = OECD26LAYER1.format(omega = MEANOMEGA, lux = FLATLUX, table = 'variants')
+               + r' Workers per retiree as the population data give them, without the correction for the retirement age.'),
+    'OECD26_Omega_nuNone': E('table', 'OECD26_Omega_nuNone'),
+    'OECD26_Layer1_nuExit': E('figure', 'OECD26_Layer1_nuExit',
+        caption = OECD26CAPTION + r'$\nu$ corrected at the effective exit age',
+        note = OECD26LAYER1.format(omega = MEANOMEGA, lux = FLATLUX, table = 'variants')
+               + r' Workers per retiree corrected for each country\textquotesingle s gap to the U.S.\ effective age of '
+               r'labor-market exit in place of the statutory retirement age.'),
+    'OECD26_Omega_nuExit': E('table', 'OECD26_Omega_nuExit'),
+    'OECD26_Layer1_thetaA': E('figure', 'OECD26_Layer1_thetaA',
+        caption = OECD26CAPTION + r'the design measured as ' + C.THETANAMES['A'],
+        note = OECD26LAYER1.format(omega = MEANOMEGA, lux = FLATLUX, table = 'variants')
+               + r' The design measured as ' + C.THETANAMES['A'] + r' (appendix \ref{app:oecd26:readings}), data and '
+               r'model alike, the U.S.\ anchor recalibrated under it.'),
+    'OECD26_Omega_thetaA': E('table', 'OECD26_Omega_thetaA'),
+    'OECD26_Layer1_thetaB': E('figure', 'OECD26_Layer1_thetaB',
+        caption = OECD26CAPTION + r'the design measured as ' + C.THETANAMES['B'],
+        note = OECD26LAYER1.format(omega = MEANOMEGA, lux = FLATLUX, table = 'variants')
+               + r' The design measured as ' + C.THETANAMES['B'] + r' (appendix \ref{app:oecd26:readings}), data and '
+               r'model alike, the U.S.\ anchor recalibrated under it.'),
+    'OECD26_Omega_thetaB': E('table', 'OECD26_Omega_thetaB'),
+    'OECD26_Layer1_cses': E('figure', 'OECD26_Layer1_cses',
+        caption = OECD26CAPTION + r'without Luxembourg',
+        note = OECD26LAYER1.format(omega = MEANOMEGA, lux = '', table = 'slopes_cses')
+               + r' On the 20 countries with a CSES survey: Luxembourg, which has none, is left out.'),
+    'OECD26_Slopes_cses': E('table', 'OECD26_Slopes_cses'),
+    'OECD26_Layer1_omegaUS': E('figure', 'OECD26_Layer1_omegaUS',
+        caption = OECD26CAPTION + r'layer 1 at the U.S.\ $\omega$',
+        note = OECD26LAYER1.format(omega = USOMEGA, lux = FLATLUX, table = 'slopes_omegaUS')),
+    'OECD26_Slopes_omegaUS': E('table', 'OECD26_Slopes_omegaUS'),
     # C7
     'UK_ESC_Calibration': E('table', 'UK_ESC_Calibration'),
     'US_ESC_Country': E('table', 'US_ESC_Country'),

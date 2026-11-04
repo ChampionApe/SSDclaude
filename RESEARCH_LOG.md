@@ -172,3 +172,26 @@ the guideline "What a note holds" in `notes/paper_styleGuide.md`; per-exhibit cu
 `archive/notes/brief_exhibitNotes.md` (OECD26 notes point to figure 7.2 via `tablesOECD26.specText`; NUM_* details to
 appendix D's prose, sourced in REPLICATION.md §5). Paper 75 pages, checkPaper OK, build 51/0, test_oecd26 14/14,
 test_onlineAppendix OK. Overleaf pushed.
+
+## 2026-11-03 (evening) — Statutory or exit-age correction of ν: both versions run overnight
+
+RKB: the correction of ν for the retirement-age gap to the U.S. is statutory (`nra`) or effective exit age (`exit`),
+to be chosen on full runs of both; the cross-section's main specification becomes own turnout with Luxembourg flat
+(`csesFlat`) and layer 1 at the mean ω. Code (uncommitted): `config.US['oecd26']['retAge']` (readers select on it,
+stage (ii) passes it, `runOECD26.py`'s default; `'none'`, build byte-identical) and `config.US['retAgeFR']` (France's
+own ν, `testEU.load`; `'nra'` = the workbook's appendix-F column bitwise). France's exit version runs in the worktree
+`logs/wt_retAgeExit/` (branch `retage-exit-2026-11`); the cross-section's readings in `results/oecd26_retage/`.
+The UK added to the exit version (`config.US['retAgeUK']`, `testEU.hostNu`; gap 1.2 years): `runUK.sh` beside
+`run.sh` (`logs/retAge_2026-11-03/`), checks in its `summary.md`; plan and next steps `notes/brief_retAgeChoice.md`.
+
+## 2026-11-04 — Statutory ν; appendix G's population and data variants; the pipeline at the new main spec
+
+RKB chose the statutory correction of ν (`nra`) as the main variant (own turnout, Luxembourg flat, layer 1 at the mean
+ω); appendix G keeps the uncorrected and exit-age ν and the data variants A, B (renamed "public tier, 23 countries",
+"all mandatory tiers", `config.THETANAMES`) at statutory ν; U.S. turnout, pooled turnout and A2pt retired; C6 holds
+the variants in full, Luxembourg left out and layer 1 at the U.S. ω. The overnight rows merged into results/oecd26/;
+A, B and the U.S.-ω reading run (`logs/variants_2026-11-04/`). Code across config, runOECD26, runShocksUS, datasets,
+tablesOECD26 (variant parts ω rule, retAge, measure), figuresOECD26, build, onlineAppendix; tests 14/14, build 59/0,
+online appendix OK. Text pass (sections 6, 7.3, appendix G, introduction, conclusion, abstract, C6): the variants
+table also reports uncorrected ν without Luxembourg (RKB: Luxembourg alone drives that reading's poor fit, r 0.36
+against 0.74 on the 20). Paper 75 pp, checkPaper OK; state in `notes/brief_retAgeChoice.md`. Overleaf pushed; uncommitted.

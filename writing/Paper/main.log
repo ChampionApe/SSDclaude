@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.10.6)  3 NOV 2026 21:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.10.6)  4 NOV 2026 11:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1432,27 +1432,27 @@ File: Figs/US_overview.pdf Graphic file (type pdf)
 Package pdftex.def Info: Figs/US_overview.pdf  used on input line 19.
 (pdftex.def)             Requested size: 452.9679pt x 242.66013pt.
 [21] [22 <./Figs/US_overview.pdf>] [23]
-<Figs/OECD26_Spending.pdf, id=825, 427.11569pt x 155.38051pt>
+<Figs/OECD26_Spending.pdf, id=826, 427.11569pt x 155.38051pt>
 File: Figs/OECD26_Spending.pdf Graphic file (type pdf)
 <use Figs/OECD26_Spending.pdf>
 Package pdftex.def Info: Figs/OECD26_Spending.pdf  used on input line 46.
 (pdftex.def)             Requested size: 452.9679pt x 164.79263pt.
 (./Figs/OECD26_Spending_note.tex)) (./Sections/EndogenousTheta.tex [24 <./Figs/
-OECD26_Spending.pdf>] [25] [26] [27] (./Tables/US_ESC_Calibration.tex)
-<Figs/US_ESC_overview.pdf, id=943, 578.16pt x 549.25201pt>
+OECD26_Spending.pdf>] [25] [26] [27] (./Tables/US_ESC_Calibration.tex) [28]
+<Figs/US_ESC_overview.pdf, id=953, 578.16pt x 549.25201pt>
 File: Figs/US_ESC_overview.pdf Graphic file (type pdf)
 <use Figs/US_ESC_overview.pdf>
 Package pdftex.def Info: Figs/US_ESC_overview.pdf  used on input line 48.
 (pdftex.def)             Requested size: 452.9679pt x 430.3173pt.
-[28] [29 <./Figs/US_ESC_overview.pdf>]
-<Figs/OECD26_Layer1.pdf, id=1050, 427.11569pt x 281.85298pt>
+[29 <./Figs/US_ESC_overview.pdf>] [30]
+<Figs/OECD26_Layer1.pdf, id=1059, 427.11569pt x 281.85298pt>
 File: Figs/OECD26_Layer1.pdf Graphic file (type pdf)
 <use Figs/OECD26_Layer1.pdf>
 Package pdftex.def Info: Figs/OECD26_Layer1.pdf  used on input line 73.
 (pdftex.def)             Requested size: 452.9679pt x 298.92616pt.
-(./Figs/OECD26_Layer1_note.tex) [30] (./Tables/OECD26_Slopes.tex) [31 <./Figs/O
-ECD26_Layer1.pdf>]
-<Figs/OECD26_ThetaFit.pdf, id=1137, 427.11569pt x 220.42351pt>
+(./Figs/OECD26_Layer1_note.tex) (./Tables/OECD26_Slopes.tex) [31 <./Figs/OECD26
+_Layer1.pdf>]
+<Figs/OECD26_ThetaFit.pdf, id=1141, 427.11569pt x 220.42351pt>
 File: Figs/OECD26_ThetaFit.pdf Graphic file (type pdf)
 <use Figs/OECD26_ThetaFit.pdf>
 Package pdftex.def Info: Figs/OECD26_ThetaFit.pdf  used on input line 93.
@@ -1685,64 +1685,75 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.35}) has
 <to be read again> 
                    \relax 
 l.22 
-      [35] (./Tables/OECD26_ThetaVariants.tex)
+      [35] (./Tables/OECD26_Variants.tex
+
+LaTeX Warning: Float too large for page by 31.75168pt on input line 43.
+
+)
+<Figs/OECD26_ThetaFitPopulation.pdf, id=1713, 427.11569pt x 610.68152pt>
+File: Figs/OECD26_ThetaFitPopulation.pdf Graphic file (type pdf)
+<use Figs/OECD26_ThetaFitPopulation.pdf>
+Package pdftex.def Info: Figs/OECD26_ThetaFitPopulation.pdf  used on input line
+ 30.
+(pdftex.def)             Requested size: 317.07614pt x 453.36954pt.
+(./Figs/OECD26_ThetaFitPopulation_note.tex)
+<Figs/OECD26_ThetaFitMeasure.pdf, id=1716, 427.11569pt x 610.68152pt>
+File: Figs/OECD26_ThetaFitMeasure.pdf Graphic file (type pdf)
+<use Figs/OECD26_ThetaFitMeasure.pdf>
+Package pdftex.def Info: Figs/OECD26_ThetaFitMeasure.pdf  used on input line 44
+.
+(pdftex.def)             Requested size: 317.07614pt x 453.36954pt.
+(./Figs/OECD26_ThetaFitMeasure_note.tex))
 pdfTeX warning (ext4): destination with the same identifier (name{page.36}) has
  been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.26 
-      [36]
-<Figs/OECD26_ThetaFitGrid.pdf, id=1706, 427.11569pt x 610.68152pt>
-File: Figs/OECD26_ThetaFitGrid.pdf Graphic file (type pdf)
-<use Figs/OECD26_ThetaFitGrid.pdf>
-Package pdftex.def Info: Figs/OECD26_ThetaFitGrid.pdf  used on input line 32.
-(pdftex.def)             Requested size: 317.07614pt x 453.36954pt.
-(./Figs/OECD26_ThetaFitGrid_note.tex) (./Tables/OECD26_Stylized.tex)) [37] [38 
-<./Figs/OECD26_ThetaFitGrid.pdf>] [39] (./main.aux)
+l.52 \end{document}
+                    [36] [37 <./Figs/OECD26_ThetaFitPopulation.pdf>] [38] [39 <
+./Figs/OECD26_ThetaFitMeasure.pdf>] (./main.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2026-09-09>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 9A8AACCC767E0C43FAAD108AD3FB33B6;9368.
+(rerunfilecheck)             Checksum: 38F450AA46D419BA65F42295419D111F;9325.
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 39761 strings out of 467050
- 758062 string characters out of 5410550
- 1650581 words of memory out of 5000000
- 68071 multiletter control sequences out of 15000+600000
- 754952 words of font info for 136 fonts, out of 8000000 for 9000
+ 39776 strings out of 467050
+ 758673 string characters out of 5410550
+ 1650921 words of memory out of 5000000
+ 68085 multiletter control sequences out of 15000+600000
+ 751957 words of font info for 135 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 112i,21n,111p,2667b,2016s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 112i,21n,111p,2700b,2016s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmbx10.pfb><c:/texlive/2026
 /texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/texlive/2026/texmf-dist/fonts/
-type1/public/lm/lmbx8.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lme
-x10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi10.pfb><c:/texliv
-e/2026/texmf-dist/fonts/type1/public/lm/lmmi12.pfb><c:/texlive/2026/texmf-dist/
-fonts/type1/public/lm/lmmi5.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/
-lm/lmmi6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi7.pfb><c:/te
-xlive/2026/texmf-dist/fonts/type1/public/lm/lmmi8.pfb><c:/texlive/2026/texmf-di
-st/fonts/type1/public/lm/lmmib10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/pu
-blic/lm/lmr10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr12.pfb><
-c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr17.pfb><c:/texlive/2026/tex
-mf-dist/fonts/type1/public/lm/lmr5.pfb><c:/texlive/2026/texmf-dist/fonts/type1/
-public/lm/lmr6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr7.pfb><
-c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr8.pfb><c:/texlive/2026/texm
-f-dist/fonts/type1/public/lm/lmri10.pfb><c:/texlive/2026/texmf-dist/fonts/type1
-/public/lm/lmri12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmri8.p
-fb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy10.pfb><c:/texlive/202
-6/texmf-dist/fonts/type1/public/lm/lmsy6.pfb><c:/texlive/2026/texmf-dist/fonts/
-type1/public/lm/lmsy7.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lms
-y8.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmtt10.pfb><c:/texlive
-/2026/texmf-dist/fonts/type1/public/lm/lmtt12.pfb><c:/texlive/2026/texmf-dist/f
-onts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on main.pdf (75 pages, 1014289 bytes).
+type1/public/lm/lmex10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lm
+mi10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi12.pfb><c:/texli
+ve/2026/texmf-dist/fonts/type1/public/lm/lmmi5.pfb><c:/texlive/2026/texmf-dist/
+fonts/type1/public/lm/lmmi6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/
+lm/lmmi7.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi8.pfb><c:/te
+xlive/2026/texmf-dist/fonts/type1/public/lm/lmmib10.pfb><c:/texlive/2026/texmf-
+dist/fonts/type1/public/lm/lmr10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/pu
+blic/lm/lmr12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr17.pfb><
+c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr5.pfb><c:/texlive/2026/texm
+f-dist/fonts/type1/public/lm/lmr6.pfb><c:/texlive/2026/texmf-dist/fonts/type1/p
+ublic/lm/lmr7.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr8.pfb><c
+:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmri10.pfb><c:/texlive/2026/tex
+mf-dist/fonts/type1/public/lm/lmri12.pfb><c:/texlive/2026/texmf-dist/fonts/type
+1/public/lm/lmsy10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy6.
+pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy7.pfb><c:/texlive/202
+6/texmf-dist/fonts/type1/public/lm/lmsy8.pfb><c:/texlive/2026/texmf-dist/fonts/
+type1/public/lm/lmtt10.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/lm/lm
+tt12.pfb><c:/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10
+.pfb>
+Output written on main.pdf (75 pages, 993208 bytes).
 PDF statistics:
- 1996 PDF objects out of 2073 (max. 8388607)
- 1408 compressed objects within 15 object streams
- 318 named destinations out of 1000 (max. 500000)
- 442 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 2053 PDF objects out of 2073 (max. 8388607)
+ 1418 compressed objects within 15 object streams
+ 320 named destinations out of 1000 (max. 500000)
+ 447 words of extra memory for PDF output out of 10000 (max. 10000000)
 
