@@ -71,7 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./esc.html" rel="next">
+<link href="./oecd-uk.html" rel="next">
 <link href="./oecd-leisure.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -244,6 +244,11 @@ window.Quarto = {
   <a href="./oecd-medicare.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">B5. Medicare among the transfers to the old</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./oecd-uk.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B6. The UK</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -278,6 +283,11 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./esc-oecd26.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C6. The cross-country test</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./esc-countries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C7. The UK and France calibrated in full</span></a>
   </div>
 </li>
       </ul>
@@ -350,27 +360,14 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="oecd-medicare-calibration">The calibration</h2>
 <p>Medicare raises the tax rate by its spending and lowers the design by its share of the transfers, which puts the U.S. design below the UK’s. Both calibrations target the same interest factor and workweek. To hold the interest factor with the larger system the discount factor rises, the political weight of the old rises to sustain the higher tax rate, and the taste for leisure falls a little, at every IES.</p>
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
-<div class="oa-exhibit oa-tablebox"><div class="oa-scroll"><table class="oa-table" id="ex-OECD_Medicare">
-<caption><span class="oa-num">Table B5.1.</span> The U.S. calibration with Medicare among the transfers to the old</caption>
-<thead>
-<tr><th class="oa-c" scope="col"></th><th class="oa-c" colspan="3" scope="col"><strong>Pensions only, the paper’s</strong></th><th class="oa-c" colspan="3" scope="col"><strong>Pensions and Medicare</strong></th></tr>
-<tr><th class="oa-c" scope="col"><strong>CRRA</strong> (<span class="math inline">\(\rho\)</span>)</th><th class="oa-c" scope="col"><span class="math inline">\(\beta\)</span></th><th class="oa-c" scope="col"><span class="math inline">\(\omega\)</span></th><th class="oa-c" scope="col"><span class="math inline">\(X\)</span></th><th class="oa-c" scope="col"><span class="math inline">\(\beta\)</span></th><th class="oa-c" scope="col"><span class="math inline">\(\omega\)</span></th><th class="oa-c" scope="col"><span class="math inline">\(X\)</span></th></tr>
-</thead>
-<tbody>
-<tr data-row="rho@0.5"><td class="oa-c">0.5</td><td class="oa-c">1.063</td><td class="oa-c">1.682</td><td class="oa-c">4.18</td><td class="oa-c">1.428</td><td class="oa-c">2.116</td><td class="oa-c">3.91</td></tr>
-<tr data-row="rho@1.0"><td class="oa-c">1.0</td><td class="oa-c">0.655</td><td class="oa-c">1.231</td><td class="oa-c">4.16</td><td class="oa-c">0.759</td><td class="oa-c">1.393</td><td class="oa-c">3.90</td></tr>
-<tr data-row="rho@2.0"><td class="oa-c">2.0</td><td class="oa-c">0.517</td><td class="oa-c">1.103</td><td class="oa-c">4.14</td><td class="oa-c">0.556</td><td class="oa-c">1.197</td><td class="oa-c">3.88</td></tr>
-</tbody></table>
-<div class="oa-notes">
-<p><em>Note:</em> Common <span class="math inline">\(X\)</span>. Both calibrations target the same 30-year interest factor and average workweek at the same income groups. With Medicare, 2.9% of GDP, added to pension spending, 7.37% of GDP, the tax rate in 2020 is 14.67% against 10.52%; Medicare is paid as a flat benefit, so the design is <span class="math inline">\(\theta = (1-m)\,\theta_P = 0.522\)</span>, with <span class="math inline">\(m = 0.282\)</span> Medicare’s share of the transfers and <span class="math inline">\(\theta_P = 0.728\)</span> the pension design read off the replacement rates.</p>
-</div></div><div class="oa-links">Data: <a href="_generated/data/results/calibration/USMedicare_rhoGridCommonX.csv" download="">USMedicare_rhoGridCommonX.csv</a> · <a href="_generated/data/results/calibration/US_rhoGridCommonX.csv" download="">US_rhoGridCommonX.csv</a> · <a href="_generated/data/results/paper/usCalibrationSummary.csv" download="">usCalibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>data/USMain_test.xlsx</code></li><li><code>results/calibration/USMedicare_rhoGridCommonX.csv</code></li><li><code>results/calibration/US_rhoGridCommonX.csv</code></li><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>tablesOA.oecdMedicare</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/fa0335f/python/paper">python/paper</a>) at commit <code>fa0335f</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Medicare</code>, then <code>build.py --site</code>.</p></details></div></div>
+<p class="oa-missing">This exhibit (OECD_Medicare) is retired: its runs were dropped when the paper moved to the measure of the design of data/oecd26_theta.csv (config.US['theta']).</p>
 </section>
 <section id="oecd-medicare-rows" class="level2">
 <h2 class="anchored" data-anchor-id="oecd-medicare-rows">The counterfactuals</h2>
 <p>The figure sets the counterfactuals of the paper’s figure 6.1 on the U.S. with Medicare below those on the paper’s U.S. Ageing moves the tax rate by about as much in the two, and it remains the largest determinant at every IES. Starting from a less earnings-related design, flat benefits raise the tax rate by less and fully earnings-related ones lower it by more; the gap between the two corners narrows, most at an IES of two. France’s income distribution lowers the tax rate by more, and France’s voting patterns raise it by more; at an IES of two, as on the paper’s U.S., France’s voting patterns move the tax rate by more than either corner of the design.</p>
 <div class="oa-explorer">
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
-<div class="oa-caption" id="ex-OECD_MedicareRows"><span class="oa-num">Figure B5.1.</span> The counterfactuals of the U.S. with pensions alone and with Medicare</div>
+<p class="oa-missing">This exhibit (OECD_MedicareRows) is retired: its runs were dropped when the paper moved to the measure of the design of data/oecd26_theta.csv (config.US['theta']).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code hidden" id="cb1" data-startfrom="33" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 32;"><span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> {counterfactuals<span class="op">,</span> control<span class="op">,</span> ROWS_GIVEN<span class="op">,</span> RHO<span class="op">,</span> GIVEN_OUTCOMES} <span class="im">from</span> <span class="st">"./assets/oa.js"</span></span>
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>oecd <span class="op">=</span> <span class="fu">FileAttachment</span>(<span class="st">"_generated/data/OECD_Counterfactuals.csv"</span>)<span class="op">.</span><span class="fu">csv</span>({<span class="dt">typed</span><span class="op">:</span> <span class="kw">true</span>})</span>
@@ -416,7 +413,7 @@ window.Quarto = {
 </div>
 </div>
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
-<div class="oa-note"><em>Note:</em> As figure <a href="oecd-parameters.html#ex-OECD_Frisch">B3.1</a>, for the U.S. under the paper’s calibration, pensions alone, and under the calibration with Medicare among the transfers to the old (table <a href="#ex-OECD_Medicare">B5.1</a>). Each bar is the change against the baseline of the same calibration and <span class="math inline">\(\rho\)</span>; France’s households are cut at the U.S. income percentiles in both.</div><div class="oa-links">Data: <a href="_generated/data/OECD_Counterfactuals.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li><li><code>results/shocks/USMedicare_shocks.csv</code></li><li><code>results/shocks/USMedicare_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocks.csv</code></li><li><code>results/shocks/US_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocksXiCommonX.csv</code></li></ul><p>Built by <code>siteData.oecdCounterfactuals</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/fa0335f/python/paper">python/paper</a>) at commit <code>fa0335f</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Counterfactuals</code>, then <code>build.py --site</code>.</p></details></div>
+
 </div>
 
 
@@ -846,8 +843,8 @@ window._ojs.runtime.interpretFromScriptTags();
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./esc.html" class="pagination-link" aria-label="C. Endogenous design">
-        <span class="nav-page-text">C. Endogenous design</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./oecd-uk.html" class="pagination-link" aria-label="B6. The UK">
+        <span class="nav-page-text"><span class="chapter-title">B6. The UK</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

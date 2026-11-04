@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://championape.github.io/SSDclaude/index.html</loc>
-    <lastmod>2026-10-27T18:20:31.467Z</lastmod>
+    <lastmod>2026-11-04T08:48:29.449Z</lastmod>
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/argentina.html</loc>
@@ -22,7 +22,7 @@
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/oecd.html</loc>
-    <lastmod>2026-10-28T10:10:54.697Z</lastmod>
+    <lastmod>2026-11-02T12:41:20.752Z</lastmod>
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/oecd-ies.html</loc>
@@ -41,16 +41,20 @@
     <lastmod>2026-10-25T11:57:56.506Z</lastmod>
   </url>
   <url>
+    <loc>https://championape.github.io/SSDclaude/oecd-uk.html</loc>
+    <lastmod>2026-11-02T12:50:10.219Z</lastmod>
+  </url>
+  <url>
     <loc>https://championape.github.io/SSDclaude/esc.html</loc>
-    <lastmod>2026-10-27T18:20:44.902Z</lastmod>
+    <lastmod>2026-11-04T08:48:30.178Z</lastmod>
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/esc-paths.html</loc>
-    <lastmod>2026-10-28T10:10:53.731Z</lastmod>
+    <lastmod>2026-11-02T12:38:12.125Z</lastmod>
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/esc-costs.html</loc>
-    <lastmod>2026-10-25T12:14:44.772Z</lastmod>
+    <lastmod>2026-11-02T12:39:29.950Z</lastmod>
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/esc-parameters.html</loc>
@@ -62,7 +66,11 @@
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/esc-oecd26.html</loc>
-    <lastmod>2026-10-28T10:10:52.712Z</lastmod>
+    <lastmod>2026-11-04T11:00:27.108Z</lastmod>
+  </url>
+  <url>
+    <loc>https://championape.github.io/SSDclaude/esc-countries.html</loc>
+    <lastmod>2026-11-02T12:36:06.924Z</lastmod>
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/checks.html</loc>
@@ -70,7 +78,7 @@
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/data.html</loc>
-    <lastmod>2026-10-09T17:42:32.019Z</lastmod>
+    <lastmod>2026-11-04T08:48:31.024Z</lastmod>
   </url>
   <url>
     <loc>https://championape.github.io/SSDclaude/numerical.html</loc>

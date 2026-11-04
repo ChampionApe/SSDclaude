@@ -244,6 +244,11 @@ window.Quarto = {
   <a href="./oecd-medicare.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B5. Medicare among the transfers to the old</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./oecd-uk.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">B6. The UK</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -278,6 +283,11 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./esc-oecd26.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C6. The cross-country test</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./esc-countries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">C7. The UK and France calibrated in full</span></a>
   </div>
 </li>
       </ul>
@@ -357,12 +367,12 @@ window.Quarto = {
 <tr><th class="oa-l" scope="col"><strong>Parameter</strong></th><th class="oa-c" scope="col"><strong>Common</strong></th><th class="oa-c" scope="col"><strong>Vector</strong></th><th class="oa-c" scope="col"><strong>Common</strong></th><th class="oa-c" scope="col"><strong>Vector</strong></th><th class="oa-c" scope="col"><strong>Common</strong></th><th class="oa-c" scope="col"><strong>Vector</strong></th></tr>
 </thead>
 <tbody>
-<tr data-row="X"><td class="oa-l"><span class="math inline">\(X\)</span></td><td class="oa-c">4.16</td><td class="oa-c">0.88</td><td class="oa-c">7.93</td><td class="oa-c">1.47</td><td class="oa-c">6.64</td><td class="oa-c">1.23</td></tr>
+<tr data-row="X"><td class="oa-l"><span class="math inline">\(X\)</span></td><td class="oa-c">4.07</td><td class="oa-c">0.88</td><td class="oa-c">7.67</td><td class="oa-c">1.45</td><td class="oa-c">6.48</td><td class="oa-c">1.23</td></tr>
 <tr data-row="etaratio"><td class="oa-l"><span class="math inline">\(\eta_H/\eta_L\)</span></td><td class="oa-c">3.08</td><td class="oa-c">3.73</td><td class="oa-c">3.06</td><td class="oa-c">3.87</td><td class="oa-c">2.29</td><td class="oa-c">2.41</td></tr>
 </tbody></table>
 <div class="oa-notes">
-<p><em>Note:</em> <span class="math inline">\(\rho = 1\)</span>. Under the vector <span class="math inline">\(X_i\)</span>, <span class="math inline">\(X\)</span> is the population-weighted mean of the <span class="math inline">\(X_i\)</span>. The other parameters of table 8 of the paper are the same under the two calibrations.</p>
-</div></div><div class="oa-links">Data: <a href="_generated/data/results/paper/usCalibrationSummary.csv" download="">usCalibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>tablesOA.oecdLeisureCalibration</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/fa0335f/python/paper">python/paper</a>) at commit <code>fa0335f</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_LeisureCalibration</code>, then <code>build.py --site</code>.</p></details></div></div>
+<p><em>Note:</em> <span class="math inline">\(\rho = 1\)</span>. Under the vector <span class="math inline">\(X_i\)</span>, <span class="math inline">\(X\)</span> is the population-weighted mean of the <span class="math inline">\(X_i\)</span>. The other parameters of table the paper are the same under the two calibrations.</p>
+</div></div><div class="oa-links">Data: <a href="_generated/data/results/paper/usCalibrationSummary.csv" download="">usCalibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>tablesOA.oecdLeisureCalibration</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d280ce3/python/paper">python/paper</a>) at commit <code>d280ce3</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_LeisureCalibration</code>, then <code>build.py --site</code>.</p></details></div></div>
 <p>Group by group, the vector <span class="math inline">\(X_i\)</span> are a fraction of the common <span class="math inline">\(X\)</span>, and their level carries no information of its own. Under the common <span class="math inline">\(X\)</span> the level is the unit of hours: it is set so that the model’s average workweek is the observed one, relative to the U.S. for the UK and France, and the productivities scale with it. Under the vector <span class="math inline">\(X_i\)</span> the relative hours fix only the ratios of the <span class="math inline">\(X_i\)</span>, and the unit is a normalization. That is why the level differs so much between the two while every aggregate is the same.</p>
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
 <div class="oa-exhibit oa-tablebox"><div class="oa-scroll"><table class="oa-table" id="ex-OECD_LeisureGroups">
@@ -373,18 +383,18 @@ window.Quarto = {
 </thead>
 <tbody>
 <tr class="oa-grouprow"><th class="oa-l" colspan="7"><em>U.S.</em></th></tr>
-<tr data-row="X@us"><td class="oa-l"><span class="math inline">\(X_i\)</span></td><td class="oa-c">4.16</td><td class="oa-c">4.16</td><td class="oa-c">4.16</td><td class="oa-c">0.65</td><td class="oa-c">0.80</td><td class="oa-c">1.49</td></tr>
-<tr data-row="eta@us"><td class="oa-l"><span class="math inline">\(\eta_i\)</span></td><td class="oa-c">0.82</td><td class="oa-c">1.39</td><td class="oa-c">2.54</td><td class="oa-c">0.54</td><td class="oa-c">0.95</td><td class="oa-c">2.00</td></tr>
+<tr data-row="X@us"><td class="oa-l"><span class="math inline">\(X_i\)</span></td><td class="oa-c">4.07</td><td class="oa-c">4.07</td><td class="oa-c">4.07</td><td class="oa-c">0.65</td><td class="oa-c">0.80</td><td class="oa-c">1.49</td></tr>
+<tr data-row="eta@us"><td class="oa-l"><span class="math inline">\(\eta_i\)</span></td><td class="oa-c">0.82</td><td class="oa-c">1.38</td><td class="oa-c">2.52</td><td class="oa-c">0.54</td><td class="oa-c">0.95</td><td class="oa-c">2.00</td></tr>
 <tr class="oa-grouprow"><th class="oa-l" colspan="7"><em>UK</em></th></tr>
-<tr data-row="X@uk"><td class="oa-l"><span class="math inline">\(X_i\)</span></td><td class="oa-c">7.93</td><td class="oa-c">7.93</td><td class="oa-c">7.93</td><td class="oa-c">1.02</td><td class="oa-c">1.40</td><td class="oa-c">2.81</td></tr>
-<tr data-row="eta@uk"><td class="oa-l"><span class="math inline">\(\eta_i\)</span></td><td class="oa-c">0.95</td><td class="oa-c">1.61</td><td class="oa-c">2.90</td><td class="oa-c">0.53</td><td class="oa-c">0.98</td><td class="oa-c">2.06</td></tr>
+<tr data-row="X@uk"><td class="oa-l"><span class="math inline">\(X_i\)</span></td><td class="oa-c">7.67</td><td class="oa-c">7.67</td><td class="oa-c">7.67</td><td class="oa-c">1.01</td><td class="oa-c">1.39</td><td class="oa-c">2.78</td></tr>
+<tr data-row="eta@uk"><td class="oa-l"><span class="math inline">\(\eta_i\)</span></td><td class="oa-c">0.94</td><td class="oa-c">1.60</td><td class="oa-c">2.87</td><td class="oa-c">0.53</td><td class="oa-c">0.98</td><td class="oa-c">2.06</td></tr>
 <tr class="oa-grouprow"><th class="oa-l" colspan="7"><em>France</em></th></tr>
-<tr data-row="X@fr"><td class="oa-l"><span class="math inline">\(X_i\)</span></td><td class="oa-c">6.64</td><td class="oa-c">6.64</td><td class="oa-c">6.64</td><td class="oa-c">1.15</td><td class="oa-c">1.22</td><td class="oa-c">1.44</td></tr>
-<tr data-row="eta@fr"><td class="oa-l"><span class="math inline">\(\eta_i\)</span></td><td class="oa-c">1.09</td><td class="oa-c">1.55</td><td class="oa-c">2.51</td><td class="oa-c">0.68</td><td class="oa-c">0.98</td><td class="oa-c">1.64</td></tr>
+<tr data-row="X@fr"><td class="oa-l"><span class="math inline">\(X_i\)</span></td><td class="oa-c">6.48</td><td class="oa-c">6.48</td><td class="oa-c">6.48</td><td class="oa-c">1.15</td><td class="oa-c">1.22</td><td class="oa-c">1.44</td></tr>
+<tr data-row="eta@fr"><td class="oa-l"><span class="math inline">\(\eta_i\)</span></td><td class="oa-c">1.09</td><td class="oa-c">1.54</td><td class="oa-c">2.49</td><td class="oa-c">0.68</td><td class="oa-c">0.98</td><td class="oa-c">1.64</td></tr>
 </tbody></table>
 <div class="oa-notes">
-<p><em>Note:</em> <span class="math inline">\(\rho = 1\)</span>. The income groups are those of tables 9, 10 and 11 of the paper; the population shares <span class="math inline">\(\gamma_i\)</span> and the propensities to vote <span class="math inline">\(\mu_i\)</span> are data and the same under the two calibrations.</p>
-</div></div><div class="oa-links">Data: <a href="_generated/data/results/paper/usCalibrationSummary.csv" download="">usCalibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>tablesOA.oecdLeisureGroups</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/fa0335f/python/paper">python/paper</a>) at commit <code>fa0335f</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_LeisureGroups</code>, then <code>build.py --site</code>.</p></details></div></div>
+<p><em>Note:</em> <span class="math inline">\(\rho = 1\)</span>. The income groups are those of tables 8, 9 of the paper and <a href="oecd-uk.html#ex-UK_householdheterogeneity">B6.2</a>; the population shares <span class="math inline">\(\gamma_i\)</span> and the propensities to vote <span class="math inline">\(\mu_i\)</span> are data and the same under the two calibrations.</p>
+</div></div><div class="oa-links">Data: <a href="_generated/data/results/paper/usCalibrationSummary.csv" download="">usCalibrationSummary.csv</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li></ul><p>Built by <code>tablesOA.oecdLeisureGroups</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d280ce3/python/paper">python/paper</a>) at commit <code>d280ce3</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_LeisureGroups</code>, then <code>build.py --site</code>.</p></details></div></div>
 </section>
 <section id="oecd-leisure-rows" class="level2">
 <h2 class="anchored" data-anchor-id="oecd-leisure-rows">The counterfactuals that differ</h2>
@@ -432,7 +442,7 @@ window.Quarto = {
 </div>
 </div>
 <p><span class="hidden"><span class="math inline">\(\cdot\)</span></span></p>
-<div class="oa-note"><em>Note:</em> France’s income distribution and leisure preferences under the common <span class="math inline">\(X\)</span> and the vector <span class="math inline">\(X_i\)</span>, each the change against the baseline of the same calibration and <span class="math inline">\(\rho\)</span>. The design, ageing and voting rows are the same under the two. All French characteristics imposes France’s income distribution, leisure preferences and voting patterns at once.</div><div class="oa-links">Data: <a href="_generated/data/OECD_Counterfactuals.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li><li><code>results/shocks/USMedicare_shocks.csv</code></li><li><code>results/shocks/USMedicare_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocks.csv</code></li><li><code>results/shocks/US_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocksXiCommonX.csv</code></li></ul><p>Built by <code>siteData.oecdCounterfactuals</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/fa0335f/python/paper">python/paper</a>) at commit <code>fa0335f</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Counterfactuals</code>, then <code>build.py --site</code>.</p></details></div>
+<div class="oa-note"><em>Note:</em> France’s income distribution and leisure preferences under the common <span class="math inline">\(X\)</span> and the vector <span class="math inline">\(X_i\)</span>, each the change against the baseline of the same calibration and <span class="math inline">\(\rho\)</span>. The design, ageing and voting rows are the same under the two. All French characteristics imposes France’s income distribution, leisure preferences and voting patterns at once.</div><div class="oa-links">Data: <a href="_generated/data/OECD_Counterfactuals.csv" download="">the figure’s data (csv)</a> · <details class="oa-source"><summary>Source</summary><p>Reads:</p><ul><li><code>results/paper/usCalibrationSummary.csv</code></li><li><code>results/shocks/US_shocks.csv</code></li><li><code>results/shocks/US_shocksCommonX.csv</code></li><li><code>results/shocks/US_shocksXiCommonX.csv</code></li></ul><p>Built by <code>siteData.oecdCounterfactuals</code> (<a href="https://github.com/ChampionApe/SSDclaude/tree/d280ce3/python/paper">python/paper</a>) at commit <code>d280ce3</code>. Rebuild: <code>.venv\Scripts\python.exe python\paper\build.py --only OECD_Counterfactuals</code>, then <code>build.py --site</code>.</p></details></div>
 </div>
 
 
