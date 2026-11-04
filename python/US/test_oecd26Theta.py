@@ -49,6 +49,13 @@ Run:  .venv\Scripts\python.exe python\US\test_oecd26Theta.py        (~1 min)
      runHorizon.escLambda read converged rows only; runTauTheta.selfCheck raises.
   X  The ξ drivers: runShocksXi and runESCxi need --theta --main, the workbook ξ runs first, the rows at another θ0 are
      replaced, the self-check reads the rows at the run's θ.
+  T  Without --theta calibrateRhoGrid{,EU}, runShocksUS, runESC, runESCcrra, runTauTheta and stationaryApproxESC refuse
+     to write into results/ (oecd26.indexTheta); --theta index runs the workbook's θ there, an output outside results/
+     runs without it.
+  Z  The sweeps resume a row only at the run's settings (calibrateRhoGrid.staleSettings/resumeAt): another n, ns (CRRA
+     rows), smoothKnots or interpKind, and for France and the UK another retAge or U.S. reference β (βUS), is re-solved;
+     a row without retAge/βUS is resumed unchecked; the published sweeps of results/calibration/ resume whole at
+     config.US's settings. End to end at ρ = 1 (LOG, n = 51) into temporary csvs.
 """
 import os, sys, time, tempfile, shutil
 import numpy as np, pandas as pd
@@ -637,7 +644,7 @@ check("G: runShocksUS.writeRows replaces the rows of its own (ρ, family, scenar
 runESC.FAILURES.clear()
 stageCorner0, argv0 = runESC.stageCorner, sys.argv
 try:
-    sys.argv = ['x.py', '--stage', 'corner', '--spec', 'size', '--phi', '0.5', '--commonX']
+    sys.argv = ['x.py', '--stage', 'corner', '--spec', 'size', '--phi', '0.5', '--commonX', '--theta', 'index']
     runESC.stageCorner = lambda *a, **k: runESC.noteFailure('corner', ValueError('boom'))
     rcFail = runESC.main()
     nFail = len(runESC.FAILURES)
@@ -769,6 +776,114 @@ if len(refT):
           '{} | {}'.format(eNaN, eBad))
 else:
     print("NOTE  the runTauTheta self-check against results/shocks/ skipped: no row at config.US['theta']")
+
+# ==== T: --theta is required for results/ ====================================================================
+tmpT = os.path.join(tmp, 'T')
+os.makedirs(tmpT)
+oT = lambda *x: os.path.join(tmpT, *x)
+ns_ = lambda **kw: argparse.Namespace(**({'theta': None, 'root': None, 'main': False} | kw))
+tCRG = [until(CRG, 'readDone', []), until(CRG, 'readDone', ['--theta', 'index']),
+        until(CRG, 'readDone', ['--out', oT('us.csv'), '--pkldir', oT('pu')]), until(CRG, 'readDone', ['--out', oT('us.csv')])]
+tCEU = [until(CEU, 'readDone', ['--rhos', '0.5', '1', '2']), until(CEU, 'readDone', ['--rhos', '0.5', '1', '2', '--theta', 'index']),
+        until(CEU, 'readDone', ['--rhos', '0.5', '1', '2', '--out', oT('fr.csv'), '--pkldir', oT('pf')])]
+tRS = [until(RS, 'hostRow', []), until(RS, 'hostRow', ['--theta', 'index']), until(RS, 'hostRow', ['--out', oT('s.csv')])]
+tRE = [until(runESC, 'setTheta', []), until(runESC, 'setTheta', ['--theta', 'index'])]
+tTT = [until(runESC, 'setTheta', [], run = runTauTheta), until(runESC, 'setTheta', ['--theta', 'index'], run = runTauTheta)]
+tSA = [until(stationaryApproxESC, 'runLOG', ['--rho', '1']),
+       until(stationaryApproxESC, 'runLOG', ['--rho', '1', '--theta', 'index']),
+       until(stationaryApproxESC, 'runLOG', ['--rho', '1', '--out', oT('sa.csv')])]
+eRC = raises(lambda: runESCcrra.setThetaCRRA(ns_()), SystemExit)
+nI = ns_(theta = 'index')
+okRC = runESCcrra.setThetaCRRA(nI) == runESCcrra.OUTDIR and nI.theta is None
+refused = lambda g: 'without --theta' in g.get('exit', '') and 'args' not in g
+ran = lambda g: 'args' in g and 'exit' not in g
+check("T: without --theta every U.S. driver that writes results/ refuses it (calibrateRhoGrid{,EU} also for the default "
+      "--pkldir), --theta index runs there at the workbook's θ, an --out (and --pkldir) outside results/ runs without it",
+      all(refused(g) for g in (tCRG[0], tCRG[3], tCEU[0], tRS[0], tRE[0], tTT[0], tSA[0])) and bool(eRC)
+      and all(ran(g) for g in (tCRG[1], tCRG[2], tCEU[1], tCEU[2], tRS[1], tRS[2], tRE[1], tTT[1], tSA[1], tSA[2]))
+      and tRE[1]['args'][0] is None and tTT[1]['args'][0] is None and okRC and runESC.THETA == saved,
+      ' | '.join(str(g.get('exit'))[:90] for g in (tCRG[0], tRE[0])))
+tMix = [until(CRG, 'resumeAt', ['--theta', 'index', '--commonX']),
+        until(CRG, 'resumeAt', ['--country', 'FR', '--rhos', '0.5', '1', '2', '--theta', 'index', '--commonX'], run = CEU)]
+check("T: --theta index does not resume a sweep csv holding a variant's rows (the published US and FR sweeps, at C)",
+      all('not the index θ' in g.get('exit', '') and 'args' not in g for g in tMix), tMix[0].get('exit', '')[-90:])
+iT = [oecd26.indexTheta('index', [oecd26.RESULTS], 'x'), oecd26.indexTheta('C', [oecd26.RESULTS], 'x'),
+      oecd26.indexTheta(None, [tmpT, None], 'x'), raises(lambda: oecd26.indexTheta(None, [oT('a'), CRG.OUTDIR], 'x'), SystemExit)]
+check("T: oecd26.indexTheta maps 'index' to None, keeps a variant, passes None outside results/ and refuses it inside",
+      iT[:3] == [None, 'C', None] and bool(iT[3]), str(iT[3]))
+
+# ==== Z: the sweeps resume at their settings ==================================================================
+gsC = oecd26.paperConfig().US['gridSettings']
+wantUS = {'n': gsC['n'], 'ns': gsC['ns'], 'smoothKnots': gsC['smoothKnots'], 'interpKind': gsC['interpKind']}
+row_ = lambda ρ, pref, **kw: {'ρ': ρ, 'preferences': pref, 'residual': 1e-12, 'n': 101, 'ns': 150 if pref == 'CRRA' else 50,
+                              'smoothKnots': 4, 'interpKind': 'linear', 'x0': 0.} | kw
+dZ = pd.DataFrame([row_(0.5, 'CRRA'), row_(1.0, 'LOG'), row_(2.0, 'CRRA', ns = 100), row_(1.5, 'CRRA', n = np.nan),
+                   row_(0.6, 'CRRA', smoothKnots = np.nan), row_(0.7, 'CRRA', interpKind = 'cubic'),
+                   row_(0.8, 'CRRA', residual = np.nan, n = 51), row_(3.0, 'CRRA', n = 51)])
+gridZ = [0.5, 0.6, 0.7, 0.8, 1.0, 1.5, 2.0]
+stZ, oldZ = CRG.staleSettings(dZ, wantUS, gridZ)
+doneZ = {0.5: 1, 0.6: 1, 0.7: 1, 1.0: 1, 1.5: 1, 2.0: 1}
+CRG.resumeAt(doneZ, dZ, wantUS, gridZ)
+wantEU = wantUS | {'retAge': 'nra', 'βUS': lambda ρ: 0.65 + ρ}
+dZE = pd.DataFrame([row_(0.5, 'CRRA', retAge = 'nra', βUS = 1.15), row_(1.0, 'LOG', retAge = np.nan, βUS = np.nan),
+                    row_(2.0, 'CRRA', retAge = 'exit', βUS = 2.65), row_(1.5, 'CRRA', retAge = 'nra', βUS = 2.15 + 1e-9)])
+stZE, oldZE = CRG.staleSettings(dZE, wantEU, [0.5, 1.0, 1.5, 2.0], ('retAge', 'βUS'))
+check("Z: staleSettings: another ns on a CRRA row (not on a LOG one), smoothKnots (NaN is the adaptive None), interpKind, "
+      "retAge or βUS is stale; a row without the grid or without retAge/βUS predates them; failed rows and rhos off the "
+      "grid are not read; resumeAt drops the stale rows from the resume cache",
+      stZ == {2.0: ['ns'], 0.6: ['smoothKnots'], 0.7: ['interpKind']} and oldZ == [1.5] and sorted(doneZ) == [0.5, 1.0, 1.5]
+      and stZE == {2.0: ['retAge'], 1.5: ['βUS']} and oldZE == [1.0], '{} {} | {} {}'.format(stZ, oldZ, stZE, oldZE))
+pubZ, pubOld = {}, {}
+for cx in (False, True):
+    refZ = testEU.usReference(commonX = cx)
+    for c in ('US', 'FR', 'UK'):
+        f = os.path.join(CRG.OUTDIR, c + '_rhoGrid' + ('CommonX' if cx else '') + '.csv')
+        w = wantUS if c == 'US' else wantUS | {'retAge': testEU.retAgeHost(c), 'βUS': lambda ρ, r = refZ: float(r(ρ)['β'])}
+        st, od = CRG.staleSettings(pd.read_csv(f), w, oecd26.paperConfig().US['ρGrid'], () if c == 'US' else CEU.INPUTCOLUMNS)
+        pubZ[os.path.basename(f)], pubOld[os.path.basename(f)] = st, len(od)
+check("Z: the published sweeps of results/calibration/ (US, FR, UK, both variants) resume whole at config.US's grid "
+      "settings: no stale row; France's and the UK's rows predate retAge/βUS and are resumed unchecked",
+      all(v == {} for v in pubZ.values()) and all(pubOld[k] == (0 if k.startswith('US') else 3) for k in pubOld),
+      str(pubOld))
+
+
+def sweep(mod, csv, *extra):
+    """ mod.main() at ρ = 1 (LOG), n = 51, no verify, the workbook's θ, into `csv` and its pickle directory. """
+    old = sys.argv
+    sys.argv = ['x.py', '--rhos', '1', '--n', '51', '--verify', '0', '--theta', 'index', '--out', csv,
+                '--pkldir', csv + '.pkl'] + list(extra)
+    try:
+        return mod.main()
+    finally:
+        sys.argv = old
+
+
+fUS, fFR = oT('US_z.csv'), oT('FR_z.csv')
+rcZ = [sweep(CRG, fUS)]
+z1 = pd.read_csv(fUS)
+z1.assign(n = 101).to_csv(fUS, index = False)
+rcZ.append(sweep(CRG, fUS))
+z2 = pd.read_csv(fUS)
+rcZ.append(sweep(CRG, fUS))
+z3 = pd.read_csv(fUS)
+check("Z: calibrateRhoGrid end to end: a row recorded at another n is re-solved at the run's, a row at the run's is "
+      "resumed (timestamp kept)", rcZ == [0, 0, 0] and list(z2['n']) == [51] and z2['timestamp'].iloc[0] == z3['timestamp'].iloc[0]
+      and z2['β'].iloc[0] == z1['β'].iloc[0], 'β {!r}'.format(z1['β'].iloc[0]))
+rcE = [sweep(CEU, fFR, '--country', 'FR')]
+e1 = pd.read_csv(fFR)
+βref = float(testEU.usReference(commonX = False)(1.0)['β'])
+e1.assign(retAge = 'exit', timestamp = 'x').to_csv(fFR, index = False)
+rcE.append(sweep(CEU, fFR, '--country', 'FR'))
+e2 = pd.read_csv(fFR)
+e2.assign(retAge = np.nan, βUS = np.nan).to_csv(fFR, index = False)
+rcE.append(sweep(CEU, fFR, '--country', 'FR'))
+e3 = pd.read_csv(fFR)
+check("Z: calibrateRhoGridEU end to end: a new row records retAge (testEU.retAgeHost) and βUS (the U.S. reference β, = its "
+      "β); a row at another retAge is re-solved; a row without retAge/βUS is resumed unchecked",
+      rcE == [0, 0, 0] and e1['retAge'].iloc[0] == testEU.retAgeHost('FR') and e1['βUS'].iloc[0] == βref == e1['β'].iloc[0]
+      and e2['retAge'].iloc[0] == testEU.retAgeHost('FR') and e2['timestamp'].iloc[0] != 'x'
+      and pd.isna(e3['retAge'].iloc[0]) and e3['timestamp'].iloc[0] == e2['timestamp'].iloc[0],
+      'βUS {!r}, retAge {}'.format(e1['βUS'].iloc[0], e1['retAge'].iloc[0]))
 
 shutil.rmtree(tmp, ignore_errors = True)
 print('\n({:.0f}s)'.format(time.time() - tic))

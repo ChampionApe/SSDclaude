@@ -46,7 +46,8 @@ France's US reference (beta imposed, hours); France takes its θ0 from the same 
 oecd26.countryθ0) in the reference row and in the calibration its characteristics are read from (frenchData), with
 omega recalibrated at it. DIR is the variant's directory (oecd26.thetaDir, results/oecd26_theta_<variant>/;
 results/ under --main, the pipeline's main variant, oecd26.thetaRoot), the csv DIR/shocks/US_shocks{,CommonX}.csv
-with thetaSource, θ0 and grid columns; --coarse (variant only) puts the tax grid at 51 nodes.
+with thetaSource, θ0 and grid columns; --coarse (variant only) puts the tax grid at 51 nodes. --theta index is the
+workbook's θ (no θ columns); without --theta a run into results/ is refused (oecd26.indexTheta).
 
 Writes results/shocks/US_shocks{,CommonX}.csv -- one row per (rho, family, scenario, effect), each with the
 tax counts of its solve (nEqMax, nCandMax, nFallback; policy.multiplicityColumns): the baseline's, France's and
@@ -147,7 +148,7 @@ def frenchData(m, ρ, preferences, gs = None, commonX = False, usCsv = None, θ0
     return {'ηFR': ηFR, 'μFR': parsFR['μj'], 'ηScale': sh.ηLevel(m, ηFR),
             'xbarRatio': XbarFR/XbarUS, 'XbarFR': XbarFR, 'XbarUS': XbarUS,
             'γgap': float(np.max(np.abs(γFR - γUS))),
-            'θUS': float(m.db['θ'].xs(t0)), 'pinTheta': True}
+            'θUS': float(m.db['θ'].xs(t0))}
 
 
 def effectRows(r, ids):
@@ -252,11 +253,12 @@ def main():
 
     names = sum((list(FAMILIES[f]) for f in (FAMILIES if a.family == 'all' else [a.family])), [])
     famOf = {n: f for f, ns in FAMILIES.items() for n in ns}
-    if a.theta is None:
+    if a.theta in (None, oecd26.INDEX):
         if a.root is not None or a.coarse or a.main:
             raise SystemExit('--root, --coarse and --main need --theta VARIANT')
         θ0, θ0FR, calibDir, usCsv, tagθ = None, None, None, None, {}
         out = a.out or os.path.join(OUTDIR, 'US_shocks' + ('CommonX' if a.commonX else '') + '.csv')
+        a.theta = oecd26.indexTheta(a.theta, [out], 'runShocksUS.py')
         os.makedirs(OUTDIR, exist_ok = True)
     else:
         θ0, calibDir, outθ, θ0FR = thetaRun(a.theta, a.root, a.commonX, a.rho, a.main)

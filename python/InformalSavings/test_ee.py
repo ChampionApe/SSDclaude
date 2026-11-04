@@ -72,9 +72,10 @@ def primitiveChecks(V, init, s0, tag, tol = 1e-10):
     d, c = close(si_lag*(V['R']/p_)[:, None] + V['bi'], V['c2i'], tol)
     check(f'[{tag}] c_2^i == s_{{t-1,i}}*R/p_{{t-1}} + b^i', c, f'max|diff|={d:.2e}')
 
-    # PAYG balance, eq (governmentBudget) -- ties κ/bbar/bi/b0 together. t=0 pays the pre-horizon generation.
-    contrib = ν*V['w']*V['h']*τ/(1+γ0)
-    payout = ((γi_*p_[:, None]*V['bi']).sum(axis = 1) + γ0_*p0_*V['b0'])/(1+γ0_)
+    # PAYG balance, eq (governmentBudget) per formal young (n_t formal, eq:aggregateStates) -- ties κ/bbar/bi/b0
+    # together. t=0 pays the pre-horizon generation. γ_{t-1,0} read from db: §3 moves it over t.
+    contrib = ν*V['w']*V['h']*τ
+    payout = (γi_*p_[:, None]*V['bi']).sum(axis = 1) + m.db['γ0[t-1]'].values*p0_*V['b0']
     d, c = close(contrib[1:], payout[1:], tol)
     check(f'[{tag}] PAYG budget balances at every t>0', c, f'max|diff|={d:.2e}')
 
@@ -158,6 +159,30 @@ try:
     primitiveChecks(VC, initC, s0C, f'ρ={ρCRRA}', tol = 1e-9)
 finally:
     m.db.clear(); m.db.update(snapshot); m.x0.pop('EE_CRRA', None)
+
+# =====================================================================================
+# 3. γ_0 moving over t -- n_t and ν_t count formal young, so κ_t = p_t + ε_{t+1}γ_{t,0}p_{t,0}
+# =====================================================================================
+# The workbook's γ_0 is constant, where a (1+γ_{t,0})/(1+γ_{t+1,0}) factor in κ is exactly 1 and the budget
+# cannot tell the two readings apart; a moving γ_0 can.
+snapshot = dict(m.db)
+try:
+    γjG = m.db['γj'].values.copy()
+    γjG[:, 0] = γ0[0]*np.linspace(0.6, 1.4, T)
+    m.db.update(m.adjPar('γj', γjG))
+    m.updateAuxPars()
+    g0, g0_1 = m.db['γ0'].values, m.db['γ0[t+1]'].values
+    fac = np.abs((1+g0[:-1])/(1+g0_1[:-1]) - 1)
+    check('[γ0 varying] the factor (1+γ_{t,0})/(1+γ_{t+1,0}) departs from 1 by > 1% at every t < T (not vacuous)',
+          fac.min() > 0.01, f'γ_0 from {g0[0]:.3f} to {g0[-1]:.3f}, |factor-1| in [{fac.min():.3f}, {fac.max():.3f}]')
+    check('[γ0 varying] κ_t == p_t + ε_{t+1}γ_{t,0}p_{t,0} exactly (no (1+γ_0) factor)',
+          np.array_equal(m.db['κ'].values, p + m.db['eps[t+1]'].values*g0*p0))
+    s0G = m.steadyState_LOG_solve(τ[tFirst], θ[tFirst], t = tFirst)['s']
+    repG = m.EE_report(m.EE_LOG_solve(τ, θ, ε, s0 = s0G), τ, θ, ε, s0G)
+    initG = m.initialState_solve(τ[tFirst], θ[tFirst], ε[tFirst])
+    primitiveChecks({k: v.values for k, v in repG.items()}, initG, s0G, 'γ0 varying')
+finally:
+    m.db.clear(); m.db.update(snapshot)
 
 # ---- the parameter writers and the removed definitions ------------------------------------------------
 import inspect

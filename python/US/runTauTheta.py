@@ -1,6 +1,7 @@
 r""" The U.S. tax of 2020 against a design pinned on the whole path, with and without the cost of redistribution.
 
 Run:  .venv\Scripts\python.exe python\US\runTauTheta.py --theta C --main --commonX
+      ... --theta index                  the workbook's θ into results/esc/ (without --theta: refused, oecd26.indexTheta)
       ... --grid 0 0.1 ... 1            the pinned designs (default 0, 0.1, ..., 1; θ0 is always added)
       ... --refine 0.01                 also the designs within one grid cell of the cost model's grid maximum, at this
                                         step (0 for none; default 0.01)
@@ -140,7 +141,9 @@ def main():
     p.add_argument('--force', action = 'store_true')
     a = p.parse_args()
     a.root = None if a.root is None else os.path.abspath(os.path.join(CWD, a.root))
-    outdir = R.setTheta(a.theta, a.root, ('calib',), False, a.commonX, 1.0, a.main)
+    import oecd26
+    theta = a.theta if a.root is not None else oecd26.indexTheta(a.theta, [R.OUTDIR], 'runTauTheta.py')
+    outdir = R.setTheta(theta, a.root, ('calib',), False, a.commonX, 1.0, a.main)
     out = os.path.join(outdir, 'escTauTheta.csv')
     calibPath = os.path.join(outdir, 'escCalibration.csv')
     calib = R.checkCalib(pd.read_csv(calibPath), calibPath, ['size'], [PHI], a.commonX)

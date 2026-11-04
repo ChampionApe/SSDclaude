@@ -24,7 +24,8 @@ Writes results/numerical/US_ESC_stationaryApprox.csv, one row per (rho, t), each
 
 Under CRRA the cost is the converged exact calibration of escCalibrationCRRA.csv at the run's θ; with only a
 path-iteration row at that (rho, spec, phi) the run stops, unless --allowPathP lets the path p stand in (a smoke run).
-A relative --out is the caller's working directory's.
+A relative --out is the caller's working directory's. --theta C --main is the pipeline's; --theta index (or an --out
+outside results/) the workbook's θ, which without --theta is refused into results/ (oecd26.indexTheta).
 """
 import os, sys, argparse, time
 from copy import deepcopy
@@ -185,11 +186,13 @@ def main():
     p.add_argument('--main', action = 'store_true', help = "with --theta config.US['theta']")
     a = p.parse_args()
     a.out = os.path.abspath(os.path.join(CWD, a.out))
+    import oecd26
+    if a.theta in (None, oecd26.INDEX) and not a.main:
+        a.theta = oecd26.indexTheta(a.theta, [a.out], 'stationaryApproxESC.py')
     if a.theta is not None or a.main:
         if not (a.theta is not None and a.main):
             raise SystemExit('--theta needs --main here (and --main --theta)')
         runESC.setTheta(a.theta, None, ('calib',), False, a.commonX, a.rho[0], main = True)
-        import oecd26
         try:
             for ρ in a.rho:
                 oecd26.usBeta(runESC.usSweep(a.commonX), ρ, thetaSource = a.theta)

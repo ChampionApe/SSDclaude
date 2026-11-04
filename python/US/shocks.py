@@ -147,7 +147,7 @@ def ηLevel(mt0, ηFR):
     return (Γh0/Γh)**(1/(1+ξ))
 
 
-def shockIncomeDistribution(mt0, ηFR, pinTheta = True, θPin = None):
+def shockIncomeDistribution(mt0, ηFR, *, θPin = None):
     """ France's productivity PROFILE eta_i, at the US productivity level (Gamma_h = 1 at the US X_i --
     see ηLevel), with X_i HELD at the US values, at the US pension design. Returns the scale c applied
     to eta.
@@ -169,13 +169,13 @@ def shockIncomeDistribution(mt0, ηFR, pinTheta = True, θPin = None):
     and letting theta adjust to the new income distribution: under France's flatter distribution the same
     observed replacement-rate ratio implies a much less Bismarckian system. That is a pension-design change
     riding along inside a counterfactual about inequality, and the two are separately identified elsewhere
-    in the same table (shockTheta is the design experiment). So pinTheta = True is the DEFAULT and this row
-    moves eta alone; pinTheta = False keeps the re-deriving reading available. With db['θ0'] set
-    (ModelUS.θOverride) getTheta returns θ0 and the two readings coincide.
+    in the same table (shockTheta is the design experiment). So this row pins theta and moves eta alone. With
+    db['θ0'] set (ModelUS.θOverride) getTheta returns θ0 and the re-derived theta is the pinned one.
 
-    theta is pinned at `θPin`, defaulting to the model's OWN design before the swap -- read here rather
-    than passed in, so the default reading needs no cooperation from the caller and cannot be pinned at
-    another model's design by accident. Installed AFTER updateAuxPars, for the reason shockTheta gives.
+    theta is pinned at `θPin` (keyword-only), defaulting to the model's OWN design before the swap -- read
+    here rather than passed in, so the default reading needs no cooperation from the caller and cannot be
+    pinned at another model's design by accident. Installed AFTER updateAuxPars, for the reason shockTheta
+    gives.
 
     eta_0 (the zero-mass slot) is kept at the US value, scaled by the same c -- it is multiplied by
     gamma_0 = 0, but must stay finite. """
@@ -187,8 +187,7 @@ def shockIncomeDistribution(mt0, ηFR, pinTheta = True, θPin = None):
     mt0.updateAuxPars()   # Gamma_h (back to the host's, by construction of c) and theta are functions of eta/X
     Γh = float(np.asarray(mt0.db['Γh'])[mt0.db['t0']])
     assert abs(Γh/Γh0 - 1) < 1e-10, f'shockIncomeDistribution: Gamma_h = {Γh} after renormalisation, expected {Γh0}'
-    if pinTheta:
-        mt0.db.update(mt0.adjPar('θ', θ0))   # after updateAuxPars -- see shockTheta
+    mt0.db.update(mt0.adjPar('θ', θ0))   # after updateAuxPars -- see shockTheta
     return c
 
 
@@ -236,16 +235,14 @@ def shockFrenchAll(mt0, d):
     shockVoting's refresh, which re-derives theta from France's eta and puts the combined row back on a
     design nothing asked for. The single-characteristic rows never see this because nothing runs after
     them, which is what makes a silently re-derived theta in the combined row the kind of defect #9 is
-    about. Under pinTheta = False the same line is a no-op on the re-derived value.
+    about.
 
     Returns the design the row ends on. """
-    pin = d.get('pinTheta', True)
     θ0 = float(mt0.db['θ'].xs(mt0.db['t'][0])) if d.get('θUS') is None else float(d['θUS'])
-    c = shockIncomeDistribution(mt0, d['ηFR'], pin, θ0 if pin else None)
+    c = shockIncomeDistribution(mt0, d['ηFR'], θPin = θ0)
     shockLeisure(mt0, d['xbarRatio'], c)
     shockVoting(mt0, d['μFR'])
-    if pin:
-        mt0.db.update(mt0.adjPar('θ', θ0))
+    mt0.db.update(mt0.adjPar('θ', θ0))
     return float(mt0.db['θ'].xs(mt0.db['t'][mt0.db['t0']]))
 
 
@@ -254,7 +251,7 @@ SHOCKS = {
     'theta1':   ('$\\theta = 1$',          lambda mt0, d: shockTheta(mt0, 1.)),
     'mild':     ('Mild ageing',            lambda mt0, d: shockAgeing(mt0, 'mild')),
     'acute':    ('Acute ageing',           lambda mt0, d: shockAgeing(mt0, 'acute')),
-    'frIncome': ('Income distribution',    lambda mt0, d: shockIncomeDistribution(mt0, d['ηFR'], d.get('pinTheta', True), d.get('θUS'))),
+    'frIncome': ('Income distribution',    lambda mt0, d: shockIncomeDistribution(mt0, d['ηFR'], θPin = d.get('θUS'))),
     'frLeisure':('Leisure preferences',    lambda mt0, d: shockLeisure(mt0, d['xbarRatio'], d.get('ηScale', 1.))),
     'frVoting': ('Voting',                 lambda mt0, d: shockVoting(mt0, d['μFR'])),
     'frAll':    ('All French characteristics', shockFrenchAll),

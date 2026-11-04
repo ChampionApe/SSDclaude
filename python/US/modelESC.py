@@ -132,8 +132,10 @@ class ModelESC(ModelUS):
         pi, until max|Δpi| < tol. The start is the fixed point the last solve of the same kind (`what`)
         reached on this instance or the one it was copied from, else db's pi, else ΠR_START: only the
         iteration count depends on it. θOf(out) -> the solve's (T,) design path. Returns the last solve,
-        whose pi is within tol of its own path's, with 'ΠRiter' and 'ΠRgap'; db holds that path's pi.
-        Under every other spec, and inside calibrate's root (_ΠRfrozen), solve() once at db's pi.
+        whose pi is within tol of its own path's, with 'ΠRiter', 'ΠRpath' (ΠRPath of the returned path, (T,))
+        and 'ΠRgap' = max|ΠRpath - pi solved at|; db keeps the pi the returned solve was solved at, the
+        warm start (_ΠRstart) the path's. Under every other spec, and inside calibrate's root (_ΠRfrozen),
+        solve() once at db's pi.
 
         A CRRA solve can jump (by ~1e-4 in tau) as pi crosses a point where its selection changes, and the
         map then has no fixed point but a 2-cycle across the jump. When the gap stops halving, the update is
@@ -154,9 +156,8 @@ class ModelESC(ModelUS):
             gap = float(np.max(np.abs(π - πIn)))
             gaps.append(gap)
             if gap < tol or (damp and len(gaps) > 6 and gap < ΠR_STALLTOL and gap > 0.9*min(gaps[-6:-1])):
-                self.setΠR(π)
                 self._ΠRstart = dict(getattr(self, '_ΠRstart', {})) | {what: π.copy()}
-                return out | {'ΠRiter': k, 'ΠRgap': gap}
+                return out | {'ΠRiter': k, 'ΠRgap': gap, 'ΠRpath': π}
             if not damp and len(gaps) > 2 and gaps[-1] > 0.5*gaps[-2] and gaps[-2] > 0.5*gaps[-3]:
                 damp = True
             self.setΠR(0.5*(πIn + π) if damp else π)
@@ -166,7 +167,8 @@ class ModelESC(ModelUS):
         """ ModelUS.calibrate; under 'sizePiR' an outer loop around it: (beta, omega) are calibrated at a
         fixed pi (_ΠRfrozen, so the root sees no feedback), pi is recomputed from the calibrated equilibrium,
         and the two alternate until max|Δpi| < ΠR_TOLCRRA (damped and accepted below ΠR_STALLTOL as in
-        _ΠRFixedPoint). Returns the last calibration, with 'ΠRiter' and 'ΠRgap'. """
+        _ΠRFixedPoint). Returns the last calibration, with 'ΠRiter', 'ΠRpath' and 'ΠRgap' as _ΠRFixedPoint's;
+        db and the warm start keep the pi it was solved at. """
         if not self._hasΠR():
             return super().calibrate(*args, **kwargs)
         start = getattr(self, '_ΠRstart', {}).get('calibrate')
@@ -187,9 +189,8 @@ class ModelESC(ModelUS):
             gap = float(np.max(np.abs(π - πIn)))
             gaps.append(gap)
             if gap < ΠR_TOLCRRA or (damp and len(gaps) > 6 and gap < ΠR_STALLTOL and gap > 0.9*min(gaps[-6:-1])):
-                # db keeps the pi the calibration was solved at, so db and the calibrated equilibrium agree
                 self._ΠRstart = dict(getattr(self, '_ΠRstart', {})) | {'calibrate': πIn.copy()}
-                return cal | {'ΠRiter': k, 'ΠRgap': gap}
+                return cal | {'ΠRiter': k, 'ΠRgap': gap, 'ΠRpath': π}
             if not damp and len(gaps) > 2 and gaps[-1] > 0.5*gaps[-2] and gaps[-2] > 0.5*gaps[-3]:
                 damp = True
             self.setΠR(0.5*(πIn + π) if damp else π)

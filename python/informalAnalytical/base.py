@@ -165,11 +165,14 @@ class Base:
     ##########      τ, θ, ε are always explicit -- to be endogenized later     ###
     #######################################################################
     def κ(self, ε1, t = None):
-        """ Eq (governmentBudget:bbar): κ_t(ε_{t+1}) = (p_t + ε_{t+1}γ_{t,0}p_t^0)(1+γ_{t,0})/(1+γ_{t+1,0}).
-        ε1 = ε_{t+1} (explicit -- mirrors the b0/bi convention, since ε may be endogenized later;
-        γ0/p/p0 are read from db as primitives, not solution objects). """
-        p, p0, γ0, γ0_1 = self.get('p', t), self.get('p0', t), self.get('γ0', t), self.get('γ0[t+1]', t)
-        return (p + ε1*γ0*p0) * (1+γ0)/(1+γ0_1)
+        """ Eq (governmentBudget:bbar): κ_t(ε_{t+1}) = p_t + ε_{t+1}γ_{t,0}p_{t,0}, so that generation t's
+        retirees per formal young cost Σ_j γ_{t,j}p_{t,j}b_{t+1}^j = κ_t h_t bbar_{t+1}. n_t and ν_t count
+        FORMAL young (eq:aggregateStates, the factor prices' s_{t-1}/(ν_t h_t), FOC's young weight ν_t), so
+        the budget n_t w_t τ_t h_t = n_{t-1} Σ_j γ_{t-1,j}p_{t-1,j}b_t^j carries no (1+γ_0) factor, also
+        when γ_0 varies over t. ε1 = ε_{t+1} (explicit -- mirrors the b0/bi convention, since ε may be
+        endogenized later; γ0/p/p0 are read from db as primitives, not solution objects). """
+        p, p0, γ0 = self.get('p', t), self.get('p0', t), self.get('γ0', t)
+        return p + ε1*γ0*p0
 
     def bbar(self, τ, w, h, h_, t = None):
         """ Eq (governmentBudget:bbar): bbar_t = ν_t w_t h_t τ_t / (h_{t-1} κ_{t-1}).

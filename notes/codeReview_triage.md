@@ -12,7 +12,14 @@ drivers, P3 paper, P4 InformalSavings/gridsearch/informalAnalytical; module logs
 - Lead: readers escPermanent/escPermanentCRRA/escSequentialCRRA and their csvs removed; pipeline entry `escXi`
   (runESCxi --theta C --main, after escExperiments) added, 0/1 until run; `runShocksXi` (shocksXi) also needs a rerun
   at C; build.py stdout UTF-8 (a new siteData note printed theta into a cp1252 log and crashed the build).
-- Open, not applied: sizePiR pi at acceptance (R1#4, <=2e-4 after a stall); resume keys on settings (R2#7); mandatory
+- Follow-up (same day, RKB "fix all 3"): escXi run at C (lambda 6.301/6.247/6.192 at xi 0.2/0.3/0.4, self-check
+  passed; site xi blocks filled, NUM_Selection ESC rows 191/157 -> 224/190); REPLICATION.md and data/README.md trace
+  oecd26Theta.py and its inputs; every item below fixed (module logs of 2026-11-04): kappa without the factor (n_t
+  formal young; bitwise), sizePiR keeps piIn (<=1e-10 in PiR), pinTheta removed, resume keys on settings, --theta
+  mandatory for drivers writing results/, objectiveFrozen's common anchor (InformalSavings; bitwise). Still open:
+  informalAnalytical's objectiveFrozen keeps the per-candidate anchor (its README); stationaryApprox, runHorizon,
+  c5Numbers, collectESCexperiments run without --theta; runCalibrationUS.missing() keys on rho only.
+- Was open (now fixed, above): sizePiR pi at acceptance (R1#4, <=2e-4 after a stall); resume keys on settings (R2#7); mandatory
   --theta (R2#11); objectiveFrozen's per-candidate anchor (R4#6); the pinTheta=False branch of
   shocks.shockIncomeDistribution/shockFrenchAll/runESC.shockIncomeAndVoting has no driver caller since freeTheta
   went (test_esc.py:351-362 still exercises it); stage-0 drafts undocumented in REPLICATION.md.

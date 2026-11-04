@@ -18,6 +18,9 @@ Run:  .venv\Scripts\python.exe python\US\test_coreGuards.py        (~30 s)
       within 1e-14 of scipy's eigs.
   G10 one zero-mass guard (policy.requireZeroMass) behind LOG's and the leaded solvers'.
   G11 the dead definitions are gone.
+  G12 κ_t = p_t + ε_{t+1}γ_{t,0}p_t^0 (Eq governmentBudget:bbar), checked at a time-varying γ_0.
+  G13 'sizePiR' at acceptance (_ΠRFixedPoint, calibrate): db keeps the π the returned solve was solved at, the
+      record carries the path's π (ΠRpath) and ΠRgap = max|ΠRpath - db's π|.
 """
 import os, sys, time, types, inspect
 import numpy as np
@@ -228,6 +231,37 @@ gone = {'Base.power_p': hasattr(base.Base, 'power_p'), 'ModelUS.aux_p': hasattr(
         'LeadedLOG.kwargs': hasattr(mE.ESC, 'kwargs'), 'LeadedCRRA.kwargs': hasattr(mE.ESCC, 'kwargs'),
         'PermanentCRRA.kwargs': hasattr(mE.ESCPC, 'kwargs')}
 check('G11 the dead definitions are gone', not any(gone.values()), f'-> still there: {[k for k, v in gone.items() if v]}')
+
+# ==== G12: κ_t = p_t + ε_{t+1}γ_{t,0}p_t^0 ===================================================================
+mK = ModelUS(pars = PARS, **testmod.kwargs)
+tK = mK.db['t']
+γK = pd.Series(np.linspace(0.1, 0.4, len(tK)), index = tK)
+mK.db.update({'γ0': γK, 'γ0[t+1]': γK.shift(-1).fillna(0.5), 'γ0[t-1]': γK.shift(1).fillna(0.05)})
+ε1 = np.linspace(0.2, 0.3, len(tK))
+p, p0 = mK.db['p'].values.astype(float), mK.db['p0'].values.astype(float)
+κK = np.asarray(mK.BT.κ(ε1), dtype = float)
+check('G12 κ_t = p_t + ε_{t+1}γ_{t,0}p_t^0 with a time-varying γ_0 (no (1+γ_{t,0})/(1+γ_{t+1,0}) factor), and = p at γ_0 = 0',
+      np.array_equal(κK, p + ε1*γK.values*p0) and np.array_equal(m.db['κ'].values.astype(float), m.db['p'].values.astype(float)),
+      f'-> κ[0] {κK[0]:.6f} against p[0] + ε γ0 p0 {p[0] + ε1[0]*γK.values[0]*p0[0]:.6f}')
+
+# ==== G13: 'sizePiR' at acceptance: db keeps the π solved at, the record the path's ===========================
+mP = ModelESC(pars = PARS, wedge = {'spec': 'sizePiR', 'phi': 0.5, 'p': 11.26}, commonX = True, **testmod.kwargs)
+mP.LOG.initGS(GS)
+outP = mP.solvePEE_LOG()
+πdb = mP.db['wedgeΠR'].values.astype(float)
+πP = outP.get('ΠRpath')
+πRe = mP.ΠRPath(outP['report'], outP['τ'].values, mP.db['θ'].values)
+check("G13 solvePEE_LOG under 'sizePiR': the record's ΠRpath is ΠRPath of the returned path, db keeps the π it was "
+      "solved at (ΠRgap = max|ΠRpath - db's π| exactly, a warm start equal to ΠRpath)",
+      πP is not None and float(np.max(np.abs(πP - πRe))) < 1e-14 and outP['ΠRgap'] == float(np.max(np.abs(πP - πdb)))
+      and outP['ΠRgap'] < 1e-10 and np.array_equal(mP._ΠRstart['solvePEE_LOG'], πP),
+      f"-> {outP['ΠRiter']} iterations, gap {outP['ΠRgap']:.1e}, π_2020 {πdb[mP.db['t0']]:.6f}")
+calP = mP.calibrate()
+πdbC = mP.db['wedgeΠR'].values.astype(float)
+check("G13 calibrate under 'sizePiR': the same record (ΠRpath, ΠRgap = max|ΠRpath - db's π|), db and the warm start "
+      "at the π the calibration was solved at", calP.get('ΠRpath') is not None
+      and calP['ΠRgap'] == float(np.max(np.abs(calP['ΠRpath'] - πdbC))) and np.array_equal(mP._ΠRstart['calibrate'], πdbC),
+      f"-> {calP['ΠRiter']} iterations, gap {calP['ΠRgap']:.1e}")
 
 print(f'[{time.time() - tic:.0f}s]')
 report()

@@ -13,7 +13,7 @@ In the formal sector, a continuum of firms transforms aggregate capital and labo
     K_t =& n_{t-1} s_{t-1}, & s_{t-1}&\equiv \sum_i\gamma_{t-1,i}s_{t-1,i},
 \end{align}
 \end{subequations}
-with $\nu_t\equiv n_t/n_{t-1}$ workers per retiree; informal households enter neither aggregate. The representative firm produces with the Cobb--Douglas technology $Y_t = K_t^{\alpha}H_t^{1-\alpha}$, total factor productivity normalised to one, so the factor prices are
+with $n_t$ the number of formal young households and $\nu_t\equiv n_t/n_{t-1}$ workers per retiree; informal households enter neither aggregate. The representative firm produces with the Cobb--Douglas technology $Y_t = K_t^{\alpha}H_t^{1-\alpha}$, total factor productivity normalised to one, so the factor prices are
 \begin{align}\label{\refeq:factorPrices}
     R_t = \alpha \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha-1}, \qquad w_t = (1-\alpha) \left(\dfrac{s_{t-1}}{\nu_t h_t}\right)^{\alpha}.
 \end{align}
@@ -64,13 +64,13 @@ Benefits are
     b_t^i =& \left[\theta_th_{t-1,i} \eta_{t-1,i}+(1-\theta_t)h_{t-1}\right] \overline{b}_t, \\
     b_t^0 =& \epsilon_t h_{t-1} \overline{b}_t,
 \end{align}
-where $\theta_t$ is the weight on earnings-related benefits and $\epsilon_t$ the universal pension relative to the average formal benefit, $h_{t-1}\overline{b}_t$. The average contribution of a formal worker is $w_t\tau_t\sum_{i}\gamma_{t,i}\eta_{t,i}h_{t,i} = w_t\tau_th_t$. With $n_t$ young households, $n_t/(1+\gamma_{t,0})$ of them formal, and type $j$ a share $\gamma_{t-1,j}/(1+\gamma_{t-1,0})$ of the previous cohort, the balanced budget requires
+where $\theta_t$ is the weight on earnings-related benefits and $\epsilon_t$ the universal pension relative to the average formal benefit, $h_{t-1}\overline{b}_t$. The average contribution of a formal worker is $w_t\tau_t\sum_{i}\gamma_{t,i}\eta_{t,i}h_{t,i} = w_t\tau_th_t$. With $n_{t-1}\gamma_{t-1,j}$ households of type $j$ in the previous cohort, the balanced budget requires
 \begin{align*}
-    \dfrac{n_t}{1+\gamma_{t,0}} w_t\tau_th_t = \dfrac{n_{t-1}}{1+\gamma_{t-1,0}}\sum_j \gamma_{t-1,j}p_{t-1,j} b_t^j,
+    n_t w_t\tau_th_t = n_{t-1}\sum_j \gamma_{t-1,j}p_{t-1,j} b_t^j,
 \end{align*}
-contributions on the left and benefits on the right. With the benefit formulas this identifies the benefit level
+contributions on the left and benefits on the right. With the benefit formulas, $\sum_i\gamma_{t-1,i}b_t^i = h_{t-1}\overline{b}_t$, this identifies the benefit level
 \begin{align}\label{\refeq:governmentBudget:bbar}
-    \overline{b}_t & \equiv \dfrac{\nu_t w_th_t\tau_t}{h_{t-1}\kappa_{t-1}}, \qquad\kappa_t \equiv \frac{1+\gamma_{t,0}}{1+\gamma_{t+1,0}}(\epsilon_{t+1}\gamma_{t,0}p_{t,0}+p_t).
+    \overline{b}_t & \equiv \dfrac{\nu_t w_th_t\tau_t}{h_{t-1}\kappa_{t-1}}, \qquad\kappa_t \equiv p_t+\epsilon_{t+1}\gamma_{t,0}p_{t,0}.
 \end{align}
 \end{subequations}
 

@@ -291,11 +291,17 @@ check('at ε≡0 every period\'s τ_t(ι_{t-1}) is flat (A_t=0 removes the only 
 # the frozen shares up to a constant, along 𝒯 and across candidates (the retirees' level carries that).
 hFD = 1e-5
 ιTwo = np.array([0.08, 1.0])
+
+def partsAndZ_T(τv, ιv):
+    """ The terminal period's zbarParts_T and consistent z (M, Nι) on a local 𝒯, as solveTerminal builds them. """
+    dL = LOG.stateGrid_T(τv, θ, t, tLag)
+    pL = LOG.zbarParts_T(dL, t)
+    return pL, LOG._zState(LOG.zbarAtShares(θ, t, dL['si_s_'], pL), τv, ε, ιv, t)
+
 with BG.cacheParams():
     for τ0 in (0.05, 0.25, 0.60):
         τg = np.array([τ0 - hFD, τ0, τ0 + hFD])
-        dLoc = LOG.stateGrid_T(τg, θ, t, tLag)
-        W = LOG.objectiveFrozen(np.full((1, 2), τ0), LOG.zbarParts_T(dLoc, t), θ, ε, ιTwo, t, tLag)
+        W = LOG.objectiveFrozen(np.full((1, 2), τ0), *partsAndZ_T(τg, ιTwo), θ, ε, ιTwo, t, tLag)
         dW = (W[0, 2, :] - W[0, 0, :])/(2*hFD)
         zc = np.array([zPolicy(τ0, ι0)[0] for ι0 in ιTwo])
         err = np.max(np.abs(dW - zc)/np.maximum(1., np.abs(zc)))
@@ -303,7 +309,7 @@ with BG.cacheParams():
               err <= 1e-6, '-> max rel err {:.2e}'.format(err))
     τFine = np.linspace(0.15, 0.40, 1001)
     cTwo = (0.20, 0.35)
-    WF = LOG.objectiveFrozen(np.array([[cTwo[0]], [cTwo[1]]]), LOG.zbarParts_T(LOG.stateGrid_T(τFine, θ, t, tLag), t),
+    WF = LOG.objectiveFrozen(np.array([[cTwo[0]], [cTwo[1]]]), *partsAndZ_T(τFine, np.array([1.0])),
                              θ, ε, np.array([1.0]), t, tLag)[:, :, 0]
 with B.cacheParams():
     Dc = [LOG.stateGrid_T(np.array([c]), θ, t, tLag)['si_s_'][0] for c in cTwo]
@@ -341,5 +347,56 @@ check('LOG recursion: policy tables bitwise the integral criterion\'s where one 
 check('the ι_t fixed point is untouched: ι_t(τ_t) and its root counts bitwise under both rules',
       np.array_equal(ιOfτ, ιL, equal_nan = True) and np.array_equal(nRoots, nRootsL),
       '-> Σ ι_t {!r}'.format(float(np.nansum(ιOfτ))))
+
+# ---- 12. the frozen objectives share one anchor per column (toy; LOG and CRRA objectiveFrozen) ----------
+# Every candidate's W drops the column-common levels (the young's, the informal retirees') at one node, which
+# must be the same node for every candidate or the dropped constants differ and so does the ranking. Toy, one
+# formal type: frozen share D(τ_c) = 0.2 - 0.5τ_c, retirees' consumption c = D + τ, column-common part -τ²/2,
+# so W(τ; D) = -τ²/2 + u(D + τ), u = ln (LOG) or c^p/p with p = 1/2 (CRRA), and the condition is NaN where
+# c <= 0. The candidate τ_c = 0.6 has D = -0.1, so it is infeasible below τ = 0.1. Column 0 is feasible from
+# τ = 0 (its anchor), where that candidate has no level and must be NaN; column 1 is feasible from τ = 0.3,
+# where both candidates are, and both must be the exact W up to one constant, τ_anchor²/2.
+import policy as policyMod
+
+class _ToyBG:
+    def get(self, k, t = None): return np.ones(1)
+    def B(self, s, h1, t = None): return np.ones_like(s)
+    def Γs(self, B, τ1, θ1, t = None): return np.ones_like(τ1)
+    def si_s(self, B, τ1, θ1, Γs, t = None): return (0.2 - 0.5*np.asarray(τ1))[:, None]
+    def c2i(self, h, s_, τ, θ, si_s_, t = None): return si_s_ + np.asarray(τ, dtype = float).reshape(-1, 1)
+
+class _Toy:
+    ni, BG = 1, _ToyBG()
+    def __init__(self, p): self.p = p
+    def _oldFormalWeights(self, t): return np.ones(1)
+    def _zState(self, zbar, τ, ε, ιGrid, t): return zbar
+    def zbarAtShares(self, θ, t, si_s_, parts):
+        c = si_s_[:, 0] + parts['τ']
+        with np.errstate(divide = 'ignore', invalid = 'ignore'):
+            return -parts['τ'] + np.where(c > 0, c**(self.p - 1), np.nan)
+
+τT = np.linspace(0., 1., 2001)
+candT = np.array([[0.2, 0.2], [0.6, 0.6]])
+lowT = τT < 0.3
+for name, p in (('LOG', 0.), ('CRRA', 0.5)):
+    u = np.log if p == 0 else (lambda c: c**p/p)
+    zT = np.column_stack([-τT + (0.2 + 0.5*τT)**(p - 1)]*2)                     # consistent: c = 0.2 + 0.5τ
+    zT[lowT, 1] = np.nan
+    if name == 'LOG':
+        WT = policyMod.LOG.objectiveFrozen(_Toy(p), candT, {'τ': τT}, zT, 0., 0., np.array([1., 2.]), 0, 0)
+    else:
+        gT = CartesianGrid(τ = τT, s_ = np.array([1., 2.]))
+        partsT = {'τ': gT.flat['τ'], 'h': np.ones(gT.flat['τ'].size), 's_': gT.flat['s_'], 'p': p}
+        WT = policyMod.CRRA.objectiveFrozen(_Toy(p), candT, gT, None, partsT, np.zeros((τT.size, 2, 1)),
+                                            zT[:, :, None], 0., np.array([1.]), 0, 0)
+    with np.errstate(divide = 'ignore', invalid = 'ignore'):
+        exact = [-τT**2/2 + u(0.2 - 0.5*c + τT) for c in candT[:, 0]]
+    gap = max(np.max(np.abs(WT[0, :, 0] - exact[0])),
+              *(np.max(np.abs(WT[k, ~lowT, 1] - exact[k][~lowT] - τT[~lowT][0]**2/2)) for k in range(2)))
+    check(f'toy, {name}: a candidate infeasible at its column\'s anchor is NaN in that column, the other is not',
+          np.isnan(WT[1, :, 0]).all() and np.isfinite(WT[0, :, 0]).all(),
+          '-> finite nodes of τ_c = 0.6 in column 0: {}'.format(int(np.isfinite(WT[1, :, 0]).sum())))
+    check(f'toy, {name}: candidates feasible at the anchor are the exact W(τ; D) up to one constant per column',
+          gap < 1e-5 and np.isnan(WT[:, lowT, 1]).all(), '-> max |W - W_exact - τ_anchor²/2| {:.1e}'.format(gap))
 
 report()

@@ -47,10 +47,12 @@ and `archive/notes/informalSavings_numericalDeviations.md`.
   term, `c2i`, `dlnc2i_dτ` the second. Checks: `∑γ_iη_i·hRatio_i = 1`, `∑γ_i·hηRatio_i = 1`.
 - `χ^R` carries a *period* index: `ι_t`/`c10`/`tildec10` use `χ^R_{t+1}`, `c20`/`dv20` use `χ^R_t`.
 - `Γs`/`B`/`B0`/`si_s`/`ι` report on `db['txE']` (length `T-1`); everything else length `T`.
+- `n_t`, `ν_t` count formal young, so `κ_t = p_t + ε_{t+1}γ_{t,0}p_{t,0}`, no `(1+γ_0)` factor (`test_ee.py` §3 moves γ₀).
 - **Tax candidates are compared at frozen formal shares** (`roots1d.selectMaxFrozen`, finding #18):
   `zbarParts_*`/`zbarAtShares` rebuild the formal retirees' term at a candidate's own shares (under CRRA
-  at its tax and the hours there), `_zState` adds the ι part, the integral along τ is the frozen objective.
-  The ι fixed point and the level `s_{t-1}` are grid states and stay as they are. Every solve reports
+  at its tax and the hours there), `_zState` adds the ι part, the integral along τ is the frozen objective,
+  anchored for every candidate at its column's first finite node of z (a candidate infeasible there is
+  masked; `test_peeLOG.py` §12). The ι fixed point and the level `s_{t-1}` are grid states and stay as they are. Every solve reports
   `nCand`/`nEq`/`fallback` per state and a `multiplicity` summary; the drivers write `nEqMax`/`nCandMax`/
   `nFallback` as non-key columns; `selection = 'legacy'` reinstates the integral criterion.
 - Two calibration variants (`ModelInformalSavings(commonX=...)`, `calibrateRhoGrid.py --commonX`, own csv

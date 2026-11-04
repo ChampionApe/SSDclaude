@@ -49,7 +49,8 @@ oecd26.thetaRoot) holds its U.S. sweep, DIR/calibration/ (calibrateRhoGrid.py --
 seeds the U.S. and is France's and the UK's U.S. reference (beta imposed, hours). The csvs go to DIR/esc/ (results/esc/
 only under --main), their rows adding thetaSource, θ0 (the U.S.'s) and grid, and a stage that reads
 escCalibration.csv or escCountry.csv refuses the rows it reads at another thetaSource, θ0 or grid (checkCalib).
---coarse (variant only): GRIDS['coarse'].
+--coarse (variant only): GRIDS['coarse']. --theta index: the workbook's θ into results/esc/; without --theta main
+refuses to run (results/esc/ is its only output, oecd26.indexTheta).
 
 Spec 'sizePiR' (ModelESC: the 'size' cost with lambda*Pi_t/R_t, pi solved to the path's own) runs the calib,
 path, shocks and country stages; its rows carry 'ΠR', pi at the row's date (t0 for calib, shocks and country).
@@ -561,12 +562,10 @@ def shockIncomeAndVoting(mt0, d):
 
     theta is re-installed after both, for the reason shocks.shockFrenchAll gives: shockVoting's
     updateAuxPars re-derives it from France's eta and would undo the income shock's pin. """
-    pin = d.get('pinTheta', True)
     θ0 = float(mt0.db['θ'].xs(mt0.db['t'][0])) if d.get('θUS') is None else float(d['θUS'])
-    sh.shockIncomeDistribution(mt0, d['ηFR'], pin, θ0 if pin else None)
+    sh.shockIncomeDistribution(mt0, d['ηFR'], θPin = θ0)
     sh.shockVoting(mt0, d['μFR'])
-    if pin:
-        mt0.db.update(mt0.adjPar('θ', θ0))
+    mt0.db.update(mt0.adjPar('θ', θ0))
     return float(mt0.db['θ'].xs(mt0.db['t'][mt0.db['t0']]))
 
 
@@ -608,8 +607,7 @@ def frenchData(m, commonX = False):
     ηFR = mFR.db['ηi'].xs(t0FR).values.astype(float)
     return {'ηFR': ηFR, 'μFR': parsFR['μj'],
             'ηScale': sh.ηLevel(m, ηFR),   # as runShocksUS.frenchData: the leisure row needs the income row's scale
-            'xbarRatio': XbarFR/XbarUS, 'pinTheta': True,
-            'θUS': float(m.db['θ'].xs(t0US))}
+            'xbarRatio': XbarFR/XbarUS, 'θUS': float(m.db['θ'].xs(t0US))}
 
 
 # ---------------------------------------------------------------- stage: France and the UK
@@ -752,7 +750,7 @@ def main():
     p.add_argument('--tag', default = '')
     p.add_argument('--theta', default = None,
                    help = "a variant of data/oecd26_theta.csv: every U.S. model at that θ (db['θ0']); stages "
-                          + ', '.join(THETASTAGES))
+                          + ', '.join(THETASTAGES) + "; 'index' the workbook's θ into results/esc/ (required for it)")
     p.add_argument('--root', default = None,
                    help = "the variant's directory (default results/oecd26_theta_<variant>): reads calibration/, "
                           "writes esc/. A relative path is the working directory's.")
@@ -761,7 +759,9 @@ def main():
                    help = "with --theta config.US['theta']: read results/calibration/, write results/esc/")
     a = p.parse_args()
     a.root = None if a.root is None else os.path.abspath(os.path.join(CWD, a.root))
-    outdir = setTheta(a.theta, a.root, a.stage, a.coarse, a.commonX, a.rho, a.main)
+    import oecd26
+    theta = a.theta if a.root is not None else oecd26.indexTheta(a.theta, [OUTDIR], 'runESC.py')
+    outdir = setTheta(theta, a.root, a.stage, a.coarse, a.commonX, a.rho, a.main)
     os.makedirs(outdir, exist_ok = True)
     f = lambda n: os.path.join(outdir, f'{n}{a.tag}.csv')
 

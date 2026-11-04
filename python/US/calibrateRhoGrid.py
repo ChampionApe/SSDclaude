@@ -13,6 +13,8 @@ Run:  .venv\Scripts\python.exe python\US\calibrateRhoGrid.py [options]
                                               a csv of another θ0 is refused unless --force.
       ... --theta VARIANT --main              the pipeline's main variant (python/paper/config.py US['theta'],
                                               oecd26.thetaRoot): the same rows into results/calibration/.
+      ... --theta index                       θ from the workbook's RR0 (no thetaSource column); without --theta that
+                                              run is refused into results/ (oecd26.indexTheta): use --out and --pkldir.
 A relative --out, --pkldir or --root is the caller's working directory's (the script itself runs in python/US).
 
 The march is anchored at rho=1, where the LOG solver applies and no warm start is needed, and walks
@@ -23,7 +25,8 @@ costs -- but it is built to survive being interrupted all the same:
   * results/calibration/US_rhoGrid.csv is the record, rewritten after *every* point. A run started over
     reads it back, and any rho already present is returned from it without re-solving -- which also means
     those points still seed the extrapolation, so a resumed march is no worse warm-started than an
-    uninterrupted one.
+    uninterrupted one. A row is resumed only at the run's settings (staleSettings, finding #13): one that
+    records another n, ns (CRRA rows), smoothKnots or interpKind is re-solved.
   * results/calibration/instancesUS/*.pkl is a cache, not the record: one pickled model per point, holding
     the converged db. Reconstructing the same thing from the csv costs one _calSetPars and one solve, so
     nothing is lost if these are deleted. Full solutions (policy functions) are deliberately NOT stored:
@@ -118,6 +121,64 @@ def readDone(path):
     return done, df
 
 
+def rowSettings(a):
+    """ The settings a row records and a resumed row must match (toRow's n, ns, smoothKnots, interpKind), from the
+    parsed arguments: smoothKnots 0 is None (the adaptive smoother). """
+    return {'n': a.n, 'ns': a.ns, 'smoothKnots': a.smoothKnots or None, 'interpKind': a.interpKind}
+
+
+def _sameSetting(v, w):
+    """ A recorded value v (from the csv) against the run's w: None is NaN, numbers to 1e-12 relative. """
+    if w is None:
+        return bool(pd.isna(v))
+    if pd.isna(v):
+        return False
+    if isinstance(w, str):
+        return str(v) == w
+    return abs(float(v) - float(w)) <= 1e-12*max(1., abs(float(w)))
+
+
+def staleSettings(df, want, grid, legacy = ()):
+    """ The resume check of a sweep csv (finding #13) over the solved rows (finite residual) at a rho of `grid`.
+    Returns ({rho: [the columns that differ]}, [the rhos of rows that predate a recorded setting]).
+
+    `want` maps a column to the run's value, or to a callable of rho. A row records the grid where its 'n' is set:
+    then n, smoothKnots, interpKind and, on a CRRA row, ns (the LOG solver has no state grid; its rows record the
+    policy's default) must equal want's. A `legacy` column, added to the rows after the csvs were first written, is
+    checked where the row has a value. A row without the grid or without a legacy column's value is accepted. """
+    if df is None or not len(df):
+        return {}, []
+    on = set(np.round(np.asarray(grid, dtype = float), 6))
+    stale, old = {}, []
+    for r in df.to_dict('records'):
+        ρ = round(float(r['ρ']), 6)
+        if ρ not in on or not np.isfinite(pd.to_numeric(r.get('residual', np.nan), errors = 'coerce')):
+            continue
+        cols = [c for c in want if c in legacy or not pd.isna(r.get('n', np.nan))]
+        cols = [c for c in cols if not (c == 'ns' and r.get('preferences') != 'CRRA')]
+        unrecorded = pd.isna(r.get('n', np.nan)) or any(pd.isna(r.get(c, np.nan)) for c in legacy)
+        diff = [c for c in cols if not (c in legacy and pd.isna(r.get(c, np.nan)))
+                and not _sameSetting(r.get(c, np.nan), want[c](ρ) if callable(want[c]) else want[c])]
+        if diff:
+            stale[ρ] = diff
+        elif unrecorded:
+            old.append(ρ)
+    return stale, old
+
+
+def resumeAt(done, df, want, grid, legacy = ()):
+    """ Drop from `done` the rows staleSettings finds at other settings (they are re-solved) and print what it found:
+    the stale rows, and one notice for the rows that predate a recorded setting (resumed unchecked). """
+    stale, old = staleSettings(df, want, grid, legacy)
+    for ρ, cols in stale.items():
+        done.pop(ρ, None)
+        print('  rho={:<6} stale: recorded at another {} -- re-solved'.format(ρ, ', '.join(cols)))
+    if old:
+        print('notice: {} row(s) (rho {}) predate the recorded settings {}: resumed without the check'.format(
+            len(old), ', '.join('{:g}'.format(v) for v in old), ', '.join(legacy) if legacy else 'n, ns, smoothKnots, interpKind'))
+    return stale, old
+
+
 def thetaRun(variant, commonX, out = None, pkldir = None, root = None, main = False):
     """ --theta VARIANT: (θ0, csv path, pickle directory), the last two by default under root/calibration/, root
     the variant's directory (oecd26.thetaDir(variant) by default; a relative path is the repo's), results/ under
@@ -178,7 +239,8 @@ def main():
     p.add_argument('--maxHalvings', type = int, default = 2)
     p.add_argument('--force', action = 'store_true', help = 're-solve points already present in the csv')
     p.add_argument('--theta', default = None,
-                   help = "a variant of data/oecd26_theta.csv: θ imposed at the U.S. row's value (db['θ0'])")
+                   help = "a variant of data/oecd26_theta.csv: θ imposed at the U.S. row's value (db['θ0']); 'index' the "
+                          "workbook's RR0 (required for that into results/)")
     p.add_argument('--root', default = None,
                    help = "the variant's directory (default results/oecd26_theta_<variant>); writes calibration/")
     p.add_argument('--main', action = 'store_true',
@@ -191,11 +253,13 @@ def main():
     a.out, a.pkldir, a.root = [None if x is None else os.path.abspath(os.path.join(CWD, x))
                                for x in (a.out, a.pkldir, a.root)]
 
-    if a.theta is None:
+    import oecd26
+    if a.theta in (None, oecd26.INDEX):
         if a.root is not None or a.main:
             raise SystemExit('--root and --main need --theta VARIANT')
         out = a.out or os.path.join(OUTDIR, 'US' + ('_rhoGridCommonX' if a.commonX else '_rhoGrid') + '.csv')
         pkldir = a.pkldir or os.path.join(OUTDIR, 'instancesUS' + ('CommonX' if a.commonX else ''))
+        a.theta = oecd26.indexTheta(a.theta, [out, pkldir], 'calibrateRhoGrid.py')
         pars, columns, extra = dict(testmod.pars), COLUMNS, {}
         os.makedirs(OUTDIR, exist_ok = True)
     else:
@@ -225,6 +289,11 @@ def main():
         if not same.all():
             raise SystemExit('{}: rows at another thetaSource or θ0 than {} {!r}: rerun with --force'.format(
                 out, a.theta, θ0))
+    if not extra and len(df) and 'thetaSource' in df.columns and df['thetaSource'].notna().any():
+        raise SystemExit('{}: rows at thetaSource {}, not the index θ: rerun with --force or another --out'.format(
+            out, sorted(set(df['thetaSource'].dropna().astype(str)))))
+    if not a.force:
+        resumeAt(done, df, rowSettings(a), grid)
     # Keyed by rho, not a list: marchGrid reports one record per *attempt*, so a point that fails on the
     # extrapolated start and succeeds on the carried one arrives twice, and a resumed run revisits values
     # already in the csv. Keying makes every write idempotent and lets a success overwrite a failure.
@@ -235,7 +304,6 @@ def main():
         'common X' if a.commonX else 'vector X_i', a.anchor, a.n, a.ns, a.verifyN, a.verify or 'off'))
     print('targets: tau0={:.6f}  RR0={:.6f}  Ushare0={:.6f}'.format(pars['τ0'], pars['RR0'], pars['Ushare0']))
     if extra:
-        import oecd26
         print('theta imposed: θ0={!r} (variant {!r} of {}; RR0 not read)'.format(θ0, a.theta, oecd26.FILES['theta']))
     print('out: {}'.format(os.path.relpath(out, REPO)))
     if done:

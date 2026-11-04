@@ -255,11 +255,11 @@ class Base:
     ##########      τ, θ, ε are always explicit -- to be endogenized later     ###
     #######################################################################
     def κ(self, ε1, t = None):
-        """ Eq (governmentBudget:bbar): κ_t(ε_{t+1}) = (p_t + ε_{t+1}γ_{t,0}p_t^0)(1+γ_{t,0})/(1+γ_{t+1,0}).
+        """ Eq (governmentBudget:bbar): κ_t(ε_{t+1}) = p_t + ε_{t+1}γ_{t,0}p_t^0 (= p_t here, γ_0 = 0).
         ε1 = ε_{t+1} (explicit -- mirrors the b0/bi convention, since ε may be endogenized later;
         γ0/p/p0 are read from db as primitives, not solution objects). """
-        p, p0, γ0, γ0_1 = self.get('p', t), self.get('p0', t), self.get('γ0', t), self.get('γ0[t+1]', t)
-        return (p + ε1*γ0*p0) * (1+γ0)/(1+γ0_1)
+        p, p0, γ0 = self.get('p', t), self.get('p0', t), self.get('γ0', t)
+        return p + ε1*γ0*p0
 
     def bbar(self, τ, w, h, h_, t = None):
         """ Eq (governmentBudget:bbar): bbar_t = ν_t w_t h_t τ_t / (h_{t-1} κ_{t-1}).

@@ -30,7 +30,7 @@ Tests (`python/runTests.py`): fast `test_ee`, `test_invariance`, `test_crra`, `t
 ## Running it
 
 ```
-python\US\calibrateRhoGrid.py [--commonX] [--rhos 0.5 1 2] [--theta V [--main]] ; calibrateRhoGridEU.py --country FR|UK [same]
+python\US\calibrateRhoGrid.py [--commonX] [--rhos 0.5 1 2] --theta V [--main] ; calibrateRhoGridEU.py --country FR|UK [same]
 python\US\runShocksUS.py [--commonX] [--family theta] [--rho 1] ; runShocksXi.py | runESCxi.py --theta C --main [--xi 0.2 0.4]
 python\US\runESC.py | runESCcrra.py --exact [--commonX]   # LOG | exact CRRA; --host UK --stage calib: the UK's own cost
 python\US\runESC.py --stage pathHost|corner --spec size --phi 0.5 --commonX     # escPathHost.csv | escCornerSlope.csv
@@ -41,8 +41,10 @@ python\US\c5Numbers.py selfcheck|a1|a9|loss|lambda|index|design|a13|strategic|de
 python\US\runHorizon.py --stage log horizon residuals scheme|design [--rho 0.5 2] [--terminal finite|steadyState] --theta C --main
 ```
 
-`python/paper/` drives all of this (`REPLICATION.md` §3 for the runs it does not). Sweeps resume from their own csv
-(finding #13: `--force` after a recalibration); EU sweeps need the complete US sweep of the same variant first.
+`python/paper/` drives all of this (`REPLICATION.md` §3 for the runs it does not). Without `--theta` the drivers refuse
+`results/` (`--theta index`: the workbook's θ, `oecd26.indexTheta`). Sweeps resume from their own csv, a row only at the
+run's grid, retAge and U.S. β (`calibrateRhoGrid.resumeAt`; finding #13: `--force` after a recalibration); EU sweeps
+need the complete US sweep of the same variant first.
 ESC drivers merge into their csvs (`runESC.mergeWrite`, keyed on `spec`, `phi`, `commonX` and the row's ids).
 
 ## Invariants the code depends on
@@ -70,7 +72,8 @@ ESC drivers merge into their csvs (`runESC.mergeWrite`, keyed on `spec`, `phi`, 
   `θ`, composites re-install the pin (#9); `shocks.ηLevel` preserves the host's `Γ_h`.
 - **The ESC cost**: `'size'` (the paper's, `f = exp(-½ λ τ Ṽ (1-θ)²)`, `λ` in the `wedgeP` slot and column `p`),
   `'scale'` (the earlier wedge, comparison arm), `'sizePiR'` (`ε·Π_t/R_t`, ε in `p`; only `solvePEE_*` and the leaded
-  solvers iterate `π`, the others refuse it; a driver reads each object off the solve that iterated to it:
+  solvers iterate `π`, the others refuse it; db keeps the `π` a solve was solved at, its record the path's (`ΠRpath`,
+  `ΠRgap`); a driver reads each object off the solve that iterated to it:
   `runOECD26.readouts`, `runESC.usWedgeRow`); `f` takes the τ of its own date; `commonX` and `spec` are in every
   merge key (#13).
 - **The cross-country csvs** are keyed on (turnout, spec, phi, commonX, betaRule, thetaSource[, omegaRule, retAge, iso3]); the

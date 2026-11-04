@@ -19,3 +19,9 @@ cites `app:EPH` (also in InformalSavings). `US/policy.py`'s `solveVectorized` ha
 The adjPar family's `t` (with `adjDf_ti`'s broken `k.loc` branch), `Base.power_p`, `getXi`, `aux_p`, `LOG.style` and
 `LOG.kwargs` removed, and unused imports (`Lead`, `interpolate`, test.py's `scipy`/`SimpleSys`, test_crraBackward's
 `roots1d`); `ω2i`'s docstring. `LOG.x0` stays: it is `solveVectorized`'s warm start. Pinned in `test_ee.py`.
+
+## 2026-11-04 — κ without the (1+γ₀) factor
+`Base.κ` = p_t + ε_{t+1}γ_{t,0}p_{t,0}: n_t and ν_t count formal young, as in InformalSavings (derivation in its log of today).
+`test_ee.py`: the PAYG check is now per formal young, and a last section moves γ₀ over t (the budget misses by 7.0e-4 on the
+old κ). The workbook's γ₀ is constant, so the factor was exactly 1 and no output moves. `objectiveFrozen` (LOG and CRRA) keeps
+the per-candidate anchor that InformalSavings replaced (README, open items).

@@ -1,5 +1,6 @@
-r""" Stage (0), DRAFT: the pension design θ (and the spending behind τ) of the 26 countries under the variants of
-notes/thetaTau_alternatives.md, for python/US/oecd26.py's thetaSource and the data part of the technical note.
+r""" Stage (0): the pension design θ (and the spending behind τ) of the 26 countries under the variants of
+notes/thetaTau_alternatives.md, for python/US/oecd26.py's thetaSource (variant C is the paper's, config.US['theta'])
+and the data part of the technical note.
 
 Run:  .venv\Scripts\python.exe -I python\paper\oecd26Theta.py [--force]
       -> data/oecd26_theta.csv, one row per country x variant: iso3, variant, theta, thetaRaw, slope, s,

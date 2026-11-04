@@ -54,9 +54,14 @@ The cross-country test on the synthetic OECD countries of figure 1 (section 6's 
 without the cost, and section 7.3's test of the design, in which each country keeps its own demography, income distribution
 and observed design, votes at its own propensities by income group (CSES; Luxembourg, without a survey, leaves the
 sample), and takes the U.S. $\beta$ and cost of redistribution, the latter carried as the elasticity $\varepsilon$, so
-that $\lambda_n = \varepsilon\,\Pi_n/R_n$ in country $n$) has two stage (0) scripts of its own, run by hand: `python\paper\oecd29Data.py`
+that $\lambda_n = \varepsilon\,\Pi_n/R_n$ in country $n$) has three stage (0) scripts of its own, run by hand in this order: `python\paper\oecd29Data.py`
 (network) and `python\paper\oecd26Sample.py` (the sample rule, no network) write `data/oecd29*.csv` and
-`data/oecd26_sample.csv`. Its runs belong to stage (ii): `runShocksUS.py`'s entry `oecd26` calls
+`data/oecd26_sample.csv`; `python\paper\oecd26Theta.py` (no network) writes `data/oecd26_theta.csv`, whose variant C
+(`config.US['theta']`) is the paper's design $\theta$ and its spending $S$ behind $\tau$. It reads
+`data/oecd26_pensionTiers_harmonised.csv` (replacement rates by tier, *Pensions at a Glance* 2021; written by
+`python\paper\oecd26PensionTiers.py`, network), `data/oecdFigure1.csv` and `data/oecd26_sample.csv`; the top-up
+shares $s$ are typed into it from `data/oecd26_topups.csv` and the country notes, each value with its source in
+`data/README.md`. Its runs belong to stage (ii): `runShocksUS.py`'s entry `oecd26` calls
 `python\US\runOECD26.py --inSample --theta C --main --omegaRule <rule> --retAge <retAge>` once per variant of
 `config.US['oecd26']['variants']` and per retAge of it (the paper's specification with the cost $\varepsilon$ and
 without it, appendix G's population variants, the online appendix's readings; about 2.5 hours cold) on every run, and

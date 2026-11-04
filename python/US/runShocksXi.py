@@ -102,7 +102,7 @@ def frenchData(m, mFR):
     ηFR = mFR.db['ηi'].xs(t0FR).values.astype(float)
     parsFR = testEU.load('FR')[0]
     return {'ηFR': ηFR, 'μFR': parsFR['μj'], 'ηScale': sh.ηLevel(m, ηFR), 'xbarRatio': XbarFR/XbarUS,
-            'XbarFR': XbarFR, 'XbarUS': XbarUS, 'θUS': float(m.db['θ'].xs(t0)), 'pinTheta': True}
+            'XbarFR': XbarFR, 'XbarUS': XbarUS, 'θUS': float(m.db['θ'].xs(t0))}
 
 
 def runXi(ξ, workweek):

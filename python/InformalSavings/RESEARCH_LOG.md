@@ -44,3 +44,14 @@ look. A lesson that would recur goes to `notes/crossCuttingFindings.md` once, ci
 - Docstrings as specs: `LOG.defaultIotaGrid` (the 0.45/3.7 rule), CRRA's nι = 30, `defaultSCandGrid` (the alignment
   argument is for 'linear'), `smooth` is a switch under pinned knots, history cut (calibrateRhoGrid, model, policy),
   stale README pointers, chdir comments. `objectiveFrozen`'s per-candidate anchor left as is (reported).
+
+## 2026-11-04 — κ without the (1+γ₀) factor; `objectiveFrozen`'s common anchor (`notes/codeReview_triage.md`, Open)
+- κ: n_t and ν_t count formal young (eq:aggregateStates, the factor prices' s_{t-1}/(ν_t h_t), FOC's young weight ν_t), so
+  the budget gives κ_t = p_t + ε_{t+1}γ_{t,0}p_{t,0}. The factor (1+γ_{t,0})/(1+γ_{t+1,0}) (inverted even under an all-young
+  reading) is gone from `Base.κ` and `shockUniversal.installEps`. `test_ee.py` §3 moves γ₀ over t: the PAYG check misses by 6.4e-4 on the old κ.
+- `LOG/CRRA.objectiveFrozen` anchor every candidate at its column's first finite node of z (`_anchoredAt`; LOG now takes z),
+  and a candidate infeasible there is masked rather than anchored at its own node. Toy in `test_peeLOG.py` §12 (3 FAIL on the old code).
+- Published instances, old vs new in one process (scripts in the session scratchpad, logs `logs/kappa*.log`, `logs/frozenIdentity.log`):
+  κ and the τ/s paths of the baseline and the 'match' reform are bitwise equal at ρ = 1, 2; all 17 `objectiveFrozen` calls per ρ
+  are bitwise equal at ρ = 1, 2, 0.5, with no column masked; τ matches the published csv to 8.3e-17. A ρ = 1 recalibration from
+  x + 0.05 is bitwise equal too. informalAnalytical keeps the per-candidate anchor (its README).

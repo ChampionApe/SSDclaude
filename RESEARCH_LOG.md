@@ -214,3 +214,12 @@ gridsearch's cubic/pchip mask NaN as linear does (0 NaN nodes in every published
 three writers on RKB's approval (`notes/docReview_proposals.md`): math slips fixed (labour-supply FOC in both informal
 models, two distributional signs), θ from variant C, the reform state, ~16k words of log material cut; 134 -> 107 pp,
 compiles clean. Fast suites 31/31. Uncommitted; the note's Overleaf push awaits RKB.
+
+## 2026-11-04 (night) — Review follow-up: the xi rerun, replication trace, the open items
+
+`escXi` run at C (xi 0.2/0.3/0.4; self-check at 0.3 passed; the site's xi blocks filled, NUM_Selection's ESC counts
+moved). REPLICATION.md and data/README.md now trace `oecd26Theta.py` (the paper's theta) and its inputs. Fixed the
+triage's open items: kappa drops (1+γ_{t,0})/(1+γ_{t+1,0}) (n_t is formal young; code and both informal notes;
+bitwise), sizePiR keeps the pi solved at, pinTheta=False removed, sweeps resume only at their settings, drivers
+refuse results/ without --theta, InformalSavings' objectiveFrozen anchors at the column's first feasible node (bitwise).
+writing/Paper unchanged; what stays open is in `notes/codeReview_triage.md`.

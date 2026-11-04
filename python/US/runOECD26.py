@@ -77,7 +77,7 @@ Readouts per row (`readouts`), all at 2020 (t0):
   R2020, Vtilde, fStar, f0   the return on the θ-pinned path, Eq esc:Vtilde, f(θ_c, τ2020), f(0, τ2020)
   τPinGap               |the pinned path's τ_2020 - τPolicy_2020(θ_c)|: rounding under 'size'; under 'sizePiR' the
                         effect of the two paths' different π; NaN under 'none'
-  ΠR2020, λEff2020, ΠRgap   'sizePiR' only: π_2020 on the θ-pinned path, p·ΠR2020 (the cost parameter the country
+  ΠR2020, λEff2020, ΠRgap   'sizePiR' only: the π_2020 the θ-pinned path is solved at, p·ΠR2020 (the cost the country
                         faces in 2020), the larger of the two fixed points' last max|Δπ| (below modelESC.ΠR_TOL).
                         NaN under 'size' and 'none', as on the rows written before these columns
   closedFormGap, closedFormCorners   oecd26.closedFormCheck: the tax at θ ≡ 1 against eq (1.4) at each date's ν
@@ -208,7 +208,7 @@ def readouts(m):
             sols, θIn, τIn = led['sols'], float(led['θ'].xs(t0)), float(led['τ'].xs(t0))
             mult.append(led['multiplicity'])
             gaps.append(led['ΠRgap'])
-            τLed = m.ESC.τAt(t0, θD)                         # at that path's π, which db now holds
+            τLed = m.ESC.τAt(t0, θD)                         # at the π that path was solved at (db's)
         else:
             sols = m.ESC.solveBackward()
             mult.append(m.ESC.lastMultiplicity)
@@ -227,7 +227,7 @@ def readouts(m):
     pir = dict.fromkeys(('ΠR2020', 'λEff2020', 'ΠRgap'), np.nan)
     if spec == 'sizePiR':
         gaps.append(pin['ΠRgap'])
-        π = float(m.db['wedgeΠR'].xs(t0))                  # the pinned path's π_2020
+        π = float(m.db['wedgeΠR'].xs(t0))                  # the π_2020 the pinned path was solved at
         pir = {'ΠR2020': π, 'λEff2020': float(m.db['wedgeP'])*π, 'ΠRgap': float(max(gaps))}
     α = float(m.db['α'].xs(t0))
     lag = '[t-1]' if spec == 'sizePiR' else ''              # f(θ_2020, τ_2020) carries π_2020

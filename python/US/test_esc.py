@@ -346,9 +346,10 @@ check('a null shock on a new path reproduces the baseline path', dτ < 1e-8,
 # re-derives theta from France's eta. Each composite must therefore re-install it. The single-shock rows
 # never see this, which is why the defect reads as a plausible number rather than as a failure.
 import runESC as _resc                                                               # noqa: E402
+import inspect                                                                       # noqa: E402
+from copy import deepcopy                                                            # noqa: E402
 θUS = float(mBase.db['θ'].xs(mBase.db['t'][0]))
 frData = _resc.frenchData(mBase)
-free = dict(frData) | {'pinTheta': False}
 
 for name, registry in (('frIncome', sh.SHOCKS), ('frAll', sh.SHOCKS), ('frBoth', _resc.SHOCKS_ESC)):
     mS, _ = sh.shockedCopy(mBase, name, frData, registry)
@@ -357,10 +358,18 @@ for name, registry in (('frIncome', sh.SHOCKS), ('frAll', sh.SHOCKS), ('frBoth',
           np.max(np.abs(θS - θUS)) < 1e-12,
           '-> theta[0]={:.6f} theta[t0]={:.6f} (US {:.6f})'.format(
               θS[0], θS[mS.db['t0']], θUS))
-    mF, _ = sh.shockedCopy(mBase, name, free, registry)
-    θF = float(mF.db['θ'].xs(mF.db['t'][mF.db['t0']]))
-    check('...and pinTheta=False still re-derives it from France\'s eta',
-          abs(θF - θUS) > 1e-3, '-> theta={:.6f}'.format(θF))
+# the composites' re-install is load-bearing: the income pin followed by shockVoting's refresh re-derives theta
+# from France's eta
+mF = deepcopy(mBase)
+sh.shockIncomeDistribution(mF, frData['ηFR'], θPin = θUS)
+sh.shockVoting(mF, frData['μFR'])
+θF = float(mF.db['θ'].xs(mF.db['t'][mF.db['t0']]))
+check("...and without the composites' re-install, shockVoting's refresh re-derives it from France's eta",
+      abs(θF - θUS) > 1e-3, '-> theta={:.6f}'.format(θF))
+sigI = inspect.signature(sh.shockIncomeDistribution).parameters
+check('the income shock always pins: shockIncomeDistribution(mt0, ηFR, *, θPin) has no pinTheta, and the French '
+      'data carry none', list(sigI) == ['mt0', 'ηFR', 'θPin'] and sigI['θPin'].kind == inspect.Parameter.KEYWORD_ONLY
+      and 'pinTheta' not in frData)
 
 # eta really did move in the pinned runs -- otherwise the check above would pass on a no-op shock.
 # It is France's PROFILE at the US productivity level: eta = c*eta_FR with c = shocks.ηLevel, chosen so

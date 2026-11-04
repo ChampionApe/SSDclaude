@@ -60,6 +60,7 @@ variant's U.S. row of data/oecd26_theta.csv, France and the UK at theirs (runESC
 sweeps in DIR/calibration/ (every rho asked for at the variant: oecd26.usBeta; the UK's for --host UK), the csvs in
 DIR/esc/ (results/ under --main, the pipeline's main variant), every row carrying thetaSource, θ0 and grid
 (solverColumns); a path or shocks stage reads only a converged calibration row at the same three (readCalibratedP).
+--theta index: the workbook's θ into results/esc/; without --theta the run is refused (oecd26.indexTheta).
 
 A stage that reads its cost from file (no calib stage in the run) under --exact needs an exact row: with only a
 path-iteration row at that (rho, spec, phi) the combination is a recorded failure, unless --allowPathP lets the path p
@@ -478,7 +479,7 @@ def main():
                                     if mt._hasΠR():
                                         # pi of the shocked economy's pinned path: a closer start for the
                                         # 2-D recursion's pi iteration than the host's free path
-                                        mt.solvePEE_CRRA()
+                                        mt.setΠR(mt.solvePEE_CRRA()['ΠRpath'])
                                         mt._ΠRstart = {k: v for k, v in mt._ΠRstart.items()
                                                        if not k.startswith('solveLeaded2D')}
                                     rec = mt.solveLeaded2D(pinAtT0 = False)
@@ -538,12 +539,13 @@ def setThetaCRRA(a):
     """ runESC.setTheta for this driver's --theta/--root/--main, and the output directory (OUTDIR without a
     variant). Under a variant: stages calib, path, shocks only, the U.S. sweep at the variant at every rho of
     --rho (oecd26.usBeta), and for --host UK the UK's sweep rows too. """
-    if a.theta is None:
+    import oecd26
+    if a.theta in (None, oecd26.INDEX):
         runESC.setTheta(None, a.root, main = a.main)        # SystemExit for --root or --main alone
+        a.theta = oecd26.indexTheta(a.theta, [OUTDIR], 'runESCcrra.py')
         return OUTDIR
     if set(a.stage) - {'calib', 'path', 'shocks'}:
         raise SystemExit('--theta: stages calib, path, shocks only')
-    import oecd26
     out = runESC.setTheta(a.theta, a.root, ('calib',), False, a.commonX, a.rho[0], a.main)
     try:
         for ρ in a.rho:

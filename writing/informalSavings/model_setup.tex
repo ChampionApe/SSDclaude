@@ -11,7 +11,7 @@ In the formal sector, a continuum of firms transforms aggregate capital and labo
     K_t =& n_{t-1} s_{t-1}, & s_{t-1}&\equiv \sum_i\gamma_{t-1,i}s_{t-1,i}.
 \end{align}
 \end{subequations}
-Both sums run over the formal types $i>0$ only: informal labour is supplied outside the formal sector, and informal savings $s_{t,0}$ are held in the informal savings vehicle and do \emph{not} add to the formal capital stock. The representative firm produces output with a Cobb-Douglas technology, with total factor productivity normalised to one,
+Here $n_t$ is the number of formal young households and $\nu_t\equiv n_t/n_{t-1}$. Both sums run over the formal types $i>0$ only: informal labour is supplied outside the formal sector, and informal savings $s_{t,0}$ are held in the informal savings vehicle and do \emph{not} add to the formal capital stock. The representative firm produces output with a Cobb-Douglas technology, with total factor productivity normalised to one,
 \begin{align*}
     Y_t = K_t^{\alpha}H_t^{1-\alpha}.
 \end{align*}
@@ -76,17 +76,17 @@ where $\epsilon_t$ measures universal pensions and $\theta_t$ measures contribut
 
 
 
-We note that the shares $\sum_j\gamma_{t,j} = 1+\gamma_{t,0}$ to have a unit mass of formal households (convenient to have for definition of aggregate states). Thus, the average contribution of young households at time $t$ is
+The shares give a unit mass of formal households, $\sum_{i>0}\gamma_{t,i} = 1$ and $\sum_j\gamma_{t,j} = 1+\gamma_{t,0}$, so $\gamma_{t,0}$ counts informal households per formal household. The average contribution of a formal worker at time $t$ is
 \begin{align*}
-    \text{Avg. contribution from formal} = w_t\tau_t\sum_{i>0}\gamma_{t,i}\eta_{t,i}h_{t,i} = w_t\tau_th_t.
+    w_t\tau_t\sum_{i>0}\gamma_{t,i}\eta_{t,i}h_{t,i} = w_t\tau_th_t.
 \end{align*}
-Letting $n_t$ denote total number of young households, the number of formal households are $n_t/(1+\gamma_{t,0})$. Similarly, without mortality, the share of retired households of type $j$ would be $\gamma_{t-1,j}/(1+\gamma_{t-1,0})$. Taking mortality into consideration, the balanced budget requires that
+Generation $t-1$ has $n_{t-1}\gamma_{t-1,j}$ households of type $j$, a share $p_{t-1,j}$ of which survives to retire, so the balanced budget requires
 \begin{align*}
-    \dfrac{n_t}{1+\gamma_{t,0}} w_t\tau_th_t = \dfrac{n_{t-1}}{1+\gamma_{t-1,0}}\sum_j \gamma_{t-1,j}p_{t-1,j} b_t^j
+    n_t w_t\tau_th_t = n_{t-1}\sum_j \gamma_{t-1,j}p_{t-1,j} b_t^j.
 \end{align*}
-The left hand side measures contributions, the right hand side measures beneficiaries. Using the structure of the pension design, this identifies the level in pension rates $\overline{b}_t$ as:
+The left hand side measures contributions, the right hand side benefits. Since $\sum_{i>0}\gamma_{t-1,i}b_t^i = h_{t-1}\overline{b}_t$ and $b_t^0 = \epsilon_th_{t-1}\overline{b}_t$, this identifies the level of pension rates $\overline{b}_t$ as
 \begin{align}\label{\refeq:governmentBudget:bbar}
-    \overline{b}_t & \equiv \dfrac{\nu_t w_th_t\tau_t}{h_{t-1}\kappa_{t-1}}, \qquad\kappa_t \equiv \frac{1+\gamma_{t,0}}{1+\gamma_{t+1,0}}(\epsilon_{t+1}\gamma_{t,0}p_{t,0}+p_t)
+    \overline{b}_t & \equiv \dfrac{\nu_t w_th_t\tau_t}{h_{t-1}\kappa_{t-1}}, \qquad\kappa_t \equiv p_t+\epsilon_{t+1}\gamma_{t,0}p_{t,0}
 \end{align}
 \end{subequations}
 

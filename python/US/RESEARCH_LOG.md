@@ -196,3 +196,14 @@ z/(γ·z): HEAD's ARPACK gave 5 distinct yη over 6 instances in one process (2.
 aux_p, getXi, shocks.solveBaseline, LOG.style/kwargs; docstrings cut to spec. HEAD vs new in one process
 (`logs/reviewP1/oldnew.log`): LOG, CRRA, calibration point, leaded LOG, permanent LOG, 2-D, θ = 0 shock bitwise; vector X
 ≤ 1.7e-15. `test_coreGuards.py` 27/27 (23 fail on HEAD); US fast 14/14, test_escTiming, test_escCRRA pass.
+
+## 2026-11-04 — Code review follow-up: κ, sizePiR at acceptance, pinTheta, resume keys, --theta (`notes/codeReview_triage.md`)
+`Base.κ` = p_t + ε_{t+1}γ_{t,0}p_t^0 (factor (1+γ_{t,0})/(1+γ_{t+1,0}) dropped): one common-X calibration at θ C, ρ = 1, and a
+CRRA solve bitwise against the old κ in one process (β 0.6514784090237656). `sizePiR` at acceptance: db keeps the π solved
+at (as `calibrate`), records add `ΠRpath`; old vs new on ITA's main-spec layer-1 row: ΠR2020 3.1e-14, λEff2020 4.0e-13, rest
+≤ 5.8e-15; escCalibrationCosts' tail ΠR 6.5e-14 (`logs/fixPassUS_2026-11-04/piAcceptance.log`); bound on the 331 published C
+rows: max ΠRgap 9.9e-11. pinTheta removed (`shockIncomeDistribution(mt0, ηFR, *, θPin)`). Sweeps resume a row only at the
+run's n, ns (CRRA), smoothKnots, interpKind and, for FR/UK, new columns retAge, βUS (`staleSettings`/`resumeAt`; older rows
+resumed with a notice); an index run refuses a csv with variant rows. Without --theta the drivers refuse results/
+(`oecd26.indexTheta`; `--theta index`). runCalibrationUS: nothing missing or stale, 0 ESC commands; runShocksUS --list all
+had. test_coreGuards 30/30 (G12-G13 new), test_oecd26Theta 56/56 (T, Z new), US fast 14/14.

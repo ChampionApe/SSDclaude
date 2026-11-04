@@ -12,6 +12,8 @@ Run:  .venv\Scripts\python.exe python\US\calibrateRhoGridEU.py --country FR
                                               csv and pickles under DIR/calibration/ (DIR the variant's directory,
                                               oecd26.thetaDir), results/calibration/ under --main (the pipeline's
                                               main variant, oecd26.thetaRoot); rows carry thetaSource and θ0.
+      ... --theta index                       the workbook's θ; without --theta that run is refused into results/
+                                              (oecd26.indexTheta): use --out and --pkldir.
 
 Same march as calibrateRhoGrid.py (read that first -- the anchor, the resume-from-csv contract, the
 pickle-is-a-cache rule and the note on how to read verifyResidual all carry over unchanged). Three
@@ -32,6 +34,10 @@ differences, all of them consequences of the protocol in modelFR.py:
     values (0.55, 0.65, ...) and KEEPS them in the record; with no US row at those values they cannot be
     solved. If a point resists, the fix is to run the US sweep on the finer grid first, not to soften the
     reference.
+
+  * A resumed row must record this run's settings (calibrateRhoGrid.resumeAt, finding #13): the grid, and in the
+    columns `retAge` (France's or the UK's own ν correction, testEU.retAgeHost) and `βUS` (the U.S. reference β at
+    its rho) the two inputs from outside the workbook; rows written before those two columns are resumed unchecked.
 
   * Two extra columns. `lambda` is the proportional X_i rescaling that puts average hours on the
     US-referenced target -- under vector X it is the second calibrated quantity, recovered in closed form
@@ -68,9 +74,10 @@ THETACOLUMNS = ['thetaSource', 'θ0']      # appended under --theta only
 # Ordered as the US csv is: what was solved, what it cost, whether to believe it, then the answer.
 COLUMNS = ['ρ', 'preferences', 'requested', 'residual', 'verifyResidual', 'hoursDrift',
            'β', 'ω', 'λ', 'X',
-           'R', 'τ', 'sr', 'h', 'hbar', 'nfev', 'time', 'n', 'ns', 'smoothKnots', 'interpKind',
+           'R', 'τ', 'sr', 'h', 'hbar', 'nfev', 'time', 'n', 'ns', 'smoothKnots', 'interpKind', 'retAge', 'βUS',
            'nEqMax', 'nCandMax', 'nFallback',
            'x0', 'commit', 'timestamp']
+INPUTCOLUMNS = ('retAge', 'βUS')          # recorded since 2026-11-04; a row without them is resumed unchecked
 
 
 def gitCommit():
@@ -156,7 +163,8 @@ def main():
     p.add_argument('--rhos', type = float, nargs = '*', default = None,
                    help = 'the grid as a list of rho (overrides --lo/--hi/--step); must contain --anchor')
     p.add_argument('--theta', default = None,
-                   help = "a variant of data/oecd26_theta.csv: θ imposed at the country's row (db['θ0'])")
+                   help = "a variant of data/oecd26_theta.csv: θ imposed at the country's row (db['θ0']); 'index' the "
+                          "workbook's θ (required for that into results/)")
     p.add_argument('--root', default = None, help = "the variant's directory (default results/oecd26_theta_<variant>)")
     p.add_argument('--main', action = 'store_true',
                    help = "with --theta config.US['theta']: results/calibration/ (the paper's)")
@@ -164,16 +172,18 @@ def main():
     a.out, a.pkldir, a.root = [None if x is None else os.path.abspath(os.path.join(CWD, x))
                                for x in (a.out, a.pkldir, a.root)]
 
-    from calibrateRhoGrid import rhoGrid
+    from calibrateRhoGrid import rhoGrid, rowSettings, resumeAt
+    import oecd26
     grid = rhoGrid(a)
     if round(a.anchor, 6) not in set(grid):
         raise SystemExit('the anchor rho={} is not on the grid {}'.format(a.anchor, list(grid)))
-    if a.theta is None:
+    if a.theta in (None, oecd26.INDEX):
         if a.root is not None or a.main:
             raise SystemExit('--root and --main need --theta VARIANT')
         tag = a.country + '_rhoGrid' + ('CommonX' if a.commonX else '')
         out = a.out or os.path.join(OUTDIR, tag + '.csv')
         pkldir = a.pkldir or os.path.join(OUTDIR, 'instances' + a.country + ('CommonX' if a.commonX else ''))
+        a.theta = oecd26.indexTheta(a.theta, [out, pkldir], 'calibrateRhoGridEU.py')
         θ0, usCsv, columns, extra = None, None, COLUMNS, {}
         os.makedirs(OUTDIR, exist_ok = True)
     else:
@@ -209,6 +219,13 @@ def main():
         if not same.all():
             raise SystemExit('{}: rows at another thetaSource or θ0 than {} {!r}: rerun with --force'.format(
                 out, a.theta, θ0))
+    if not extra and len(df) and 'thetaSource' in df.columns and df['thetaSource'].notna().any():
+        raise SystemExit('{}: rows at thetaSource {}, not the index θ: rerun with --force or another --out'.format(
+            out, sorted(set(df['thetaSource'].dropna().astype(str)))))
+    retAge = testEU.retAgeHost(a.country)
+    βUS = lambda ρ: float(ref(float(ρ))['β'])
+    if not a.force:
+        resumeAt(done, df, rowSettings(a) | {'retAge': retAge, 'βUS': βUS}, grid, INPUTCOLUMNS)
     rows = {} if a.force else {round(float(r['ρ']), 6): r for r in df.to_dict('records')}
 
     print('country: {},  variant: {}'.format(a.country, 'common X' if a.commonX else 'vector X_i'))
@@ -257,7 +274,7 @@ def main():
             return
         if r['result'].get('cached'):
             return
-        rows[key] = toRow(r['result'], r['requested'], commit) | extra
+        rows[key] = toRow(r['result'], r['requested'], commit) | {'retAge': retAge, 'βUS': βUS(key)} | extra
         write()
         with open(os.path.join(pkldir, 'rho_{:.4f}.pkl'.format(r['value'])), 'wb') as f:
             pickle.dump(m, f)

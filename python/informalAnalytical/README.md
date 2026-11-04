@@ -41,6 +41,8 @@ rather than trusting scipy's `res.success`.
   in one vectorised pass rather than refining windows per state.
 - **Explicit vs db-sourced.** Primitives from db; anything solve- or policy-dependent an explicit argument.
   Known gap: `κ(ε1, t)` exists but its consumers read a cached `db['κ']`; harmless while `ε` is fixed.
+- **`n_t`, `ν_t` count formal young**, so `κ_t = p_t + ε_{t+1}γ_{t,0}p_{t,0}`, no `(1+γ_0)` factor;
+  `test_ee.py`'s last section moves γ₀ over t.
 - **`hRatio` vs `hηRatio`.** `hRatio = h_{t,i}/h_t`, `hηRatio = h_{t,i}η_{t,i}/h_t`; `hi` needs the
   first, `si_s`'s third term, `c2i`, `dlnc2i_dτ` the second. Was a live bug. `test_ee.py` asserts
   `∑γ_iη_i·hRatio_i = 1` and `∑γ_i·hηRatio_i = 1`.
@@ -101,6 +103,8 @@ untested far from 1; its outer search has no globalisation.
 ## Open items
 
 - `κ`'s db-cache staleness under an endogenous `ε`.
+- `LOG/CRRA.objectiveFrozen` still anchor each candidate at its own first finite node; `InformalSavings`
+  anchors every candidate at z's (`policy._anchoredAt`). Equal unless frozen shares make a candidate infeasible.
 - The `nMax > 1` multiplicity branch is unit-tested but never triggered by a real calibration.
 - No `SolveGrid`-equivalent class for `self.GS`; revisit if a third grid-search problem needs it.
 - `solveBackward` does not cache nodes across window expansions (`z_t` is closed-form, so free).

@@ -204,6 +204,29 @@ def thetaRoot(variant, main = False):
     return thetaDir(variant)
 
 
+def underResults(path):
+    """ Is `path` results/ or below it? """
+    q, r = os.path.normcase(os.path.abspath(path)), os.path.normcase(RESULTS)
+    return q == r or q.startswith(r + os.sep)
+
+
+def indexTheta(theta, paths, driver):
+    """ A U.S. driver's --theta where it may mean the index θ (the workbooks' RR0, figure 1.1's index): returns None
+    for None and INDEX (the driver's no-variant path), any other value unchanged. Without --theta (None) a run that
+    would write any of `paths` under results/ exits: the standard paths hold the pipeline's main variant
+    (--theta config.US['theta'] --main), and --theta index writes the index θ there on purpose. """
+    if theta == INDEX:
+        return None
+    if theta is None:
+        bad = [p for p in paths if p is not None and underResults(p)]
+        if bad:
+            raise SystemExit("{}: without --theta the rows are at the index θ, and {} is under results/, which holds "
+                             "the main variant's (--theta config.US['theta'] --main): pass --theta {} to write the "
+                             'index θ there, or an output outside results/'.format(
+                                 driver, os.path.relpath(bad[0], REPO), INDEX))
+    return theta
+
+
 def thetaSample(variant, path = None):
     """ The countries with inSample True under `variant`, in data/oecd29.csv's order, the U.S. always included. """
     d = readTheta(path)

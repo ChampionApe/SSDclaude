@@ -125,8 +125,7 @@ def installEps(m, ε):
     m.db.update(m.adjPar('eps', np.asarray(ε, dtype = float)))
     ll = m.addLeadAndLags('κ', m.aux_κ)
     p_, γ0_, p0_ = (float(m.db[k].iloc[0]) for k in ('p[t-1]', 'γ0[t-1]', 'p0[t-1]'))
-    γ0 = float(m.db['γ0'].iloc[0])
-    ll['κ[t-1]'].iloc[0] = (p_ + float(m.db['eps'].iloc[0])*γ0_*p0_) * (1+γ0_)/(1+γ0)
+    ll['κ[t-1]'].iloc[0] = p_ + float(m.db['eps'].iloc[0])*γ0_*p0_
     m.db.update(ll)
 
 
