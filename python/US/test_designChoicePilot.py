@@ -1,6 +1,6 @@
 r""" The frozen-state design-choice layers for the CRRA leaded design (writing/US/num_esc.tex): LeadedCRRA2D's
 root layer (designRule 'root', alg esc:crra2D), policyESCpilot's first-order-condition layer (alg
-esc:crra2Dfoc), the split of LeadedCRRA2D.solveBackward_t2D they plug into, and the design counts through
+esc:crra2Dfoc, note at commit c9561b3), the split of LeadedCRRA2D.solveBackward_t2D they plug into, and the design counts through
 the solver and runESCcrra.py's rows.
 
 Run:  .venv\Scripts\python.exe python\US\test_designChoicePilot.py        (~2 min)

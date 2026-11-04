@@ -21,18 +21,22 @@ economy's own baseline, R, and the tax rule's counts (policy.multiplicityColumns
 Writes results/esc/escTauTheta.csv (under --main; a variant's root/esc otherwise), merged on (spec, phi, commonX,
 θpin) with thetaColumns; a row on disk at the same key, θ variant, λ, β and ω is reused unless --force.
 Self-checks printed at the end: the 'none' rows at θ = 0 and 1 against results/shocks/US_shocksCommonX.csv's θ = 0 and
-θ = 1 rows at ρ = 1, and the 'size' row at θ0 against escShocks.csv's pinned baseline.
+θ = 1 rows at ρ = 1, and the 'size' row at θ0 against escShocks.csv's pinned baseline; a gap above SELFCHECKTOL in τ,
+or no pair to compare, exits with an error after the rows are written. A relative --root is the caller's working
+directory's.
 """
 import os, sys, argparse, time
 import numpy as np, pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+CWD = os.getcwd()                     # where a relative --root points: runESC's import changes the directory to HERE
 sys.path.insert(0, HERE)
 import runESC as R                    # changes the working directory to HERE
 import shocks as sh
 from policy import multiplicityColumns
 
 KEY = ['spec', 'phi', 'commonX', 'θpin']
+SELFCHECKTOL = 1e-6                   # the largest gap in τ against the published rows
 PHI = 0.5
 GRID = [round(0.1*k, 10) for k in range(11)]
 
@@ -83,9 +87,10 @@ def pinned(m, θ, hbarRef):
             'θ_t0': r['θ0']} | multiplicityColumns(r['multiplicity'])
 
 
-def selfCheck(df, outdir, commonX):
+def selfCheck(df, outdir, commonX, tol = SELFCHECKTOL):
     """ The rows that reproduce published numbers: 'none' at θ = 0, 1 against the shock csv, 'size' at θ0 against
-    escShocks.csv's pinned baseline. Printed; returns the largest absolute gap in τ. """
+    escShocks.csv's pinned baseline. Printed; returns the largest absolute gap in τ, and raises RuntimeError when
+    it exceeds `tol` or when no pair could be compared (NaN). """
     sys.path.insert(0, os.path.join(R.REPO, 'python', 'paper'))
     import config as PC
     gaps = []
@@ -116,7 +121,11 @@ def selfCheck(df, outdir, commonX):
     none = df[df['spec'] == 'none'].set_index('θpin')['τ']
     if 0.0 in none.index and 1.0 in none.index:
         print('without the cost, τ(1) - τ(0) = {:+.4f} p.p.'.format(100*(none[1.0] - none[0.0])))
-    return max(gaps) if gaps else np.nan
+    gap = max(gaps) if gaps else np.nan
+    if not gap <= tol:
+        raise RuntimeError('self-check: largest gap in τ against the published rows is {} (tolerance {:g}; NaN: no '
+                           'row to compare)'.format(gap, tol))
+    return gap
 
 
 def main():
@@ -130,6 +139,7 @@ def main():
     p.add_argument('--specs', nargs = '+', default = ['none', 'size'], choices = ('none', 'size'))
     p.add_argument('--force', action = 'store_true')
     a = p.parse_args()
+    a.root = None if a.root is None else os.path.abspath(os.path.join(CWD, a.root))
     outdir = R.setTheta(a.theta, a.root, ('calib',), False, a.commonX, 1.0, a.main)
     out = os.path.join(outdir, 'escTauTheta.csv')
     calibPath = os.path.join(outdir, 'escCalibration.csv')

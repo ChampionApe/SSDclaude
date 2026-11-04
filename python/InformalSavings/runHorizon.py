@@ -101,21 +101,22 @@ def resize(m, T):
     db['tj'] = pd.MultiIndex.from_product([db['t'], db['j']])
     db['ti'] = pd.MultiIndex.from_product([db['t'], db['i']])
     mT.T = mT.LOG.T = mT.CRRA.T = T
-    mT.x0, mT.LOG.x0, mT.CRRA.x0 = {}, {}, {}
+    mT.x0 = {}
     mT.addNamespaces()
     return mT
 
 
 def fresh(m, T):
     """ The model built afresh at horizon T from the workbook (test.py) and m's calibrated (beta, omega,
-    eta_0, X_0, X), as calibrate leaves them (_calPostRoot). The check on resize. """
+    eta_0, X_0), plus X under common X, as calibrate leaves them (_calPostRoot). The check on resize. """
     tss = T - testmod.TLog
     ν = np.hstack([testmod.νLog, np.full(tss, testmod.νLog[-1])])
     t0 = m.db['t'][m.db['t0']]
     pars = dict(testmod.pars) | {'ρ': float(m.db['ρ'].xs(t0)), 'ν': ν}
     mf = ModelInformalSavings(pars = pars, T = T, nj = testmod.kwargs['nj'], commonX = m.commonX, epsPre0 = m.epsPre0)
-    mf.initProductivity_commonX(X = float(m.db['Xj'].values[0, 1]), keepInformal = True)
-    mf.updateAuxPars()
+    if m.commonX:
+        mf.initProductivity_commonX(X = float(m.db['Xj'].values[0, 1]), keepInformal = True)
+        mf.updateAuxPars()
     mf._calSetPars(m.calibrationPars)
     return mf
 

@@ -57,7 +57,7 @@ rather than trusting scipy's `res.success`.
 
 No term of `z_t` depends on any lag of `τ`, so `z_t = z_t(τ_t, τ_{t+1})` and the `T`-dimensional root is
 triangular, solved exactly by backward recursion over scalar problems. Holds only while `θ`/`ε` are
-exogenous. Three entry points: `solveVectorized` (`alg:fast`), `solveBackward` (`alg:gridsearch`, for
+exogenous. Three entry points: `solveVectorized` (`alg:LOG:fast`), `solveBackward` (`alg:LOG:gridsearch`, for
 diagnosing the FOC), and **`solveRobust`** (vectorised, else backward then polish, else the grid solution
 flagged; catches only `RuntimeError`). `solveVectorized` genuinely fails at `ω ≥ 5` on Argentina. scipy
 stops on a step tolerance, not on `max|z|`, so `solveVectorized` restarts the root once from its own

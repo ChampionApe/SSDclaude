@@ -45,9 +45,10 @@ clamp**; 2-D evaluates elementwise on paired coordinates), `griddedSmooth1D`/`gr
 - `kind`: `'linear'` (historical default), `'cubic'`, `'pchip'`. The non-linear kinds are what made
   `InformalSavings`' CRRA calibration solvable away from `ρ=1`. Prefer `'pchip'` in 1-D; in 2-D
   `RegularGridInterpolator` rebuilds it per call (~1400× slower), so `'cubic'` there.
-- NaN survives the non-linear kinds by nearest-valid fill for the fit and a mask on evaluation. **Do not
-  simplify the mask away**: an infeasible region must return non-finite. Both interpolants guard
-  non-finite coordinates. A point exactly on a node is assigned to the left interval.
+- NaN survives the non-linear kinds by nearest-valid fill for the fit and a mask on evaluation that is
+  NaN exactly where `'linear'` is (cells, nodes, extrapolation); near an invalid node the values depend
+  on the fill. **Do not simplify the mask away**: an infeasible region must return non-finite. Both
+  interpolants guard non-finite coordinates.
 - `griddedGradient1D`'s `s` is an absolute bound: normalise per column. Differentiate in the coordinate
   that makes a singular factor affine (`ln(1-τ)`). A root against interpolant output inherits kinks at the
   nodes: refine candidate grids in whole multiples, or not at all.

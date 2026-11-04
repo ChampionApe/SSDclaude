@@ -1,7 +1,7 @@
 r""" ModelFR -- the US model calibrated against a US reference rather than on its own.
 
 France and the UK are the same model as `ModelUS` (see model.py and writing/US/); only the calibration
-protocol differs, in the two ways the paper states (Quant.tex, "Social Security in Rich OECD Countries"):
+protocol differs, in the two ways the paper's calibration of the rich OECD countries states:
 
   1. beta is IMPOSED at the value the US calibration produced at the same rho, not searched. The interest
      rate stops being a target with it, so eq:calibration collapses from a 2-D root over (beta, omega) to
@@ -97,24 +97,16 @@ class ModelFR(ModelUS):
     _calBounds = {k: (0., np.inf) for k in _calPars}
 
     # Tolerance for the post-rescaling drift check, per solver. The scale invariance is EXACT, so under
-    # LOG the drift is machine precision and the check is worth asserting at 1e-8.
+    # LOG the drift is machine precision and the check is asserted at 1e-8.
     #
-    # Not so under CRRA, for a reason that is a known limit rather than a defect: policy.py's
-    # defaultSGrid floors the state grid at an ABSOLUTE 1e-4 (s_{T-1}=0 makes Rlead/Bi/si_s undefined,
-    # and every model here can reach exact zero, so that region must simply not be searched -- the floor
-    # must NOT be made to scale with the model). Its upper bound 1.25*sMax does move with the model, so
-    # rescaling X shifts the floor's position relative to the grid and the solution moves a little.
-    # Measured on the US workbook at rho=0.8, |dtau| = 1.30e-4 at ns=150 and 1.40e-4 at ns=600 -- it
-    # PLATEAUS, which locates the cause in the bound rather than in resolution.
-    #
-    # What this costs is bounded and small at the scales here: sMax ~ 0.37 and lambda in [0.83, 0.90]
-    # across FR/UK, so 1e-4 is ~0.03% of the grid's span and the drift stays <= 2.5e-4 -- inside the CRRA
-    # solver's own error level (verifyResidual ~6e-4 across the US sweep). Re-check that comparison before
-    # trusting it at a calibration whose sMax is an order of magnitude smaller.
-    #
-    # 1e-3 therefore passes the known artifact while still catching what the check is for -- an eta/X
-    # leaking into an aggregate through something other than y^eta, which is an O(1) error, not O(1e-4).
-    # The measured drift is always recorded on the report as 'hoursDrift'; read it, do not assume it.
+    # Under CRRA policy.py's defaultSGrid floors the state grid at an ABSOLUTE 1e-4 (s_{T-1}=0 makes
+    # Rlead/Bi/si_s undefined and every model here can reach exact zero; the floor must NOT be made to
+    # scale with the model), while its upper bound 1.25*sMax moves with the model. Rescaling X therefore
+    # shifts the floor relative to the grid and τ moves by O(1e-4), a plateau in ns rather than a
+    # resolution error, and small only while 1e-4 is a small share of sMax: re-check at a calibration whose
+    # sMax is an order of magnitude below the US's. 1e-3 passes that while still catching what the check
+    # is for -- an eta/X leaking into an aggregate through something other than y^eta, an O(1) error. The
+    # measured drift is recorded on the report as 'hoursDrift'; read it, do not assume it.
     hoursDriftTol = {'LOG': 1e-8, 'CRRA': 1e-3}
 
     def __init__(self, *args, usRef = None, **kwargs):

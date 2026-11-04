@@ -186,7 +186,7 @@ EXHIBITS = {
     'OECD26_Layer1_cses': E('figure', 'OECD26_Layer1_cses',
         caption = OECD26CAPTION + r'without Luxembourg',
         note = OECD26LAYER1.format(omega = MEANOMEGA, lux = '', table = 'slopes_cses')
-               + r' On the 20 countries with a CSES survey: Luxembourg, which has none, is left out.'),
+               + r' On the {csesN} countries with a CSES survey: Luxembourg, which has none, is left out.'),
     'OECD26_Slopes_cses': E('table', 'OECD26_Slopes_cses'),
     'OECD26_Layer1_omegaUS': E('figure', 'OECD26_Layer1_omegaUS',
         caption = OECD26CAPTION + r'layer 1 at the U.S.\ $\omega$',
@@ -538,6 +538,13 @@ def generatedNote(output):
     return '\n'.join(l for l in read(p).split('\n') if not l.startswith('%%')).strip()
 
 
+def sampleSize(output):
+    """ The 'n countries' the note of the table `output` states (its sample), None where the table is not built. """
+    p = os.path.join(TABLES, output + '.tex')
+    m = re.search(r'(\d+) countries', read(p)) if os.path.exists(p) else None
+    return int(m.group(1)) if m else None
+
+
 def block(i, ex, num, paper, refs, prov, here, report):
     """ {'whole': html} for a static exhibit, {'head': html, 'foot': html} for an explorer. """
     word, n, _ = num
@@ -564,6 +571,11 @@ def block(i, ex, num, paper, refs, prov, here, report):
             return {'whole': '<p class="oa-missing">Figure {} has not been built yet.</p>'.format(n)}
         copy(svg, os.path.join(GEN, 'figs', ex.output + '.svg'))
         note = re.sub(r'^\\textit\{Note:\}\s*', '', note.strip())
+        if '{csesN}' in note:                                  # page C5's Luxembourg-less sample, from its table
+            size = sampleSize('OECD26_Slopes_cses')
+            if size is None:
+                report.append('{}: the sample size of OECD26_Slopes_cses is not known'.format(i))
+            note = note.replace('{csesN}', '?' if size is None else str(size))
         return {'whole': ('<div class="oa-exhibit oa-figure" id="{}"><div class="oa-caption">{}{}{}</div>'
                           '<img src="_generated/figs/{}.svg" alt="{}">{}{}</div>').format(
             anchor(i), number, TT.inline(cap, ctx), paperBadge(ex.output, None, paper), ex.output,

@@ -602,4 +602,6 @@ check('selectMaxFrozen: a full-stencil crossing whose own objective peaks at the
       'an equilibrium', selN2.get('nEqRaw') == 0 and selN2['nEq'] == 0 and selN2['fallback'],
       f"-> nEqRaw={selN2.get('nEqRaw')}, nEq={selN2['nEq']}, fallback={selN2['fallback']}")
 
+check('roots1d has no firstMin (no caller; allMin stays)', not hasattr(roots1d, 'firstMin') and hasattr(roots1d, 'allMin'))
+
 report()

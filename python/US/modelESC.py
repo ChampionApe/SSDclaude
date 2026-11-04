@@ -24,8 +24,8 @@ THREE SPECS, and they differ in more than a formula (Base.wedgeA/wedgeB, Eq esc:
 Under 'size' and 'scale' f cancels out of the OECD replacement-rate ratio that identifies theta, so theta is
 the same number as in the exogenous-theta model. Under 'flat' it does NOT cancel: the same RR0 datum implies a
 different theta for every p, so theta and the wedge are jointly identified and getTheta becomes a scalar
-root. That is why the calibration below targets the DATUM (RR0, through theta*(p)) rather than the number
-0.738 -- see notes/crossCuttingFindings.md #9, which is exactly this trap in its earlier incarnation.
+root. That is why the calibration below targets the DATUM (RR0, through theta*(p)) rather than a number for
+theta -- see notes/crossCuttingFindings.md #9, which is exactly this trap in its earlier incarnation.
 
 THE CALIBRATION, and what is approximate about it. Three targets, three parameters:
 
@@ -38,9 +38,9 @@ by 2020, and the counterfactual tables, which are new paths read at 2020, have a
 the datum. Everything after 2020 is then a prediction: as nu_t moves the design moves with it, and that
 drift is the object of the exercise.
 
-That target replaced thetaPolicy_{t0}(theta*) = theta* -- the choice MADE at 2020, which is the right
-object only when the design is pinned as history through 2020 and the tables are read at 2050. The two
-differ by one period of nu_t and by about 0.011 in theta at the calibrated point.
+The target is not thetaPolicy_{t0}(theta*) = theta*, the choice MADE at 2020, which is the right object
+only when the design is pinned as history through 2020 and the tables are read at 2050; the two differ by
+one period of nu_t.
 
 The approximation is in the inner block: (beta, omega) are calibrated on the path with theta held at
 theta*, not on the endogenous-theta path. At the calibrated p those two paths agree at t0 by construction
@@ -53,15 +53,14 @@ import numpy as np, pandas as pd
 from scipy import optimize
 from model import ModelUS
 from policy import mergeMultiplicity
-from policyESC import LeadedLOG, LeadedCRRA, LeadedCRRA2D, PermanentLOG, PermanentCRRA
+from policyESC import LeadedLOG, LeadedCRRA, LeadedCRRA2D, PermanentLOG, PermanentCRRA, SOLVE_FAILURES
 
 WEDGE_SPECS = (None, 'scale', 'flat', 'size', 'sizePiR')
 # calibrateWedge's default scan bracket per spec (a log grid): p in [0.05, 3] for the theta^p forms; lambda
-# in [0.5, 200] for 'size' at rho = 1 under LOG, where the calibrated lambda is about 8.6 (test_esc.py,
-# vector X) and the residual runs from the theta -> 0 corner at small lambda to the theta -> 1 corner at
-# large, with one sign change. The CRRA driver has its own defaults (runESCcrra.BRACKET_CRRA, --bracket):
-# the required cost falls steeply in rho. The 'sizePiR' lambda is the 'size' one over pi_t0 (about 0.55),
-# so its bracket is doubled.
+# in [0.5, 200] for 'size' at rho = 1 under LOG, where the residual runs from the theta -> 0 corner at small
+# lambda to the theta -> 1 corner at large, with one sign change. The CRRA driver has its own defaults
+# (runESCcrra.BRACKET_CRRA, --bracket): the required cost falls steeply in rho. The 'sizePiR' lambda is the
+# 'size' one over pi_t0 (about 0.55), so its bracket is doubled.
 WEDGE_BRACKET = {'scale': (0.05, 3.0), 'flat': (0.05, 3.0), 'size': (0.5, 200.), 'sizePiR': (1.0, 400.)}
 # The pi = Pi/R path a 'sizePiR' solve starts from when it has no earlier one (U.S. 2020,
 # archive/notes/reviewResponse_2026-10/theory_closedForm.md 3.4), the fixed point's tolerance (max |Δpi| over the path; the map contracts by
@@ -77,11 +76,11 @@ class ModelESC(ModelUS):
 
     def __init__(self, *args, wedge = None, nθ = 41, nθCand = 121, nθCandCRRA = 13,
                  nθCandPerm = 21, nθ2D = 13, nθCand2D = 21, designRule = 'root', Ma = 5, **kwargs):
-        """ wedge: {'spec': None|'scale'|'flat'|'size', 'phi': float, 'p': float} ('p' is lambda under
-        'size'). spec=None reproduces ModelUS exactly (Base.wedgeA/wedgeB are then the identity), which is
-        what test_esc.py pins. designRule, Ma: LeadedCRRA2D's design layer ('root', alg esc:crra2D, or
-        'legacy') and the root layer's tabulation nodes. nθ2D: LeadedCRRA2D's θ-state grid, its policies
-        cubic along it (LeadedCRRA2D.__init__ for the measurement behind 13). """
+        """ wedge: {'spec': None|'scale'|'flat'|'size'|'sizePiR', 'phi': float, 'p': float} ('p' is lambda
+        under 'size', ε under 'sizePiR'). spec=None reproduces ModelUS exactly (Base.wedgeA/wedgeB are then the
+        identity), which is what test_esc.py pins. designRule, Ma: LeadedCRRA2D's design layer ('root', alg
+        esc:crra2D, or 'legacy') and the root layer's tabulation nodes. nθ2D: LeadedCRRA2D's θ-state grid,
+        its policies cubic along it (test_gridConvergence.py checks 13 nodes against 97; finding #19). """
         self._wedge0 = self._defaultWedge | (wedge or {})
         if self._wedge0['spec'] not in WEDGE_SPECS:
             raise ValueError(f"ModelESC: unknown wedge spec {self._wedge0['spec']!r}; one of {WEDGE_SPECS}.")
@@ -229,7 +228,7 @@ class ModelESC(ModelUS):
 
     # ------------------------------------------------------------------ theta identification
     def getθ(self):
-        """ theta from the OECD replacement-rate ratio (eq in Quant.tex), wedge-aware.
+        """ theta from the OECD replacement-rate ratio (eq:calibration:theta), wedge-aware.
 
         The datum pins the RATIO of the benefit formula's two coefficients, B/A = (1-RR0)/(RR0*h1-h2),
         and nothing else -- so the parent's closed form already delivers it as (1-theta)/theta. Under
@@ -355,19 +354,26 @@ class ModelESC(ModelUS):
         only has to be good enough to locate the root.
 
         13 candidate solves rather than a full path iteration, which is what makes calibrating p under
-        CRRA affordable at all. """
+        CRRA affordable at all.
+
+        A candidate whose solve fails (policyESC.SOLVE_FAILURES) is not a maximiser; any other exception
+        propagates. The last call's failures are in self.lastGridChoiceFailures, (candidate, error) pairs. """
         self._refuseΠR('_leadedGridChoice_CRRA')
         θStar = float(self.db['θ'].xs(self.t0Year))
         Ws = np.empty(self.ESCC.nθCand)
+        failures = []
         for k, cand in enumerate(self.ESCC.θCand):
             θTry = np.full(self.T, θStar)
             θTry[votePos+1] = cand
             try:
                 Ws[k] = self.ESCC.W(self.ESCC.solveθPath(θTry, s0 = s0, **(solveKwargs or {})), votePos)
-            except Exception:
+            except SOLVE_FAILURES as e:
                 Ws[k] = -np.inf
+                failures.append((float(cand), f'{type(e).__name__}: {e}'))
+        self.lastGridChoiceFailures = failures
         if not np.any(np.isfinite(Ws)):
-            raise RuntimeError(f'{name or "_leadedGridChoice_CRRA"}: every candidate failed to solve.')
+            raise RuntimeError(f'{name or "_leadedGridChoice_CRRA"}: every candidate failed to solve '
+                               f'({len(failures)} solver failures).')
         return self.ESCC._argmax(self.ESCC.θCand, Ws)[0]
 
     def leadedChoiceAtT0_CRRA(self, s0 = None, solveKwargs = None):
@@ -471,7 +477,11 @@ class ModelESC(ModelUS):
         γ_{t-1,i} ω p_{t-1} μ_{t-1,i}. Under CRRA the summand carries (c_{2,t}^i)^{1-1/ρ}, evaluated at the
         candidate θ_t through Base.c2i's own bracket; at ρ = 1 that factor is 1 and the sum is the doc's
         formula. The sign over [0,1] is the object: negative everywhere means the costless sequential
-        choice is the Beveridgean corner. pos = 0 has no solved t-1 ratio and raises. """
+        choice is the Beveridgean corner. pos = 0 has no solved t-1 ratio and raises; so does an installed
+        wedge, since c2i would carry f(θ, τ) while the summand stays costless. """
+        if self.db.get('wedgeSpec') is not None:
+            raise NotImplementedError(f"sequentialFOC is the costless Eq (esc:seqFOC); wedge spec "
+                                      f"{self.db.get('wedgeSpec')!r} is installed.")
         pos = int(self.db['t0']) if pos is None else int(pos)
         if pos == 0:
             raise ValueError('sequentialFOC: no predetermined ratio at the first period.')
@@ -547,6 +557,10 @@ class ModelESC(ModelUS):
 
         diagnostics: also report the choice under the other two readings ('θIncumbent', 'θMoving').
 
+        s0 (CRRA): the state before the first period of the horizon (solvePEE_CRRA's s0) for every
+        candidate's solve and for the equilibrium at the chosen design; None, the default, is each solve's
+        own steady-state seed (steadyStatePEE_CRRA). Unused under LOG.
+
         Returns {'θ', 'atBound', 'τ', 'sol', 'report', 'W', 'θCand', 'converged', 'multiplicity', ...},
         'multiplicity' the tax candidates' counts over the choice's tax selections (every candidate design)
         and the equilibrium at the chosen design (policy.mergeMultiplicity; num_robustroot.tex). """
@@ -559,8 +573,6 @@ class ModelESC(ModelUS):
         if preferences == 'LOG':
             P, kw = self.ESCP, {'θCand': θCand}
         else:
-            if s0 is None:
-                s0 = float(base['report']['s_'].xs(t0))
             P, kw = self.ESCPC, {'θCand': θCand, 's0': s0, 'verbose': verbose}
         if pinning == 'fixedPoint':
             rec = P.solveFixedPoint(t0, θInc, **kw)
@@ -587,12 +599,13 @@ class ModelESC(ModelUS):
             self.db.update(self.adjPar('θ', θ))
             if preferences == 'LOG':
                 τ, multPath = self.ESCP.τPath(θ, withMultiplicity = True)
+                s0e = self.steadyState_LOG_solve(τ[self.B.tFirst], θ[self.B.tFirst], t = self.B.tFirst)['s']
+                sol = self.EE_LOG_solve(τ, θ, ε, s0e)
+                report = self.EE_report(sol, τ, θ, ε, s0e)
             else:
-                outC = self.solvePEE_CRRA(θ = θ, ε = ε)
+                outC = self.solvePEE_CRRA(θ = θ, ε = ε, s0 = s0)
                 τ, multPath = outC['τ'].values.astype(float), outC.get('multiplicity')
-            s0e = self.steadyState_LOG_solve(τ[self.B.tFirst], θ[self.B.tFirst], t = self.B.tFirst)['s']                   if preferences == 'LOG' else None
-            sol = getattr(self, f'EE_{preferences}_solve')(τ, θ, ε, s0e)
-            report = self.EE_report(sol, τ, θ, ε, s0e if s0e is not None else float(sol['s'].iloc[0]))
+                sol, report = outC['sol'], outC['report']
         finally:
             self.db.update(self.adjPar('θ', θSave))
         return rec | {'τ': pd.Series(τ, index = self.db['t']), 'sol': sol, 'report': report, 'θPath': θ,
@@ -606,18 +619,17 @@ class ModelESC(ModelUS):
         the system it has, i.e. choice(theta*) = theta*, and THAT EQUATION IS the fixed-point condition:
         a p where the incumbent-pinned choice reproduces the incumbent design is a p where the incumbent
         design IS the fixed point. So both readings have the same root, and this one reaches it with one
-        pass per trial instead of an inner iteration. Verified against a scan run with solveFixedPoint
-        in the loop (archive/sessionLogs/RESEARCH_LOG_US.md, 2026-08-24): identical p to 1e-9.
+        pass per trial instead of an inner iteration.
 
-        What the two do NOT share is the residual away from the root, so a scan must not mix them. """
+        What the two do NOT share is the residual away from the root, so a scan must not mix them. Under
+        CRRA every candidate starts from its own steady-state seed (solvePermanent's s0 = None). """
         t0 = self.t0Year
         if base is None:
             base = getattr(self, f'solvePEE_{preferences}')()
         siRatio_ = self.predeterminedSiRatio(base = base)
         if preferences == 'LOG':
             return self.ESCP.solve(t0, siRatio_)['θ']
-        s0 = float(base['report']['s_'].xs(t0))
-        return self.ESCPC.solve(t0, siRatio_, s0 = s0, verbose = verbose)['θ']
+        return self.ESCPC.solve(t0, siRatio_, verbose = verbose)['θ']
 
     # ------------------------------------------------------------------ calibrating the wedge
     def wedgeResidual(self, p, spec, phi, calKwargs = None, preferences = 'LOG'):

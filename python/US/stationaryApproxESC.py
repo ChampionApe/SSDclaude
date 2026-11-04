@@ -21,6 +21,10 @@ Also: the stationary function evaluated at the exact path's own states (the erro
 Writes results/numerical/US_ESC_stationaryApprox.csv, one row per (rho, t), each with the exact solve's counts
 (policy.multiplicityColumns): the tax rule's (nEqMax, nCandMax, nFallback) and the root design layer's of the
 2-D recursion (nEqθMax, nBrθMax, nFallbackθ; -1 under LOG, whose design is a grid argmax).
+
+Under CRRA the cost is the converged exact calibration of escCalibrationCRRA.csv at the run's θ; with only a
+path-iteration row at that (rho, spec, phi) the run stops, unless --allowPathP lets the path p stand in (a smoke run).
+A relative --out is the caller's working directory's.
 """
 import os, sys, argparse, time
 from copy import deepcopy
@@ -28,6 +32,7 @@ import numpy as np, pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
+CWD = os.getcwd()                 # where a relative --out points: the chdir below moves to HERE
 sys.stdout.reconfigure(encoding = 'utf-8', line_buffering = True)
 sys.path.insert(0, HERE)
 os.chdir(HERE)
@@ -114,13 +119,14 @@ def runLOG(spec, phi, commonX):
     return rows(1.0, 'LOG', m, ν, θE, θA, θAatE, τE, τA, τAatE, None, None, conv, led['multiplicity'])
 
 
-def runCRRA(ρ, spec, phi, commonX, ns, nCand2D):
+def runCRRA(ρ, spec, phi, commonX, ns, nCand2D, allowPathP = False):
     fCal = os.path.join(ESCDIR, 'escCalibrationCRRA.csv')
-    p, from_ = readCalibratedP(fCal, ρ, spec, phi, commonX, 'exact')
+    p, from_ = readCalibratedP(fCal, ρ, spec, phi, commonX, 'exact', fallback = allowPathP)
     if not np.isfinite(p):
-        raise KeyError(f'no CRRA wedge calibration for (rho={ρ}, {spec}, {phi}, commonX={commonX})')
+        raise KeyError(f'no exact CRRA wedge calibration for (rho={ρ}, {spec}, {phi}, commonX={commonX}); '
+                       '--allowPathP uses the path-iteration p')
     if from_ != 'exact':
-        print(f'  WARNING: no exact calibration on file at rho={ρ}; using the {from_} p = {p:.6f}')
+        print(f'  WARNING: no exact calibration on file at rho={ρ}; using the {from_} p = {p:.6f} (--allowPathP)')
     gs = GSC | {'ns': ns}
     m = runESCcrra.buildUS(ρ, {'spec': spec, 'phi': phi, 'p': p}, commonX = commonX, gs = gs, nθCand2D = nCand2D)
     m.calibrate()
@@ -172,10 +178,13 @@ def main():
     p.add_argument('--ns', type = int, default = GSC['ns'])
     p.add_argument('--nCand2D', type = int, default = 41)
     p.add_argument('--out', default = OUT)
+    p.add_argument('--allowPathP', action = 'store_true',
+                   help = 'under CRRA, use the path-iteration p where no exact calibration is on file (a smoke run)')
     p.add_argument('--theta', default = None,
                    help = "the pipeline's main θ variant (with --main): runESC.setTheta's θ0, rows carry it")
     p.add_argument('--main', action = 'store_true', help = "with --theta config.US['theta']")
     a = p.parse_args()
+    a.out = os.path.abspath(os.path.join(CWD, a.out))
     if a.theta is not None or a.main:
         if not (a.theta is not None and a.main):
             raise SystemExit('--theta needs --main here (and --main --theta)')
@@ -189,7 +198,7 @@ def main():
     allRows = []
     for ρ in a.rho:
         allRows += [r | runESC.thetaColumns() for r in (runLOG(a.spec, a.phi, a.commonX) if np.isclose(ρ, 1)
-                    else runCRRA(ρ, a.spec, a.phi, a.commonX, a.ns, a.nCand2D))]
+                    else runCRRA(ρ, a.spec, a.phi, a.commonX, a.ns, a.nCand2D, a.allowPathP))]
         df = pd.DataFrame(allRows)
         os.makedirs(os.path.dirname(a.out), exist_ok = True)
         df.to_csv(a.out, index = False)                     # after every rho: a long run is readable as it goes

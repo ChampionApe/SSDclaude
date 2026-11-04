@@ -23,7 +23,11 @@ from tablesOECD26 import (RELATIONS, SPENDING, panelData, ols, suffix, variant, 
 MARKFMT = dict(F1.MARKFMT)
 AXIS = {'spending': (0, 20), 'index': (0.44, 1.07)}
 EDGE = '#fcfcfb'
-SRC = 'results/oecd26/layer1.csv, layer2.csv, anchor.csv; data/oecdFigure1.csv, oecd26_theta.csv'
+
+
+def _src(theta = None, layers = 'layer1.csv, layer2.csv, anchor.csv'):
+    """ A note's %% Source: line: the csvs of the measure `theta`'s results directory (datasets.oecd26Dir) and the data. """
+    return D.oecd26DirRel(theta) + layers + '; data/oecdFigure1.csv, oecd26_theta.csv'
 
 
 def _note(name, src, text):
@@ -106,6 +110,7 @@ def oecd26Figure(layer = 1, turnout = None, sample = None, reading = None, spec 
     a = D.oecd26Anchor(v['turnout'], v['spec'], T._thetaSource(v))
     if sfx == '':
         # the anchor of the OECD26 notes: the later exhibits point here (tablesOECD26.specText)
+        T.paperWording()
         ω = T.layer1Omega(v)
         shared = (r'every country at the U.S.\ $\beta$ and $\varepsilon$ and at the mean of the second '
                   r'layer\textquotesingle s $\omega$, ' + C.num(ω, 2) if ω is not None else
@@ -121,7 +126,7 @@ def oecd26Figure(layer = 1, turnout = None, sample = None, reading = None, spec 
         note = (r'\textit{Note:} ' + sampleText(n, p.attrs['dropped']) + r' in the data and in layer 1 of the model, '
                 r'with the least-squares lines whose slopes table~\ref{table:OECD26:slopes' + sfx + '} reports. '
                 + modelText(v) + ' ' + _layersText(a, v, layers = (1,)) + ' ' + turnoutNote(v['turnout']))
-    return out + [_note(name, SRC, note)]
+    return out + [_note(name, _src(T._thetaSource(v)), note)]
 
 
 def oecd26Spending(turnout = None, sample = None):
@@ -181,7 +186,7 @@ def oecd26Spending(turnout = None, sample = None):
             r'$\tau(1-\alpha)$ in 2020 at the observed design, every country at the U.S.\ $\beta = '
             + C.num(float(a['β']), 2) + weight + ', without the cost. ' + turnoutNote(v['turnout'])
             + ' The lines are least-squares fits.')
-    return out + [_note(name, SRC.replace('layer2.csv, ', ''), note)]
+    return out + [_note(name, _src(layers = 'layer1.csv, anchor.csv'), note)]
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -302,7 +307,7 @@ def oecd26ThetaFit(units = 'theta'):
     (tablesOECD26.thetaFit). Writes its note; the statistics are on the panels. """
     name = 'OECD26_ThetaFit' + ('' if units == 'theta' else 'Index')
     unit, lim, _ = UNITS[units]
-    v = variant()
+    T.paperWording()
     fs = {k: T.thetaFit(k, units = units) for k in (1, 2)}
     fig, axes = plt.subplots(1, 2, figsize = (5.91, 3.05))
     fig.subplots_adjust(left = 0.085, right = 0.99, bottom = 0.25, top = 0.93, wspace = 0.2)
@@ -335,7 +340,7 @@ def oecd26ThetaFit(units = 'theta'):
             + r'. The solid line is the least-squares fit over the other ' + str(fs[1]['nStat'])
             + r' countries, and each panel reports, without the U.S., the correlation $r$ and the RMSE of the '
             r'prediction, beside the RMSE of a prediction at the sample mean.')
-    return out + [_note(name, SRC, note)]
+    return out + [_note(name, _src(), note)]
 
 
 FITNOTE = {
@@ -374,4 +379,4 @@ def oecd26ThetaFitRows(kind, units = 'theta'):
     note = (r'\textit{Note:} As figure~\ref{fig:OECD26:thetaFit}' + ('' if units == 'theta' else r', in units of the index')
             + ', ' + FITNOTE[kind] + r'. The U.S.\ is open; the solid lines are least-squares fits over the other '
             r'countries.')
-    return out + [_note(name, SRC + ('; results/oecd26_theta_<V>/' if kind == 'measure' else ''), note)]
+    return out + [_note(name, _src() + ('; results/oecd26_theta_<V>/' if kind == 'measure' else ''), note)]

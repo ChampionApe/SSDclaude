@@ -1,5 +1,5 @@
 import numpy as np, pandas as pd
-from scipy import optimize, interpolate
+from scipy import optimize
 from gridsearch import (robustRoot, roots1d, CartesianGrid, griddedInterp1D,
                         griddedSmooth1D, griddedGradient1D)
 
@@ -60,22 +60,16 @@ class LOG:
     # attribute, so that an instance unpickled from before it existed selects by the frozen rule too.
     selection = 'frozen'
 
-    def __init__(self, m, style = 'Vector', grid = None, **kwargs):
+    def __init__(self, m, grid = None):
         self.m = m
         self.B  = m.B # refer to base class
         self.BG = m.BG # refer to basegrid class
         self.BT = m.BT # refer to basetime class
         self.db = m.db # refer to main database
         self.ni, self.T = m.ni, m.T # copied locally so solves don't need to keep reaching into self.m
-        self.style = style
         self.x0 = {} # own cache of last-used/default initial guesses, keyed by problem name -- separate
                       # from self.m.x0 (model.py's EE_* cache)
-        self.kwargs = self._kwargs | kwargs # passed to newton solver
         self.initGS(grid)
-
-    @property
-    def _kwargs(self):
-        return {'update': True}
 
     #######################################################################
     ##########   Named grid-problem structure (self.GS)                ####
@@ -92,14 +86,14 @@ class LOG:
 
     @property
     def _gridSettings(self):
-        """ Defaults for solveBackward (docs alg:gridsearch). l/u: interior bounds -- u<1 strictly, since
+        """ Defaults for solveBackward (docs alg:LOG:gridsearch). l/u: interior bounds -- u<1 strictly, since
         z_t carries a 1/(1-τ_t) factor and diverges at τ=1. n: nodes spanning [l,u]. Δl/Δu: nodes
         below/above the previous period's solution the refinement window spans -- kept separate since a
         monotone-in-t policy path can be solved with far fewer evaluations by making them asymmetric. """
         return {'l': 1e-4, 'u': 1-1e-4, 'n': 101, 'Δl': 10, 'Δu': 10}
 
     #######################################################################
-    ##########   solveVectorized (docs alg:fast, "Gradient-based       ####
+    ##########   solveVectorized (docs alg:LOG:fast, "Gradient-based       ####
     ##########   roots for the politico-economic equilibrium with      ####
     ##########   log preferences")                                     ####
     #######################################################################
@@ -114,7 +108,7 @@ class LOG:
     # model.py's initialState_solve, which itself needs no s0.
 
     def stateVectorized(self, τtilde, θ, ε, l = 0, u = 1):
-        """ Build the dict of economic objects the LOG political FOC (eq:fast) needs at a candidate
+        """ Build the dict of economic objects the LOG political FOC (eq:LOG:fast) needs at a candidate
         *unbounded* tax path τtilde (length T). θ, ε: full paths, as model.py's EE_LOG_solve. l, u:
         bounds for gridsearch.robustRoot.clip -- τ is only ever evaluated inside [l,u]. """
         d = {'τtilde': τtilde, 'τ': robustRoot.clip(τtilde, l, u), 'θ': θ, 'ε': ε}
@@ -138,7 +132,7 @@ class LOG:
         return d
 
     def focVectorized(self, d):
-        """ Evaluate the LOG political FOC z_t (eq:fast) from a state dict (see stateVectorized): young
+        """ Evaluate the LOG political FOC z_t (eq:LOG:fast) from a state dict (see stateVectorized): young
         (FH_dv1i_LOG/FH_dv10_LOG) and old (dv2i_dτ_LOG/dv20_dτ_LOG) marginal utilities via Base.FOC. """
         τ, θ, ε = d['τ'], d['θ'], d['ε']
         dv1i = self.BT.FH_dv1i_LOG(d['βi'], τ)
@@ -156,7 +150,7 @@ class LOG:
                 'maxResid': maxResid, 'success': res.success, 'message': res.message}
 
     def solveVectorized(self, θ, ε, x0 = None, l = 0, u = 1, a0 = 1, a1 = 1, tol = 1e-8, update = True, **kwargs):
-        """ Solve the stacked LOG political FOC (eq:fast) for the whole tax path at once, via the
+        """ Solve the stacked LOG political FOC (eq:LOG:fast) for the whole tax path at once, via the
         bounded-root reparameterization (gridsearch.robustRoot, eq:root). x0: defaults to a cached
         self.x0['vectorized'] warm-start, else the constant db['τ0'] path. update: cache the solved τ̃ on
         convergence. Returns just τ + solver diagnostics (see reportVectorized).
@@ -182,8 +176,7 @@ class LOG:
         return self.reportVectorized(res, l, u, tol = tol)
 
     #######################################################################
-    ##########   solveBackward (docs alg:gridsearch, "Iterative grid   ####
-    ##########   search with initial boundary check")                  ####
+    ##########   solveBackward (docs alg:LOG:gridsearch, backward grid search)     ####
     #######################################################################
     # Rests on a structural property solveVectorized doesn't exploit: no term of z_t depends on any
     # *lag* of τ (young terms depend on τ_t alone; dv2i's si_s_ is closed-form in τ_t; only dv20's Θh
@@ -218,7 +211,7 @@ class LOG:
         return {'τ': τ, 'Θh': Θh, 'si_s_': BG.si_s(βi_, τ, θ, Γs_, tLag)}
 
     def focGrid(self, d, t, θ, ε, terminal):
-        """ Evaluate z_t (eq:fast) over the grid of candidate τ_t in a stateGrid dict. Returns (M,). The
+        """ Evaluate z_t (eq:LOG:fast) over the grid of candidate τ_t in a stateGrid dict. Returns (M,). The
         terminal period passes β=β0=0 (matching how the doc derives eq:terminalPEELOG from the general
         formulas with β_{T,j}=0), rather than a separate formula. """
         BG, τ = self.BG, d['τ']
@@ -302,7 +295,7 @@ class LOG:
     def solveBackward_t(self, t, θ, ε, tLag, terminal, τ1 = None, θ1 = None,
                         Δl = None, Δu = None, maxExpand = 8, tol = 0.0):
         """ Solve the scalar problem for one period: refine the grid around τ_{t+1}, evaluate z_t,
-        select among the candidates (steps 1-3 of alg:gridsearch, eq:equilibriumTest). Terminal period
+        select among the candidates (steps 1-3 of alg:LOG:gridsearch, eq:equilibriumTest). Terminal period
         searches the full grid.
 
         The expansion step guards the refinement window: if the selection sits on a window edge that
@@ -345,7 +338,7 @@ class LOG:
                 'atBound': bool(sel['atBound']), 'expansions': k, 'windowed': bool(atLo or atHi)}
 
     def solveBackward(self, θ, ε, Δl = None, Δu = None, maxExpand = 8, tol = 0.0, update = True):
-        """ Solve the whole tax path by backward recursion over scalar grid searches (docs alg:gridsearch).
+        """ Solve the whole tax path by backward recursion over scalar grid searches (docs alg:LOG:gridsearch).
         No x0/s0 needed -- self-starting from the terminal period.
 
         Returns {'τ', 'maxResid', 'success', 'message', 'diagnostics', 'multiplicity'}, the first four
@@ -633,7 +626,7 @@ class CRRA(LOG):
     # (ii) Three log-derivatives are numerical along τ (d ln h_t, d ln ĉ_{1,t}^i, d ln c̃_{2,t+1}^0).
     #      dln(c_{2,t}^i)/dτ_t must come from base.py's dlnc2i_dτ instead -- s_{t-1,i}/s_{t-1} varies
     #      along the grid but the policy maker takes it as predetermined, so a grid derivative would fold
-    #      in a channel that doesn't belong in the FOC (docs §PEE footnote -- a correctness issue, not
+    #      in a channel that doesn't belong in the FOC (docs §PEE -- a correctness issue, not
     #      precision). dln(c̃_{2,t}^0) could go either way; closed form used for consistency.
     #
     # Infeasibility is first-class here (unlike at T): for a given s_{t-1}, the implied s_t leaves the

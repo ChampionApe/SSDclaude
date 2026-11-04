@@ -1,9 +1,9 @@
 r""" The endogenous design under the 'size' cost at other Frisch elasticities: log preferences (rho = 1),
 the model recalibrated at each xi.
 
-Run:  .venv\Scripts\python.exe python\US\runESCxi.py                  # xi = 0.3 and the self-check, then 0.2, 0.4
-      ... --xi 0.2 0.4 --stage calib path acute                      # no self-check
-      ... --xi 0.3 --stage check                                     # the self-check on the rows on disk
+Run:  .venv\Scripts\python.exe python\US\runESCxi.py --theta C --main      # xi = 0.3 and the self-check, then 0.2, 0.4
+      ... --theta C --main --xi 0.2 0.4 --stage calib path acute      # no self-check
+      ... --theta C --main --xi 0.3 --stage check                     # the self-check on the rows on disk
 
 xi is the workbook's 'Labor supply elasticity' (data/USMain_test.xlsx, 0.3), replaced in the parameters the
 model is built from (buildUSxi); the workbook is never written. The cost is Eq (esc:AB) of
@@ -29,7 +29,14 @@ default, --no-commonX for vector X). Stages, per xi:
           xi in --xi it runs first and a failure stops the run before any other xi: rows from a code path that
           does not reproduce the headline are not comparable with it.
 
-Writes results/esc/escXiRobustness.csv, long format, merged through runESC.mergeWrite on KEYXI: per xi one
+--theta VARIANT --main are required (runESC.setTheta; VARIANT = python/paper/config.py's US['theta']): every U.S.
+model imposes theta = the variant's U.S. row of data/oecd26_theta.csv as db['θ0'], seeded off results/calibration/'s
+sweep at that θ0, so theta* is the same at every xi; the published rows the self-check reads (escCalibration.csv,
+escPath.csv, escExperiments.csv) and the rows of this file are kept at that thetaSource and θ0 (oecd26.rowsAtTheta), and
+every row written carries thetaSource, θ0 and grid (runESC.thetaColumns).
+
+Writes results/esc/escXiRobustness.csv, long format, merged through runESC.mergeWrite on KEYXI after dropping the rows
+on file at another thetaSource or θ0 (a csv holds one θ): per xi one
 'calibration' row and one 'acute pinned' and one 'acute chosen' row at 2020, and one 'path' row per date.
 The path and acute stages read lambda from the calibration row on disk when calib is not run with them;
 every row carries its lambda in 'p', and the summary flags a row whose 'p' differs from its xi's calibration
@@ -48,6 +55,7 @@ sys.path.insert(0, HERE)
 os.chdir(HERE)
 
 import test as testmod
+import oecd26
 import runESC
 from policy import multiplicityColumns
 
@@ -95,7 +103,23 @@ def _assertθ(θ, θ0, ξ, where):
 
 def _ids(ξ, commonX, kind, pos, date, λ):
     return {'xi': ξ, 'spec': SPEC, 'phi': PHI, 'commonX': commonX, 'kind': kind, 'pos': int(pos),
-            'date': date, 'p': λ}
+            'date': date, 'p': λ} | runESC.thetaColumns()
+
+
+def atθ(df):
+    """ The rows of csv frame `df` at the run's θ (oecd26.rowsAtTheta at runESC.THETA's variant and θ0). """
+    return oecd26.rowsAtTheta(df, runESC.THETA['variant'], runESC.THETA['θ0'])
+
+
+def write(out, rows):
+    """ runESC.mergeWrite on KEYXI, after the rows of `out` at another thetaSource or θ0 than the run's are dropped. """
+    if os.path.exists(out):
+        old = pd.read_csv(out, float_precision = 'round_trip')
+        keep = atθ(old)
+        if len(keep) < len(old):
+            print(f'  {os.path.relpath(out, REPO)}: {len(old) - len(keep)} rows at another θ dropped')
+            runESC.writeCsv(keep, out)
+    runESC.mergeWrite(out, rows, KEYXI)
 
 
 # ---------------------------------------------------------------- stages
@@ -136,7 +160,7 @@ def stageCalib(ξ, out, commonX, θ0, bracket = None):
         r |= multiplicityColumns(None)
     if not rec['converged']:
         print(f"  -> NOT CONVERGED ({r['message']}); scan: {r['scan']}")
-    runESC.mergeWrite(out, [r], KEYXI)
+    write(out, [r])
     return r
 
 
@@ -158,7 +182,7 @@ def stagePath(ξ, λ, out, commonX):
             'ν': float(m.db['ν'].xs(t)), 'θ': float(led['θ'].xs(t)), 'τ': r['τ'], 'sr': r['sr'],
             'workweek': r['workweek'], 'R': r['R'],
             'τExo': rb['τ'], 'srExo': rb['sr'], 'workweekExo': rb['workweek']} | multiplicityColumns(led['multiplicity']))
-    runESC.mergeWrite(out, rows, KEYXI)
+    write(out, rows)
     print('[ξ={}] θ path: {}   τ path: {}  ({:.0f}s)'.format(
         ξ, '  '.join('{:.4f}'.format(x) for x in led['θ'].values[:8]),
         '  '.join('{:.4f}'.format(x) for x in led['τ'].values[:8]), time.time()-tic))
@@ -183,17 +207,17 @@ def stageAcute(ξ, λ, out, commonX):
             'ww_t1': r['t1']['workweek']} | multiplicityColumns(r['multiplicity']))
         print('[ξ={}] acute {:<6}: θ_t0={:.4f}  τ_t0={:.4f} sr_t0={:.4f} ww_t0={:.2f}  (θ_t1={:.4f})'.format(
             ξ, 'pinned' if pin else 'chosen', r['θ0'], r['t0']['τ'], r['t0']['sr'], r['t0']['workweek'], r['θ1']))
-    runESC.mergeWrite(out, rows, KEYXI)
+    write(out, rows)
     print(f'  ({time.time()-tic:.0f}s)')
 
 
 # ---------------------------------------------------------------- the self-check and the summary
 
 def _rows(out, ξ, commonX):
-    """ This file's rows at ξ under (SPEC, PHI, commonX); an empty frame if none. """
+    """ This file's rows at ξ under (SPEC, PHI, commonX) and the run's θ; an empty frame if none. """
     if not os.path.exists(out):
         return pd.DataFrame()
-    d = pd.read_csv(out)
+    d = atθ(pd.read_csv(out))
     return d[np.isclose(d['xi'], ξ) & (d['spec'] == SPEC) & np.isclose(d['phi'], PHI)
              & (d['commonX'].astype(bool) == bool(commonX))]
 
@@ -205,14 +229,14 @@ def calibrationRow(out, ξ, commonX):
 
 
 def selfCheck(out, commonX, tol = CHECK_TOL):
-    """ The workbook-ξ rows of `out` against the published ones. True iff at least one pair was compared
-    and every gap is within tol (relative for λ, absolute otherwise). Pairs whose rows are missing on
-    either side are listed, not failed. """
+    """ The workbook-ξ rows of `out` against the published ones, both at the run's θ (atθ). True iff at least one
+    pair was compared and every gap is within tol (relative for λ, absolute otherwise). Pairs whose rows are
+    missing on either side are listed, not failed. """
     d = _rows(out, XI0, commonX)
-    cal = runESC.pickCalib(pd.read_csv(PUBLISHED['calib']), SPEC, PHI, commonX)
-    path = pd.read_csv(PUBLISHED['path'])
+    cal = runESC.pickCalib(atθ(pd.read_csv(PUBLISHED['calib'])), SPEC, PHI, commonX)
+    path = atθ(pd.read_csv(PUBLISHED['path']))
     path = path[(path['spec'] == SPEC) & np.isclose(path['phi'], PHI) & (path['commonX'].astype(bool) == bool(commonX))]
-    exp = pd.read_csv(PUBLISHED['experiments'])
+    exp = atθ(pd.read_csv(PUBLISHED['experiments']))
     exp = exp[np.isclose(exp['ρ'], 1.0) & (exp['preferences'] == 'LOG') & (exp['spec'] == SPEC)
               & np.isclose(exp['phi'], PHI) & (exp['commonX'].astype(bool) == bool(commonX))
               & (exp['scenario'] == 'acute')]
@@ -302,8 +326,14 @@ def main():
     ap.add_argument('--bracket', type = float, nargs = 2, default = None,
                     help = "the λ scan bracket; default ModelESC.WEDGE_BRACKET['size']")
     ap.add_argument('--out', default = OUT)
+    ap.add_argument('--theta', default = None, help = "the pipeline's main θ variant, config.US['theta'] (with --main)")
+    ap.add_argument('--main', action = 'store_true', help = "with --theta: read and write results/esc/")
     a = ap.parse_args()
     a.out = os.path.abspath(os.path.join(CWD, a.out))
+    if a.theta is None or not a.main:
+        raise SystemExit('--theta VARIANT --main are required: the rows are at config.US[\'theta\'], the design the '
+                         'paper reads')
+    runESC.setTheta(a.theta, None, ('calib',), False, a.commonX, 1.0, True)
     xis = [round(float(x), 10) for x in a.xi]
     xis = [x for x in xis if np.isclose(x, XI0)][:1] + [x for x in dict.fromkeys(xis) if not np.isclose(x, XI0)]
     run = [s for s in ('calib', 'path', 'acute') if s in a.stage]

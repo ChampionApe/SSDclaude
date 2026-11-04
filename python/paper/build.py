@@ -13,8 +13,8 @@ This stage imports NO model code and unpickles nothing. It reads csv, writes tex
 seconds -- which is what makes it safe to re-run after every edit to a caption or a rounding rule. The
 expensive work belongs to stages (i) and (ii), whose output in results/ is the record.
 
-An output whose inputs are missing is REPORTED AND SKIPPED, never partially written: an experiment that
-has not been run must not be able to look like a table that has.
+An output whose inputs are missing or stale (datasets.MissingInput, StaleInput) is REPORTED AND SKIPPED, never
+partially written: an experiment that has not been run must not be able to look like a table that has.
 
 WHERE THINGS LAND. Every output is written to results/paper/ first and then copied into writing/Paper/
 (--no-copy stops at the first step), except the online appendix's own exhibits (ONLINE_ONLY), which stay
@@ -207,8 +207,11 @@ MAP_BEGIN, MAP_END = '<!-- outputs:begin -->', '<!-- outputs:end -->'
 def _traceInputs(fn):
     """ Run one builder with pandas' file readers wrapped, and return the repo-relative paths it read.
     Every csv a builder uses goes through pd.read_csv, so the trace is the builder's input list; a figure
-    builder also writes its files to results/paper, as --list does. """
+    builder also writes its files to results/paper, as --list does. The cached workbook and θ-file reads are
+    forgotten first, so that every output lists the files it reads and not only the first to read them. """
     import pandas as pd
+    C.clearCaches()
+    D.usAlpha.cache_clear()
     seen, orig = [], (pd.read_csv, pd.read_excel)
 
     def wrap(f):
@@ -264,7 +267,7 @@ def writeMap():
     for name, (kind, fn, rel) in OUTPUTS.items():
         try:
             reads = _compress(_traceInputs(fn))
-        except D.MissingInput as e:
+        except (D.MissingInput, D.StaleInput) as e:
             reads = 'BLOCKED: {}'.format(e)
         where = uses.get(rel, []) + uses.get(os.path.splitext(rel)[0], [])
         if name in ONLINE_ONLY:
@@ -292,6 +295,9 @@ def writeMap():
 
 
 def main():
+    for stream in (sys.stdout, sys.stderr):    # notes print θ; a redirected cp1252 console would raise
+        if hasattr(stream, 'reconfigure'):
+            stream.reconfigure(encoding = 'utf-8')
     p = argparse.ArgumentParser(description = __doc__.split('\n')[1])
     p.add_argument('--only', nargs = '+', choices = list(OUTPUTS), default = list(OUTPUTS))
     p.add_argument('--copy', dest = 'copy', action = 'store_true', default = True,
@@ -324,7 +330,7 @@ def main():
             try:
                 fn()                      # cheap; the loaders raise before any real work
                 print('{:<22} {:<7} OK'.format(name, kind))
-            except D.MissingInput as e:
+            except (D.MissingInput, D.StaleInput) as e:
                 print('{:<22} {:<7} BLOCKED -- {}'.format(name, kind, e))
             continue
         try:
@@ -332,7 +338,7 @@ def main():
             built.append((name, rel, paths))
             print('built  {:<22} -> {}'.format(name, rel if a.copy and name not in ONLINE_ONLY else
                                                os.path.relpath(paths[0], C.REPO)))
-        except D.MissingInput as e:
+        except (D.MissingInput, D.StaleInput) as e:
             skipped.append((name, str(e)))
             print('SKIP   {:<22} {}'.format(name, e))
 

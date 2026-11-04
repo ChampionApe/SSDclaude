@@ -50,7 +50,7 @@ THE FRENCH COUNTERFACTUALS. Three separate experiments, and the paper's own tabl
     combination, what "level" means here and why it has to be renormalised, why the obvious alternatives
     to holding X are all the same experiment as each other, and why theta is pinned rather than
     re-derived. France's income groups are cut at US percentiles precisely so that gamma_i lines up and
-    the swap is like-for-like (Quant.tex).
+    the swap is like-for-like.
   * Leisure preferences: a PURE SCALE on X_i, matching France's population-weighted mean X expressed at
     the same productivity level the income row uses (eta_scale * Xbar_FR / Xbar_US -- see ηLevel). It is
     rescaleX, i.e. eq:us:model:scaleInvariance, so tau, the savings rate and R cannot move at all and only
@@ -64,7 +64,7 @@ THE FRENCH COUNTERFACTUALS. Three separate experiments, and the paper's own tabl
     so a common scale cancels out of z_t = 0. US mu rises steeply across income (0.474/0.629/0.765),
     France's is nearly flat (0.810/0.857/0.852).
 """
-import numpy as np, pandas as pd
+import numpy as np
 from copy import deepcopy
 
 
@@ -95,15 +95,14 @@ def readout(m, τ, report, workweekData, hbarRef, pos = 0):
 def shockTheta(mt0, value):
     """ theta_t = `value` for every period of the horizon. Returns the installed path.
 
-    db['θ'] is written (rather than only passed to the solver) because solvePEE_*'s theta=None default,
-    Base.ΓsCap and the CRRA steady-state bracket all read it from db, and leaving them on the calibrated
-    theta while the solver used a shocked one would be silently inconsistent.
+    db['θ'] is written (rather than only passed to the solver) because the shocked model's solves take
+    theta from db: solvePEE_*'s theta=None default, runOne's EE-only reading and ModelESC's theta*.
 
     DO NOT call updateAuxPars after this. theta is in paramsFromFuncs, so updateAuxPars recomputes it
     from getTheta -- i.e. from the replacement-rate data -- and would put the calibrated theta straight
-    back, undoing the shock while every other number still looked reasonable. That is exactly how this
-    first ran: theta = 0 and theta = 1 both returned the baseline to every digit. Nothing else in
-    paramsFromFuncs (Gamma_h, eps, kappa) depends on theta, so nothing needs refreshing here. """
+    back, undoing the shock while every other number still looked reasonable (#9: theta = 0 and theta = 1
+    would both return the baseline). Nothing else in paramsFromFuncs (Gamma_h, eps, kappa) depends on
+    theta, so nothing needs refreshing here. """
     mt0.db.update(mt0.adjPar('θ', float(value)))
     return mt0.db['θ'].values.copy()
 
@@ -167,13 +166,12 @@ def shockIncomeDistribution(mt0, ηFR, pinTheta = True, θPin = None):
 
     THETA WOULD OTHERWISE MOVE WITH ETA, AND IT WOULD MOVE A LOT. theta is in paramsFromFuncs, so
     updateAuxPars re-derives it from getTheta -- holding the OECD replacement-rate RATIO db['RR0'] fixed
-    and letting theta adjust to the new income distribution, which takes it from 0.738 to 0.495: under
-    France's flatter distribution the same observed replacement-rate ratio implies a much less Bismarckian
-    system. That is a pension-design change riding along inside a counterfactual about inequality, and the
-    two are separately identified elsewhere in the same table (shockTheta is the design experiment). So
-    pinTheta = True is the DEFAULT and this row moves eta alone. The two readings differ by ~0.6 p.p. in
-    tau: 13.21% pinned against 13.79% re-derived under the paper's common-X calibration, 12.83% against
-    13.28% under vector X. pinTheta = False keeps the re-deriving reading available.
+    and letting theta adjust to the new income distribution: under France's flatter distribution the same
+    observed replacement-rate ratio implies a much less Bismarckian system. That is a pension-design change
+    riding along inside a counterfactual about inequality, and the two are separately identified elsewhere
+    in the same table (shockTheta is the design experiment). So pinTheta = True is the DEFAULT and this row
+    moves eta alone; pinTheta = False keeps the re-deriving reading available. With db['θ0'] set
+    (ModelUS.θOverride) getTheta returns θ0 and the two readings coincide.
 
     theta is pinned at `θPin`, defaulting to the model's OWN design before the swap -- read here rather
     than passed in, so the default reading needs no cooperation from the caller and cannot be pinned at
@@ -237,8 +235,8 @@ def shockFrenchAll(mt0, d):
     is in paramsFromFuncs, so the LAST one wins: shockIncomeDistribution's pin is recomputed away by
     shockVoting's refresh, which re-derives theta from France's eta and puts the combined row back on a
     design nothing asked for. The single-characteristic rows never see this because nothing runs after
-    them, which is what makes the combined row's silent 0.738 -> 0.551 the kind of defect #9 is about.
-    Under pinTheta = False the same line is a no-op on the re-derived value.
+    them, which is what makes a silently re-derived theta in the combined row the kind of defect #9 is
+    about. Under pinTheta = False the same line is a no-op on the re-derived value.
 
     Returns the design the row ends on. """
     pin = d.get('pinTheta', True)
@@ -264,12 +262,6 @@ SHOCKS = {
 
 
 # ---------------------------------------------------------------- running one experiment
-
-def solveBaseline(m, preferences):
-    """ The calibrated model's own PEE path over the full horizon, plus the readout at t0. """
-    out = getattr(m, f'solvePEE_{preferences}')()
-    return out
-
 
 def shockedCopy(m, name, data, registry = None):
     """ A fresh model carrying `name`'s parameters over the whole horizon. Returns (model, extra).

@@ -11,8 +11,7 @@ data/oecd26_sample.csv's sample26, with the 'index' rows of results/oecd26/.
 
 Every builder takes
   turnout  'csesFlat' (each economy at its own CSES propensities to vote; Luxembourg, which has none and enforces
-           compulsory voting, flat) | 'cses' (Luxembourg left out of data and model alike) | 'cps' (every economy at
-           the U.S. CPS propensities; rows of before 2026-11-04);
+           compulsory voting, flat) | 'cses' (Luxembourg left out of data and model alike);
   sample   '26', the sample of the design's measure (above);
   reading  'inForce' (the design in force in 2020 on the freely simulated path, chosen in 1990: the reading of the
            cost parameter's target) | 'chosen' (the design chosen in 2020 at the observed design, in force from 2050);
@@ -34,7 +33,7 @@ the inverse of the loader's θ = 2 - 1/I; spending is 100 τ (1 - α), % of GDP,
 sides of every slope use figure 1.1's regressors (OECD population growth 2020/1990, the WIID Gini) and the same
 countries.
 """
-import os, re
+import re
 import numpy as np, pandas as pd
 
 import config as C
@@ -46,12 +45,11 @@ from tablesUS import _xwrap
 # Figure 1.1's panels in its order, (y role, x role); the x role 'index' is the design on the index scale.
 RELATIONS = (('spending', 'growth'), ('spending', 'gini'), ('spending', 'index'),
              ('index', 'growth'), ('index', 'gini'))
-# Section 6's spending test (spendingSlopes, figuresOECD26.oecd26Spending) and the relations of the index
-# (OECD26_Stylized), each a subset of RELATIONS.
+# Section 6's spending test (spendingSlopes, figuresOECD26.oecd26Spending), a subset of RELATIONS.
 SPENDING = (('spending', 'growth'), ('spending', 'gini'))
 READINGS = {'chosen': 'θChosen', 'inForce': 'θInForce'}
 SPENDINGS = ('chosen', 'observed')
-TURNOUTS = ('csesFlat', 'cses', 'cps')
+TURNOUTS = ('csesFlat', 'cses')
 OMEGARULES = ('mean', 'anchor')
 RETAGES = ('nra', 'none', 'exit')
 # The measures of the design: the paper's, then appendix G's data variants.
@@ -70,8 +68,7 @@ SPECCAPTION = {'size': r'the U.S.\ $\lambda$ in every country',
                'none': 'without the cost'}
 BETACAPTION = {'common': r'the U.S.\ $\beta$ in every country',
                'commonR': r'each country\textquotesingle s $\beta$ set to the U.S.\ 2020 return'}
-TURNOUTCAPTION = {'csesFlat': 'each country at its own turnout', 'cses': 'without Luxembourg',
-                  'cps': r'every country at the U.S.\ turnout'}
+TURNOUTCAPTION = {'csesFlat': 'each country at its own turnout', 'cses': 'without Luxembourg'}
 SPENDINGCAPTION = {'chosen': 'spending at the chosen designs', 'observed': 'spending at the observed designs'}
 OMEGACAPTION = {'anchor': r'layer 1 at the U.S.\ $\omega$', 'mean': r'layer 1 at the mean $\omega$'}
 RETAGECAPTION = {'none': r'$\nu$ uncorrected', 'exit': r'$\nu$ corrected at the effective exit age',
@@ -80,8 +77,21 @@ THETACAPTION = {m: r'the design measured as ' + C.THETANAMES.get(m, m) for m in 
 # The notes' sentence on the propensities to vote by income group.
 TURNOUTNOTE = {'csesFlat': r'Turnout: each country\textquotesingle s own propensities to vote by income group, from the '
                            r'CSES; Luxembourg, which has no CSES survey and enforces compulsory voting, at a flat profile.',
-               'cses': r'Turnout: each country\textquotesingle s own propensities to vote by income group, from the CSES.',
-               'cps': r'Turnout: the U.S.\ propensities to vote by income group, from the CPS, in every country.'}
+               'cses': r'Turnout: each country\textquotesingle s own propensities to vote by income group, from the CSES.'}
+
+
+# What the notes of the paper's variant say in words (its cost \varepsilon, own turnout with Luxembourg flat, the design in
+# force in 2020 chosen in 1990, spending on the path of that design) rather than from PAPER.
+PAPERWORDING = {'spec': 'sizePiR', 'turnout': 'csesFlat', 'reading': 'inForce', 'spending': 'chosen'}
+
+
+def paperWording():
+    """ Raises unless config.US['oecd26'] is the variant PAPERWORDING describes, the one the paper's notes (figures
+    OECD26_Layer1 and OECD26_ThetaFit, table OECD26_Omega) state in words. """
+    bad = {k: PAPER[k] for k, v in PAPERWORDING.items() if PAPER[k] != v}
+    if bad:
+        raise ValueError("the notes of the paper's cross-country test are worded for {}; config has {}: reword them"
+                         .format(PAPERWORDING, bad))
 
 
 def turnoutNote(turnout):
@@ -398,7 +408,8 @@ def oecd26Slopes(turnout = None, sample = None, reading = None, spec = None, bet
             + specText(a, v))
     sfx = suffix(**v)
     return _xwrap('OECD26_Slopes' + sfx,
-                  'results/oecd26/layer1.csv, layer2.csv, anchor.csv; data/oecdFigure1.csv, oecd26_theta.csv',
+                  D.oecd26DirRel(_thetaSource(v)) + 'layer1.csv, layer2.csv, anchor.csv; data/oecdFigure1.csv, '
+                  'oecd26_theta.csv',
                   r'Figure \ref{fig:US:OECDdata}\textquotesingle s relations in the data and in the model'
                   + variantCaption(**v),
                   'table:OECD26:slopes' + sfx, 'lYYY',
@@ -417,6 +428,11 @@ def oecd26Omega(turnout = None, sample = None, reading = None, spec = None, beta
     m = D.oecd26Layer(2, v['turnout'], v['spec'], v['betaRule'], _thetaSource(v), None, 'anchor',
                       v['retAge']).loc[p.index]
     a = D.oecd26Anchor(v['turnout'], v['spec'], _thetaSource(v))
+    gap = max(float((m[k].astype(float) - p[k].astype(float)).abs().max()) for k in ('spendingData', 'indexData', 'θData'))
+    if not gap <= 1e-12:
+        raise D.StaleInput('{}: the data columns of layer 2 differ from the data side (data/oecd26_theta.csv) by {:.2e}: '
+                           'rows calibrated to other data; rerun python/US/runOECD26.py'.format(
+                               D.oecd26Path(2, _thetaSource(v)), gap))
     smp = D.oecd26Sample()
     outside = [c for c in p.index if not bool(smp.at[c, 'sample26'])]
     body = []
@@ -424,8 +440,9 @@ def oecd26Omega(turnout = None, sample = None, reading = None, spec = None, beta
         r = m.loc[c]
         tag = r'$^{\ast}$' if c == 'USA' else r'$^{\dagger}$' if c in outside else ''
         cells = [str(p.at[c, 'country']) + tag, C.num(float(r['ν2020']), 2),
-                 C.num(float(r['Vtilde']), 3), C.num(float(r['spendingData']), 1), C.num(float(r['indexData']), 3),
-                 C.num(float(r['θData']), 3), C.num(float(r['ω']), 3), C.num(float(p.at[c, 'θModel']), 3),
+                 C.num(float(r['Vtilde']), 3), C.num(float(p.at[c, 'spendingData']), 1),
+                 C.num(float(p.at[c, 'indexData']), 3),
+                 C.num(float(p.at[c, 'θData']), 3), C.num(float(r['ω']), 3), C.num(float(p.at[c, 'θModel']), 3),
                  C.num(float(p.at[c, 'indexModel']), 3)]
         body.append(' & '.join(cells) + r' \\ % row: ' + c.lower())
     design = ('chosen in 2020, in force from 2050' if v['reading'] == 'chosen' else
@@ -443,6 +460,7 @@ def oecd26Omega(turnout = None, sample = None, reading = None, spec = None, beta
     dagger = (r' $^{\dagger}$Outside the paper\textquotesingle s sample: informal employment above '
               + '{:g}'.format(float(smp['informalMax'].iloc[0])) + r'\% of employment.' if outside else '')
     if suffix(**v) == '':
+        paperWording()
         note = (r'\textit{Note:} ' + '{} countries'.format(len(p)) + r'. $\nu_{2020}$, workers per retiree; '
                 r'$\tilde V$, the dispersion of relative incomes at the U.S.\ income percentiles; spending in \% of '
                 r'GDP; $\theta$ and $I = 1/(2-\theta)$ as in appendix \ref{app:oecd26:data}. $\omega$ is calibrated to '
@@ -459,7 +477,8 @@ def oecd26Omega(turnout = None, sample = None, reading = None, spec = None, beta
               + r'\cmidrule(lr){2-6}\cmidrule(lr){7-9}' + '\n'
               + r'\textbf{Country} & $\nu_{2020}$ & $\tilde V$ & spending & $I$ & $\theta$ & $\omega$ & $\theta$ & $I$')
     sfx = suffix(**v)
-    return _xwrap('OECD26_Omega' + sfx, 'results/oecd26/layer2.csv, anchor.csv; data/oecdFigure1.csv, oecd26_theta.csv',
+    return _xwrap('OECD26_Omega' + sfx,
+                  D.oecd26DirRel(_thetaSource(v)) + 'layer2.csv, anchor.csv; data/oecdFigure1.csv, oecd26_theta.csv',
                   r'The countries of the cross-country test, each calibrated to its pension spending'
                   + variantCaption(**v),
                   'table:OECD26:omega' + sfx, 'l' + 'Y'*8, header,
@@ -483,12 +502,14 @@ def populationRows():
     return [r for r in RETAGEORDER if r in have]
 
 
-def _variantSlopes(**kw):
-    """ slopes() of RELATIONS at the paper's specification but `kw`, or None while its rows are missing or stale
-    (MissingInput, StaleInput): `--`, never a stale value. Anything else raises. """
+def _variantSlopes(paper = False, **kw):
+    """ slopes() of RELATIONS at the paper's specification but `kw`, or None while a variant's rows are missing or stale
+    (MissingInput, StaleInput): `--`, never a stale value. The paper's own rows (`paper`) and anything else raise. """
     try:
         return slopes(**kw)
     except (D.MissingInput, D.StaleInput):
+        if paper:
+            raise
         return None
 
 
@@ -498,12 +519,12 @@ def oecd26Variants():
     (populationRows, the paper's starred), then the uncorrected ν without Luxembourg (turnout 'cses'), with its own data
     on its 20 countries. Panel B, the measure of the design: per measure (MEASURES, the paper's first) its own data, on
     its own countries, and layers 1 and 2, the data variants from results/oecd26_theta_<V>/ (stage (ii)'s
-    oecd26Variants), at the paper's ν. A reading whose rows are missing or stale prints `--`. Rows keyed
+    oecd26Variants), at the paper's ν. A variant whose rows are missing or stale prints `--`; the paper's own (starred) raise. Rows keyed
     `population_data`, `population_<retAge>_<layer1|layer2>`, `population_none_cses_<data|layer1|layer2>`,
     `measure_<θ>_<data|layer1|layer2>`. """
-    pop = {r: _variantSlopes(retAge = r) for r in populationRows()}
+    pop = {r: _variantSlopes(r == PAPER['retAge'], retAge = r) for r in populationRows()}
     noLux = _variantSlopes(retAge = 'none', turnout = 'cses')         # Luxembourg is what moves the uncorrected ν
-    meas = {m: _variantSlopes(theta = m) for m in MEASURES}
+    meas = {m: _variantSlopes(m == PAPER['theta'], theta = m) for m in MEASURES}
     ncol = 2 + len(RELATIONS)
 
     def cells(s, side):
@@ -530,12 +551,12 @@ def oecd26Variants():
         for side, lab in (('data', 'Data'), ('layer1', 'Layer 1'), ('layer2', 'Layer 2')):
             name = cap(C.THETANAMES[m]) + star(m == PAPER['theta']) if side == 'data' else ''
             body.append(keyed(' & '.join([name, lab] + cells(s, side)) + r' \\', 'measure_{}_{}'.format(m, side)))
-    n = first.attrs['n'] if first is not None else None
+    n = first.attrs['n']
     ns = ', '.join('{} {}'.format(C.THETANAMES[m], s.attrs['n']) for m, s in meas.items() if s is not None)
     note = (r'\textit{Note:} Least-squares slopes, standard errors in parentheses, the U.S.\ included. Panel A: $\nu$ '
             r'corrected for each country\textquotesingle s gap to the U.S.\ statutory retirement age, uncorrected, or '
             r'corrected for its gap in the effective age of labor-market exit'
-            + (r', on the {} countries of the paper\textquotesingle s measure'.format(n) if n else '')
+            + r', on the {} countries of the paper\textquotesingle s measure'.format(n)
             + r'; the data do not depend on $\nu$. The last three rows leave out Luxembourg, which has no CSES survey'
             + (r', on {} countries'.format(noLux.attrs['n']) if noLux is not None else '')
             + r'. Panel B: each measure of $\theta$ is its own cross-section, the data '

@@ -6,7 +6,6 @@ Run:  .venv\Scripts\python.exe python\informalSavings\test_createCopyFromt0.py
 """
 import os, sys
 import numpy as np
-import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -34,7 +33,7 @@ check('mt0.T == T - t0Pos', mt0.T == T - t0Pos)
 check("mt0.db['t'] renumbered to 0-based", list(mt0.db['t']) == list(range(T - t0Pos)))
 check('tFirst reset to 0 on B/BG/BT', mt0.B.tFirst == 0 and mt0.BG.tFirst == 0 and mt0.BT.tFirst == 0)
 check('LOG/CRRA T refreshed', mt0.LOG.T == mt0.T and mt0.CRRA.T == mt0.T)
-check('warm-start caches cleared', mt0.x0 == {} and mt0.LOG.x0 == {} and mt0.CRRA.x0 == {})
+check('warm-start cache cleared', mt0.x0 == {})
 expectedT0 = (calPos - t0Pos) if calPos >= t0Pos else None
 check("db['t0'] shifted/None correctly", mt0.db['t0'] == expectedT0,
       f'-> got {mt0.db["t0"]!r}, expected {expectedT0!r}')
@@ -85,5 +84,15 @@ check('stateAtT0 at an interior t0 ignores init and reads report[ι].xs(t0-1)',
 # ---- 5. LOG.solveRobust actually runs on the copy (warm-start caches genuinely cleared, not stale-shaped)
 sols = mt0.LOG.solveBackward(mt0.db['θ'].values, mt0.db['eps'].values)
 check('LOG.solveBackward runs on the copy without error', len(sols) == mt0.T)
+
+# ---- 6. runHorizon.fresh rebuilds an instance of either calibration variant (its check on resize) ----
+import runHorizon
+from model import ModelInformalSavings
+mc = ModelInformalSavings(pars = testmod.pars, commonX = True, **testmod.kwargs)
+mc.initProductivity_commonX(X = 1.3, keepInformal = True)
+mc.updateAuxPars()
+for name, mm in (('vector X', m), ('common X', mc)):
+    gap = runHorizon.dbGap(mm, runHorizon.fresh(mm, mm.T))
+    check(f'runHorizon.fresh reproduces a {name} instance at its own horizon', gap < 1e-12, f'-> gap {gap:.1e}')
 
 report()

@@ -1,5 +1,5 @@
 import numpy as np, pandas as pd
-from scipy import optimize, interpolate
+from scipy import optimize
 from gridsearch import (robustRoot, roots1d, CartesianGrid, griddedInterp1D,
                         griddedSmooth1D, griddedGradient1D)
 
@@ -70,38 +70,41 @@ def multiplicityColumns(mult, design = False):
     return {k: int(mult.get(k, -1)) for k in cols}
 
 
+def requireZeroMass(db, what):
+    """ Raise unless the informal slot has zero mass (γ0 = 0 at every date; README, "Zero-mass slot"):
+    `what` names the code that relies on it and why. """
+    if float(np.max(np.abs(db['γ0'].values))) != 0.:
+        raise NotImplementedError(f'{what} requires the zero-mass informal slot γ0 = 0 '
+                                  '(README, "Zero-mass slot").')
+
+
 class LOG:
     """
     Identify Sequence of Policy Functions.
-    Informal Analytical, LOG model.
+    US model, LOG preferences.
 
     The analytical LOG model does not involve identifying policy
     functions when pension characteristics (θ,ϵ) are fixed.
     """
-    def __init__(self, m, style = 'Vector', grid = None, **kwargs):
+    def __init__(self, m, grid = None):
         self.m = m
         self.B  = m.B # refer to base class
         self.BG = m.BG # refer to basegrid class
         self.BT = m.BT # refer to basetime class
         self.db = m.db # refer to main database
         self.ni, self.T = m.ni, m.T # copied locally so solves don't need to keep reaching into self.m
-        self.style = style
         self.x0 = {} # own cache of last-used/default initial guesses, keyed by problem name -- separate
                       # from self.m.x0 (model.py's EE_* cache)
-        self.kwargs = self._kwargs | kwargs # passed to newton solver
         self.selection = 'frozen'           # 'legacy' reinstates the integral criterion, for comparisons only
         self.initGS(grid)
-
-    @property
-    def _kwargs(self):
-        return {'update': True}
 
     #######################################################################
     ##########   Named grid-problem structure (self.GS)                ####
     #######################################################################
-    # See README's "Named grid-problem structure" for the design (why one dict per named problem, why
-    # CRRA extends 'PEE' rather than adding a second name, why stateGrids['s_'] is a settable override
-    # slot and not a cache).
+    # self.GS = {name: {'solGrids', 'stateGrids', 'gridSettings'}}, one entry per named problem. CRRA
+    # extends LOG's 'PEE' entry with its state grids rather than adding a second name. stateGrids['s_']
+    # is an override slot a caller sets to pin the state grid; None means each solve builds its own
+    # (defaultSGrid), and no solve writes its grid back into it.
     def initGS(self, grid = None):
         """ LOG's only named problem, 'PEE': solGrids={'τ': ...} from this entry's own gridSettings
         (_gridSettings' defaults, overridable via `grid`), no state. CRRA.initGS extends this entry. """
@@ -111,58 +114,33 @@ class LOG:
 
     @property
     def _gridSettings(self):
-        """ Defaults for solveBackward (docs alg:gridsearch). l/u: interior bounds -- u<1 strictly, since
+        """ Defaults for solveBackward (docs alg:LOG:gridsearch). l/u: interior bounds -- u<1 strictly, since
         z_t carries a 1/(1-τ_t) factor and diverges at τ=1. n: nodes spanning [l,u]. Δl/Δu: nodes
-        below/above the previous period's solution the refinement window spans -- kept separate since a
-        monotone-in-t policy path can be solved with far fewer evaluations by making them asymmetric.
+        below/above the previous period's solution the refinement window spans (asymmetric windows solve a
+        monotone-in-t path with fewer evaluations).
 
-        `ns` sizes the CRRA state grid 𝒮 that solveBackward builds when none is passed (LOG ignores it).
-        It lives here, rather than only as a solveBackward argument, so that a sweep can refine the inner
-        grid the same way it refines `n` -- through initGS, in one place -- which is what model.py's
-        calibratePoint/_calVerify need to be able to do.
+        `ns` sizes the CRRA state grid 𝒮 that solveBackward builds when none is passed (LOG ignores it);
+        it lives here so that a sweep refines it through initGS, as calibratePoint/_calVerify do. 50 is the
+        SOLVE default, not the CALIBRATION's: the outer root needs a finer inner grid than one PEE solve
+        (finding #3), so a calibration passes ns ≥ 150 explicitly (calibrateRhoGrid.py does).
 
-        interpKind / smoothKnots are well-posedness settings, not resolution ones. Both were inherited
-        unset from the vintage this module was copied from -- notes/crossCuttingFindings.md #4 ends by
-        naming `informalAnalytical` as unchecked for exactly this, and the defaults below are that check,
-        measured on the US calibration at ρ=0.5 (the hardest point of the ρ sweep) over ns ∈ {50,75,100,150}.
-
-        smoothKnots: how the policy smoother picks its knots. None is FITPACK's adaptive count, chosen
-        from the data, so it flips discontinuously as a parameter moves and puts jumps in a residual that
-        is about to be differentiated (#5). An int m pins a knot every m-th node. **This is the one that
-        mattered.** Adaptive, β JITTERS with no trend across ns (1.4347, 1.4395, 1.4391, 1.4369 -- a band,
-        not a sequence); pinned, it becomes monotone and converging (1.4698, 1.4420, 1.4375, 1.4354).
-        Judge by the trend, not the spread: the converging sequence has the WIDER range, so a
-        spread-of-answers metric ranks it worse, which is backwards (#3).
-
-        interpKind: the continuation interpolants' kind. #4 fixed a stall in `InformalSavings` by moving
-        linear -> cubic, but that is not the binding defect here and cubic is NOT adopted: at fixed knot
-        policy it reproduces linear's behaviour almost exactly (jitter 3.6e-3 vs 3.4e-3 adaptive; the same
-        monotone sequence pinned) while failing to converge in 2 of 8 measured cells. That is #4's own
-        overshoot caution showing up, so we take #5's fix and leave #4's alone. The knob stays exposed
-        because the measurement was worth keeping reproducible, not because 'cubic' is recommended.
-
-        `ns`=50 is the SOLVE default and is deliberately not the CALIBRATION's: the outer root is far more
-        demanding of the inner grid than a single PEE solve is. Measured at ρ=0.5 with knots pinned, β runs
-        1.4698 (ns=50), 1.4420 (75), 1.4375 (100), 1.4354 (150), 1.4354 (200), 1.4353 (250), 1.4355 (300)
-        -- monotone, settling to 1e-4 relative from ns=150 on, with ns=50 fully 2.4% off. So a calibration
-        passes ns≥150 explicitly (calibrateRhoGrid.py does) while a solve keeps 50. Note the adaptive
-        smoother was not avoiding that error, only masking it: it put every ns in a 0.3%-wide band with no
-        trend, so no amount of refinement revealed where the answer actually was.
+        interpKind / smoothKnots are well-posedness settings, not resolution ones (findings #4, #5).
+        smoothKnots: an int m pins a knot of the policy smoother every m-th node. None (FITPACK's adaptive
+        count, chosen from the data) flips discontinuously as a parameter moves and puts jumps into a
+        residual that is about to be differentiated (#5): do not reintroduce it. interpKind: the
+        continuation interpolants' kind; 'linear' ('cubic' does not converge everywhere, #4's overshoot
+        caution).
 
         gradKnotSpacing: the distance in τ between the interior knots of the least-squares spline the CRRA
         τ-derivatives are taken from (CRRA._gradProfile), held in τ so that refining `n` puts more nodes
-        under each knot rather than more knots. Measured at the calibrated ρ = 0.5 and 2, ns = 150: with
-        0.04 (4 nodes per knot at n = 101) the 2020 tax moves ≤ 1.8e-5 and the θ 1 -> 0 gap ≤ 1.3e-4 from
-        n = 101 to 801, and spacings of 0.02 and 0.08 move the 2020 tax by ≤ 1.4e-4 (ρ = 0.5), ≤ 2e-5 (ρ = 2),
-        and the gap by ≤ 2.9e-4. An interpolating spline (no smoothing) does not converge in n there (2020
-        tax 0.1043, 0.1038, 0.1062, 0.1073 at n = 101 ... 801, ρ = 0.5): the profiles carry a kink wherever
-        s_t(τ_t) crosses a node of 𝒮, and the derivatives' noise compounds backwards through each policy's
-        slope in s. """
+        under each knot rather than more knots (test_gridConvergence.py; findings #7, #20). An interpolating
+        spline does not converge in n: the profiles carry a kink wherever s_t(τ_t) crosses a node of 𝒮,
+        and the derivatives' noise compounds backwards through each policy's slope in s. """
         return {'l': 1e-4, 'u': 1-1e-4, 'n': 101, 'Δl': 10, 'Δu': 10, 'ns': 50,
                 'interpKind': 'linear', 'smoothKnots': 4, 'gradKnotSpacing': 0.04}
 
     #######################################################################
-    ##########   solveVectorized (docs alg:fast, "Gradient-based       ####
+    ##########   solveVectorized (docs alg:LOG:fast, "Gradient-based       ####
     ##########   roots for the politico-economic equilibrium with      ####
     ##########   log preferences")                                     ####
     #######################################################################
@@ -187,7 +165,7 @@ class LOG:
         return self.GS['PEE']['gridSettings']['u'] if u is None else u
 
     def stateVectorized(self, τtilde, θ, ε, l = 0, u = None):
-        """ Build the dict of economic objects the LOG political FOC (eq:fast) needs at a candidate
+        """ Build the dict of economic objects the LOG political FOC (eq:LOG:foc) needs at a candidate
         *unbounded* tax path τtilde (length T). θ, ε: full paths, as model.py's EE_LOG_solve. l, u:
         bounds for gridsearch.robustRoot.clip -- τ is only ever evaluated inside [l,u]; u None is the
         grid's (_upper). """
@@ -212,7 +190,7 @@ class LOG:
         return d
 
     def focVectorized(self, d):
-        """ Evaluate the LOG political FOC z_t (eq:fast) from a state dict (see stateVectorized): young
+        """ Evaluate the LOG political FOC z_t (eq:LOG:foc) from a state dict (see stateVectorized): young
         (FH_dv1i_LOG/FH_dv10_LOG) and old (dv2i_dτ_LOG/dv20_dτ_LOG) marginal utilities via Base.FOC. """
         τ, θ, ε = d['τ'], d['θ'], d['ε']
         dv1i = self.BT.FH_dv1i_LOG(d['βi'], τ)
@@ -230,12 +208,12 @@ class LOG:
                 'maxResid': maxResid, 'success': res.success, 'message': res.message}
 
     def solveVectorized(self, θ, ε, x0 = None, l = 0, u = None, a0 = 1, a1 = 1, tol = 1e-8, update = True, **kwargs):
-        """ Solve the stacked LOG political FOC (eq:fast) for the whole tax path at once, via the
+        """ Solve the stacked LOG political FOC (eq:LOG:foc) for the whole tax path at once, via the
         bounded-root reparameterization (gridsearch.robustRoot, eq:root). x0: defaults to a cached
         self.x0['vectorized'] warm-start, else the constant db['τ0'] path. l, u: eq:root's bounds, u None the
-        grid's u < 1 (_upper; the section header says why u = 1 must not be used). update: cache the final
-        τ̃ as the next warm start, also when the solve failed. Returns just τ + solver diagnostics (see
-        reportVectorized). """
+        grid's u < 1 (_upper; the section header says why u = 1 must not be used). update: cache the
+        converged τ̃ as the next warm start; a solve that fails the convergence check raises and leaves the
+        cache as it was. Returns just τ + solver diagnostics (see reportVectorized). """
         u = self._upper(u)
         if x0 is None:
             x0 = self.x0.get('vectorized', np.full(self.T, self.db['τ0']))
@@ -248,12 +226,13 @@ class LOG:
         # for the solve (base.py's cacheParams). self.BT, not self.BG: this works through BaseTime.
         with self.BT.cacheParams():
             res = optimize.root(residual, x0, **kwargs)
+        out = self.reportVectorized(res, l, u, tol = tol)
         if update:
             self.x0['vectorized'] = res.x
-        return self.reportVectorized(res, l, u, tol = tol)
+        return out
 
     #######################################################################
-    ##########   solveBackward (docs alg:gridsearch, "Iterative grid   ####
+    ##########   solveBackward (docs alg:LOG:gridsearch, "Iterative grid   ####
     ##########   search with initial boundary check")                  ####
     #######################################################################
     # Rests on a structural property solveVectorized doesn't exploit: no term of z_t depends on any
@@ -288,7 +267,7 @@ class LOG:
         return {'τ': τ, 'Θh': Θh, 'si_s_': BG.si_s(βi_, τ, θ, Γs_, tLag)}
 
     def focGrid(self, d, t, θ, ε, terminal):
-        """ Evaluate z_t (eq:fast) over the grid of candidate τ_t in a stateGrid dict. Returns (M,). The
+        """ Evaluate z_t (eq:LOG:foc) over the grid of candidate τ_t in a stateGrid dict. Returns (M,). The
         terminal period passes β=β0=0 (matching how the doc derives eq:terminalPEELOG from the general
         formulas with β_{T,j}=0), rather than a separate formula. """
         BG, τ = self.BG, d['τ']
@@ -307,9 +286,7 @@ class LOG:
     # candidate implies, held fixed along the whole grid (roots1d.selectMaxFrozen). The callbacks below
     # assemble that W_t from objects already on the grid.
     def _requireZeroMass(self):
-        if float(np.max(np.abs(self.db['γ0'].values))) != 0.:
-            raise NotImplementedError('objectiveFrozen (LOG) carries no informal blocs: it requires the '
-                                      'zero-mass slot γ0 = 0 (README, "Zero-mass slot").')
+        requireZeroMass(self.db, 'objectiveFrozen (no informal blocs)')
 
     def objectiveFrozen(self, cand, τGrid, d, θ, t, ε, tLag, terminal):
         """ W_t(τ; D) on τGrid at the savings shares D frozen at each candidate tax, up to a constant common
@@ -375,7 +352,7 @@ class LOG:
     def solveBackward_t(self, t, θ, ε, tLag, terminal, τ1 = None, θ1 = None,
                         Δl = None, Δu = None, maxExpand = 8, tol = 0.0):
         """ Solve the scalar problem for one period: refine the grid around τ_{t+1}, evaluate z_t,
-        select the maximiser (steps 1-3 of alg:gridsearch). Terminal period searches the full grid.
+        select the maximiser (steps 1-3 of alg:LOG:gridsearch). Terminal period searches the full grid.
 
         The expansion step guards the refinement window: if the selection sits on a window edge that
         isn't a global-grid edge, the window may have excluded the true maximum, so the binding side is
@@ -417,7 +394,7 @@ class LOG:
                 'atBound': bool(sel['atBound']), 'expansions': k, 'windowed': bool(atLo or atHi)}
 
     def solveBackward(self, θ, ε, Δl = None, Δu = None, maxExpand = 8, tol = 0.0, update = True):
-        """ Solve the whole tax path by backward recursion over scalar grid searches (docs alg:gridsearch).
+        """ Solve the whole tax path by backward recursion over scalar grid searches (docs alg:LOG:gridsearch).
         No x0/s0 needed -- self-starting from the terminal period.
 
         Returns {'τ', 'maxResid', 'success', 'message', 'diagnostics'}, matching reportVectorized's keys.
@@ -502,8 +479,8 @@ class LOG:
 
 class CRRA(LOG):
     """
-    Identify Sequence of Policy Functions. CRRA model with H2M informal households. The only relevant
-    state variable is aggregate savings s[t-1] (docs §PEE).
+    Identify Sequence of Policy Functions. US model, CRRA preferences (the informal slot carries zero mass).
+    The only relevant state variable is aggregate savings s[t-1] (docs §PEE).
 
     Terminal period (t=T-1, docs' t=T) is closed-form -- see solveTerminal, docs eq:terminalPEECRRA: each
     dv/dτ term is (consumption level)^{1-1/ρ} times the same log-derivative already implemented for LOG
@@ -524,11 +501,11 @@ class CRRA(LOG):
 
     def initGS(self, grid = None):
         """ Extends LOG's 'PEE' entry (not a separate name) with the state grid CRRA's political problem
-        has. 's_' starts unset (see self.GS's header comment for why). Also adds solGrids['s'] (docs'
-        𝒮'): the grid of *candidate* s_t values the t<T fixed point is searched over -- kept separate
-        from stateGrids['s_'] (docs' 𝒮, the predetermined states solved *at*) since the accuracy of the
-        state approximation is governed by 's' alone and may warrant finer spacing. Unset -> the state
-        grid. """
+        has. 's_' starts unset: each solve then builds its own (the GS header above LOG.initGS). Also
+        adds solGrids['s'] (docs' 𝒮'): the grid of *candidate* s_t values the t<T fixed point is
+        searched over -- kept separate from stateGrids['s_'] (docs' 𝒮, the predetermined states solved
+        *at*) since the accuracy of the state approximation is governed by 's' alone and may warrant
+        finer spacing. Unset -> the state grid. """
         super().initGS(grid)
         self.GS['PEE']['stateGrids'] = {'s_': None}
         self.GS['PEE']['solGrids']['s'] = None
@@ -578,8 +555,8 @@ class CRRA(LOG):
         the whole (τ, s_) grid -- no numerical derivatives, no per-state loop.
 
         Grids come from self.GS['PEE']: 'τ' from solGrids['τ']; 's_' from stateGrids['s_'] if set, else a
-        fresh defaultSGrid(θ, t) (never cached back -- see self.GS's header comment). sGrid overrides
-        both, and is how solveBackward pins one shared state grid across every period.
+        fresh defaultSGrid(θ, t), never written back. sGrid overrides both, and is how solveBackward pins
+        one shared state grid across every period.
 
         Corner/multiplicity handling matches LOG's terminal solve (roots1d.selectMax's candidate-set
         criterion), applied once per state via selectMaxND. No self.x0/warm start needed -- closed-form,
@@ -761,7 +738,7 @@ class CRRA(LOG):
     # (ii) Three log-derivatives are numerical along τ (d ln h_t, d ln ĉ_{1,t}^i, d ln c̃_{2,t+1}^0).
     #      dln(c_{2,t}^i)/dτ_t must come from base.py's dlnc2i_dτ instead -- s_{t-1,i}/s_{t-1} varies
     #      along the grid but the policy maker takes it as predetermined, so a grid derivative would fold
-    #      in a channel that doesn't belong in the FOC (docs §PEE footnote -- a correctness issue, not
+    #      in a channel that doesn't belong in the FOC (docs §PEE -- a correctness issue, not
     #      precision). dln(c̃_{2,t}^0) could go either way; closed form used for consistency.
     #
     # Infeasibility is first-class here (unlike at T): for a given s_{t-1}, the implied s_t leaves the
@@ -800,9 +777,7 @@ class CRRA(LOG):
         the lowest is taken and the count reported rather than silently picking one. """
         ν, σ = self.BG.get('ν', t), self.BG.power_s(t)
         resid = Θs * ((s_/ν)**σ)[None, :] - sGrid[:, None]
-        r = roots1d.allRoots(sGrid, resid, kind = 'any')
-        if r.ndim == 1:
-            r = r[:, None]
+        r = roots1d.allRoots(sGrid, resid, kind = 'any')     # resid is 2-D, so r is (K, N)
         n = (~np.isnan(r)).sum(axis = 0)
         return (r[0] if r.shape[0] else np.full(len(s_), np.nan)), n
 

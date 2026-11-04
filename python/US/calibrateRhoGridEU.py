@@ -39,6 +39,8 @@ differences, all of them consequences of the protocol in modelFR.py:
     role instead. `hoursDrift` is how far tau/R/hbar moved when the rescaled model was re-solved; see
     ModelFR.hoursDriftTol for what level to expect and why it is recorded rather than asserted away.
 
+A relative --out, --pkldir or --root is the caller's working directory's (the script itself runs in python/US).
+
 What must be constant down the csv: tau (the one target) and beta (imposed, and equal to the US sweep's).
 What moves: omega, lambda, the untargeted savings rate, and R -- which is a prediction here, not a target,
 and is the most interesting column in the file for exactly that reason.
@@ -48,6 +50,7 @@ import numpy as np, pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
+CWD = os.getcwd()                 # where a relative --out, --pkldir or --root points: the chdir below moves to HERE
 
 # See calibrateRhoGrid.py: line buffering so progress appears as it happens, UTF-8 so the Greek parameter
 # names in every progress line do not take the march down on a redirected Windows stdout.
@@ -158,6 +161,8 @@ def main():
     p.add_argument('--main', action = 'store_true',
                    help = "with --theta config.US['theta']: results/calibration/ (the paper's)")
     a = p.parse_args()
+    a.out, a.pkldir, a.root = [None if x is None else os.path.abspath(os.path.join(CWD, x))
+                               for x in (a.out, a.pkldir, a.root)]
 
     from calibrateRhoGrid import rhoGrid
     grid = rhoGrid(a)

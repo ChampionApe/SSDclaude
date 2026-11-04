@@ -56,7 +56,7 @@ import numpy as np, pandas as pd
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, HERE)
-os.chdir(HERE)                                  # test.py resolves data/ relative to the repo root
+os.chdir(HERE)                                  # relative paths resolve here; test.py finds data/ itself
 
 import shockUniversal as su                     # installEps/universalEps/loadCalibrated/frame: one code path
 from policy import multiplicityColumns

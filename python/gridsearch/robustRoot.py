@@ -1,4 +1,4 @@
-""" Bounded-root reparameterization (writing/*_docs.tex, "Robust root finding with bounds", eq:root).
+""" Bounded-root reparameterization (the note's "Robust policy search with bounds", eq:root).
 
 Generic, model-agnostic: wraps any first-order-condition function f (only meaningful/safe to evaluate on
 [l,u], e.g. a tax rate confined to [0,1]) into an unconstrained residual h(z,τ) that a gradient-based

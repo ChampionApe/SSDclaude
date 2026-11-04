@@ -1,7 +1,7 @@
-import numpy as np, pandas as pd, functools, scipy, time
+import numpy as np, pandas as pd, functools, time
 from scipy import optimize
 from copy import deepcopy
-from symMaps import SimpleSys, Lag, Lead
+from symMaps import SimpleSys, Lag
 from base import Base, BaseGrid, BaseTime
 from policy import LOG, CRRA
 from gridsearch import continuation
@@ -141,15 +141,14 @@ class ModelUS:
                     Only a target when commonX=True; ignored otherwise. Set by test.py, not defaulted here.
         - 'RR0'     the OECD ratio of replacement rates at mean vs half-mean income, which identifies θ_P,
                     the design of the pension formula.
-        - 'Ushare0' the share of transfers to the old paid as a flat benefit outside the pension formula
-                    (Medicare in the online appendix's 'transfers to the old' reading, test.reading): θ =
-                    (1 - Ushare0)·θ_P (getθ). 0 in every workbook. Also the inert ε (getEps).
+        - 'Ushare0' the share of transfers to the old paid as a flat benefit outside the pension formula:
+                    θ = (1 - Ushare0)·θ_P (getθ). 0 in every workbook. Also the inert ε (getEps).
         The defaults are USMain_test.xlsx's (pension cash spending 7.366% of GDP over 1-α = 0.7; 39.2/49.6).
 
         NOTE 't0' here is the *index into db['t'] of the calibration baseline year* (2020 for the US;
         defaults to 2, an arbitrary early index) -- NOT self.B.tFirst (=db['t'][0], the model's first
         active/endogenous period, docs' t=1) and NOT the pre-determined period before the horizon (docs'
-        t=0). All three are genuinely different things; see README's "Timing convention". """
+        t=0). All three are genuinely different things. """
         return {'τ0': .105229, 'RR0': 0.790323, 'R0': 2.443, 'Ushare0': 0., 'RRGroups': (1,2), 't0': 2}
 
     @property
@@ -179,9 +178,6 @@ class ModelUS:
     @property
     def aux_κ(self):
         return self.BT.κ(self.db['eps[t+1]'])
-    @property
-    def aux_p(self):
-        return (self.db['γi'] * self.db['pi']).sum(axis=1)
     @property
     def aux_Γh(self):
         return self.BT.Γh()
@@ -241,20 +237,22 @@ class ModelUS:
     def updateAuxPars(self):
         [self.db.update(self.addLeadAndLags(k, getattr(self, f'aux_{k}'))) for k in self.paramsFromFuncs]
 
-    def adjPar(self, k, vals, t = None):
-        """ Default methods for adjusting different parameter types. """
+    def adjPar(self, k, vals):
+        """ The db entries for parameter k at vals, broadcast over the whole horizon (a scalar, a (nj,)/(ni,)
+        type vector or a full (T,)/(T, n) array), with their [t+1]/[t-1] siblings. Returns new objects;
+        db itself is not touched. """
         if k == 'β':
-            return self.adj2Dj_ll('βj', self.simpleβ(vals), t = t)
+            return self.adj2Dj_ll('βj', self.simpleβ(vals))
         elif k == 'pj':
-            return self.adjpj('pj', vals, t = t)
+            return self.adjpj('pj', vals)
         elif k in self.parTypes['0D']:
             return {k: vals}
         elif k in self.parTypes['1D']:
-            return self.adj1D_ll(k, vals, t = t)
+            return self.adj1D_ll(k, vals)
         elif k in self.aux2DParams:
-            return self.adj2Di_ll(k, vals, t = t)
+            return self.adj2Di_ll(k, vals)
         elif k in self.parTypes['2D']:
-            return self.adj2Dj_ll(k, vals, t = t)
+            return self.adj2Dj_ll(k, vals)
         else:
             return {k:vals}
     def simpleβ(self, β):
@@ -263,18 +261,18 @@ class ModelUS:
     def simpleβinv(self):
         """ Get scalar β from full dataframe (assumes constant across t,j) """
         return self.db['βj'].iloc[0,0]/self.db['pj'].iloc[0,0]
-    def adjpj(self, k, vals, t = None):
+    def adjpj(self, k, vals):
         """ Specialized method for p - we have to enforce constant p across pi"""
-        d = self.adjDf_tj(k,vals,t=t)
+        d = self.adjDf_tj(k, vals)
         d['p'] = (self.db['γi'] * d['pi']).sum(axis=1)
         return self.addLeadAndLags(d)
 
-    def adj1D_ll(self, k, vals, t = None):
-        return self.addLeadAndLags(k, self.adjVec_t(k, vals, t = t))
-    def adj2Dj_ll(self, k , vals, t = None):
-        return self.addLeadAndLags(self.adjDf_tj(k, vals ,t = t))
-    def adj2Di_ll(self, k , vals, t = None):
-        return self.addLeadAndLags(self.adjDf_ti(k, vals ,t = t))
+    def adj1D_ll(self, k, vals):
+        return self.addLeadAndLags(k, self.adjVec_t(vals))
+    def adj2Dj_ll(self, k , vals):
+        return self.addLeadAndLags(self.adjDf_tj(k, vals))
+    def adj2Di_ll(self, k , vals):
+        return self.addLeadAndLags(self.adjDf_ti(k, vals))
 
     def addLeadAndLags(self, k, s = None):
         if isinstance(k, dict):
@@ -282,34 +280,21 @@ class ModelUS:
         else:
             return {k: s, f'{k}[t+1]': self.leadSym(s, lead = {'t':-1} if isinstance(s, pd.DataFrame) else -1), f'{k}[t-1]': self.leadSym(s, lead = {'t': 1} if isinstance(s, pd.DataFrame) else  1)}
 
-    def adjVec_t(self, k, vals, t = None):
-        if t is None:
-            return pd.Series(vals, index = self.db['t'])
-        else:
-            x = self.db[k]
-            x.loc[t] = vals
-            return x
-    def adjDf_ti(self, k, vals, t = None):
+    def adjVec_t(self, vals):
+        return pd.Series(vals, index = self.db['t'])
+    def adjDf_ti(self, k, vals):
         if np.isscalar(vals):
             xi = pd.DataFrame(vals, index = self.db['t'], columns = self.db['i'])
         elif vals.ndim == 1:
-            if t is None: 
-                xi = pd.DataFrame(np.tile(vals, (self.T,1)), index = self.db['t'], columns = self.db['i'])
-            else:
-                xi = self.db[k]
-                k.loc[t] = vals
+            xi = pd.DataFrame(np.tile(vals, (self.T,1)), index = self.db['t'], columns = self.db['i'])
         else:
             xi = pd.DataFrame(vals, index = self.db['t'], columns = self.db['i'])
         return {f'{k[:-1]}j': pd.concat([self.db[f'{k[:-1]}0'], xi], axis = 1), k: xi}
-    def adjDf_tj(self, k, vals, t = None):
+    def adjDf_tj(self, k, vals):
         if np.isscalar(vals):
             xj = pd.DataFrame(vals, index = self.db['t'], columns = self.db['j'])
         elif vals.ndim == 1:
-            if t is None:
-                xj =  pd.DataFrame(np.tile(vals, (self.T, 1)), index = self.db['t'], columns = self.db['j'])
-            else:
-                xj = self.db[k]
-                xj.loc[t] = vals
+            xj =  pd.DataFrame(np.tile(vals, (self.T, 1)), index = self.db['t'], columns = self.db['j'])
         else:
             xj = pd.DataFrame(vals, index = self.db['t'], columns = self.db['j'])
         return {k: xj, f'{k[:-1]}i': xj[self.db['i']], f'{k[:-1]}0': xj[0]}
@@ -422,8 +407,8 @@ class ModelUS:
         """ The value h̄_{t0} is calibrated to. db['h0'] as given -- the observed workweek in the model's
         own time unit. Read through this method rather than db['h0'] directly, because a level of h̄ is
         only meaningful under commonX: modelFR.ModelFR overrides it with a target defined RELATIVE to a
-        US reference, which is the only form that means anything under vector X (docs eq:us:model:hoursUnit
-        and the README's "report h̄ against a reference point, never as a level"). """
+        US reference, which is the only form that means anything under vector X (docs eq:us:model:hoursUnit:
+        h̄ is reported against a reference, never as a level). """
         return self.db['h0']
 
     def solveCommonX(self, h):
@@ -453,33 +438,28 @@ class ModelUS:
         self.updateAuxPars() # Γh moves to λ; θ is invariant but is recomputed from η/X, so refresh it too
 
     def addEigenVectors(self):
-        """ Eq (calibration:etai/Xi) with both eigenvectors scaled to γ·y = 1: Γ_h = 1 AND the hours
-        unit μ = ∑γ_i y^x_i = 1 (eq:hoursUnit), as the Argentina models do (eq:calibration:yNorm there).
+        """ The eigenvectors y^η, y^x of Eq (calibration:etai/Xi), each scaled to γ·y = 1: Γ_h = 1 AND the
+        hours unit μ = ∑γ_i y^x_i = 1 (eq:hoursUnit). The matrix z·γᵀ has rank one, so its eigenvector is
+        z itself (eigenvalue γ·z) and the scaled eigenvector is y = z/(γ·z), in closed form.
 
-        The y^x scale is not cosmetic. It is the hours unit of eq (hoursUnit), and scipy's unit-norm
-        eigenvector makes it country-specific (0.5593 for the US, 0.5590 for France, 0.5770 for the UK
-        at US percentiles). Since ModelFR hits its h̄ target by rescaling Γ_h rather than μ, that left
-        the ratio X̄_c/X̄_US carrying a spurious μ_US/μ_c. Equilibrium-neutral either way (h̄ and h_i
-        are the only objects that respond to μ), but the reported η_i, X_i and X̄ are not. """
-        γi = self.db['γi'].xs(self.db['t0']).values
-        valx, vecx = scipy.sparse.linalg.eigs(self.db['zxi'].xs(self.db['t0']).values.reshape(self.ni,1) * γi.reshape(1, self.ni), k = 1)
-        valη, vecη = scipy.sparse.linalg.eigs(self.db['zηi'].xs(self.db['t0']).values.reshape(self.ni,1) * γi.reshape(1, self.ni), k = 1)
-        yx, yη = abs(np.real(vecx)).reshape(self.ni), abs(np.real(vecη)).reshape(self.ni)
-        self.db['yx'], self.db['yη'] = yx/(γi*yx).sum(), yη/(γi*yη).sum()
+        The y^x scale is not cosmetic: it is the hours unit of eq (hoursUnit), the same in every country
+        only under this normalisation. Equilibrium-neutral (h̄ and h_i are the only objects that respond
+        to μ), but the reported η_i, X_i and X̄ are not. """
+        t0 = self.db['t0']
+        γi = self.db['γi'].xs(t0).values
+        zx, zη = self.db['zxi'].xs(t0).values, self.db['zηi'].xs(t0).values
+        self.db['yx'], self.db['yη'] = zx/(γi*zx).sum(), zη/(γi*zη).sum()
     def getηi(self):
         return self.db['yη']/(self.db['yx']*sum(self.db['γi'].xs(self.db['t0']).values*self.db['yη']))
-    def getXi(self):
-        return self.db['ηi']/self.db['yx']**(1/self.db['ξ'])
 
     #######################################################################
     ##########   3. Economic equilibrium (EE) solve, given policy   ########
     #######################################################################
-    # See README's "EE solve (model.py §3)" for the residual/solve/report style, the timing convention,
-    # and the T-vs-T-1 domain split. One implementation note not in the README: EE_LOG_solve/EE_CRRA_solve/
-    # EE_report return plain ndarrays internally, wrapping into pd.Series/DataFrame only in the final
-    # return (_wrapVars, keyed off _t2vars/_txE2vars below) -- not done inside base.py's own methods (incl.
-    # FH_*), since those run inside EE_CRRA_solve's root-finding loop where pandas' per-call overhead would
-    # be pure cost.
+    # Each problem is a residual, a solve and a report. Γs/B/si_s live on db['txE'] (length T-1, no period
+    # T+1 to look into), everything else on db['t'] (length T). EE_LOG_solve/EE_CRRA_solve/EE_report work
+    # on plain ndarrays and wrap into pd.Series/DataFrame only in the final return (_wrapVars, keyed off
+    # _t2vars/_txE2vars below) -- not inside base.py's own methods (incl. FH_*), since those run inside
+    # EE_CRRA_solve's root-finding loop where pandas' per-call overhead would be pure cost.
 
     # Which pandas index a symbol reports over -- a fixed, once-per-model mapping.
     _t2vars = ('s', 'h', 's_', 'R', 'w', 'w0', 'hi', 'bbar', 'bi', 'b0',
@@ -585,7 +565,7 @@ class ModelUS:
         nx = self.T - 1
         ns = self.ns['EE_CRRA']
         if x0 is None:
-            x0 = self.x0.get('EE_CRRA', self.defaultX0_EE_CRRA(τ, θ, ε, s0))
+            x0 = self.x0['EE_CRRA'] if 'EE_CRRA' in self.x0 else self.defaultX0_EE_CRRA(τ, θ, ε, s0)
         res = optimize.root(self.EE_CRRA_residual, x0, args = (τ, θ, ε, s0), **kwargs)
         self._checkConverged(res.fun, tol = tol, name = 'EE_CRRA_solve', scipyRes = res)
         if update:
@@ -640,7 +620,7 @@ class ModelUS:
     #######################################################################
     ##########   4. Steady state solve (docs §2.1, eq:steadystate_*)  ######
     #######################################################################
-    # See README's "Steady state solve". Default s0 source for EE_LOG_solve/EE_CRRA_solve.
+    # The default s0 source for EE_LOG_solve/EE_CRRA_solve.
     def steadyState_LOG_solve(self, τ, θ, t = None):
         """ Closed-form steady state given LOG preferences (ρ=1, so B^i=β_i is a pure primitive -- no
         root-finding, matching EE_LOG_solve). τ, θ: constant steady-state policy (scalars). """
@@ -660,8 +640,7 @@ class ModelUS:
         """ Bracket for steadyState_CRRA_solve's Γs search: (lower, min(upper, margin·Base.ΓsCap)),
         widened upward if that does not actually bracket a root.
 
-        `upper` alone -- the constant 0.75 the Argentina models use -- is NOT safe at US parameters, and
-        it fails in BOTH directions:
+        A constant `upper` alone (0.75) is NOT safe at US parameters, and it fails in BOTH directions:
 
         Too high. The Θh denominator turns negative at Base.ΓsCap, which at this calibration falls below
         0.75 once τ ≳ 0.78, and steadyStatePEE_CRRA searches τ over the whole of [l,u]. brentq then
@@ -716,8 +695,9 @@ class ModelUS:
     #######################################################################
     ##########   5. Initial (pre-determined) state (docs' t=0)        ######
     #######################################################################
-    # See README's "Initial (pre-determined) state solve". initialState_solve does NOT take s0 -- only
-    # h_{-1} needs it (via Base.hFromS), computed separately in EE_report.
+    # Γ_{s,-1}, B_{-1}^i and s_{-1,i}/s_{-1} (the generation already old at db['t'][0]) are the CRRA steady
+    # state's at db['t'][0]'s own (τ,θ). initialState_solve does NOT take s0 -- only h_{-1} needs it (via
+    # Base.hFromS), computed separately in EE_report.
     def initialState_solve(self, τ, θ, t = None, **kwargs):
         """ Identify Γ_{s,-1}, B_{-1}^i, s_{-1,i}/s_{-1} -- see §5 header. τ, θ: scalars, db['t'][0]'s own
         policy. kwargs passed to steadyState_CRRA_solve. Returns {'Γs','B','si_s'} -- no h_{-1} (needs the
@@ -740,7 +720,7 @@ class ModelUS:
         τ[db['t'][0]]. Returns {'policy','sol','report'}.
 
         solver picks which policy.py method identifies τ:
-        - 'Robust'     (default) LOG.solveRobust -- gradient solve (alg:fast), falling back to the
+        - 'Robust'     (default) LOG.solveRobust -- gradient solve (alg:LOG:fast), falling back to the
                        backward grid search + warm-started gradient polish if it fails (e.g. a high
                        political weight ω moves the solution far from the constant-db['τ0'] guess).
         - 'Vectorized' LOG.solveVectorized alone. Fails loudly rather than falling back.
@@ -822,10 +802,9 @@ class ModelUS:
     # residual evaluation refreshes the auxiliary parameters and re-solves the whole PEE (inner loop).
     # ηi/Xi/θ are NOT here -- fixed once in §2, independent of (β,ω).
     #
-    # Two targets, not the Argentina models' four. η0/X0 are gone because the informal type has no mass, and
-    # the savings-rate target is replaced by the interest rate R_{t0}. The commonX variant adds a third
-    # target (average hours) but NOT a third dimension: X enters no aggregate, so it is recovered in closed
-    # form after the root, never inside it. See calibrate.
+    # Two targets, R_{t0} and τ_{t0}. The commonX variant adds a third target (average hours) but NOT a
+    # third dimension: X enters no aggregate, so it is recovered in closed form after the root, never
+    # inside it. See calibrate.
 
     _calPars = ('β', 'ω')
     # Unbounded reparameterization below: finite upper bound -> logit, infinite -> log. Only positivity is
@@ -864,8 +843,8 @@ class ModelUS:
         """ Install `pars`, solve the PEE, evaluate the target quantities at db['t0'].
 
         Returns the two targeted quantities (R, τ), plus the savings rate and average hours, which are
-        reported but not targeted -- 'sr' because it is the Argentina models' target and worth watching,
-        'hbar' because under commonX it is what solveCommonX is about to be pointed at.
+        reported but not targeted -- 'hbar' because under commonX it is what solveCommonX is about to be
+        pointed at.
 
         solveKwargs must not pin θ/ε: they need to stay at their None defaults so solvePEE_* re-reads
         db['θ']/db['eps'] after _calSetPars refreshes them. """
@@ -973,22 +952,24 @@ class ModelUS:
             return gridSettings.get(preferences)
         return gridSettings
 
-    def _calVerify(self, x, preferences, policy, verify, gridSettings):
-        """ Re-evaluate the outer residual at the converged x on a finer inner grid, and restore the
-        working grid afterwards. Returns max|residual|, or NaN if the refined solve fails.
+    def _calVerify(self, x, preferences, policy, verify):
+        """ Re-evaluate the outer residual at the converged x on a finer inner grid (the installed grid
+        settings updated by `verify`), and restore the installed settings afterwards. Returns
+        max|residual|, or NaN if the refined solve fails.
 
         This is the one diagnostic that separates a converged calibration from a *resolved* one: the outer
         root can settle on a point that is displaced rather than merely imprecise, and the symptom is that
         refining the inner grid at fixed parameters leaves the residual on a plateau instead of decaying.
         Read the LEVEL across points, not the shape within one -- the rung at the calibration's own grid
         is ~0 by construction. Recorded per point, never asserted: no grid size has standing at every ρ. """
+        working = dict(policy.GS['PEE']['gridSettings'])
         try:
-            policy.initGS((gridSettings or {}) | verify)
+            policy.initGS(working | verify)
             return float(np.max(np.abs(self.calibration_residual(x, preferences))))
         except Exception:
             return np.nan
         finally:
-            policy.initGS(gridSettings)
+            policy.initGS(working)
 
     def calibratePoint(self, value, x0 = None, par = 'ρ', gridSettings = None, verify = None,
                        calKwargs = None):
@@ -998,13 +979,16 @@ class ModelUS:
         actually used, and 'multiplicity': the tax candidates' counts of the PEE solve at the calibrated
         parameters, policy.multiplicitySummary, num_robustroot.tex eq:equilibriumTest).
 
-        x0 is the *unbounded* vector, not a parameter dict. db is left holding the converged point, which
-        is deliberate: it is the next point's inner warm start. """
+        x0 is the *unbounded* vector, not a parameter dict. gridSettings (flat, or keyed by 'LOG'/'CRRA',
+        _calGridSettings) is installed on the solver in use; None keeps the settings already installed.
+        db is left holding the converged point, which is deliberate: it is the next point's inner warm
+        start. """
         self.db.update(self.adjPar(par, value))
         preferences = self._calPreferences()
         policy = getattr(self, preferences)
         settings = self._calGridSettings(gridSettings, preferences)
-        policy.initGS(settings)
+        if settings is not None:
+            policy.initGS(settings)
         tStart = time.time()
         cal = self.calibrate(preferences = preferences, x0 = x0, **(calKwargs or {}))
         elapsed = time.time()-tStart
@@ -1019,7 +1003,7 @@ class ModelUS:
         rec.update({k: float(v) for k, v in cal['pars'].items()})
         verifySettings = self._calGridSettings(verify, preferences) if verify else None
         if verifySettings:
-            rec['verifyResidual'] = self._calVerify(cal['x'], preferences, policy, verifySettings, settings)
+            rec['verifyResidual'] = self._calVerify(cal['x'], preferences, policy, verifySettings)
         return rec
 
     def calibrateGrid(self, grid, par = 'ρ', anchor = 1.0, gridSettings = None, verify = None,

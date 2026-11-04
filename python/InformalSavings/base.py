@@ -17,7 +17,7 @@ class Base:
         self.db = m.db # main database
         self.tFirst = self.db['t'][0] # model's first active/endogenous period (docs' t=1) -- NOT the
         # pre-determined state before it (docs' t=0, code's `s0`) and NOT db['t0'] (calibration baseline
-        # year index). See README's "Timing convention".
+        # year index). See README, "Timing and data conventions".
         self.t = t # current year
         self._cache = None # parameter cache; None = disabled. See cacheParams().
 
@@ -25,7 +25,7 @@ class Base:
     ##########   Parameter caching (cacheParams)                  #########
     #######################################################################
     # Opt-in and block-scoped, not always-on -- a cache surviving a db rewrite (model.py's calibration)
-    # would return stale parameters silently. See README's "cacheParams()" for the measurement/rationale.
+    # would return stale parameters silently.
     @contextmanager
     def cacheParams(self):
         """ Memoise db parameter reads for the duration of the block (see the §header comment above).
@@ -75,9 +75,8 @@ class Base:
     #######################################################################
     # Political weights:
     def ω2i(self, t = None):
-        """ Political weight on types 2i. Uses μ_{t-1,i} (voting weight of the now-old generation as of
-        when they were young), matching the FOC's timing (eq:PEELOG's restatement, tex line ~271) rather
-        than the objective W_t's own (differently-timed) statement -- see README for the discrepancy. """
+        """ Political weight on types 2i, p_{t-1,i}·ω_t·μ_{t-1,i}: the voting weight is the old generation's
+        own, set when it was young (μ attaches to a generation). """
         return (self('pi[t-1]', t).mul(self('ω',t), axis = 0).mul(self('μi[t-1]',t), axis = 0)).values
     def ω20(self, t = None):
         """ Political weight on types 20. Uses μ_{t-1,0} -- see ω2i's docstring. """
@@ -96,9 +95,6 @@ class Base:
     def power_h(self, t = None):
         """ αξ/(1+αξ) """
         return self.get('α',t)*self.get('ξ',t)/(1+self.get('α',t)*self.get('ξ',t))
-    def power_p(self, t = None):
-        """ ( α(1+ξ)/(1+αξ) )^2 """
-        return self.power_s(t)**2
 
     # Auxiliary parameters over household types:
     def auxProd(self, t = None, lag = ''):
@@ -163,8 +159,7 @@ class Base:
 
         χ^R carries a *period* index, not a generation index: R_t^0 is the return earned between t-1 and t,
         so the discounting of b_{t+1}^0 inside s_{t,0} uses χ^R_{t+1} (see auxInf1) while c_{2,t}^0 uses
-        χ^R_t (auxInf1_). The docs write χ^R_t / χ^R_{t-1} in those two places respectively -- a typo;
-        immaterial while χ^R is constant over t. """
+        χ^R_t (auxInf1_). """
         return self.R(s_, h, t) * self.get('χR', t)
 
     #######################################################################
@@ -461,8 +456,8 @@ class Base:
     #######################################################################
     ##########   8. Steady state (eq:steadystate_LOG, eq:steadystate_CRRA)  #
     #######################################################################
-    # Fixed point s_t=s_{t-1}=s* under constant (τ,θ) at t=self.tFirst's parameters. See README's "Timing
-    # convention".
+    # Fixed point s_t=s_{t-1}=s* under constant (τ,θ) at t=self.tFirst's parameters. See README, "Timing
+    # and data conventions".
     def sSteadyState(self, Θs, t = None):
         """ Eq (steadystate_LOG:s), generalized: the steady-state savings level s* solving the fixed point
         s* = Θs*(s*/ν_t)^power_s -- i.e. s_t = s_{t-1} = s* under a constant Θs_t = Θs. Algebraically
@@ -517,7 +512,7 @@ class Base:
     # FOC is the preference-agnostic combiner; `_LOG` methods below are LOG-specific closed forms. CRRA's
     # t<T equivalents need numerical derivatives instead (docs §PEE) -- see dlnc2i_dτ/dlnc20_dτ below.
     def FOC(self, dv1i, dv10, dv2i, dv20, t = None):
-        """ Eq (fast / the general FOC underlying eq:PEELOG, tex line ~269-273): z_t, the marginal
+        """ Eq (focbounded, the general FOC underlying eq:PEELOG): z_t, the marginal
         political objective w.r.t. τ_t. Combines the young (dv1i,dv10) and old (dv2i,dv20) marginal
         indirect utilities via the political weights (ω1i/ω10/ω2i/ω20, §0) and population shares γ.
         Preference-agnostic: this combination is identical regardless of whether dv1i/dv10/dv2i/dv20 came

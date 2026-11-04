@@ -5,9 +5,9 @@ In the model a retiree of relative earnings $z_i = y_i/\bar y$ receives
 \end{align}
 so $1-\theta$ is the share of pension spending not linked to own earnings and $\theta$ is the slope of relative benefits on relative earnings. The tax is the spending share of labour income,
 \begin{align}
-    \tau = \frac{S}{1-\alpha}, \qquad \alpha = 0.30, \label{eq:data:tau}
+    \tau = \frac{S}{100\,(1-\alpha)}, \qquad \alpha = 0.30, \label{eq:data:tau}
 \end{align}
-with $S$ pension spending in \% of GDP. One rule governs every measure below: the tiers in $\tau$ are the tiers whose design $\theta$ measures. \Cref{tab:data:tiers} maps each type of provision to the two.
+with $S$ pension spending in \% of GDP and $\alpha$ the capital share of the U.S.\ model, applied to every country. One rule governs every measure below: the tiers in $\tau$ are the tiers whose design $\theta$ measures. \Cref{tab:data:tiers} maps each type of provision to the two.
 
 \begin{table}[htbp]
 \centering
@@ -39,13 +39,13 @@ PaG publishes the gross replacement rate $RR(z)$ of a full-career worker at $z =
 \end{align}
 By \cref{eq:data:benefit}, $P(z)/P(1) = \theta z + 1 - \theta$, so $\hat\theta = \theta$ when the formula is linear. The model's top income group has its mean at 1.5--2.0 AW, so 0.5--2 AW spans its groups, while 0.5--1 AW does not.
 
-PaG's worker never draws a minimum top-up or tested benefit that lies below his own pension at 0.5 AW, although many retirees do. That spending is flat. Let $T$ be 2020 spending on the top-ups and tested benefits that the worker at 0.5 AW does not reach and that SOCX books inside public old-age and survivors cash. "Reached" compares the public pension at 0.5 AW (PaG 2021, table 4.2) with the benefit's 2020 level (table 3.2), both in \% of AW. The flat share and the design are
+PaG's worker never draws a minimum top-up or tested benefit that lies below his own pension at 0.5 AW, although many retirees do. That spending is flat. Let $T$ be 2020 spending on the top-ups and tested benefits that the worker at 0.5 AW does not reach and that SOCX books inside public old-age and survivors cash. ``Reached'' compares the public pension at 0.5 AW (PaG 2021, table 4.2) with the benefit's 2020 level (table 3.2), both in \% of AW. The flat share and the design are
 \begin{align}
     s = \frac{T}{S}, \qquad \theta = \hat\theta\,(1-s). \label{eq:data:theta}
 \end{align}
-$s$ is largest in PRT (0.082), CHE (0.066), FIN (0.059), ESP (0.048), ITA (0.046), FRA (0.036) and SWE (0.033), and below 0.02 elsewhere. Minimum pensions that the worker reaches (NOR, POL) are already in $\hat\theta$, so $s = 0$ there.
+$s$ is at most 0.082 (PRT) and exceeds 0.02 in seven countries. Minimum pensions that the worker reaches (NOR, POL) are already in $\hat\theta$, so $s = 0$ there.
 
-The paper's index uses two points of the mandatory replacement rate: with $I = RR(1)/RR(0.5)$, \cref{eq:data:benefit} gives $RR(0.5)/RR(1) = 2-\theta$, so
+The replacement-rate index, the csv's variant \texttt{paper}, uses two points of the mandatory replacement rate: with $I = RR(1)/RR(0.5)$, \cref{eq:data:benefit} gives $RR(0.5)/RR(1) = 2-\theta$, so
 \begin{align}
     \theta_{\text{paper}} = 2 - \frac{1}{I}, \label{eq:data:thetaPaper}
 \end{align}

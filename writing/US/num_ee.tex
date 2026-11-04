@@ -1,30 +1,23 @@
 \subsection{The economic equilibrium}\label{\refsec:EE}
 
 \smalltitle{With log preferences.}
-Assume that we know the path of taxes $\tau_t$, pension characteristics $\theta_t$, and an initial exogenous level of savings $s_0$. In this case, recall that we simply have $B_{t+1}^i = \beta_{t,i}$. Given this, we can solve for the economic equilibrium without any numerical root finding:
+Given the paths of taxes $\tau_t$ and designs $\theta_t$ and an initial level of savings $s_0$, and with $B_{t+1}^i = \beta_{t,i}$, the economic equilibrium needs no numerical root finding:
 \begin{itemize}
-    \item First compute $\Gamma_{s,t}$ from \eqref{\refeq:auxiliary:Gammas} (only defined for $t<T$).
-    \item Then compute finite horizon $\Theta_{h,t}$ from stacking \eqref{\refeq:auxiliary:Thetah} for $t<T$ and \eqref{\refeq:auxiliary:ThetahT} for $t=T$.
-    \item Then compute $\Theta_{s,t}$ from \eqref{\refeq:auxiliary:Thetas} (only defined for $t<T$ as well).
-    \item Given $s_0$ and $\Theta_{s,t}$ we can iterate forward on \eqref{\refeq:auxiliary:s} to solve for $s_t$ for all $t<T$. For $t=T$ we have $s_T = 0$ per construction.
+    \item compute $\Gamma_{s,t}$ from \eqref{\refeq:auxiliary:Gammas} for $t<T$;
+    \item compute $\Theta_{h,t}$ from \eqref{\refeq:auxiliary:Thetah} for $t<T$ and \eqref{\refeq:auxiliary:ThetahT} for $t=T$, and $\Theta_{s,t}$ from \eqref{\refeq:auxiliary:Thetas} for $t<T$;
+    \item iterate forward on \eqref{\refeq:auxiliary:s} from $s_0$ for $t<T$, with $s_T = 0$.
 \end{itemize}
-As explained in \cref{\refmodelsec}, this set of core variables allows us to solve for individual labour supply and savings, factor prices, pension benefits, and finally consumption levels (from budgets).
+These core variables give individual labour supply and savings, factor prices, pension benefits and, from the budgets, consumption (\cref{\refmodelsec}).
 
 
 \smalltitle{With CRRA preferences.}
-Assume again that we know the path of taxes $\tau_t$, pension characteristics $\theta_t$, and an initial exogenous level of savings $s_0$. The core of the economic equilibrium can then be reduced to identifying vectors of $\Gamma_{s,t}, h_t, s_t$. The three vectors are identified by three sets of conditions (we have a square system of nonlinear equations):
-\begin{itemize}
-    \item The finite horizon labour supply condition requires \eqref{\refeq:auxiliary:h} with $\Theta_{h,t}$ being computed using \eqref{\refeq:auxiliary:Thetah} for $t<T$ and \eqref{\refeq:auxiliary:ThetahT} for $t=T$.
-    \item The finite horizon savings decision requires solving for $t<T$ (with $s_T = 0$); we use \eqref{\refeq:auxiliary:sFromH} for this.
-    \item Finally, $\Gamma_{s,t}$ is also only defined for $t<T$; we use \eqref{\refeq:auxiliary:Gammas} for this, evaluated with $B_{t+1}^i(s_t, h_{t+1})$ from \eqref{\refeq:auxiliary:B}.
-\end{itemize}
-Given a solution to this core of the economic equilibrium ($s_t, h_t, \Gamma_{s,t}$), the rest of the outcomes can be solved as in the log case.
+With the same inputs, the core of the economic equilibrium is the vectors $\Gamma_{s,t}, h_t, s_t$, identified by a square system of nonlinear equations: the labour supply condition \eqref{\refeq:auxiliary:h}, with $\Theta_{h,t}$ from \eqref{\refeq:auxiliary:Thetah} for $t<T$ and \eqref{\refeq:auxiliary:ThetahT} for $t=T$; the savings condition \eqref{\refeq:auxiliary:sFromH} for $t<T$, with $s_T = 0$; and \eqref{\refeq:auxiliary:Gammas} for $t<T$, evaluated with $B_{t+1}^i(s_t, h_{t+1})$ from \eqref{\refeq:auxiliary:B}. The rest of the outcomes follow as in the log case.
 
 
 \smalltitle{Initializing with steady state savings.}
-When we solve for the economic equilibrium given vectors of $\tau_t$ and $\theta_t$, our default option for the initial exogenous level of savings $s_0$ is to solve for steady state levels using parameter values from the first period ($t=1$). This default is also what makes the scale invariance of \eqref{\refmodeleq:scaleInvariance} operative: $s_0$ is then a function of the same parameters as everything else and rescales with them, which it would not do if imposed exogenously.
+By default the initial level of savings $s_0$ is the steady state at the parameters and policy of the first period. This default is also what makes the scale invariance of \eqref{\refmodeleq:scaleInvariance} operative: $s_0$ is then a function of the same parameters as everything else and rescales with them.
 
-With log preferences, we have that $B^i = \beta_i$ and then we can solve for $\Gamma_{s}$ directly in closed form using the general equation \eqref{\refeq:auxiliary:Gammas}. Given this, we can then compute steady state savings from \eqref{\refeq:steadystate_LOG:s}:
+With log preferences $B^i = \beta_i$, so $\Gamma_{s}$ is the closed form \eqref{\refeq:auxiliary:Gammas} and steady state savings follow from \eqref{\refeq:steadystate_LOG:s}:
 \begin{subequations}\label{\refeq:steadystate_LOG}
     \begin{align}
         \Gamma_s =& \frac{1}{1+\xi}\frac{\sum_i \frac{\gamma_{i}\eta_{i}^{1+\xi}}{X_{i}^{\xi}}\frac{B^i}{1+B^i}}{1+\frac{1-\alpha}{\alpha}\tau\left(\theta+(1-\theta)\sum_i\frac{\gamma_{i}}{1+B^i}\right)} \label{\refeq:steadystate_LOG:Gammas}\\
@@ -32,7 +25,7 @@ With log preferences, we have that $B^i = \beta_i$ and then we can solve for $\G
     \end{align}
 \end{subequations}
 
-With CRRA preferences, we have to identify $s^*$ numerically instead. This can technically be done in several ways, but we prefer the following as it allows us to solve the problem as a bounded scalar search where there are robust and fast algorithms available (e.g.\ golden-section search). Specifically, we solve for the $\Gamma_s$ that satisfies condition \eqref{\refeq:steadystate_CRRA:Gammas}:
+With CRRA preferences, we have to identify $s^*$ numerically instead, as a bounded scalar root problem in $\Gamma_s$ solved by Brent's method: we solve for the $\Gamma_s$ that satisfies condition \eqref{\refeq:steadystate_CRRA:Gammas},
 \begin{subequations}\label{\refeq:steadystate_CRRA}
 \begin{align}
     &\Gamma_s(1+\xi)\left[1+\frac{1-\alpha}{\alpha}\tau\left(\theta+(1-\theta)\sum_i\frac{\gamma_i}{1+B^i(\Gamma_s)}\right)\right] = \sum_i\frac{\gamma_i\eta_i^{1+\xi}}{X_i^{\xi}} \frac{B^i(\Gamma_s)}{1+B^i(\Gamma_s)}, \label{\refeq:steadystate_CRRA:Gammas} \\
@@ -47,6 +40,6 @@ This is a bound on where the root \emph{is}. The second is a bound on where the 
 \begin{align}\label{\refeq:steadystate_CRRA:cap}
     \Gamma_s^{\max}\left(\tau,\theta\right) = \frac{\Gamma_h\,\alpha}{(1-\alpha)\,\theta\tau},
 \end{align}
-and is negative above it. A steady state always satisfies $\Gamma_s<\Gamma_s^{\max}$ --- $\Theta_{h}$ must be real and positive --- so \eqref{\refeq:steadystate_CRRA:cap} never excludes the root. What it does exclude is a chunk of the search interval: raising $\Gamma_s$ past $\Gamma_s^{\max}$ raises a negative number to the fractional power $\rho-1$, and the residual returns NaN rather than a finite value of the wrong sign. A bracketing method then fails on the NaN, reporting a problem with the solver rather than with the interval it was handed.
+and is negative above it. A steady state always satisfies $\Gamma_s<\Gamma_s^{\max}$, since $\Theta_{h}$ must be real and positive, so \eqref{\refeq:steadystate_CRRA:cap} never excludes the root. What it does exclude is a part of the search interval: raising $\Gamma_s$ past $\Gamma_s^{\max}$ raises a negative number to the fractional power $\rho-1$, and the residual returns NaN rather than a finite value of the wrong sign, on which a bracketing method fails.
 
-The practical bracket is therefore $\left(0,\min\left\lbrace u_{\Gamma}, \varsigma\,\Gamma_s^{\max}(\tau,\theta)\right\rbrace\right)$ for a fixed $u_{\Gamma}$ and a safety factor $\varsigma$ slightly below one. It is worth being explicit about why a constant $u_{\Gamma}$ alone will not do, because it \emph{appears} to work: with $\Gamma_h = 1$, \eqref{\refeq:steadystate_CRRA:cap} is $\alpha/((1-\alpha)\theta\tau)$, which at $\alpha = 0.43$ and the Argentina calibration stays above a constant such as $0.75$ over the whole unit interval of $\tau$, while at $\alpha = 0.30$ it falls to $\approx 0.58$ as $\tau\rightarrow 1$. A constant that is safe in one calibration is thus not safe in another, and since the steady state is evaluated at trial taxes spanning $[l,u]$ while solving for the politico-economic equilibrium, the infeasible region is genuinely visited rather than merely nearby. Retuning the constant would only move the $\tau$ at which the problem reappears; tying the bracket to \eqref{\refeq:steadystate_CRRA:cap} removes it. Note finally that $\Gamma_h$ is kept explicit in both \eqref{\refeq:steadystate_CRRA:bounds} and \eqref{\refeq:steadystate_CRRA:cap} even though both model variants normalize it to one, so that the bounds remain consequences of the model rather than of the normalization.
+The bracket is therefore $\left(l_{\Gamma},\min\left\lbrace u_{\Gamma}, \varsigma\,\Gamma_s^{\max}(\tau,\theta)\right\rbrace\right)$, with $l_{\Gamma} = 10^{-6}$, $u_{\Gamma} = 0.75$ and a safety factor $\varsigma = 0.99$, and where it does not bracket a sign change its upper end is doubled, up to $\varsigma\,\Gamma_s^{\max}$, until it does. A constant upper end fails in both directions: it is too high where the cap falls below it, at large $\theta\tau$, and at $\theta = 0$, where $\Gamma_s^{\max}$ is infinite, the root can lie above it (at $\rho = 2$ and $\tau$ near one). Both regions are visited, since the steady state is evaluated at trial taxes spanning $[l,u]$ while the politico-economic equilibrium is solved. $\Gamma_h$ is kept explicit in \eqref{\refeq:steadystate_CRRA:bounds} and \eqref{\refeq:steadystate_CRRA:cap}: the US calibrations normalise it to one, but the France and UK calibrations under variant A end at $\Gamma_h\neq1$ (\cref{\refmodelsec:calibration:targets}).

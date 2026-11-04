@@ -309,12 +309,16 @@ def escTauTheta():
               + C.num(θ1, 2) + '$, against ' + pc(100*float(tt[spec].loc[np.isclose(tt[spec]['θpin'], θstar), 'τ'].iloc[0]))
               + r' at $\theta^{\ast}$, and falls to ' + pc(hi1) + r' at $\theta = 1$.')
     step = tt[spec].loc[tt[spec]['kind'] == 'refine', 'θpin']
+    grid = C.US['tauTheta']['grid']                              # the note names it as the first, second and last point
+    if not np.allclose(np.diff(grid), grid[1] - grid[0]):
+        raise ValueError("config.US['tauTheta']['grid'] is not equally spaced: {}".format(grid))
     note = (r'\textit{Note:} The U.S.\ in ' + str(year0) + r' under log preferences ($\rho = 1$), with the design '
             r'pinned at the same $\theta$ at every date and the economy started from its own steady state; $\beta$, '
             r'$\omega$ and $X$ stay at their calibration at the observed $\theta^{\ast} = ' + C.num(θstar, 3)
             + r'$ (dashed line), without the cost as in section \ref{sec:oecd} and with the paper\textquotesingle s '
             r'cost at $\lambda = ' + C.num(lam, 2) + r'$ (table \ref{table:US_ESC:calibration}). ' + first + second
-            + (r' The designs are $\theta = 0, 0.1, \dots, 1$, $\theta^{\ast}$ and, around the peak, steps of '
+            + (r' The designs are $\theta = {:g}, {:g}, \dots, {:g}$, $\theta^{{\ast}}$ and, around the peak, steps of '.format(
+                   grid[0], grid[1], grid[-1])
                + C.num(float(np.diff(np.sort(step.values)).min()), 2) + '.' if len(step) > 1 else ''))
     path = os.path.join(C.PAPERDIR, 'Figs', name + '_note.tex')
     with open(path, 'w', encoding = 'utf-8', newline = '\n') as f:

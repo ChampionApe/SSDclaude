@@ -1,6 +1,11 @@
-import os, pandas as pd, numpy as np, scipy
+r""" Loader of the U.S. workbook data/USMain_test.xlsx: `pars` and `kwargs` for ModelUS, the dates, the workweek.
+
+Importing this module has side effects the suites and drivers rely on: `pars` is updated with the LOG anchor point
+(ρ = 1, ω = 2, β = 0.6), so every `testmod.pars | {...}` carries them unless it overrides, and `mLOG`, a ModelUS on
+`pars` with db['dates'] and db['workweek'] installed, is built at import (the structure suites read it).
+"""
+import os, pandas as pd, numpy as np
 from model import ModelUS
-from symMaps import SimpleSys
 
 # Read in data from excel: C:\Users\sxj477\Documents\GitHub\SSDclaude\data\USMain_test.xlsx
 PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data', 'USMain_test.xlsx')
@@ -28,28 +33,14 @@ workweek = dfc['Average workweek']
 kwargs = {'T': TLog+t_ss, 'nj':dfj.shape[0]}
 pars = {'α': dfc['Capital income share'], 'ξ': dfc['Labor supply elasticity'], 'ν': np.hstack([νLog, np.full(kwargs['T']-TLog, νLog[-1])]),
         'τ0': dfc['Pension tax'], 'RR0': dfc['Replacement rate'], 'RRGroups': tuple(eval(dfc['Replacement rate groups'])), 't0': dates.get_loc(dfc['Calibration year']),
-        'γj': dfj['Population shares'].values.astype(float), 
-        'μj': dfj['Voting shares'].values.astype(float), 
+        'γj': dfj['Population shares'].values.astype(float),
+        'μj': dfj['Voting shares'].values.astype(float),
         'Xj': 1,
-        'zxj': (dfj['Hours'].values/(dfj['Hours'].values.mean())).astype(float), 
+        'zxj': (dfj['Hours'].values/(dfj['Hours'].values.mean())).astype(float),
         'zηj': (dfj['Income'].values/(dfj['Income'].values.mean())).astype(float)}
 pars['h0'] = workweek / (7*12) # estimate of share of time spend on labor
 pars['R0'] = dfc['30y interest']
 pars['Ushare0'] = dfc['Universal share']
-
-
-def reading(medicare = None, base = None):
-    """ The workbook's parameters under a reading of the transfers to the old. medicare None: the workbook
-    as it is, pensions only (the paper's). medicare = M, Medicare spending as a share of GDP: the online
-    appendix's 'transfers to the old', Medicare added to pension spending S = τ0(1-α) and paid as a flat
-    benefit, so τ0 = (S + M)/(1-α) and Ushare0 = M/(S + M), the flat share that scales θ (ModelUS.getθ).
-    base: the parameter dict to start from (this module's `pars` by default). Returns a new dict. """
-    base = pars if base is None else base
-    if medicare is None:
-        return dict(base)
-    α = float(base['α'])
-    S, M = float(base['τ0'])*(1-α), float(medicare)
-    return dict(base) | {'τ0': (S + M)/(1-α), 'Ushare0': M/(S + M)}
 
 
 # Initialize LOG model with some parameter values:
@@ -57,4 +48,3 @@ pars.update({'ρ': 1, 'ω': 2, 'β': .6})
 mLOG = ModelUS(pars = pars, **kwargs)
 mLOG.db['dates'] = dates
 mLOG.db['workweek'] = workweek
-

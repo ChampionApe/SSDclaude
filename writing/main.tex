@@ -4,9 +4,6 @@
 \title{Technical Note: \\
 \emph{Social Security Design and Its Political Support}}
 
-\title{Technical Note: \\
-\emph{Social Security Design and Its Political Support}}
-
 \author{Rasmus K.\ Berg\thanks{University of Copenhagen. Oster Farimagsgade 5, 1353 Copenhagen K, Denmark. E-mail: \texttt{rasmus.kehlet.berg@econ.ku.dk}.}
 \and
 Mart\'{\i}n Gonzalez-Eiras\thanks{University of Bologna. Piazza Scaravilli 2, 40126 Bologna. E-mail: \texttt{mge@alum.mit.edu}. Web: \texttt{alum.mit.edu/www/mge}.}}
@@ -14,11 +11,9 @@ Mart\'{\i}n Gonzalez-Eiras\thanks{University of Bologna. Piazza Scaravilli 2, 40
 
 \begin{abstract}
 \noindent
-The note formally presents a number of different models used in the paper \textit{Social Security Design and Its Political Support}. In many instances, the note is more general than in the final paper. 
+This note documents the models and the data behind the paper \textit{Social Security Design and Its Political Support}, in several places in more generality than the paper uses. It has four parts: the informal analytical model, the informal savings model, the U.S.\ model, and the data of the paper's OECD cross-section, which sets out how the pension design and the tax rate of each country are measured. Each model part first characterizes the economic equilibrium, in which taxes and pension characteristics are given, and the politico-economic equilibrium, and then sets out how the model is solved numerically. Each part is self-contained, so some text recurs across parts.
 
-Each model is documented in two stages: The first one describes and characterizes both the economic equilibrium and the politico-economic equilibrium. In the second stage, we go through more carefully how we solve the model numerically, including the solution algorithms we apply throughout. All model documentations are self-contained, with no cross-references. This means that a lot of the text will naturally be identical across model types.
-
-At the current stage, models include the following overall variations: The analytical-informal model, the informal savings model, and the US model. For each of the three, we currently implement a number of different solutions. First, we have one set of implementations with one common $X$ across all types and one with type-specific ones, $X_j$. Second, we have one where pension characteristics are fixed (exogenous), one where they are chosen permanently in one period, and one where characteristics are chosen without commitment equivalent to the tax rate.
+Households differ in productivity and in $X$, the disutility of hours. The informal analytical model calibrates a type-specific $X$; the informal savings and U.S.\ models are calibrated either with one $X$ common to all household types or with type-specific values. In every model the tax rate is chosen each period by a government that cannot commit to future policy. The pension design $\theta$, and in the two informal models the universal pension $\epsilon$, are exogenous, except in the U.S.\ model, where the electorate can also choose $\theta$: once and for all at a reform date, or period by period, one period ahead, without commitment.
 \end{abstract}
 
 

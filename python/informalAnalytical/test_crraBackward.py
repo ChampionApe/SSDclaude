@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 import test as testmod
 from model import ModelInformalAnalytical
-from gridsearch import CartesianGrid, roots1d
+from gridsearch import CartesianGrid
 
 from gridsearch.testing import check, report
 

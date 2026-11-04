@@ -1,5 +1,5 @@
 \subsection{Calibration}\label{\refsec:calibration}
-This model is used to match rich OECD economies: the US, France, and the UK. The full procedure and a description of the data can be found in the main paper. The main application uses constant parameter values across $t$ for almost all parameters. Thus, when we drop the $t$-subscript in the following, we assume constant parameters.
+The model is calibrated to the US, France and the UK; the paper describes the procedure and the data. Parameters other than the demographic $\nu_t$ are constant across $t$, and their $t$-subscript is dropped below.
 
 \smalltitle{Data.}
 We follow previous literature and let $t$ represent 30-year intervals (this helps with the assumption that capital fully depreciates between time steps). We find population data including projections to determine $\nu_t$ and amend the ends of the sample with constant extrapolation. For France we correct the population growth rate for the lower retirement age.
@@ -10,7 +10,9 @@ We use the capital income share to identify $\alpha$ and set the labour supply e
 
 
 \subsubsection{Pension characteristics}\label{\refsec:calibration:theta}
-We use OECD data on the ratio of replacement rates, $RR$, at mean and half-mean wages to identify $\theta$. Letting group $i=2$ denote mean income and group $i=1$ half-mean income, we solve for $\theta$ (constant across $t$ in this calibration) from the requirement
+The design is imposed as a datum, constant across $t$: the earnings-linked share of the public benefit line in relative earnings, net of the flat spending that the line does not capture (\cref{eq:data:slope,eq:data:theta}; variant C of \cref{sec:data:variants}). By \eqref{\refeq:governmentBudget} a retiree's benefit per unit of mean benefit is $\theta z + 1-\theta$ in relative earnings $z$, so that share is $\theta$ itself, and no model object enters it.
+
+Without that datum, $\theta$ is identified from OECD data on the ratio of replacement rates, $RR$, at mean and half-mean wages. Letting group $i=2$ denote mean income and group $i=1$ half-mean income, we solve for $\theta$ from the requirement
 \begin{align}\label{\refeq:calibration:RR}
         RR \equiv \dfrac{\theta+(1-\theta)\frac{h_t}{\eta_2 h_{t,2}}}{\theta+(1-\theta)\frac{h_t}{\eta_1 h_{t,1}}} = \frac{\theta + (1-\theta)/z_2^{\eta}}{\theta+(1-\theta)/z_1^{\eta}},
 \end{align}
@@ -18,11 +20,11 @@ where the second equality uses \eqref{\refeq:EE:hi} and the definition of relati
 \begin{align}\label{\refeq:calibration:theta}
     \theta = \frac{RR/z_1^{\eta} - 1/z_2^{\eta}}{1-1/z_2^{\eta}-RR\left(1-1/z_1^{\eta}\right)}.
 \end{align}
-This is where the construction of the income groups earns its keep. Groups $1$ and $2$ are cut so that $z_1^{\eta}\approx 1/2$ and $z_2^{\eta}\approx 1$, and at exactly those values \eqref{\refeq:calibration:theta} collapses to
+This is where the construction of the income groups matters. Groups $1$ and $2$ are cut so that $z_1^{\eta}\approx 1/2$ and $z_2^{\eta}\approx 1$, and at exactly those values \eqref{\refeq:calibration:theta} collapses to
 \begin{align}\label{\refeq:calibration:thetaSimple}
     \theta = 2-\frac{1}{RR}.
 \end{align}
-A purely Bismarckian system has the same replacement rate at both income levels, $RR = 1$ and $\theta = 1$; a purely Beveridgean system pays the same benefit to both, so halving the wage doubles the replacement rate, $RR = 1/2$ and $\theta = 0$. Equation \eqref{\refeq:calibration:thetaSimple} is the right way to read what $RR$ is telling us, but it is not what we compute: the group cuts land near, not on, half-mean and mean, and the residual matters. In the US data the population-weighted shares put $z_1^{\eta} = 0.507$ and $z_2^{\eta} = 1.0005$, at which \eqref{\refeq:calibration:theta} returns $\theta = 0.728$ against the $0.735$ that \eqref{\refeq:calibration:thetaSimple} would give at $RR = 39.2/49.6$. We therefore always use the general expression \eqref{\refeq:calibration:theta}. For France, where the system is purely Bismarckian and $\theta = 1$ is imposed, the identifying restriction is not needed and the income groups may be cut at any percentiles --- we use the US ones, which is what makes the counterfactual of imposing the French income distribution on the US model well defined.
+A purely Bismarckian system has the same replacement rate at both income levels, $RR = 1$ and $\theta = 1$; a purely Beveridgean system pays the same benefit to both, so halving the wage doubles the replacement rate, $RR = 1/2$ and $\theta = 0$. Equation \eqref{\refeq:calibration:thetaSimple} is how to read $RR$, but the group cuts land near, not on, half-mean and mean, so this route always uses the general expression \eqref{\refeq:calibration:theta}. A ratio of one gives $\theta = 1$ for any grouping, and the imposed datum does not depend on the grouping either. France's income groups are therefore cut at the US percentiles, which is what makes the counterfactual of imposing the French income distribution on the US model well defined.
 
 
 \subsubsection{Productivity and the disutility of labour}\label{\refsec:calibration:etaX}
@@ -34,7 +36,7 @@ Let $z_i^{\eta}$ and $z_i^{x}$ denote income and working hours relative to the a
 The two model variants differ in whether the second of these is data or prediction.
 
 \smalltitle{Variant A: type-specific $X_i$.}
-Both conditions in \eqref{\refeq:calibration:zeta} are imposed, and we normalize $\Gamma_h \equiv \sum_i \gamma_i\eta_i^{1+\xi}/X_i^{\xi} = 1$ in the calibration stage --- a free choice by the scale invariance in \eqref{\refeq:scaleInvariance}. Using $y_i^{\eta} = \eta_i^{1+\xi}/X_i^{\xi}$ and $y_i^x = (\eta_i/X_i)^{\xi}$ as shorthand, we can set up the conditions as linear systems:
+Both conditions in \eqref{\refeq:calibration:zeta} are imposed, and we normalize $\Gamma_h \equiv \sum_i \gamma_i\eta_i^{1+\xi}/X_i^{\xi} = 1$ in the calibration stage, a free choice by the scale invariance in \eqref{\refeq:scaleInvariance}. Using $y_i^{\eta} = \eta_i^{1+\xi}/X_i^{\xi}$ and $y_i^x = (\eta_i/X_i)^{\xi}$ as shorthand, we can set up the conditions as linear systems:
 \begin{align*}
     \left(\bm{z}_i^{\eta} \times \bm{\gamma}_i^{\prime}-\bm{I}\right)\times \bm{y}_i^{\eta} &= \bm{0} \\
     \left(\bm{z}_i^{x} \times \bm{\gamma}_i^{\prime}-\bm{I}\right)\times \bm{y}_i^{x} &= \bm{0},
@@ -44,20 +46,20 @@ where the bold notation indicates vectors and matrices. We note that the $\bm{y}
     \bm{\eta}_i &= \frac{\bm{y}^{\eta}_i}{\bm{y}_i^x \left(\bm{y}_i^{\eta} \cdot \bm{\gamma}_i\right)} \label{\refeq:calibration:etai} \\
     \bm{X}_i &= \frac{\bm{\eta}_i}{(\bm{y}_i^x)^{1/\xi}}, \label{\refeq:calibration:Xi}
 \end{align}
-where $\bm{y}_i^{\eta} = \text{Eigvec}(\bm{z}_i^{\eta}\times \bm{\gamma}_i^{\prime})$ and $\bm{y}_i^{x} = \text{Eigvec}(\bm{z}_i^{x}\times \bm{\gamma}_i^{\prime})$. The division by $\bm{y}_i^{\eta}\cdot\bm{\gamma}_i$ in \eqref{\refeq:calibration:etai} is what enforces $\Gamma_h = 1$. The scale of $\bm{y}^x_i$ is a second and separate choice: by \eqref{\refeq:hoursUnit} it \emph{is} the hours unit $\mu = \sum_i\gamma_iy_i^x$, and relative-hours data cannot speak to it. We spend it the same way, normalizing $\bm{\gamma}_i\cdot\bm{y}^x_i = 1$, so that by \eqref{\refeq:avgHours} the average workweek $\overline{h}_{t_0}$ and the aggregate $h_{t_0}$ are counted in the same unit. This is a units convention and nothing more --- the equilibrium is invariant to it --- but it is one convention rather than one per calibration, which is what makes the reported $\overline{h}$ and $X_i$ comparable across countries.
+where $\bm{y}_i^{\eta} = \text{Eigvec}(\bm{z}_i^{\eta}\times \bm{\gamma}_i^{\prime})$ and $\bm{y}_i^{x} = \text{Eigvec}(\bm{z}_i^{x}\times \bm{\gamma}_i^{\prime})$. Each matrix has rank one, so its eigenvector is the data vector itself, $\bm{y}_i = \bm{z}_i/(\bm{\gamma}_i\cdot\bm{z}_i)$ in the scaling used below. The division by $\bm{y}_i^{\eta}\cdot\bm{\gamma}_i$ in \eqref{\refeq:calibration:etai} is what enforces $\Gamma_h = 1$. The scale of $\bm{y}^x_i$ is a second and separate choice: by \eqref{\refeq:hoursUnit} it \emph{is} the hours unit $\mu = \sum_i\gamma_iy_i^x$, and relative-hours data cannot speak to it. We spend it the same way, normalizing $\bm{\gamma}_i\cdot\bm{y}^x_i = 1$, so that by \eqref{\refeq:avgHours} the average workweek $\overline{h}_{t_0}$ and the aggregate $h_{t_0}$ are counted in the same unit. This is a units convention and nothing more, since the equilibrium is invariant to it, but it is one convention rather than one per calibration, which is what makes the reported $\overline{h}$ and $X_i$ comparable across countries.
 
 \smalltitle{Variant B: common $X$.}
 Here $X_i = X$ for all $i$. We keep the same normalization, $\Gamma_h = 1$, so that the first condition in \eqref{\refeq:calibration:zeta} reads $z_i^{\eta} = \eta_i^{1+\xi}/X^{\xi}$ and inverts directly:
 \begin{align}\label{\refeq:calibration:etaCommonX}
     \eta_i = \left(z_i^{\eta}\right)^{\frac{1}{1+\xi}}X^{\frac{\xi}{1+\xi}}.
 \end{align}
-The eigenvector step of variant A is not needed --- with a common $X$ the two systems collapse into one, and it has a closed-form solution --- and the normalization is not spent by \eqref{\refeq:calibration:etaCommonX}, since $\sum_i\gamma_iz_i^{\eta} = 1$ holds by construction of relative income and therefore $\Gamma_h = \sum_i\gamma_i\eta_i^{1+\xi}/X^{\xi} = \sum_i\gamma_iz_i^{\eta} = 1$ for \emph{any} $X$.
+The eigenvector step of variant A is not needed (with a common $X$ the two systems collapse into one, which has a closed-form solution), and the normalization is not spent by \eqref{\refeq:calibration:etaCommonX}, since $\sum_i\gamma_iz_i^{\eta} = 1$ holds by construction of relative income and therefore $\Gamma_h = \sum_i\gamma_i\eta_i^{1+\xi}/X^{\xi} = \sum_i\gamma_iz_i^{\eta} = 1$ for \emph{any} $X$.
 
 The scalar $X$ is thus left free, and what it parameterizes is exactly the hours unit of \eqref{\refeq:hoursUnit}: substituting \eqref{\refeq:calibration:etaCommonX} into \eqref{\refeq:yDefs},
 \begin{align}\label{\refeq:calibration:yxCommonX}
-    y_i^{x} = \left(z_i^{\eta}\right)^{\frac{\xi}{1+\xi}}X^{-\frac{\xi}{1+\xi}}, \qquad\text{i.e.}\qquad \mu = X^{-\frac{\xi}{1+\xi}}.
+    y_i^{x} = \left(z_i^{\eta}\right)^{\frac{\xi}{1+\xi}}X^{-\frac{\xi}{1+\xi}}, \qquad\text{i.e.}\qquad \mu = \sum_i\gamma_iy_i^x = X^{-\frac{\xi}{1+\xi}}\sum_i\gamma_i\left(z_i^{\eta}\right)^{\frac{\xi}{1+\xi}}.
 \end{align}
-It has to be free of the aggregate equilibrium, and it is: $X$ appears nowhere except through $y^x$, so no aggregate --- $h_t$, $s_t$, $R_t$, $\tau_t$ --- responds to it at all.
+It has to be free of the aggregate equilibrium, and it is: $X$ appears nowhere except through $y^x$, so no aggregate ($h_t$, $s_t$, $R_t$, $\tau_t$) responds to it at all.
 
 The restriction does cost something. Relative hours are no longer available as data, because with a common $X$ the model \emph{predicts} them,
 \begin{align}\label{\refeq:calibration:zxCommonX}
@@ -65,7 +67,7 @@ The restriction does cost something. Relative hours are no longer available as d
 \end{align}
 so that hours rise with income at elasticity $\xi/(1+\xi)$ whether or not they do so in the data. Equation \eqref{\refeq:calibration:zxCommonX} is worth reporting against the observed $z_i^x$ as a diagnostic. In exchange, the hours data are freed to identify the one thing variant A leaves arbitrary: we take the observed average workweek, convert it to a share of discretionary time, and impose it on $\overline{h}_{t_0}$ from \eqref{\refeq:avgHours}.
 
-Both variants therefore normalize identically --- $\Gamma_h = 1$ --- and differ only in how the hours unit $\mu$ is fixed: arbitrarily in variant A, by the average-hours target in variant B. Nothing prevents the same target from being imposed in variant A, where it would rescale $\bm{y}^x_i$ and $\bm{\eta}_i$ without touching any other object; we simply have no need of it there, since relative hours have already been used.
+Both variants therefore normalize identically, $\Gamma_h = 1$, and differ only in how the hours unit $\mu$ is fixed: by convention in variant A, by the average-hours target in variant B.
 
 
 \subsubsection{Targets and free parameters}\label{\refsec:calibration:targets}
@@ -77,12 +79,14 @@ The remaining parameters are the discount factor $\beta$ and the political weigh
 \end{align}
 Broadly, $\beta$ is adjusted to hit the interest rate and $\omega$ to hit the tax rate, though neither mapping is exclusive and the two are solved jointly.
 
-The third target does not enlarge the problem, and does not merely fail to enlarge it asymptotically --- it is exactly separable. By \eqref{\refeq:calibration:yxCommonX}, $X$ enters no aggregate, so the first two conditions of \eqref{\refeq:calibration:system} form a closed $2\times2$ system in $(\beta,\omega)$ that does not contain $X$ at all. Solving it delivers $h_{t_0}$, after which \eqref{\refeq:avgHours} with $\Gamma_h = 1$ gives $\overline{h}_{t_0} = h_{t_0}X^{-\xi/(1+\xi)}\sum_i\gamma_{t_0,i}(z_i^{\eta})^{\xi/(1+\xi)}$ and $X$ follows in one step:
+The third target does not enlarge the problem: it is exactly separable. By \eqref{\refeq:calibration:yxCommonX}, $X$ enters no aggregate, so the first two conditions of \eqref{\refeq:calibration:system} form a closed $2\times2$ system in $(\beta,\omega)$ that does not contain $X$ at all. Solving it delivers $h_{t_0}$, after which \eqref{\refeq:avgHours} with $\Gamma_h = 1$ gives $\overline{h}_{t_0} = h_{t_0}X^{-\xi/(1+\xi)}\sum_i\gamma_{t_0,i}(z_i^{\eta})^{\xi/(1+\xi)}$ and $X$ follows in one step:
 \begin{align}\label{\refeq:calibration:Xsolve}
     X = \left(\frac{h_{t_0}}{\hat{\overline{h}}_{t_0}}\sum_i\gamma_{t_0,i}\left(z_i^{\eta}\right)^{\frac{\xi}{1+\xi}}\right)^{\frac{1+\xi}{\xi}}.
 \end{align}
-No re-solve is required and $\beta$, $\omega$, $\tau_{t_0}$ and $R_{t_0}$ are untouched by construction. The calibration is therefore block-recursive, and variant B costs no more to solve than variant A.
+No further search is required, and $\beta$, $\omega$, $\tau_{t_0}$ and $R_{t_0}$ are untouched by construction. The calibration is therefore block-recursive, and variant B costs no more to solve than variant A.
 
-Two remarks on what is \emph{not} identified. First, in the log case the survival probability $p_t$ enters the political problem only through the product $\omega p_{t-1}$ weighting the retired bloc, and drops out of the first order condition elsewhere; $\omega$ and a constant $p$ are then not separately identified, and $\omega$ should be read as the political weight of the old inclusive of their survival rate. Under CRRA preferences $p_t$ additionally enters $B_{t+1}^i$ and the consumption levels, and the degeneracy is broken. Second, in variant A the average workweek $\overline{h}_t$ is not a target and its level carries no interpretation as data: by \eqref{\refeq:hoursUnit} it moves one-for-one with a units convention, which we fix at $\mu = 1$ rather than let the data choose. Hours are therefore reported relative to a reference point --- the baseline year of the same calibration. Since $\mu = 1$ is imposed in every calibration, the levels are at least on one scale and may be compared with each other; they simply cannot be read against an observed workweek. In variant B the level is a target, and this caveat does not apply. Note that the caveat concerns $\overline{h}_t$ and $h_{t,i}$, not the aggregate $h_t$: the latter is pinned in both variants by $\Gamma_h = 1$, but it is measured in efficiency units and is not the object an observed workweek is comparable to.
+Two remarks on what is \emph{not} identified. First, in the log case the survival probability $p_t$ enters the political problem only through the product $\omega p_{t-1}$ weighting the retired bloc, and drops out of the first order condition elsewhere; $\omega$ and a constant $p$ are then not separately identified, and $\omega$ should be read as the political weight of the old inclusive of their survival rate. Under CRRA preferences $p_t$ additionally enters $B_{t+1}^i$ and the consumption levels, and the degeneracy is broken. Second, in variant A the level of the average workweek $\overline{h}_t$ moves one-for-one with the units convention $\mu = 1$ of \eqref{\refeq:hoursUnit}. Hours are therefore reported relative to the baseline year of the same calibration; since $\mu = 1$ in every calibration the levels compare with each other, but not with an observed workweek. In variant B the level is a target. Neither caveat concerns the aggregate $h_t$, which $\Gamma_h = 1$ pins in both variants, in efficiency units.
 
-Most parameters can be calibrated initially given assumed values for $\xi$ and $\rho$. The exceptions are $\beta$ and $\omega$, which cannot be calibrated without knowing the politico-economic equilibrium path, and, as the equilibrium cannot be solved without them, the final bit of calibration is solved as a nested fixed point problem. In \cref{\refnumsec} we describe this calibration procedure in more detail.
+\smalltitle{France and the UK.} The two are calibrated against the US calibration at the same $\rho$, with two departures from \eqref{\refeq:calibration:system}. First, $\beta$ is imposed at the US value, so the interest rate becomes a prediction and the system reduces to one root in $\omega$ against $\hat{\tau}_{t_0}$. Second, average hours are targeted in both variants, relative to the US: $\hat{\overline{h}}_{t_0} = \overline{h}_{t_0}^{US}\,\mathrm{WW}/\mathrm{WW}^{US}$, with $\mathrm{WW}$ the observed workweeks and $\overline{h}_{t_0}^{US}$ the calibrated US value. Under variant B this is the country's own observed workweek in the model's time unit, since $\overline{h}_{t_0}^{US}$ is the US one by construction. Under variant A the target is met after the root through the scale invariance \eqref{\refeq:scaleInvariance}, by rescaling every $X_i$ by a common factor: $\tau_{t_0}$, $R_{t_0}$ and every ratio are unchanged, and $\Gamma_h$ ends at the ratio of the target to the average hours solved at $\Gamma_h = 1$, a level that the hours target determines rather than a normalisation.
+
+Every parameter but $\beta$ and $\omega$ follows from the data and the assumed $\xi$ and $\rho$. The two remaining ones require the politico-economic equilibrium path, which requires them, so the calibration is a nested fixed point problem (\cref{\refnumsec:calibration}).

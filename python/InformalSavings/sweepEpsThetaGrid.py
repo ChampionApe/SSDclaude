@@ -27,7 +27,7 @@ WHAT INSTALLING EACH PARAMETER REQUIRES
     consumed everywhere through a CACHED db['kappa'], so passing a new eps while leaving db alone solves
     the households' problem against one government budget and the government's against another. Nothing
     raises -- a mutually inconsistent (eps, kappa) violates no equilibrium condition, since kappa enters
-    everywhere as a given (README, "Known limitations").
+    everywhere as a given (README, "Open items").
 
   theta: installTheta, which writes db['theta'] plus its lead/lag through adjPar. theta has no cached
     descendant EXCEPT through eps, and that chain is deliberately cut here.
@@ -61,7 +61,7 @@ utf8Stdout()                                    # progress lines and --help carr
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, HERE)
-os.chdir(HERE)                                  # test.py resolves data/ relative to this directory
+os.chdir(HERE)                                  # relative paths resolve here; test.py finds data/ itself
 
 from shockUniversal import loadCalibrated, installEps, solvePEE, universalEps, PKLDIR
 from policy import multiplicityColumns
@@ -90,7 +90,7 @@ def installTheta(m, θ):
 
 def atT0(m, sol, t0):
     """ The reported equilibrium at the single year t0, as the csv's columns. s_/h/c10/c20 report on
-    db['t'] and iota on db['txE'] (README, "Reporting domains"), so both are looked up by label at t0
+    db['t'] and iota on db['txE'] (README, "Conventions and traps"), so both are looked up by label at t0
     rather than positionally. The tax candidates' counts cover the whole recursion, not t0 alone. """
     r = sol['report']
     s, s_, h, Y, Y0 = (float(r[k].xs(t0)) for k in ('s', 's_', 'h', 'Y', 'Y0'))

@@ -10,7 +10,7 @@ House style, applied by `_panel`:
   * recessive grid and axes; text in ink colours, never in a series colour.
 """
 import os, re, json
-import numpy as np, pandas as pd
+import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt

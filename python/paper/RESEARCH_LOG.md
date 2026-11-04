@@ -182,3 +182,16 @@ the least-squares line, times one minus the top-up share), in OECDdata's and OEC
 The pooled turnout's compulsory-voting countries are oecd26.COMPULSORY within the measure's sample (`datasets.compulsoryVoting`, read with ast): Belgium and Luxembourg under C.
 Closing (main session): datasets.horizon('US')/residuals('US')/derivativeScheme/taxPolicyState/strategicTerm read through
 `_readUS` (the rerun csvs carry thetaSource C); full build 51/0, `--map`, `--site`; date-only PDF rewrites of --map restored (README trap).
+
+## 2026-11-04 — code review pass P3 (`notes/codeReview_triage.md`, paper module)
+
+Guards, no output change: `compareResults` keys +15 and repeated keys compared in file order and counted, not dropped; `build.py`
+skips `StaleInput` like `MissingInput` (`--list`: BLOCKED) and `--map` clears the cached workbook reads (`config.clearCaches`), so 20
+rows of REPLICATION's map gained their workbook or csv; last-wins readers (`rhoGrid`, `usSweep`, `usShockRow`, `escRow`, `escCountry`)
+raise on a repeated key; `usAlpha` raises, cached; the overview figures raise on a missing headline row; `siteData` checks are NaN-safe
+and its skips print; OECD26_Variants' paper rows raise, OECD26_Omega checks layer 2's data columns, OECD_Correlations the csv against
+the figure's data (`oecdFigure1.figureCorrelations`); typed prose numbers now come from config/data or assert it (`paperWording`).
+Moved on purpose: NUM_Selection(Files) count `US_shocksXiCommonX.csv` and `escXiRobustness.csv` (Experiments 2 -> 3 files, 108 -> 162 rows,
+60 -> 90 counted; Endogenous design 12 -> 13 files, rows unchanged: the xi csv has no row at θ C); the `_thetaA/B` banners name
+`results/oecd26_theta_<V>/`. 36 orphan files of retired builders `git rm`ed from results/paper; dead defs and imports out (`spendingPath`
+stays: REPLICATION §3 cites it); Argentina's commands carry `--commonX`. Checks: tests 2/2 (16 + 11), build 59/0, `--map`, `--site`, quarto OK.

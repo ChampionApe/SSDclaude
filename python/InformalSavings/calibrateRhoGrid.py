@@ -19,8 +19,8 @@ outward in both directions (gridsearch.continuation.marchGrid). Each calibration
     interactively. Full solutions (policy functions) are deliberately NOT stored: CRRA's are not
     pickleable at all (gridsearch.interp's griddedInterp2D returns a closure) and they regenerate in ~21 s.
 
-The inner grid defaults to nι=ns=45, which is NOT the PEE solve's default and must not be reduced -- see
-README, "The CRRA calibration needs a finer inner grid than the CRRA solve". Whether 45 is still enough
+The inner grid defaults to nι=ns=45, which is NOT the PEE solve's default and must not be reduced -- the
+CRRA calibration needs a finer inner grid than the CRRA solve (finding #3). Whether 45 is still enough
 far from rho=1 has never been tested, which is what --verify exists to answer: it re-evaluates the outer
 residual at the converged parameters on a finer grid and stores it beside the point. A point whose
 verifyResidual is not small is converged but not resolved, and should not be read as a result.
@@ -39,7 +39,7 @@ REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 # UnicodeEncodeError on the first point and takes the whole march down with it.
 sys.stdout.reconfigure(encoding = 'utf-8', line_buffering = True)
 sys.path.insert(0, HERE)
-os.chdir(HERE)                                        # test.py reads data/ relative to its own location
+os.chdir(HERE)                                        # relative paths resolve here; test.py finds data/ itself
 
 import test as testmod
 from model import ModelInformalSavings
@@ -113,9 +113,9 @@ def main():
     p.add_argument('--verify', type = int, default = 60, help = 'refined nι=ns for the resolution check; 0 to skip')
     p.add_argument('--verifyLOG', type = int, default = 75,
                    help = "refined nι for the LOG anchor's resolution check (its working nι is 50)")
-    # Default 4, matching policy.py's own since 2026-08-19. It must NOT be None here: initGS merges this
-    # dict over the class defaults, so a None would explicitly select the adaptive smoother rather than
-    # request the default -- the exact inversion the flip introduced. 0 is the way back to adaptive.
+    # Default 4, policy.py's own. It must NOT be None here: initGS merges this dict over the class
+    # defaults, so a None would select the adaptive smoother rather than request the default. 0 selects
+    # the adaptive smoother.
     p.add_argument('--smoothKnots', type = int, default = 4,
                    help = 'fixed-knot policy smoother: interior knot every m-th node. 0 selects the '
                           'adaptive smoother, which re-chooses its knot COUNT from the data and makes the '
@@ -125,11 +125,9 @@ def main():
                           "from rho=1 under CRRA, and does not converge in nι at all under LOG")
     p.add_argument('--degree', type = int, default = 1, help = 'extrapolation degree for the warm start')
     p.add_argument('--maxHalvings', type = int, default = 2)
-    # Now that interpKind is shared, crossing rho=1 changes the solver, the state dimension and nι
-    # (50->45) -- but no longer the interpolant, which was carrying ~98% of the jump. --common
-    # additionally matches the grid SIZES. That is a diagnostic, not a fix: nι accounts for ~2% of the
-    # boundary gap and the LOG answer is already converged in it at 'cubic' (flat to 1e-5 across
-    # nι in {45,60,90}). Use it to isolate the two recursions from every setting at once.
+    # interpKind is shared, so crossing rho=1 changes the solver, the state dimension and nι (50->45) but
+    # not the interpolant. --common additionally matches the grid SIZES, to isolate the two recursions
+    # from every setting at once (a diagnostic: the LOG answer is converged in nι at 'cubic').
     p.add_argument('--common', action = 'store_true',
                    help = 'also give the LOG anchor the CRRA grid SIZES, so nothing but the recursion '
                           'changes at rho=1 (diagnostic; interpKind is already shared)')
@@ -168,35 +166,19 @@ def main():
     os.makedirs(pkldir, exist_ok = True)
     grid = np.round(np.arange(args.lo, args.hi + 0.5*args.step, args.step), 6)
     commit = gitCommit()
-    # Keyed by solver: the grid sizes and interpKind are the CRRA calibration's, and the LOG anchor keeps
-    # its own defaults (nι=50, 'linear') rather than being silently moved onto them. interpKind='cubic' is
-    # required rather than preferred -- at 'linear' the CRRA calibration away from rho=1 does not converge
-    # and its answer is not grid-converged; see the module docstring of test_calibrationGrid.py.
-    #
-    # smoothKnots is the one setting BOTH solvers get. It is not a resolution choice but a well-posedness
-    # one -- the adaptive spline's knot count is chosen from the data and flips discontinuously as a
-    # parameter moves, putting jumps in the outer residual (README, "The policy smoother's knots must be
-    # pinned"). Leaving the anchor on the adaptive smoother would solve rho=1 under a different residual
-    # from every other point, and since the anchor's x is the warm start the whole march is seeded from,
-    # that difference propagates. Measured at rho=1: same nfev (26 vs 25), a 33x tighter residual
-    # (1.5e-11 vs 5.2e-10), and beta/omega move -0.057%/+0.32%.
+    # Keyed by solver. The grid SIZES are the CRRA calibration's alone (the LOG anchor keeps its own nι=50):
+    # they are resolution choices and legitimately differ. interpKind and smoothKnots go to BOTH solvers:
+    # they are well-posedness choices (findings #4, #5, #7), and the anchor's x seeds the whole march, so
+    # solving rho=1 under a different interpolant or smoother would propagate to every point.
+    # interpKind='cubic' is required rather than preferred: at 'linear' the CRRA calibration away from rho=1
+    # does not converge and the LOG solve does not converge in nι (test_calibrationGrid.py's docstring;
+    # archive/notes/informalSavings_resolvedIssues.md).
     knots = args.smoothKnots if args.smoothKnots else None      # 0 -> the adaptive branch
     crraGS = {'nι': args.nι, 'ns': args.ns, 'interpKind': args.interpKind, 'smoothKnots': knots}
-    # interpKind is given to BOTH solvers (2026-08-20). It is not a resolution choice but a
-    # well-posedness one, the same argument as smoothKnots above: at 'linear' the LOG solve does not
-    # converge in nι, it JITTERS -- tau(t0) spans 9.6e-4 across nι in [45,120] with no trend, against
-    # 2.2e-5 at 'cubic', and tau(t0+1) 2.4e-3 against 2.5e-5. Since tau(t0) is a calibration target the
-    # four parameters were being fitted to one realisation of that jitter at one nι, displacing the rho=1
-    # anchor off the curve its CRRA neighbours trace and putting a +10.6%-of-scale spike in the
-    # universalisation response at t0+1. It was keyed on CRRA only because that is where
-    # crossCuttingFindings #4 surfaced -- see #7, and archive/notes/informalSavings_resolvedIssues.md for the
-    # full chain. nι stays per-solver: THAT one is a resolution choice and legitimately differs.
     logGS = {'smoothKnots': knots, 'interpKind': args.interpKind}
     gridSettings = {'CRRA': crraGS, 'LOG': dict(crraGS) if args.common else logGS}
-    # LOG is keyed here too (2026-08-20). It was CRRA-only, so every LOG row of every sweep carried
-    # verifyResidual=NaN -- the one point running the unconverged interpolant was also the one point with
-    # no resolution check, which is why the defect above survived. 75 is LOG's established refinement
-    # rung (1.5x its nι=50), matching test_calibrationGrid.py's VERIFY.
+    # The resolution check runs at both solvers; 75 is LOG's refinement rung (1.5x its nι=50), matching
+    # test_calibrationGrid.py's VERIFY.
     verify = ({'CRRA': {'nι': args.verify, 'ns': args.verify, 'interpKind': args.interpKind},
                'LOG': {'nι': args.verifyLOG}}
               if args.verify else None)

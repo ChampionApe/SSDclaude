@@ -1,6 +1,5 @@
 import numpy as np, pandas as pd
-from scipy import optimize, interpolate
-from gridsearch import (robustRoot, roots1d, CartesianGrid, griddedInterp1D, griddedInterp2D,
+from gridsearch import (roots1d, CartesianGrid, griddedInterp1D, griddedInterp2D,
                         griddedSmooth1D, griddedGradient1D)
 
 
@@ -84,22 +83,14 @@ class LOG:
     # attribute, so that an instance unpickled from before it existed selects by the frozen rule too.
     selection = 'frozen'
 
-    def __init__(self, m, style = 'Vector', grid = None, **kwargs):
+    def __init__(self, m, grid = None):
         self.m = m
         self.B  = m.B # refer to base class
         self.BG = m.BG # refer to basegrid class
         self.BT = m.BT # refer to basetime class
         self.db = m.db # refer to main database
         self.ni, self.T = m.ni, m.T # copied locally so solves don't need to keep reaching into self.m
-        self.style = style
-        self.x0 = {} # own cache of last-used/default initial guesses, keyed by problem name -- separate
-                      # from self.m.x0 (model.py's EE_* cache)
-        self.kwargs = self._kwargs | kwargs # passed to newton solver
         self.initGS(grid)
-
-    @property
-    def _kwargs(self):
-        return {'update': True}
 
     def initGS(self, grid = None):
         """ Named grid problems. 'PEE': solGrids={'τ': ...} built from this entry's own gridSettings
@@ -119,35 +110,20 @@ class LOG:
     @property
     def _gridSettings(self):
         """ Grid defaults. l/u: interior τ bounds -- u<1 strictly, since z_t carries a 1/(1-τ_t) factor and
-        diverges at τ=1. n: nodes spanning [l,u]. Δl/Δu: nodes below/above the previous period's solution a
-        refinement window spans (kept separate so a monotone-in-t path can be solved asymmetrically).
-        nι/δι/padι/capι/spacingι: state-grid defaults -- see defaultIotaGrid.
+        diverges at τ=1. n: nodes spanning [l,u]. nι/δι/padι/capι/spacingι: state-grid defaults -- see
+        defaultIotaGrid.
 
-        interpKind: the continuation interpolants' kind (gridsearch.interp). 'linear' is the piecewise-
-        linear form everything below was measured against; its kinks are the documented error floor of the
-        state approximation and of z_t. 'pchip' is the monotone C1 alternative -- smoother without the
-        overshoot a plain 'cubic' introduces where a policy is flat at a bound. Changing it changes the
-        solution, so it is recorded in the grid settings rather than set at the call sites.
+        interpKind: the continuation interpolants' kind (gridsearch.interp): 'linear', 'cubic' (what every
+        calibration passes) or 'pchip'. 'linear' leaves kinks at the state nodes (finding #4). Changing it
+        changes the solution, so it is recorded in the grid settings rather than set at the call sites.
 
-    smoothKnots: how the policy smoother picks its knots (gridsearch.interp.griddedSmooth1D). An int m
-        pins them at every m-th valid node, making the smoother a LINEAR MAP of its input and hence the
-        outer residual continuous in the model parameters. None selects the adaptive-knot smoothing
-        spline instead, whose knot COUNT is chosen from the data and therefore flips discontinuously as a
-        parameter moves -- ~3.5e-6 jumps in the calibration's outer residual, which is what made ρ≈0.7
-        uncalibratable (deviations note item 3).
-
-        Defaulted to 4 on 2026-08-19, having previously defaulted to None so that pre-2026-08-19 results
-        reproduced bitwise. Those results are all superseded, every calibration path was overriding it
-        explicitly, and the configurations that still reached the adaptive branch by default were the ones
-        that silently failed -- test_calibration.py §8 spent a session broken that way. None remains
-        available and is what archive/code/InformalSavings/diagnoseRho07.py pinned explicitly to reproduce its
-        own measurements.
-
-        NOTE the override trap this creates: initGS merges the caller's dict OVER these defaults, so
-        passing smoothKnots=None explicitly now DISABLES pinned knots rather than requesting the default.
-        A caller that threads an optional argument through must omit the key when it has nothing to say.
-        Recorded here rather than set at the call sites for the same reason as interpKind. """
-        return {'l': 1e-4, 'u': 1-1e-4, 'n': 101, 'Δl': 10, 'Δu': 10,
+        smoothKnots: how the policy smoother picks its knots (gridsearch.interp.griddedSmooth1D). An int m
+        pins them at every m-th valid node, making the smoother a linear map of its input and hence the
+        outer residual continuous in the model parameters (finding #5). None selects the adaptive-knot
+        smoothing spline, whose knot count is chosen from the data and flips as a parameter moves.
+        initGS merges the caller's dict over these defaults, so passing smoothKnots=None DISABLES pinned
+        knots rather than requesting the default: omit the key when there is nothing to say. """
+        return {'l': 1e-4, 'u': 1-1e-4, 'n': 101,
                 'nι': 50, 'δι': 1e-4, 'padι': (0.45, 3.7), 'capι': 2.0, 'spacingι': 'log',
                 'interpKind': 'linear', 'smoothKnots': 4}
 
@@ -155,45 +131,20 @@ class LOG:
     ##########   State grids over ι_{t-1} (docs §PEELOG, "Grids")      #####
     #######################################################################
     def defaultIotaGrid(self, θ, ε, t = None, n = None):
-        """ Default grid of predetermined states ι_{t-1} (docs' 𝒮_0), taken from the steady state: under a
-        constant policy τ, eq:auxiliary:s0_s evaluated at the steady-state Θ_s(τ) gives ι*(τ), and the grid
-        spans BOTH bounds as multiples of min_τ ι*(τ): l_ι = max{δ_ι, padι[0]·min_τ ι*(τ)},
-        u_ι = min{padι[1]·min_τ ι*(τ), capι}.
+        """ Default grid of predetermined states ι_{t-1} (docs' 𝒮_0, §PEELOG): under a constant policy τ,
+        eq:auxiliary:s0_s at the steady-state Θ_s(τ) gives ι*(τ), and both bounds are multiples of its
+        minimum over 𝒯, l_ι = max{δι, padι[0]·min_τ ι*(τ)}, u_ι = min{padι[1]·min_τ ι*(τ), capι}, with nι
+        nodes (n overrides) spaced logarithmically ('spacingι'). θ, ε: scalars; t: the period whose steady
+        state is used, default the terminal one.
 
-        Anchoring the upper bound on the MINIMUM is deliberate and is what retires the absolute cap as the
-        operative bound (archive/code/InformalSavings/measureGrids.py, 2026-08-19). ι*(τ) diverges as τ→1 --
-        25 484 at τ=0.9999 on the Argentina calibration -- so a rule anchored on max_τ ι*(τ) has no finite
-        content and the grid's
-        real upper bound was whatever capι happened to be set to, an absolute number that would not
-        survive a change of data. Measured against the reachable set (policy.reachableBox), both bounds
-        are stable multiples of the minimum instead: across ρ ∈ [0.5, 2.0] and under LOG, min_τ ι*(τ) is
-        constant to 0.045%, and the reachable box sits at 0.539-0.557x and 2.89-3.07x it. The pads carry
-        ~20% margin on those. capι survives as a backstop, inert on this calibration (3.7·0.3042 = 1.13).
+        The anchor is the minimum because ι*(τ) diverges as τ→1 (formal savings vanish), so the upper end
+        of its range has no finite content; capι is a backstop and should not bind. The minimum runs over
+        every node of 𝒯, since ι*(τ) need not be monotone.
 
-        min/max run over the whole of 𝒯 rather than just its endpoints: ι*(τ) need not be monotone, and
-        evaluating it is one vectorized closed-form pass (steadyState_LOG_solve takes the τ grid directly).
-
-        l_ι > 0 strictly is not cosmetic. It puts dv20's pole at ι_{t-1}+A_tτ_t = 0 outside the evaluation
-        region for every node of 𝒯, so z_t is bounded on the whole grid and no masking of the state
-        dimension is needed. It also *assumes* the informal household is a net saver -- which is why a
-        solved ι_t outside [l_ι,u_ι] is reported as an infeasibility and never clipped back onto the grid.
-
-        Three departures from the doc's rule, all measured rather than assumed (see test_peeLOG.py and the
-        README's open items):
-        - u_ι is capped at 'capι' (default 2). ι*(τ) = s_0/s diverges as τ→1 -- not because informal
-          savings explode, but because the *denominator*, formal savings, collapses -- so uncapped the
-          rule gives ~10^4 on the Argentina calibration while solved paths live at ι ~ 0.1. The grid would
-          then be spent almost entirely on states no path can reach. The cap places resolution; it is not
-          an economic restriction, since a solved ι_t above it is still reported infeasible and never
-          clipped, so too low a cap fails loudly.
-        - The lower padding is 0.25, not the doc's 0.75. The steady-state range *understates* ι_t's
-          dynamic range: at t=T-1 the solved ι_t(τ) falls to 0.031 against a steady-state minimum of
-          0.094. With the doc's factor, 29 of 101 nodes of 𝒯 are infeasible purely because the implied ι_t
-          sits below l_ι, and the political selection is then pinned to the feasibility edge at most
-          states rather than determined by the first order condition (188 corner selections vs 71 here).
-          The solved path is unaffected either way, which is what identifies this as a grid artefact.
-        - Spacing is logarithmic ('spacingι'), which the doc does not specify. Well defined precisely
-          because l_ι>0. """
+        l_ι > 0 strictly keeps dv20's pole at ι_{t-1}+A_tτ_t = 0 off the grid for every node of 𝒯, so z_t
+        is bounded and the state dimension needs no mask. It assumes the informal household is a net
+        saver: a solved ι_t outside [l_ι, u_ι] is reported infeasible, never clipped. Raises when the
+        bounds are degenerate. """
         t = self.db['t'][-1] if t is None else t
         settings = self.GS['PEE']['gridSettings']
         τGrid = self.GS['PEE']['solGrids']['τ']
@@ -633,7 +584,9 @@ class LOG:
         the same zbarParts_t as z_t. smooth: griddedSmooth1D on the selected τ_t(ι_{t-1}) before
         interpolation (the profile inherits small kinks from the continuation interpolants, which the next
         period's numerical derivatives amplify); applied in log ι, since 𝒮_0 is geometrically spaced. Pass
-        0 to disable. si_s_: inherited shares of the generation old at t (ni,), solveBackward's si_s0. """
+        0 to disable. With smoothKnots an int (the default) the smoother is a least-squares fit on pinned
+        knots that ignores its smoothing factor, so any nonzero `smooth` gives the same fit: it is a switch.
+        si_s_: inherited shares of the generation old at t (ni,), solveBackward's si_s0. """
         settings = self.GS['PEE']['gridSettings']
         τGrid = self.GS['PEE']['solGrids']['τ']
         with self.BG.cacheParams():
@@ -737,8 +690,8 @@ class LOG:
         eq:forwardSim) -- what turns a sequence of policy functions into one path.
 
         sols: solveBackward's {t: report}. θ, ε: full length-T paths (needed by the re-solve below). ι0:
-        the state entering db['t'][0] -- the docs' ι_0, i.e. the code's ι_{-1} (README's timing
-        convention), normally model.py's initialStatePEE.
+        the state entering db['t'][0] -- the docs' ι_0, i.e. the code's ι_{-1} (README, "Timing and data
+        conventions"), normally model.py's initialStatePEE.
 
         exact: take the state transition as the docs write it, ι_t = ι_t(τ_t) -- re-solving
         eq:stateResidualLOG at the walked τ_t -- rather than reading it off the reported ιPolicy. The two
@@ -821,8 +774,9 @@ class CRRA(LOG):
     @property
     def _gridSettings(self):
         """ LOG's, plus the savings-state grid (ns/δs/pads -- see defaultSGrid) and the refinement factor
-        of its candidate grid (nsCandMult -- see defaultSCandGrid). nι is halved from LOG's default: with
-        two states the product grid 𝒮×𝒮_0 is what costs, and the report step's re-solve scales with it. """
+        of its candidate grid (nsCandMult -- see defaultSCandGrid). nι = ns = 30 against LOG's nι = 50: with
+        two states the product grid 𝒮×𝒮_0 is what costs, and the report step's re-solve scales with it. The
+        calibration passes nι = ns = 45 (finding #3). """
         return super()._gridSettings | {'nι': 30, 'ns': 30, 'δs': 1e-4, 'pads': (0.45, 3.65),
                                         'sAnchorτ': 0.3, 'nsCandMult': 4}
 
@@ -869,9 +823,8 @@ class CRRA(LOG):
         return np.linspace(max(settings['δs'], lo), hi, settings['ns'] if n is None else n)
 
     def defaultIotaGrid(self, θ, ε, t = None, n = None, nτ = 21):
-        """ LOG's rule (padded, capped range of the steady-state ι*(τ) -- see LOG.defaultIotaGrid for the
-        three departures from the doc, all of which carry over), but off the CRRA steady state, where B^0
-        is B0SteadyState rather than the primitive β_0.
+        """ LOG's rule (bounds as multiples of min_τ ι*(τ), capped -- see LOG.defaultIotaGrid), but off the
+        CRRA steady state, where B^0 is B0SteadyState rather than the primitive β_0.
 
         ι*(τ) is evaluated on a coarse subsample of 𝒯 (nτ nodes) rather than every node, since each is a
         brentq solve rather than a closed form. Nodes where that solve fails to bracket -- which happens as
@@ -911,24 +864,18 @@ class CRRA(LOG):
                 np.asarray(r['inGrid'], dtype = bool))
 
     def defaultSCandGrid(self, sGrid):
-        """ Default 𝒮', the candidate grid the s_t root is searched over: spans 𝒮 but finer by
-        'nsCandMult' AND geometrically spaced. The two candidate grids are deliberately chosen by
-        different rules, because the two roots' errors have different sources (measured; docs §PEE
-        "Grids"):
+        """ Default 𝒮', the candidate grid the s_t root is searched over: spans 𝒮, 'nsCandMult' times finer
+        and geometrically spaced (s_t spans a factor of ~20, so a uniform 𝒮' spends constant-width cells at
+        the bottom of that range). The two candidate grids follow different rules (docs §PEE "Grids"):
 
-        - eq:stateResidual:iota reaches ι_t ONLY through the continuation interpolants, which are
-          piecewise linear with breakpoints at 𝒮_0's nodes. The residual therefore has no intrinsic
-          curvature of its own -- its kinks are the whole error -- and a cell of 𝒮_0' straddling a
-          breakpoint is one the secant cannot represent. Aligning 𝒮_0' with 𝒮_0 removes every straddling
-          cell: relative error 2.3e-7 at 𝒮_0'=𝒮_0, falling as O(h²) along refinements that CONTAIN 𝒮_0's
-          nodes (5.4e-8, 1.4e-8, 3.5e-9 at k=2,4,8), while same-size grids that do not sit at ~2e-5 and do
-          not converge cleanly. Hence 𝒮_0' = 𝒮_0 by default; refine it only as a superset.
-        - eq:stateResidual:s is dominated instead by B_{t+1}(s_t,h_{t+1})'s genuine nonlinearity in s_t,
-          which swamps the same kinks. Alignment buys nothing there (superset and non-aligned grids of
-          equal size agree to within 20%), and refinement does. Relative error in the located s_t across
-          the state grid: 2.3e-2 at 𝒮'=𝒮, 4.5e-4 at 4x uniform, 7.2e-5 at 4x geometric -- geometric
-          because s_t spans a factor of ~20 while a uniform 𝒮' puts constant-width cells at the bottom of
-          that range. """
+        - eq:stateResidual:iota reaches ι_t only through the continuation interpolants, so its error is
+          their shape between 𝒮_0's nodes. Under 'linear' interpolants the residual is kinked at exactly
+          those nodes, and 𝒮_0' = 𝒮_0 (or a refinement containing its nodes) leaves no cell straddling a
+          kink, which is why 𝒮_0' defaults to 𝒮_0. The measurements behind this were made on 'linear'
+          interpolants; under 'cubic'/'pchip' (what the calibrations run) the residual has no kinks there,
+          and the alignment is a default rather than a requirement.
+        - eq:stateResidual:s is dominated by B_{t+1}(s_t,h_{t+1})'s own nonlinearity in s_t, so refinement
+          pays and alignment does not. """
         settings = self.GS['PEE']['gridSettings']
         return np.geomspace(sGrid[0], sGrid[-1], settings['nsCandMult']*len(sGrid))
 
@@ -1319,11 +1266,12 @@ class CRRA(LOG):
         return report
 
     def _smooth2D(self, τ, sGrid, ιGrid, smooth):
-        """ Docs §PEE "Numerical stability": a light smoothing of the selected τ_t(s_{t-1},ι_{t-1}) before
+        """ Docs §PEE "Smoothing": a light smoothing of the selected τ_t(s_{t-1},ι_{t-1}) before
         interpolation, which matters more here than in the log case because each of the next period's
         numerical derivatives composes TWO interpolated surfaces. Applied separably, along s and then
         along ln ι -- log because 𝒮_0 is geometrically spaced while 𝒮 is not. NaNs are held out of the fit
-        and restored after; pass smooth=0 to disable.
+        and restored after; pass smooth=0 to disable. Under pinned knots (smoothKnots an int, the default)
+        the fit ignores the smoothing factor, so `smooth` only switches it on (LOG.solveBackward_t).
 
         The result is clipped back into [l,u]. Smoothing is a denoise, not a re-optimisation, and a spline
         through a profile that is flat at a corner over part of the grid undershoots it: without the clip
@@ -1460,7 +1408,9 @@ class CRRA(LOG):
         extrapolate, (ii) leaves the previous period's reachable set, or (iii) goes non-finite. The last
         is not hypothetical and has no counterpart in the log case: a policy surface carries NaN at its
         infeasible nodes, and griddedInterp2D cannot drop them the way the 1-D interpolants filter to
-        their feasible nodes -- so a path can go non-finite without ever leaving the rectangle. """
+        their feasible nodes; under every interpKind it returns NaN wherever 'linear' would (any cell, node
+        or extrapolation whose lookup touches an infeasible node) -- so a path can go non-finite without
+        ever leaving the rectangle. """
         tIdx = self.db['t']
         settings = self.GS['PEE']['gridSettings']
         l, u = settings['l'], settings['u']

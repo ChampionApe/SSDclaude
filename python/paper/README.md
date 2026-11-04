@@ -12,8 +12,8 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | Stage | Argentina | US / France / UK | Writes | Cost (cold, ARG / US) |
 |---|---|---|---|---|
 | (0) data targets | `dataTargets.py` | `oecdFigure1.py` (figure 1) | `data/argentina_*.csv`, `data/oecdFigure1*.csv` | seconds |
-| (i) calibration | `runCalibration.py` | `runCalibrationUS.py --commonX` | `results/calibration/`, `results/paper/*Summary.csv` | ~3.2 h / ~45 min |
-| (ii) experiments | `runShocks.py` | `runShocksUS.py` | `results/shocks/`, `results/sweeps/`, `results/esc/`, `results/oecd26/`, `results/oecd26_theta_<V>/` | ~50 min / ~2 h (+3 h variants, +1.5 h stylized) |
+| (i) calibration | `runCalibration.py --commonX` | `runCalibrationUS.py --commonX` | `results/calibration/`, `results/paper/*Summary.csv` | ~3.2 h / ~45 min |
+| (ii) experiments | `runShocks.py --commonX` | `runShocksUS.py` | `results/shocks/`, `results/sweeps/`, `results/esc/`, `results/oecd26/`, `results/oecd26_theta_<V>/` | ~50 min / ~2 h (+3 h variants, +1.5 h stylized) |
 | (iii) build | `build.py` | `build.py` | `results/paper/{Tables,Figs}`, then `writing/Paper` | seconds |
 | online appendix | `build.py --site`, then `quarto render writing/OnlineAppendix` | the same | `writing/OnlineAppendix/{_generated,_book,_variables.yml}`, `writing/Paper/onlineAppendix.tex` | ~1 min |
 
@@ -26,9 +26,11 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 - Every stage skips work whose output exists; `--force` overrides, `--list` reports, `--dry` prints the delegated
   commands. **`--force` whenever anything upstream moved, a recalibration above all** (#13); it is forwarded to the
   child only where the child resumes.
-- Stage (iii) imports no model code and unpickles nothing; an output whose inputs are missing is reported and
-  skipped (`datasets.MissingInput`), never partially written. Stages (i)/(ii) are declarations: `config.py` records
-  the settings the published numbers were produced at. **Change a paper number there first.**
+- Stage (iii) imports no model code and unpickles nothing; an output whose inputs are missing or stale is reported and
+  skipped (`datasets.MissingInput`, `StaleInput`; `--list`: BLOCKED), never partially written. Stages (i)/(ii) are
+  declarations: `config.py` records the settings the published numbers were produced at. **Change a paper number
+  there first.** Argentina's stages take `--commonX` (the headline, `config.ARG['commonX']`); without it they sweep
+  vector X only.
 - Both arms carry two calibration variants, `config.US['commonX']`/`config.ARG['commonX']` (both True) naming the
   headline; `build.py` registers the headline only. The ESC leg runs under the US headline only.
 - Stage (0) is the only network access (it writes `data/` and skips existing output). **`--map`** rewrites
@@ -50,9 +52,9 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
   6's `spendingSpec` live in `config.US['oecd26']`; another carries its suffix (`_cses`, `_omegaUS`, `_nuNone`,
   `_thetaA`). Stale anchors or rows raise `StaleInput`. France's own ν is `config.US['retAgeFR']`'s (`testEU.load`;
   `'nra'`, appendix F). Retired: the cps rows (unread); the pooled turnout and A2pt in `archive/results/`.
-- **Argentina's GDP** is formal plus informal output, `Y + Y0` (#3): `datasets` reads savings and spending over it
-  (`savingsRatePath`, `spendingPath`) and `config.argTaxTarget` checks the calibrated τ. Not wired: the pre-reform
-  ε = 0 calibration and `reformDiagnostics.py` (`REPLICATION.md` §3).
+- **Argentina's GDP** is formal plus informal output, `Y + Y0` (#3): `datasets` reads savings over it
+  (`savingsRatePath`; `spendingPath`, for `REPLICATION.md` §3's prose numbers) and `config.argTaxTarget` checks the
+  calibrated τ. Not wired: the pre-reform ε = 0 calibration and `reformDiagnostics.py` (`REPLICATION.md` §3).
 - Not wired, commands in `REPLICATION.md` §3, both with `--theta C --main`: C5's smaller U.S. numbers
   (`python/US/c5Numbers.py` -> `results/numerical/C5_*.csv`; the site's `US_TaxState`, `US_Strategic` read two) and
   C4's appendix D checks (`runHorizon.py` -> `results/numerical/`; `NUM_Horizon`, `NUM_Residuals`,
@@ -78,7 +80,7 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
 | `tablesHorizon.py` | appendix D: `NUM_Horizon` (`NUM_HorizonPaths` on the site), `NUM_Residuals`; the counts are `tablesOA.numSelection` |
 | `tablesOECD26.py`, `figuresOECD26.py` | the cross-country test (`results/oecd26/`, the measure's data side `tablesOECD26.dataSide`): section 6's spending at the observed designs without the cost (`OECD26_Spending`), layer 1 beside the data (`OECD26_Layer1`), the five slopes (`OECD26_Slopes`), the `ω`'s (`OECD26_Omega`), predicted against observed θ (`OECD26_ThetaFit`; `thetaFit`'s r and RMSE without the U.S.), appendix G's `OECD26_Variants` (population and data variants) and `OECD26_ThetaFitPopulation`, `OECD26_ThetaFitMeasure`, C5's exhibits by suffix; the index version `OECD26_ThetaFitIndex` is built, not input. Every figure writes `<name>_note.tex` with its numbers. `test_oecd26.py` checks them on synthetic csvs |
 
-## Outputs wired (51)
+## Outputs wired (59)
 
 Every generated `.tex` carries a `%% Source:` banner; `--list` reports what is buildable now. Every table row ends
 in a `% row: <key>` comment (`tables.rowKey`) and every figure writes `.svg` and `.marks.json` (`figures._save`),
@@ -109,6 +111,8 @@ One line each; measurements in the archived READMEs.
 - US arm: the full US sweep before any EU sweep; one savings unit, `s/Y` (`datasets.US_SR`, the ESC csvs by
   `(1-α)`); an ESC reading against the baseline of the same reading; `workweek` in the shock csv is in hours;
   `config.usCalendar()` reads the workbook, not a copy's stale `db['dates']`.
-- The CRRA ESC csvs hold `method` exact (published) and path side by side; `datasets.escMethod` never falls back.
-- An ESC calibration row without `Vtilde`, `fStar`, `f0`, `τ0` predates `'size'` (`datasets.escWedge`).
+- The CRRA ESC csvs hold `method` exact (published) and path side by side; `datasets.escMethod` never falls back. A
+  calibration row without `Vtilde`, `fStar`, `f0`, `τ0` predates `'size'` (`datasets.escWedge`).
+- A repeated key in a results csv is an error (`datasets._noDuplicates`, #8), never last-wins; `datasets.usAlpha` never
+  falls back to the workbook; `oecdCorrelations.csv` and layer 2's data columns are checked against the current data.
 - The two calibration variants check each other: baseline, `θ`, ageing and voting identical (≤5e-15).

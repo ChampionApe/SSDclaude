@@ -1,9 +1,9 @@
 r""" Endogenous system characteristics under CRRA: calibrate the wedge at rho != 1, solve the design path,
 and run the ageing counterfactual.
 
-Run:  .venv\Scripts\python.exe python\US\runESCcrra.py                       # rho = 2, both specs, phi=.5
+Run:  .venv\Scripts\python.exe python\US\runESCcrra.py                       # rho = 2, spec 'scale', phi = .5
       ... --rho 2.0 0.5  --spec scale  --phi 0.5  --commonX
-      ... --stage calib path shocks sens
+      ... --stage calib path shocks
       ... --exact --stage calib path shocks --ns 150                        # the published method
       ... --exact --rho 2.0 --spec size --phi 0.5 --commonX --bracket L U     # the paper's wedge, lambda in p
 
@@ -44,9 +44,6 @@ STAGES
           BELOW the LOG one: at rho = 2 the LOG-calibrated p = 0.41 already puts the choice at the
           theta = 1 corner (a higher EIS needs far less wedge to reach an interior choice).
   path    the design path at the calibrated p, plus targetDrift.
-  sens    stateSensitivity -- d(theta_{t+2})/d(theta_{t+1}), the quantity the path iteration assumes is
-          zero. It IS zero under LOG (proved and measured); this reports what it is under CRRA. Any path
-          result should be read next to this number. Not run under --exact (nothing is assumed there).
   shocks  counterfactuals, theta pinned vs chosen, each a NEW EQUILIBRIUM PATH (shocked parameters over
           the whole horizon, own steady state, the choice binding from the first period) and REPORTED AT
           t0. Default scenario set: acute ageing plus the French characteristics -- income distribution,
@@ -54,16 +51,20 @@ STAGES
           runESC.py's LOG stage runs, selectable via --scenarios, plus France's own calibrated path as
           the endpoint row. The French data are frenchData's (runShocksUS.py), calibrated at the SAME rho
           under CRRA, computed once per rho and shared across specs.
-  permanent   the permanent choice traced in rho (stagePermanentCRRA), escPermanentCRRA.csv.
   sequential  the COSTLESS sequential FOC of eq:esc:seqFOC (ModelESC.sequentialFOC) on the solved
               no-wedge baseline at every dated period, escSequentialCRRA.csv: its sign over theta in
               [0,1] is the "three timings, one corner" claim under CRRA (the LOG case is test_esc.py's).
 
---theta VARIANT [--root DIR | --main] (stages calib, path, sens, shocks; runESC.setTheta): the U.S. at θ0 = the
+--theta VARIANT [--root DIR | --main] (stages calib, path, shocks; runESC.setTheta): the U.S. at θ0 = the
 variant's U.S. row of data/oecd26_theta.csv, France and the UK at theirs (runESC.countryθ0), seeded off the variant's
 sweeps in DIR/calibration/ (every rho asked for at the variant: oecd26.usBeta; the UK's for --host UK), the csvs in
 DIR/esc/ (results/ under --main, the pipeline's main variant), every row carrying thetaSource, θ0 and grid
-(solverColumns); a path or shocks stage reads only a calibration row at the same three (readCalibratedP).
+(solverColumns); a path or shocks stage reads only a converged calibration row at the same three (readCalibratedP).
+
+A stage that reads its cost from file (no calib stage in the run) under --exact needs an exact row: with only a
+path-iteration row at that (rho, spec, phi) the combination is a recorded failure, unless --allowPathP lets the path p
+stand in (a smoke run). Failures a run survives (a calibration, a path or a scenario that raised) are printed, the run
+goes on, and main exits 1 with the list (runESC.noteFailure). A relative --root is the caller's working directory's.
 """
 import os, sys, argparse, time
 import numpy as np, pandas as pd
@@ -71,6 +72,7 @@ from copy import deepcopy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
+CWD = os.getcwd()                 # where a relative --root points: the chdir below moves to HERE
 sys.stdout.reconfigure(encoding = 'utf-8', line_buffering = True)
 sys.path.insert(0, HERE)
 os.chdir(HERE)
@@ -157,55 +159,6 @@ def franceRowCRRA(m, ρ, spec, phi, p, hbarRef, commonX = False, gs = None):
             'τ_t1': r1['τ'], 'sr_t1': r1['sr'], 'ww_t1': r1['workweek'], 'multiplicity': out.get('multiplicity')}
 
 
-def stagePermanentCRRA(ρs, specs, phis, out, wedgeP = None, nCand = 21, commonX = False):
-    """ The permanent choice under CRRA, traced in rho.
-
-    This is where the permanent timing turns out to be fragile in a way the appendix does not report. With
-    no wedge the objective is essentially MONOTONE in theta, so the choice is always a corner -- and WHICH
-    corner flips inside the paper's own rho range: theta = 0 for rho <~ 1.3 (the appendix's result, found
-    at rho = 1) and theta = 1 above it. The gaps W(0) - W(1) are recorded so the flatness is visible rather
-    than inferred from the argmax alone.
-
-    theta_perm is the anticipated vote's fixed point (modelESC.solvePermanent's default); the unanticipated
-    reading is recorded beside it. Every row here is a corner, where the two cannot differ -- which is
-    exactly the case finding #10 warns about, so the column is kept to make that visible. Each row carries
-    the tax counts of solvePermanent (every candidate's solve and the equilibrium at the choice)."""
-    rows = []
-    for ρ in ρs:
-        for spec in specs:
-            for phi in phis:
-                w = None if wedgeP is None else {'spec': spec, 'phi': phi, 'p': wedgeP}
-                for label, wedge in (('none', None), ('calibrated', w)):
-                    if wedge is None and label == 'calibrated':
-                        continue
-                    try:
-                        m = buildUS(ρ, wedge, nθCandCRRA = 13, commonX = commonX)
-                        m.ESCPC.nθCand = nCand
-                        m.ESCPC.θCand = np.linspace(0., 1., nCand)
-                        m.calibrate()
-                        pref = 'LOG' if ρ == 1.0 else 'CRRA'
-                        tic = time.time()
-                        r = m.solvePermanent(pref, verbose = False)
-                        W = np.asarray(r['W'], dtype = float)
-                        W = W - np.nanmax(W)
-                        rows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': commonX,
-                                     'wedge': label,
-                                     'p': np.nan if wedge is None else wedge['p'],
-                                     'θStar': float(m.db['θ'].xs(m.t0Year)), 'θPerm': r['θ'],
-                                     'atBound': r['atBound'], 'W0gap': W[0], 'W1gap': W[-1],
-                                     'converged': r['converged'],
-                                     'θPermIncumbent': r['θIncumbent'],
-                                     'τAtChoice': r['τAtChoice']}
-                                    | multiplicityColumns(r.get('multiplicity')))
-                        print('  rho={:<5} {:<6} wedge={:<11} θ_perm={:.4f}  corner={:<5} '
-                              'W(0)-max={:+.5f} W(1)-max={:+.5f}  [{:.0f}s]'.format(
-                                  ρ, spec, label, r['θ'], str(r['atBound']), W[0], W[-1], time.time()-tic))
-                    except Exception as e:
-                        print('  rho={} {} {} FAILED {}: {}'.format(ρ, spec, label, type(e).__name__, e))
-                    pd.DataFrame(rows).to_csv(out, index = False)
-    return pd.DataFrame(rows)
-
-
 def stageSequential(ρs, out, commonX = False, gs = None, nθ = 201):
     """ The costless sequential FOC on the solved no-wedge baseline at every non-terminal dated period
     (position 0 has no predetermined ratio). One row per (rho, pos): the largest and smallest value over
@@ -232,15 +185,17 @@ def stageSequential(ρs, out, commonX = False, gs = None, nθ = 201):
     return pd.DataFrame(rows)
 
 
-def readCalibratedP(fCal, ρ, spec, phi, commonX, method):
-    """ The calibrated p for this (rho, spec, phi, variant) from the csv, at `method` if such a row exists.
-    An exact run with no exact row yet falls back to the path-iteration p with a printed warning -- the
-    two agree to ~0.01 in the design, so it is a serviceable stand-in for a smoke run, not for the paper
-    (the pipeline runs calib first). NaN when nothing matches. """
+def readCalibratedP(fCal, ρ, spec, phi, commonX, method, fallback = False):
+    """ (p, method of the row) for this (rho, spec, phi, variant) from the csv: the last converged row at `method`.
+    With `fallback` and no row at 'exact', the last converged row of another method (the path iteration's p, which
+    agrees with the exact one to ~0.01 in the design: a stand-in for a smoke run, not for the paper). (NaN, None)
+    when nothing matches. """
     if not os.path.exists(fCal):
         return np.nan, None
     hit = pd.read_csv(fCal)
     hit = hit[(hit['ρ'] == ρ) & (hit['spec'] == spec) & (hit['phi'] == phi)]
+    if 'converged' in hit.columns:
+        hit = hit[hit['converged'].fillna(False).astype(bool)]
     if 'commonX' in hit.columns:
         hit = hit[hit['commonX'].astype(bool) == bool(commonX)]
     want = runESC.thetaColumns()          # under a θ variant only a row at its thetaSource, θ0 and grid
@@ -254,7 +209,7 @@ def readCalibratedP(fCal, ρ, spec, phi, commonX, method):
     own = hit[hit['method'] == method]
     if not own.empty:
         return float(own.iloc[-1]['p']), method
-    if method == 'exact' and not hit.empty:
+    if fallback and method == 'exact' and not hit.empty:
         return float(hit.iloc[-1]['p']), str(hit.iloc[-1]['method'])
     return np.nan, None
 
@@ -311,15 +266,18 @@ def main():
                    help = 'the common-X calibration variant (the paper leads with it). Written as a '
                           'column and part of the merge key -- see runESC.mergeWrite.')
     p.add_argument('--phi', type = float, nargs = '*', default = [0.5])
-    p.add_argument('--stage', nargs = '*', default = ['calib', 'path', 'sens', 'shocks'],
-                   help = "add 'permanent' for the permanent-choice trace in rho, 'sequential' for the "
-                          "costless sequential FOC")
+    p.add_argument('--stage', nargs = '*', default = ['calib', 'path', 'shocks'],
+                   choices = ('calib', 'path', 'shocks', 'sequential'),
+                   help = "add 'sequential' for the costless sequential FOC")
     p.add_argument('--scenarios', nargs = '*',
                    default = ['baseline', 'acute', 'frIncome', 'frLeisure', 'frVoting', 'frBoth', 'frAll'],
                    help = 'shock stage scenarios; any key of runESC.SHOCKS_ESC plus "baseline"')
     p.add_argument('--exact', action = 'store_true',
                    help = 'solve the leaded choice with the exact 2-D recursion (LeadedCRRA2D) instead of '
                           'the path iteration; rows are written with method = "exact"')
+    p.add_argument('--allowPathP', action = 'store_true',
+                   help = 'under --exact, a stage without calib that finds no exact calibration at a (rho, spec, phi) '
+                          'uses the path-iteration p (a smoke run); otherwise that combination fails')
     p.add_argument('--ns', type = int, default = GSC['ns'],
                    help = 'the CRRA savings-state grid (default {}); the 2-D recursion borrows it, and '
                           '50 is ~4x faster at no measurable cost in the choice'.format(GSC['ns']))
@@ -334,12 +292,9 @@ def main():
     p.add_argument('--Ma', type = int, default = 5,
                    help = "under --exact and designRule 'root', the nodes on which the residual in a is "
                           'tabulated before its sign changes are closed')
-    # ONE bracket cannot serve every rho. The required cost falls steeply in the intertemporal
-    # elasticity -- p is about 0.95, 0.41, 0.09 at rho = 0.5, 1, 2 -- so the old default [0.01, 0.6],
-    # chosen for rho = 2, sits entirely BELOW the root at rho = 0.5 and the scan correctly reports no
-    # crossing rather than returning a number. Spanning all three costs only scan nodes, so the default
-    # spans them and nScan rises to keep the resolution per decade roughly what it was. Under --exact the
-    # default is half..double the path iteration's p instead (readCalibratedP), each node being a full
+    # The required cost falls steeply in the intertemporal elasticity (p is about 0.95, 0.41, 0.09 at rho = 0.5,
+    # 1, 2), so the default bracket spans all three and nScan keeps the resolution per decade. Under --exact the
+    # default is half..double the path iteration's p when one is on file (readCalibratedP), each node being a full
     # recursion. The default is per spec (BRACKET_CRRA): under 'size' the parameter is lambda, an order of
     # magnitude larger than p; one explicit --bracket applies to every spec in the run.
     p.add_argument('--bracket', type = float, nargs = 2, default = None)
@@ -358,6 +313,7 @@ def main():
     p.add_argument('--main', action = 'store_true',
                    help = "with --theta config.US['theta']: read results/calibration/, write results/esc/")
     a = p.parse_args()
+    a.root = None if a.root is None else os.path.abspath(os.path.join(CWD, a.root))
     if a.host != 'US' and set(a.stage) != {'calib'}:
         p.error('--host {} runs the calib stage only (--stage calib)'.format(a.host))
     OUTDIR = setThetaCRRA(a)
@@ -375,15 +331,11 @@ def main():
                                           f'{a.designRule}, Ma = {a.Ma}' if a.exact else ''))
     layer = {'designRule': a.designRule, 'Ma': a.Ma}
 
-    if 'permanent' in a.stage:
-        print('=== the permanent choice under CRRA, traced in rho ===')
-        stagePermanentCRRA(a.rho, a.spec, a.phi, os.path.join(OUTDIR, f'escPermanentCRRA{a.tag}.csv'),
-                           commonX = a.commonX)
     if 'sequential' in a.stage:
         print('=== the costless sequential FOC on the no-wedge baseline ===')
         stageSequential(a.rho, os.path.join(OUTDIR, f'escSequentialCRRA{a.tag}.csv'),
                         commonX = a.commonX, gs = gs)
-    if set(a.stage) <= {'permanent', 'sequential'}:
+    if set(a.stage) <= {'sequential'}:
         print()
         print('-> {}'.format(os.path.relpath(OUTDIR, REPO)))
         return 0
@@ -442,7 +394,7 @@ def main():
                                                        if a.exact and rec['converged'] else None))
                         print('  -> p={}  ({})  [{:.0f}s]'.format(rec['p'], rec['message'], time.time()-tic))
                     except Exception as e:
-                        print(f'  FAILED {type(e).__name__}: {e}')
+                        runESC.noteFailure(f'{tag} calibration', e)
                         calRows.append({'ρ': ρ, 'spec': spec, 'phi': phi, 'commonX': a.commonX, 'host': a.host,
                                         'method': method, 'p': np.nan,
                                         'converged': False, 'message': f'{type(e).__name__}: {e}'}
@@ -451,12 +403,15 @@ def main():
                 else:
                     # a --tag run without its own calibration reads the untagged one (smoke runs)
                     for fc in (fCal, os.path.join(OUTDIR, f'escCalibrationCRRA{hs}.csv')):
-                        pCal, from_ = readCalibratedP(fc, ρ, spec, phi, a.commonX, method)
+                        pCal, from_ = readCalibratedP(fc, ρ, spec, phi, a.commonX, method, fallback = a.allowPathP)
                         if np.isfinite(pCal):
                             break
                     if np.isfinite(pCal) and from_ != method:
                         print(f'  [{tag}] WARNING: no {method} calibration on file; using the {from_} '
-                              f'p = {pCal:.6f} as a stand-in.')
+                              f'p = {pCal:.6f} as a stand-in (--allowPathP).')
+                    if not np.isfinite(pCal):
+                        runESC.noteFailure(tag, LookupError('no converged {} calibration on file (--stage calib, or '
+                                                            '--allowPathP under --exact)'.format(method)))
                 if not np.isfinite(pCal):
                     print(f'  [{tag}] no calibrated p -- skipping the remaining stages.')
                     continue
@@ -485,29 +440,8 @@ def main():
                             ledBase.get('converged', True), time.time()-tic))
                         mergeWrite(fPath, pathRows, KEYPATH)
                     except Exception as e:
-                        print(f'  path FAILED {type(e).__name__}: {e}')
+                        runESC.noteFailure(f'{tag} design path', e)
                         ledBase = None
-
-                # ---------------------------------------------------- the assumption, measured
-                if 'sens' in a.stage and a.exact:
-                    print('  sens: not applicable under --exact (the 2-D recursion assumes nothing '
-                          'about the inherited design).')
-                elif 'sens' in a.stage:
-                    tic = time.time()
-                    try:
-                        θc = np.full(m.T, θStar)
-                        sens = m.ESCC.stateSensitivity(θc, pos = m.db['t0'])
-                        print('  stateSensitivity d(θ_t+2)/d(θ_t+1) = {:+.4f}  '
-                              '(choice {:.4f} at θ={:.3f} vs {:.4f} at θ={:.3f})  [{:.0f}s]'.format(
-                                  sens['slope'], sens['choiceLo'], sens['θLo'],
-                                  sens['choiceHi'], sens['θHi'], time.time()-tic))
-                        for r in calRows:
-                            if (r['ρ'], r['spec'], r['phi']) == (ρ, spec, phi):
-                                r['stateSlope'] = sens['slope']
-                        if calRows:
-                            mergeWrite(fCal, calRows, KEYCAL)
-                    except Exception as e:
-                        print(f'  sens FAILED {type(e).__name__}: {e}')
 
                 # ---------------------------------------------------- counterfactuals
                 if 'shocks' in a.stage:
@@ -575,7 +509,7 @@ def main():
                                           r0['workweek'], float(θPath.iloc[pos0+1]), time.time()-tic))
                                 mergeWrite(fShk, shkRows, KEYSHK)
                             except Exception as e:
-                                print(f'  {name} pin={pin} FAILED {type(e).__name__}: {e}')
+                                runESC.noteFailure(f'{tag} {name} pin={pin}', e)
 
                     # France's own calibrated path at this rho -- the endpoint the French-characteristics
                     # rows are read against (runESC.franceRow's CRRA counterpart, exogenous theta). Run with
@@ -593,20 +527,22 @@ def main():
                                                    f['ww_t0'], time.time()-tic))
                         mergeWrite(fShk, shkRows, KEYSHK)
                     except Exception as e:
-                        print(f'  France FAILED {type(e).__name__}: {e}')
+                        runESC.noteFailure(f'{tag} France', e)
     print('\n-> {}'.format(os.path.relpath(OUTDIR, REPO)))
-    return 0
+    if runESC.FAILURES:
+        print('{} FAILED:'.format(len(runESC.FAILURES)) + ''.join('\n  ' + x for x in runESC.FAILURES))
+    return 1 if runESC.FAILURES else 0
 
 
 def setThetaCRRA(a):
     """ runESC.setTheta for this driver's --theta/--root/--main, and the output directory (OUTDIR without a
-    variant). Under a variant: stages calib, path, sens, shocks only, the U.S. sweep at the variant at every rho of
+    variant). Under a variant: stages calib, path, shocks only, the U.S. sweep at the variant at every rho of
     --rho (oecd26.usBeta), and for --host UK the UK's sweep rows too. """
     if a.theta is None:
         runESC.setTheta(None, a.root, main = a.main)        # SystemExit for --root or --main alone
         return OUTDIR
-    if set(a.stage) - {'calib', 'path', 'sens', 'shocks'}:
-        raise SystemExit('--theta: stages calib, path, sens, shocks only')
+    if set(a.stage) - {'calib', 'path', 'shocks'}:
+        raise SystemExit('--theta: stages calib, path, shocks only')
     import oecd26
     out = runESC.setTheta(a.theta, a.root, ('calib',), False, a.commonX, a.rho[0], a.main)
     try:

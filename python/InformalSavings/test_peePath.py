@@ -238,4 +238,42 @@ check('multiplicityColumns: the csv columns over several solves, -1 where a solv
 check('a policy object restored without __init__ (as unpickling does) selects by the frozen rule',
       object.__new__(type(m.LOG)).selection == 'frozen' and object.__new__(type(m.CRRA)).selection == 'frozen')
 
+# ---- 5. initialStatePEE's root count: an exact zero at a scan node is one root, not one per cell ----
+# Stubbed state map (ι_0 = τ, s_0 = 1) and policy, so the residual on the scan is known in closed form:
+# r(τ) = τ - (1.5τ - 0.25) = 0.25 - 0.5τ, exactly zero at the node τ = 0.5.
+from copy import deepcopy
+mz = deepcopy(m)
+mz.initialState_solve = lambda τ, θ, ε, t = None: {'ι': τ, 's': 1.}
+mz.steadyState_LOG_solve = lambda τ, θ, t = None: {'s': 1.}
+τScan = np.array([0.25, 0.375, 0.5, 0.625, 0.75])
+zeroAt = mz.initialStatePEE({tFirst: {'τPolicy': lambda ι: 1.5*ι - 0.25, 'ι_': np.array([0.1, 0.9])}},
+                            θpath, εpath, 'LOG', τGrid = τScan)
+check('initialStatePEE counts an exact zero at a scan node once and returns that node',
+      zeroAt['nRoots'] == 1 and zeroAt['τ'] == 0.5 and zeroAt['residual'] == 0,
+      '-> nRoots={}, τ={}, residual={}'.format(zeroAt['nRoots'], zeroAt['τ'], zeroAt['residual']))
+twoRoots = mz.initialStatePEE({tFirst: {'τPolicy': lambda ι: ι + (ι - 0.4)*(ι - 0.6), 'ι_': np.array([0.1, 0.9])}},
+                              θpath, εpath, 'LOG', τGrid = τScan)
+check('...and still counts two genuine crossings as two, taking the lower',
+      twoRoots['nRoots'] == 2 and np.isclose(twoRoots['τ'], 0.4, atol = 1e-10),
+      '-> nRoots={}, τ={:.12f}'.format(twoRoots['nRoots'], twoRoots['τ']))
+
+# ---- 6. calibratePoint's resolution check re-solves with the calibration's own solveKwargs ----------
+# calibrate and calibration_residual stubbed: the check is that the kwargs reach the verification re-solve.
+mv = deepcopy(m)
+t0v = mv.db['t'][mv.db['t0']]
+seen = {}
+def _residualStub(x, preferences, solveKwargs = None):
+    seen['solveKwargs'] = solveKwargs
+    return np.zeros(4)
+mv.calibration_residual = _residualStub
+mv.calibrate = lambda preferences = None, x0 = None, **kw: {
+    'x': np.zeros(4), 'residual': np.zeros(4), 'scipyRes': None, 'pars': mv.calibrationPars,
+    'report': {'KY': 1., 'sr': 1., 'τ': 1., 'hbar': 1., 'yInf': 0., 'spendGDP': 0., 'srGDP': 0.,
+               'PEE': {'init': None, 'multiplicity': None, 'sols': {},
+                       'report': {'ι': outLOG['report']['ι']}}}}
+sk = {'pathKwargs': {'strict': False}}
+recV = mv.calibratePoint(1.0, verify = {'nι': 10}, calKwargs = {'solveKwargs': sk})
+check("calibratePoint's verifyResidual re-solves with the calibration's solveKwargs",
+      seen.get('solveKwargs') == sk and recV['verifyResidual'] == 0.0, f"-> {seen.get('solveKwargs')}")
+
 report()

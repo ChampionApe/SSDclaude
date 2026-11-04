@@ -1,4 +1,4 @@
-""" One-dimensional root and extremum detection on a grid (writing/*_docs.tex, alg:gridsearch).
+""" One-dimensional root and extremum detection on a grid (the note's alg:LOG:gridsearch).
 
 Generic and model-agnostic. Given a sorted grid x (M,) and function values f (M,) or (M,N) -- N
 independent functions sampled on the *same* grid -- locate where the piecewise-linear interpolant of f
@@ -252,10 +252,6 @@ def firstMax(x, f, tol = 0.0):
 def allMin(x, f, tol = 0.0):
     """ Every interior minimum of ∫f, i.e. every upward crossing of f. """
     return allRoots(x, f, kind = 'up', tol = tol)
-
-def firstMin(x, f, tol = 0.0):
-    """ The lowest-x interior minimum of ∫f. """
-    return firstRoot(x, f, kind = 'up', tol = tol)
 
 
 def objectiveProfile(x, f):

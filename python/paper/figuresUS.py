@@ -18,7 +18,6 @@ Style rules that apply here specifically:
     backslash literally, so a legend built with it reads "14.4\%". Anything drawn INTO a figure needs
     plain formatting; config.pct is for tex cells only.
 """
-import os
 import numpy as np
 
 import matplotlib
@@ -26,11 +25,10 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.lines import Line2D
-from matplotlib.ticker import MaxNLocator
 
 import config as C
 import datasets as D
-from figures import SERIES, INK, LW, _panel, _save, markId, mark, signed, plain
+from figures import SERIES, INK, _panel, _save, markId, mark, signed, plain
 from tablesUS import ROWKEY
 
 
@@ -177,11 +175,10 @@ def _figLegend(fig, handles, labels, bottom = 0.075, ncol = None):
                fontsize = 11, bbox_to_anchor = (0.5, 0.01))
 
 
-def _rowsPresent(df, ρs, rows, effect = 'full'):
-    r""" The subset of `rows` for which every rho has each of the row's scenarios (entry[1]: one csv
-    scenario, or OVERVIEW's list of (scenario, label)): a scenario the run did not produce should drop out
-    of the figure rather than take the whole build down with it, and a scenario missing at SOME rho is
-    dropped too -- a bar group with a hole in it reads as a zero. """
+def _rowsPresent(df, ρs, rows, effect = 'full', drop = False):
+    r""" `rows` that have, at every rho, each of the row's scenarios (entry[1]: one csv scenario, or OVERVIEW's list of
+    (scenario, label)). A scenario missing at any rho raises MissingInput, the output being skipped: a bar group with a
+    hole in it reads as a zero. `drop`: leave such a row out of the figure instead (a twin calibration's). """
     out = []
     for entry in rows:
         names = [entry[1]] if isinstance(entry[1], str) else [s for s, _ in entry[1]]
@@ -190,6 +187,8 @@ def _rowsPresent(df, ρs, rows, effect = 'full'):
                 for s in names:
                     D.usShockRow(df, ρ, s, effect)
         except D.MissingInput:
+            if not drop:
+                raise
             continue
         out.append(entry)
     return out
@@ -198,7 +197,7 @@ def _rowsPresent(df, ρs, rows, effect = 'full'):
 def usOverview(commonX = None):
     r""" Figure \ref{fig:US:overview}: every single-characteristic counterfactual's effect on the tax
     rate, savings over GDP and the average workweek, in deviations from the baseline, at each rho in
-    config.US['rhoTable'].
+    config.US['ρTable'].
 
     Read as: which characteristics move each outcome, and does that ranking survive the IES. Ageing and
     pension design should dominate the tax panel and the French characteristics should be visibly minor
@@ -215,7 +214,7 @@ def usOverview(commonX = None):
     name, marks = 'US_overview' + sfx, []
     df = D.usShocks(commonX = commonX)
     ρs = C.US['ρTable']
-    rows = _rowsPresent(df, ρs, OVERVIEW)
+    rows = _rowsPresent(df, ρs, OVERVIEW, drop = not C.isLead(commonX))
     labels = [lab for lab, _, _ in rows]
     kinds = [kind for _, _, kind in rows]
     colours = RHOCOLOURS[:len(ρs)]
@@ -257,29 +256,14 @@ ESCSCENARIOS = [('Acute ageing',           'acute'),
                 ('French leisure',         'frLeisure')]
 
 
-def _capitalShare():
-    """ The US capital income share alpha, from the calibration summary. Needed to turn the ESC csv's
-    s/(wh) into s/Y = (1 - alpha) s/(wh); the shock csv carries srOverY itself, this one does not. """
-    rec = D.usCalibrationSummary()['US']
-    if 'α' not in rec or rec['α'] != rec['α']:
-        raise D.MissingInput('α for the US in results/paper/usCalibrationSummary.csv')
-    return float(rec['α'])
-
-
 def _escRowsPresent(df, spec, ρs, scenarios):
-    """ The subset of `scenarios` carrying BOTH readings at every rho -- same contract as _rowsPresent:
-    the LOG and CRRA ESC drivers have their own scenario lists, so a scenario can legitimately exist at
-    rho = 1 and nowhere else. """
-    out = []
+    """ `scenarios` after checking that each carries BOTH readings at every rho (escRow raises MissingInput, the
+    output being skipped): a row of the figure is never dropped. """
     for entry in scenarios:
-        try:
-            for ρ in ρs:
-                for pinned in (True, False):
-                    D.escRow(df, ρ, spec, entry[1], pinned)
-        except D.MissingInput:
-            continue
-        out.append(entry)
-    return out
+        for ρ in ρs:
+            for pinned in (True, False):
+                D.escRow(df, ρ, spec, entry[1], pinned)
+    return list(scenarios)
 
 
 def _escPairs(name, df, spec, ρs, scen, col, title, scale, level, idHost = ()):
@@ -384,7 +368,7 @@ def escOverview():
     """
     df = D.escExperiments()
     spec, ρs = C.US['esc']['spec'], C.US['esc']['ρTable']
-    α = _capitalShare()
+    α = D.usAlpha()
     colours = RHOCOLOURS[:len(ρs)]
     scen = _escRowsPresent(df, spec, ρs, ESCSCENARIOS)
     labels = [lab for lab, _ in scen]

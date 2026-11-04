@@ -1,6 +1,6 @@
 r""" How far is a stationary policy function from the exact date-specific one along the US demographic path?
 
-Run:  .venv\Scripts\python.exe python\US\stationaryApprox.py                 # rho = 0.5, 1.5, 2
+Run:  .venv\Scripts\python.exe python\US\stationaryApprox.py                 # rho = 0.5, 2 (config.US['ρStationary'])
       ... --rho 2 --Tstat 15 --ns 150 --n 101 [--vectorX]
 
 The question (sec:numerical's literature paragraph). The numerical politico-economic literature computes a
@@ -27,7 +27,7 @@ the tail for the finite-horizon effect. Both solves share one state grid (the ba
 grid settings, so the gaps are not interpolation artefacts of different grids.
 
 Writes results/numerical/US_stationaryApprox.csv, one row per (rho, t), each with the exact solve's tax counts
-(nEqMax, nCandMax, nFallback; policy.multiplicityColumns).
+(nEqMax, nCandMax, nFallback; policy.multiplicityColumns). A relative --out is the caller's working directory's.
 """
 import os, sys, argparse, time
 import numpy as np, pandas as pd
@@ -35,6 +35,7 @@ from scipy import optimize
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
+CWD = os.getcwd()                 # where a relative --out points: the chdir below moves to HERE
 sys.stdout.reconfigure(encoding = 'utf-8', line_buffering = True)
 sys.path.insert(0, HERE)
 os.chdir(HERE)
@@ -168,7 +169,7 @@ def runRho(ρ, commonX, gs, Tstat):
 
 def main():
     p = argparse.ArgumentParser(description = 'Stationary-policy approximation vs exact date-specific policies (US, CRRA).')
-    p.add_argument('--rho', type = float, nargs = '*', default = [0.5, 1.5, 2.0])
+    p.add_argument('--rho', type = float, nargs = '*', default = [0.5, 2.0])      # config.US['ρStationary']
     p.add_argument('--Tstat', type = int, default = 40, help = 'horizon of the frozen-nu recursion')
     p.add_argument('--n', type = int, default = 101)
     p.add_argument('--ns', type = int, default = 150)
@@ -178,6 +179,7 @@ def main():
     p.add_argument('--theta', default = None, help = "the pipeline's main θ variant (with --main)")
     p.add_argument('--main', action = 'store_true', help = "with --theta config.US['theta']")
     a = p.parse_args()
+    a.out = os.path.abspath(os.path.join(CWD, a.out))
     if a.theta is not None or a.main:
         import oecd26
         if not (a.theta is not None and a.main):

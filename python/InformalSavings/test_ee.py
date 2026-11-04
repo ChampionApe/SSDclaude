@@ -159,4 +159,14 @@ try:
 finally:
     m.db.clear(); m.db.update(snapshot); m.x0.pop('EE_CRRA', None)
 
+# ---- the parameter writers and the removed definitions ------------------------------------------------
+import inspect
+writers = ('adjPar', 'adjpj', 'adj1D_ll', 'adj2Dj_ll', 'adj2Di_ll', 'adjVec_t', 'adjDf_ti', 'adjDf_tj')
+check('the parameter writers take no t: they always rebuild the whole path, never write db in place',
+      all('t' not in inspect.signature(getattr(m, f)).parameters for f in writers))
+removed = ((m.B, 'power_p'), (m, 'getXi'), (type(m), 'aux_p'), (m.LOG, 'style'), (m.LOG, 'kwargs'),
+           (type(m.LOG), '_kwargs'), (m.LOG, 'x0'))
+check('removed definitions stay removed (Base.power_p, getXi, aux_p, LOG.style/kwargs/x0)',
+      not any(hasattr(o, a) for o, a in removed))
+
 report()

@@ -14,3 +14,8 @@ grid fallback. `LOG.solveVectorized` now restarts `optimize.root` once from its 
 unchanged. `test_calibration.py` §8 pins the paper's section 5 footnote: on the calibrated ρ = 1 model the reform (ε
 0.210 → 0.547 from 2010, rule 'match', κ rebuilt) raises the 2010 tax from 10.92% to 16.38%. `getEps`'s docstring
 cites `app:EPH` (also in InformalSavings). `US/policy.py`'s `solveVectorized` has the same default and passes; unchanged.
+
+## 2026-11-04 — code review P4: dead code only
+The adjPar family's `t` (with `adjDf_ti`'s broken `k.loc` branch), `Base.power_p`, `getXi`, `aux_p`, `LOG.style` and
+`LOG.kwargs` removed, and unused imports (`Lead`, `interpolate`, test.py's `scipy`/`SimpleSys`, test_crraBackward's
+`roots1d`); `ω2i`'s docstring. `LOG.x0` stays: it is `solveVectorized`'s warm start. Pinned in `test_ee.py`.

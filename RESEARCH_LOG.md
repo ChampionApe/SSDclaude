@@ -203,3 +203,14 @@ lists of the front and landing pages, link texts, code comments, `notes/TODO.md`
 keys are unchanged, so the paper's `\oa` links stand and only `onlineAppendix.tex`'s codes moved. The front page no
 longer names the authors in its opening sentence (they are printed above the title), and neither it nor part C's
 landing page still advertises the dropped U.S.-turnout reading. Rebuilt, test_onlineAppendix OK, published.
+
+## 2026-11-04 (evening) — Code and technical-note review (`notes/brief_codeDocReview.md`)
+
+Code: four read-only reviews, then one fix pass per module (module logs of today hold the detail); triage and open
+items in `notes/codeReview_triage.md`. No published number moved: writing/Paper identical (PDF dates aside); moved by
+intent NUM_Selection's counts, four Source banners, REPLICATION's Reads. RKB retired Medicare/freeTheta, the unwired
+ESC stages and 36 orphan results/paper files; the ξ drivers now run at C (`escXi`, `shocksXi` need a rerun);
+gridsearch's cubic/pchip mask NaN as linear does (0 NaN nodes in every published ARG surface). Note: three reviews,
+three writers on RKB's approval (`notes/docReview_proposals.md`): math slips fixed (labour-supply FOC in both informal
+models, two distributional signs), θ from variant C, the reform state, ~16k words of log material cut; 134 -> 107 pp,
+compiles clean. Fast suites 31/31. Uncommitted; the note's Overleaf push awaits RKB.

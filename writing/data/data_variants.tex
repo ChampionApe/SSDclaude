@@ -1,5 +1,5 @@
 \section{The variants}\label{sec:data:variants}
-The script \texttt{python/paper/\allowbreak oecd26Theta.py} writes one row per country and variant to \texttt{data/\allowbreak oecd26\_theta.csv}: $\theta$ (in $[0,1]$, else empty), the unclipped value, $s$, spending, the private share and the sample flag. \Cref{tab:data:variants} summarises the five variants. All are gross: the model taxes labour income only, and PaG publishes no net replacement rates by tier.
+\texttt{python/paper/\allowbreak oecd26Theta.py} writes one row per country and variant to \texttt{data/\allowbreak oecd26\_theta.csv}: $\theta$ (in $[0,1]$, else empty), the unclipped value, $s$, spending, the private share and the sample flag. \Cref{tab:data:variants} summarises the five variants; C is the paper's measure. All are gross, since the model taxes labour income only and PaG publishes no net replacement rates by tier.
 
 \begin{table}[htbp]
 \centering
@@ -10,9 +10,9 @@ The script \texttt{python/paper/\allowbreak oecd26Theta.py} writes one row per c
 \toprule
 Variant & $\theta$ & $\tau$ & Timing and sample \\
 \midrule
-paper & \cref{eq:data:thetaPaper}, mandatory tiers (table 4.1) & $S$: SOCX public & formula for 2020 entrants; spending 2020; 26 \\
-A & \cref{eq:data:slope,eq:data:theta}, public tier (table 4.2); GBR in force & $S$: SOCX public & formula for 2020 entrants, $s$ and $S$ in 2020; 26 \\
-A2pt & as A on $z_L$ and 1 only & $S$ & as A; 26 \\
+paper & index, \cref{eq:data:thetaPaper}, mandatory tiers (table 4.1) & $S$: SOCX public & formula for 2020 entrants; spending 2020; 26 \\
+A & \cref{eq:data:slope,eq:data:theta}, public tier (table 4.2); GBR in force & $S$: SOCX public & formula for 2020 entrants, $s$ and $S$ in 2020; 23 ($\theta$ empty for AUS, DNK, ISL) \\
+A2pt & as A on $z_L$ and 1 only & $S$ & as A; 23 \\
 B & \cref{eq:data:slope} on all mandatory tiers (table 4.1), times $1 - T/S_B$ & $S_B$, \cref{eq:data:SB} & as A; mismatched where funds are immature; 26 \\
 C & as A & $S$ & as A; drops a country by \cref{eq:data:Crule}; 21 \\
 \bottomrule
@@ -21,21 +21,21 @@ C & as A & $S$ & as A; drops a country by \cref{eq:data:Crule}; 21 \\
 \end{table}
 
 \smalltitle{A, the public system.}
-All public schemes: earnings-related social insurance, flat or basic pensions, minimum top-ups, tested pensions and government-employee schemes, as in SOCX public cash. Funded private tiers are left out; in the model they are private saving. The formula is PaG's steady state for workers entering in 2020 under 2020 law. It coincides with the rules in force unless a reform is phasing in. The exception is the UK: 2020 retirees draw the basic State Pension plus the earnings-related S2P, so $\theta$ is S2P's share of spending on the basic and new State Pension, S2P and Pension Credit in 2019--20, $0.81/(2.96+0.81+0.48+0.22) = 0.181$ (\% of GDP; steady state: 0). A2pt applies \cref{eq:data:slope} to $z_L$ and 1 only, $\hat\theta = (P(1)-P(z_L))/\left((1-z_L)P(1)\right)$, which is \cref{eq:data:thetaPaper} on the public tier.
+All public schemes, as in SOCX public cash: earnings-related social insurance, flat or basic pensions, minimum top-ups, tested pensions and government-employee schemes. Funded private tiers, private saving in the model, are left out. The formula is PaG's steady state for workers entering in 2020 under 2020 law, which coincides with the rules in force unless a reform is phasing in. The exception is the UK, whose 2020 retirees draw the basic State Pension and the earnings-related S2P: $\theta$ is S2P's share of 2019--20 spending on the State Pensions and Pension Credit, 0.181 (steady state: 0). A2pt applies \cref{eq:data:slope} to $z_L$ and 1 only, $\hat\theta = (P(1)-P(z_L))/\left((1-z_L)P(1)\right)$, which is \cref{eq:data:thetaPaper} on the public tier.
 
 \smalltitle{B, all mandatory and quasi-mandatory provision.}
 A plus the legislated funded tiers and the occupational tiers set by collective agreement. $\theta$ comes from the mandatory replacement rates (PaG 2021, table 4.1), which include both. Spending adds SOCX mandatory private and, for NLD and SWE, whose quasi-mandatory tiers SOCX books as voluntary, SOCX voluntary private:
 \begin{align}
-    S_B = S + S^{\text{mand.\,priv.}} + \mathbf{1}_{\{\text{NLD, SWE}\}}S^{\text{vol.\,priv.}}, \qquad \tau_B = \frac{S_B}{1-\alpha}, \qquad \pi = 1 - \frac{S}{S_B}, \label{eq:data:SB}
+    S_B = S + S^{\text{mand.\,priv.}} + \mathbf{1}_{\{\text{NLD, SWE}\}}S^{\text{vol.\,priv.}}, \qquad \tau_B = \frac{S_B}{100\,(1-\alpha)}, \qquad \pi = 1 - \frac{S}{S_B}, \label{eq:data:SB}
 \end{align}
-with $\pi$ the private share. $\theta_B$ is clipped at 1 (SWE's occupational tier pays more above the public ceiling). The funded tiers are immature in AUS, NOR and GBR, so 2020 benefits lie far below PaG's steady state there. Funded benefits also earn the interest rate and transfer nothing between generations, which the model's PAYG budget does not allow.
+with $\pi$ the private share. $\theta_B$ is clipped at 1 (SWE's occupational tier pays more above the public ceiling). The funded tiers are immature in AUS, NOR and GBR, so 2020 benefits lie far below PaG's steady state there.
 
 \smalltitle{C, the public system on the countries it describes.}
-A, on the countries where one public PAYG system is the bulk of retirement provision. A country is dropped when
+A, on the countries where one public PAYG system is the bulk of retirement provision: funded benefits earn the interest rate and transfer nothing between generations, which the model's PAYG budget does not allow. A country is dropped when
 \begin{align}
     \pi \geq 0.25 \quad \text{or} \quad \hat\theta_A (1-s) < 0, \label{eq:data:Crule}
 \end{align}
-that is, when funded tiers pay at least a quarter of mandatory benefits in 2020, or when its public pension is tested against the private one. The rule is fixed before any slope is seen. It drops AUS, ISL, CHE, NLD and DNK and keeps 21; SWE ($\pi = 0.19$) and NOR ($\pi = 0$ in SOCX) stay.
+that is, when funded tiers pay at least a quarter of mandatory benefits in 2020 or its public pension is tested against the private one; the rule is fixed before any slope is seen. It drops AUS, CHE, ISL and NLD by the first condition and DNK ($\pi = 0.19$) by the second, and keeps 21, SWE ($\pi = 0.19$) among them.
 
 \smalltitle{Data gaps.}
-Four values of $s$ are bounds. LUX: no spending on the minimum-pension complement was found for 2019--20 (16.4\% of pensions received it in 2023), so $s = 0$ and $\theta_A = 0.820$ is an upper bound. BEL: $s = 0.014$ counts GRAPA only; the minimum-pension supplement was not found, so $s$ is a lower bound and $\theta_A = 0.376$ an upper bound. ITA and PRT: the integrazione al minimo and the complementos sociais include their invalidity part, which no source splits off, so $s$ is an upper bound (ITA 0.046, PRT 0.082; PRT 0.012 without the complementos) and $\theta_A$ (0.954, 0.879) a lower bound. The values of $s$ for ESP, FIN, SWE, JPN, CHE and the U.S.\ come from the country notes, \texttt{notes/data\_thetaTau\_countriesA.md} and \texttt{\_countriesB.md} (SWE: 2018).
+Five values of $s$ are bounds. They are upper bounds, so that $\theta_A$ is a lower bound, for ITA and PRT, whose top-ups include their invalidity part, and for HUN, whose minimum top-up is counted at the full minimum for every recipient; and lower bounds for BEL, which counts GRAPA only, and LUX, set to 0 for want of 2019--20 spending on its minimum-pension complement. The values of $s$ for ESP, FIN, SWE (2018), JPN, CHE and the U.S.\ come from the spending the scheme files record, the others from the top-up file.

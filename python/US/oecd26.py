@@ -2,8 +2,8 @@ r""" The model of section 7 (ModelESC, a proportional cost of Eq esc:AB or none,
 OECD country's data: the loader of the cross-country test (python/US/runOECD26.py -> results/oecd26/).
 
     import oecd26
-    inp = oecd26.countryInputs('GBR')                 # turnout 'cps' (default) or 'cses'
-    inp = oecd26.countryInputs('GBR', thetaSource = 'C')   # θ from data/oecd26_theta.csv's variant 'C'
+    inp = oecd26.countryInputs('GBR', 'csesFlat')     # the turnout is always named: 'csesFlat' (the paper's), 'cses', ...
+    inp = oecd26.countryInputs('GBR', 'csesFlat', thetaSource = 'C')   # θ from data/oecd26_theta.csv's variant 'C'
     β, ωSeed, src = oecd26.usBeta()
     m = oecd26.build(inp, β, ω = 1.5, λ = 10.)        # a ModelOECD, LOG grid installed
 
@@ -35,9 +35,10 @@ Inputs per country (`countryInputs`):
           mandatory and quasi-mandatory private spending.
   α, ξ    the U.S. workbook's (data/USMain_test.xlsx through test.py), and its workweek for h0 (hours levels
           move no rate under log preferences).
-  μ_i     'cps': the U.S. workbook's CPS propensities to vote, in every country (the U.S. percentiles are the
-          CPS groups' cuts); 'cses': the country's own CSES turnout averaged over the same groups
-          (mu1-3_usPct; none for Luxembourg, which raises NoTurnout). 'pooled' (appendix H's stylized reading, not in
+  μ_i     by `turnout`, always named by the caller: 'cses': the country's own CSES turnout averaged over the same
+          groups (mu1-3_usPct; none for Luxembourg, which raises NoTurnout); 'cps' (not the paper's; runOECD26 refuses
+          it into results/oecd26/): the U.S. workbook's CPS propensities to vote, in every country (the U.S. percentiles
+          are the CPS groups' cuts). 'pooled' (appendix H's stylized reading, not in
           TURNOUT): the U.S. at its own CSES turnout; the countries of COMPULSORY flat, μ = (1, 1, 1); every other
           country at `pooledProfile`, the mean of μ_c/μ_c,1 over the voluntary non-U.S. countries of the θ source's
           sample with CSES turnout (`turnoutSample`), so Luxembourg enters. 'csesFlat' (not in TURNOUT): 'cses',
@@ -89,8 +90,8 @@ T_SS = 3                                  # steady-state periods after 2110, as 
 DATES = pd.Index([1960, 1990, 2020, 2050, 2080, 2110] + [2110 + 30*k for k in range(1, T_SS + 1)])
 T0YEAR = 2020
 GS = {'n': 101, 'smoothKnots': 4, 'interpKind': 'linear'}     # runESC.GS
-TURNOUT = ('cps', 'cses')                 # the paper's readings, runOECD26's default
-TURNOUTS = TURNOUT + ('pooled', 'csesFlat')   # with the exploration readings (module docstring, μ_i)
+TURNOUT = ('cps', 'cses')                 # the readings the loader's tests loop over; the paper's is 'csesFlat' (config.US['oecd26'])
+TURNOUTS = TURNOUT + ('pooled', 'csesFlat')   # every reading countryInputs accepts (module docstring, μ_i)
 RETAGES = ('none', 'exit', 'nra')         # the retirement-age correction of ν (module docstring, ν_t)
 PERIOD = 30.                              # years per model period, the 30 of retAgeNu
 MU = ['mu1_usPct', 'mu2_usPct', 'mu3_usPct']
@@ -162,18 +163,33 @@ def spendingFromFile(iso3, variant, path = None):
     return float(r['spending'].iloc[0])
 
 
+def rowsAtTheta(df, variant, θ0):
+    """ The rows of csv frame `df` at a run's θ: thetaSource `variant` and θ0 within 1e-12; without a variant
+    (None) the rows with no thetaSource, or INDEX, the workbook's θ. A missing column reads as NaN. """
+    ts = df['thetaSource'] if 'thetaSource' in df.columns else pd.Series(np.nan, index = df.index)
+    if variant is None:
+        return df[ts.isna() | (ts == INDEX)]
+    θ = pd.to_numeric(df['θ0'], errors = 'coerce') if 'θ0' in df.columns else pd.Series(np.nan, index = df.index)
+    return df[(ts == variant) & (θ - θ0).abs().le(1e-12)]
+
+
 def countryθ0(country, variant, path = None):
     """ θ0 of a workbook country ('US', 'FR', 'UK'; ISO3) under `variant`: thetaFromFile of its ISO3 row. """
     return thetaFromFile(ISO3[country], variant, path)
 
 
-def paperTheta():
-    """ python/paper/config.py's US['theta'], the pipeline's main θ variant, read from the file. """
+def paperConfig():
+    """ python/paper/config.py as a module, loaded from the file (python/US imports nothing from python/paper). """
     import importlib.util
     sp = importlib.util.spec_from_file_location('_paperConfigθ', PAPERCONFIG)
     mod = importlib.util.module_from_spec(sp)
     sp.loader.exec_module(mod)
-    return mod.US.get('theta')
+    return mod
+
+
+def paperTheta():
+    """ python/paper/config.py's US['theta'], the pipeline's main θ variant, read from the file. """
+    return paperConfig().US.get('theta')
 
 
 def thetaRoot(variant, main = False):
@@ -186,13 +202,6 @@ def thetaRoot(variant, main = False):
                              'got --theta {!r}'.format(paperTheta(), variant))
         return RESULTS
     return thetaDir(variant)
-
-
-def isStandard(path):
-    """ Is `path` under results/{calibration,esc,shocks,oecd26}/, the paper's directories? """
-    p = os.path.normcase(os.path.abspath(path))
-    return any(p == os.path.normcase(os.path.join(RESULTS, d)) or p.startswith(os.path.normcase(os.path.join(RESULTS, d)) + os.sep)
-               for d in ('calibration', 'esc', 'shocks', 'oecd26'))
 
 
 def thetaSample(variant, path = None):
@@ -300,7 +309,7 @@ def pooledProfile(thetaSource = INDEX, data = None):
     return (μ/μ[:, :1]).mean(axis = 0), keep
 
 
-def countryInputs(iso3, turnout = 'cps', data = None, thetaSource = INDEX, retAge = 'none'):
+def countryInputs(iso3, turnout, data = None, thetaSource = INDEX, retAge = 'none'):
     """ One country's inputs (module docstring) as a dict; `data` a readData() triple to reuse. thetaSource
     'index' (figure 1.1's index) or a variant of data/oecd26_theta.csv (NoTheta where it has no θ). turnout one of
     TURNOUTS; under 'pooled' μ depends on thetaSource's sample (pooledProfile). retAge one of RETAGES (ν's
@@ -344,7 +353,7 @@ def countryInputs(iso3, turnout = 'cps', data = None, thetaSource = INDEX, retAg
     return inp
 
 
-def inputsFrom(iso3, country, ν, γ, y, μ, spending, index, turnout = 'cps', sample26 = None, thetaSource = INDEX):
+def inputsFrom(iso3, country, ν, γ, y, μ, spending, index, turnout, sample26 = None, thetaSource = INDEX):
     """ The inputs dict of countryInputs from its parts: ν over DATES (T,), γ_i and y_i (3,), μ_i (3,), spending
     in % of GDP and the replacement-rate ratio I; α, ξ and the workweek from the U.S. workbook. thetaSource is
     recorded only (countryInputs reads θ). """

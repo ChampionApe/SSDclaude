@@ -1,16 +1,16 @@
 r""" The cross-country test of section 7's model: the log model with a cost of Eq esc:AB, or none, built from each
 OECD country's data (oecd26.py), its predicted 2020 tax and design set against figure 1.1's relations.
 
-Run:  .venv\Scripts\python.exe python\US\runOECD26.py                       every stage, both turnout readings
+Run:  .venv\Scripts\python.exe python\US\runOECD26.py                       every stage, at the paper's variant
       ... --stage anchor layer1 layer2
-      ... --turnout cps cses                                                (default; 'pooled' on request)
+      ... --turnout csesFlat cses                                           (default: config's; 'cps', 'pooled' on request)
       ... --spec size sizePiR none                                          the costs (default: the paper's)
       ... --betaRule common commonR                                         the β rules (default: the paper's)
       ... --countries USA GBR FRA                                           a subset (default: the 29)
       ... --theta VARIANT                                                   θ of data/oecd26_theta.csv (default 'index')
       ... --inSample                                                        the variant's inSample countries and the U.S.
       ... --theta VARIANT --main                                            the pipeline's main variant into results/oecd26/
-      ... --omegaRule anchor|mean                                           layer 1's ω (default 'anchor')
+      ... --omegaRule anchor|mean                                           layer 1's ω (default config's)
       ... --retAge none|exit|nra                                            ν's retirement-age correction (default config's)
       ... --usSweep FILE                                                    the U.S. sweep β is read from (not with --main)
       ... --force                                                           recompute rows already on disk
@@ -27,7 +27,8 @@ results/calibration/US_rhoGridCommonX.csv, which must be at that variant's θ0 a
 seed from FILE instead (oecd26.usBeta checks its row's θ0 under a variant; its path enters the anchor's key), so that a
 run into another --outdir can stand on the main variant's sweep and reuse its anchor rows.
 
-The defaults of --spec and --betaRule are python/paper/config.py's US['oecd26'] (`paperVariant`). Three stages, one
+The defaults of --spec, --betaRule, --turnout, --omegaRule and --retAge are python/paper/config.py's US['oecd26']
+(`paperVariant`). Three stages, one
 csv each in --outdir, rows merged on their keys (runESC.mergeWrite); ρ = 1, common X. Every (spec, betaRule) asked
 for runs in turn, the anchor once per spec and turnout.
 
@@ -45,21 +46,21 @@ for runs in turn, the anchor once per spec and turnout.
 and no row reads a design: p, θChosen, θInForce, τInForce, fStar, f0 are NaN and the status 'ok'; a costless
 design choice is the corner of proposition 4). `phi` is the dummy 0.5 under every spec.
 
-`turnout` 'cps' gives every economy the U.S. CPS propensities to vote; 'cses' each its own CSES turnout, the
-anchor included (each reading has its own anchor). Luxembourg has no CSES election: its 'cses' rows carry
-status 'noTurnout'. 'pooled' (appendix H's stylized reading, never a default; oecd26.countryInputs): the U.S. at its CSES turnout, so
-its anchor solves the 'cses' anchor's inputs under another key; the compulsory-voting countries flat; the others
-at the sample's mean CSES profile; Luxembourg enters. 'csesFlat' (the paper's since 2026-11-04): 'cses' with Luxembourg flat; its
-anchor is the 'cses' anchor (`ANCHORTURNOUT`), and a layer row of a country whose inputs equal its 'cses' ones but
-for the label is copied from the current 'cses' row of the same key when there is one (`_twin`, column
-`copiedFrom`). Every row carries `sample26` from the data step (python/paper/oecd26Sample.py).
+`turnout` 'csesFlat' (the paper's): each country its own CSES turnout, Luxembourg flat; 'cses' the same with Luxembourg
+left out (status 'noTurnout', no CSES election); each reading has its own anchor, but the anchor of 'csesFlat' is the
+'cses' anchor (`ANCHORTURNOUT`), and a layer row of a country whose inputs equal its 'cses' ones but for the label is
+copied from the current 'cses' row of the same key when there is one (`_twin`, column `copiedFrom`). 'cps' gives every
+economy the U.S. CPS propensities to vote and 'pooled' (appendix H's stylized reading; oecd26.countryInputs) the U.S. at
+its CSES turnout, the compulsory-voting countries flat and the others at the sample's mean CSES profile, Luxembourg
+included; main refuses both into results/oecd26/. Every row carries `sample26` from the data step
+(python/paper/oecd26Sample.py).
 
 `retAge`: ν corrected for the gap to the U.S. retirement age (oecd26.retAgeNu), 'exit' or 'nra' (the paper's since
 2026-11-03, config.US['oecd26']['retAge'], the CLI's default); a key column of the layers (LEGACY 'none'), in their
 inputsKey only when not 'none', which python/paper's readers select on (datasets._oecd26Rows), so any reading may be
 written into results/oecd26/. The U.S. gap is 0, so the anchor is retAge's 'none' anchor.
 
-`omegaRule`, layer 1's ω: 'anchor' (the default) the anchor's; 'mean' ω̄, the arithmetic mean of the ok layer-2 ω's of
+`omegaRule`, layer 1's ω: 'anchor' the anchor's; 'mean' ω̄, the arithmetic mean of the ok layer-2 ω's of
 --outdir's layer2.csv at the same turnout, spec, betaRule and thetaSource over the run's countries (`meanOmega`;
 each row against the current anchor and inputs, a missing one refused), with β and the cost parameter still the
 anchor's. Under 'mean' layer 2 runs before layer 1; the rows carry `ωMean`, `nMean`. Layer 2's rows carry 'anchor':
@@ -122,8 +123,10 @@ KEYLAYER = KEYANCHOR + ['omegaRule', 'retAge', 'iso3']
 # The value of a key column in a csv written before the column existed (migrate, _onDisk).
 LEGACY = {'betaRule': 'common', 'thetaSource': oecd26.INDEX, 'omegaRule': 'anchor', 'retAge': 'none'}
 OMEGARULES = ('anchor', 'mean')
-ANCHORTURNOUT = {'csesFlat': 'cses'}      # a reading whose U.S. inputs are another's: it stands on that one's anchor
-TWIN = {'csesFlat': 'cses'}               # a reading whose layer rows are another's where the inputs are (_twin)
+# A reading whose inputs are another's but for the label: it stands on that one's anchor and copies its layer rows
+# where the inputs are equal (_twin).
+ANCHORTURNOUT = {'csesFlat': 'cses'}
+PAPERTURNOUT = ('cses', 'csesFlat')       # the readings main writes into results/oecd26/ (python/paper selects on them)
 STAGES = ('anchor', 'layer1', 'layer2')
 SETTINGS = {'fine':   {'n': 101, 'nθ': 41, 'nθCand': 121, 'nScan': 12},
             'coarse': {'n': 51, 'nθ': 21, 'nθCand': 41, 'nScan': 6}}
@@ -402,10 +405,10 @@ def meanOmega(turnout, isos, outdir, anchor, cfg):
 
 
 def _twin(layer, path, keyVals, inp, data, β, ω, λ, cfgK, RA, anchorKey_):
-    """ Under a TWIN reading, the twin reading's row of `path` at the same key for a country whose inputs equal its
+    """ Under an ANCHORTURNOUT reading, the twin reading's row of `path` at the same key for a country whose inputs equal its
     twin inputs but for the label, when it is 'ok', computed against the same anchor and keyed on those inputs at the
     same β, ω, λ and settings; None otherwise. """
-    t = TWIN.get(keyVals[0])
+    t = ANCHORTURNOUT.get(keyVals[0])
     if t is None:
         return None
     try:
@@ -505,8 +508,9 @@ def main():
     v = paperVariant()
     p = argparse.ArgumentParser(description = __doc__, formatter_class = argparse.RawDescriptionHelpFormatter)
     p.add_argument('--stage', nargs = '*', default = list(STAGES), choices = STAGES)
-    p.add_argument('--turnout', nargs = '*', default = list(oecd26.TURNOUT), choices = oecd26.TURNOUTS,
-                   help = "default {}; 'pooled' only on request".format(' '.join(oecd26.TURNOUT)))
+    p.add_argument('--turnout', nargs = '*', default = [v['turnout']], choices = oecd26.TURNOUTS,
+                   help = "the readings, each in turn (default: config.US['oecd26']['turnout']); 'cps' and "
+                          "'pooled' only into another --outdir")
     p.add_argument('--spec', nargs = '*', default = [v['spec']], choices = SPECS,
                    help = "the costs, each in turn (default: config.US['oecd26']['spec'])")
     p.add_argument('--betaRule', nargs = '*', default = [v['betaRule']], choices = BETARULES,
@@ -522,8 +526,9 @@ def main():
     p.add_argument('--coarse', action = 'store_true', help = 'small grids (SETTINGS["coarse"]), for a quick check')
     p.add_argument('--main', action = 'store_true',
                    help = "with --theta config.US['theta']: results/oecd26/ and results/calibration/'s U.S. sweep")
-    p.add_argument('--omegaRule', default = 'anchor', choices = OMEGARULES,
-                   help = "layer 1's ω: the anchor's, or the mean of the layer-2 ω's (layer 2 runs first)")
+    p.add_argument('--omegaRule', default = v['omegaRule'], choices = OMEGARULES,
+                   help = "layer 1's ω: the anchor's, or the mean of the layer-2 ω's (layer 2 runs first); "
+                          "default config.US['oecd26']['omegaRule']")
     p.add_argument('--retAge', default = v.get('retAge', 'none'), choices = oecd26.RETAGES,
                    help = "ν corrected for the gap to the U.S. men's effective exit age ('exit') or normal "
                           "retirement age ('nra'); the layers only, the anchor is unchanged (default: "
@@ -550,10 +555,13 @@ def main():
     if variant and not a.main and os.path.normcase(a.outdir) == os.path.normcase(OUTDIR):
         raise SystemExit('--theta {}: results/oecd26/ holds the main θ variant (--main) only; use another '
                          '--outdir'.format(a.theta))
-    explore = [x for x in a.turnout if x not in set(oecd26.TURNOUT) | {'csesFlat'}]
-    if explore and os.path.normcase(a.outdir) == os.path.normcase(OUTDIR):
+    standard = os.path.normcase(a.outdir) == os.path.normcase(OUTDIR)
+    explore = [x for x in a.turnout if x not in PAPERTURNOUT]
+    if explore and standard:
         raise SystemExit('{}: python/paper does not select on these readings; not into results/oecd26/ (use '
                          '--outdir)'.format(', '.join(explore)))
+    if a.coarse and standard:
+        raise SystemExit('--coarse: the small grids are for a quick check; not into results/oecd26/ (use --outdir)')
     isos = a.countries or oecd26.countries()
     unknown = set(isos) - set(oecd26.countries())
     if unknown:

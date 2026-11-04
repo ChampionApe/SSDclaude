@@ -124,13 +124,11 @@ def oecdCountries():
                   _body(lines), note, width = r'\textwidth')
 
 
-# The tables' name of a variable where it is not oecdFigure1.LABEL's.
-VARLABEL = {}
 EPS = re.compile(r'\bEPS\b|eps_')
 
 
 def _varLabel(role, column):
-    return VARLABEL.get(role, F1.LABEL[column])
+    return F1.LABEL[column]
 
 
 def _withoutEPS(note):
@@ -183,11 +181,19 @@ def oecdCorrelations():
     (results/paper/oecdCorrelations.csv, written by the OECDdata build, variant 'figure' = oecdFigure1.PLOT on
     oecdFigure1.plotted): n, Pearson's r and Spearman's rank correlation with their p-values. The csv's other concept
     sets, on the 29 (the named concepts, the figure's previous version), are not printed (data/README.md). Rows
-    keyed `named_<x role>_<y role>`. """
+    keyed `named_<x role>_<y role>`. The csv is checked against the figure's current data (n, r and rho per pair on
+    oecdFigure1.plotted): a csv of another sample or of an earlier data/oecdFigure1.csv is StaleInput. """
     df = D.oecdCorrelations()
     sub = df[df['variant'] == 'figure']
     if sub.empty:
         raise D.MissingInput('results/paper/oecdCorrelations.csv (variant figure)')
+    cur = F1.figureCorrelations(F1.plotted()).set_index(['x', 'y'])
+    have = sub.set_index(['x', 'y'])
+    if (sorted(cur.index) != sorted(have.index) or (cur['n'] != have['n'].reindex(cur.index)).any()
+            or not np.allclose(cur[['pearson', 'spearman']].values,
+                               have[['pearson', 'spearman']].reindex(cur.index).values.astype(float), rtol = 0, atol = 1e-9)):
+        raise D.StaleInput('results/paper/oecdCorrelations.csv does not hold the correlations of the current figure '
+                           '(data/oecdFigure1.csv, data/oecd26_theta.csv): rebuild OECDdata')
     role = {v: k for k, v in F1.PLOT.items()}
     label = lambda c: _tex(_varLabel(role[c], c))
     p = lambda v: r'$<0.001$' if float(v) < 0.0005 else C.num(float(v), 3)

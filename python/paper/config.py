@@ -12,7 +12,6 @@ REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 DATA      = os.path.join(REPO, 'data')
 RESULTS   = os.path.join(REPO, 'results')
 CALIBDIR  = os.path.join(RESULTS, 'calibration')
-INSTDIR   = os.path.join(CALIBDIR, 'instances')
 SHOCKDIR  = os.path.join(RESULTS, 'shocks')
 SWEEPDIR  = os.path.join(RESULTS, 'sweeps')
 ESCDIR    = os.path.join(RESULTS, 'esc')
@@ -189,8 +188,7 @@ US = {
     #           redistributed. lambda lives in the csvs' `p` column (the paper prints it as lambda).
     #   'scale' (the previous wedge, the online appendix's second cost specification): f(theta) =
     #           phi + (1-phi) theta^p, the cost attached to the design label rather than to the transfer.
-    #   'flat'  (only the flat component carries the cost) runs only in the permanent stage's comparison
-    #           rows of escPermanent.csv, which no output prints.
+    #   'flat'  (only the flat component carries the cost): no run since the permanent stage was retired.
     # The rho points of the pre-publication stationary-vs-date-specific check (runShocksUS.py 'stationary';
     # rho = 1 is exact by the LOG decoupling and is not run): the non-log points of ρGrid. sec:numerical's
     # footnote quotes the maximal gap over these points.
@@ -207,10 +205,9 @@ US = {
         # required parameter falls steeply in rho, so one bracket cannot serve both. A rho absent from a
         # spec's dict leaves the bracket to runESCcrra.py's own default for that spec; a rho present with
         # None is a PLACEHOLDER and stage (i) refuses to run it (config.escBracket). 'size' (the paper's cost, the
-        # one exact calibration run): set from the LOG lambda after WP4 -- [lambda/20, 3 lambda] at rho = 2,
-        # [lambda/3, 5 lambda] at rho = 0.5 -- on 2026-10-23 from lambda 11.563954 at the pension-only workbook. At
-        # US['theta'] the LOG lambda is 6.247 (results/esc/escCalibration.csv), so at the exact/LOG
-        # ratios of 2026-10-25 (2.21 and 0.233) the roots expected, ~13.8 and ~1.46, lie inside both brackets.
+        # one exact calibration run): [lambda/20, 3 lambda] at rho = 2 and [lambda/3, 5 lambda] at rho = 0.5 of
+        # lambda = 11.563954 (the LOG lambda at the pension-only workbook). At US['theta'] the LOG lambda is 6.247
+        # (results/esc/escCalibration.csv), and the exact roots expected there, ~13.8 and ~1.46, lie inside both.
         'bracket':        {'size':    {0.5: (3.855, 57.82), 2.0: (0.5782, 34.69)}},
         # brentq's xtol on the cost parameter where runESCcrra.py's default (2e-5) is too coarse, per spec and rho.
         'xtol':           {},
@@ -223,7 +220,7 @@ US = {
         'nsScan':    50,       # the coarse grid the wedge calibration SCANS on before refining at ns2D
         # The candidate grid for θ_{t+1}. The objective is flat near its maximum (1e-5 in W over ±0.01 in
         # θ at the frVoting choice, rho = 2), so this grid sets the resolution of the printed design: 13
-        # nodes gave 0.285, 21 gave 0.273 (2026-09-11).
+        # nodes gave 0.285, 21 gave 0.273.
         'nCand2D':   41,
         # The design layer of the exact recursion (runESCcrra.py --designRule/--Ma): algorithm esc:crra2D of
         # writing/US/num_esc.tex, the root in a, adopted on the pilot (python/US/RESEARCH_LOG.md, 2026-10-02).
@@ -231,13 +228,10 @@ US = {
         'Ma':         5,
         # The UK's OWN cost parameter per rho (the deep test, UK_ESC_Calibration), calibrated as the US one is:
         # LOG from escCountry.csv ('own'), CRRA by the exact recursion into escCalibrationCRRAUK.csv (stage (i)
-        # --prepub, runESCcrra.py --host UK --stage calib). Brackets set from coarse probes (2026-09-29): the
-        # UK's design is 0.23/0.57 at lambda 1.45/3.0 (rho = 2) and 0.46/0.71 at 12/25 (rho = 0.5). nsScan 0 at
-        # rho = 0.5 scans at ns2D: the UK's (beta-imposed) calibration does not converge on the ns = 50 grid
-        # there. Rescaled 2026-10-23 by the UK's LOG lambda at the pension-only workbooks (7.786 against 7.264)
-        # and widened: the exact lambda was 2.08 and 0.38 times the LOG one. Rescaled 2026-10-30 to the UK at its
-        # θ0 of US['theta'] (0.181): its LOG lambda 3.628 on the coarse smoke grid (logs/pipelineThetaC/smoke)
-        # against 7.740, so ~7.8 and ~1.45 expected at those ratios; widened, one scan node more.
+        # --prepub, runESCcrra.py --host UK --stage calib). The brackets are scaled to the UK's LOG lambda at its
+        # θ0 of US['theta'] (0.181; 3.628 on the coarse grid), the exact lambda being 2.08 and 0.38 times the LOG
+        # one at rho = 0.5 and 2: ~7.8 and ~1.45 expected, inside the brackets, scanned at nScan nodes. nsScan 0 at
+        # rho = 0.5 scans at ns2D: the UK's (beta-imposed) calibration does not converge on the ns = 50 grid there.
         'uk': {'bracket':   {0.5: (3.5, 16.0), 2.0: (0.55, 3.2)},
                'nsScan':    {0.5: 0, 2.0: 50},
                'nScan':     5},
@@ -262,7 +256,7 @@ US = {
     #             2020 return is the U.S. anchor's)
     #   turnout   'csesFlat' (each country's own CSES propensities to vote; Luxembourg, which has no CSES survey and
     #             enforces compulsory voting, flat: 21 countries under C; it stands on the 'cses' anchor) | 'cses'
-    #             (Luxembourg left out, 20 countries) | 'cps' (the U.S. CPS propensities: rows of before 2026-11-04)
+    #             (Luxembourg left out, 20 countries)
     #   omegaRule layer 1's omega: 'mean' (the mean of layer 2's; beta and the cost parameter the anchor's) |
     #             'anchor' (the U.S. anchor's)
     #   reading   the model's design: 'inForce' (in force in 2020, chosen in 1990) | 'chosen' (chosen in 2020)
@@ -279,11 +273,10 @@ US = {
     # of each (--theta US['theta'] --main --inSample), in this order (an anchor and layer 2 before the mean omega that
     # reads them); rows already current are reused, so a rerun costs seconds. They are the paper's specification with
     # and without the cost, appendix G's population variants (`populationVariants`) and the online appendix's
-    # readings (`oaReadings`, each the parts that differ from the paper's: Luxembourg left out, layer 1 at the U.S.
-    # omega). `thetaVariants`: appendix G's data variants, measures of data/oecd26_theta.csv (THETANAMES), each run by
-    # stage (ii)'s entry 'oecd26Variants' at the paper's specification (a U.S. sweep at rho = 1, then the
-    # cross-section) into its own results/oecd26_theta_<V>/. Retired: the U.S. turnout (the cps rows, unread in
-    # results/oecd26/); the pooled turnout and A2pt in archive/results/ (archive/INDEX.md).
+    # readings (the last two entries, each the parts that differ from the paper's: Luxembourg left out, layer 1 at
+    # the U.S. omega). `thetaVariants`: appendix G's data variants, measures of data/oecd26_theta.csv (THETANAMES),
+    # each run by stage (ii)'s entry 'oecd26Variants' at the paper's specification (a U.S. sweep at rho = 1, then the
+    # cross-section) into its own results/oecd26_theta_<V>/.
     'oecd26': {
         'spec': 'sizePiR', 'betaRule': 'common', 'turnout': 'csesFlat', 'omegaRule': 'mean', 'reading': 'inForce',
         'spendingSpec': 'none', 'spendingReading': 'chosen', 'retAge': 'nra',
@@ -299,7 +292,6 @@ US = {
         ],
         'populationVariants': ['none', 'exit'],
         'thetaVariants': ['A', 'B'],
-        'oaReadings': [{'turnout': 'cses'}, {'omegaRule': 'anchor'}],
     },
     # THE TAX AGAINST A PINNED DESIGN (python/US/runTauTheta.py, results/esc/escTauTheta.csv; US_ESC_TauTheta): the
     # U.S. at rho = 1 without the cost and under US['esc']['spec'] at its calibrated lambda, theta pinned on the whole
@@ -412,6 +404,13 @@ def usCalendar(country = 'US'):
             'τ0': float(dfc['Pension tax']),
             'RR0': float(dfc['Replacement rate']),
             'α': float(dfc['Capital income share'])}
+
+
+def clearCaches():
+    """ Forget the cached workbook and θ-file reads (calendar, usCalendar, _thetaFile). build.py --map traces each
+    output's file reads, which a read cached by an earlier output would hide. """
+    for f in (calendar, usCalendar, _thetaFile):
+        f.cache_clear()
 
 
 # ---------------------------------------------------------------------------------------------------

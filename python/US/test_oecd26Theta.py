@@ -21,12 +21,12 @@ Run:  .venv\Scripts\python.exe python\US\test_oecd26Theta.py        (~1 min)
   U  ModelUS.getθ without db['θ0'] (or with NaN) is the RR0 closed form bit for bit; with it θ = θ0 on every date,
      through updateAuxPars and the common-X calibration at ρ = 1, which still hits R, τ and hours; θ0 outside [0, 1]
      raises. ModelESC returns θ0 under 'size' (runESC.buildUS) and refuses it under 'flat'; ModelOECD refuses it.
-  C  The U.S. drivers' --theta. calibrateRhoGrid.thetaRun: θ0, the variant's calibration/; results/calibration/,
-     --medicare refused. runESC without a variant: results/calibration's sweep, the workbook's θ, the fine grids;
+  C  The U.S. drivers' --theta. calibrateRhoGrid.thetaRun: θ0, the variant's calibration/; results/calibration/
+     refused. runESC without a variant: results/calibration's sweep, the workbook's θ, the fine grids;
      setTheta: every U.S. model at θ0 seeded off the variant's sweep, France and the UK at their FRA and GBR rows
      against that sweep, root/esc, the coarse grid; other stages, results/esc/, a missing sweep, a calibration at
      another θ0 refused. runShocksUS.thetaRun: the variant's sweep at every rho asked for, root/shocks/, France's θ0;
-     --medicare, --freeTheta and results/shocks/ refused; the host model carries θ0.
+     results/shocks/ refused; the host model carries θ0.
   S  τ0 under a variant is the file's `spending` over the labour share (a fixture variant at another spending); for
      the variants of oecd26.SPENDINGASFIGURE a spending other than figure 1.1's raises; on data/oecd26_theta.csv
      paper, A, A2pt and C equal figure 1.1's pensionSpending (data/oecd29.csv, data/oecdFigure1.csv) to 1e-9.
@@ -42,6 +42,13 @@ Run:  .venv\Scripts\python.exe python\US\test_oecd26Theta.py        (~1 min)
      variant's rows at θ0 (the rows without thetaSource without one); under C c5Numbers.usModel and runHorizon.build
      carry θ0 and runESC.THETA is installed; runHorizon.mergeWrite and c5Numbers._mergeExperiments drop the rows at
      another θ (a csv holds one θ), replace a key and tag their rows.
+  G  The drivers' defaults, guards, paths and exit codes: runOECD26's --turnout and --omegaRule are config's, 'cps' and
+     --coarse are refused into results/oecd26/, countryInputs takes the turnout; the retired Medicare reading, ESC stages
+     and dead helpers are gone; a relative --out, --pkldir or --root is the caller's; runShocksUS.writeRows merges
+     atomically; runESC.main exits 1 after a survived failure; readCalibratedP, c5Numbers.escRows and
+     runHorizon.escLambda read converged rows only; runTauTheta.selfCheck raises.
+  X  The ξ drivers: runShocksXi and runESCxi need --theta --main, the workbook ξ runs first, the rows at another θ0 are
+     replaced, the self-check reads the rows at the run's θ.
 """
 import os, sys, time, tempfile, shutil
 import numpy as np, pandas as pd
@@ -63,7 +70,7 @@ tmp = tempfile.mkdtemp(prefix = 'oecd26Theta_')
 FIX = os.path.join(tmp, 'oecd26_theta.csv')
 data = oecd26.readData()
 β, ωSeed, βSource = oecd26.usBeta()
-θUSindex = oecd26.countryInputs('USA')['θ']
+θUSindex = oecd26.countryInputs('USA', 'cps')['θ']
 rows = ([('USA', 'fixA', 0.54, False), ('GBR', 'fixA', 0.18, True), ('CAN', 'fixA', 0.32, True),
          ('AUS', 'fixA', np.nan, False), ('FRA', 'fixA', 1.0, True), ('IRL', 'fixA', 0.0, True),
          ('ITA', 'fixA', 1.2, True)]                                   # NZL: no row under fixA
@@ -100,7 +107,7 @@ for t in oecd26.TURNOUT:
         same &= a.keys() == b.keys() and all(np.array_equal(a[k], b[k]) if isinstance(a[k], np.ndarray)
                                              else a[k] == b[k] for k in a)
         recorded &= a['thetaSource'] == 'index'
-inpUS = oecd26.countryInputs('USA')
+inpUS = oecd26.countryInputs('USA', 'cps')
 cfgI = R.settings(coarse = True)
 check("I: countryInputs' default is thetaSource 'index' (every value, 29 countries, both turnouts) and records it",
       same and recorded)
@@ -257,10 +264,9 @@ check("U: ModelESC returns θ0 under 'size' (runESC.buildUS, through setWedge) a
 cOut = CRG.thetaRun('fixA', True)
 cSub = os.path.join(oecd26.thetaDir('fixA'), 'calibration')
 cRef = [raises(lambda: CRG.thetaRun('fixA', True, out = os.path.join(CRG.OUTDIR, 'US_rhoGridCommonX.csv')), SystemExit),
-        raises(lambda: CRG.thetaRun('fixA', True, medicare = 0.029), SystemExit),
         raises(lambda: CRG.thetaRun('fixC', True), SystemExit)]
 check('C: calibrateRhoGrid --theta: θ0 the variant\'s U.S. θ, csv and pickles under the variant\'s calibration/; '
-      'results/calibration/, --medicare and a variant without a U.S. θ refused',
+      'results/calibration/ and a variant without a U.S. θ refused',
       cOut == (θ0, os.path.join(cSub, 'US_rhoGridCommonX.csv'), os.path.join(cSub, 'instancesUSCommonX'))
       and all(cRef) and not os.path.exists(oecd26.thetaDir('fixA')), ' | '.join(str(x) for x in cRef))
 mD = runESC.buildUS({'spec': 'size', 'phi': 0.5, 'p': 10.}, commonX = True)
@@ -279,7 +285,7 @@ try:
     eCal = raises(lambda: runESC.checkCalib(cal0.assign(θ0 = 0.6), 'x'), SystemExit)
 finally:
     runESC.THETA.update(saved)
-eRef = [raises(lambda: runESC.setTheta('fixA', root, ['calib', 'fig1']), SystemExit),
+eRef = [raises(lambda: runESC.setTheta('fixA', root, ['calib', 'nosuch']), SystemExit),
         raises(lambda: runESC.setTheta('fixA', 'results'), SystemExit),
         raises(lambda: runESC.setTheta('fixA', os.path.join(tmp, 'none')), SystemExit),
         raises(lambda: runESC.setTheta(None, coarse = True), SystemExit), eCal]
@@ -291,12 +297,10 @@ sOut = RS.thetaRun('fixA', root, True, [1.0])
 sOutFR = sOut[3]
 sOut = sOut[:3]
 sRef = [raises(lambda: RS.thetaRun('fixA', root, True, [0.5, 1.0]), SystemExit),
-        raises(lambda: RS.thetaRun('fixA', root, True, [1.0], medicare = 0.029), SystemExit),
-        raises(lambda: RS.thetaRun('fixA', root, True, [1.0], freeTheta = True), SystemExit),
         raises(lambda: RS.thetaRun('fixA', 'results', True, [1.0]), SystemExit)]
 mS = RS.hostModel(1.0, True, RS.hostRow(1.0, True, 'US', sOut[1]), {'n': 51}, θ0 = sOut[0])
-check("C: runShocksUS --theta: θ0, the variant's sweep (every rho asked for) and root/shocks/; --medicare, "
-      "--freeTheta and results/shocks/ refused; the host model carries θ0 on every date",
+check("C: runShocksUS --theta: θ0, the variant's sweep (every rho asked for) and root/shocks/; results/shocks/ "
+      "refused; the host model carries θ0 on every date",
       sOut == (θ0, os.path.join(root, 'calibration'), os.path.join(root, 'shocks', 'US_shocksCommonX.csv'))
       and all(sRef) and float(np.max(np.abs(mS.db['θ'].values - θ0))) == 0. and mS.simpleβinv() == 0.6
       and sOutFR == FIXTHETA[('FRA', 'fixA')], ' | '.join(str(x) for x in sRef))
@@ -368,9 +372,9 @@ def argvExit(mod, *argv):
         runESC.THETA.update(saved)
 eX = [argvExit(runShocksXi, '--theta', 'C'), argvExit(stationaryApprox, '--theta', 'C'),
       argvExit(stationaryApproxESC, '--main'), argvExit(runShocksXi, '--theta', 'fixA', '--main'),
-      argvExit(runESCcrra, '--theta', 'C', '--exact', '--stage', 'permanent')]
+      argvExit(runESCcrra, '--theta', 'C', '--exact', '--stage', 'sequential')]
 check("M: runShocksXi, stationaryApprox, stationaryApproxESC take --theta with --main only and for config.US['theta']; "
-      "runESCcrra refuses a variant's permanent stage", all(eX), ' | '.join(str(x) for x in eX))
+      "runESCcrra refuses a variant's sequential stage", all(eX), ' | '.join(str(x) for x in eX))
 
 # ==== R: France and the UK at θ0 ==============================================================================
 import testEU
@@ -491,6 +495,280 @@ check("N: c5Numbers and runHorizon take --theta with --main only and for config.
       all(eN) and noVariant == [[3, 4], [3, 4]] and atC == [[1], [1]] and θN == [0., 0.] and okEsc and okMerge
       and okX and hzN is None and c5Numbers.THETA == c5Saved and runHorizon.THETA == hzSaved,
       ' | '.join(str(x) for x in eN))
+
+# ==== G: defaults, guards, paths and exit codes of the drivers ==================================================
+import argparse
+import runShocksXi, runESCxi, runTauTheta, stationaryApprox, stationaryApproxESC, runESCcrra
+from runESCcrra import readCalibratedP
+tmpG = os.path.join(tmp, 'G')
+os.makedirs(tmpG)
+runESC.THETA.update(saved)
+
+
+class Stop(Exception):
+    pass
+
+
+def defaultsOf(mod, *argv):
+    """ The namespace mod.main() parses from argv; main stops there, nothing runs. """
+    orig, box = argparse.ArgumentParser.parse_args, {}
+
+    def grab(self, args = None, namespace = None):
+        box['a'] = orig(self, list(argv), namespace)
+        raise Stop
+
+    argparse.ArgumentParser.parse_args = grab
+    try:
+        mod.main()
+    except Stop:
+        pass
+    finally:
+        argparse.ArgumentParser.parse_args = orig
+    return box['a']
+
+
+def until(mod, name, argv, stub = None, run = None, **others):
+    """ (run or mod).main() on argv with mod.<name> replaced by `stub` (by default a stub that records its arguments and
+    raises Stop), mod.<others> by theirs, oecd26.usBeta by one returning the U.S. β: {'args': what the default stub
+    was called with, 'exit': the text of a SystemExit}. """
+    got, saved_ = {}, {k: getattr(mod, k) for k in (name, *others)}
+
+    def stop(*args, **kw):
+        got['args'] = args
+        raise Stop
+
+    ub, old = oecd26.usBeta, sys.argv
+    setattr(mod, name, stub or stop)
+    for k, v in others.items():
+        setattr(mod, k, v)
+    oecd26.usBeta = lambda *a, **k: (β, ωSeed, 'stub')
+    sys.argv = ['x.py'] + list(argv)
+    try:
+        (run or mod).main()
+    except Stop:
+        pass
+    except SystemExit as e:
+        got['exit'] = str(e) or 'exit'
+    finally:
+        sys.argv, oecd26.usBeta = old, ub
+        for k, v in saved_.items():
+            setattr(mod, k, v)
+    return got
+
+
+vOE = R.paperVariant()
+dG = defaultsOf(R)
+gA = until(R, 'stageAnchor', ['--stage', 'anchor', '--outdir', tmpG])
+gL = until(R, 'stageLayer', ['--stage', 'layer1', '--outdir', tmpG], anchorRow = lambda *a: {'status': 'ok'})
+check("G: runOECD26's --turnout and --omegaRule default to config.US['oecd26'] ('csesFlat', 'mean'), the stages get them",
+      dG.turnout == [vOE['turnout']] == ['csesFlat'] and dG.omegaRule == vOE['omegaRule'] == 'mean'
+      and gA['args'][0] == 'csesFlat' and gL['args'][7] == 'mean', '{} {}'.format(dG.turnout, dG.omegaRule))
+gC, gCo = until(R, 'stageAnchor', ['--turnout', 'cps']), until(R, 'stageAnchor', ['--turnout', 'cps', '--outdir', tmpG])
+gK, gKo = until(R, 'stageAnchor', ['--coarse']), until(R, 'stageAnchor', ['--coarse', '--outdir', tmpG])
+gKm = until(R, 'stageAnchor', ['--theta', mainV, '--main', '--coarse'])
+gP = until(R, 'stageAnchor', ['--turnout', 'cses', 'csesFlat'])
+check("G: runOECD26 refuses turnout 'cps' and --coarse into results/oecd26/ (also under --main), allows them into another "
+      "--outdir, and the paper's turnouts into results/oecd26/",
+      'cps' in gC.get('exit', '') and 'args' not in gC and gCo.get('args', [None])[0] == 'cps'
+      and '--coarse' in gK.get('exit', '') and 'args' not in gK and 'args' in gKo
+      and '--coarse' in gKm.get('exit', '') and 'args' not in gKm and gP.get('args', [None])[0] == 'cses',
+      ' | '.join(str(x.get('exit')) for x in (gC, gK, gKm)))
+eT = [raises(lambda: oecd26.countryInputs('GBR'), TypeError),
+      raises(lambda: oecd26.inputsFrom('X', 'X', [1.]*9, [.3]*3, [1.]*3, [1.]*3, 1., .5), TypeError)]
+check("G: oecd26.countryInputs and inputsFrom take the turnout explicitly (no 'cps' default); one dict for the anchor "
+      "and twin turnouts", all(eT) and R.ANCHORTURNOUT == {'csesFlat': 'cses'} and not hasattr(R, 'TWIN')
+      and not hasattr(oecd26, 'isStandard'), ' | '.join(str(x) for x in eT))
+check('G: the Medicare reading, the unwired ESC stages, the dead readers and helpers are gone',
+      not any((hasattr(testmod, 'reading'), hasattr(runESC, 'stagePermanent'), hasattr(runESC, 'stageFig1'),
+               hasattr(runESCcrra, 'stagePermanentCRRA'), hasattr(testEU, 'retAgeFR'), hasattr(testEU, 'frenchNu'),
+               hasattr(RS, 'usRow'), hasattr(runESC, 'json'))))
+dE, dC = defaultsOf(runESC), defaultsOf(runESCcrra)
+eS = [raises(lambda: defaultsOf(runESC, '--stage', 'fig1'), SystemExit),
+      raises(lambda: defaultsOf(runESC, '--stage', 'permanent'), SystemExit),
+      raises(lambda: defaultsOf(runESCcrra, '--stage', 'sens'), SystemExit),
+      raises(lambda: defaultsOf(runESCcrra, '--stage', 'permanent'), SystemExit)]
+check("G: runESC's default stages are calib path shocks country, runESCcrra's calib path shocks; fig1, permanent and sens "
+      "are no choice", dE.stage == ['calib', 'path', 'shocks', 'country'] and dC.stage == ['calib', 'path', 'shocks']
+      and all(eS), ' | '.join(str(x) for x in eS))
+ρSt = oecd26.paperConfig().US['ρStationary']
+check("G: stationaryApprox's default --rho is config.US['ρStationary'], and the drivers' literals of the design grid "
+      "are config.US['esc']['nCand2D']", list(defaultsOf(stationaryApprox).rho) == list(ρSt) == [0.5, 2.0]
+      and c5Numbers.NCAND2D == runHorizon.N_CAND_2D == oecd26.paperConfig().US['esc']['nCand2D'])
+
+# relative --out, --pkldir, --root: the caller's working directory's, absolute before the drivers change directory
+rel = ['rel/o.csv', 'rel/p', 'rel/r']
+absOf = lambda mod, x: os.path.abspath(os.path.join(mod.CWD, x))
+gCRG = until(CRG, 'thetaRun', ['--theta', 'fixA', '--out', rel[0], '--pkldir', rel[1], '--root', rel[2]])['args']
+gCEU = until(CEU, 'thetaRun', ['--theta', 'fixA', '--out', rel[0], '--pkldir', rel[1], '--root', rel[2]])['args']
+gRS = until(RS, 'thetaRun', ['--theta', 'fixA', '--root', rel[2]])['args']
+gRE = until(runESC, 'setTheta', ['--theta', 'fixA', '--root', rel[2]])['args']
+gRC = until(runESCcrra, 'setThetaCRRA', ['--theta', 'fixA', '--root', rel[2]])['args'][0]
+gTT = until(runESC, 'setTheta', ['--theta', 'fixA', '--root', rel[2]], run = runTauTheta)['args']
+check("G: a relative --out, --pkldir or --root is absolute against the caller's directory in calibrateRhoGrid{,EU}, "
+      "runShocksUS, runESC, runESCcrra and runTauTheta",
+      gCRG[2:5] == tuple(absOf(CRG, x) for x in rel) and gCEU[3:6] == tuple(absOf(CEU, x) for x in rel)
+      and gRS[1] == absOf(RS, rel[2]) and gRE[1] == absOf(runESC, rel[2]) and gRC.root == absOf(runESCcrra, rel[2])
+      and gTT[1] == absOf(runTauTheta, rel[2]), str(gCRG[2:5]))
+
+# the merge of runShocksUS: a subset keeps the other rows, another θ is dropped, a failed rename leaves the file
+fw = os.path.join(tmpG, 'shocks.csv')
+tagC = {'thetaSource': 'C', 'θ0': 0.544496}
+mk = lambda ρ, τ, tag = tagC: {'ρ': ρ, 'family': 'ageing', 'scenario': 'Acute', 'effect': 'full', 'τ': τ} | tag
+pd.DataFrame([mk(0.5, .1), mk(1.0, .2), mk(2.0, .3)]).to_csv(fw, index = False)
+RS.writeRows(fw, [mk(1.0, 9.)], tagC)
+d1 = pd.read_csv(fw).sort_values('ρ')
+before = open(fw, 'rb').read()
+osReplace = os.replace
+os.replace = lambda *a: (_ for _ in ()).throw(OSError('rename'))
+try:
+    eW = raises(lambda: RS.writeRows(fw, [mk(0.5, 7.)], tagC), OSError)
+finally:
+    os.replace = osReplace
+untouched = open(fw, 'rb').read() == before and not os.path.exists(fw + '.tmp')
+tag5 = {'thetaSource': 'C', 'θ0': 0.5}
+RS.writeRows(fw, [mk(1.0, 5., tag5)], tag5)
+d2 = pd.read_csv(fw)
+check("G: runShocksUS.writeRows replaces the rows of its own (ρ, family, scenario, effect) and keeps the others; a "
+      "failing rename leaves the file as it was; the rows at another θ0 are dropped",
+      list(d1['ρ']) == [0.5, 1.0, 2.0] and list(d1['τ']) == [.1, 9., .3] and bool(eW) and untouched
+      and list(d2['τ']) == [5.] and list(d2['θ0']) == [0.5], str(list(d1['τ'])))
+
+# the exit code of a run that survived a failure; the exact CRRA cost read from file
+runESC.FAILURES.clear()
+stageCorner0, argv0 = runESC.stageCorner, sys.argv
+try:
+    sys.argv = ['x.py', '--stage', 'corner', '--spec', 'size', '--phi', '0.5', '--commonX']
+    runESC.stageCorner = lambda *a, **k: runESC.noteFailure('corner', ValueError('boom'))
+    rcFail = runESC.main()
+    nFail = len(runESC.FAILURES)
+    runESC.FAILURES.clear()
+    runESC.stageCorner = lambda *a, **k: None
+    rcOK = runESC.main()
+finally:
+    runESC.stageCorner, sys.argv = stageCorner0, argv0
+    runESC.FAILURES.clear()
+check('G: runESC.main exits 1 when a stage noted a failure it survived, 0 otherwise', (rcFail, nFail, rcOK) == (1, 1, 0),
+      str((rcFail, nFail, rcOK)))
+fcr = os.path.join(tmpG, 'escCalibrationCRRA.csv')
+crra = lambda ρ, m_, p_, ok: {'ρ': ρ, 'spec': 'size', 'phi': 0.5, 'commonX': True, 'method': m_, 'p': p_, 'converged': ok,
+                              'β': .6, 'ω': 1.2}
+pd.DataFrame([crra(2.0, 'exact', 4.0, True), crra(2.0, 'exact', 9.0, False), crra(0.5, 'path', 1.5, True),
+              crra(0.5, 'path', 8.0, False)]).to_csv(fcr, index = False)
+rc = [readCalibratedP(fcr, 2.0, 'size', 0.5, True, 'exact'), readCalibratedP(fcr, 0.5, 'size', 0.5, True, 'exact'),
+      readCalibratedP(fcr, 0.5, 'size', 0.5, True, 'exact', fallback = True), readCalibratedP(fcr, 0.5, 'size', 0.5, True, 'path')]
+escDir0, build0 = stationaryApproxESC.ESCDIR, runESCcrra.buildUS
+stationaryApproxESC.ESCDIR = tmpG
+runESCcrra.buildUS = lambda *a, **k: (_ for _ in ()).throw(RuntimeError('built'))
+try:
+    eRef = raises(lambda: stationaryApproxESC.runCRRA(0.5, 'size', 0.5, True, 50, 21), KeyError)
+    eBuilt = raises(lambda: stationaryApproxESC.runCRRA(0.5, 'size', 0.5, True, 50, 21, allowPathP = True), RuntimeError)
+finally:
+    stationaryApproxESC.ESCDIR, runESCcrra.buildUS = escDir0, build0
+check("G: readCalibratedP reads converged rows only (exact 4.0, not the failed 9.0; path 1.5, not 8.0) and falls back to "
+      "the path p only on request; stationaryApproxESC refuses the path p unless --allowPathP",
+      rc[0] == (4.0, 'exact') and np.isnan(rc[1][0]) and rc[1][1] is None and rc[2] == (1.5, 'path') and rc[3] == (1.5, 'path')
+      and bool(eRef) and bool(eBuilt), '{} | {}'.format(rc, eRef))
+# the converged filter of the readers of the cost calibration
+fl = lambda f_, rows_: pd.DataFrame(rows_).to_csv(os.path.join(tmpG, f_), index = False)
+cal = lambda p_, ok, **kw: {'spec': 'size', 'phi': 0.5, 'commonX': True, 'p': p_, 'converged': ok, 'β': .6, 'ω': 1.2,
+                            'τ0': .1, 'Vtilde': .3, 'θStar': c5Numbers.THETA_WORKBOOK} | kw
+pir = lambda p_, ok, **kw: {'spec': 'sizePiR', 'phi': 0.5, 'commonX': True, 'p': p_, 'converged': ok, 'ΠR': .9} | kw
+fl('escCalibration.csv', [cal(8., True), cal(99., False)])
+fl('escCalibrationCosts.csv', [pir(7., True), pir(77., False)])
+fl('escCalibrationCRRA.csv', [cal(4., True, ρ = r_, method = 'exact') for r_ in (0.5, 2.0)]
+   + [cal(44., False, ρ = r_, method = 'exact') for r_ in (0.5, 2.0)])
+fl('escCalibrationCRRACosts.csv', [pir(3., True, ρ = r_, method = 'exact') for r_ in (0.5, 2.0)]
+   + [pir(33., False, ρ = r_, method = 'exact') for r_ in (0.5, 2.0)])
+esc0, escH0 = c5Numbers.ESC, runHorizon.ESCDIR
+c5Numbers.ESC = runHorizon.ESCDIR = tmpG
+try:
+    e5 = c5Numbers.escRows()
+    lH = [float(runHorizon.escLambda(1.0, 'LOG')['p']), float(runHorizon.escLambda(2.0, 'exact')['p'])]
+finally:
+    c5Numbers.ESC, runHorizon.ESCDIR = esc0, escH0
+check("G: c5Numbers.escRows and runHorizon.escLambda read converged calibration rows only",
+      [e5[r_]['λ'] for r_ in (1.0, 0.5, 2.0)] == [8., 4., 4.] and [e5[r_]['λΠR'] for r_ in (1.0, 0.5, 2.0)] == [7., 3., 3.]
+      and lH == [8., 4.], '{} {}'.format({k: v['λ'] for k, v in e5.items()}, lH))
+
+# ==== X: the ξ drivers ========================================================================================
+XIC = 0.544496
+tagXi = {'thetaSource': 'C', 'θ0': XIC, 'grid': 'fine'}
+eXi = []
+for mod, name in ((runShocksXi, 'runXi'), (runESCxi, 'θStarAt')):
+    for argv in ([], ['--theta', 'C'], ['--main']):
+        eXi.append(until(mod, name, argv).get('exit', 'ran'))
+check("X: runShocksXi and runESCxi need --theta and --main both (the rows are the paper's measure)",
+      all('--theta' in x and 'PASSED' not in x for x in eXi), ' | '.join(eXi[:2]))
+seen = []
+fout = os.path.join(tmpG, 'xi.csv')
+until(runShocksXi, 'runXi', ['--theta', mainV, '--main', '--xi', '0.2', '0.4', '0.3', '--out', fout],
+      stub = lambda ξ, ww: (seen.append(ξ), (_ for _ in ()).throw(Stop()))[0])
+check("X: runShocksXi runs the workbook ξ first, whatever the order of --xi", seen == [runShocksXi.XI0], str(seen))
+pd.DataFrame([{'ξ': 0.2, 'x': 0., 'thetaSource': 'C', 'θ0': 0.5}, {'ξ': 0.4, 'x': 1., 'thetaSource': 'C', 'θ0': 0.5},
+              {'ξ': 0.4, 'x': 2., 'thetaSource': 'C', 'θ0': XIC}, {'ξ': 0.25, 'x': 3., 'thetaSource': np.nan, 'θ0': np.nan}]
+             ).to_csv(fout, index = False)
+newXi = lambda ξ, ww: pd.DataFrame([{'ξ': ξ, 'x': 9., 'thetaSource': 'C', 'θ0': XIC}])
+until(runShocksXi, 'runXi', ['--theta', mainV, '--main', '--xi', '0.2', '--out', fout], stub = newXi)
+dXi = pd.read_csv(fout).sort_values('ξ')
+check("X: runShocksXi replaces the rows of its ξ, keeps the others at the variant's θ0 and drops the rows at another θ0 "
+      "or none", list(dXi['ξ']) == [0.2, 0.4] and list(dXi['x']) == [9., 2.] and set(dXi['θ0']) == {XIC},
+      str(dict(zip(dXi['ξ'], dXi['x']))))
+# runESCxi: the rows read and kept at the run's θ
+saved2 = dict(runESC.THETA)
+runESC.THETA.update({'variant': 'C', 'θ0': XIC, 'grid': 'fine'})
+pubc = {'spec': 'size', 'phi': 0.5, 'commonX': True, 'converged': True}
+cvals = dict(p = 6., θStar = .54, β = .65, ω = 1.2, X = 4., Vtilde = .3, fStar = .9, f0 = .7, choice = .54)
+decoy = lambda r_: r_ | {'thetaSource': 'fixA', 'θ0': 0.5}
+mine = lambda r_: r_ | tagXi
+fl('pubCal.csv', [decoy(pubc | {k: v + 1 for k, v in cvals.items()}), mine(pubc | cvals)])
+fl('pubPath.csv', [decoy({'spec': 'size', 'phi': 0.5, 'commonX': True, 'pos': k, 'date': 1960 + 30*k, 'θ': .1, 'τ': .1})
+                   for k in (2, 3, 4, 5)] + [mine({'spec': 'size', 'phi': 0.5, 'commonX': True, 'pos': k,
+                                                   'date': 1960 + 30*k, 'θ': .5, 'τ': .2}) for k in (2, 3, 4, 5)])
+expr = lambda pin, th: {'ρ': 1.0, 'preferences': 'LOG', 'spec': 'size', 'phi': 0.5, 'commonX': True, 'scenario': 'acute',
+                        'θpinned': pin, 'θ_t0': th, 'τ_t0': .3}
+fl('pubExp.csv', [decoy(expr(p_, 0.)) for p_ in (True, False)] + [mine(expr(p_, .5)) for p_ in (True, False)])
+xiRow = lambda kind, pos, **kw: {'xi': runESCxi.XI0, 'spec': 'size', 'phi': 0.5, 'commonX': True, 'kind': kind, 'pos': pos,
+                                 'date': 1960 + 30*pos, 'p': 6.} | kw
+xiRows = ([xiRow('calibration', 2, **(cvals | {'converged': True}))]
+          + [xiRow('path', k, θ = .5, τ = .2) for k in (2, 3, 4, 5)]
+          + [xiRow('acute ' + w, 2, θ = .5, τ = .3) for w in ('pinned', 'chosen')])
+fx = os.path.join(tmpG, 'xiRob.csv')
+pd.DataFrame([decoy(xiRow('calibration', 2, **{k: v + 5 for k, v in cvals.items()}))] + [mine(r_) for r_ in xiRows]
+             ).to_csv(fx, index = False)
+pub0 = dict(runESCxi.PUBLISHED)
+runESCxi.PUBLISHED.update({'calib': os.path.join(tmpG, 'pubCal.csv'), 'path': os.path.join(tmpG, 'pubPath.csv'),
+                           'experiments': os.path.join(tmpG, 'pubExp.csv')})
+try:
+    okSelf = runESCxi.selfCheck(fx, True)
+    ids = runESCxi._ids(0.2, True, 'path', 2, 1990, 6.)
+    runESCxi.write(fx, [mine(xiRow('acute chosen', 2, θ = .6, τ = .4))])
+    dW = pd.read_csv(fx)
+finally:
+    runESCxi.PUBLISHED.update(pub0)
+    runESC.THETA.update(saved2)
+check("X: runESCxi's self-check reads the published and its own rows at the run's θ only (a decoy row of another θ0 first "
+      "in each file), the rows it writes carry thetaSource, θ0, grid and the rows at another θ0 are dropped on a write",
+      okSelf and set(dW['thetaSource']) == {'C'} and set(dW['θ0']) == {XIC} and len(dW) == len(xiRows)
+      and runESC.THETA == saved and ids['thetaSource'] == 'C' and ids['θ0'] == XIC and ids['grid'] == 'fine',
+      '{} rows'.format(len(dW)))
+
+# runTauTheta: the self-check raises when it cannot compare or the gap is above its tolerance
+sys.path.insert(0, os.path.join(runTauTheta.R.REPO, 'python', 'paper'))
+import config as PC
+fshk = os.path.join(runTauTheta.R.REPO, 'results', 'shocks', 'US_shocksCommonX.csv')
+shk = PC.atTheta(pd.read_csv(fshk)) if os.path.exists(fshk) else pd.DataFrame()
+refT = shk[np.isclose(shk['ρ'], 1.0) & (shk['effect'] == 'full') & (shk['scenario'] == r'$\theta = 0$')] if len(shk) else shk
+eNaN = raises(lambda: runTauTheta.selfCheck(pd.DataFrame({'spec': [], 'θpin': [], 'τ': []}), tmpG, True), RuntimeError)
+if len(refT):
+    τ0T = float(refT['τ'].iloc[0])
+    gOK = runTauTheta.selfCheck(pd.DataFrame([{'spec': 'none', 'θpin': 0., 'τ': τ0T}]), tmpG, True)
+    eBad = raises(lambda: runTauTheta.selfCheck(pd.DataFrame([{'spec': 'none', 'θpin': 0., 'τ': τ0T + 1e-3}]), tmpG, True),
+                  RuntimeError)
+    check("G: runTauTheta.selfCheck raises when nothing could be compared (NaN) or the gap in τ is above 1e-6, and "
+          "returns a gap of 0 against the published row", bool(eNaN) and 'NaN' in str(eNaN) and bool(eBad) and gOK == 0.,
+          '{} | {}'.format(eNaN, eBad))
+else:
+    print("NOTE  the runTauTheta self-check against results/shocks/ skipped: no row at config.US['theta']")
 
 shutil.rmtree(tmp, ignore_errors = True)
 print('\n({:.0f}s)'.format(time.time() - tic))

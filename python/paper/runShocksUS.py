@@ -316,6 +316,17 @@ EXPERIMENTS = {
         'outputs': lambda: [os.path.join(C.ESCDIR, 'escExperiments.csv')],
         'note':    'merge the LOG and CRRA legs into one long table',
     },
+    # The ESC counterfactuals at other Frisch elasticities (python/US/runESCxi.py; the site's xi blocks of
+    # ESC_Counterfactuals and ESC_Paths): the cost recalibrated at each xi, the workbook xi first as a self-check.
+    # After escExperiments, whose merge the self-check reads.
+    'escXi': {
+        'part':    'main',
+        'script':  'runESCxi.py',
+        'args':    THETA,
+        'outputs': lambda: [os.path.join(C.ESCDIR, 'escXiRobustness.csv')],
+        'requires': lambda: [os.path.join(C.ESCDIR, f) for f in ('escCalibration.csv', 'escPath.csv', 'escExperiments.csv')],
+        'note':    'endogenous-theta counterfactuals at xi = 0.2, 0.3, 0.4, LOG (rho = 1)',
+    },
 }
 
 

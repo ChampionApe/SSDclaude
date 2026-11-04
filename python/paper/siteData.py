@@ -24,6 +24,11 @@ ESCKEY = {'acute': 'acute', 'mild': 'mild', 'frIncome': 'income', 'frVoting': 'v
 CHECK_TOL = 1e-6
 
 
+def _note(text):
+    """ A deliberate omission, printed with the build's other lines. """
+    print('  siteData: ' + text)
+
+
 def _workbookXi():
     """ The Frisch elasticity of every run without an explicit xi: the workbook's, read off the calibration
     summary rather than typed. """
@@ -105,8 +110,11 @@ def oecdCounterfactuals():
     # the xi file's workbook-xi block is the main file's rho = 1 block (runShocksXi.check); keep it honest
     a = out[(out['source'] == 'xi') & np.isclose(out['xi'], ξ0)].set_index(['scenario', 'effect', 'outcome'])['level']
     b = out[(out['source'] == 'main') & (out['host'] == 'US') & (out['calibration'] == 'commonX')
-            & np.isclose(out['rho'], 1.0)].set_index(['scenario', 'effect', 'outcome'])['level']
-    gap = (a - b.reindex(a.index)).abs().max()
+            & np.isclose(out['rho'], 1.0)].set_index(['scenario', 'effect', 'outcome'])['level'].reindex(a.index)
+    if not (a.notna().all() and b.notna().all()):
+        raise D.StaleInput('US_shocksXiCommonX.csv at ξ = {} and US_shocksCommonX.csv at ρ = 1 do not hold the same '
+                           'rows ({} of {} compared)'.format(ξ0, int((a.notna() & b.notna()).sum()), len(a)))
+    gap = (a - b).abs().max()
     if not gap <= 100*CHECK_TOL:
         raise ValueError('US_shocksXiCommonX.csv at ξ = {} differs from US_shocksCommonX.csv at ρ = 1 by {}'.format(ξ0, gap))
     return out
@@ -134,7 +142,7 @@ def escCounterfactuals():
     that csv holds rows at the θ variant (python/US/runESCxi.py, not a stage (ii) entry). The design is a level; the
     tax rate, savings over GDP and the workweek are also changes against the baseline of the same reading. """
     ξ0 = _workbookXi()
-    rows = []
+    rows, left = [], []
     for host in ('US',):
         df = D.escExperiments()
         for spec in sorted(df['spec'].unique()):
@@ -143,16 +151,21 @@ def escCounterfactuals():
                     try:
                         base = _escLevels(D.escRow(df, ρ, spec, 'baseline', pinned))
                     except D.MissingInput:
+                        left.append((spec, ρ, 'baseline', pinned))
                         continue
                     for scen, key in ESCKEY.items():
                         try:
                             r = D.escRow(df, ρ, spec, scen, pinned)
                         except D.MissingInput:          # France has no chosen reading; mild ageing is rho = 1 only
+                            left.append((spec, ρ, scen, pinned))
                             continue
                         rows += _escRows('main', host, spec, ξ0, ρ, key, pinned, _escLevels(r), base)
+    if left:
+        _note('ESC_Counterfactuals: no escExperiments.csv row for {} of (spec, rho, scenario, reading); left out'.format(len(left)))
     try:
         xi = D.escXi()
-    except D.MissingInput:
+    except D.MissingInput as ex:
+        _note('ESC_Counterfactuals: no Frisch-elasticity block ({})'.format(ex))
         return pd.DataFrame(rows)
     year0 = C.usCalendar()['year0']
     for ξ in sorted(xi['xi'].unique()):
@@ -172,6 +185,9 @@ def escCounterfactuals():
     a = out[(out['source'] == 'xi') & np.isclose(out['xi'], ξ0)].set_index(k)[['level', 'baseline']]
     b = out[(out['source'] == 'main') & (out['host'] == 'US') & (out['spec'] == C.US['esc']['spec'])
             & np.isclose(out['rho'], 1.0)].set_index(k)[['level', 'baseline']].reindex(a.index)
+    if not (a.notna().all().all() and b.notna().all().all()):
+        raise D.StaleInput('escXiRobustness.csv at ξ = {} and escExperiments.csv at ρ = 1 do not hold the same '
+                           'rows'.format(ξ0))
     gap = float((a - b).abs().max().max())
     if not gap <= 100*CHECK_TOL:
         raise ValueError('escXiRobustness.csv at ξ = {} differs from escExperiments.csv at ρ = 1 by {}'.format(ξ0, gap))
@@ -221,14 +237,15 @@ def escPaths():
             rows += _pathRows(D.escPath(ρ, spec = spec), 'main', 'US', ('US', 'own'), spec, ρ, ξ0, θStar, years)
     try:
         xi = D.escXi()
-    except D.MissingInput:
+    except D.MissingInput as ex:
+        _note('ESC_Paths: no Frisch-elasticity block ({})'.format(ex))
         xi = pd.DataFrame(columns = ['xi', 'kind', 'pos'])
     # A stale row (crossCuttingFindings #13): the workbook-xi path must be escPath.csv's rho = 1 path.
     own = xi[np.isclose(xi['xi'], ξ0) & (xi['kind'] == 'path')].sort_values('pos')
     if not own.empty:
         base = D.escPath(1.0)
         for c in ('θ', 'τ', 'τExo'):
-            if len(own) != len(base) or np.max(np.abs(own[c].values - base[c].values)) > 1e-8:
+            if len(own) != len(base) or not np.all(np.abs(own[c].values - base[c].values) <= 1e-8):
                 raise ValueError('escXiRobustness.csv at the workbook ξ = {} does not reproduce escPath.csv ({}); '
                                  're-run python/US/runESCxi.py'.format(ξ0, c))
     for ξ in sorted(xi['xi'].unique()):

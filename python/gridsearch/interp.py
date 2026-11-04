@@ -28,7 +28,9 @@ def _fillInvalid(values, valid):
     """ Replace invalid nodes with their nearest valid neighbour, so a spline can be *constructed* over a
     grid carrying infeasible cells. This is scaffolding for the fit only -- the caller must still mask the
     result back to NaN through _maskedCall, or the filled values would be reported as if they were policy.
-    An all-invalid grid is returned as zeros; the mask then makes every evaluation NaN anyway. """
+    The fill still shapes the spline in the valid cells near an invalid node ('cubic' is a global spline,
+    'pchip' reads the neighbouring nodes' slopes), so there the result is not a fit over the valid nodes
+    alone. An all-invalid grid is returned as zeros; the mask then makes every evaluation NaN anyway. """
     out = np.array(values, dtype = float)
     if valid.all():
         return out
@@ -38,17 +40,18 @@ def _fillInvalid(values, valid):
     return out[tuple(idx)]
 
 
-def _maskedCall(f, fValid):
-    """ Wrap an interpolant so that any evaluation drawing on an invalid node returns NaN.
-
-    fValid interpolates the 0/1 validity mask *linearly*, so it is <1 exactly when the enclosing cell has
-    at least one invalid corner. That reproduces the NaN propagation a plain linear interpolant over the
-    unfilled values gives for free, which is the semantics the callers already depend on: an infeasible
-    region has to surface as a non-finite path rather than as a plausible interpolated policy. """
+def _maskedCall(f, fNaN):
+    """ Wrap an interpolant so that it returns NaN exactly where the 'linear' kind over the unfilled values
+    would. fNaN is that linear interpolant of an array that is 0 at valid nodes and NaN at invalid ones, so
+    the same interval lookup decides: a point in a cell with an invalid corner, a point extrapolated from
+    such an edge cell, and a point exactly on a valid node whose lookup interval has an invalid corner
+    (interp1d assigns a node to the interval on its left, RegularGridInterpolator to the one on its right)
+    all return NaN. An infeasible region has to surface as a non-finite path rather than as a plausible
+    interpolated policy. """
     def call(*args):
         out = np.asarray(f(*args), dtype = float)
-        ok = np.asarray(fValid(*args), dtype = float) >= 1-1e-12
-        return np.where(ok.reshape(ok.shape + (1,)*(out.ndim-ok.ndim)), out, np.nan)
+        bad = np.isnan(np.asarray(fNaN(*args), dtype = float))
+        return np.where(bad.reshape(bad.shape + (1,)*(out.ndim-bad.ndim)), np.nan, out)
     return call
 
 
@@ -56,21 +59,19 @@ def griddedInterp1D(x, y, kind = 'linear'):
     """ x: (M,) grid nodes -- sorted here defensively, since only the axis a search runs over (roots1d's
     own precondition) is guaranteed sorted, not every state axis a grid happens to carry. y: (M,) or
     (M, ...) values at those nodes; trailing axes (e.g. a per-household-type quantity) pass through
-    unchanged. kind: passed to scipy.interpolate.interp1d -- 'linear' matches what this package's callers
-    settled on (piecewise-linear, no curvature between nodes); pass 'quadratic'/'cubic' for a smoother
-    continuation if one is ever wanted.
+    unchanged.
 
-    Returns a callable f(xNew) -> yNew that extrapolates *linearly* past [min(x), max(x)] rather than
-    raising or clamping to the boundary value. This matters concretely: a candidate state produced by an
-    outer root-solve (e.g. an endogenous continuation state implied by a candidate policy) is not
-    guaranteed to land inside the grid this interpolant was built from, and clamping would silently
-    misrepresent the policy at exactly the states where the boundary is actually informative.
+    Returns a callable f(xNew) -> yNew that extrapolates past [min(x), max(x)] rather than raising or
+    clamping to the boundary value: a candidate state produced by an outer root-solve (e.g. an
+    endogenous continuation state implied by a candidate policy) need not land inside the grid this
+    interpolant was built from, and clamping would misrepresent the policy at exactly the states where the
+    boundary is informative.
 
-    kind: 'linear' (the default the callers settled on) or any interp1d kind; 'pchip' selects a monotone
-    C1 cubic, which removes the kinks of the piecewise-linear form without the overshoot a plain cubic
-    introduces where a policy is flat at a bound. Non-linear kinds cannot be constructed over NaN, so
-    invalid nodes are filled for the fit and masked back out on evaluation (_maskedCall) -- the NaN
-    semantics of the linear path are preserved exactly, not quietly dropped. """
+    kind: 'linear' (piecewise linear, NaN wherever the lookup interval has an invalid node), any other
+    interp1d kind ('cubic': a not-a-knot cubic spline), or 'pchip' (monotone C1 cubic, no overshoot where
+    a policy is flat at a bound). The non-linear kinds cannot be constructed over NaN, so invalid nodes are
+    filled for the fit and masked on evaluation (_maskedCall): they return NaN exactly where 'linear'
+    does; elsewhere near an invalid node their values depend on the fill (_fillInvalid). """
     order = np.argsort(x)
     xs, ys = np.asarray(x)[order], np.asarray(y, dtype = float)[order]
     if kind == 'linear':
@@ -95,9 +96,9 @@ def griddedInterp1D(x, y, kind = 'linear'):
 
     if valid.all():
         return f
-    fValid = interpolate.interp1d(xs, valid.astype(float), kind = 'linear',
-                                  bounds_error = False, fill_value = 'extrapolate')
-    return _maskedCall(f, fValid)
+    fNaN = interpolate.interp1d(xs, np.where(valid, 0., np.nan), kind = 'linear',
+                                bounds_error = False, fill_value = 'extrapolate')
+    return _maskedCall(f, fNaN)
 
 
 def griddedInterp2D(x, y, z, kind = 'linear'):
@@ -117,13 +118,13 @@ def griddedInterp2D(x, y, z, kind = 'linear'):
     extrapolation may be trusted is a question for the caller's own reachability check, not for this
     function.
 
-    kind: 'linear' (the callers' default) or any RegularGridInterpolator method -- 'pchip' for a monotone
-    C1 surface, 'cubic' for a smoother but overshooting one. A policy surface carries NaN at its
-    infeasible nodes and the spline methods refuse to be constructed over them, so invalid nodes are
-    filled for the fit and masked back to NaN on evaluation. That mask is not a nicety: 'linear' propagates
-    NaN out of an infeasible cell for free, and the path solve's `strict` check relies on a path through
-    such a cell going non-finite *without* leaving the rectangle. Filling without masking would convert
-    that signal into a plausible-looking number. """
+    kind: 'linear' or any RegularGridInterpolator method -- 'pchip' for a monotone C1 surface, 'cubic'
+    for a smoother but overshooting one (a tensor-product spline, global along each axis). A policy
+    surface carries NaN at its infeasible nodes and the spline methods refuse to be constructed over them,
+    so invalid nodes are filled for the fit and masked on evaluation (_maskedCall): the result is NaN
+    exactly where 'linear' is, and elsewhere near an invalid node it depends on the fill (_fillInvalid).
+    The mask is not a nicety: a path through an infeasible cell must go non-finite *without* leaving the
+    rectangle, which is what the CRRA path solve's `strict` check reads. """
     xo, yo = np.argsort(x), np.argsort(y)
     grid = (np.asarray(x)[xo], np.asarray(y)[yo])
     values = np.asarray(z, dtype = float)
@@ -155,7 +156,7 @@ def griddedInterp2D(x, y, z, kind = 'linear'):
     f = build(_fillInvalid(values, valid), kind)
     if valid.all():
         return f
-    return _maskedCall(f, build(valid.astype(float), 'linear'))
+    return _maskedCall(f, build(np.where(valid, 0., np.nan), 'linear'))
 
 
 def _fixedKnots(xv, k, every):
@@ -224,9 +225,10 @@ def griddedSmooth1D(x, y, s = 1e-5, k = 3, knots = None):
     _splineAlongAxis0). s: smoothing factor -- larger smooths harder; 0 would interpolate exactly.
 
     knots: None keeps the adaptive-knot smoothing spline (s applies); an int m pins the knots at every
-    m-th valid node and fits by least squares (s is then unused). See _splineAlongAxis0 -- the fixed
-    branch is the one whose output is continuous in the data, and it is also ~2.4x faster, since FITPACK
-    no longer iterates over knot counts. """
+    m-th valid node and fits by least squares, and s is then IGNORED: every value of s gives the same fit,
+    so a caller's nonzero s only switches the smoothing on (the policy smoothers' `smooth`). See
+    _splineAlongAxis0 -- the fixed branch is the one whose output is continuous in the data, and it is also
+    ~2.4x faster, since FITPACK no longer iterates over knot counts. """
     return _splineAlongAxis0(x, y, s, k, derivative = False, knots = knots)
 
 

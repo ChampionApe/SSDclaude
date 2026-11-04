@@ -29,7 +29,7 @@ LAMBDA, BETA, OMEGA = 8.662480950864664, 0.7585347063319889, 1.5078972407047575
 
 # ==== R ========================================================================================================
 y = np.asarray(INC)/np.sum(np.asarray(Γ)*np.asarray(INC))
-inp = oecd26.inputsFrom('US', 'US', NU + [NU[-1]]*(1 + oecd26.T_SS), Γ, y, MU, 100*TAU0*0.7, 1/(2 - THETA))
+inp = oecd26.inputsFrom('US', 'US', NU + [NU[-1]]*(1 + oecd26.T_SS), Γ, y, MU, 100*TAU0*0.7, 1/(2 - THETA), 'cps')
 m = oecd26.build(inp, BETA, 1.45, None)
 rec = m.calibrateWedge(spec = 'size', phi = 0.5, bracket = (8.0, 9.5), nScan = 3, verbose = False)
 ω = float(m.db['ω'].iloc[2])

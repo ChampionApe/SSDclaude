@@ -40,7 +40,7 @@ We note that when discount rates are identical across types, i.e.\ when $\beta_{
 \begin{align*}
     \frac{s_{t,i}}{s_t} = \frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{h,t}}+\frac{1-\alpha}{\alpha}\tau_{t+1}\frac{1-\theta_{t+1}}{1+B_{t+1}}\left(\frac{\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}}{\Gamma_{h,t}}-1\right).
 \end{align*}
-This is the sense in which a lower $\theta_{t+1}$ redistributes: the second term pulls every type towards the average, and more strongly the more Beveridgean the system is.
+Savings are therefore more dispersed than income: $s_{t,i}/s_t-1$ is the type's relative income net of one, $\eta_{t,i}^{1+\xi}/(X_{t,i}^{\xi}\Gamma_{h,t})-1$, times $1+\frac{1-\alpha}{\alpha}\tau_{t+1}(1-\theta_{t+1})/(1+B_{t+1})\geq 1$. The flat component of future benefits crowds out the saving of low-income types relative to that of high-income types, and a lower $\theta_{t+1}$ spreads savings further from the mean.
 
 
 Finally, we can combine $s_t, h_t$ to yield closed form expressions. Start from the definition of $h_t$ and use that $s_t$ is proportional to $h_t^{(1+\xi)/\xi}$ to write
@@ -58,21 +58,21 @@ Given discount functions, $B^i$, equations \eqref{\refeq:EE} identify aggregate 
 
 
 \smalltitle{Scale invariance.}
-The equilibrium is homogeneous in the labour aggregator $\Gamma_{h,t}$, and this is worth recording explicitly because the calibration in \cref{\refsec:calibration} rests on it. Fix $\lambda>0$ and rescale the disutility parameters as $X_{t,i}\rightarrow \lambda^{-1/\xi}X_{t,i}$ for all $i$ and $t$, so that $\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}\rightarrow \lambda\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}$ and hence $\Gamma_{h,t}\rightarrow\lambda\Gamma_{h,t}$. Then \eqref{\refeq:EE:h} gives $\Theta_{h,t}\rightarrow \lambda^{1/(1+\alpha\xi)}\Theta_{h,t}$, and provided the initial state is rescaled with it, $s_0\rightarrow\lambda s_0$, an induction on \eqref{\refeq:EE:s} yields
+The equilibrium is homogeneous in the labour aggregator $\Gamma_{h,t}$, which the calibration in \cref{\refsec:calibration} rests on. Fix $\lambda>0$ and rescale the disutility parameters as $X_{t,i}\rightarrow \lambda^{-1/\xi}X_{t,i}$ for all $i$ and $t$, so that $\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}\rightarrow \lambda\eta_{t,i}^{1+\xi}/X_{t,i}^{\xi}$ and hence $\Gamma_{h,t}\rightarrow\lambda\Gamma_{h,t}$. Then \eqref{\refeq:EE:h} gives $\Theta_{h,t}\rightarrow \lambda^{1/(1+\alpha\xi)}\Theta_{h,t}$, and provided the initial state is rescaled with it, $s_0\rightarrow\lambda s_0$, an induction on \eqref{\refeq:EE:s} yields
 \begin{align}\label{\refeq:scaleInvariance}
     \left(h_t, h_{t,i}, s_t, s_{t,i}, c_{1,t}^i, c_{2,t}^i, Y_t\right)\rightarrow \lambda\cdot\left(h_t, h_{t,i}, s_t, s_{t,i}, c_{1,t}^i, c_{2,t}^i, Y_t\right),
 \end{align}
 while $R_t$, $w_t$, $B_{t+1}^i$, the ratios $h_{t,i}/h_t$ and $s_{t,i}/s_t$, and the savings rate $s_t/\left[(s_{t-1}/\nu_t)^{\alpha}h_t^{1-\alpha}\right]$ are all unchanged. Because $B_{t+1}^i$ is invariant, the argument is self-consistent under CRRA as well as log preferences, and \cref{\refsec:PEELOG} shows that equilibrium policy inherits the invariance.
 
-Two consequences follow. First, $\Gamma_{h,t}$ is a units convention for labour: one normalization of it is free, and we spend it, imposing $\Gamma_h = 1$ at the calibration stage in both model variants of \cref{\refsec:calibration}. Second, no ratio of aggregates --- the savings rate, the interest rate, the equilibrium tax --- carries any information about $\lambda$; only the levels listed in \eqref{\refeq:scaleInvariance} do. Note that the invariance requires the initial state to be scaled along with the parameters; this holds when $s_0$ is set at the model's own steady state --- our default --- but not when $s_0$ is imposed exogenously.
+Two consequences follow. First, $\Gamma_{h,t}$ is a units convention for labour: one normalization of it is free, and we spend it, imposing $\Gamma_h = 1$ at the calibration stage in both model variants of \cref{\refsec:calibration}. Second, no ratio of aggregates (the savings rate, the interest rate, the equilibrium tax) carries any information about $\lambda$; only the levels listed in \eqref{\refeq:scaleInvariance} do. The invariance requires the initial state to be scaled along with the parameters, which holds when $s_0$ is set at the model's own steady state, our default, but not when $s_0$ is imposed exogenously.
 
 
 \smalltitle{The units of individual hours.}
-A second and independent indeterminacy concerns individual rather than aggregate hours, and it is the one our two model variants actually differ over. Write
+A second and independent indeterminacy concerns individual rather than aggregate hours, and it is the one the two model variants differ over. Write
 \begin{align}\label{\refeq:yDefs}
     y_{t,i}^{\eta}\equiv \frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}, \qquad y_{t,i}^{x}\equiv \left(\frac{\eta_{t,i}}{X_{t,i}}\right)^{\xi},
 \end{align}
-and note that everything above involves $\eta_{t,i}$ and $X_{t,i}$ only through these two objects --- and almost everything through $y^{\eta}$ alone. Indeed $\Gamma_{h,t}$, $\Gamma_{s,t}$, the savings ratios \eqref{\refeq:EE:si_s} and the consumption functions \eqref{\refeq:EE:ci} all use $y^{\eta}$; the sole appearance of $y^x$ is the ratio $h_{t,i}/h_t$ in \eqref{\refeq:EE:hi}. Now fix $\mu>0$ and rescale $y_{t,i}^x\rightarrow\mu y_{t,i}^x$ holding $y_{t,i}^{\eta}$ fixed, which by \eqref{\refeq:yDefs} means
+and note that everything above involves $\eta_{t,i}$ and $X_{t,i}$ only through these two objects, and almost everything through $y^{\eta}$ alone. Indeed $\Gamma_{h,t}$, $\Gamma_{s,t}$, the savings ratios \eqref{\refeq:EE:si_s} and the consumption functions \eqref{\refeq:EE:ci} all use $y^{\eta}$; the sole appearance of $y^x$ is the ratio $h_{t,i}/h_t$ in \eqref{\refeq:EE:hi}. Now fix $\mu>0$ and rescale $y_{t,i}^x\rightarrow\mu y_{t,i}^x$ holding $y_{t,i}^{\eta}$ fixed, which by \eqref{\refeq:yDefs} means
 \begin{align}\label{\refeq:hoursUnit}
     \eta_{t,i}\rightarrow \frac{\eta_{t,i}}{\mu}, \qquad X_{t,i}\rightarrow \mu^{-\frac{1+\xi}{\xi}}X_{t,i}.
 \end{align}
@@ -82,19 +82,19 @@ Data on \emph{relative} hours cannot identify $\mu$, being ratios; the observed 
 \begin{align}\label{\refeq:avgHours}
     \overline{h}_t \equiv \sum_i\gamma_{t,i}h_{t,i} = h_t\sum_i\gamma_{t,i}\frac{y_{t,i}^x}{\Gamma_{h,t}},
 \end{align}
-we have $\overline{h}_t\rightarrow\mu\overline{h}_t$ under \eqref{\refeq:hoursUnit}. Note that $\overline{h}_t$ is an unweighted average and is not the aggregate $h_t$, which weights by productivity; the two differ except in the degenerate case of a single type, and only the former is comparable to an observed workweek.
+we have $\overline{h}_t\rightarrow\mu\overline{h}_t$ under \eqref{\refeq:hoursUnit}. Note that $\overline{h}_t$ is an unweighted average and is not the aggregate $h_t$, which weights by productivity; the two coincide when $\sum_i\gamma_{t,i}y_{t,i}^x = \Gamma_{h,t}$, which the normalisation of variant A imposes as a units convention (\cref{\refsec:calibration:etaX}), and only $\overline{h}_t$ is comparable to an observed workweek.
 
 
 \smalltitle{Closed form consumption functions.}
-We note that if we know $s_t$, $h_t$, $B^i$, and $s_{t-1}$, it is straightforward to identify all other variables directly: individual labour supply and savings decisions from \eqref{\refeq:EE:hi} and \eqref{\refeq:EE:si}, factor prices from \eqref{\refeq:factorPrices}, pension benefits from \eqref{\refeq:governmentBudget}, and finally consumption simply from budgets \eqref{\refeq:budget}. However, in particular in the analytical log case, it is useful to derive \emph{equilibrium} consumption functions as well; all consumption functions can be written on the form $x_t = \Theta_{x,t}(s_{t-1}/\nu_t)^{\sigma_x}$ with
+Given $s_t$, $h_t$, $B^i$ and $s_{t-1}$, every other variable follows directly: individual labour supply and savings from \eqref{\refeq:EE:hi} and \eqref{\refeq:EE:si}, factor prices from \eqref{\refeq:factorPrices}, pension benefits from \eqref{\refeq:governmentBudget}, and consumption from the budgets \eqref{\refeq:budget}. For the log case it is useful to have \emph{equilibrium} consumption functions as well, all of the form $x_t = \Theta_{x,t}(s_{t-1}/\nu_t)^{\sigma_x}$ with
 \begin{align}\label{\refeq:EE:sigma_ci}
     \sigma_{c_1,t}^i &= \sigma_{c_2,t}^i = \sigma_{\tilde{c}_1,t}^i = \dfrac{\alpha(1+\xi)}{1+\alpha\xi},
     \qquad \sigma_{c_2,t+1}^i = \left(\dfrac{\alpha(1+\xi)}{1+\alpha\xi}\right)^2.
 \end{align}
-This is essentially what ensures that the political objective function is log-separable in the state $s_{t-1}/\nu_t$.
+This is what makes the political objective log-separable in the state $s_{t-1}/\nu_t$.
 
 \begin{subequations}\label{\refeq:EE:ci}
-The coefficient functions (that also generally depend on policy) are derived using the aggregate states in the functions above. For completeness, we have the following:
+The coefficient functions, which generally depend on policy, follow from the aggregate states above:
 \begin{align}
     c_{1,t}^i &= \frac{\eta_{t,i}^{1+\xi}}{X_{t,i}^{\xi}}\left(\frac{h_t}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}}\left(1-\frac{B_{t+1}^i}{(1+B_{t+1}^i)(1+\xi)}\right)+\frac{s_t}{1+B_{t+1}^i}\frac{1-\alpha}{\alpha}\tau_{t+1}(1-\theta_{t+1}) \\
     c_{2,t}^i &= \alpha \frac{\nu_t}{p_{t-1}}h_t^{1-\alpha}\left(\frac{s_{t-1}}{\nu_t}\right)^{\alpha}\left(\frac{s_{t-1,i}}{s_{t-1}}+\frac{1-\alpha}{\alpha}\tau_t\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)\right) \\

@@ -56,13 +56,18 @@ path, shocks and country stages; its rows carry 'ΠR', pi at the row's date (t0 
 Run it with a --tag: it is an experiment beside the paper's cost, not a row of the paper's csvs.
 
 Everything is LOG (rho = 1). The CRRA case needs a two-dimensional (s, theta) state and is not this file.
+
+A failure a stage survives (a scenario, France's row, a country's cost) is printed, the run goes on, and main exits 1
+with the list at the end (`noteFailure`); a calibration that does not converge is a row with converged False, not a
+failure. A relative --root is the caller's working directory's (the script itself runs in python/US).
 """
-import os, sys, argparse, time, json
+import os, sys, argparse, time
 import numpy as np, pandas as pd
 from copy import deepcopy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
+CWD = os.getcwd()                 # where a relative --root points: the chdir below moves to HERE
 sys.stdout.reconfigure(encoding = 'utf-8', line_buffering = True)
 sys.path.insert(0, HERE)
 os.chdir(HERE)
@@ -90,6 +95,27 @@ def countryθ0(country):
         return None
     import oecd26
     return oecd26.countryθ0(country, THETA['variant'])
+
+
+FAILURES = []                      # the failures this run survived (noteFailure); main exits 1 when there are any
+
+
+def noteFailure(where, e):
+    """ Print and record a failure a stage survives: the run goes on, main exits 1 with the list. """
+    FAILURES.append('{}: {}: {}'.format(where, type(e).__name__, e))
+    print('  FAILED ' + FAILURES[-1])
+
+
+def writeCsv(df, path):
+    """ `df` to csv `path` through a temporary file in its directory and os.replace, so that an interrupted write
+    leaves the file as it was. """
+    tmp = path + '.tmp'
+    try:
+        df.to_csv(tmp, index = False)
+        os.replace(tmp, path)
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
 
 
 def mergeWrite(path, rows, key):
@@ -120,7 +146,7 @@ def mergeWrite(path, rows, key):
             if k not in old.columns:
                 old[k] = np.nan
         df = pd.concat([old[~_keyOf(old, key).isin(_keyOf(df, key))], df], ignore_index = True)
-    df.to_csv(path, index = False)
+    writeCsv(df, path)
 
 
 def _keyCell(v):
@@ -153,8 +179,6 @@ KEYSHK = ['spec', 'phi', 'commonX', 'scenario', 'θpinned']
 KEYPATH = ['spec', 'phi', 'commonX', 'pos']
 KEYPATHHOST = ['spec', 'phi', 'commonX', 'country', 'wedgeFrom', 'pos']
 KEYCTY = ['spec', 'phi', 'commonX', 'country', 'wedgeFrom']
-KEYPERM = ['spec', 'phi', 'commonX', 'source']
-KEYFIG = ['spec', 'phi', 'commonX', 'axis', 'value']
 KEYCORNER = ['spec', 'phi', 'commonX', 'country', 'λ', 'vote']
 
 
@@ -463,9 +487,9 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, scenarios = 
             m = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
             m.calibrate()
             _, hbarRef = baselineRefs(m)
-            data = frenchData(m, commonX = commonX)
-            print(f'\n[{host}: {spec}, φ={phi}, p={p:.4f}] counterfactuals')
             names = scenarios or ESC_SCENARIOS
+            data = frenchData(m, commonX = commonX) if any(n.startswith('fr') for n in names) else None
+            print(f'\n[{host}: {spec}, φ={phi}, p={p:.4f}] counterfactuals')
             for name in names:
                 apply, d = (None, None) if name == 'baseline' else (SHOCKS_ESC[name][1], data)
                 for pin in (True, False):
@@ -473,7 +497,7 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, scenarios = 
                     try:
                         r = leadedNewPath(m, hbarRef, apply, d, pin = pin)
                     except Exception as e:
-                        print(f'  {name:<10} pin={pin}: FAILED {type(e).__name__}: {e}')
+                        noteFailure(f'{spec} φ={phi} {name} pin={pin}', e)
                         continue
                     rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'host': host, 'p': p,
                                  'scenario': name,
@@ -500,7 +524,7 @@ def stageShocks(specs, phis, calib, out, ρ = 1.0, commonX = False, scenarios = 
                       .format('France', 'True', f['θ_t0'], f['τ_t0'], f['sr_t0'], f['ww_t0']))
                 mergeWrite(out, rows, KEYSHK)
             except Exception as e:
-                print(f'  France     FAILED {type(e).__name__}: {e}')
+                noteFailure(f'{spec} φ={phi} France', e)
     return pd.DataFrame(rows)
 
 
@@ -624,7 +648,7 @@ def stageCountry(specs, phis, calib, out, commonX = False):
                     print('[{}, φ={}] {:<5} US wedge p={:.4f}: θ*={:.4f} -> choice {:.4f}  (Vtilde={:.4f})'
                           .format(spec, phi, label, pUS, θStar, ch, rows[-1]['Vtilde']))
                 except Exception as e:
-                    print(f'  {label} US-wedge FAILED {type(e).__name__}: {e}')
+                    noteFailure(f'{spec} φ={phi} {label} US wedge', e)
                 # (ii) its own calibrated p
                 try:
                     m = buildEU(country, {'spec': spec, 'phi': phi, 'p': pUS}, commonX = commonX)
@@ -642,130 +666,9 @@ def stageCountry(specs, phis, calib, out, commonX = False):
                     print('[{}, φ={}] {:<5} own wedge: p={} θ*={:.4f} ({})'
                           .format(spec, phi, label, rec['p'], rec['θ'], rec['message']))
                 except Exception as e:
-                    print(f'  {label} own-wedge FAILED {type(e).__name__}: {e}')
+                    noteFailure(f'{spec} φ={phi} {label} own wedge', e)
                 mergeWrite(out, rows, KEYCTY)
     return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------- stage: the permanent choice
-
-def stagePermanent(specs, phis, out, ρ = 1.0, θCand = None, commonX = False):
-    """ The PERMANENT choice of theta (app:ESC), calibrated in its own right and compared with the leaded
-    one at the same wedge.
-
-    One no-wedge row (spec 'none', the corner the appendix reports, independent of the wedge asked for)
-    and, per (spec, phi), the permanent timing's OWN calibrated p with the leaded design at that same wedge
-    beside it (θLeaded). The own p is the number that belongs beside the appendix's 0.41.
-
-    Three readings of the predetermined ratio are recorded per row (modelESC.solvePermanent's `pinning`).
-    theta_perm is the anticipated vote's fixed point; theta_permIncumbent is the unanticipated reform, which
-    coincides with it wherever the choice reproduces the incumbent design -- so the two agree by
-    construction on the calibrated rows and separate only elsewhere. theta_permMovingSi is the WRONG object
-    under either timing, kept because the gap is ~0.13 in theta and belongs on the record."""
-    rows = []
-    # (a) no wedge -- one row, it does not depend on (spec, phi)
-    m = buildUS(None, ρ = ρ, commonX = commonX)
-    m.calibrate()
-    r = m.solvePermanent('LOG', θCand = θCand)
-    rows.append({'spec': 'none', 'phi': np.nan, 'commonX': commonX, 'p': np.nan, 'source': 'none',
-                 'θStar': float(m.db['θ'].xs(m.t0Year)), 'θPerm': r['θ'],
-                 'atBound': r['atBound'], 'nTurning': r['nTurning'],
-                 'converged': r['converged'], 'θPermIncumbent': r['θIncumbent'],
-                 'θPermMovingSi': r['θMoving'],
-                 'θLeaded': m.leadedDesignAtT0(m.ESC.solveBackward()),
-                 'τAtChoice': r['τAtChoice']} | multiplicityColumns(r.get('multiplicity')))
-    print('no wedge: θ_perm={:.4f} (corner={}, turns={})'.format(r['θ'], r['atBound'], r['nTurning']))
-    mergeWrite(out, rows, KEYPERM)
-
-    for spec in specs:
-        for phi in phis:
-            # (b) the permanent timing's own calibrated p
-            m = buildUS({'spec': spec, 'phi': phi, 'p': 0.4}, ρ = ρ, commonX = commonX)
-            try:
-                rec = m.calibrateWedge(spec = spec, phi = phi, preferences = 'permLOG', verbose = False)
-            except Exception as e:
-                print('  own-p calibration FAILED {}: {}'.format(type(e).__name__, e))
-                rec = {'converged': False, 'p': np.nan, 'message': str(e)}
-            if rec['converged']:
-                r = m.solvePermanent('LOG', θCand = θCand)
-                rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': rec['p'],
-                             'source': 'permanent',
-                             'θStar': rec['θ'], 'θPerm': r['θ'], 'atBound': r['atBound'],
-                             'nTurning': r['nTurning'], 'converged': r['converged'],
-                             'θPermIncumbent': r['θIncumbent'], 'θPermMovingSi': r['θMoving'],
-                             'θLeaded': m.leadedDesignAtT0(m.ESC.solveBackward()),
-                             'τAtChoice': r['τAtChoice']} | multiplicityColumns(r.get('multiplicity')))
-                print('  own p={:.4f}: θ_perm={:.4f} (target {:.4f}), leaded at the same wedge={:.4f}'.format(
-                    rec['p'], r['θ'], rec['θ'], rows[-1]['θLeaded']))
-            mergeWrite(out, rows, KEYPERM)
-    return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------- stage: the model's figure 1.1
-
-def stageFig1(specs, phis, calib, out, ρ = 1.0, commonX = False):
-    """ The model's own cross-section: the chosen design and the equilibrium tax as functions of population
-    growth and of income inequality, one axis at a time.
-
-    Figure 1.1 plots pension spending and the Bismarckian index against population growth and against the
-    Gini across twenty OECD countries, and reports a clear relation with the first and none with the second.
-    This traces the model's counterpart by re-solving the leaded equilibrium on a grid of nu (holding
-    everything else at the US calibration) and on a grid of inequality (scaling the SPREAD of eta_i around
-    its population-weighted mean, so mean productivity is held fixed and only dispersion moves).
-
-    theta reported is the CHOICE at t0 -- the design the electorate picks given the shocked environment,
-    which is what the cross-section of designs corresponds to. """
-    rows = []
-    for spec in specs:
-        for phi in phis:
-            hit = pickCalib(calib, spec, phi, commonX)
-            if hit.empty:
-                continue
-            p = float(hit.iloc[0]['p'])
-            base = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
-            base.calibrate()
-            t0 = base.t0Year
-            pars0 = {'β': base.simpleβinv(), 'ω': float(base.db['ω'].xs(t0))}
-            ν0 = float(base.db['ν'].xs(t0))
-            η0 = base.db['ηi'].xs(t0).values.astype(float)
-            γ0 = base.db['γi'].xs(t0).values.astype(float)
-            ηBar = float((γ0*η0).sum())
-
-            for axis, values in (('nu', np.linspace(0.95, 1.55, 13)),
-                                 ('inequality', np.linspace(0.5, 1.3, 9))):
-                for v in np.round(values, 10):          # a key column: must round-trip through the csv
-                    m = buildUS({'spec': spec, 'phi': phi, 'p': p}, ρ = ρ, commonX = commonX)
-                    m.db.update(m.adjPar('β', pars0['β']))
-                    m.db.update(m.adjPar('ω', pars0['ω']))
-                    if axis == 'nu':
-                        m.db.update(m.adjPar('ν', float(v)))
-                    else:
-                        ηNew = ηBar + v*(η0 - ηBar)          # scale the spread, hold the mean
-                        m.db.update(m.adjPar('ηj', np.append(m.db['η0'].xs(t0), ηNew)))
-                    m.updateAuxPars()
-                    try:
-                        sols = m.ESC.solveBackward()
-                        θStar = float(m.db['θ'].xs(t0))
-                        ch = m.leadedDesignAtT0(sols)
-                        rows.append({'spec': spec, 'phi': phi, 'commonX': commonX, 'p': p, 'axis': axis,
-                                     'value': float(v),
-                                     'ν': float(m.db['ν'].xs(t0)), 'θData': θStar, 'θChoice': ch,
-                                     'τ': m.ESC.τAt(t0, θStar),
-                                     'τAtChoice': m.ESC.τAt(t0, ch),
-                                     'ηRatio': float(m.db['ηi'].xs(t0).values[-1]/m.db['ηi'].xs(t0).values[0])}
-                                    | multiplicityColumns(m.ESC.lastMultiplicity))
-                    except Exception as e:
-                        print(f'  {axis}={v:.3f} FAILED {type(e).__name__}: {e}')
-                    mergeWrite(out, rows, KEYFIG)
-                d = pd.DataFrame(rows)
-                d = d[(d.spec == spec) & (d.phi == phi) & (d.axis == axis)]
-                print('[{}, φ={}] {:<11}: θ choice {:.3f} -> {:.3f} over {} = {:.2f} -> {:.2f}'.format(
-                    spec, phi, axis, d['θChoice'].iloc[0], d['θChoice'].iloc[-1], axis,
-                    d['value'].iloc[0], d['value'].iloc[-1]))
-    return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------- main
 
 
 # ---------------------------------------------------------------- stage: the slope at the Bismarckian corner
@@ -825,9 +728,8 @@ def stageCorner(specs, phis, calib, out, commonX = False):
 
 def main():
     p = argparse.ArgumentParser(description = 'Endogenous theta: leaded choice under the deadweight wedge.')
-    p.add_argument('--stage', nargs = '*', default = ['calib', 'path', 'shocks', 'country', 'fig1',
-                                                     'permanent'],
-                   choices = ('calib', 'path', 'pathHost', 'shocks', 'country', 'fig1', 'permanent', 'corner'),
+    p.add_argument('--stage', nargs = '*', default = ['calib', 'path', 'shocks', 'country'],
+                   choices = ('calib', 'path', 'pathHost', 'shocks', 'country', 'corner'),
                    help = "pathHost: the design path of France and the UK under the US and their own cost "
                           "(escPathHost.csv; needs escCalibration.csv and escCountry.csv)")
     p.add_argument('--scenarios', nargs = '*', default = None,
@@ -853,11 +755,12 @@ def main():
                           + ', '.join(THETASTAGES))
     p.add_argument('--root', default = None,
                    help = "the variant's directory (default results/oecd26_theta_<variant>): reads calibration/, "
-                          "writes esc/. A relative path is the repo's.")
+                          "writes esc/. A relative path is the working directory's.")
     p.add_argument('--coarse', action = 'store_true', help = "GRIDS['coarse'], under --theta only")
     p.add_argument('--main', action = 'store_true',
                    help = "with --theta config.US['theta']: read results/calibration/, write results/esc/")
     a = p.parse_args()
+    a.root = None if a.root is None else os.path.abspath(os.path.join(CWD, a.root))
     outdir = setTheta(a.theta, a.root, a.stage, a.coarse, a.commonX, a.rho, a.main)
     os.makedirs(outdir, exist_ok = True)
     f = lambda n: os.path.join(outdir, f'{n}{a.tag}.csv')
@@ -879,14 +782,12 @@ def main():
                     scenarios = a.scenarios)
     if 'country' in a.stage:
         stageCountry(a.spec, a.phi, calib, f('escCountry'), commonX = a.commonX)
-    if 'fig1' in a.stage:
-        stageFig1(a.spec, a.phi, calib, f('escFig1'), ρ = a.rho, commonX = a.commonX)
     if 'corner' in a.stage:
         stageCorner(a.spec, a.phi, calib, f('escCornerSlope'), commonX = a.commonX)
-    if 'permanent' in a.stage:
-        stagePermanent(a.spec, a.phi, f('escPermanent'), ρ = a.rho, commonX = a.commonX)
     print('\n-> {}'.format(os.path.relpath(outdir, REPO)))
-    return 0
+    if FAILURES:
+        print('{} FAILED:'.format(len(FAILURES)) + ''.join('\n  ' + x for x in FAILURES))
+    return 1 if FAILURES else 0
 
 
 THETASTAGES = ('calib', 'path', 'pathHost', 'shocks', 'country', 'corner')     # the stages a θ variant runs

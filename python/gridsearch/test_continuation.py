@@ -7,7 +7,6 @@ checks are about the *quality of the warm start* and the *recovery from failure*
 content of the module. A real solve would hide both behind its own convergence.
 """
 import numpy as np
-from gridsearch import continuation
 from gridsearch.continuation import marchGrid, extrapolateX
 
 from gridsearch.testing import check, report

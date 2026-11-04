@@ -185,3 +185,14 @@ csv; runHorizon's under a lock file, so the per-ρ/terminal design lanes share U
 `--retAge none|exit|nra` (`oecd26.retAgeGaps`, `retAgeNu`: ν(30 − g)/(30 + ν g), its mirror (30ν − g)/(30 + g) for g < 0 as `oecd29Data.nraRule`; exit ages `data/oecd29_exitAge.csv`, PaG 2021 fig. 6.14); key column `retAge` (LEGACY 'none', inputsKey only when not 'none'), the anchor unchanged (U.S. gap 0). Turnout `csesFlat`: the cses anchor (`ANCHORTURNOUT`), rows equal to cses copied (`_twin`, `copiedFrom`).
 Runs `logs/oecdRetAge/run.sh` -> `results/oecd26_retage/` (36 min; the mirror rerun 23 min): every row ok, nEqMax 1; defaults reproduce all 273 C keys on disk; FRA ν under nra 1.039. `logs/variantCompare/summary_retAge.md`: exit lowers ω̄ (1.306 -> 1.177) and makes Luxembourg harmless (L1 Pearson with LUX 0.362 -> 0.683; without 0.735 -> 0.688); layer 2 unchanged.
 One-sided rule (as the brief) put NZL (ν 1.98) at τ = 0: `summary_retAge_oneSided.md`. test_oecd26 50/50 (Y new).
+
+## 2026-11-04 — Code review, fix pass P1: the model core (`notes/codeReview_triage.md`)
+CRRA permanent timing (unwired): candidates start from their own steady-state seed (s_{t0-1} was passed as the state
+before position 0), the chosen design's equilibrium is `solvePEE_CRRA`'s own sol/report (was re-solved and reported at
+s0 = s_0). Guards: the candidate-design loops drop only `policyESC.SOLVE_FAILURES` and count them, other errors propagate;
+`s0FixedPoint`'s fallback must converge on the grid; `solveVectorized` caches x0 only after its check; `sequentialFOC`
+refuses a wedge; `calibratePoint(gridSettings = None)` keeps the installed settings. `addEigenVectors` in closed form
+z/(γ·z): HEAD's ARPACK gave 5 distinct yη over 6 instances in one process (2.2e-16). Removed adjPar's dead `t`, power_p,
+aux_p, getXi, shocks.solveBaseline, LOG.style/kwargs; docstrings cut to spec. HEAD vs new in one process
+(`logs/reviewP1/oldnew.log`): LOG, CRRA, calibration point, leaded LOG, permanent LOG, 2-D, θ = 0 shock bitwise; vector X
+≤ 1.7e-15. `test_coreGuards.py` 27/27 (23 fail on HEAD); US fast 14/14, test_escTiming, test_escCRRA pass.

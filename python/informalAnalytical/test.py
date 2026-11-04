@@ -1,6 +1,5 @@
-import os, pandas as pd, numpy as np, scipy
+import os, pandas as pd, numpy as np
 from model import ModelInformalAnalytical
-from symMaps import SimpleSys
 
 # Read in data from excel: C:\Users\sxj477\Documents\GitHub\SSDclaude\data\ArgentinaTest.xlsx
 PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data', 'ArgentinaTest.xlsx')

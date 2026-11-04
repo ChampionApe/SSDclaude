@@ -4,18 +4,16 @@ Run:  .venv\Scripts\python.exe python\US\calibrateRhoGrid.py [options]
       ... --lo 0.5 --hi 2.0 --step 0.1        the default sweep
       ... --commonX                           the common-X variant (its own csv and pickle directory)
       ... --force                             re-solve points already in the csv
-      ... --medicare 0.029                    the 'transfers to the old' reading (test.reading): Medicare
-                                              spending, share of GDP, in tau0 and as a flat share of theta;
-                                              its own csv and pickle directory (USMedicare_rhoGrid*)
       ... --rhos 0.5 1 2                      the grid as a list (instead of --lo/--hi/--step)
       ... --theta VARIANT [--root DIR]        theta imposed as db['θ0'] = the U.S. row of data/oecd26_theta.csv
                                               under VARIANT (ModelUS.getθ, oecd26.thetaFromFile); csv and pickles
                                               under DIR/calibration/, DIR the variant's directory (default
                                               results/oecd26_theta_<variant>/, oecd26.thetaDir),
                                               never results/calibration/; its rows carry thetaSource and θ0, and
-                                              a csv of another θ0 is refused unless --force. Not with --medicare.
+                                              a csv of another θ0 is refused unless --force.
       ... --theta VARIANT --main              the pipeline's main variant (python/paper/config.py US['theta'],
                                               oecd26.thetaRoot): the same rows into results/calibration/.
+A relative --out, --pkldir or --root is the caller's working directory's (the script itself runs in python/US).
 
 The march is anchored at rho=1, where the LOG solver applies and no warm start is needed, and walks
 outward in both directions (gridsearch.continuation.marchGrid). Each CRRA point is a full backward
@@ -58,6 +56,7 @@ import numpy as np, pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
+CWD = os.getcwd()                 # where a relative --out, --pkldir or --root points: the chdir below moves to HERE
 
 # Progress has to appear as it happens rather than when the process exits: whenever stdout is a pipe or a
 # log file it is block-buffered by default, which hides the whole run. Encoding too, not only buffering --
@@ -119,15 +118,12 @@ def readDone(path):
     return done, df
 
 
-def thetaRun(variant, commonX, medicare = None, out = None, pkldir = None, root = None, main = False):
+def thetaRun(variant, commonX, out = None, pkldir = None, root = None, main = False):
     """ --theta VARIANT: (θ0, csv path, pickle directory), the last two by default under root/calibration/, root
     the variant's directory (oecd26.thetaDir(variant) by default; a relative path is the repo's), results/ under
-    `main` (oecd26.thetaRoot: VARIANT must be the pipeline's main variant). SystemExit with --medicare (Ushare0 does
-    not scale θ0, ModelUS.getθ), with --main and --root, where the variant has no U.S. θ, or, without --main, for a
-    path under results/calibration/. """
+    `main` (oecd26.thetaRoot: VARIANT must be the pipeline's main variant). SystemExit with --main and --root, where
+    the variant has no U.S. θ, or, without --main, for a path under results/calibration/. """
     import oecd26
-    if medicare is not None:
-        raise SystemExit('--theta imposes θ0, which Ushare0 does not scale: not with --medicare')
     if main and root is not None:
         raise SystemExit('--main writes results/calibration/: not with --root')
     try:
@@ -181,9 +177,6 @@ def main():
     p.add_argument('--degree', type = int, default = 1, help = 'extrapolation degree for the warm start')
     p.add_argument('--maxHalvings', type = int, default = 2)
     p.add_argument('--force', action = 'store_true', help = 're-solve points already present in the csv')
-    p.add_argument('--medicare', type = float, default = None,
-                   help = "Medicare spending as a share of GDP: the 'transfers to the old' reading "
-                          '(test.reading), written to USMedicare_rhoGrid*.csv and instancesUSMedicare*')
     p.add_argument('--theta', default = None,
                    help = "a variant of data/oecd26_theta.csv: θ imposed at the U.S. row's value (db['θ0'])")
     p.add_argument('--root', default = None,
@@ -195,19 +188,19 @@ def main():
     p.add_argument('--out', default = None)
     p.add_argument('--pkldir', default = None, help = 'where the per-point pickled instances go')
     a = p.parse_args()
+    a.out, a.pkldir, a.root = [None if x is None else os.path.abspath(os.path.join(CWD, x))
+                               for x in (a.out, a.pkldir, a.root)]
 
-    country = 'US' if a.medicare is None else 'USMedicare'
-    tag = country + ('_rhoGridCommonX' if a.commonX else '_rhoGrid')
     if a.theta is None:
         if a.root is not None or a.main:
             raise SystemExit('--root and --main need --theta VARIANT')
-        out = a.out or os.path.join(OUTDIR, tag + '.csv')
-        pkldir = a.pkldir or os.path.join(OUTDIR, 'instances' + country + ('CommonX' if a.commonX else ''))
-        pars, columns, extra = testmod.reading(a.medicare), COLUMNS, {}
+        out = a.out or os.path.join(OUTDIR, 'US' + ('_rhoGridCommonX' if a.commonX else '_rhoGrid') + '.csv')
+        pkldir = a.pkldir or os.path.join(OUTDIR, 'instancesUS' + ('CommonX' if a.commonX else ''))
+        pars, columns, extra = dict(testmod.pars), COLUMNS, {}
         os.makedirs(OUTDIR, exist_ok = True)
     else:
-        θ0, out, pkldir = thetaRun(a.theta, a.commonX, a.medicare, a.out, a.pkldir, a.root, a.main)
-        pars, columns, extra = testmod.reading() | {'θ0': θ0}, COLUMNS + THETACOLUMNS, {'thetaSource': a.theta, 'θ0': θ0}
+        θ0, out, pkldir = thetaRun(a.theta, a.commonX, a.out, a.pkldir, a.root, a.main)
+        pars, columns, extra = dict(testmod.pars) | {'θ0': θ0}, COLUMNS + THETACOLUMNS, {'thetaSource': a.theta, 'θ0': θ0}
         os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok = True)
     os.makedirs(pkldir, exist_ok = True)
 
@@ -240,9 +233,7 @@ def main():
     print('grid: {} points, {}'.format(len(grid), ', '.join('{:g}'.format(v) for v in grid)))
     print('variant: {},  anchor rho={},  tau nodes {},  state nodes {},  verify at {}/{}'.format(
         'common X' if a.commonX else 'vector X_i', a.anchor, a.n, a.ns, a.verifyN, a.verify or 'off'))
-    print('targets: tau0={:.6f}  RR0={:.6f}  Ushare0={:.6f}{}'.format(
-        pars['τ0'], pars['RR0'], pars['Ushare0'],
-        '' if a.medicare is None else '   (Medicare {} of GDP)'.format(a.medicare)))
+    print('targets: tau0={:.6f}  RR0={:.6f}  Ushare0={:.6f}'.format(pars['τ0'], pars['RR0'], pars['Ushare0']))
     if extra:
         import oecd26
         print('theta imposed: θ0={!r} (variant {!r} of {}; RR0 not read)'.format(θ0, a.theta, oecd26.FILES['theta']))

@@ -75,6 +75,7 @@ os.chdir(HERE)
 
 import test as testmod
 import shocks as sh
+import oecd26
 from model import ModelUS
 from modelESC import ModelESC
 from policy import multiplicityColumns
@@ -93,13 +94,8 @@ THETA = {'variant': None, 'θ0': None}
 
 
 def _at(df):
-    """ The rows of df at the run's theta: thetaSource THETA['variant'] and θ0 THETA['θ0'] (1e-12); without a
-    variant the rows without a thetaSource (or 'index'), the workbook's theta. """
-    ts = df['thetaSource'] if 'thetaSource' in df.columns else pd.Series(np.nan, index = df.index)
-    if THETA['variant'] is None:
-        return df[ts.isna() | (ts == 'index')]
-    θ = pd.to_numeric(df['θ0'], errors = 'coerce') if 'θ0' in df.columns else pd.Series(np.nan, index = df.index)
-    return df[(ts == THETA['variant']) & (θ - THETA['θ0']).abs().le(1e-12)]
+    """ The rows of df at the run's theta (oecd26.rowsAtTheta at THETA's variant and θ0). """
+    return oecd26.rowsAtTheta(df, THETA['variant'], THETA['θ0'])
 
 
 def _tag():
@@ -114,7 +110,6 @@ def setTheta(theta, main):
         return
     if theta is None or not main:
         raise SystemExit('--theta needs --main here (and --main --theta)')
-    import oecd26
     try:
         oecd26.thetaRoot(theta, main = True)
         THETA.update({'variant': theta, 'θ0': oecd26.thetaFromFile('USA', theta)})
@@ -256,15 +251,16 @@ def stageHorizon(ρs, kSS, out, gs = GS):
 
 
 def escLambda(ρ, method):
-    """ The calibrated cost lambda of the paper's spec, common X: LOG from escCalibration.csv, the exact CRRA
-    recursion's from escCalibrationCRRA.csv (method = 'exact'). """
+    """ The converged calibrated cost lambda of the paper's spec, common X: LOG from escCalibration.csv, the exact
+    CRRA recursion's from escCalibrationCRRA.csv (method = 'exact'). """
     if method == 'LOG':
         df = _at(pd.read_csv(os.path.join(ESCDIR, 'escCalibration.csv')))
-        hit = df[(df['spec'] == WEDGE['spec']) & (df['phi'] == WEDGE['phi']) & df['commonX'].astype(bool)]
+        hit = df[(df['spec'] == WEDGE['spec']) & (df['phi'] == WEDGE['phi']) & df['commonX'].astype(bool)
+                 & df['converged'].astype(bool)]
     else:
         df = _at(pd.read_csv(os.path.join(ESCDIR, 'escCalibrationCRRA.csv')))
         hit = df[(df['spec'] == WEDGE['spec']) & (df['phi'] == WEDGE['phi']) & df['commonX'].astype(bool)
-                 & ((df['ρ'] - ρ).abs() < 1e-9) & (df['method'] == method)]
+                 & df['converged'].astype(bool) & ((df['ρ'] - ρ).abs() < 1e-9) & (df['method'] == method)]
     if hit.empty:
         raise KeyError(f'No {method} calibration of {WEDGE} at ρ={ρ} at θ {THETA}.')
     return hit.iloc[-1]

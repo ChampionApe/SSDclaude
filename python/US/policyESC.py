@@ -41,8 +41,14 @@ Differentiating W_t would buy speed and cost exactly the property being measured
 import time
 import numpy as np, pandas as pd
 from scipy import optimize
-from gridsearch import roots1d, CartesianGrid, griddedInterp1D, griddedSmooth1D, griddedGradient1D
-from policy import CRRA, multiplicitySummary, mergeMultiplicity, DESIGN_KEYS, DESIGN_NAMES
+from gridsearch import roots1d, CartesianGrid, griddedInterp1D, griddedSmooth1D
+from policy import CRRA, multiplicitySummary, mergeMultiplicity, DESIGN_KEYS, DESIGN_NAMES, requireZeroMass
+
+# What a candidate's equilibrium solve raises when it fails, and the grid searches over candidate designs
+# catch: non-convergence (model._checkConverged, brentq; RuntimeError), a bracket without a sign change or
+# degenerate scipy/numpy input, LinAlgError included (ValueError), float overflow or division
+# (ArithmeticError). Any other exception is a bug and propagates.
+SOLVE_FAILURES = (RuntimeError, ValueError, ArithmeticError)
 
 
 class LeadedBase:
@@ -59,10 +65,8 @@ class LeadedBase:
     def _requireZeroMass(self):
         """ The whole design rests on gamma_0 = 0 (see LeadedLOG.z and the module header). Checked where
         it is relied on rather than asserted in a comment. """
-        if float(np.max(np.abs(self.db['γ0'].values))) != 0.:
-            raise NotImplementedError(
-                'The leaded solvers require the zero-mass informal slot (gamma_0 = 0): with mass, z_t '
-                'depends on theta_{t+1} through dv20 and tau_t/theta_{t+1} stop being separable.')
+        requireZeroMass(self.db, 'The leaded and permanent design solvers (with mass, z_t depends on '
+                                 'theta_{t+1} through dv20 and tau_t, theta_{t+1} stop being separable)')
 
     @staticmethod
     def _argmax(x, y):
@@ -87,7 +91,7 @@ class LeadedLOG(LeadedBase):
     it costs almost nothing, it is what MAKES that property measurable, and it stops being true the moment
     anything breaks the log separability. """
 
-    def __init__(self, m, nθ = 41, nθCand = 121, **kwargs):
+    def __init__(self, m, nθ = 41, nθCand = 121):
         self.m = m
         self.B, self.BG, self.BT = m.B, m.BG, m.BT
         self.db = m.db
@@ -95,7 +99,6 @@ class LeadedLOG(LeadedBase):
         self.nθ, self.nθCand = nθ, nθCand
         self.θGrid = np.linspace(0., 1., nθ)          # the state grid, and where policies are tabulated
         self.θCand = np.linspace(0., 1., nθCand)      # candidates searched over
-        self.kwargs = kwargs
 
     # ------------------------------------------------------------------ tau given theta
     def z(self, t, τ, θ, tLag, terminal):
@@ -418,14 +421,13 @@ class LeadedCRRA(LeadedBase):
     every candidate, so its own response to theta_{t+1} contributes nothing to first order, and W_t is
     evaluated at the equilibrium tau rather than at a stale one. """
 
-    def __init__(self, m, nθCand = 13, **kwargs):
+    def __init__(self, m, nθCand = 13):
         self.m = m
         self.B, self.BG, self.BT = m.B, m.BG, m.BT
         self.db = m.db
         self.ni, self.T = m.ni, m.T
         self.nθCand = nθCand
         self.θCand = np.linspace(0., 1., nθCand)
-        self.kwargs = kwargs
 
     # ------------------------------------------------------------------ one equilibrium
     def solveθPath(self, θ, s0 = None, **kwargs):
@@ -456,9 +458,11 @@ class LeadedCRRA(LeadedBase):
 
         theta[pos] for pos <= pinPos is held at theta0 (the inherited design -- history, not a choice, as
         LeadedLOG.simulate's tPin). Positions pinPos+1 .. T-1 are chosen, swept forward, Gauss-Seidel
-        (each choice sees the updated earlier entries and the previous iterate's later ones).
+        (each choice sees the updated earlier entries and the previous iterate's later ones). A candidate
+        whose solve fails (SOLVE_FAILURES) is not a maximiser; any other exception propagates.
 
-        Returns {'θ', 'out', 'iterations', 'converged', 'atBound', 'history', 'step'}. """
+        Returns {'θ', 'out', 'iterations', 'converged', 'atBound', 'history', 'step', 'nFailed',
+        'failures'}: the failed candidate solves, as (iteration, pos, candidate, error). """
         self._requireZeroMass()
         kw = dict(solveKwargs or {})
         T = len(self.db['t'])
@@ -466,6 +470,7 @@ class LeadedCRRA(LeadedBase):
         history = [θ.copy()]
         atBound = np.zeros(T, dtype = bool)
         step = np.inf
+        failures = []
         for it in range(maxIter):
             θNew = θ.copy()
             for pos in range(pinPos, T-1):
@@ -475,8 +480,9 @@ class LeadedCRRA(LeadedBase):
                     θTry[pos+1] = cand
                     try:
                         Ws[k] = self.W(self.solveθPath(θTry, s0 = s0, **kw), pos)
-                    except Exception:
+                    except SOLVE_FAILURES as e:
                         Ws[k] = -np.inf        # an infeasible candidate is not a maximiser
+                        failures.append((it, pos, float(cand), f'{type(e).__name__}: {e}'))
                 if not np.any(np.isfinite(Ws)):
                     raise RuntimeError(f'LeadedCRRA: every candidate failed to solve at pos={pos}.')
                 θNew[pos+1], atBound[pos+1] = self._argmax(self.θCand, Ws)
@@ -490,7 +496,8 @@ class LeadedCRRA(LeadedBase):
                 break
         out = self.solveθPath(θ, s0 = s0, **kw)
         return {'θ': pd.Series(θ, index = self.db['t']), 'out': out, 'iterations': it+1,
-                'converged': step < tol, 'atBound': atBound, 'history': history, 'step': step}
+                'converged': step < tol, 'atBound': atBound, 'history': history, 'step': step,
+                'nFailed': len(failures), 'failures': failures}
 
     # ------------------------------------------------------------------ the assumption, measured
     def stateSensitivity(self, θ, pos, δ = 0.05, s0 = None, solveKwargs = None):
@@ -499,10 +506,12 @@ class LeadedCRRA(LeadedBase):
         theta_{pos+2} at each, and returns d(theta_{pos+2})/d(theta_{pos+1}).
 
         Zero under LOG by the separability argument; whatever it is under CRRA is the error term of the
-        path iteration, and belongs in the write-up next to the result. """
+        path iteration, and belongs in the write-up next to the result. A candidate whose solve fails
+        (SOLVE_FAILURES) is not a maximiser, counted in 'nFailed'; any other exception propagates. """
         kw = dict(solveKwargs or {})
         θ = np.asarray(θ, dtype = float)
         got = {}
+        nFailed = 0
         for s, lab in ((-δ, 'lo'), (+δ, 'hi')):
             θP = θ.copy()
             θP[pos+1] = float(np.clip(θ[pos+1] + s, 0., 1.))
@@ -512,12 +521,14 @@ class LeadedCRRA(LeadedBase):
                 θTry[pos+2] = cand
                 try:
                     Ws[k] = self.W(self.solveθPath(θTry, s0 = s0, **kw), pos+1)
-                except Exception:
+                except SOLVE_FAILURES:
                     Ws[k] = -np.inf
+                    nFailed += 1
             got[lab] = (self._argmax(self.θCand, Ws)[0], θP[pos+1])
         (chLo, θLo), (chHi, θHi) = got['lo'], got['hi']
         slope = (chHi - chLo)/(θHi - θLo) if θHi != θLo else np.nan
-        return {'slope': float(slope), 'choiceLo': chLo, 'choiceHi': chHi, 'θLo': θLo, 'θHi': θHi}
+        return {'slope': float(slope), 'choiceLo': chLo, 'choiceHi': chHi, 'θLo': θLo, 'θHi': θHi,
+                'nFailed': nFailed}
 
 
 class Interp2D:
@@ -811,11 +822,8 @@ class LeadedCRRA2D(CRRA, LeadedBase):
                  aTolResidual = 1e-6, aClose = 'secant', θInterp = 'cubic', **kwargs):
         """ nθ, θInterp: the θ-state grid and the policies' interpolant along it (Interp2D's kind). The design
         objective is flat at its maximum, and a piecewise-linear continuation sets its argmax at the kinks
-        (finding #19). At the λ of escCalibrationCRRA.csv ((β, ω, X) recalibrated), ns = 150 and 41
-        candidates, the design in force in 2020 at 13 / 25 / 49 / 97 nodes is, linear, 0.7248 / 0.7116 /
-        0.7143 / 0.7138 (ρ = 0.5) and 0.7227 / 0.7079 / 0.7106 / 0.7099 (ρ = 2); cubic at 13 / 25 / 49,
-        0.7145 / 0.7138 / 0.7139 (ρ = 0.5) and 0.7106 / 0.7100 / 0.7101 (ρ = 2). The cubic costs ~1.15 times
-        the linear at a given nθ, and a recursion's cost grows about in proportion to nθ.
+        (finding #19): 'cubic' at 13 nodes, checked against 97 by test_gridConvergence.py. A recursion's
+        cost grows about in proportion to nθ; the cubic costs ~1.15 times the linear at a given nθ.
         designRule: 'root' or 'legacy' (class docstring). Ma (>= 4), aTolBracket, aTolResidual, aClose: the
         root layer's tabulation nodes, closing tolerances and closing method. """
         super().__init__(m, **kwargs)
@@ -1235,18 +1243,17 @@ class LeadedCRRA2D(CRRA, LeadedBase):
         tT = tIdx[-1]
         tLagT = tIdx[posT-1] if posT > 0 else self.B.tFirst
         sols = {tT: self.solveTerminal2D(ε[posT], sGrid, tT, tLagT)}
-        import time as _time
         for pos in range(posT-1, -1, -1):
             t, t1 = tIdx[pos], tIdx[pos+1]
             tLag = tIdx[pos-1] if pos > 0 else self.B.tFirst
             choose = (pinPos is None) or (pos >= pinPos)
             θ1Grid = self.θCand if choose else np.array([float(θPin)])
-            tic = _time.time()
+            tic = time.time()
             sols[t] = self.solveBackward_t2D(sols[t1], t, tLag, t1, ε[pos], ε[pos+1],
                                              sGrid, sGrid, θ1Grid, choose)
             if verbose:
                 print('    t={}: {}  [{:.1f}s]'.format(
-                    t, 'choice' if choose else 'pinned', _time.time() - tic))
+                    t, 'choice' if choose else 'pinned', time.time() - tic))
         self.lastMultiplicity = self.multiplicity(sols)
         return sols
 
@@ -1263,7 +1270,10 @@ class LeadedCRRA2D(CRRA, LeadedBase):
     # ------------------------------------------------------------------ forward simulation
     def s0FixedPoint(self, sols, θ0):
         """ The stationary state of the FIRST period's transition at the inherited design -- the CRRA2D
-        counterpart of the steady-state seed the other solvers use for s0. """
+        counterpart of the steady-state seed the other solvers use for s0. brentq on the state grid when
+        its ends bracket a sign change; otherwise iteration from the grid's middle, which raises unless it
+        converges (|Δs| < 1e-12 within 200 steps) to a state on the grid: off it, sPolicy is an
+        extrapolation, not a tabulated equilibrium. """
         tIdx = self.db['t']
         f = lambda s: float(sols[tIdx[0]]['sPolicy'](s, θ0)) - s
         sg = sols[tIdx[0]]['sGrid']
@@ -1271,12 +1281,17 @@ class LeadedCRRA2D(CRRA, LeadedBase):
         fa, fb = f(a), f(b)
         if np.isfinite(fa) and np.isfinite(fb) and fa*fb < 0:
             return float(optimize.brentq(f, a, b, xtol = 1e-12))
-        s = 0.5*(a+b)                                # fall back to iteration from the grid's middle
+        s, gap = 0.5*(a+b), np.inf
         for _ in range(200):
             sNew = float(sols[tIdx[0]]['sPolicy'](s, θ0))
-            if abs(sNew - s) < 1e-12:
+            gap = abs(sNew - s)
+            if gap < 1e-12:
                 break
             s = sNew
+        if not (gap < 1e-12 and a <= s <= b):
+            raise RuntimeError(f's0FixedPoint: no sign change of sPolicy(s) - s on the state grid [{a:.6g}, '
+                               f'{b:.6g}], and the iteration from its middle ended at s = {s:.6g} with '
+                               f'|Δs| = {gap:.2e} (it must converge on the grid).')
         return s
 
     def simulate(self, sols, θ0, s0, pinPos = None):
@@ -1459,26 +1474,27 @@ class PermanentCRRA(LeadedBase):
     same equilibria against a different pinned ratio, so it costs iterations of arithmetic rather than
     iterations of solvePEE_CRRA. """
 
-    def __init__(self, m, nθCand = 21, **kwargs):
+    def __init__(self, m, nθCand = 21):
         self.m = m
         self.B, self.BG, self.BT = m.B, m.BG, m.BT
         self.db = m.db
         self.ni, self.T = m.ni, m.T
         self.nθCand = nθCand
         self.θCand = np.linspace(0., 1., nθCand)
-        self.kwargs = kwargs
 
     def _grid(self, t0, ths, s0 = None, solveKwargs = None, verbose = True):
         """ One ordinary CRRA equilibrium per candidate permanent design, reduced to what W needs.
 
-        db['theta'] is written for each candidate, not just passed to the solver: Base.ΓsCap and the
-        CRRA steady-state bracket read it from db, and leaving them on the incumbent design while the
-        solver used a candidate would be silently inconsistent (shocks.shockTheta's own warning). It is
-        restored in a finally block, so a failed candidate cannot leave db on the wrong design.
+        The candidate is passed to solvePEE_CRRA and also written into db['θ'], so that anything reading
+        the design in force from db (solvePEE_*'s θ = None default) sees the candidate; no updateAuxPars
+        runs in between, which would re-derive θ from the data (#9). db['θ'] is restored in a finally
+        block, so a failed candidate cannot leave db on the wrong design.
 
         'si' is each candidate's OWN s_{t0-1,i}/s_{t0-1}. W never uses it -- solveFixedPoint does, to
         find the ratio the anticipated vote implies. 'mult' is each candidate's tax counts (solvePEE_CRRA's
-        'multiplicity'; None where it failed). Failed candidates keep ok=False and NaN rows. """
+        'multiplicity'; None where it failed). A candidate whose solve fails (SOLVE_FAILURES) keeps ok=False
+        and NaN rows, its error in 'errors' (None where it solved) and the count in 'nFailed'; any other
+        exception propagates. """
         self._requireZeroMass()
         t = self.db['t'][self.db['t'].get_loc(t0)]
         ε = self.db['eps'].values.astype(float)
@@ -1486,7 +1502,7 @@ class PermanentCRRA(LeadedBase):
         c = {'θ': ths, 'ok': np.zeros(n, dtype = bool), 'τ': np.full(n, np.nan),
              'h': np.full(n, np.nan), 's_': np.full(n, np.nan),
              'c1': np.full((n, self.ni), np.nan), 'B': np.full((n, self.ni), np.nan),
-             'si': np.full((n, self.ni), np.nan), 'mult': [None]*n}
+             'si': np.full((n, self.ni), np.nan), 'mult': [None]*n, 'errors': [None]*n}
         thSave = self.db['θ'].values.astype(float).copy()
         try:
             for k, cand in enumerate(ths):
@@ -1503,11 +1519,13 @@ class PermanentCRRA(LeadedBase):
                     c['τ'][k] = float(out['τ'].xs(t0))
                     c['mult'][k] = out.get('multiplicity')
                     c['ok'][k] = True
-                except Exception as e:
+                except SOLVE_FAILURES as e:
+                    c['errors'][k] = f'{type(e).__name__}: {e}'
                     if verbose:
                         print('      theta={:.3f}: failed ({}: {})'.format(cand, type(e).__name__, e))
         finally:
             self.db.update(self.m.adjPar('θ', thSave))
+        c['nFailed'] = int(n - c['ok'].sum())
         if not c['ok'].any():
             raise RuntimeError('PermanentCRRA: every candidate failed to solve.')
         return c
@@ -1535,7 +1553,8 @@ class PermanentCRRA(LeadedBase):
               cache = None):
         """ Grid-search the permanent design under CRRA at a given pinned ratio. One full solvePEE_CRRA
         per candidate, unless a cache from a previous _grid call is supplied. 'multiplicity': the tax
-        counts over every candidate's solve (policy.mergeMultiplicity of the cache's 'mult'). """
+        counts over every candidate's solve (policy.mergeMultiplicity of the cache's 'mult'); 'nFailed':
+        the candidates whose solve failed (_grid). """
         ths = self.θCand if θCand is None else np.asarray(θCand, dtype = float)
         if cache is None:
             cache = self._grid(t0, ths, s0 = s0, solveKwargs = solveKwargs, verbose = verbose)
@@ -1544,7 +1563,8 @@ class PermanentCRRA(LeadedBase):
         ok = cache['ok']
         return {'θ': thStar, 'atBound': atBound, 'W': Ws, 'θCand': cache['θ'], 'cache': cache,
                 'τAtChoice': float(np.interp(thStar, cache['θ'][ok], cache['τ'][ok])),
-                'multiplicity': mergeMultiplicity(cache.get('mult', []))}
+                'multiplicity': mergeMultiplicity(cache.get('mult', [])),
+                'nFailed': int(cache.get('nFailed', int((~ok).sum())))}
 
     def solveFixedPoint(self, t0, θ0, s0 = None, θCand = None, solveKwargs = None, verbose = True,
                         tol = 1e-6, maxIter = 50):

@@ -40,7 +40,7 @@ sys.stdout.reconfigure(encoding = 'utf-8', line_buffering = True)
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, HERE)
-os.chdir(HERE)                                  # test.py resolves data/ relative to this directory
+os.chdir(HERE)                                  # relative paths resolve here; test.py finds data/ itself
 
 import shockUniversal as su
 import shockEEOnly as see

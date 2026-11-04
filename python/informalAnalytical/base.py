@@ -75,9 +75,8 @@ class Base:
     #######################################################################
     # Political weights:
     def ω2i(self, t = None):
-        """ Political weight on types 2i. Uses μ_{t-1,i} (voting weight of the now-old generation as of
-        when they were young), matching the FOC's timing (eq:PEELOG's restatement, tex line ~271) rather
-        than the objective W_t's own (differently-timed) statement -- see README for the discrepancy. """
+        """ Political weight on types 2i, p_{t-1,i}·ω_t·μ_{t-1,i}: the voting weight is the old generation's
+        own, set when it was young (README, "Base conventions": μ attaches to a generation). """
         return (self('pi[t-1]', t).mul(self('ω',t), axis = 0).mul(self('μi[t-1]',t), axis = 0)).values
     def ω20(self, t = None):
         """ Political weight on types 20. Uses μ_{t-1,0} -- see ω2i's docstring. """
@@ -96,9 +95,6 @@ class Base:
     def power_h(self, t = None):
         """ αξ/(1+αξ) """
         return self.get('α',t)*self.get('ξ',t)/(1+self.get('α',t)*self.get('ξ',t))
-    def power_p(self, t = None):
-        """ ( α(1+ξ)/(1+αξ) )^2 """
-        return self.power_s(t)**2
 
     # Auxiliary parameters over household types:
     def auxProd(self, t = None, lag = ''):
@@ -417,12 +413,12 @@ class Base:
         return np.where(np.isnan(cap), np.inf, cap)[()]
 
     #######################################################################
-    ##########   9. Political first-order condition (eq:fast, eq:PEELOG)  ##
+    ##########   9. Political first-order condition (eq:LOG:fast, eq:PEELOG)  ##
     #######################################################################
     # FOC is the preference-agnostic combiner; `_LOG` methods below are LOG-specific closed forms (see
     # README's "Political first-order condition").
     def FOC(self, dv1i, dv10, dv2i, dv20, t = None):
-        """ Eq (fast / the general FOC underlying eq:PEELOG, tex line ~269-273): z_t, the marginal
+        """ Eq (LOG:fast, the general FOC underlying eq:PEELOG): z_t, the marginal
         political objective w.r.t. τ_t. Combines the young (dv1i,dv10) and old (dv2i,dv20) marginal
         indirect utilities via the political weights (ω1i/ω10/ω2i/ω20, §0) and population shares γ.
         Preference-agnostic: this combination is identical regardless of whether dv1i/dv10/dv2i/dv20 came

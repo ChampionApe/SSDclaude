@@ -4,8 +4,6 @@ Run:  .venv\Scripts\python.exe python\US\runShocksUS.py                      # r
       ... --rho 1                                the LOG case alone
       ... --family theta                         one family (theta | ageing | french | all)
       ... --commonX                              the common-X calibration variant
-      ... --medicare 0.029                       the US under the 'transfers to the old' reading (test.reading),
-                                                 from USMedicare_rhoGrid*.csv, France referenced to it
       ... --theta VARIANT [--root DIR] [--coarse]  the US at theta imposed (thetaRun)
       ... --theta VARIANT --main                 the pipeline's main variant into results/shocks/
 
@@ -21,8 +19,8 @@ baseline path):
 Read by the paper's figure 6.1 (python/paper/figuresUS.usOverview) and the online appendix's counterfactuals
 (python/paper/siteData.oecdCounterfactuals), which also carries the economic-equilibrium effect.
 
-The income-distribution scenario holds theta at the US design (--freeTheta re-derives it from RR0 under
-France's eta instead), so that row is about inequality alone and the theta family carries pension design.
+The income-distribution scenario holds theta at the US design, so that row is about inequality alone and the
+theta family carries pension design.
 
 Plus a FRANCE reference row (--noFrance to skip): France's own calibrated path, read at its own 2020 with
 the US workweek reference, so the French-characteristics rows can be read against the country they are
@@ -40,11 +38,6 @@ The calibration at each rho comes from the US sweep csv (results/calibration/US_
 so this script never re-runs the outer root: it installs (beta, omega) and solves. That also means every
 rho asked for must already be in the sweep.
 
-THE READING. --medicare M runs the same families on the US calibrated with Medicare spending M
-(share of GDP) in tau0 and as a flat share of theta (test.reading, sweep USMedicare), and calibrates France
-against that US (testEU.usReference's variant), so France's imposed beta and hours reference are those of the
-host the characteristics are imposed on. Writes USMedicare_shocks{,CommonX}.csv.
-
 THE θ VARIANT. --theta VARIANT imposes theta on the US as db['θ0'] = the US row of data/oecd26_theta.csv under
 VARIANT (ModelUS.getθ, oecd26.thetaFromFile): the baseline and every US-based scenario carry it, the income row
 holds theta at it, and the theta family still sets 0 and 1. The calibration is the variant's own sweep,
@@ -53,18 +46,23 @@ France's US reference (beta imposed, hours); France takes its θ0 from the same 
 oecd26.countryθ0) in the reference row and in the calibration its characteristics are read from (frenchData), with
 omega recalibrated at it. DIR is the variant's directory (oecd26.thetaDir, results/oecd26_theta_<variant>/;
 results/ under --main, the pipeline's main variant, oecd26.thetaRoot), the csv DIR/shocks/US_shocks{,CommonX}.csv
-with thetaSource, θ0 and grid columns; --coarse (variant only) puts the tax grid at 51 nodes. Not with --medicare
-or --freeTheta.
+with thetaSource, θ0 and grid columns; --coarse (variant only) puts the tax grid at 51 nodes.
 
-Writes results/shocks/US{,Medicare}_shocks{,CommonX}.csv -- one row per (rho, family, scenario, effect), each with the
+Writes results/shocks/US_shocks{,CommonX}.csv -- one row per (rho, family, scenario, effect), each with the
 tax counts of its solve (nEqMax, nCandMax, nFallback; policy.multiplicityColumns): the baseline's, France's and
-each scenario's full effect (shocks.runOne's 'multiplicity'); -1 on the 'ee' rows, which select no tax.
+each scenario's full effect (shocks.runOne's 'multiplicity'); -1 on the 'ee' rows, which select no tax. A run
+replaces the rows of its own (rho, family, scenario, effect) in the csv and keeps the others (`writeRows`), so a
+subset (--rho 1, --family theta) leaves the rest; rows at another θ than the run's (thetaSource, θ0) are dropped, a
+csv holds one θ. The file is written through a temporary file and renamed. France's reference row is the one failure
+a run survives: it is printed, the run goes on, and main exits 1 (runESC.noteFailure). A relative --out or --root is
+the caller's working directory's.
 """
 import os, sys, argparse, time
 import numpy as np, pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
+CWD = os.getcwd()                 # where a relative --out or --root points: the chdir below moves to HERE
 sys.stdout.reconfigure(encoding = 'utf-8', line_buffering = True)
 sys.path.insert(0, HERE)
 os.chdir(HERE)
@@ -72,6 +70,8 @@ os.chdir(HERE)
 import test as testmod
 import testEU
 import shocks as sh
+import oecd26
+import runESC
 from policy import multiplicityColumns
 from model import ModelUS
 
@@ -82,8 +82,8 @@ FAMILIES = {'theta': ('theta0', 'theta1'), 'ageing': ('mild', 'acute'),
 
 
 def hostRow(ρ, commonX, host = 'US', calibDir = None):
-    """ A sweep csv's row at this rho: `host` is the sweep's stem ('US', 'USMedicare', or 'UK' for
-    runESCcrra.py's UK cost calibration); calibDir the sweep's directory, results/calibration by default. """
+    """ A sweep csv's row at this rho: `host` is the sweep's stem ('US', or 'UK' for runESCcrra.py's UK cost
+    calibration); calibDir the sweep's directory, results/calibration by default. """
     csv = os.path.join(calibDir or os.path.join(REPO, 'results', 'calibration'),
                        host + '_rhoGrid' + ('CommonX' if commonX else '') + '.csv')
     df = pd.read_csv(csv)
@@ -93,18 +93,13 @@ def hostRow(ρ, commonX, host = 'US', calibDir = None):
     return hit.iloc[-1]
 
 
-def usRow(ρ, commonX):
-    """ The US sweep's calibrated row at this rho -- the name the ESC drivers import. """
-    return hostRow(ρ, commonX, 'US')
-
-
-def hostModel(ρ, commonX, row, gs, medicare = None, θ0 = None):
+def hostModel(ρ, commonX, row, gs, θ0 = None):
     """ The US's calibrated model at rho, rebuilt from its sweep row rather than unpickled: the csv is the
     record of the calibration. ModelUS with (beta, omega) and, under common X, the calibrated X. The baseline
-    solve that follows is the check: tau must come back at the workbook target. medicare: the US reading
-    (test.reading). θ0: theta imposed (db['θ0'], ModelUS.getθ), None for the workbook's. """
+    solve that follows is the check: tau must come back at the workbook target. θ0: theta imposed (db['θ0'],
+    ModelUS.getθ), None for the workbook's. """
     preferences = 'LOG' if ρ == 1 else 'CRRA'
-    m = ModelUS(pars = testmod.reading(medicare) | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])}
+    m = ModelUS(pars = testmod.pars | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])}
                 | ({} if θ0 is None else {'θ0': float(θ0)}), commonX = commonX, **testmod.kwargs)
     m.db['dates'] = testmod.dates
     getattr(m, preferences).initGS(gs)
@@ -114,10 +109,10 @@ def hostModel(ρ, commonX, row, gs, medicare = None, θ0 = None):
     return m
 
 
-def frenchData(m, ρ, preferences, gs = None, commonX = False, usVariant = '', usCsv = None, θ0FR = None):
+def frenchData(m, ρ, preferences, gs = None, commonX = False, usCsv = None, θ0FR = None):
     """ France's characteristics, in the form the shocks want, plus the host quantities they are relative to.
-    usVariant: the US reading France is referenced to (testEU.usReference), '' or 'Medicare'; usCsv the US sweep
-    instead (a θ variant's); θ0FR France's design imposed (db['θ0'], a θ variant's FRA row), None for its RR0's.
+    usCsv: the US sweep France is referenced to instead of results/calibration's (a θ variant's); θ0FR France's
+    design imposed (db['θ0'], a θ variant's FRA row), None for its RR0's.
 
     zetaFR and muFR are data and do not depend on rho. xbarRatio does: France's X_i carry the calibrated
     hours-unit level lambda, which moves across rho (0.8835 -> 0.9020 over the sweep), so France is
@@ -133,7 +128,7 @@ def frenchData(m, ρ, preferences, gs = None, commonX = False, usVariant = '', u
     # commonX must match the host model being shocked. Under commonX, France's X_i is a single scalar and
     # its eta_i inverts z^eta directly, so both characteristics differ from the vector-X calibration --
     # taking them from the wrong variant would impose a France that does not exist in this run's units.
-    mFR = testEU.model('FR', ρ = float(ρ), commonX = commonX, usVariant = usVariant, usCsv = usCsv, θ0 = θ0FR)
+    mFR = testEU.model('FR', ρ = float(ρ), commonX = commonX, usCsv = usCsv, θ0 = θ0FR)
     if gs:
         getattr(mFR, preferences).initGS(gs)
     mFR.calibrate(preferences = preferences)
@@ -152,7 +147,7 @@ def frenchData(m, ρ, preferences, gs = None, commonX = False, usVariant = '', u
     return {'ηFR': ηFR, 'μFR': parsFR['μj'], 'ηScale': sh.ηLevel(m, ηFR),
             'xbarRatio': XbarFR/XbarUS, 'XbarFR': XbarFR, 'XbarUS': XbarUS,
             'γgap': float(np.max(np.abs(γFR - γUS))),
-            'θUS': float(m.db['θ'].xs(t0))}
+            'θUS': float(m.db['θ'].xs(t0)), 'pinTheta': True}
 
 
 def effectRows(r, ids):
@@ -164,7 +159,7 @@ def effectRows(r, ids):
 
 
 def franceReference(ρ, preferences, gs = None, commonX = False, workweekData = None, hbarRef = None,
-                    usVariant = '', usCsv = None, θ0FR = None):
+                    usCsv = None, θ0FR = None):
     """ France's own calibrated equilibrium at 2020, in the same three columns the host rows carry.
 
     The endpoint of the "mostly US, partly France" scale: the online appendix reads the French-characteristics
@@ -176,10 +171,9 @@ def franceReference(ρ, preferences, gs = None, commonX = False, workweekData = 
     number is France's hours on the US scale. That is the comparable object under vector X, where the
     LEVEL of hbar is not identified -- and it is also ModelFR's own hours target, so this cell reproduces
     France's observed workweek by construction rather than predicting it. Say so wherever it is printed.
-    usVariant, usCsv, θ0FR: the US reading or sweep France is referenced to and France's imposed design, as
-    frenchData.
+    usCsv, θ0FR: the US sweep France is referenced to and France's imposed design, as frenchData.
     """
-    mFR = testEU.model('FR', ρ = float(ρ), commonX = commonX, usVariant = usVariant, usCsv = usCsv, θ0 = θ0FR)
+    mFR = testEU.model('FR', ρ = float(ρ), commonX = commonX, usCsv = usCsv, θ0 = θ0FR)
     if gs:
         getattr(mFR, preferences).initGS(gs)
     mFR.calibrate(preferences = preferences)
@@ -190,15 +184,29 @@ def franceReference(ρ, preferences, gs = None, commonX = False, workweekData = 
     return r | multiplicityColumns(out.get('multiplicity'))
 
 
-def thetaRun(theta, root = None, commonX = True, rhos = (1.0,), medicare = None, freeTheta = False, main = False):
+KEYROW = ['ρ', 'family', 'scenario', 'effect']      # the identity of a row of the csv
+
+
+def writeRows(path, rows, tag):
+    """ Csv `path` after this run's `rows`: the rows on disk at the run's θ (oecd26.rowsAtTheta at tag's thetaSource
+    and θ0; the workbook's without a variant) whose KEYROW the run did not produce, then `rows`; written atomically
+    (runESC.writeCsv). Called after every scenario with the rows so far. """
+    new = pd.DataFrame(rows)
+    if os.path.exists(path):
+        old = pd.read_csv(path, float_precision = 'round_trip')
+        keep = oecd26.rowsAtTheta(old, tag.get('thetaSource'), tag.get('θ0'))
+        keep = keep[~runESC._keyOf(keep, KEYROW).isin(runESC._keyOf(new, KEYROW))]
+        if len(keep):
+            new = pd.concat([keep, new], ignore_index = True)
+    runESC.writeCsv(new, path)
+
+
+def thetaRun(theta, root = None, commonX = True, rhos = (1.0,), main = False):
     """ --theta VARIANT: (θ0, the variant's calibration directory, the default csv, France's θ0). root: the
     variant's directory (oecd26.thetaDir by default; a relative path is the repo's; results/ under `main`,
-    oecd26.thetaRoot). The sweep at every rho must be at θ0 (oecd26.usBeta). SystemExit with --medicare or
-    --freeTheta (θ0 is not re-derived), --main with --root or another variant than config.US['theta'], for a variant
-    without a US or French θ, a missing or other-θ0 sweep, or results/shocks/ as the output without --main. """
-    import oecd26
-    if medicare is not None or freeTheta:
-        raise SystemExit('--theta imposes θ0 (not re-derived, not scaled by Ushare0): not with --medicare or --freeTheta')
+    oecd26.thetaRoot). The sweep at every rho must be at θ0 (oecd26.usBeta). SystemExit for --main with --root or
+    another variant than config.US['theta'], for a variant without a US or French θ, a missing or other-θ0 sweep, or
+    results/shocks/ as the output without --main. """
     if main and root is not None:
         raise SystemExit('--main reads results/calibration/ and writes results/shocks/: not with --root')
     try:
@@ -229,16 +237,9 @@ def main():
     p.add_argument('--ns', type = int, default = 150)
     p.add_argument('--smoothKnots', type = int, default = 4)
     p.add_argument('--interpKind', default = 'linear')
-    p.add_argument('--freeTheta', action = 'store_true',
-                   help = "re-derive theta from RR0 under France's eta in the income-distribution "
-                          "counterfactual, instead of holding it at the US design (the default). The "
-                          "alternative reading; see shocks.shockIncomeDistribution.")
     p.add_argument('--noFrance', action = 'store_true',
                    help = "skip France's own calibrated path, the reference row the French-characteristics "
                           'counterfactuals are read against. See franceReference.')
-    p.add_argument('--medicare', type = float, default = None,
-                   help = "Medicare spending as a share of GDP, the 'transfers to the old' reading "
-                          '(test.reading); reads USMedicare_rhoGrid*.csv, writes USMedicare_shocks*.csv')
     p.add_argument('--theta', default = None,
                    help = "a variant of data/oecd26_theta.csv: the US at that θ (db['θ0']); see THE θ VARIANT")
     p.add_argument('--root', default = None, help = "the variant's directory (default results/oecd26_theta_<variant>)")
@@ -247,8 +248,7 @@ def main():
                    help = "with --theta config.US['theta']: read results/calibration/, write results/shocks/")
     p.add_argument('--out', default = None)
     a = p.parse_args()
-    usVariant = '' if a.medicare is None else 'Medicare'
-    sweep = 'US' + usVariant                       # the sweep and the csv's stem
+    a.out, a.root = [None if x is None else os.path.abspath(os.path.join(CWD, x)) for x in (a.out, a.root)]
 
     names = sum((list(FAMILIES[f]) for f in (FAMILIES if a.family == 'all' else [a.family])), [])
     famOf = {n: f for f, ns in FAMILIES.items() for n in ns}
@@ -256,10 +256,10 @@ def main():
         if a.root is not None or a.coarse or a.main:
             raise SystemExit('--root, --coarse and --main need --theta VARIANT')
         θ0, θ0FR, calibDir, usCsv, tagθ = None, None, None, None, {}
-        out = a.out or os.path.join(OUTDIR, sweep + '_shocks' + ('CommonX' if a.commonX else '') + '.csv')
+        out = a.out or os.path.join(OUTDIR, 'US_shocks' + ('CommonX' if a.commonX else '') + '.csv')
         os.makedirs(OUTDIR, exist_ok = True)
     else:
-        θ0, calibDir, outθ, θ0FR = thetaRun(a.theta, a.root, a.commonX, a.rho, a.medicare, a.freeTheta, a.main)
+        θ0, calibDir, outθ, θ0FR = thetaRun(a.theta, a.root, a.commonX, a.rho, a.main)
         usCsv = os.path.join(calibDir, 'US_rhoGrid' + ('CommonX' if a.commonX else '') + '.csv')
         tagθ = {'thetaSource': a.theta, 'θ0': θ0, 'grid': 'coarse' if a.coarse else 'fine'}
         out = a.out or outθ
@@ -270,16 +270,16 @@ def main():
 
     workweek = float(testmod.workweek)
     rows = []
-    print('host: US{}'.format('' if a.medicare is None else ' (Medicare {} of GDP in tau0 and theta)'.format(a.medicare)))
+    print('host: US')
     print('scenarios: {}'.format(', '.join(names)))
     print('workweek (data, {}): {:.5f}'.format(testmod.dfc['Calibration year'], workweek))
 
     for ρ in a.rho:
-        row = hostRow(ρ, a.commonX, sweep, calibDir)
+        row = hostRow(ρ, a.commonX, 'US', calibDir)
         preferences = 'LOG' if ρ == 1 else 'CRRA'
         wp = {'smoothKnots': a.smoothKnots or None, 'interpKind': a.interpKind}
         gs = ({'n': a.n, 'ns': a.ns} if preferences == 'CRRA' else {'n': a.n}) | wp
-        m = hostModel(ρ, a.commonX, row, gs, medicare = a.medicare, θ0 = θ0)
+        m = hostModel(ρ, a.commonX, row, gs, θ0 = θ0)
 
         t0 = m.db['t'][m.db['t0']]
         tic = time.time()
@@ -294,16 +294,14 @@ def main():
         # Against the sweep's OWN recorded tau, not the workbook target: on a vector-X ModelFR under CRRA the
         # recorded tau carries the hours-rescaling drift (modelFR.hoursDriftTol, <= 1e-3 from the target).
         if abs(b['τ'] - float(row['τ'])) > 1e-6:
-            raise RuntimeError('{} baseline at ρ={} gives τ={:.6f} but the sweep recorded {:.6f}: the reinstalled '
-                               'calibration does not reproduce the sweep'.format(sweep, ρ, b['τ'], float(row['τ'])))
+            raise RuntimeError('US baseline at ρ={} gives τ={:.6f} but the sweep recorded {:.6f}: the reinstalled '
+                               'calibration does not reproduce the sweep'.format(ρ, b['τ'], float(row['τ'])))
         rows.append({'ρ': ρ, 'preferences': preferences, 'family': 'baseline', 'scenario': 'Baseline',
                      'effect': 'baseline', **b} | multiplicityColumns(base.get('multiplicity')) | tagθ)
 
         gsFR = gs
-        data = (frenchData(m, ρ, preferences, gsFR, a.commonX, usVariant = usVariant, usCsv = usCsv, θ0FR = θ0FR)
+        data = (frenchData(m, ρ, preferences, gsFR, a.commonX, usCsv = usCsv, θ0FR = θ0FR)
                 if any(famOf[n] == 'french' for n in names) else {})
-        if data:
-            data['pinTheta'] = not a.freeTheta
         if data:
             print('  French: Xbar_FR/Xbar_host={:.4f} ({:.2f} vs {:.2f}), eta level c={:.4f}, '
                   'max|gamma_FR-gamma_host|={:.1e}'.format(data['xbarRatio'], data['XbarFR'],
@@ -318,25 +316,27 @@ def main():
                   'ww={:.2f}   {:.0f}s'.format(
                       name, r['full']['τ'], r['full']['sr'], r['full']['workweek'],
                       r['ee']['τ'], r['ee']['sr'], r['ee']['workweek'], time.time()-tic))
-            pd.DataFrame(rows).to_csv(out, index = False)
+            writeRows(out, rows, tagθ)
 
         if not a.noFrance:
             tic = time.time()
             try:
-                f = franceReference(ρ, preferences, gsFR, a.commonX, workweek, hbarRef, usVariant = usVariant,
-                                    usCsv = usCsv, θ0FR = θ0FR)
+                f = franceReference(ρ, preferences, gsFR, a.commonX, workweek, hbarRef, usCsv = usCsv,
+                                    θ0FR = θ0FR)
                 rows.append({'ρ': ρ, 'preferences': preferences, 'family': 'french',
                              'scenario': 'France (own calibration)', 'effect': 'full', **f} | tagθ)
                 print('  {:<22} full: tau={:.4f} sr={:.4f} ww={:.2f}   |   theta={:.4f} omega={:.4f}'
                       '   {:.0f}s'.format('France', f['τ'], f['sr'], f['workweek'], f['θ'], f['ω'],
                                           time.time()-tic))
             except Exception as e:
-                print(f'  France reference FAILED {type(e).__name__}: {e}')
-            pd.DataFrame(rows).to_csv(out, index = False)
+                runESC.noteFailure(f'ρ={ρ} France reference', e)
+            writeRows(out, rows, tagθ)
 
-    pd.DataFrame(rows).to_csv(out, index = False)
+    writeRows(out, rows, tagθ)
     print('\n-> {}'.format(os.path.relpath(out, REPO)))
-    return 0
+    if runESC.FAILURES:
+        print('{} FAILED:'.format(len(runESC.FAILURES)) + ''.join('\n  ' + x for x in runESC.FAILURES))
+    return 1 if runESC.FAILURES else 0
 
 
 if __name__ == '__main__':

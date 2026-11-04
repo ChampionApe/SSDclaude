@@ -16,7 +16,7 @@ Note that this is the general economic equilibrium with $\Gamma_{s,t} = 0$: with
 The politico-economic equilibrium similarly simplifies, because we per construction do not have a continuation policy. In the log case, we can simply reuse the regular expressions from \eqref{\refeq:PEELOG}, but with $\beta_{t,i} = 0$ throughout. This leaves us with a simplified expression for the young and a replica for the old:
 \begin{subequations}\label{\refeq:terminalPEELOG}
 \begin{align}
-    \dfrac{d v_{1,t}^i}{d \tau_t} =& - \frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi} \\
+    \dfrac{d \upsilon_{1,t}^i}{d \tau_t} =& - \frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi} \\
     \frac{d\upsilon_{2,t}^i}{d\tau_t} =& (1-\alpha)\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial \tau_t}+\frac{\frac{1-\alpha}{\alpha}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)}{\frac{s_{t-1,i}}{s_{t-1}}+\frac{1-\alpha}{\alpha}\tau_t\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)},
 \end{align}
 where $\partial \ln\left(\Theta_{h,t}\right)/\partial \tau_t$ is the same as for $t<T$, given in \eqref{\refeq:PEELOG:dThetah}.
@@ -26,7 +26,7 @@ where $\partial \ln\left(\Theta_{h,t}\right)/\partial \tau_t$ is the same as for
 In the CRRA case with $\rho\neq 1$, the savings level $s_{t-1}$ is now a relevant state variable. Furthermore, we need to compute consumption levels in order to evaluate marginal utilities from changed policy. However, beyond this, we can use the log formulation and write the first order condition directly (instead of relying on numerical grid searches):
 \begin{subequations}\label{\refeq:terminalPEECRRA}
 \begin{align}
-    \dfrac{d v_{1,t}^i}{d \tau_t} =& - \frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi}\left(\tilde{c}_{1,t}^i\right)^{1-1/\rho}  \\
+    \dfrac{d \upsilon_{1,t}^i}{d \tau_t} =& - \frac{1}{1-\tau_t}\frac{1+\xi}{1+\alpha\xi}\left(\tilde{c}_{1,t}^i\right)^{1-1/\rho}  \\
     \frac{d\upsilon_{2,t}^i}{d\tau_t} =& \left(c_{2,t}^i\right)^{1-1/\rho}\left[(1-\alpha)\frac{\partial \ln\left(\Theta_{h,t}\right)}{\partial \tau_t}+\frac{\frac{1-\alpha}{\alpha}\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)}{\frac{s_{t-1,i}}{s_{t-1}}+\frac{1-\alpha}{\alpha}\tau_t\left(1+\theta_t\left[\frac{\eta_{t-1,i}^{1+\xi}}{X_{t-1,i}^{\xi}}\frac{1}{\Gamma_{h,t-1}}-1\right]\right)}\right],
 \end{align}
 where again $\partial \ln\left(\Theta_{h,t}\right)/\partial \tau_t$ is identical to the log formulation in the terminal state.

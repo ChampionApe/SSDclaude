@@ -42,30 +42,30 @@ We note that when discount rates are identical across types, i.e. when $\beta_{t
 \end{align*}
 
 
-Finally, we can combine $s_t, h_t$ to yield closed form expression given the generalized discount functions: Start from the definition of $h_t$, use that $s_t$ is proportional to $h_t^{(1+\xi)/\xi}$ to write:
-Furthermore, note that we can combine equations for $s_t, h_t$ to yield a closed form expressions \begin{align}\label{\refeq:EE:h}
+Finally, substituting \eqref{\refeq:EE:s(h)} into $h_t = \sum_i\gamma_{t,i}\eta_{t,i}h_{t,i}$, with $h_{t,i}$ from the labour supply above, yields a closed form given the generalized discount functions:
+\begin{align}\label{\refeq:EE:h}
     h_t = \underbrace{\left(\Gamma_{h,t}\right)^{\frac{1+\xi}{1+\alpha\xi}}\left(\frac{(1-\alpha)(1-\tau_t)}{\Gamma_{h,t}-\frac{1-\alpha}{\alpha}\frac{p_t\theta_{t+1}\tau_{t+1}}{\kappa_t}\Gamma_{s,t}}\right)^{\frac{\xi}{1+\alpha\xi}}}_{\equiv \Theta_{h,t}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha\xi}{1+\alpha\xi}}.
 \end{align}
 Naturally, we can use this in the expression for $s_t$ to write savings as
 \begin{align}\label{\refeq:EE:s}
-    s_t &= \left(\frac{\Theta_{h,t}}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}}\Gamma_{s,t}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}.
+    s_t &= \underbrace{\left(\frac{\Theta_{h,t}}{\Gamma_{h,t}}\right)^{\frac{1+\xi}{\xi}}\Gamma_{s,t}}_{\equiv\Theta_{s,t}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\frac{\alpha(1+\xi)}{1+\alpha\xi}}.
 \end{align}
 
 
-Given discount functions, $B^i$, equations \eqref{\refeq:EE} identify aggregate states $s_t$ and $h_t$ as complicated parameter and policy functions $\Theta_{x,t}$ times the lagged state $s_{t-1}$ raised to some power $\sigma_x$. 
+Given discount functions, $B^i$, equations \eqref{\refeq:EE} identify each aggregate state as $x_t = \Theta_{x,t}(s_{t-1}/\nu_t)^{\sigma_x}$, a coefficient function $\Theta_{x,t}$ of parameters and policy times a power of the lagged state, with $\sigma_s = \alpha(1+\xi)/(1+\alpha\xi)$ and $\sigma_h = \alpha\xi/(1+\alpha\xi)$ independent of policy.
 
 
 \bigskip
 Given the structure of the aggregate states in economic equilibrium, it is straightforward to reduce the informal savings ratio $s_{t,0}/s_t$ and write it as
 \begin{align}\label{\refeq:EE:s0_s}
-    \frac{s_t^0}{s_t} =& \frac{B_{t+1}^0}{1+B_{t+1}^0}\frac{\eta_{t,0}^{1+\xi}}{X_{t,0}^{\xi}(1+\xi)}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}
+    \frac{s_{t,0}}{s_t} =& \frac{B_{t+1}^0}{1+B_{t+1}^0}\frac{\eta_{t,0}^{1+\xi}}{X_{t,0}^{\xi}(1+\xi)}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1+\xi}{1+\alpha\xi}}
     \frac{1}{\Theta_{s,t}}-\frac{1}{1+B_{t+1}^0}\frac{1-\alpha}{\chi_{t+1}^R\alpha}\frac{p_{t,0}\epsilon_{t+1}\tau_{t+1}}{\kappa_t}.
 \end{align}
 \end{subequations}
 
 
 \smalltitle{Closed form consumption functions.}
-We note that if we know $s_t$ $h_t$, $B^i$, and $s_{t-1}$, it is straightforward to identify all other variables directly: Individual labour supply and savings decisions from \eqref{\refeq:EE:hi} and \eqref{\refeq:EE:si}, factor prices from \eqref{\refeq:factorPrices}, pension benefits from \eqref{\refeq:governmentBudget}, and finally consumption simply from budgets \eqref{\refeq:formalBudget} and \eqref{\refeq:informalBudget}. However, in particular in the analytical log case, it can be useful to derive \emph{equilibrium} consumption functions as well; All consumption functions can be written on the form $x_t = \Theta_{x,t}(s_{t-1}/\nu_t)^{\sigma_x}$ with 
+We note that if we know $s_t$, $h_t$, $B^i$, and $s_{t-1}$, it is straightforward to identify all other variables directly: Individual labour supply and savings decisions from \eqref{\refeq:EE:hi} and \eqref{\refeq:EE:si}, factor prices from \eqref{\refeq:factorPrices}, pension benefits from \eqref{\refeq:governmentBudget}, and finally consumption simply from budgets \eqref{\refeq:formalBudget} and \eqref{\refeq:informalBudget}. However, in particular in the analytical log case, it can be useful to derive \emph{equilibrium} consumption functions as well. All consumption functions take the same form $x_t = \Theta_{x,t}(s_{t-1}/\nu_t)^{\sigma_x}$, with
 \begin{align}\label{\refeq:EE:sigma_ci}
     \sigma_{c_1,t}^i &= \sigma_{c_2,t}^i = \sigma_{\tilde{c}_1,t}^i = \dfrac{\alpha(1+\xi)}{1+\alpha\xi}, 
     \qquad \sigma_{c_2,t+1}^i = \left(\dfrac{\alpha(1+\xi)}{1+\alpha\xi}\right)^2.
@@ -91,7 +91,7 @@ For the informal households that save through the informal vehicle, relevant equ
 \end{align}
 Consumption when old is then given by
 \begin{align}
-    c_{2,t}^0 =& \chi_{t}^R\alpha \frac{\nu_t}{p_{t-1,0}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\alpha}h_t^{1-\alpha}\left(\frac{s_{t-1}^0}{s_{t-1}}+\frac{1-\alpha}{\chi_{t}^R\alpha} \frac{p_{t-1,0}\epsilon_t\tau_t}{\kappa_{t-1}}\right).
+    c_{2,t}^0 =& \chi_{t}^R\alpha \frac{\nu_t}{p_{t-1,0}}\left(\frac{s_{t-1}}{\nu_t}\right)^{\alpha}h_t^{1-\alpha}\left(\frac{s_{t-1,0}}{s_{t-1}}+\frac{1-\alpha}{\chi_{t}^R\alpha} \frac{p_{t-1,0}\epsilon_t\tau_t}{\kappa_{t-1}}\right).
 \end{align}
 \end{subequations}
 

@@ -5,7 +5,7 @@ Run:  .venv\Scripts\python.exe python\InformalSavings\shockUniversal.py --rho 1.
 A bare invocation is the headline experiment: rule='match' against refType=1, every rho in the csv that
 has a pickled instance. The other readings are reached through --rule/--refType/--scale.
 
-The experiment (docs §9's model-copy mechanism, README "Model copies for shock experiments"):
+The experiment (docs §9's model-copy mechanism; README, "Conventions and traps", createCopyFromt0):
 
   1. Solve the baseline PEE over the full horizon at the calibrated parameters, with db's own eps.
   2. Read the state entering t0 off that solved path (stateAtT0, eq:shockState): (s_{t0-1}, iota_{t0-1})
@@ -35,7 +35,7 @@ relative benefit of the SAME type j=1 times an early-retirement discount (see mo
 against j=1 undoes the 70% and the discount. --refType and --scale run the intermediate readings; neither
 changes the mechanism. Values: results/paper/calibrationSummary.csv (eps) and the shock csvs.
 
-TWO THINGS THE COPY NEEDS BEYOND A NEW eps ARRAY, both from README "Known limitations":
+TWO THINGS THE COPY NEEDS BEYOND A NEW eps ARRAY (README, "Open items", on the cached kappa):
   - eps must be written into db, not only passed to solvePEE_*. kappa_t(eps_{t+1}) is consumed everywhere
     through a CACHED db['kappa'] rather than through the explicit kappa(eps1, t), so a call that passed a
     new eps while leaving db alone would solve the reform's household problem against the baseline's
@@ -67,7 +67,7 @@ sys.stdout.reconfigure(encoding = 'utf-8', line_buffering = True)
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, HERE)
-os.chdir(HERE)                                  # test.py resolves data/ relative to the repo root
+os.chdir(HERE)                                  # relative paths resolve here; test.py finds data/ itself
 
 from policy import multiplicityColumns
 
@@ -108,9 +108,9 @@ def universalEps(m, rule = 'match', refType = 1, scale = 1.0):
     'flat':  eps_t = 1 - theta_t -- type 0 receives only the NON-CONTRIBUTIVE component, the part of
         eq:governmentBudget that is proportional to aggregate h_{t-1} and independent of any own earnings
         history. This is universal coverage of the flat pillar rather than of the whole system, and on the
-        Argentina calibration it is a benefit CUT for type 0, not a rise: theta=0.839 puts eps at 0.161
-        against the calibrated 0.337. The two readings therefore bracket the reform rather than differing
-        in degree, which is why the sign of every response flips between them. """
+        Argentina calibration 1 - theta lies below the calibrated eps, so it is a benefit CUT for type 0,
+        not a rise. The two readings therefore bracket the reform rather than differing in degree, which is
+        why the sign of every response flips between them. """
     if rule == 'match':
         return scale * relBenefit(m, refType)
     elif rule == 'flat':
@@ -166,8 +166,8 @@ def loadCalibrated(ρ, settings, commonSettings = False, pkldir = None, epsPre0 
 
 def frame(report, refType = 1, names = SERIES, τ = None, m = None):
     """ Named series out of an EE_report (plus tau, which the report does not carry), aligned on the
-    reporting index each one uses -- ι/Γs live on txE and are one period shorter (README, "Reporting
-    domains"), so this must be a join rather than a column stack. Type-indexed entries (bi) are reduced
+    reporting index each one uses -- ι/Γs live on txE and are one period shorter (README, "Conventions
+    and traps"), so this must be a join rather than a column stack. Type-indexed entries (bi) are reduced
     to the reform's reference type, so the reported b^i is the one b^0 is being equalised to.
 
     m: the model the report was solved on. Given, the formal benefits are added per type, 'bi<j>' for

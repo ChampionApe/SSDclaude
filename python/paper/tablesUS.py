@@ -328,7 +328,7 @@ def escCountryTable(specs = TRANSPORTS):
             if u.empty:
                 raise D.MissingInput('escCountry ({}, US {}, {}, phi={})'
                                      .format(key, COSTSYMBOL[spec], spec, C.US['esc']['phi']))
-            u = u.iloc[-1]
+            u = u.iloc[0]                     # escCountry: one row per (country, wedgeFrom)
             pUS[spec] = float(u['p'])
             θs.append(float(u['θStar']))
             Vs.append(float(u['Vtilde']) if hasV else np.nan)
@@ -336,7 +336,7 @@ def escCountryTable(specs = TRANSPORTS):
             ownFR |= key == 'FR' and not own.empty
             if own.empty and name not in noOwn:
                 noOwn.append(name)
-            cells += [C.num(float(u['choice']), 3), '--' if own.empty else C.num(float(own.iloc[-1]['p']), 2)]
+            cells += [C.num(float(u['choice']), 3), '--' if own.empty else C.num(float(own.iloc[0]['p']), 2)]
         if np.ptp(θs) > 1e-6 or (hasV and np.ptp(Vs) > 1e-6):
             raise ValueError('US_ESC_Country: {} has another observed design or Ṽ under {}: {} {}'.format(
                 key, specs, θs, Vs))
@@ -344,7 +344,7 @@ def escCountryTable(specs = TRANSPORTS):
             θFR = θs[0]
         lead = [name, C.num(θs[0], 3)] + (['--' if Vs[0] != Vs[0] else C.num(Vs[0], 3)] if hasV else [])
         if hasR:
-            lead.append(C.num(float(us[pir][us[pir]['country'] == key].iloc[-1]['ΠR']), 3))
+            lead.append(C.num(float(us[pir][us[pir]['country'] == key].iloc[0]['ΠR']), 3))
         rows.append(keyed(' & '.join(lead + cells) + r' \\', rk))
     corner = θFR is not None and abs(θFR - 1.) < 1e-12           # France observed at the Bismarckian corner
     if corner and ownFR:

@@ -49,7 +49,7 @@ OUTDIR = os.path.join(REPO, 'results', 'numerical')
 def frozen(m, ν):
     """ A deep copy of m with nu frozen at `nu` over the whole horizon and the warm-start caches cleared. """
     ms = deepcopy(m)
-    ms.x0, ms.LOG.x0, ms.CRRA.x0 = {}, {}, {}
+    ms.x0 = {}
     ms.db.update(ms.adjPar('ν', np.full(ms.T, float(ν))))
     ms.updateAuxPars()
     return ms

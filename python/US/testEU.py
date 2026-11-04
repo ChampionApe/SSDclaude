@@ -53,10 +53,6 @@ def retAgeHost(country):
     return r
 
 
-def retAgeFR():
-    return retAgeHost('FR')
-
-
 def hostNu(country, dft, retAge):
     """ `country`'s ν at the population sheet's dates (dft, indexed on t) under `retAge`: 'nra' the sheet's
     'Worker-to-retiree', bitwise (France's appendix-F column; the UK's WPP ratio, its normal retirement ages being the
@@ -67,10 +63,6 @@ def hostNu(country, dft, retAge):
     import oecd26                                   # lazily: oecd26 imports the U.S. workbook and the model
     g = float(oecd26.retAgeGaps(HOSTISO[country], 'exit')[0])
     return oecd26.retAgeNu(dft[HOSTWPP[country]].values.astype(float), np.full(len(dft), g))
-
-
-def frenchNu(dft, retAge):
-    return hostNu('FR', dft, retAge)
 
 
 def load(country, t_ss = t_ss):
@@ -110,24 +102,23 @@ def load(country, t_ss = t_ss):
     return pars, kwargs, dates, workweek
 
 
-def usReference(commonX = False, h0US = None, variant = '', csv = None):
+def usReference(commonX = False, h0US = None, csv = None):
     """ ModelFR's US reference as a callable of rho, read off the US rho sweep. h0US defaults to the US
-    workbook's own average-hours input, loaded from test.py. variant: the US reading the sweep belongs to,
-    '' (the workbook) or 'Medicare' (test.reading's, results/calibration/USMedicare_rhoGrid*.csv). csv: the
-    sweep's path instead (a θ variant's own, calibrateRhoGrid.py --theta), which `variant` then does not name. """
+    workbook's own average-hours input, loaded from test.py. csv: the sweep's path instead of
+    results/calibration/US_rhoGrid[CommonX].csv (a θ variant's own, calibrateRhoGrid.py --theta). """
     from modelFR import usRefFromCsv
     if h0US is None:
         import test as testmod
         h0US = testmod.pars['h0']
     if csv is None:
         csv = os.path.join(DIR, '..', '..', 'results', 'calibration',
-                           'US' + variant + '_rhoGrid' + ('CommonX' if commonX else '') + '.csv')
+                           'US_rhoGrid' + ('CommonX' if commonX else '') + '.csv')
     return usRefFromCsv(csv, h0US = h0US)
 
 
-def model(country, commonX = False, ρ = 1., ω = 2., usVariant = '', usCsv = None, θ0 = None, **over):
+def model(country, commonX = False, ρ = 1., ω = 2., usCsv = None, θ0 = None, **over):
     """ A ready ModelFR on `country`'s workbook, with the US reference wired to the sweep of the matching
-    variant (and US reading, usVariant; or the sweep at usCsv; see usReference). beta is NOT set here: setUSRef
+    variant (or the sweep at usCsv; see usReference). beta is NOT set here: setUSRef
     installs it from the reference at db's rho when calibrate runs. θ0: the design imposed as db['θ0']
     (ModelUS.getθ); None leaves it to the workbook's RR0.
     """
@@ -135,6 +126,6 @@ def model(country, commonX = False, ρ = 1., ω = 2., usVariant = '', usCsv = No
     pars, kwargs, dates, workweek = load(country)
     pars.update({'ρ': ρ, 'ω': ω} | ({} if θ0 is None else {'θ0': float(θ0)}))
     m = ModelFR(pars = pars | over, commonX = commonX,
-                usRef = usReference(commonX = commonX, variant = usVariant, csv = usCsv), **kwargs)
+                usRef = usReference(commonX = commonX, csv = usCsv), **kwargs)
     m.db['dates'], m.db['workweek'], m.db['country'] = dates, workweek, country
     return m

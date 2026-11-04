@@ -1,84 +1,54 @@
 \subsection{Calibration}\label{\refsec:calibration}
-This first model is used to match the case of Argentina only. The full procedure and a description of the data can be found in the main paper. The main application in the paper uses constant parameter values across $t$ for almost all parameters. Thus, when we drop the $t$-subscript in the following, we assume constant parameters.  
+The model is calibrated to Argentina, with 2010 as the baseline year. The inputs are in \texttt{data/ArgentinaTest.xlsx} and \texttt{data/argentina\_calibrationTargets.csv}, sourced in \texttt{data/README.md}. Parameters are constant over time except the ratio of workers to retirees $\nu_t$, and the $t$-subscript is dropped where a parameter is constant.
 
-\smalltitle{Data.} 
-We follow previous literature and let $t$ represent 30-year intervals (this helps with the assumption that capital fully depreciates between time steps). We find population data including projections to determine $\nu_t$ from 1950 to 2070 and amend the data with $t = 1920, 2100$  with constant extrapolation.
+\smalltitle{Data.}
+A period is thirty years, which suits the assumption that capital fully depreciates between periods. $\nu_t$ comes from population data and projections for 1980 to 2070, held at the 1980 value in 1920 and 1950 and at the 2070 value in 2100. A household survey gives the shares $\gamma$, hours and income of $J+1 = 5$ types, the informal type and four formal income quartiles, together with their propensities to vote $\mu_j$ and survival rates $p_j$, with $p_i = p$ common across the formal types.
 
-We use a household survey to split up the population into $J+1 = 5$ household types. This household survey provides shares $\gamma$, hours worked, and income. In addition, we have data on voting shares represented by $\mu_j$ in the political problem and survival rates $(p_j)$ (where $p_i = p$ is common across $i>0$ types). 
+The capital share is $\alpha = 0.35$ and the Frisch elasticity $\xi = 0.3$. The targets are a capital--output ratio of 3.23, Argentina's ratio in the Penn World Table in 2010, and a pension tax rate equal to pension spending, 7.1\% of GDP, over the labour share, $\tau_{2010} = 0.071/(1-\alpha) = 0.109$. Because a period is thirty years, the ratio the data report is thirty times the model's own $K_t/Y_t$ (\cref{\refnumsec:calibration}).
 
-We use the capital income share to identify $\alpha$, set the labour supply elasticity at a baseline value $\xi = 0.3$, take the capital--output ratio to be 3.23 --- Argentina's ratio in the Penn World Table at the baseline year $t=2010$, where the remaining targets are measured too --- and the pension tax rate $\tau_t$ to be 12.5\% in the baseline year. Because a period is thirty years, the ratio the data report is thirty times the model's own $K_t/Y_t$, which is a stock over a single period's output; \cref{\refnumsec:calibration} sets out how that is imposed. 
-
-We use OECD data to define ratio of replacement rates $RR$ at half mean wages and mean wages (represented by groups $j=1, j=3$ in our data). This will help us identify $\theta$ (we do not work with endogenous pension characteristics for Argentina). 
-
-In the Argentina case, we exploit a pension reform around $t=2010$ that drastically changed the degree of universal pensions $\epsilon$. This does not, however, yield a static calibration target, as we see below.
+The ratio $RR$ of the replacement rates at mean and half-mean wages (OECD), represented by types $3$ and $1$, identifies $\theta$, which is exogenous in this model. The pre-reform universal pension $\epsilon$ is set from the pension rules rather than targeted: the basic pension was 70\% of the minimum pension, read as the benefit of the lowest formal type relative to the average formal benefit and discounted, with $\beta$, because it starts five (men) or ten (women) years after the formal retirement age. The reform that raised $\epsilon$ from 2010 is an experiment on the calibrated model, not a target.
 
 
 \smalltitle{Calibration.}
-Several of the model parameters are set directly using the data. This covers the parts that are not set directly, but have to solved in one way or another.
-
-First, we calibrate the income distribution and relative working hours across the income distribution using $\eta_j$ and $X_j$. Specifically, let $z_j^{\eta}$ and $z_j^{x}$ denote income and working hours of type $j$ relative to the average \emph{formal} household. The reference is the same for all types, informal ones included, and the informal type is compared to it without being part of it, so that
+The productivities $\eta_i$ and disutilities of labour $X_i$ of the formal types match income and hours. Let $z_j^{\eta}$ and $z_j^{x}$ denote the income and hours of type $j$ relative to the population-weighted mean over the \emph{formal} types, the same reference for every type, the informal one included, so that
 \begin{align}\label{\refeq:calibration:z}
     \sum_{i}\gamma_i z_i^{\eta} = \sum_{i}\gamma_i z_i^{x} = 1,
 \end{align}
-where, as throughout, the sums over $i$ run over the formal types only. In the data this means dividing each group's income and hours by the population-weighted mean over the formal groups.
-
-With $A_t\equiv w_t(1-\tau_t)+\theta_{t+1}\overline{b}_{t+1}$, formal labour supply \eqref{\refeq:formalOpt} is $h_{t,i} = (\eta_i/X_i)^{\xi}A_t^{\xi}$, so that $h_t = \Gamma_hA_t^{\xi}$ and $h_{t,i}/h_t = (\eta_i/X_i)^{\xi}/\Gamma_h$. The relative income and hours of the formal types are then
+where, as throughout, sums over $i$ run over the formal types only. Formal labour supply \eqref{\refeq:formalOpt} is $h_{t,i} = (\eta_i/X_i)^{\xi}\left[w_t(1-\tau_t)+\theta_{t+1}\overline{b}_{t+1}p_t/R_{t+1}\right]^{\xi}$, with the bracket common to all types, so that $h_{t,i}/h_t = (\eta_i/X_i)^{\xi}/\Gamma_h$ and the relative income and hours of the formal types are
 \begin{align*}
         z_i^{\eta} &= \dfrac{w_t(1-\tau_t)h_{t,i} \eta_i}{w_t(1-\tau_t)h_t} = \dfrac{\eta_i^{1+\xi}/X_i^{\xi}}{\sum_{j} \gamma_ j\eta_j^{1+\xi}/X_j^{\xi}},  \\
         z_i^{x} &= \frac{h_{t,i}}{\sum_j\gamma_j h_{t,j}} = \frac{(\eta_i/X_i)^{\xi}}{\sum_j \gamma_j(\eta_j/X_j)^{\xi}}.
 \end{align*}
-Both conditions are ratios and leave two normalizations free. The first is the level of the labour aggregator $\Gamma_h$. The second is the unit in which hours are counted: the rescaling $\eta_i\rightarrow\eta_i/\mu$, $X_i\rightarrow\mu^{-(1+\xi)/\xi}X_i$ leaves $\eta_i^{1+\xi}/X_i^{\xi}$ and therefore efficiency units $\eta_ih_{t,i}$, the aggregate $h_t$ and the equilibrium unchanged, and scales every $h_{t,i}$ by $\mu$. We spend both normalizations in the calibration stage:
+Both are ratios, so the scales of $y_i^{\eta} \equiv \eta_i^{1+\xi}/X_i^{\xi}$ and $y_i^x \equiv (\eta_i/X_i)^{\xi}$ are free, and we fix them:
 \begin{align}\label{\refeq:calibration:yNorm}
     \Gamma_h\equiv\sum_i\gamma_i\frac{\eta_i^{1+\xi}}{X_i^{\xi}} = 1, \qquad \sum_i\gamma_i\left(\frac{\eta_i}{X_i}\right)^{\xi} = 1.
 \end{align}
-The second one is a real restriction on the informal calibration below, not a convenience. The aggregate $h_t$ weights hours by productivity, and $h_t/\sum_i\gamma_ih_{t,i} = \Gamma_h/\sum_i\gamma_i(\eta_i/X_i)^{\xi}$. Under \eqref{\refeq:calibration:yNorm}, and only under it, $h_t$ equals average formal hours in the same clock unit as the individual $h_{t,i}$ and $h_{1,t}^0$, which lets the informal hours target be stated against $h_t$.
-
-Using $y_i^{\eta} = \eta_i^{1+\xi}/X_i^{\xi}$ and $y_i^x = (\eta_i/X_i)^{\xi}$ as shorthand, we can set up the conditions as linear systems instead:
-\begin{align*}
-    \left(\bm{z}^{\eta} \bm{\gamma}'-\bm{I}\right)\bm{y}^{\eta} &= \bm{0} \\
-    \left(\bm{z}^{x} \bm{\gamma}'-\bm{I}\right) \bm{y}^{x} &= \bm{0},
-\end{align*}
-where the bold notation indicates vectors and matrices over the formal types. The $\bm{y}$ vectors are eigenvectors with eigenvalue $\bm{\gamma}'\bm{z} = 1$. Since $\bm{z}\bm{\gamma}'$ has rank one, the eigenvector is $\bm{z}$ itself, and \eqref{\refeq:calibration:yNorm} fixes its scale at $\bm{\gamma}'\bm{y} = 1$, so $\bm{y}^{\eta} = \bm{z}^{\eta}$ and $\bm{y}^{x} = \bm{z}^{x}$. The vectors of productivity and disutility of labour follow as
+The first sets the level of the labour aggregator. The second sets the unit of hours, which the rescaling $\eta_i\rightarrow\eta_i/\mu$, $X_i\rightarrow\mu^{-(1+\xi)/\xi}X_i$ changes without changing the equilibrium, and it matters for the informal calibration below: since $h_t/\sum_i\gamma_ih_{t,i} = \Gamma_h/\sum_i\gamma_i(\eta_i/X_i)^{\xi}$, only under \eqref{\refeq:calibration:yNorm} is $h_t$ average formal hours in the unit of $h_{t,i}$ and $h_{1,t}^0$, against which the informal hours target is stated. Then $\bm{y}^{\eta} = \bm{z}^{\eta}$ and $\bm{y}^{x} = \bm{z}^{x}$, and
 \begin{align}
     \bm{\eta} &= \frac{\bm{y}^{\eta}}{\bm{y}^x} \label{\refeq:calibration:etai} \\
     \bm{X} &= \frac{\bm{\eta}}{(\bm{y}^x)^{1/\xi}}, \label{\refeq:calibration:Xi}
 \end{align}
-with division and powers taken element by element.
+with bold symbols the vectors over the formal types and division and powers element by element.
 
-To capture the relative income and working hours of the informal/hand-to-mouth households, requires a bit more. By \eqref{\refeq:calibration:z} and \eqref{\refeq:calibration:yNorm}, the ratios of young informal income and working hours are
+For the informal type, \eqref{\refeq:calibration:z} and \eqref{\refeq:calibration:yNorm} give the relative income and hours of the young as
 \begin{align*}
     z_0^{\eta} &= \frac{w_t^0h_{1,t}^0\eta_{0}}{w_t(1-\tau_t)h_t}, \\
     z_0^x &= \dfrac{h_{1,t}^0}{\sum_i \gamma_{i} h_{t,i}} = \frac{h_{1,t}^0}{h_t}.
 \end{align*}
-Write $k_t\equiv s_{t-1}/\nu_t$. In equilibrium $h_t = \Theta_{h,t}k_t^{\alpha\xi/(1+\alpha\xi)}$, so the factor prices \eqref{\refeq:factorPrices} and \eqref{\refeq:w0} give $w_t = (1-\alpha)\Theta_{h,t}^{-\alpha}k_t^{\alpha/(1+\alpha\xi)}$ and $w_t^0 = \left((1-\alpha)/\Gamma_{h,t}^{\alpha}\right)^{1/(1+\alpha\xi)}k_t^{\alpha/(1+\alpha\xi)}$. The ratio $z_0^{\eta}/z_0^x = \eta_0w_t^0/\left(w_t(1-\tau_t)\right)$ then identifies $\eta_0$, and the informal labour supply condition \eqref{\refeq:informalOpt}, $h_{1,t}^0 = (\eta_0w_t^0/X_0)^{\xi} = z_0^x\Theta_{h,t}k_t^{\alpha\xi/(1+\alpha\xi)}$, identifies $X_0$. Here $k_t$ drops out of both:
+Write $k_t\equiv s_{t-1}/\nu_t$. In equilibrium $h_t = \Theta_{h,t}k_t^{\alpha\xi/(1+\alpha\xi)}$, so the factor prices \eqref{\refeq:factorPrices} and \eqref{\refeq:w0} give $w_t = (1-\alpha)\Theta_{h,t}^{-\alpha}k_t^{\alpha/(1+\alpha\xi)}$ and $w_t^0 = \left((1-\alpha)/\Gamma_{h,t}^{\alpha}\right)^{1/(1+\alpha\xi)}k_t^{\alpha/(1+\alpha\xi)}$. The ratio $z_0^{\eta}/z_0^x = \eta_0w_t^0/\left(w_t(1-\tau_t)\right)$ then identifies $\eta_0$, and the informal labour supply condition \eqref{\refeq:informalOpt}, $h_{1,t}^0 = (\eta_0w_t^0/X_0)^{\xi} = z_0^x\Theta_{h,t}k_t^{\alpha\xi/(1+\alpha\xi)}$, identifies $X_0$; $k_t$ drops out of both:
 \begin{align}
     \eta_{0} &= \frac{z_0^{\eta}}{z_0^x}\frac{(1-\alpha)(1-\tau_t)}{\Theta_{h,t}^{\alpha}\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}} \label{\refeq:calibration:eta0}\\
-    X_{0} &= \eta_{0}\frac{\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}}{\left(\Theta_{h,t}z_0^x\right)^{1/\xi}} \label{\refeq:calibration:X0}
+    X_{0} &= \eta_{0}\frac{\left(\frac{1-\alpha}{\Gamma_{h,t}^{\alpha}}\right)^{\frac{1}{1+\alpha\xi}}}{\left(\Theta_{h,t}z_0^x\right)^{1/\xi}}, \label{\refeq:calibration:X0}
 \end{align}
-We note that all of this is evaluated at $t=2010$, our baseline year. However, while we can identify most of the terms, the coefficient function $\Theta_{h,t}$ still has to be solved for us to get this. Thus, we add these two conditions determining $\eta_0, X_0$ as targets that we have to solve alongside the politico-economic equilibrium (to get $\Theta_{h,t}$ in the baseline year). 
+evaluated in 2010. The coefficient $\Theta_{h,t}$ depends on the politico-economic equilibrium, so the two conditions are targets solved together with it.
 
-
-
-Given vectors of productivities and disutility of labour for formal households, $\bm{\eta}_i, \bm{X}_i$, we can determine $\theta$ from the ratio of replacement rates. In particular, we solve for $\theta$ (constant across $t$ in this calibration) from the requirement:
+Given the formal $\eta_i$ and $X_i$, $\theta$ (constant over time) follows from the ratio of replacement rates,
  \begin{align*}
         RR \equiv \dfrac{\theta+(1-\theta)\frac{h_t}{\eta_3 h_{t,3}}}{\theta+(1-\theta)\frac{h_t}{\eta_1 h_{t,1}}} = \frac{\theta + (1-\theta)\frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}}{\theta+(1-\theta)\frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}}},
 \end{align*}
-where we have data on $RR$ from OECD data, and the two groups $j=1, 3$ represent half-mean and mean wages in our data for Argentina. Given that we know $\eta_i, X_i$ for formal households already, we can simply compute $\theta$ from
+where types $1$ and $3$ stand for half-mean and mean wages, so that
 \begin{align}
-    \theta = \frac{RR \frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}} - \frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}}{1-\frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}-RR\left(1-\frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}}\right)}
+    \theta = \frac{RR \frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}} - \frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}}{1-\frac{\Gamma_{h,t} X_3^{\xi}}{\eta_3^{1+\xi}}-RR\left(1-\frac{\Gamma_{h,t} X_1^{\xi}}{\eta_1^{1+\xi}}\right)}.
 \end{align}
 
-
-
-Finally, we need to determine parameters $\omega$ and discount parameters $\beta$. Note that we assume that they are identical across time and household types in the calibration. They are identified by ensuring that the politico-economic equilibrium replicates a pension tax of 12.5\% and a capital--output ratio of 3.23 in the baseline year 2010. Capital at $t$ is the previous generation's savings, $K_t = s_{t-1}/\nu_t$, so with Cobb--Douglas production the ratio is
-\begin{align*}
-    \frac{K_t}{Y_t} = \frac{s_{t-1}/\nu_t}{\left(s_{t-1}/\nu_t\right)^{\alpha} h_t^{1-\alpha}} = \frac{\alpha}{R_t},
-\end{align*}
-a stock over \emph{one period's} output; multiplying by the thirty years in a period puts it in the units the data are reported in. The savings rate
-\begin{align*}
-    \text{Savings rate}_t = \frac{s_t}{\left(s_{t-1}/\nu_t\right)^{\alpha} h_t^{1-\alpha}}
-\end{align*}
-is reported alongside it, but is not a target: with capital fully depreciating between periods it equals $K_{t+1}/Y_t$, which is again a stock over a period's flow rather than the annual saving rate the national accounts measure.
-
-
-Most parameters can be calibrated initially, assuming values for parameters $\xi, \rho$. There are, however, four parameters that cannot be calibrated without knowing the politico-economic equilibrium path: $\omega, \beta, \eta_0, X_0$. As the politico-economic equilibrium cannot be solved without these parameters, the final bit of calibration is solved as a nested fixed point problem. In \cref{\refnumsec} we describe this calibration procedure in more detail. 
+The remaining four parameters need the politico-economic equilibrium path: the political weight $\omega$ and the discount factor $\beta$, with $\beta_{t,j} = \beta p_j$, set so that the equilibrium reproduces the capital--output ratio and the tax rate of 2010, and $\eta_0, X_0$, which satisfy \eqref{\refeq:calibration:eta0} and \eqref{\refeq:calibration:X0} at the equilibrium $\Theta_{h,2010}$. Since the equilibrium cannot be solved without them, the four are found jointly as a nested fixed point (\cref{\refnumsec:calibration}).

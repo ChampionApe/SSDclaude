@@ -8,7 +8,7 @@ results/.
 Every body row ends with ` % row: <key>` (rowKey, keyed), the row's `data-row` in the online appendix's
 HTML (texTable). Deleting those comments gives back the table as LaTeX sees it.
 """
-import numpy as np, pandas as pd
+import numpy as np
 
 import config as C
 import datasets as D

@@ -1,10 +1,11 @@
-r""" The first-order-condition layer for the CRRA leaded design (writing/US/num_esc.tex, alg esc:crra2Dfoc),
+r""" The first-order-condition layer for the CRRA leaded design (not adopted, finding #19; its algorithm esc:crra2Dfoc and equations esc:designFOC,
+designProfile, designEnvelope are in writing/US/num_esc.tex at commit c9561b3, cut from the note since),
 the documented alternative to LeadedCRRA2D's root layer (alg esc:crra2D, designRule = 'root'), and the
 checks both layers are measured with:
 
-  LeadedCRRA2DFOC    alg esc:crra2Dfoc. Candidates from the design condition eq:esc:designFOC (the
+  LeadedCRRA2DFOC    alg esc:crra2Dfoc (c9561b3). Candidates from the design condition eq:esc:designFOC (c9561b3) (the
                      crossings of z^θ and the two corners), each tested and ranked on its own frozen
-                     profile eq:esc:designProfile through roots1d.selectMaxFrozen. Overrides _choose only:
+                     profile eq:esc:designProfile (c9561b3) through roots1d.selectMaxFrozen. Overrides _choose only:
                      step 1 (_periodCore), the hand-back (_handBack) and the frozen tax pass
                      (policyESC.frozenTaxPass) are LeadedCRRA2D's; pinned periods and states with no
                      equilibrium (fallbackθ) take the legacy layer's answer (_chooseLegacy).
@@ -107,15 +108,15 @@ def designSlopeAt(E, core, iτ, js, θq, knots = None):
 
 # ---------------------------------------------------------------------------------------------- layer B
 class LeadedCRRA2DFOC(LeadedCRRA2D):
-    """ alg esc:crra2Dfoc: the design located from its first order condition at a frozen state.
+    """ alg esc:crra2Dfoc (c9561b3): the design located from its first order condition at a frozen state.
 
     Once per period: ∂_θ' ln h_t and ∂_θ' ln hatc1i on the step-1 grid by fixed-knot splines along θ1
     (griddedGradient1D, knots = smoothKnotsθ, default the grid's smoothKnots), dv1i_dθ = hatc1iPow·∂ ln
     hatc1i. Per θ_t: the tax rule at every design (consistentTax, the earlier layer's step 3) and the
-    consistent a(θ') there; z^θ(θ') of eq:esc:designFOC = Σ young·dv1i_dθ + Σ old·c_2^q·(1-α)·∂ ln h, read
+    consistent a(θ') there; z^θ(θ') of eq:esc:designFOC (c9561b3) = Σ young·dv1i_dθ + Σ old·c_2^q·(1-α)·∂ ln h, read
     along τ at τ*(θ'), c_2 at D(a(θ')); roots1d.selectMaxFrozen on θ1 with, per candidate, a_c = a(θ') at
-    the candidate (np.interp along θ1), frozenTaxPass at a_c and the profile eq:esc:designProfile = the
-    trapezoid integral of the frozen derivative eq:esc:designEnvelope plus V(first feasible θ'; a_c). The
+    the candidate (np.interp along θ1), frozenTaxPass at a_c and the profile eq:esc:designProfile (c9561b3) = the
+    trapezoid integral of the frozen derivative eq:esc:designEnvelope (c9561b3) plus V(first feasible θ'; a_c). The
     tax at the selected design: τ̂(·; a_c*) of that candidate's pass, np.interp along θ1.
 
     Period-dict entries (nθ, ns_): nCandθ, nEqθ, fallbackθ (none passed: _chooseLegacy's answer), aStar

@@ -17,7 +17,7 @@ national-accounts table 29), the SOCX programme-level workbook (webfs.oecd.org),
 (spr_exp_pens, spr_exp_fol, spr_exp_fsu, spr_rec_sumt, spr_pns_ben) and the PaG 2013 progressivity table.
 Values are copied as published: no interpolation, no filling, a missing cell is no row.
 """
-import os, re, sys, glob, argparse, datetime, urllib.request
+import os, re, sys, argparse, datetime, urllib.request
 import numpy as np, pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

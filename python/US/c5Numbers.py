@@ -20,8 +20,9 @@ C5_US_shocksRhoGridCommonX.csv only at the run's theta.
               mu_i = y_i^k and mu_i = (mu_i^CPS)^m, and the pairwise bound (D_H/D_L)^{1/rho} at theta_t = 0.
               -> C5_criticalTurnout.csv
   a9          every counterfactual of figure 6.1 (tax rate, full effect, p.p.) at every rho on file, ranked by
-              size: results/shocks/US_shocksCommonX.csv and C5_US_shocksRhoGridCommonX.csv (the U.S. at the
-              other rho of the sweep, runShocksUS.py --out). -> C5_ranking.csv
+              size: results/shocks/US_shocksCommonX.csv and, where present, results/numerical/
+              C5_US_shocksRhoGridCommonX.csv (runShocksUS.py --out, for other rho of the sweep; no pipeline entry
+              writes it). -> C5_ranking.csv
   loss        the share of revenue lost, 1 - f of eq:esc:budget, at theta* and below it, at each rho's calibrated
               cost (the paper's and the Pi-inclusive one), the 2020 tax held and, under log, re-solved
               (T_2020(theta)); and its derivative in theta at theta*. -> C5_marginalLoss.csv
@@ -64,6 +65,7 @@ os.chdir(HERE)
 
 import test as testmod
 import shocks as sh
+import oecd26
 from modelESC import ModelESC
 from policyESC import LeadedBase
 from runShocksUS import hostRow
@@ -90,13 +92,8 @@ def θStar():
 
 
 def _at(df):
-    """ The rows of df at the run's theta: thetaSource THETA['variant'] and θ0 THETA['θ0'] (1e-12); without a
-    variant the rows without a thetaSource (or 'index'), the workbook's theta. """
-    ts = df['thetaSource'] if 'thetaSource' in df.columns else pd.Series(np.nan, index = df.index)
-    if THETA['variant'] is None:
-        return df[ts.isna() | (ts == 'index')]
-    θ = pd.to_numeric(df['θ0'], errors = 'coerce') if 'θ0' in df.columns else pd.Series(np.nan, index = df.index)
-    return df[(ts == THETA['variant']) & (θ - THETA['θ0']).abs().le(1e-12)]
+    """ The rows of df at the run's theta (oecd26.rowsAtTheta at THETA's variant and θ0). """
+    return oecd26.rowsAtTheta(df, THETA['variant'], THETA['θ0'])
 
 
 def _read(path):
@@ -121,7 +118,6 @@ def setTheta(theta, main):
         return
     if theta is None or not main:
         raise SystemExit('--theta needs --main here (and --main --theta)')
-    import oecd26
     try:
         oecd26.thetaRoot(theta, main = True)
         θ0 = oecd26.thetaFromFile('USA', theta)
@@ -148,7 +144,7 @@ def usModel(ρ, cls = ModelESC):
     row = hostRow(ρ, True, 'US')
     if not _at(pd.DataFrame([row])).shape[0]:
         raise ValueError(f'US_rhoGridCommonX.csv at ρ={ρ}: the row is not at θ {THETA}')
-    m = cls(pars = testmod.reading(None) | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])}
+    m = cls(pars = testmod.pars | {'ρ': float(ρ), 'β': float(row['β']), 'ω': float(row['ω'])}
             | ({} if THETA['θ0'] is None else {'θ0': THETA['θ0']}), commonX = True, **testmod.kwargs)
     m.db['dates'], m.db['workweek'] = testmod.dates, testmod.workweek
     gs = GS if ρ != 1 else {k: v for k, v in GS.items() if k != 'ns'}
@@ -161,23 +157,24 @@ def usModel(ρ, cls = ModelESC):
 def escRows():
     """ The paper's cost calibration at each rho: (lambda, beta, omega) of 'size' and lambda of 'sizePiR', common
     X, at theta* = θStar() (LOG: escCalibration{,Costs}.csv; CRRA: the exact rows of escCalibrationCRRA{,Costs}.csv),
-    every row at the run's theta (_at). A missing 'sizePiR' row gives NaN for λΠR and ΠR. """
+    every row converged and at the run's theta (_at). A missing 'sizePiR' row gives NaN for λΠR and ΠR. """
     def piR(cc):
         return (float(cc.p.iloc[-1]), float(cc['ΠR'].iloc[-1])) if len(cc) else (np.nan, np.nan)
 
     rows = {}
     c = _read(os.path.join(ESC, 'escCalibration.csv'))
     cc = _at(pd.read_csv(os.path.join(ESC, 'escCalibrationCosts.csv')))
-    s = c[(c.spec == 'size') & c.commonX.astype(bool) & np.isclose(c['θStar'], θStar(), atol = 1e-6)].iloc[-1]
-    λΠR, ΠR = piR(cc[(cc.spec == 'sizePiR') & cc.commonX.astype(bool)])
+    s = c[(c.spec == 'size') & c.commonX.astype(bool) & c.converged.astype(bool)
+          & np.isclose(c['θStar'], θStar(), atol = 1e-6)].iloc[-1]
+    λΠR, ΠR = piR(cc[(cc.spec == 'sizePiR') & cc.commonX.astype(bool) & cc.converged.astype(bool)])
     rows[1.0] = {'λ': float(s.p), 'β': float(s['β']), 'ω': float(s['ω']), 'τ0': float(s['τ0']),
                  'Vtilde': float(s.Vtilde), 'θStar': float(s['θStar']), 'λΠR': λΠR, 'ΠR': ΠR}
     c = _read(os.path.join(ESC, 'escCalibrationCRRA.csv'))
     cc = _at(pd.read_csv(os.path.join(ESC, 'escCalibrationCRRACosts.csv')))
     for ρ in (0.5, 2.0):
         s = c[(c['ρ'] == ρ) & (c.spec == 'size') & (c.method == 'exact') & c.commonX.astype(bool)
-              & np.isclose(c['θStar'], θStar(), atol = 1e-6)].iloc[-1]
-        λΠR, ΠR = piR(cc[(cc['ρ'] == ρ) & (cc.spec == 'sizePiR') & (cc.method == 'exact')])
+              & c.converged.astype(bool) & np.isclose(c['θStar'], θStar(), atol = 1e-6)].iloc[-1]
+        λΠR, ΠR = piR(cc[(cc['ρ'] == ρ) & (cc.spec == 'sizePiR') & (cc.method == 'exact') & cc.converged.astype(bool)])
         rows[ρ] = {'λ': float(s.p), 'β': float(s['β']), 'ω': float(s['ω']), 'τ0': float(s['τ0']),
                    'Vtilde': float(s.Vtilde), 'θStar': float(s['θStar']), 'λΠR': λΠR, 'ΠR': ΠR}
     return rows
@@ -500,7 +497,6 @@ def index(a):
         θdata, src, what = (2 - 1/f1).clip(0., 1.), 'data/oecdFigure1.csv', 'figure 1.1 index (theta = 2 - 1/I)'
         rng = 'figure 1.1 range ({} countries)'.format(len(f1))
     else:
-        import oecd26
         v = oecd26.readTheta()
         v = v[(v['variant'] == THETA['variant'])].set_index('iso3')
         θdata, src, what = v['theta'], 'data/oecd26_theta.csv', f"theta, variant {THETA['variant']}"

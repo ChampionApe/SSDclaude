@@ -5,8 +5,8 @@ Run:  .venv\Scripts\python.exe python\gridsearch\test_interp.py
 The point of the file: 'linear' propagates NaN out of an infeasible cell for free, and the CRRA path
 solve's `strict` check relies on that (a path through such a cell must go non-finite *without* leaving the
 rectangle). 'pchip'/'cubic' cannot be constructed over NaN at all, so they fill and mask instead -- and the
-masked result has to reproduce linear's NaN pattern exactly, or an infeasible region starts returning
-plausible-looking policy.
+masked result has to reproduce linear's NaN pattern exactly (inside the grid, on its nodes and past its
+edges), or an infeasible region starts returning plausible-looking policy.
 """
 import numpy as np
 from gridsearch import interp
@@ -33,10 +33,7 @@ check('2D evaluates elementwise on paired coordinates, not on an outer product',
       np.shape(g([0.2, 0.8], [1.4, 0.3])) == (2,))
 
 # ---- 2. pchip/cubic reproduce the linear NaN pattern --------------------------------------------------
-# The reference is linear's own output, compared AWAY FROM THE NODES. On a node exactly, interp1d and
-# RegularGridInterpolator assign the point to the left-hand interval, so a *valid* node bordering an
-# invalid cell reads the NaN and returns NaN. That is an interval-lookup artifact, not a property worth
-# reproducing: the masked kinds return the node's own value there, which is checked separately below.
+# The reference is linear's own output: first away from the nodes, then on them and past the grid's edges.
 xs = np.linspace(0, 1, 11)
 ys = np.sin(3*xs)
 ys[4] = np.nan                                            # one infeasible node
@@ -63,13 +60,32 @@ for kind in ('pchip', 'cubic'):
     check(f'2D {kind} reproduces linear\'s NaN pattern off the nodes',
           np.array_equal(got2, ref2), f'-> {got2.sum()} vs {ref2.sum()} NaN')
 
-# The node convention itself, stated rather than inherited: a valid node next to an invalid cell keeps its
-# own value under the masked kinds, where linear reports NaN.
-check("linear reports NaN at a VALID node bordering an invalid cell (the lookup artifact)",
-      np.isnan(griddedInterp1D(xs, ys, 'linear')(xs[5])))
-check("the masked kinds return that node's own value instead",
-      np.isclose(griddedInterp1D(xs, ys, 'pchip')(xs[5]), ys[5]),
-      '-> {:.6f} vs y[5]={:.6f}'.format(float(griddedInterp1D(xs, ys, 'pchip')(xs[5])), ys[5]))
+# On the nodes and past the edges as well. linear reads NaN at a VALID node whose lookup interval has an
+# invalid corner (interp1d takes the interval on a node's left, RegularGridInterpolator the one on its
+# right) and at a point extrapolated from an edge cell with an invalid node; the masked kinds must too. The
+# second NaN node sits next to the lower edge, so the extrapolated probes below 0 cross it.
+ye = np.sin(3*xs)
+ye[[1, 4]] = np.nan
+probeE = np.concatenate([xs, np.linspace(-0.3, 1.3, 33)])
+refE = np.isnan(griddedInterp1D(xs, ye, 'linear')(probeE))
+check('the 1D edge/node reference has NaN on a valid node and below the lower edge',
+      refE[5] and refE[0] and not refE[3] and refE[len(xs)], f'-> {refE.sum()} NaN of {len(probeE)}')
+for kind in ('pchip', 'cubic'):
+    gotE = np.isnan(griddedInterp1D(xs, ye, kind)(probeE))
+    check(f"1D {kind} reproduces linear's NaN pattern on the nodes and past the edges",
+          np.array_equal(gotE, refE), f'-> {gotE.sum()} vs {refE.sum()} NaN of {len(probeE)}')
+
+ze = zs.copy()
+ze[1, 2] = np.nan                                         # next to the lower edge of axis 0
+pxe, pye = np.meshgrid(np.concatenate([ax, np.linspace(-0.25, 1.25, 13)]),
+                       np.concatenate([ay, np.linspace(-0.3, 2.3, 11)]), indexing = 'ij')
+refE2 = np.isnan(griddedInterp2D(ax, ay, ze, 'linear')(pxe, pye))
+check('the 2D edge/node reference has NaN on valid nodes and past the edge',
+      refE2[2, 5] and refE2[3, 4] and not refE2[4, 6] and refE2[len(ax), 2], f'-> {refE2.sum()} NaN of {refE2.size}')
+for kind in ('pchip', 'cubic'):
+    gotE2 = np.isnan(griddedInterp2D(ax, ay, ze, kind)(pxe, pye))
+    check(f"2D {kind} reproduces linear's NaN pattern on the nodes and past the edges",
+          np.array_equal(gotE2, refE2), f'-> {gotE2.sum()} vs {refE2.sum()} NaN of {refE2.size}')
 
 # The whole point of the exercise: pchip must be CONSTRUCTIBLE over a NaN-carrying surface, which is what
 # failed before (PchipInterpolator raises "`y` must contain only finite values").

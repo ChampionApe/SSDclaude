@@ -111,7 +111,7 @@ def synthetic(turnout = None, anchorKey = 'h000000000001', drop = (), lux = Fals
             ω = (OMEGAMEAN if omegaRule == 'mean' else 1.23) if layer == 1 else 1 + 0.01*sp
             rows[layer].append(base | {'status': 'ok', 'ω': ω,
                                        'ν2020': g[c], 'Vtilde': 0.2, 'spendingData': FIG.at[c, 'pensionSpending'],
-                                       'indexData': index[c], 'θData': 0.5, 'spending2020': sp, 'τ2020': sp/70}
+                                       'indexData': index[c], 'θData': 2 - 1/index[c], 'spending2020': sp, 'τ2020': sp/70}
                                | design | extra)
     for name, df in (('anchor', a), ('layer1', pd.DataFrame(rows[1])), ('layer2', pd.DataFrame(rows[2]))):
         if df.empty:
@@ -292,7 +292,7 @@ def test_variant_suffix_and_caption():
     """ OECD26_Slopes at a non-default variant carries the variant in its name, label and caption. """
     synthetic(spec = 'size', betaRule = 'commonR')
     assert T.suffix() == '' and T.suffix(spec = 'size') == '_size' and T.suffix(spending = 'observed') == '_observed'
-    assert T.suffix(turnout = 'cps', spec = 'none', betaRule = 'commonR') == '_cps_none_commonR'
+    assert T.suffix(turnout = 'cses', spec = 'none', betaRule = 'commonR') == '_cses_none_commonR'
     assert V['turnout'] == 'csesFlat' and T.suffix(turnout = 'cses') == '_cses'
     assert ((T.suffix(retAge = 'none'), T.suffix(retAge = 'exit'), T.suffix(omegaRule = 'anchor'), T.suffix(theta = 'B'))
             == ('_nuNone', '_nuExit', '_omegaUS', '_thetaB'))
@@ -513,6 +513,40 @@ def test_country_table_lambda_and_france():
     _deepTest(θFR = 1.0, ownFR = 13.59, corner = True)
     assert _raises(lambda: TU.escCountryTable(), ValueError)
     _deepTest()
+
+
+def test_paper_rows_and_data_columns_are_never_stale():
+    """ A stale row of the paper's own variant (the starred rows of OECD26_Variants) raises where a variant's prints
+    `--`; layer 2's copy of the data side that is not data/oecd26_theta.csv's is StaleInput in OECD26_Omega. """
+    fresh()
+    synthetic(β = BETA*(1 + 1e-6))                                 # the paper's anchor off the U.S. sweep
+    assert _raises(lambda: T.oecd26Variants(), D.StaleInput)
+    fresh()
+    synthetic()
+    d = pd.read_csv(D.oecd26Path(2), dtype = {'inputsKey': str, 'anchorKey': str})
+    d['spendingData'] += 0.01
+    d.to_csv(D.oecd26Path(2), index = False)
+    e = _raises(lambda: T.oecd26Omega(), D.StaleInput)
+    assert e and 'data columns of layer 2' in e
+
+
+def test_correlations_and_capital_share_are_tied_to_their_sources():
+    """ OECD_Correlations refuses an oecdCorrelations.csv that is not the current figure's (StaleInput); the capital
+    share has no fallback to the workbook (MissingInput without the summary). """
+    import tablesOA as OA, oecdFigure1 as F1
+    cur = F1.figureCorrelations(F1.plotted())
+    old, D.OECDCORR = D.OECDCORR, os.path.join(TMP, 'oecdCorrelations.csv')
+    try:
+        cur.to_csv(D.OECDCORR, index = False)
+        assert 'row: named_spending_growth' in OA.oecdCorrelations()
+        bad = cur.copy()
+        bad.loc[0, 'n'] -= 1
+        bad.to_csv(D.OECDCORR, index = False)
+        assert _raises(lambda: OA.oecdCorrelations(), D.StaleInput)
+    finally:
+        D.OECDCORR = old
+    D.usAlpha.cache_clear()
+    assert _raises(lambda: D.usAlpha(), D.MissingInput)
 
 
 if __name__ == '__main__':

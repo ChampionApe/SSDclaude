@@ -7,18 +7,21 @@ the largest absolute difference on rows aligned by the file's key columns.
     .venv\Scripts\python.exe python\paper\compareResults.py --only esc      # path substring filter
     .venv\Scripts\python.exe python\paper\compareResults.py --tol 1e-12     # report columns above tol
 
-Alignment: the first columns common to both versions among KEYS, in order; a file with none of them is
-aligned on position when the row counts agree and reported as 'positional'. Rows present on one side
-only are counted. The committed version is read with `git show <ref>:<path>`; nothing is written.
+Alignment: the columns common to both versions among KEYS, in order; a file with none of them is aligned on
+position when the row counts agree and reported as 'positional'. Rows present on one side only are counted. Rows
+that repeat a key are never dropped: the n-th repeat of a key in one version is compared with the n-th repeat in the
+other, and the number of rows that share a key is reported per version. The committed version is read with
+`git show <ref>:<path>`; nothing is written.
 """
-import os, sys, io, argparse, subprocess
+import os, io, argparse, subprocess
 import numpy as np, pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 KEYS = ['ρ', 'rho', 'spec', 'phi', 'commonX', 'method', 'host', 'scenario', 'θpinned', 'pos', 'country',
         'variant', 'experiment', 'shock', 'name', 'year', 't', 'preferences', 'timing', 'ξ', 'xi',
-        'pinning', 'nu', 'wedge']
+        'pinning', 'nu', 'wedge', 'thetaSource', 'turnout', 'omegaRule', 'retAge', 'betaRule', 'iso3', 'effect',
+        'family', 'kind', 'wedgeFrom', 'date', 'ns', 'block', 'tss', 'terminal']
 # eps and theta are keys only on the (eps, theta) grid sweeps; elsewhere θ is an output (the design path)
 GRIDKEYS = ['eps', 'theta', 'θ']
 
@@ -50,16 +53,17 @@ def compare(old, new, tol, path = ''):
         for k in keys:
             if pd.api.types.is_float_dtype(old[k]) and pd.api.types.is_float_dtype(new[k]):
                 old[k], new[k] = old[k].round(12), new[k].round(12)
-        o = old.set_index(keys, drop = True)
-        n = new.set_index(keys, drop = True)
-        o = o[~o.index.duplicated(keep = 'last')]
-        n = n[~n.index.duplicated(keep = 'last')]
+        dupOld, dupNew = int(old.duplicated(keys, keep = False).sum()), int(new.duplicated(keys, keep = False).sum())
+        for d in (old, new):                       # the n-th repeat of a key meets the n-th repeat of it
+            d['#repeat'] = d.groupby(keys, dropna = False).cumcount()
+        o = old.set_index(keys + ['#repeat'], drop = True)
+        n = new.set_index(keys + ['#repeat'], drop = True)
         both = o.index.intersection(n.index)
         onlyOld, onlyNew = len(o.index.difference(n.index)), len(n.index.difference(o.index))
         o, n = o.loc[both], n.loc[both]
         how = 'keys ' + ','.join(keys)
     elif len(old) == len(new):
-        o, n, onlyOld, onlyNew, how = old, new, 0, 0, 'positional'
+        o, n, onlyOld, onlyNew, how, dupOld, dupNew = old, new, 0, 0, 'positional', 0, 0
     else:
         return {'how': 'unaligned', 'rowsOld': len(old), 'rowsNew': len(new), 'added': added,
                 'dropped': dropped, 'diffs': {}}
@@ -76,7 +80,7 @@ def compare(old, new, tol, path = ''):
             ne = int((a.astype(str) != b.astype(str)).sum())
             if ne:
                 diffs[c] = ('text', ne)
-    return {'how': how, 'rows': len(o), 'onlyOld': onlyOld, 'onlyNew': onlyNew,
+    return {'how': how, 'rows': len(o), 'onlyOld': onlyOld, 'onlyNew': onlyNew, 'dupOld': dupOld, 'dupNew': dupNew,
             'added': added, 'dropped': dropped, 'diffs': diffs}
 
 
@@ -105,6 +109,8 @@ def main():
             print(f'  rows {r["rowsOld"]} -> {r["rowsNew"]}, no key columns to align on')
         else:
             print(f'  rows aligned {r["rows"]}; only committed {r["onlyOld"]}; only new {r["onlyNew"]}')
+            if r['dupOld'] or r['dupNew']:
+                print(f'  rows sharing a key with another row: committed {r["dupOld"]}, new {r["dupNew"]}')
         if r['added']:
             print(f'  columns added: {", ".join(r["added"])}')
         if r['dropped']:

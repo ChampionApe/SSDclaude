@@ -1,8 +1,8 @@
 import numpy as np, pandas as pd, functools, scipy, time
 from scipy import optimize
 from copy import deepcopy
-from symMaps import SimpleSys, Lag, Lead
-from gridsearch import continuation
+from symMaps import SimpleSys, Lag
+from gridsearch import continuation, roots1d
 from base import Base, BaseGrid, BaseTime
 from policy import LOG, CRRA, multiplicityColumns
 
@@ -50,6 +50,15 @@ def _sliceDb(db, t0, tName = 't'):
             elif idx.name == tName:
                 sub = v[idx >= t0]
                 db[k] = sub.set_axis(sub.index - t0)
+
+
+def _scanCrossings(x, r):
+    """ Crossings of a scanned residual r (M,) on the grid x (M,), NaN where masked: roots1d.allRoots
+    (kind 'any', the sign-run rule) on each run of consecutive finite entries. """
+    fin = np.isfinite(r)
+    edges = np.flatnonzero(np.diff(np.r_[0, fin.astype(int), 0]))
+    runs = [(a, b) for a, b in zip(edges[::2], edges[1::2]) if b - a >= 2]
+    return int(sum(len(roots1d.allRoots(x[a:b], r[a:b])) for a, b in runs))
 
 
 class ModelInformalSavings:
@@ -132,7 +141,7 @@ class ModelInformalSavings:
     @property
     def default0DParams(self):
         """ scalars. NOTE two names here collide (in spelling only) with unrelated timing concepts used
-        throughout §3/§4 -- see README's "Timing convention":
+        throughout §3/§4 -- see README, "Timing and data conventions":
         - 's0' here is the *aggregate savings rate* at db['t0'] (a ratio, e.g. 0.184 = 18.4%). It was the
           target that identified β until 2026-08-24 and is now REPORTED ONLY -- 'KY0' replaced it, see
           calibration_report. It is NOT the `s0` function argument used throughout EE_LOG_solve/
@@ -180,9 +189,6 @@ class ModelInformalSavings:
     @property
     def aux_κ(self):
         return self.BT.κ(self.db['eps[t+1]'])
-    @property
-    def aux_p(self):
-        return (self.db['γi'] * self.db['pi']).sum(axis=1)
     @property
     def aux_Γh(self):
         return self.BT.Γh()
@@ -246,20 +252,20 @@ class ModelInformalSavings:
     def updateAuxPars(self):
         [self.db.update(self.addLeadAndLags(k, getattr(self, f'aux_{k}'))) for k in self.paramsFromFuncs]
 
-    def adjPar(self, k, vals, t = None):
+    def adjPar(self, k, vals):
         """ Default methods for adjusting different parameter types. """
         if k == 'β':
-            return self.adj2Dj_ll('βj', self.simpleβ(vals), t = t)
+            return self.adj2Dj_ll('βj', self.simpleβ(vals))
         elif k == 'pj':
-            return self.adjpj('pj', vals, t = t)
+            return self.adjpj('pj', vals)
         elif k in self.parTypes['0D']:
             return {k: vals}
         elif k in self.parTypes['1D']:
-            return self.adj1D_ll(k, vals, t = t)
+            return self.adj1D_ll(k, vals)
         elif k in self.aux2DParams:
-            return self.adj2Di_ll(k, vals, t = t)
+            return self.adj2Di_ll(k, vals)
         elif k in self.parTypes['2D']:
-            return self.adj2Dj_ll(k, vals, t = t)
+            return self.adj2Dj_ll(k, vals)
         else:
             return {k:vals}
     def simpleβ(self, β):
@@ -268,18 +274,18 @@ class ModelInformalSavings:
     def simpleβinv(self):
         """ Get scalar β from full dataframe (assumes constant across t,j) """
         return self.db['βj'].iloc[0,0]/self.db['pj'].iloc[0,0]
-    def adjpj(self, k, vals, t = None):
+    def adjpj(self, k, vals):
         """ Specialized method for p - we have to enforce constant p across pi"""
-        d = self.adjDf_tj(k,vals,t=t)
+        d = self.adjDf_tj(k, vals)
         d['p'] = (self.db['γi'] * d['pi']).sum(axis=1)
         return self.addLeadAndLags(d)
 
-    def adj1D_ll(self, k, vals, t = None):
-        return self.addLeadAndLags(k, self.adjVec_t(k, vals, t = t))
-    def adj2Dj_ll(self, k , vals, t = None):
-        return self.addLeadAndLags(self.adjDf_tj(k, vals ,t = t))
-    def adj2Di_ll(self, k , vals, t = None):
-        return self.addLeadAndLags(self.adjDf_ti(k, vals ,t = t))
+    def adj1D_ll(self, k, vals):
+        return self.addLeadAndLags(k, self.adjVec_t(k, vals))
+    def adj2Dj_ll(self, k , vals):
+        return self.addLeadAndLags(self.adjDf_tj(k, vals))
+    def adj2Di_ll(self, k , vals):
+        return self.addLeadAndLags(self.adjDf_ti(k, vals))
 
     def addLeadAndLags(self, k, s = None):
         if isinstance(k, dict):
@@ -287,34 +293,21 @@ class ModelInformalSavings:
         else:
             return {k: s, f'{k}[t+1]': self.leadSym(s, lead = {'t':-1} if isinstance(s, pd.DataFrame) else -1), f'{k}[t-1]': self.leadSym(s, lead = {'t': 1} if isinstance(s, pd.DataFrame) else  1)}
 
-    def adjVec_t(self, k, vals, t = None):
-        if t is None:
-            return pd.Series(vals, index = self.db['t'])
-        else:
-            x = self.db[k]
-            x.loc[t] = vals
-            return x
-    def adjDf_ti(self, k, vals, t = None):
+    def adjVec_t(self, k, vals):
+        return pd.Series(vals, index = self.db['t'])
+    def adjDf_ti(self, k, vals):
         if np.isscalar(vals):
             xi = pd.DataFrame(vals, index = self.db['t'], columns = self.db['i'])
         elif vals.ndim == 1:
-            if t is None: 
-                xi = pd.DataFrame(np.tile(vals, (self.T,1)), index = self.db['t'], columns = self.db['i'])
-            else:
-                xi = self.db[k]
-                k.loc[t] = vals
+            xi = pd.DataFrame(np.tile(vals, (self.T,1)), index = self.db['t'], columns = self.db['i'])
         else:
             xi = pd.DataFrame(vals, index = self.db['t'], columns = self.db['i'])
         return {f'{k[:-1]}j': pd.concat([self.db[f'{k[:-1]}0'], xi], axis = 1), k: xi}
-    def adjDf_tj(self, k, vals, t = None):
+    def adjDf_tj(self, k, vals):
         if np.isscalar(vals):
             xj = pd.DataFrame(vals, index = self.db['t'], columns = self.db['j'])
         elif vals.ndim == 1:
-            if t is None:
-                xj =  pd.DataFrame(np.tile(vals, (self.T, 1)), index = self.db['t'], columns = self.db['j'])
-            else:
-                xj = self.db[k]
-                xj.loc[t] = vals
+            xj =  pd.DataFrame(np.tile(vals, (self.T, 1)), index = self.db['t'], columns = self.db['j'])
         else:
             xj = pd.DataFrame(vals, index = self.db['t'], columns = self.db['j'])
         return {k: xj, f'{k[:-1]}i': xj[self.db['i']], f'{k[:-1]}0': xj[0]}
@@ -444,13 +437,11 @@ class ModelInformalSavings:
         self.db['yx'], self.db['yη'] = yx/(γi*yx).sum(), yη/(γi*yη).sum()
     def getηi(self):
         return self.db['yη']/(self.db['yx']*sum(self.db['γi'].xs(self.db['t0']).values*self.db['yη']))
-    def getXi(self):
-        return self.db['ηi']/self.db['yx']**(1/self.db['ξ'])
 
     #######################################################################
     ##########   3. Economic equilibrium (EE) solve, given policy   ########
     #######################################################################
-    # See README's "Timing convention" for db['t']/s0/db['t'][-1] vs. the docs' t=0..T, and the module
+    # See README, "Timing and data conventions", for db['t']/s0/db['t'][-1] vs. the docs' t=0..T, and the module
     # overview's "The one structural consequence" for what's unchanged from informalAnalytical here. One
     # implementation note not in the README: EE_LOG_solve/EE_CRRA_solve/EE_report return plain ndarrays
     # internally, wrapping into pd.Series/DataFrame only in the final return (_wrapVars, keyed off
@@ -664,12 +655,9 @@ class ModelInformalSavings:
         """ Bracket for steadyState_CRRA_solve's Γs search: (lower, min(upper, margin·Base.ΓsCap)),
         widened upward if that does not actually bracket a root.
 
-        `upper` alone -- the constant 0.75 this module carried until 2026-09-08 -- was safe at α = 0.43 by
-        parameter values, not by construction: the cap scales with α/(1-α), and at α = 0.35 it falls below
-        0.75 over part of the τ grid steadyStatePEE_CRRA searches, so brentq evaluated a NaN and raised
-        "function value at x=0.75 is NaN" at the first CRRA point of the ρ march. The expansion runs only
-        when the default bracket fails to bracket a root, so it cannot change a call that already worked.
-        Same construction as US/model.py; notes/crossCuttingFindings.md #7. """
+        The cap scales with α/(1-α), so `upper` alone is not a bracket by construction: at α = 0.35 the
+        cap falls below 0.75 over part of the τ grid and the residual is NaN at `upper`. The expansion runs
+        only when the default bracket fails to bracket a root. Same construction as US/model.py; finding #7. """
         t = self.B.tFirst if t is None else t
         cap = self.B.ΓsCap(τ, θ, t)
         hi = min(upper, margin*cap)
@@ -770,7 +758,10 @@ class ModelInformalSavings:
         all and drops out of the residual; it is read off at the converged τ_1 to report levels. τGrid:
         the scan grid, defaulting to the policy class's own 𝒯. kwargs -> brentq.
 
-        Returns {'τ','s','ι','residual','nRoots'}; the lowest root is taken when nRoots > 1. """
+        Returns {'τ','s','ι','residual','nRoots'}; the lowest root is taken when nRoots > 1. nRoots counts
+        the scan's crossings by roots1d's sign-run rule within each run of finite residuals (_scanCrossings):
+        an exact zero at a node is one crossing, and a zero between same-signed nodes is a graze, not
+        counted. """
         if preferences not in ('LOG', 'CRRA'):
             raise ValueError(f"preferences must be 'LOG' or 'CRRA', got {preferences!r}.")
         t = self.B.tFirst if t is None else t
@@ -810,7 +801,7 @@ class ModelInformalSavings:
         res = residual(τStar)
         self._checkConverged(res, tol = tol, name = f'initialStatePEE ({preferences})')
         s, ι = state(τStar)
-        return {'τ': τStar, 's': s, 'ι': ι, 'residual': res, 'nRoots': int(cross.sum())}
+        return {'τ': τStar, 's': s, 'ι': ι, 'residual': res, 'nRoots': _scanCrossings(τGrid, r)}
 
     #######################################################################
     ##########   7. Politico-economic equilibrium (PEE) solve         ######
@@ -919,22 +910,9 @@ class ModelInformalSavings:
     # savings-rate target needs β≈1.3, and a (0,1) cap makes the search stall on the bound rather than fail).
     _calBounds = {k: (0., np.inf) for k in _calPars}
 
-    # Per-solver overrides for the outer root, merged under the caller's kwargs by calibrate. Deliberately
-    # EMPTY: both solvers now run at scipy's own finite-difference step.
-    #
-    # It held {'CRRA': {'options': {'eps': 1e-4}}} until 2026-08-19. That existed for one reason -- at
-    # ρ=1.1, 45x45, the η0 column of the Jacobian came out at 5.13 against a resolved 0.99, and one
-    # corrupted column is enough to derail the Newton direction. The corruption was the adaptive-knot
-    # smoother's residual jumps being straddled at that particular step, not a property of the residual, so
-    # smoothKnots removed it at source: re-measured at the converged ρ=0.7 and ρ=0.9 points, every column
-    # is flat to 0.01% from 1.5e-8 through 1e-4 and within 0.6% at 1e-2. Calibrating at each candidate from
-    # a common start then converges in the same evaluation count (12 at ρ=0.9, 14 at ρ=0.7) to the same
-    # parameters to 3.7e-10, with scipy's default reaching the TIGHTEST final residual of the three -- so a
-    # larger step is now a small accuracy cost with no benefit to trade against it.
-    #
-    # Kept as an empty dict rather than deleted: the per-solver hook is the right place for the next such
-    # finding, and an empty one records that the split between LOG and CRRA was retracted on evidence
-    # rather than never considered. deviations note item 11.
+    # Per-solver overrides for the outer root ({'LOG': {...}, 'CRRA': {...}}), merged under the caller's
+    # kwargs by calibrate. Empty: both solvers run at scipy's own finite-difference step, which pinned
+    # smoother knots make safe (finding #5; deviations note item 11).
     _calOuterKwargs = {}
 
     @property
@@ -1006,8 +984,7 @@ class ModelInformalSavings:
         target, and the reason KY cannot be a level gap: it is O(3.6) against τ's O(0.1). η0/X0 are
         relative because a relative gap is the natural form for a self-consistency condition; at the
         calibrated point they are O(0.3-0.4), so that choice is close to immaterial either way. The two
-        are in any case nearly solved by substitution -- see README §8.1 on their 0.00%/0.02% spread
-        over ρ.
+        are in any case nearly solved by substitution.
 
         Split out so a change of targets happens in exactly one place: `calibrate` re-forms the residual
         at the converged point and the two must not be able to drift apart. """
@@ -1026,8 +1003,7 @@ class ModelInformalSavings:
         self.x0['calibration'] if cached, else db's current parameters. kwargs -> scipy.optimize.root,
         merged over _calOuterKwargs[preferences] (the caller wins on any top-level key, so passing
         options={...} replaces a per-solver default rather than merging into it). That dict is currently
-        empty -- both solvers run at scipy's own finite-difference step; see it for the measurement that
-        retired the CRRA override.
+        empty -- both solvers run at scipy's own finite-difference step.
 
         tol is looser than the inner solves' (EE 1e-8, steady state 1e-11) on purpose: those are exact
         root problems, whereas eq:calibration's targets are read off a path that reached them through two
@@ -1112,15 +1088,16 @@ class ModelInformalSavings:
         """ Resolve calibratePoint's gridSettings for the solver actually in use. A flat dict applies to
         whichever solver runs; a dict keyed by 'LOG'/'CRRA' selects per solver, which is what a march
         across ρ generally wants -- only the CRRA calibration needs a grid finer than its own PEE default
-        (README, "The CRRA calibration needs a finer inner grid than the CRRA solve"), and imposing that
-        number on the LOG solver silently moves it off its documented default of nι=50 instead. """
+        (finding #3), and imposing that number on the LOG solver moves it off its default of nι=50. """
         if gridSettings and set(gridSettings) & {'LOG', 'CRRA'}:
             return gridSettings.get(preferences)
         return gridSettings
 
-    def _calVerify(self, x, preferences, policy, verify, gridSettings):
+    def _calVerify(self, x, preferences, policy, verify, gridSettings, solveKwargs = None):
         """ Re-evaluate the outer residual at the converged x on a finer inner grid, and restore the
-        working grid afterwards. Returns max|residual|, or NaN if the refined solve fails.
+        working grid afterwards. Returns max|residual|, or NaN if the refined solve fails. solveKwargs:
+        the calibration's own, passed to calibration_residual so the refined solve differs from it only in
+        the grid.
 
         This is the one diagnostic that separates a converged calibration from a *correct* one: the outer
         root can settle on a point that is displaced rather than merely imprecise, and the symptom is that
@@ -1133,7 +1110,7 @@ class ModelInformalSavings:
         Recorded per point rather than asserted: 45 has no standing at every ρ. """
         try:
             policy.initGS((gridSettings or {}) | verify)
-            return float(np.max(np.abs(self.calibration_residual(x, preferences))))
+            return float(np.max(np.abs(self.calibration_residual(x, preferences, solveKwargs))))
         except Exception:
             return np.nan
         finally:
@@ -1207,7 +1184,8 @@ class ModelInformalSavings:
             # At the FINAL parameters, not the root's x: under common X the root ran at X = 1 and the
             # post-root step rescaled η_0/X_0 with X, so cal['x'] would be evaluated at the wrong scale.
             xFinal = self._calToX({k: cal['pars'][k] for k in self._calPars})
-            rec['verifyResidual'] = self._calVerify(xFinal, preferences, policy, verifySettings, settings)
+            rec['verifyResidual'] = self._calVerify(xFinal, preferences, policy, verifySettings, settings,
+                                                    (calKwargs or {}).get('solveKwargs'))
         return rec
 
     def calibrateGrid(self, grid, par = 'ρ', anchor = 1.0, gridSettings = None, verify = None,
@@ -1247,8 +1225,8 @@ class ModelInformalSavings:
     def createCopyFromt0(self, t0):
         """ Return an independent copy of this model with its time horizon restricted to db['t'] >= t0
         and renumbered to start at 0 (db['t'] runs 0..T-t0-1 on the copy, not t0..T-1).
-        Warm-start caches (self.x0, self.LOG.x0, self.CRRA.x0) are cleared (stale/wrong length for the
-        new horizon); self.LOG.GS/self.CRRA.GS (state-space grids, not time-indexed) are left as-is.
+        The warm-start cache self.x0 is cleared (stale/wrong length for the new horizon);
+        self.LOG.GS/self.CRRA.GS (state-space grids, not time-indexed) are left as-is.
         db['t0'] (the calibration-baseline-year *position* -- unrelated to this t0; see
         default0DParams' docstring) is shifted by -t0 if the calibration year still falls inside the new
         horizon, else set to None: a stale position would otherwise silently resolve to the wrong year
@@ -1261,7 +1239,7 @@ class ModelInformalSavings:
         for baseIns in (mt0.B, mt0.BG, mt0.BT):
             baseIns.tFirst = mt0.db['t'][0]
         mt0.LOG.T = mt0.CRRA.T = mt0.T
-        mt0.x0, mt0.LOG.x0, mt0.CRRA.x0 = {}, {}, {}
+        mt0.x0 = {}
         mt0.addNamespaces()
         mt0.db['t0'] = (self.db['t0'] - t0) if (self.db['t0'] is not None and self.db['t0'] >= t0) else None
         return mt0

@@ -17,7 +17,7 @@ class Base:
         self.db = m.db # main database
         self.tFirst = self.db['t'][0] # model's first active/endogenous period (docs' t=1) -- NOT the
         # pre-determined state before it (docs' t=0, code's `s0`) and NOT db['t0'] (calibration baseline
-        # year index). See README's "Timing convention".
+        # year index).
         self.t = t # current year
         self._cache = None # parameter cache; None = disabled. See cacheParams().
 
@@ -25,7 +25,7 @@ class Base:
     ##########   Parameter caching (cacheParams)                  #########
     #######################################################################
     # Opt-in and block-scoped, not always-on -- a cache surviving a db rewrite (model.py's calibration)
-    # would return stale parameters silently. See README's "Base conventions" for the measurement/rationale.
+    # would return stale parameters silently.
     @contextmanager
     def cacheParams(self):
         """ Memoise db parameter reads for the duration of the block (see the §header comment above).
@@ -76,8 +76,8 @@ class Base:
     # Political weights:
     def ω2i(self, t = None):
         """ Political weight on types 2i. Uses μ_{t-1,i} (voting weight of the now-old generation as of
-        when they were young), matching the FOC's timing (eq:PEELOG's restatement, tex line ~271) rather
-        than the objective W_t's own (differently-timed) statement -- see README for the discrepancy. """
+        when they were young): the FOC's timing (eq:PEELOG's restatement), not the date the statement of
+        the objective W_t gives it. """
         return (self('pi[t-1]', t).mul(self('ω',t), axis = 0).mul(self('μi[t-1]',t), axis = 0)).values
     def ω20(self, t = None):
         """ Political weight on types 20. Uses μ_{t-1,0} -- see ω2i's docstring. """
@@ -96,9 +96,6 @@ class Base:
     def power_h(self, t = None):
         """ αξ/(1+αξ) """
         return self.get('α',t)*self.get('ξ',t)/(1+self.get('α',t)*self.get('ξ',t))
-    def power_p(self, t = None):
-        """ ( α(1+ξ)/(1+αξ) )^2 """
-        return self.power_s(t)**2
 
     # Auxiliary parameters over household types:
     def auxProd(self, t = None, lag = ''):
@@ -140,7 +137,7 @@ class Base:
             self.auxProd(t, lag = lag) / self._bcast(self.Γh(t, lag = lag)))
 
     #######################################################################
-    ##########      1. Factor prices (eq:factorPrices, eq:w0)     ##########
+    ##########      1. Factor prices (eq:factorPrices; eq:w0 and eq:EE:c0 are writing/informalAnalytical's labels)
     #######################################################################
     def R(self, s_, h, t = None):
         """ Eq (factorPrices): R_t = α (s_{t-1}/(ν_t h_t))^(α-1). s_ = s_{t-1}, h = h_t (explicit -- solution objects). """
@@ -472,8 +469,7 @@ class Base:
     #######################################################################
     ##########   8. Steady state (eq:steadystate_LOG, eq:steadystate_CRRA)  #
     #######################################################################
-    # Fixed point s_t=s_{t-1}=s* under constant (τ,θ) at t=self.tFirst's parameters. See README's "Steady
-    # state solve" / "Timing convention".
+    # Fixed point s_t=s_{t-1}=s* under constant (τ,θ) at t=self.tFirst's parameters.
     def sSteadyState(self, Θs, t = None):
         """ Eq (steadystate_LOG:s), generalized: the steady-state savings level s* solving the fixed point
         s* = Θs*(s*/ν_t)^power_s -- i.e. s_t = s_{t-1} = s* under a constant Θs_t = Θs. Algebraically
@@ -506,17 +502,14 @@ class Base:
         not a numerical nicety: a steady state must have Θh real and positive, so the root is always
         strictly below the cap.
 
-        This matters here in a way it does not in the Argentina models. The cap scales with α/(1-α), which
-        is 0.43/0.57 = 0.75 there against 0.30/0.70 = 0.43 here, and with κ/p, which exceeds one there
-        (a positive informal mass) but is exactly one here. At the US calibration the cap falls to ≈0.58
-        as τ→1, i.e. BELOW the constant 0.75 upper bound those models hard-code -- so that constant is
-        safe there by parameter values, not by construction. See steadyState_CRRA_bounds. """
+        The cap scales with α/(1-α) and κ/p (= 1 here, γ_0 = 0); at the US calibration it falls to ≈0.58
+        as τ→1, so no constant upper bracket is safe for every τ. See steadyState_CRRA_bounds (finding #7). """
         denom = (1-self.get('α', t))*self.get('p', t)*self.wedgeA(θ, τ, t)*τ
         cap = self.Γh(t)*self.get('α', t)*self.get('κ', t)/np.where(denom == 0, np.nan, denom)
         return np.where(np.isnan(cap), np.inf, cap)[()]
 
     #######################################################################
-    ##########   9. Political first-order condition (eq:fast, eq:PEELOG)  ##
+    ##########   9. Political first-order condition (eq:LOG:foc, eq:PEELOG)##
     #######################################################################
     def politicalWeights(self, t = None):
         """ The bloc weights of the political objective, exactly as FOC combines them: old formal (ni,),
@@ -527,10 +520,9 @@ class Base:
         ν = self.get('ν', t)
         return γi_*self.ω2i(t), γ0_*self.ω20(t), ν*γi*self.ω1i(t), ν*γ0*self.ω10(t)
 
-    # FOC is the preference-agnostic combiner; `_LOG` methods below are LOG-specific closed forms (see
-    # README's "Political first-order condition").
+    # FOC is the preference-agnostic combiner; `_LOG` methods below are LOG-specific closed forms.
     def FOC(self, dv1i, dv10, dv2i, dv20, t = None):
-        """ Eq (fast / the general FOC underlying eq:PEELOG, tex line ~269-273): z_t, the marginal
+        """ Eq (LOG:foc, the general FOC underlying eq:PEELOG): z_t, the marginal
         political objective w.r.t. τ_t. Combines the young (dv1i,dv10) and old (dv2i,dv20) marginal
         indirect utilities via the political weights (ω1i/ω10/ω2i/ω20, §0) and population shares γ.
         Preference-agnostic: this combination is identical regardless of whether dv1i/dv10/dv2i/dv20 came

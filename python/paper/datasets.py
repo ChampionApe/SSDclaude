@@ -5,13 +5,10 @@ Nothing here imports the model. A loader whose input is missing raises MissingIn
 turns into a skipped output and a line in the report -- an unrun experiment must never look like a
 built table.
 """
-import os, re, glob, json
+import os, json, functools
 import numpy as np, pandas as pd
 
 import config as C
-
-SCENARIOS = {'reform': 'universal_{rule}_rho{ρ:.4f}.csv',   # full effect, taxes re-optimised
-             'ee':     'eeOnly_{rule}_rho{ρ:.4f}.csv'}      # taxes held at the baseline path
 
 
 class MissingInput(Exception):
@@ -64,16 +61,16 @@ def calibrationSummary(commonX = None):
 
 
 def rhoGrid(commonX = None):
-    """ The calibration sweep of one variant, one row per rho, deduplicated on rho keeping the last (the
-    file is appended to across resumed marches). 'sr' is savings over GDP (the sweep's srGDP, GDP = formal
-    plus informal output, model.taxTarget's concept); the sweep's own 'sr', savings over formal output, is
-    returned as 'srFormal'. A sweep without srGDP predates that concept and is MissingInput. """
+    """ The calibration sweep of one variant, one row per rho (a repeated rho is an error, #8). 'sr' is savings
+    over GDP (the sweep's srGDP, GDP = formal plus informal output, model.taxTarget's concept); the sweep's own
+    'sr', savings over formal output, is returned as 'srFormal'. A sweep without srGDP predates that concept and is
+    MissingInput. """
     path = _need(C.argSweepCsv(_argCX(commonX)))
     df = pd.read_csv(path)
     if 'srGDP' not in df.columns:
         raise MissingInput(path + ' (no srGDP column: the sweep predates the GDP concept; rerun stage (i))')
     df = df.rename(columns = {'sr': 'srFormal'}).assign(sr = lambda d: d['srGDP'])
-    return df.drop_duplicates('ρ', keep = 'last').sort_values('ρ').reset_index(drop = True)
+    return _noDuplicates(df, ['ρ'], path).sort_values('ρ').reset_index(drop = True)
 
 
 def _shockCsv(ρ, scenario, rule, commonX):
@@ -122,7 +119,7 @@ def epsThetaGrid(ρ = None, commonX = None):
     calibrated column and keeps every row solved at the old parameters. The rectangle check cannot see
     that -- staleness adds a column rather than leaving a hole -- but the csv then carries two rows
     flagged statusQuo, and a wholly stale csv carries one that does not match calibrationSummary. Both
-    are caught here. This was live: 378 of 392 rows survived the 2026-08-24 K/Y retarget.
+    are caught here.
 
     'sr' is savings over GDP (the csv's srGDP), the csv's own 'sr' (over formal output) 'srFormal', as
     rhoGrid. """
@@ -242,7 +239,8 @@ def reformSavingsRate(ρ, period = 0, rule = None, commonX = None):
 
 def spendingPath(ρ, which = 'reform', rule = None, commonX = None):
     """ Pension spending over GDP, tau_t (1-alpha) Y_t/(Y_t + Y0_t), over the whole reported path: the tax
-    is levied on formal labour income (1-alpha) Y_t, GDP includes informal output (model.taxTarget). """
+    is levied on formal labour income (1-alpha) Y_t, GDP includes informal output (model.taxTarget). No builder
+    calls it: it is the entry point REPLICATION.md names for the prose numbers of section 5. """
     df, Y, Y0 = _gdpPath(ρ, which, rule, commonX)
     α = calibrationSummary(commonX)['α']
     return pd.Series(df['τ_' + which].values.astype(float)*(1-α)*Y/(Y + Y0), index = df.index)
@@ -303,16 +301,18 @@ def usCalibrationSummary(commonX = None):
     return out
 
 
+@functools.lru_cache(maxsize = None)
 def usAlpha(commonX = None):
-    """ The capital share of the US/FR/UK model, read from usCalibrationSummary.csv (the US row of
-    the requested variant) and cross-checked against the workbook's `Capital income share` cell,
-    which is where the summary got it. Falls back to the workbook alone when the summary is absent.
-    Raises if the two disagree -- one number, from data, never typed here. """
+    """ The capital share of the US/FR/UK model, read from usCalibrationSummary.csv (the US row of the requested
+    variant) and checked against the workbook's `Capital income share` cell, which is where the summary got it.
+    MissingInput without the summary or its U.S. row, ValueError if the two disagree: one number, from data, never
+    typed here and never taken from the workbook alone. Cached (build.py --map clears it, via clearCaches). """
     fromWb = C.usCalendar('US')['α']
-    try:
-        fromCsv = float(usCalibrationSummary(commonX)['US']['α'])
-    except (MissingInput, KeyError):
-        return fromWb
+    path = os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv')
+    rec = usCalibrationSummary(commonX).get('US')
+    if rec is None or 'α' not in rec or rec['α'] != rec['α']:
+        raise MissingInput(path + ' (no α for the US)')
+    fromCsv = float(rec['α'])
     if not np.isclose(fromCsv, fromWb):
         raise ValueError('capital share disagrees: usCalibrationSummary.csv {!r} vs workbook {!r}'
                          .format(fromCsv, fromWb))
@@ -358,7 +358,10 @@ def usShockRow(df, ρ, scenario, effect):
     if hit.empty:
         raise MissingInput('{} (ρ={}, {}) in {}'
                            .format(scenario, ρ, effect, df.attrs.get('source', 'the US shock csv')))
-    return hit.iloc[-1]
+    if len(hit) > 1:
+        raise ValueError('{}: {} rows for ρ={}, {}, {}'.format(df.attrs.get('source', 'the US shock csv'), len(hit),
+                                                              ρ, scenario, effect))
+    return hit.iloc[0]
 
 
 def usBaseline(df, ρ):
@@ -375,10 +378,10 @@ def usShocksXi():
 
 
 def usSweep(country, commonX = None):
-    """ One country's calibration sweep, deduplicated on rho keeping the last. """
+    """ One country's calibration sweep at the θ variant, one row per rho (a repeated rho is an error, #8). """
     commonX = C.US['commonX'] if commonX is None else commonX
-    df = _readUS(C.usSweepCsv(country, commonX))
-    return df.drop_duplicates('ρ', keep = 'last').sort_values('ρ').reset_index(drop = True)
+    path = C.usSweepCsv(country, commonX)
+    return _noDuplicates(_readUS(path), ['ρ'], path).sort_values('ρ').reset_index(drop = True)
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -410,17 +413,19 @@ def escCountry(commonX = None, spec = None):
     'size' spec. The stage runs under LOG only, and the csv carries no rho column, so rho = 1 is stamped
     on here rather than read -- a CRRA country stage would have to write the column itself. The spec of
     config.US['esc']['costVariants'] ('sizePiR') is read from its tagged csv (escCountryCosts.csv), where
-    runESC.py --tag writes it; every other spec from escCountry.csv. Each economy at its θ0 under the θ variant. """
+    runESC.py --tag writes it; every other spec from escCountry.csv. Each economy at its θ0 under the θ variant; one
+    row per (country, wedgeFrom), a repeated pair being an error. """
     commonX = C.US['commonX'] if commonX is None else commonX
     spec = C.US['esc']['spec'] if spec is None else spec
     cv = C.US['esc']['costVariants']
-    df = _readUS(os.path.join(C.ESCDIR, 'escCountry' + (cv['tag'] if spec == cv['spec'] else '') + '.csv'))
+    path = os.path.join(C.ESCDIR, 'escCountry' + (cv['tag'] if spec == cv['spec'] else '') + '.csv')
+    df = _readUS(path)
     keep = [i for i, rec in enumerate(df.to_dict('records'))
             if _escVariant(rec, commonX) and rec['spec'] == spec
             and np.isclose(float(rec['phi']), C.US['esc']['phi'])
             and (rec['wedgeFrom'] != 'own' or (rec['converged'] == rec['converged']
                                                and bool(rec['converged'])))]
-    df = df.iloc[keep].copy()
+    df = _noDuplicates(df.iloc[keep].copy(), ['country', 'wedgeFrom'], path)
     if 'ρ' not in df.columns:
         df['ρ'] = 1.0
     return df
@@ -536,7 +541,7 @@ def escCalibrationHost(host = 'UK', commonX = None, spec = None):
     cty = escCountry(commonX = commonX, spec = spec)
     own = cty[(cty['country'] == host) & (cty['wedgeFrom'] == 'own')]
     if not own.empty:
-        out[1.0] = own.iloc[-1].to_dict()
+        out[1.0] = own.iloc[0].to_dict()
     path = os.path.join(C.ESCDIR, 'escCalibrationCRRA' + host + '.csv')
     if os.path.exists(path):
         for rec in C.atTheta(pd.read_csv(path)).to_dict('records'):
@@ -553,9 +558,8 @@ def escExperiments():
 
     The t0 columns are what the tables read. Every scenario is a NEW EQUILIBRIUM PATH -- the shocked
     parameters hold over the whole horizon and the political choice binds from the first period -- so
-    theta_{t0} is an equilibrium outcome and 2020 already carries the design response. (Under the
-    superseded copy-from-2020 convention it did not, and the tables read t0+1.) The scenario 'France' is France's own calibrated path, not a shock on the US
-    model, and carries only the pinned reading. """
+    theta_{t0} is an equilibrium outcome and 2020 already carries the design response. The scenario 'France' is
+    France's own calibrated path, not a shock on the US model, and carries only the pinned reading. """
     df = _readUS(os.path.join(C.ESCDIR, 'escExperiments.csv'))
     df.attrs['source'] = 'results/esc/escExperiments.csv'
     return df
@@ -579,7 +583,10 @@ def escRow(df, ρ, spec, scenario, pinned, commonX = None):
     if hit.empty:
         raise MissingInput('{} (ρ={}, {}, pinned={}, commonX={}, method={}) in results/esc/escExperiments{{,UK}}.csv'
                            .format(scenario, ρ, spec, pinned, commonX, escMethod()))
-    return hit.iloc[-1]
+    if len(hit) > 1:
+        raise ValueError('{}: {} rows for ρ={}, {}, pinned={}, commonX={}, method={}'.format(
+            df.attrs.get('source', 'the ESC csv'), len(hit), ρ, scenario, pinned, commonX, escMethod()))
+    return hit.iloc[0]
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -643,21 +650,6 @@ def oecd26SampleOf(variant = None):
     return [c for c in oecdFigure1Data().index if c in t.index and bool(t.at[c, 'sample'])]
 
 
-def compulsoryVoting(theta = None):
-    """ The countries of python/US/oecd26.py's COMPULSORY (flat turnout under 'pooled') in the cross-section's sample
-    under the θ variant `theta` (oecd26SampleOf), in figure 1.1's order. The tuple is read from the source with ast,
-    never imported: stage (iii) imports no model code. """
-    import ast
-    path = os.path.join(C.USDIR, 'oecd26.py')
-    tree = ast.parse(open(_need(path), encoding = 'utf-8').read())
-    hit = [n.value for n in tree.body if isinstance(n, ast.Assign)
-           and any(isinstance(t, ast.Name) and t.id == 'COMPULSORY' for t in n.targets)]
-    if len(hit) != 1:
-        raise ValueError('{}: no single COMPULSORY assignment'.format(path))
-    comp = set(ast.literal_eval(hit[0]))
-    return [c for c in oecd26SampleOf(theta) if c in comp]
-
-
 def oecd26Dir(theta = None, root = None):
     """ Where the cross-section's rows of thetaSource `theta` (config.US['theta'] by default) are: results/oecd26/ for
     the main variant and for 'index' (the rows of figure 1.1's index, the paper's measure before the variant),
@@ -682,6 +674,12 @@ def oecd26OmegaRule(layer, omegaRule = None):
             raise ValueError("layer 2 calibrates each country's ω: omegaRule 'anchor' only, got {!r}".format(omegaRule))
         return 'anchor'
     return C.US['oecd26']['omegaRule'] if omegaRule is None else omegaRule
+
+
+def oecd26DirRel(theta = None):
+    """ oecd26Dir(theta) as the banners of the generated files name it: 'results/oecd26/' or
+    'results/oecd26_theta_<V>/'. """
+    return 'results/' + os.path.basename(oecd26Dir(theta)) + '/'
 
 
 def oecd26Path(layer, theta = None, root = None):
@@ -893,29 +891,6 @@ def _variantRows(path, commonX, key):
     return _noDuplicates(df, key, path).reset_index(drop = True)
 
 
-def escPermanent(commonX = None):
-    """ python/US/runESC.stagePermanent's csv (log preferences, rho = 1) at the variant. The costless row
-    has spec 'none': θPerm the design chosen once and for all (the anticipated vote's fixed point),
-    θPermIncumbent the same with the savings ratio pinned at the incumbent design, θLeaded the leaded
-    design in force at t0, τAtChoice the tax at θPerm. The other rows are the previous cost forms
-    ('scale', 'flat') at the permanent timing's own calibrated p. """
-    return _variantRows(os.path.join(C.ESCDIR, 'escPermanent.csv'), commonX, ['spec', 'phi'])
-
-
-def escPermanentCRRA(commonX = None):
-    """ python/US/runESCcrra.stagePermanentCRRA's csv at the variant: the permanent choice under CRRA traced
-    in rho, `wedge` 'none' without the cost; θPerm, θPermIncumbent and τAtChoice as escPermanent. """
-    return _variantRows(os.path.join(C.ESCDIR, 'escPermanentCRRA.csv'), commonX, ['ρ', 'spec', 'phi', 'wedge'])
-
-
-def escSequentialCRRA(commonX = None):
-    """ python/US/runESCcrra.stageSequential's csv at the variant: the costless first order condition of
-    the design chosen with the tax (eq esc:seqFOC) on the solved baseline path, per (rho, dated period):
-    its largest value over a grid of θ in [0, 1] (`focMax`, at `θAtMax`), its smallest (`focMin`), whether
-    it is negative at every node (`negative`), and the baseline tax `τ` at that date. """
-    return _variantRows(os.path.join(C.ESCDIR, 'escSequentialCRRA.csv'), commonX, ['ρ', 'pos'])
-
-
 def stationaryApprox(which):
     """ The stationary-against-date-specific check of `which`: 'US' (the tax with the design given, CRRA),
     'US_ESC' (the design and the tax with the design chosen; `method` LOG or CRRA2D) or 'ARG' (Argentina's
@@ -968,14 +943,6 @@ def residuals(arm):
     return _noDuplicates(df, ['ρ', 'ns', 'date', 'set', 'region'], path)
 
 
-def derivativeScheme():
-    """ The U.S. CRRA solve at its calibrated parameters under the published tax derivatives and under the
-    converged ones (python/US/runHorizon.py stage scheme): per (rho, scheme, scenario, date), scenario
-    'baseline', 'theta0', 'theta1', dates 2020 and 2050. """
-    path = os.path.join(C.NUMDIR, 'US_derivativeScheme.csv')
-    return _noDuplicates(_readUS(path), ['ρ', 'scheme', 'scenario', 'date'], path)
-
-
 def taxPolicyState():
     """ The U.S. 2020 tax policy function against inherited savings (python/US/c5Numbers.py a13): per (rho,
     `s_2019/s*`), `τ2020` the policy at the savings the 2020 economy inherits, as a multiple of their value on the
@@ -1018,9 +985,10 @@ def selectionCsvs():
         for country in ('US', 'UK', 'FR'):
             us.append(('US', os.path.basename(C.usSweepCsv(country, cx)), [C.usSweepCsv(country, cx)]))
         us.append(('US', os.path.basename(C.usShockCsv('US', cx)), [C.usShockCsv('US', cx)]))
+    us.append(('US', 'US_shocksXiCommonX.csv', [os.path.join(C.SHOCKDIR, 'US_shocksXiCommonX.csv')]))
     for f in ('escCalibration.csv', 'escCalibrationCosts.csv', 'escCalibrationCRRA.csv', 'escCalibrationCRRAUK.csv',
               'escCountry.csv', 'escShocks.csv', 'escShocksCosts.csv', 'escShocksCRRA.csv', 'escPath.csv',
-              'escPathCRRA.csv', 'escPathHost.csv', 'escTauTheta.csv'):
+              'escPathCRRA.csv', 'escPathHost.csv', 'escTauTheta.csv', 'escXiRobustness.csv'):
         us.append(('US', f, [os.path.join(C.ESCDIR, f)]))
     for layer in (0, 1, 2):
         p = oecd26Path(layer)

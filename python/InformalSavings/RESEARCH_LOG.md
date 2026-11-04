@@ -33,3 +33,14 @@ look. A lesson that would recur goes to `notes/crossCuttingFindings.md` once, ci
 - Residuals |τ_FOC − τ̂| off the grid: ≤ 0.008 p.p. on the path (0.014 on a 4× tax grid); every off-grid state ≤ 0.003
   (ρ = 1) and 0.015 p.p. (ρ = 2); at ρ = 0.5 the 2-D smoothing departs ≤ 0.35 p.p. from the raw selection at
   1920–2010 states away from the path. Numbers `archive/notes/reviewResponse_2026-10/ledger_C4.md`, log `logs/C4/ARG.log`.
+
+## 2026-11-04 — code review P4 (`notes/brief_codeDocReview.md` step 2): fixes that move no published number
+- `initialStatePEE`: `nRoots` by roots1d's sign-run rule per finite run (`_scanCrossings`), an exact zero at a scan
+  node once rather than twice; the root is unchanged. `_calVerify` re-solves with the calibration's `solveKwargs`.
+  `runHorizon.fresh` applies common X only when `m.commonX`. Tests: `test_peePath.py` §5-6, `test_createCopyFromt0.py`
+  §6, pins in `test_ee.py`.
+- Removed: the adjPar family's `t` (and `adjDf_ti`'s broken `k.loc` branch), `Base.power_p`, `getXi`, `aux_p`,
+  `LOG.style/x0/kwargs`, the unused Δl/Δu settings, unused imports.
+- Docstrings as specs: `LOG.defaultIotaGrid` (the 0.45/3.7 rule), CRRA's nι = 30, `defaultSCandGrid` (the alignment
+  argument is for 'linear'), `smooth` is a switch under pinned knots, history cut (calibrateRhoGrid, model, policy),
+  stale README pointers, chdir comments. `objectiveFrozen`'s per-candidate anchor left as is (reported).

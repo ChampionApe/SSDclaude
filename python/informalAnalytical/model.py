@@ -1,7 +1,7 @@
 import numpy as np, pandas as pd, functools, scipy
 from scipy import optimize
 from copy import deepcopy
-from symMaps import SimpleSys, Lag, Lead
+from symMaps import SimpleSys, Lag
 from base import Base, BaseGrid, BaseTime
 from policy import LOG, CRRA
 
@@ -168,9 +168,6 @@ class ModelInformalAnalytical:
     def aux_κ(self):
         return self.BT.κ(self.db['eps[t+1]'])
     @property
-    def aux_p(self):
-        return (self.db['γi'] * self.db['pi']).sum(axis=1)
-    @property
     def aux_Γh(self):
         return self.BT.Γh()
 
@@ -229,20 +226,20 @@ class ModelInformalAnalytical:
     def updateAuxPars(self):
         [self.db.update(self.addLeadAndLags(k, getattr(self, f'aux_{k}'))) for k in self.paramsFromFuncs]
 
-    def adjPar(self, k, vals, t = None):
+    def adjPar(self, k, vals):
         """ Default methods for adjusting different parameter types. """
         if k == 'β':
-            return self.adj2Dj_ll('βj', self.simpleβ(vals), t = t)
+            return self.adj2Dj_ll('βj', self.simpleβ(vals))
         elif k == 'pj':
-            return self.adjpj('pj', vals, t = t)
+            return self.adjpj('pj', vals)
         elif k in self.parTypes['0D']:
             return {k: vals}
         elif k in self.parTypes['1D']:
-            return self.adj1D_ll(k, vals, t = t)
+            return self.adj1D_ll(k, vals)
         elif k in self.aux2DParams:
-            return self.adj2Di_ll(k, vals, t = t)
+            return self.adj2Di_ll(k, vals)
         elif k in self.parTypes['2D']:
-            return self.adj2Dj_ll(k, vals, t = t)
+            return self.adj2Dj_ll(k, vals)
         else:
             return {k:vals}
     def simpleβ(self, β):
@@ -251,18 +248,18 @@ class ModelInformalAnalytical:
     def simpleβinv(self):
         """ Get scalar β from full dataframe (assumes constant across t,j) """
         return self.db['βj'].iloc[0,0]/self.db['pj'].iloc[0,0]
-    def adjpj(self, k, vals, t = None):
+    def adjpj(self, k, vals):
         """ Specialized method for p - we have to enforce constant p across pi"""
-        d = self.adjDf_tj(k,vals,t=t)
+        d = self.adjDf_tj(k, vals)
         d['p'] = (self.db['γi'] * d['pi']).sum(axis=1)
         return self.addLeadAndLags(d)
 
-    def adj1D_ll(self, k, vals, t = None):
-        return self.addLeadAndLags(k, self.adjVec_t(k, vals, t = t))
-    def adj2Dj_ll(self, k , vals, t = None):
-        return self.addLeadAndLags(self.adjDf_tj(k, vals ,t = t))
-    def adj2Di_ll(self, k , vals, t = None):
-        return self.addLeadAndLags(self.adjDf_ti(k, vals ,t = t))
+    def adj1D_ll(self, k, vals):
+        return self.addLeadAndLags(k, self.adjVec_t(k, vals))
+    def adj2Dj_ll(self, k , vals):
+        return self.addLeadAndLags(self.adjDf_tj(k, vals))
+    def adj2Di_ll(self, k , vals):
+        return self.addLeadAndLags(self.adjDf_ti(k, vals))
 
     def addLeadAndLags(self, k, s = None):
         if isinstance(k, dict):
@@ -270,34 +267,21 @@ class ModelInformalAnalytical:
         else:
             return {k: s, f'{k}[t+1]': self.leadSym(s, lead = {'t':-1} if isinstance(s, pd.DataFrame) else -1), f'{k}[t-1]': self.leadSym(s, lead = {'t': 1} if isinstance(s, pd.DataFrame) else  1)}
 
-    def adjVec_t(self, k, vals, t = None):
-        if t is None:
-            return pd.Series(vals, index = self.db['t'])
-        else:
-            x = self.db[k]
-            x.loc[t] = vals
-            return x
-    def adjDf_ti(self, k, vals, t = None):
+    def adjVec_t(self, k, vals):
+        return pd.Series(vals, index = self.db['t'])
+    def adjDf_ti(self, k, vals):
         if np.isscalar(vals):
             xi = pd.DataFrame(vals, index = self.db['t'], columns = self.db['i'])
         elif vals.ndim == 1:
-            if t is None: 
-                xi = pd.DataFrame(np.tile(vals, (self.T,1)), index = self.db['t'], columns = self.db['i'])
-            else:
-                xi = self.db[k]
-                k.loc[t] = vals
+            xi = pd.DataFrame(np.tile(vals, (self.T,1)), index = self.db['t'], columns = self.db['i'])
         else:
             xi = pd.DataFrame(vals, index = self.db['t'], columns = self.db['i'])
         return {f'{k[:-1]}j': pd.concat([self.db[f'{k[:-1]}0'], xi], axis = 1), k: xi}
-    def adjDf_tj(self, k, vals, t = None):
+    def adjDf_tj(self, k, vals):
         if np.isscalar(vals):
             xj = pd.DataFrame(vals, index = self.db['t'], columns = self.db['j'])
         elif vals.ndim == 1:
-            if t is None:
-                xj =  pd.DataFrame(np.tile(vals, (self.T, 1)), index = self.db['t'], columns = self.db['j'])
-            else:
-                xj = self.db[k]
-                xj.loc[t] = vals
+            xj =  pd.DataFrame(np.tile(vals, (self.T, 1)), index = self.db['t'], columns = self.db['j'])
         else:
             xj = pd.DataFrame(vals, index = self.db['t'], columns = self.db['j'])
         return {k: xj, f'{k[:-1]}i': xj[self.db['i']], f'{k[:-1]}0': xj[0]}
@@ -351,8 +335,6 @@ class ModelInformalAnalytical:
         self.db['yx'], self.db['yη'] = yx/(γi*yx).sum(), yη/(γi*yη).sum()
     def getηi(self):
         return self.db['yη']/(self.db['yx']*sum(self.db['γi'].xs(self.db['t0']).values*self.db['yη']))
-    def getXi(self):
-        return self.db['ηi']/self.db['yx']**(1/self.db['ξ'])
 
     #######################################################################
     ##########   3. Economic equilibrium (EE) solve, given policy   ########
@@ -614,7 +596,7 @@ class ModelInformalAnalytical:
         candidates' counts (policy.multiplicitySummary, num_robustroot.tex), None under 'Vectorized'.
 
         solver picks which policy.py method identifies τ:
-        - 'Robust'     (default) LOG.solveRobust -- gradient solve (alg:fast), checked against the full
+        - 'Robust'     (default) LOG.solveRobust -- gradient solve (alg:LOG:fast), checked against the full
                        backward grid search and its selection rule, which also supplies the counts; the
                        grid selection, polished, replaces the gradient solution where they disagree or
                        the gradient solve fails.

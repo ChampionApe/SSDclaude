@@ -72,7 +72,7 @@ US_CUTS = np.array([0.582266, 0.757993])
 dev = {k: 0. for k in ('ν', 'γ', 'y', 'V', 'I', 'τ0', 'hη', 'Vm')}
 θok, μok = True, True
 for iso in oecd26.countries():
-    inp = oecd26.countryInputs(iso)
+    inp = oecd26.countryInputs(iso, 'cps')
     p = pop[(pop['iso3'] == iso) & (pop['definition'] == 'wpp2024')].set_index('period')['nu']
     want = np.array([p[1960], p[1990], p[2020], p[2050], p[2080], p[2110]] + [p[2110]]*oecd26.T_SS)
     dev['ν'] = max(dev['ν'], np.max(np.abs(inp['ν'] - want)))
@@ -100,8 +100,8 @@ check('L: on the model hηRatio = y_i and Base.Vtilde = Ṽ (common X, Γ_h = 1)
       'max |Δ| {:.1e}, {:.1e}'.format(dev['hη'], dev['Vm']))
 ν = np.asarray(testmod.pars['ν'], dtype = float)
 check("L: the U.S. ν is the U.S. workbook's (WPP 2024, to the workbook's rounding)",
-      np.max(np.abs(oecd26.countryInputs('USA')['ν'] - ν)) < 5e-7,
-      'max |Δ| {:.1e}'.format(np.max(np.abs(oecd26.countryInputs('USA')['ν'] - ν))))
+      np.max(np.abs(oecd26.countryInputs('USA', 'cps')['ν'] - ν)) < 5e-7,
+      'max |Δ| {:.1e}'.format(np.max(np.abs(oecd26.countryInputs('USA', 'cps')['ν'] - ν))))
 cs = oecd26.countryInputs('GBR', 'cses')
 check('L: cses turnout is oecd29.csv mu*_usPct', np.array_equal(cs['μ'], main.loc['GBR', ['mu1_usPct', 'mu2_usPct', 'mu3_usPct']].to_numpy(float)))
 try:
@@ -110,7 +110,7 @@ try:
 except oecd26.NoTurnout:
     check('L: Luxembourg under cses raises NoTurnout', True)
 
-inp = oecd26.countryInputs('GBR')
+inp = oecd26.countryInputs('GBR', 'cps')
 m = oecd26.build(inp, β, ωSeed, 10.)
 θs = [float(m.db['θ'].iloc[2])]
 m.updateAuxPars(); θs.append(float(m.db['θ'].iloc[2]))
@@ -129,13 +129,13 @@ check('S: oecd26_sample.csv lists the 29 in oecd29.csv\'s order; 26 kept, MEX, T
       list(s.index) == oecd26.countries() and int(s['sample26'].sum()) == 26
       and set(s.index[~s['sample26']]) == {'MEX', 'TUR', 'KOR'})
 check('S: sample26 is informal employment <= 25% or no series', bool((s['sample26'] == ~(inf > 25)).all()))
-check('S: the loader carries sample26', all(oecd26.countryInputs(c)['sample26'] == bool(s.at[c, 'sample26'])
+check('S: the loader carries sample26', all(oecd26.countryInputs(c, 'cps')['sample26'] == bool(s.at[c, 'sample26'])
                                            for c in ('USA', 'MEX', 'KOR', 'GBR')))
 
 # ==== C: the closed form at θ ≡ 1 =============================================================================
 gaps, corners = {}, {}
 for iso in oecd26.countries():
-    m = oecd26.build(oecd26.countryInputs(iso), β, 1.3, 10.)
+    m = oecd26.build(oecd26.countryInputs(iso, 'cps'), β, 1.3, 10.)
     gaps[iso], corners[iso] = oecd26.closedFormCheck(m)
 worst = max(gaps, key = gaps.get)
 check('C: at θ ≡ 1 the tax is eq (1.4) at every date and each country\'s ν, terminal β -> 0 (29 countries, λ = 10)',
@@ -168,7 +168,7 @@ PUB = {'λ': 8.64320735564998, 'βUS': 0.7585347063319889, 'ωUS': 1.50777114266
 
 def headInputs(k):
     nu, γ, inc, μ, τ0, θ = HEAD[k]
-    return oecd26.inputsFrom(k, k, nu + [nu[-1]]*(1 + oecd26.T_SS), γ, rel(inc, γ), μ, 100*τ0*0.7, 1/(2 - θ))
+    return oecd26.inputsFrom(k, k, nu + [nu[-1]]*(1 + oecd26.T_SS), γ, rel(inc, γ), μ, 100*τ0*0.7, 1/(2 - θ), 'cps')
 
 
 m = oecd26.build(headInputs('US'), PUB['βUS'], 1.45, PUB['λ'])
@@ -191,7 +191,7 @@ for k in ('UK', 'FR'):
 
 # ==== B: the gradient solve's upper bound =====================================================================
 fine = R.settings()
-inpUS = oecd26.countryInputs('USA')
+inpUS = oecd26.countryInputs('USA', 'cps')
 ref = R._build(inpUS, β, ωSeed, 10., fine).solvePEE_LOG()['τ'].values.astype(float)
 dev, err = 0., ''
 for x0 in (np.r_[1.5, ref[1:]], np.full(len(ref), 3.)):
@@ -222,7 +222,7 @@ check("B: Turkey's layer-2 row under CSES, ω seeded at the anchor of 2026-10-25
       ok, msg)
 same = []
 for iso in ('USA', 'AUS', 'ITA', 'TUR'):
-    inp = oecd26.countryInputs(iso)
+    inp = oecd26.countryInputs(iso, 'cps')
     a, b = R._build(inp, β, ωSeed, 10., fine), R._build(inp, β, ωSeed, 10., fine)
     θc, εc = a.db['θ'].values, a.db['eps'].values
     same.append(np.array_equal(a.LOG.solveRobust(θc, εc, u = 1.)['τ'].values, b.LOG.solveRobust(θc, εc)['τ'].values))
@@ -232,7 +232,7 @@ check('B: on cold solves the tax is bitwise the one under u = 1 (USA, AUS, ITA, 
 # ==== D: the driver ===========================================================================================
 tmp = tempfile.mkdtemp(prefix = 'oecd26_')
 cfg = R.settings(coarse = True)
-inpUS = oecd26.countryInputs('USA')
+inpUS = oecd26.countryInputs('USA', 'cps')
 m = R._build(inpUS, β, ωSeed, 10., cfg)
 cal = m.calibrate()
 a = {'turnout': 'cps', 'spec': cfg['spec'], 'phi': R.PHI, 'commonX': R.COMMONX, 'betaRule': 'common', 'iso3': 'USA',
@@ -388,7 +388,7 @@ check("N: the 'none' anchor calibrates ω to τ0 and reads no design (p, θChose
 rowsN = {r['iso3']: r for r in R.stageLayer('layer1', 'cps', ['FRA', 'AUT'], tmpN, aN, cfgN)}
 gapN = {}
 for iso, r in rowsN.items():
-    inp = oecd26.countryInputs(iso)
+    inp = oecd26.countryInputs(iso, 'cps')
     gapN[iso] = abs(r['τ2020'] - oecd26.closedFormTax(inp['α'], β, inp['ξ'], aN['ω'],
                                                       inp['ν'][oecd26.DATES.get_loc(oecd26.T0YEAR)]))
     counts.append(('N layer1 ' + iso, {k: r[k] for k in MULT}))
@@ -424,7 +424,7 @@ p1 = R.stageLayer('layer1', 'cps', ['GBR'], tmpP, aP, cfgP)[0]
 p2 = R.stageLayer('layer2', 'cps', ['GBR'], tmpP, aP, cfgP)[0]
 for r in (p1, p2):
     counts.append(('Π {} GBR'.format(r['layer']), {k: r[k] for k in MULT}))
-inpG = oecd26.countryInputs('GBR')
+inpG = oecd26.countryInputs('GBR', 'cps')
 m2 = R._build(inpG, β, a['ω'], 20., cfgP)
 pin2 = m2.solvePEE_LOG()
 t0 = m2.t0Year
