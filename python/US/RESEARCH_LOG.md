@@ -207,3 +207,10 @@ run's n, ns (CRRA), smoothKnots, interpKind and, for FR/UK, new columns retAge, 
 resumed with a notice); an index run refuses a csv with variant rows. Without --theta the drivers refuse results/
 (`oecd26.indexTheta`; `--theta index`). runCalibrationUS: nothing missing or stale, 0 ESC commands; runShocksUS --list all
 had. test_coreGuards 30/30 (G12-G13 new), test_oecd26Theta 56/56 (T, Z new), US fast 14/14.
+
+## 2026-11-04 — --theta mandatory for the last four drivers (`notes/codeReview_triage.md`, "Still open")
+stationaryApprox, runHorizon and c5Numbers (every command but `selfcheck`, which writes nothing) refuse results/ without --theta
+(`oecd26.indexTheta`; `--theta index` the workbook's θ), collectESCexperiments refuses results/esc/ (`--theta index` keeps the rows
+without thetaSource); `--theta C --main` unchanged. stationaryApprox writes through `writeRows` (merge on (ρ, t), `runESC.writeCsv`,
+rows at another θ dropped): the published csv rewritten with its own ρ = 0.5 rows is byte-identical; collect's `--theta C` and
+`--costs --theta C` on a copy of results/ reproduce escExperiments.csv (64 rows) and escAgeingCosts.csv (24) byte for byte.

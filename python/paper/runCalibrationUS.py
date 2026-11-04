@@ -8,7 +8,7 @@ Run:  .venv\Scripts\python.exe python\paper\runCalibrationUS.py       the MAIN p
       ... --force                                                      re-solve every point
       ... --summaryOnly                                                skip solving; just rebuild the summary
       ... --commonX                                                    also sweep the common-X variant
-      ... --dry                                                        print the commands and exit
+      ... --dry                                                        print the commands that would run and exit
 
 TWO PARTS, as runShocksUS.py: the main part is the sweeps, the LOG wedge calibration and the summary; the
 pre-publication part is the EXACT CRRA wedge calibration of the paper's cost and the UK's own (runESCcrra.py
@@ -17,7 +17,11 @@ pre-publication part is the EXACT CRRA wedge calibration of the paper's cost and
 THE θ VARIANT. Every command carries config.thetaFlags() (--theta config.US['theta'] --main): the U.S., France and
 the UK at the variant's θ0 (data/oecd26_theta.csv), written to the standard results/ paths. A sweep point or a cost
 calibration counts as present only at that thetaSource and θ0 (config.atTheta); a sweep csv holding rows of another
-θ is re-solved whole (--force to the child, which refuses to resume across a θ0).
+θ is re-solved whole (--force to the child, which refuses to resume across a θ0). A sweep point also counts only at
+the settings sweepCmd passes, as the row records them (offSettings: n, ns on CRRA rows, smoothKnots, interpKind; for
+France and the UK retAge and the U.S. β, βUS), so a change of config.US['gridSettings'] or ['retAgeFR'/'retAgeUK']
+runs the child, which re-solves those rows (calibrateRhoGrid.resumeAt); a row without the columns counts as current
+(one notice per csv). --dry checks France and the UK against the U.S. sweep on disk.
 
 Two things happen, and only the first is expensive:
 
@@ -87,14 +91,95 @@ def stale(country, commonX = False):
     return df is not None and len(C.atTheta(df, country = country)) < len(df)
 
 
-def missing(country, commonX = False):
-    """ rho in the paper's grid that `country`'s sweep csv does not already carry at the θ variant. """
+GRIDCOLUMNS = ('n', 'ns', 'smoothKnots', 'interpKind')     # python/US/calibrateRhoGrid.rowSettings
+INPUTCOLUMNS = ('retAge', 'βUS')                          # python/US/calibrateRhoGridEU.INPUTCOLUMNS (France, UK)
+RETAGEKEY = {'FR': 'retAgeFR', 'UK': 'retAgeUK'}          # python/US/testEU.retAgeHost's config key ('nra' where absent)
+_NOTICED = set()                                          # the csvs whose legacy notice was printed
+
+
+def _finite(df):
+    """ The rows of a sweep frame with a finite residual (the solved ones). """
+    return df[np.isfinite(pd.to_numeric(df['residual'], errors = 'coerce'))]
+
+
+def sweepSettings(country, commonX = False):
+    """ The settings sweepCmd passes, as a sweep row records them: n, ns, smoothKnots (0 is None, the adaptive
+    smoother), interpKind (calibrateRhoGrid.rowSettings), and for France and the UK retAge (config.US['retAgeFR'],
+    ['retAgeUK']) and βUS, a callable of rho: the U.S. sweep's β at that rho, its last solved row at the θ variant
+    (modelFR.usRefFromCsv; None where the U.S. sweep has no such row). """
+    g = C.US['gridSettings']
+    want = {'n': g['n'], 'ns': g['ns'], 'smoothKnots': g['smoothKnots'] or None, 'interpKind': g['interpKind']}
+    if country == 'US':
+        return want
+    us, βUS = _sweep('US', commonX), {}
+    if us is not None:
+        us = _finite(C.atTheta(us, country = 'US'))
+        βUS = {round(float(r), 6): float(b) for r, b in zip(us['ρ'], us['β'])}      # the last row at a rho wins
+    return want | {'retAge': C.US.get(RETAGEKEY[country], 'nra'), 'βUS': lambda ρ: βUS.get(round(float(ρ), 6))}
+
+
+def _same(v, w):
+    """ A recorded value v (from the csv) against config's w (calibrateRhoGrid._sameSetting): None is NaN, a string
+    by equality, a number to 1e-12 relative. """
+    if w is None:
+        return bool(pd.isna(v))
+    if pd.isna(v):
+        return False
+    if isinstance(w, str):
+        return str(v) == w
+    return abs(float(v) - float(w)) <= 1e-12*max(1., abs(float(w)))
+
+
+def offSettings(country, commonX = False):
+    """ The sweep's own resume check (calibrateRhoGrid.staleSettings) read from the csv: over the solved rows at the θ
+    variant at a rho of config.US['ρGrid'], ({rho: [the columns that differ from sweepSettings]}, [the rhos of rows
+    that predate a recorded setting]). A row with n records the grid: n, smoothKnots, interpKind and, on a CRRA row,
+    ns are compared; France's and the UK's retAge and βUS where the row has them (βUS not where the U.S. sweep has
+    no row at that rho, which `missing('US')` reports). A row without the grid or without retAge/βUS counts as
+    current, with one notice per csv. """
+    df = _sweep(country, commonX)
+    if df is None:
+        return {}, []
+    want, legacy = sweepSettings(country, commonX), (() if country == 'US' else INPUTCOLUMNS)
+    on = {round(ρ, 6) for ρ in C.US['ρGrid']}
+    off, old, unrecorded = {}, [], []
+    for r in _finite(C.atTheta(df, country = country)).to_dict('records'):
+        ρ = round(float(r['ρ']), 6)
+        if ρ not in on:
+            continue
+        grid = not pd.isna(r.get('n', np.nan))
+        cols = [c for c in GRIDCOLUMNS if grid and not (c == 'ns' and r.get('preferences') != 'CRRA')]
+        cols += [c for c in legacy if not pd.isna(r.get(c, np.nan))]
+        w = {c: want[c](ρ) if callable(want[c]) else want[c] for c in cols}
+        diff = [c for c in cols if not (c == 'βUS' and w[c] is None) and not _same(r.get(c, np.nan), w[c])]
+        lack = ([] if grid else list(GRIDCOLUMNS)) + [c for c in legacy if pd.isna(r.get(c, np.nan))]
+        if diff:
+            off[ρ] = diff
+        elif lack:
+            old.append(ρ)
+            unrecorded += [c for c in lack if c not in unrecorded]
+    path = C.usSweepCsv(country, commonX)
+    if old and path not in _NOTICED:
+        _NOTICED.add(path)
+        try:
+            shown = os.path.relpath(path, C.REPO)
+        except ValueError:                    # another drive
+            shown = path
+        print('notice: {}: {} row(s) (rho {}) predate the recorded settings {}: counted as current'.format(
+            shown, len(old), ', '.join('{:g}'.format(v) for v in old), ', '.join(unrecorded)))
+    return off, old
+
+
+def missing(country, commonX = False, settings = True):
+    """ rho in the paper's grid that `country`'s sweep csv does not already carry at the θ variant, and (`settings`)
+    the rho whose row records other settings than config passes (offSettings), which the child re-solves
+    (calibrateRhoGrid.resumeAt). """
     df = _sweep(country, commonX)
     if df is None:
         return list(C.US['ρGrid'])
-    df = C.atTheta(df, country = country)
-    have = set(np.round(df.loc[np.isfinite(pd.to_numeric(df['residual'], errors = 'coerce')), 'ρ'], 6))
-    return [ρ for ρ in C.US['ρGrid'] if round(ρ, 6) not in have]
+    have = set(np.round(_finite(C.atTheta(df, country = country))['ρ'], 6))
+    off = set(offSettings(country, commonX)[0]) if settings else set()
+    return [ρ for ρ in C.US['ρGrid'] if round(ρ, 6) not in have or round(ρ, 6) in off]
 
 
 def _escLogRows(phis, name = 'escCalibration.csv'):
@@ -310,7 +395,11 @@ def main():
         if part != 'prepub':
             for cx in variants:
                 for c in SWEEPS:
-                    print(' '.join(sweepCmd(c, cx, a.force)))
+                    if a.force or missing(c, cx):
+                        print(' '.join(sweepCmd(c, cx, a.force)))
+                    else:
+                        print('# sweep {}{}: all {} rho current, not run'.format(
+                            c, ' (common X)' if cx else '', len(C.US['ρGrid'])))
         for cmd in escMissing(part, a.force, strict = False):
             print(' '.join(cmd))
         return
@@ -374,10 +463,10 @@ def main():
     # Both variants, always: the paper's headline outputs read one and their robustness twins the
     # other, so a summary carrying only one of them blocks half the build (config.US['commonX']).
     # A sweep that does not exist yet is left out of the summary rather than failing it; its tables
-    # report MissingInput in stage (iii).
+    # report MissingInput in stage (iii). The summary reads what is on file (missing without the settings check).
     recs = [summarise(c, a.rho, cx) for cx in (False, True) for c in SWEEPS
             if os.path.exists(C.usSweepCsv(c, cx))
-            and (C.US['ρBaseline'] if a.rho is None else a.rho) not in missing(c, cx)]
+            and (C.US['ρBaseline'] if a.rho is None else a.rho) not in missing(c, cx, settings = False)]
     os.makedirs(C.PAPERDIR, exist_ok = True)
     out = os.path.join(C.PAPERDIR, 'usCalibrationSummary.csv')
     pd.DataFrame(recs).to_csv(out, index = False)

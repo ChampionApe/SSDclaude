@@ -19,7 +19,7 @@ endogenous-design details and every status measurement: `archive/readmes/US_READ
 | `calibrateRhoGrid.py`, `calibrateRhoGridEU.py`, `runShocksUS.py`, `runShocksXi.py`, `runESC.py`, `runESCcrra.py`, `runESCxi.py`, `collectESCexperiments.py` | drivers |
 | `runTauTheta.py` | the U.S. 2020 tax with θ pinned on the whole path over a grid, without the cost and at the calibrated λ (runESC's pinned machinery) -> `results/esc/escTauTheta.csv` |
 | `oecd26.py`, `runOECD26.py` | the cross-country test: `ModelOECD(ModelESC)` from `data/oecd29*.csv`; anchor, layer 1 (the anchor's `ω` or, `--omegaRule mean`, the mean layer-2 `ω`; cost), layer 2 (own `ω`), turnout `csesFlat` (cses, Luxembourg flat, on the cses anchor)/`cses`/`cps`, cost `size`/`sizePiR`/`none`, β `common`/`commonR` (set to the anchor's `R2020`), `--retAge nra|exit|none` (ν corrected for the gap to the U.S. statutory or effective exit age), θ figure 1.1's index or a variant of `data/oecd26_theta.csv` (`--theta`), rows keyed on an inputs hash -> `results/oecd26/`; turnout `pooled` (U.S. own CSES, `COMPULSORY` flat, the rest the sample's mean profile) is refused there |
-| `stationaryApprox.py`, `stationaryApproxESC.py` | prepub: stationary against date-specific policy functions (taxes; the design) -> `results/numerical/` |
+| `stationaryApprox.py`, `stationaryApproxESC.py` | prepub: stationary against date-specific policy functions (taxes; the design) -> `results/numerical/` (`stationaryApprox.writeRows` merges on (ρ, t), atomically) |
 | `runHorizon.py` | appendix D, not wired: other horizons and the steady-state terminal condition, FOC residuals off the grid, a jump scan, converged τ-derivatives -> `results/numerical/US_{horizon,horizonDesign,residuals,jumps,derivativeScheme}.csv`; `--theta C --main`, one θ per csv |
 | `c5Numbers.py` | the review response's smaller numbers -> `results/numerical/C5_*.csv` (`US_TaxState` and `US_Strategic` read two); `--theta C --main`, rows read and written at C |
 
@@ -35,14 +35,14 @@ python\US\runShocksUS.py [--commonX] [--family theta] [--rho 1] ; runShocksXi.py
 python\US\runESC.py | runESCcrra.py --exact [--commonX]   # LOG | exact CRRA; --host UK --stage calib: the UK's own cost
 python\US\runESC.py --stage pathHost|corner --spec size --phi 0.5 --commonX     # escPathHost.csv | escCornerSlope.csv
 python\US\runESC.py --stage calib path shocks --spec sizePiR --tag Costs --scenarios baseline mild acute --commonX
-python\US\collectESCexperiments.py [--costs]                                   # -> escExperiments.csv | escAgeingCosts.csv
+python\US\collectESCexperiments.py [--costs] --theta C                        # -> escExperiments.csv | escAgeingCosts.csv
 python\US\runOECD26.py [--stage ...] [--turnout csesFlat cses (config's default; cps, pooled only into another --outdir)] [--spec size sizePiR none] [--betaRule common commonR] [--coarse] [--theta V [--inSample]] [--omegaRule anchor|mean (config's default)] [--retAge none|exit|nra] [--usSweep FILE --outdir DIR]
 python\US\c5Numbers.py selfcheck|a1|a9|loss|lambda|index|design|a13|strategic|designCRRA [--rho 0.5] --theta C --main
 python\US\runHorizon.py --stage log horizon residuals scheme|design [--rho 0.5 2] [--terminal finite|steadyState] --theta C --main
 ```
 
-`python/paper/` drives all of this (`REPLICATION.md` §3 for the runs it does not). Without `--theta` the drivers refuse
-`results/` (`--theta index`: the workbook's θ, `oecd26.indexTheta`). Sweeps resume from their own csv, a row only at the
+`python/paper/` drives all of this (`REPLICATION.md` §3 for the runs it does not). Without `--theta` every driver refuses
+`results/` (`--theta index`: the workbook's θ, `oecd26.indexTheta`; c5Numbers' `selfcheck` writes nothing). Sweeps resume from their own csv, a row only at the
 run's grid, retAge and U.S. β (`calibrateRhoGrid.resumeAt`; finding #13: `--force` after a recalibration); EU sweeps
 need the complete US sweep of the same variant first.
 ESC drivers merge into their csvs (`runESC.mergeWrite`, keyed on `spec`, `phi`, `commonX` and the row's ids).

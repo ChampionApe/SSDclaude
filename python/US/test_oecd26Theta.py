@@ -49,9 +49,13 @@ Run:  .venv\Scripts\python.exe python\US\test_oecd26Theta.py        (~1 min)
      runHorizon.escLambda read converged rows only; runTauTheta.selfCheck raises.
   X  The ξ drivers: runShocksXi and runESCxi need --theta --main, the workbook ξ runs first, the rows at another θ0 are
      replaced, the self-check reads the rows at the run's θ.
-  T  Without --theta calibrateRhoGrid{,EU}, runShocksUS, runESC, runESCcrra, runTauTheta and stationaryApproxESC refuse
-     to write into results/ (oecd26.indexTheta); --theta index runs the workbook's θ there, an output outside results/
-     runs without it.
+  T  Without --theta calibrateRhoGrid{,EU}, runShocksUS, runESC, runESCcrra, runTauTheta, stationaryApprox{,ESC},
+     runHorizon and c5Numbers (but selfcheck) refuse to write into results/ (oecd26.indexTheta), collectESCexperiments
+     results/esc/; --theta index runs the workbook's θ there (collectESCexperiments: keeps the rows without
+     thetaSource), an output outside results/ runs without it. stationaryApprox.writeRows merges on (ρ, t), atomically.
+  Q  python/paper/runCalibrationUS.py counts a sweep row only at config's settings (offSettings: n, ns on CRRA rows,
+     smoothKnots, interpKind; France's and the UK's retAge, βUS): nothing to run on the published sweeps (--dry), a
+     temporary copy at another n, retAge or βUS runs that sweep alone, a config change of n runs all three.
   Z  The sweeps resume a row only at the run's settings (calibrateRhoGrid.staleSettings/resumeAt): another n, ns (CRRA
      rows), smoothKnots or interpKind, and for France and the UK another retAge or U.S. reference β (βUS), is re-solved;
      a row without retAge/βUS is resumed unchecked; the published sweeps of results/calibration/ resume whole at
@@ -812,6 +816,129 @@ iT = [oecd26.indexTheta('index', [oecd26.RESULTS], 'x'), oecd26.indexTheta('C', 
 check("T: oecd26.indexTheta maps 'index' to None, keeps a variant, passes None outside results/ and refuses it inside",
       iT[:3] == [None, 'C', None] and bool(iT[3]), str(iT[3]))
 
+# the four drivers of appendix D, C5 and the ESC merge: stationaryApprox, runHorizon, c5Numbers, collectESCexperiments
+import collectESCexperiments as CE
+NUMD = os.path.join(oecd26.RESULTS, 'numerical')
+watched = [os.path.join(NUMD, f) for f in ('US_stationaryApprox.csv', 'US_horizon.csv', 'C5_criticalTurnout.csv')] + [
+    os.path.join(CE.ESC, f) for f in ('escExperiments.csv', 'escAgeingCosts.csv')]
+mtime = lambda: {f: os.path.getmtime(f) if os.path.exists(f) else None for f in watched}
+mt0 = mtime()
+tSt = [until(stationaryApprox, 'runRho', ['--rho', '2']), until(stationaryApprox, 'runRho', ['--rho', '2', '--theta', 'index']),
+       until(stationaryApprox, 'runRho', ['--rho', '2', '--out', oT('st.csv')]),
+       until(stationaryApprox, 'runRho', ['--rho', '2', '--theta', 'index', '--main'])]
+stTheta = dict(stationaryApprox.THETA)
+tSt.append(until(stationaryApprox, 'runRho', ['--rho', '2', '--theta', 'C', '--main']))
+stThetaC = dict(stationaryApprox.THETA)
+stationaryApprox.THETA.update(stTheta)
+tHz = [until(runHorizon, 'stageLog', ['--stage', 'log']), until(runHorizon, 'stageLog', ['--stage', 'log', '--theta', 'index']),
+       until(runHorizon, 'stageLog', ['--stage', 'log', '--theta', 'index', '--main'])]
+hzTheta = dict(runHorizon.THETA)
+tHz.append(until(runHorizon, 'stageLog', ['--stage', 'log', '--theta', 'C', '--main']))
+hzThetaC = dict(runHorizon.THETA)
+runHorizon.THETA.update(hzSaved)
+
+
+def c5Run(*argv):
+    """ c5Numbers.main() on argv with every command stubbed: {'theta': THETA when the command was reached, 'exit': ...}. """
+    got, cmds, old = {}, dict(c5Numbers.COMMANDS), sys.argv
+
+    def stop(a):
+        got['theta'] = dict(c5Numbers.THETA)
+        raise Stop
+    c5Numbers.COMMANDS.update({k: stop for k in cmds})
+    sys.argv = ['x.py'] + list(argv)
+    try:
+        c5Numbers.main()
+    except Stop:
+        pass
+    except SystemExit as e:
+        got['exit'] = str(e) or 'exit'
+    finally:
+        sys.argv = old
+        c5Numbers.COMMANDS.update(cmds)
+        c5Numbers.THETA.update(c5Saved)
+        runESC.THETA.update(saved)
+    return got
+
+
+tC5 = [c5Run('a1'), c5Run('a1', '--theta', 'index'), c5Run('selfcheck'), c5Run('a1', '--theta', 'index', '--main'),
+       c5Run('a1', '--theta', 'C', '--main')]
+check("T: without --theta stationaryApprox (default --out), runHorizon and c5Numbers (every command but selfcheck, which "
+      "writes nothing) refuse results/; --theta index runs the workbook's θ there (no variant installed), an --out outside "
+      "results/ runs without it, --theta index --main is refused; --theta C --main still runs at C in all three",
+      refused(tSt[0]) and ran(tSt[1]) and ran(tSt[2]) and 'args' not in tSt[3] and "'index'" in tSt[3].get('exit', '')
+      and stTheta == {'variant': None, 'θ0': None} and ran(tSt[4]) and stThetaC == {'variant': 'C', 'θ0': 0.544496}
+      and refused(tHz[0]) and ran(tHz[1]) and 'args' not in tHz[2] and "'index'" in tHz[2].get('exit', '')
+      and hzTheta == hzSaved == {'variant': None, 'θ0': None} and ran(tHz[3]) and hzThetaC == {'variant': 'C', 'θ0': 0.544496}
+      and 'without --theta' in tC5[0].get('exit', '') and 'theta' not in tC5[0]
+      and tC5[1].get('theta') == {'variant': None, 'θ0': None} and 'exit' not in tC5[1] and 'theta' in tC5[2]
+      and 'theta' not in tC5[3] and "'index'" in tC5[3].get('exit', '')
+      and tC5[4].get('theta') == {'variant': 'C', 'θ0': 0.544496},
+      ' | '.join(str(g.get('exit'))[:70] for g in (tSt[0], tHz[0], tC5[0])))
+
+# collectESCexperiments: refused into results/esc/ without --theta; on a fixture ESC directory --theta keeps its rows
+tmpE = oT('esc')
+os.makedirs(tmpE)
+eRow = {'spec': 'size', 'phi': 0.5, 'commonX': True, 'scenario': 'baseline', 'θpinned': False, 'p': 6., 'θ_t0': 0.5,
+        'τ_t0': 0.1, 'sr_t0': 0.2, 'thetaSource': 'C', 'θ0': 0.544496}
+pd.DataFrame([eRow, eRow | {'θ_t0': 0.7, 'thetaSource': np.nan, 'θ0': np.nan}]).to_csv(os.path.join(tmpE, 'escShocks.csv'),
+                                                                                    index = False)
+pd.DataFrame([eRow | {'ρ': 2.0, 'method': 'exact', 'θ_t0': 0.6}]).to_csv(os.path.join(tmpE, 'escShocksCRRA.csv'), index = False)
+
+
+def ceRun(esc, *argv):
+    """ collectESCexperiments.main() with ESC = esc on argv: {'exit': ..., 'out': escExperiments.csv's frame}. """
+    got, old, esc0 = {}, sys.argv, CE.ESC
+    CE.ESC, sys.argv = esc, ['x.py'] + list(argv)
+    f = os.path.join(esc, 'escExperiments.csv')
+    if esc == tmpE and os.path.exists(f):
+        os.remove(f)
+    try:
+        CE.main()
+        got['out'] = pd.read_csv(f) if esc == tmpE else None
+    except SystemExit as e:
+        got['exit'] = str(e) or 'exit'
+    finally:
+        CE.ESC, sys.argv = esc0, old
+    return got
+
+
+tCE = [ceRun(CE.ESC), ceRun(CE.ESC, '--costs'), ceRun(tmpE, '--theta', 'index'), ceRun(tmpE, '--theta', 'C'), ceRun(tmpE)]
+θCE = [sorted(g['out']['θ_t0']) if 'out' in g else None for g in tCE[2:]]
+check("T: collectESCexperiments refuses to write results/esc/ without --theta (both merges); --theta index keeps the rows "
+      "without thetaSource, --theta C the C rows, and an ESC directory outside results/ merges every row as before",
+      all('without --theta' in g.get('exit', '') for g in tCE[:2]) and θCE == [[0.7], [0.5, 0.6], [0.5, 0.6, 0.7]],
+      '{} | {}'.format(tCE[0].get('exit', '')[:80], θCE))
+
+# stationaryApprox.writeRows: merged on (ρ, t), atomic, the other ρ kept to the digit, another θ dropped
+fSA = oT('sa_merge.csv')
+saRow = lambda ρ, t, v, **kw: {'ρ': ρ, 't': t, 'date': 1960 + 30*t, 'τ_exact': v, 'inGrid_stat': True, 'nEqMax': 1,
+                               'thetaSource': 'C', 'θ0': 0.544496} | kw
+pd.DataFrame([saRow(0.5, 0, 0.1), saRow(0.5, 1, 0.2), saRow(2.0, 0, 0.1 + 0.2), saRow(2.0, 1, 1/3),
+              saRow(1.5, 0, 9., thetaSource = np.nan, θ0 = np.nan)]).to_csv(fSA, index = False)
+fPub, fPubCopy = os.path.join(NUMD, 'US_stationaryApprox.csv'), oT('US_stationaryApprox.csv')
+stationaryApprox.THETA.update({'variant': 'C', 'θ0': 0.544496})
+try:
+    stationaryApprox.writeRows(pd.DataFrame([saRow(0.5, 1, 6.), saRow(0.5, 0, 5.)]), fSA)
+    samePub = None
+    if os.path.exists(fPub):
+        shutil.copy(fPub, fPubCopy)
+        own = pd.read_csv(fPubCopy, float_precision = 'round_trip')
+        stationaryApprox.writeRows(own[own['ρ'] == 0.5].reset_index(drop = True), fPubCopy)
+        with open(fPub, 'rb') as f1, open(fPubCopy, 'rb') as f2:
+            samePub = f1.read() == f2.read()
+finally:
+    stationaryApprox.THETA.update({'variant': None, 'θ0': None})
+mSA = pd.read_csv(fSA, float_precision = 'round_trip')
+check("T: stationaryApprox.writeRows merges on (ρ, t): this run's ρ replaced, the other ρ's rows kept to the digit, a row "
+      "at another θ dropped, sorted, no temporary file left; the published csv rewritten with its own ρ = 0.5 rows is "
+      "byte-identical", list(zip(mSA['ρ'], mSA['t'], mSA['τ_exact'])) == [(0.5, 0, 5.), (0.5, 1, 6.), (2.0, 0, 0.1 + 0.2),
+                                                                          (2.0, 1, 1/3)]
+      and set(mSA['thetaSource']) == {'C'} and not os.path.exists(fSA + '.tmp') and samePub is not False,
+      'published csv byte-identical: {}'.format(samePub))
+check("T: none of these runs touched results/numerical/ or results/esc/ (mtimes of US_stationaryApprox, US_horizon, "
+      "C5_criticalTurnout, escExperiments, escAgeingCosts)", mtime() == mt0)
+
 # ==== Z: the sweeps resume at their settings ==================================================================
 gsC = oecd26.paperConfig().US['gridSettings']
 wantUS = {'n': gsC['n'], 'ns': gsC['ns'], 'smoothKnots': gsC['smoothKnots'], 'interpKind': gsC['interpKind']}
@@ -884,6 +1011,81 @@ check("Z: calibrateRhoGridEU end to end: a new row records retAge (testEU.retAge
       and e2['retAge'].iloc[0] == testEU.retAgeHost('FR') and e2['timestamp'].iloc[0] != 'x'
       and pd.isna(e3['retAge'].iloc[0]) and e3['timestamp'].iloc[0] == e2['timestamp'].iloc[0],
       'βUS {!r}, retAge {}'.format(e1['βUS'].iloc[0], e1['retAge'].iloc[0]))
+
+# ==== Q: python/paper/runCalibrationUS.py counts a sweep row only at config's settings ===========================
+import io, contextlib
+import runCalibrationUS as RCU          # python/paper is on sys.path (section G); its config is PC
+
+
+def rcuDry(*argv):
+    """ runCalibrationUS.main() --dry on argv: (the command lines it prints, every line). """
+    old, buf = sys.argv, io.StringIO()
+    sys.argv = ['x.py', '--dry'] + list(argv)
+    try:
+        with contextlib.redirect_stdout(buf):
+            RCU.main()
+    finally:
+        sys.argv = old
+    lines = buf.getvalue().splitlines()
+    return [l for l in lines if l.startswith(PC.PYTHON)], lines
+
+
+SWQ = [(c, cx) for cx in (False, True) for c in RCU.SWEEPS]
+RCU._NOTICED.clear()
+cmdQ, linesQ = rcuDry('--commonX')
+pubQ = {k: (RCU.missing(*k), RCU.stale(*k), RCU.offSettings(*k)) for k in SWQ}
+cmdQ2, linesQ2 = rcuDry('--commonX')
+check("Q: runCalibrationUS on the published sweeps (US, FR, UK, both variants): nothing missing, stale or off config's "
+      "settings, France's and the UK's rows (no retAge/βUS) counted as current with one notice per csv; --dry --commonX "
+      "prints no command",
+      all(m == [] and not s and o[0] == {} and len(o[1]) == (0 if k[0] == 'US' else 3) for k, (m, s, o) in pubQ.items())
+      and cmdQ == cmdQ2 == [] and sum('current, not run' in l for l in linesQ) == 6
+      and sum(l.startswith('notice') for l in linesQ) == 4 and not any(l.startswith('notice') for l in linesQ2),
+      '{} | {}'.format({'{}{}'.format(*k): len(v[2][1]) for k, v in pubQ.items()}, linesQ[0]))
+
+tmpQ = os.path.join(tmp, 'Q')
+os.makedirs(tmpQ)
+for k in SWQ:
+    shutil.copy(PC.usSweepCsv(*k), tmpQ)
+calQ, gsQ = PC.CALIBDIR, PC.US['gridSettings']
+rd = lambda f: pd.read_csv(os.path.join(tmpQ, f), float_precision = 'round_trip')
+wr = lambda d, f: d.to_csv(os.path.join(tmpQ, f), index = False)
+try:
+    PC.CALIBDIR = tmpQ
+    d = rd('US_rhoGridCommonX.csv')
+    wr(d.assign(n = np.where(np.isclose(d['ρ'], 0.5), 51, d['n'])), 'US_rhoGridCommonX.csv')       # another n at 0.5
+    d = rd('US_rhoGrid.csv')
+    wr(d.assign(n = np.where(np.isclose(d['ρ'], 2.0), np.nan, d['n'])), 'US_rhoGrid.csv')         # no grid at 2
+    βQ = dict(zip(d['ρ'], d['β']))
+    d = rd('FR_rhoGrid.csv')                 # 0.5 at the U.S. β; 1 (LOG) another ns, retAge exit; 2 another βUS
+    d['retAge'] = np.where(np.isclose(d['ρ'], 1.0), 'exit', 'nra')
+    d['βUS'] = [βQ[ρ]*(1. + 1e-9 if ρ == 2.0 else 1.) for ρ in d['ρ']]
+    d['ns'] = np.where(np.isclose(d['ρ'], 1.0), 77, d['ns'])
+    wr(d, 'FR_rhoGrid.csv')
+    tmpRes = {k: (RCU.missing(*k), RCU.stale(*k), RCU.offSettings(*k)) for k in SWQ}
+    noSet = RCU.missing('US', True, settings = False)
+    cmdT, linesT = rcuDry('--commonX')
+    PC.CALIBDIR = calQ
+    PC.US['gridSettings'] = gsQ | {'n': 151}
+    cfgRes = {k: RCU.missing(*k) for k in SWQ}
+    cmdN, _ = rcuDry()
+finally:
+    PC.CALIBDIR, PC.US['gridSettings'] = calQ, gsQ
+check("Q: on temporary copies, a row recorded at another n (US common X, ρ = 0.5), retAge (France, ρ = 1) or U.S. β "
+      "(France, ρ = 2, 1e-9 relative) is missing and --dry prints that sweep's command alone (no --force: the child "
+      "re-solves it), ns on a LOG row and a row without n count as current, the summary's check (settings = False) does "
+      "not see it",
+      tmpRes[('US', True)][0] == [0.5] and tmpRes[('US', True)][2][0] == {0.5: ['n']}
+      and tmpRes[('US', False)][0] == [] and tmpRes[('US', False)][2] == ({}, [2.0])
+      and tmpRes[('FR', False)][0] == [1.0, 2.0] and tmpRes[('FR', False)][2] == ({1.0: ['retAge'], 2.0: ['βUS']}, [])
+      and all(tmpRes[k][0] == [] for k in SWQ if k not in (('US', True), ('FR', False)))
+      and not any(v[1] for v in tmpRes.values()) and noSet == []
+      and len(cmdT) == 2 and sum('calibrateRhoGrid.py ' in c and c.endswith('--commonX') for c in cmdT) == 1
+      and sum('--country FR' in c and '--commonX' not in c for c in cmdT) == 1 and not any('--force' in c for c in cmdT),
+      '{} | {}'.format(tmpRes[('FR', False)][2], [c.split(os.sep)[-1][:60] for c in cmdT]))
+check("Q: a change of config.US['gridSettings'] (n 101 -> 151) makes every published sweep row missing, and --dry prints "
+      "the three sweeps at --n 151", all(v == [0.5, 1.0, 2.0] for v in cfgRes.values())
+      and len(cmdN) == 3 and all('--n 151' in c for c in cmdN), str(cfgRes[('US', True)]))
 
 shutil.rmtree(tmp, ignore_errors = True)
 print('\n({:.0f}s)'.format(time.time() - tic))

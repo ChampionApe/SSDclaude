@@ -42,6 +42,24 @@ def _interpAtCand(x, Y, cand):
     return np.where(np.isfinite(cand) & (x[j] == c), Y[j, n], out)
 
 
+def _firstFinite(Z):
+    """ (N,) index of each column's first finite node of Z (M, N), 0 where a column has none: the node
+    roots1d.selectMaxFrozen puts the lower-corner candidate on when Z is the consistent z. """
+    fin = np.isfinite(Z)
+    return np.where(fin.any(axis = 0), fin.argmax(axis = 0), 0)
+
+
+def _anchoredAt(τGrid, zk, Lk, anchor):
+    """ One candidate's frozen objective (M, N): ∫ zk along τGrid plus the formal retirees' level Lk, both
+    taken from the column's common anchor node (_firstFinite of the consistent z), where every candidate
+    drops the same column-common levels. A column where zk is not finite at the anchor is NaN: there the
+    candidate has no level comparable with the others'. zk must be NaN wherever the consistent z is not
+    finite, so that no candidate's integral starts before the anchor. """
+    n = np.arange(zk.shape[1])
+    at = np.isfinite(zk[anchor, n])
+    return np.where(at[None, :], roots1d.cumtrapzColumns(τGrid, zk) + Lk[anchor, n][None, :], np.nan)
+
+
 def _retireeLevel(w, c2, p):
     """ Σ_i w_i υ(c_{2,t}^i), υ(c) = c^p/p with p = 1-1/ρ, and ln c at p = 0 (ρ = 1, where the CRRA
     terminal period is solved too and c^p/p is undefined). c2: (..., ni). """
@@ -233,19 +251,22 @@ class LOG:
         """ (ni,) weights of the formal retirees' term in W_t, exactly as Base.FOC applies them to dv2i. """
         return self.BG.get('γi[t-1]', t) * self.BG.ω2i(t)
 
-    def objectiveFrozen(self, cand, τGrid, d, θ, t, ε, tLag, terminal):
+    def objectiveFrozen(self, cand, τGrid, d, z, θ, t, ε, tLag, terminal):
         """ W_t(τ; D) on τGrid at the formal savings shares D frozen at each candidate tax, up to a
         constant common to a column -- the callback of roots1d.selectMaxFrozen (eq:objectiveProfile).
-        d: a stateGrid dict over the τ-first mesh of τGrid and the N columns (flat length M·N); cand:
-        (K, N) candidate taxes, NaN-padded; θ: the design in force, scalar or (N,) per column. Returns
-        (K, M, N).
+        d: a stateGrid dict over the τ-first mesh of τGrid and the N columns (flat length M·N); z: the
+        consistent z_t (focGrid of d), flat (M·N,) or (M, N), whose non-finite cells stay NaN and whose
+        first finite node per column is the anchor; cand: (K, N) candidate taxes, NaN-padded; θ: the
+        design in force, scalar or (N,) per column. Returns (K, M, N).
 
         It is z_t (focGrid) re-evaluated along the grid with d['si_s_'] replaced by the frozen shares and
         integrated in τ (roots1d.cumtrapzColumns), plus the formal retirees' level Σ_i w_i ln c_{2,t}^i at
-        the first feasible node and the frozen shares; the young's and the informal retirees' levels
-        there are common to the column and drop out. The frozen shares are Eq EE:si_s at vintage t-1 at
-        the candidate's own tax (exact under LOG, where B = β). c_{2,t}^i is evaluated at h = s_ = 1:
-        its outer factor is common to the column and drops out with the rest. """
+        the frozen shares, both from the column's anchor (_anchoredAt): the young's and the informal
+        retirees' levels there are common to the column and drop out, which needs one anchor for every
+        candidate; a candidate whose frozen condition is not finite there is NaN in that column. The
+        frozen shares are Eq EE:si_s at vintage t-1 at the candidate's own tax (exact under LOG, where
+        B = β). c_{2,t}^i is evaluated at h = s_ = 1: its outer factor is common to the column and drops
+        out with the rest. """
         BG = self.BG
         cand = np.asarray(cand, dtype = float)
         K, N = cand.shape
@@ -261,16 +282,16 @@ class LOG:
             D[ok] = BG.si_s(βi_, cF[ok], θF[ok], Γs_, tLag)
         θB = np.broadcast_to(θc[None, :], (M, N)).reshape(-1)
         oldW = self._oldFormalWeights(t)
-        n = np.arange(N)
+        zN = np.asarray(z, dtype = float).reshape(M, N)
+        infeasible, anchor = ~np.isfinite(zN), _firstFinite(zN)
         W = np.full((K, M, N), np.nan)
         with np.errstate(divide = 'ignore', invalid = 'ignore'):
             for k in range(K):
                 Dk = np.broadcast_to(D[k*N:(k+1)*N][None, :, :], (M, N, self.ni)).reshape(-1, self.ni)
                 zk = np.asarray(self.focGrid(d | {'si_s_': Dk}, t, θB, ε, terminal), dtype = float).reshape(M, N)
+                zk = np.where(infeasible, np.nan, zk)
                 Lk = (oldW*np.log(BG.c2i(1., 1., d['τ'], θB, Dk, t))).sum(axis = -1).reshape(M, N)
-                fin = np.isfinite(zk)
-                first = np.where(fin.any(axis = 0), fin.argmax(axis = 0), 0)
-                W[k] = roots1d.cumtrapzColumns(τGrid, zk) + Lk[first, n][None, :]
+                W[k] = _anchoredAt(τGrid, zk, Lk, anchor)
         return W
 
     def _select(self, x, z, frozen, tol = 0.0):
@@ -325,7 +346,7 @@ class LOG:
             g = τGrid[lo:hi]
             d = self.stateGrid(g, t, θ, tLag, terminal, τ1, θ1)
             z = self.focGrid(d, t, θ, ε, terminal)
-            frozen = lambda cand, g = g, d = d: self.objectiveFrozen(cand, g, d, θ, t, ε, tLag, terminal)
+            frozen = lambda cand, g = g, d = d, z = z: self.objectiveFrozen(cand, g, d, z, θ, t, ε, tLag, terminal)
             sel = self._select(g, z, frozen, tol = tol)
             τ = sel['x']
             atLo, atHi = (lo > 0) and (τ <= g[0]), (hi < n) and (τ >= g[-1])
@@ -525,7 +546,7 @@ class CRRA(LOG):
         with self.BG.cacheParams():
             d = self.stateGrid_T(g.flat['τ'], g.flat['s_'], θ, ε, t, tLag)
             z = self.focGrid_T(d, θ, ε, t)
-            frozen = lambda cand: self.objectiveFrozen(cand, g, d, None, θ, t, tLag, ε = ε, terminal = True)
+            frozen = lambda cand: self.objectiveFrozen(cand, g, d, None, z, θ, t, tLag, ε = ε, terminal = True)
             sel = self._selectND(g, z, 'τ', frozen, tol = tol)
         report = self.report_T(sGrid, sel['x'], θ, ε, t, tLag)
         report['nMax'], report['atBound'] = sel['nMax'], sel['atBound']
@@ -533,22 +554,24 @@ class CRRA(LOG):
         return report
 
     # ------------------------------------------------------------------ W_t at frozen shares (CRRA)
-    def objectiveFrozen(self, cand, g, d, parts, θ, t, tLag, ε = None, terminal = False):
+    def objectiveFrozen(self, cand, g, d, parts, z, θ, t, tLag, ε = None, terminal = False):
         """ W_t(τ; D) over the grid g (τ its first axis) at formal shares frozen at each column's
         candidates, up to a column constant -- the callback of roots1d.selectMaxFrozenND
         (eq:objectiveProfile). d: the grid dict (stateGrid_T / stateGrid_t) with 'h', 's_', 'τ' flat
-        over g; parts: focParts_t(d) at t < T, None at T (pass ε and terminal = True there); θ: the
-        design in force, scalar or flat over g (constant along τ within a column). Returns (K, M, N) in
-        g.asColumns order.
+        over g; parts: focParts_t(d) at t < T, None at T (pass ε and terminal = True there); z: the
+        consistent z_t flat over g (focGrid_T / zAtShares at d['si_s_']), whose non-finite cells stay NaN
+        and whose first finite node per column is the anchor; θ: the design in force, scalar or flat over
+        g (constant along τ within a column). Returns (K, M, N) in g.asColumns order.
 
         It is z_t re-evaluated with the formal retirees' shares frozen (zAtShares at t < T, focGrid_T at
         T) and integrated in τ (roots1d.cumtrapzColumns), plus Σ_i w_i (c_{2,t}^i)^{1-1/ρ}/(1-1/ρ) (ln c
-        at ρ = 1, _retireeLevel) at the first feasible node and the frozen shares; the young's and the
-        informal retirees' levels there are common to the column and drop out. Integrating the condition
-        rather than reading utility levels keeps the smoothed numerical derivatives z_t carries at t < T
-        (finding #18). The frozen shares are Eq EE:si_s at vintage t-1 at the candidate's own tax and the
-        hours there, B_t(s_{t-1}, h_t) with h interpolated linearly along τ (_interpAtCand). Cells where
-        z_t is infeasible stay NaN. """
+        at ρ = 1, _retireeLevel) at the frozen shares, both from the column's anchor (_anchoredAt): the
+        young's and the informal retirees' levels there are common to the column and drop out, which
+        needs one anchor for every candidate; a candidate whose frozen condition is not finite there is
+        NaN in that column. Integrating the condition rather than reading utility levels keeps the
+        smoothed numerical derivatives z_t carries at t < T (finding #18). The frozen shares are Eq
+        EE:si_s at vintage t-1 at the candidate's own tax and the hours there, B_t(s_{t-1}, h_t) with h
+        interpolated linearly along τ (_interpAtCand). """
         BG = self.BG
         if g.axis('τ') != 0:
             raise ValueError('objectiveFrozen expects τ as the first axis of the grid.')
@@ -574,7 +597,8 @@ class CRRA(LOG):
                 D[ok] = BG.si_s(Bc, cF[ok], θcF[ok], Γc, tLag)
         p = 1 - 1/float(BG.get('ρ', t))
         oldW = self._oldFormalWeights(t)
-        n = np.arange(N)
+        zN = np.asarray(z, dtype = float).reshape(M, N)
+        infeasible, anchor = ~np.isfinite(zN), _firstFinite(zN)
         W = np.full((K, M, N), np.nan)
         θz = θ if np.ndim(θ) == 0 else θF
         with np.errstate(divide = 'ignore', invalid = 'ignore'):
@@ -585,11 +609,9 @@ class CRRA(LOG):
                     zk = self.focGrid_T(d | {'si_s_': Dk, 'c2i': c2k}, θz, ε, t)
                 else:
                     zk = self.zAtShares(d, parts, θz, Dk, t)
-                zk = np.asarray(zk, dtype = float).reshape(M, N)
+                zk = np.where(infeasible, np.nan, np.asarray(zk, dtype = float).reshape(M, N))
                 Lk = _retireeLevel(oldW, c2k, p).reshape(M, N)
-                fin = np.isfinite(zk)
-                first = np.where(fin.any(axis = 0), fin.argmax(axis = 0), 0)
-                W[k] = roots1d.cumtrapzColumns(τGrid, zk) + Lk[first, n][None, :]
+                W[k] = _anchoredAt(τGrid, zk, Lk, anchor)
         return W
 
     def report_T(self, sGrid, τ, θ, ε, t, tLag):
@@ -756,7 +778,7 @@ class CRRA(LOG):
                                  t, tLag, t1, θ, θ1, ε, ε1, solp)
             parts = self.focParts_t(d, g, t, ε)
             z = self.zAtShares(d, parts, θ, d['si_s_'], t)        # = focGrid_t, splines done once
-            frozen = lambda cand: self.objectiveFrozen(cand, g, d, parts, θ, t, tLag)
+            frozen = lambda cand: self.objectiveFrozen(cand, g, d, parts, z, θ, t, tLag)
             sel = self._selectND(g, z, 'τ', frozen, tol = tol)
 
             τ = sel['x']

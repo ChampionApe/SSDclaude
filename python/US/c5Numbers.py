@@ -6,8 +6,9 @@ Run:  .venv\Scripts\python.exe python\US\c5Numbers.py <command> [--rho ...] --th
 --theta VARIANT --main (VARIANT = python/paper/config.py's US['theta'], oecd26.thetaRoot; the paper's numbers): every
 U.S. model at theta0 = the variant's U.S. row of data/oecd26_theta.csv (db['θ0'], ModelUS.getθ; runESC.setTheta for
 the ESC builders, France at its FRA row), every csv read kept at that thetaSource and theta0 (_at: a run never reads a
-row of another theta, #13), every row written carrying both, and theta* = theta0. Without the flags the workbook's
-theta (rows without thetaSource). Where a CRRA row of the Pi-inclusive cost ('sizePiR', escCalibrationCRRACosts.csv)
+row of another theta, #13), every row written carrying both, and theta* = theta0. Without --theta a command that
+writes results/numerical/ (all but selfcheck) is refused (oecd26.indexTheta); --theta index runs the workbook's theta
+(rows without thetaSource). Where a CRRA row of the Pi-inclusive cost ('sizePiR', escCalibrationCRRACosts.csv)
 is missing at the run's theta, `loss` and `lambda` leave its CRRA entries out (NaN); `a9` reads
 C5_US_shocksRhoGridCommonX.csv only at the run's theta.
 
@@ -872,9 +873,12 @@ def main():
     p.add_argument('--rho', type = float, nargs = '*', default = list(RHOS))
     p.add_argument('--passes', type = int, default = 2, help = 'designCRRA: solves per experiment at most')
     p.add_argument('--only', nargs = '*', default = None, help = 'designCRRA: experiments to run (X1 X2)')
-    p.add_argument('--theta', default = None, help = "the pipeline's main θ variant, config.US['theta'] (with --main)")
+    p.add_argument('--theta', default = None,
+                   help = "the pipeline's main θ variant, config.US['theta'] (with --main); 'index' the workbook's θ")
     p.add_argument('--main', action = 'store_true', help = "with --theta config.US['theta']")
     a = p.parse_args()
+    if a.theta in (None, oecd26.INDEX) and not a.main:
+        a.theta = oecd26.indexTheta(a.theta, [] if a.command == 'selfcheck' else [OUTDIR], 'c5Numbers.py')
     setTheta(a.theta, a.main)
     print(f"θ variant {THETA['variant']!r}: θ* = {θStar()!r}")
     tic = time.time()

@@ -11,8 +11,9 @@ Run:  .venv\Scripts\python.exe python\US\runHorizon.py --stage horizon --rho 0.5
 THE THETA VARIANT. --theta VARIANT --main (VARIANT = python/paper/config.py's US['theta'], oecd26.thetaRoot): every
 model at theta0 = the variant's U.S. row of data/oecd26_theta.csv (db['θ0'], ModelUS.getθ), every calibration row
 read (the sweep, the cost, the design path of the self-checks) kept at that thetaSource and theta0 (_at), every row
-written carrying both. A csv holds one theta: a merge drops the rows on disk at another (mergeWrite). Without the
-flags the workbook's theta.
+written carrying both. A csv holds one theta: a merge drops the rows on disk at another (mergeWrite). Without --theta
+the run is refused (every output is under results/numerical/, oecd26.indexTheta); --theta index runs the workbook's
+theta there.
 
 HORIZON. The calibrated economy (results/calibration/US_rhoGridCommonX.csv; the cost lambda from
 results/esc/escCalibration{,CRRA}.csv) with every parameter held at its calibrated value, re-solved with the
@@ -512,9 +513,12 @@ def main():
     p.add_argument('--refine', type = int, default = 8, help = 'residuals, scheme: the reference tax-grid refinement')
     p.add_argument('--nScan', type = int, default = 41)
     p.add_argument('--width', type = float, default = 1e-3)
-    p.add_argument('--theta', default = None, help = "the pipeline's main θ variant, config.US['theta'] (with --main)")
+    p.add_argument('--theta', default = None,
+                   help = "the pipeline's main θ variant, config.US['theta'] (with --main); 'index' the workbook's θ")
     p.add_argument('--main', action = 'store_true', help = "with --theta config.US['theta']")
     a = p.parse_args()
+    if a.theta in (None, oecd26.INDEX) and not a.main:
+        a.theta = oecd26.indexTheta(a.theta, [OUTDIR], 'runHorizon.py')
     setTheta(a.theta, a.main)
     print(f"θ variant {THETA['variant']!r}: θ0 = {THETA['θ0']!r}")
     for st in a.stage:

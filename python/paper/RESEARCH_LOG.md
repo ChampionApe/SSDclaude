@@ -195,3 +195,10 @@ Moved on purpose: NUM_Selection(Files) count `US_shocksXiCommonX.csv` and `escXi
 60 -> 90 counted; Endogenous design 12 -> 13 files, rows unchanged: the xi csv has no row at θ C); the `_thetaA/B` banners name
 `results/oecd26_theta_<V>/`. 36 orphan files of retired builders `git rm`ed from results/paper; dead defs and imports out (`spendingPath`
 stays: REPLICATION §3 cites it); Argentina's commands carry `--commonX`. Checks: tests 2/2 (16 + 11), build 59/0, `--map`, `--site`, quarto OK.
+
+## 2026-11-04 — runCalibrationUS checks the sweeps' recorded settings (`notes/codeReview_triage.md`, "Still open")
+`missing()` counts a sweep row only at the settings `sweepCmd` passes, as the row records them (`offSettings`: n, ns on CRRA rows,
+smoothKnots, interpKind; France's and the UK's retAge and βUS, the U.S. sweep's β), read off the csvs (no python/US import), so a change
+of `config.US['gridSettings']`/`retAgeFR`/`retAgeUK` runs the child, which re-solves those rows; a row without the columns counts as
+current (one notice per csv: FR, UK today). The summary keeps the presence check; `--dry` prints only what would run: today nothing.
+On a temp copy at n = 51 (ρ 0.5) HEAD's `missing` returns [], the new [0.5] (`python/US/test_oecd26Theta.py` Q).

@@ -25,7 +25,9 @@ Two arms, Argentina (`python/InformalSavings/`) and the OECD economies (`python/
   and an output counts only there. The U.S. ρ grid is 0.5, 1, 2 (`--rhos`).
 - Every stage skips work whose output exists; `--force` overrides, `--list` reports, `--dry` prints the delegated
   commands. **`--force` whenever anything upstream moved, a recalibration above all** (#13); it is forwarded to the
-  child only where the child resumes.
+  child only where the child resumes. `runCalibrationUS` counts a sweep row only at the settings it passes, as the row
+  records them (`offSettings`: n, ns, smoothKnots, interpKind; France's and the UK's retAge, βUS; a row without them
+  counts as current, one notice per csv), and its `--dry` prints only the commands that would run.
 - Stage (iii) imports no model code and unpickles nothing; an output whose inputs are missing or stale is reported and
   skipped (`datasets.MissingInput`, `StaleInput`; `--list`: BLOCKED), never partially written. Stages (i)/(ii) are
   declarations: `config.py` records the settings the published numbers were produced at. **Change a paper number

@@ -55,3 +55,7 @@ look. A lesson that would recur goes to `notes/crossCuttingFindings.md` once, ci
   κ and the τ/s paths of the baseline and the 'match' reform are bitwise equal at ρ = 1, 2; all 17 `objectiveFrozen` calls per ρ
   are bitwise equal at ρ = 1, 2, 0.5, with no column masked; τ matches the published csv to 8.3e-17. A ρ = 1 recalibration from
   x + 0.05 is bitwise equal too. informalAnalytical keeps the per-candidate anchor (its README).
+
+## 2026-11-04 — addEigenVectors in closed form
+`model.addEigenVectors`: y = z/(γ·z) (z·γᵀ has rank one) replaces ARPACK `eigs`, whose random start made two builds of one model
+differ by ~1e-16; on the ARG workbook instance ARPACK and the closed form agree to 3.3e-16 (as python/US since P1).

@@ -326,13 +326,13 @@ class ModelInformalAnalytical:
     def addEigenVectors(self):
         """ Eq (calibration:yNorm): both eigenvectors scaled to γ·y = 1, i.e. Γ_h = 1 AND ∑γ_i(η_i/X_i)^ξ = 1.
         The y^x scale is NOT cosmetic: calibrationη0/X0 take h_t as average formal hours ∑γ_i h_{t,i},
-        which holds only under it. scipy's unit-norm eigenvector gives ∑γ_i y^x_i ≈ 0.5 here, and the
-        informal hours target then lands at twice its data value. """
-        γi = self.db['γi'].xs(self.db['t0']).values
-        valx, vecx = scipy.sparse.linalg.eigs(self.db['zxi'].xs(self.db['t0']).values.reshape(self.ni,1) * γi.reshape(1, self.ni), k = 1)
-        valη, vecη = scipy.sparse.linalg.eigs(self.db['zηi'].xs(self.db['t0']).values.reshape(self.ni,1) * γi.reshape(1, self.ni), k = 1)
-        yx, yη = abs(np.real(vecx)).reshape(self.ni), abs(np.real(vecη)).reshape(self.ni)
-        self.db['yx'], self.db['yη'] = yx/(γi*yx).sum(), yη/(γi*yη).sum()
+        which holds only under it (a unit-norm eigenvector would put the informal hours target at twice its
+        data value). The matrix z·γᵀ has rank one, so its eigenvector is z itself and the scaled one is
+        y = z/(γ·z), in closed form (deterministic, unlike an iterative eigen-solver's random start). """
+        t0 = self.db['t0']
+        γi = self.db['γi'].xs(t0).values
+        zx, zη = self.db['zxi'].xs(t0).values, self.db['zηi'].xs(t0).values
+        self.db['yx'], self.db['yη'] = zx/(γi*zx).sum(), zη/(γi*zη).sum()
     def getηi(self):
         return self.db['yη']/(self.db['yx']*sum(self.db['γi'].xs(self.db['t0']).values*self.db['yη']))
 

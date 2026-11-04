@@ -1,6 +1,6 @@
 r""" How far is a stationary policy function from the exact date-specific one along the US demographic path?
 
-Run:  .venv\Scripts\python.exe python\US\stationaryApprox.py                 # rho = 0.5, 2 (config.US['ρStationary'])
+Run:  .venv\Scripts\python.exe python\US\stationaryApprox.py --theta C --main   # rho = 0.5, 2 (config.US['ρStationary'])
       ... --rho 2 --Tstat 15 --ns 150 --n 101 [--vectorX]
 
 The question (sec:numerical's literature paragraph). The numerical politico-economic literature computes a
@@ -27,7 +27,10 @@ the tail for the finite-horizon effect. Both solves share one state grid (the ba
 grid settings, so the gaps are not interpolation artefacts of different grids.
 
 Writes results/numerical/US_stationaryApprox.csv, one row per (rho, t), each with the exact solve's tax counts
-(nEqMax, nCandMax, nFallback; policy.multiplicityColumns). A relative --out is the caller's working directory's.
+(nEqMax, nCandMax, nFallback; policy.multiplicityColumns), merged into the csv on (rho, t) and written atomically
+(writeRows): a run at some rho keeps the other rho's rows at its θ and drops the rows at another θ (one θ per csv).
+A relative --out is the caller's working directory's. --theta C --main is the pipeline's; --theta index (or an --out
+outside results/) the workbook's θ, which without --theta is refused into results/ (oecd26.indexTheta).
 """
 import os, sys, argparse, time
 import numpy as np, pandas as pd
@@ -167,6 +170,29 @@ def runRho(ρ, commonX, gs, Tstat):
     return pd.DataFrame(rows)
 
 
+KEY = ['ρ', 't']                  # the csv's row key (python/paper/datasets.stationaryApprox)
+
+
+def writeRows(df, path):
+    """ Merge this run's rows `df` into csv `path` and write it through runESC.writeCsv (atomic): rows on disk at a
+    key (ρ, t) of `df` are replaced, the others kept if at the run's θ (oecd26.rowsAtTheta at THETA) and dropped
+    otherwise. Carried rows are read round trip, so their digits survive. Returns the written frame, sorted on KEY. """
+    import oecd26, runESC
+    os.makedirs(os.path.dirname(path), exist_ok = True)
+    out = df
+    if os.path.exists(path):
+        old = pd.read_csv(path, float_precision = 'round_trip')
+        keep = oecd26.rowsAtTheta(old, THETA['variant'], THETA['θ0'])
+        if len(keep) < len(old):
+            print(f'  {os.path.relpath(path, REPO)}: {len(old) - len(keep)} rows at another θ dropped')
+        k = lambda d: [(round(float(ρ), 9), int(t)) for ρ, t in zip(d['ρ'], d['t'])]
+        mine = set(k(df))
+        out = pd.concat([keep[[x not in mine for x in k(keep)]], df], ignore_index = True)
+    out = out.sort_values(KEY, kind = 'stable').reset_index(drop = True)
+    runESC.writeCsv(out, path)
+    return out
+
+
 def main():
     p = argparse.ArgumentParser(description = 'Stationary-policy approximation vs exact date-specific policies (US, CRRA).')
     p.add_argument('--rho', type = float, nargs = '*', default = [0.5, 2.0])      # config.US['ρStationary']
@@ -176,12 +202,15 @@ def main():
     p.add_argument('--smoothKnots', type = int, default = 4)
     p.add_argument('--vectorX', action = 'store_true', help = 'the vector-X calibration variant (headline is common X)')
     p.add_argument('--out', default = OUT)
-    p.add_argument('--theta', default = None, help = "the pipeline's main θ variant (with --main)")
+    p.add_argument('--theta', default = None,
+                   help = "the pipeline's main θ variant (with --main); 'index' the workbook's θ")
     p.add_argument('--main', action = 'store_true', help = "with --theta config.US['theta']")
     a = p.parse_args()
     a.out = os.path.abspath(os.path.join(CWD, a.out))
+    import oecd26
+    if a.theta in (None, oecd26.INDEX) and not a.main:
+        a.theta = oecd26.indexTheta(a.theta, [a.out], 'stationaryApprox.py')
     if a.theta is not None or a.main:
-        import oecd26
         if not (a.theta is not None and a.main):
             raise SystemExit('--theta needs --main here (and --main --theta)')
         try:
@@ -194,8 +223,7 @@ def main():
     df = pd.concat(dfs, ignore_index = True)
     if THETA['variant'] is not None:
         df = df.assign(thetaSource = THETA['variant'], θ0 = THETA['θ0'])
-    os.makedirs(os.path.dirname(a.out), exist_ok = True)
-    df.to_csv(a.out, index = False)
+    writeRows(df, a.out)
     pd.set_option('display.width', 200)
     print('\n' + df[['ρ', 'date', 'ν', 'τ_exact', 'τ_stat', 'τ_ssPEE', 'τ_statLongRun', 'gap_pp', 'gapAtExactState_pp',
                      'gapSS_pp', 'gapLongRun_pp', 'srY_exact', 'srY_stat', 'statConv', 'inGrid_stat']].round(5).to_string(index = False))

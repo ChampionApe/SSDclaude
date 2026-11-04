@@ -25,3 +25,13 @@ The adjPar family's `t` (with `adjDf_ti`'s broken `k.loc` branch), `Base.power_p
 `test_ee.py`: the PAYG check is now per formal young, and a last section moves γ₀ over t (the budget misses by 7.0e-4 on the
 old κ). The workbook's γ₀ is constant, so the factor was exactly 1 and no output moves. `objectiveFrozen` (LOG and CRRA) keeps
 the per-candidate anchor that InformalSavings replaced (README, open items).
+
+## 2026-11-04 — `objectiveFrozen`'s common anchor (port of InformalSavings' fix of today)
+`LOG/CRRA.objectiveFrozen` take the consistent z and anchor every candidate at its column's first finite node of z
+(`policy._firstFinite`, `_anchoredAt`); a candidate not finite there is NaN in that column. Toy: `test_cacheParams.py` §8 (4 FAIL on the old code).
+Old vs new in one process (`logs/iaFrozen_oldNew.log`): solves at ρ = 1, 1.5, 2, 0.5 bitwise equal, all 31 LOG and 34 CRRA calls
+bitwise, no column masked. Fresh models are not bitwise reproducible in one process (`addEigenVectors`' ARPACK start), so compare deep copies.
+
+## 2026-11-04 — addEigenVectors in closed form
+`model.addEigenVectors`: y = z/(γ·z) (z·γᵀ has rank one) replaces ARPACK `eigs`, whose random start made two builds of one model
+differ by ~1e-16; on the ARG workbook instance ARPACK and the closed form agree to 3.3e-16 (as python/US since P1).

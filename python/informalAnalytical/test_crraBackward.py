@@ -203,7 +203,7 @@ check('zAtShares at the consistent shares is focGrid_t, bitwise', np.array_equal
 fin2 = np.isfinite(z2c)
 last2 = z2c.shape[0] - 1 - fin2[::-1, :].argmax(axis = 0)
 cut = fin2.any(axis = 0) & (last2 < z2c.shape[0] - 1)
-W2 = CR2.objectiveFrozen(tauG2[last2][None, :], g2, d2, parts2, th2[p2], t2, t2Lag)
+W2 = CR2.objectiveFrozen(tauG2[last2][None, :], g2, d2, parts2, z2, th2[p2], t2, t2Lag)
 check('upper-end candidates next to an infeasible cell get a finite frozen objective on the feasible sub-grid',
       cut.any() and all(np.isfinite(W2[0, fin2[:, j], j]).all() for j in np.flatnonzero(cut)),
       '-> {} of {} states end below the top of 𝒯'.format(int(cut.sum()), cut.size))

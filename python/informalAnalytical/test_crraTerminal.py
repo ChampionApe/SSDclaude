@@ -133,7 +133,7 @@ with m2.BG.cacheParams():
         gLoc = CartesianGrid(τ = np.array([τm - hFD, τm, τm + hFD]), s_ = sFive)
         dLoc = CRRA2.stateGrid_T(gLoc.flat['τ'], gLoc.flat['s_'], th2[pos], eps2[pos], t2, tLag2)
         zLoc = CRRA2.focGrid_T(dLoc, th2[pos], eps2[pos], t2).reshape(3, -1)
-        W = CRRA2.objectiveFrozen(np.full((1, sFive.size), τm), gLoc, dLoc, None, th2[pos], t2, tLag2,
+        W = CRRA2.objectiveFrozen(np.full((1, sFive.size), τm), gLoc, dLoc, None, zLoc, th2[pos], t2, tLag2,
                                   ε = eps2[pos], terminal = True)
         dW = (W[0, 2, :] - W[0, 0, :])/(2*hFD)
         err = np.max(np.abs(dW - zLoc[1])/np.maximum(1., np.abs(zLoc[1])))

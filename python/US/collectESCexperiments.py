@@ -1,9 +1,11 @@
 r""" Collect the endogenous-theta counterfactual runs across rho into one table.
 
-Run:  .venv\Scripts\python.exe python\US\collectESCexperiments.py
+Run:  .venv\Scripts\python.exe python\US\collectESCexperiments.py --theta V
       ... --costs        the ageing counterfactuals under the three costs -> escAgeingCosts.csv (see costs())
-      ... --theta V      only the rows at thetaSource V (a csv or row without the column reads as 'index'), which
-                         the merged csv then carries; without it every row, as written (atTheta)
+      ... --theta V      only the rows at thetaSource V (a csv or row without the column reads as 'index'; --theta
+                         index keeps those), which the merged csv then carries (atTheta). Without it the run is
+                         refused, since results/esc/ holds the main variant's rows (oecd26.underResults); an ESC
+                         directory outside results/ merges every row, as written.
 
 Inputs (results/esc/): escShocks.csv (rho = 1, LOG, runESC.py) and escShocksCRRA.csv (rho != 1, CRRA,
 runESCcrra.py --stage shocks). Writes results/esc/escExperiments.csv (long form, one row per
@@ -113,6 +115,13 @@ def main():
                     help = "write escAgeingCosts.csv from the paper's csvs and the --tag Costs runs instead")
     ap.add_argument('--theta', default = None, help = "keep the rows at this thetaSource only (atTheta)")
     args = ap.parse_args()
+    target = os.path.join(ESC, 'escAgeingCosts.csv' if args.costs else 'escExperiments.csv')
+    if args.theta is None:
+        import oecd26
+        if oecd26.underResults(target):
+            raise SystemExit("collectESCexperiments.py: without --theta every row on file, whatever its θ, would be "
+                             "merged into {}, which holds the main variant's (--theta config.US['theta']): pass "
+                             "--theta V (--theta index: the rows without thetaSource)".format(os.path.relpath(target, REPO)))
     if args.costs:
         stems = ('escShocks', 'escShocksCRRA', 'escShocksCosts', 'escShocksCRRACosts', 'escShocksCRRACostsMild')
         frames = {st: atTheta(pd.read_csv(os.path.join(ESC, st + '.csv')), args.theta) for st in stems
