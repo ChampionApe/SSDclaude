@@ -42,6 +42,21 @@ push and the online appendix (`archive/notes/brief_retAgeChoice.md`). Left for R
   - `OECD_Sources` documents the old index;
   - the style guide's §4 and `data/README.md` still cite the old appendix letters and "the deep test".
 - Then the rest of "For RKB" in the review response.
+- Decide k = 2 in the cost (τ² in ln f): robustness or main specification. Full run done on branch `exp/tauPower`
+  (worktree `..\SSDclaude-tauPower`, uncommitted); state, results and the to-do if adopted in its `notes/tauPower_k2.md`.
+  The calibrateWedge warm-start fix there belongs on main either way. Its microfoundation: W24 (3).
+
+**W24. RKB's three requests of 2026-11-07** (briefs in `archive/notes/`). (1) Appendix C.2 rewritten as a step-by-step
+derivation of the cost, still τ to the power one. (2) "Layer 1" prints as the model and "layer 2" as own ω: table 5
+without own ω, own ω first at figure 7.3, in section 7.3, appendix G, the generated exhibits and the online appendix;
+internal names (csvs, labels, anchors) unchanged. (3) A microfoundation of the τ² cost by a Fable theorist
+(`notes/tauPower_microfoundation.md`), compared the same day with the coauthor's `quadratic_cost.pdf` (repo root,
+untracked, written on the draft of 10-29): the same model as candidate A. RKB's decision: A's accounting (the excess
+burden) in the text, C's (the fiscal externality) in a footnote; the note's §10 has the comparison and the points for
+the coauthor's text. Running: the cross-section with λ_{n,t} = 2κπ(1−π) on the k = 2 worktree
+(`notes/brief_convexCarrier.md`). The k = 2 worktree is synced with (1) and (2). Left for RKB: C.2's two flags (the
+fall of Π/R from 0.55 to 0.47 now cited on section 7.2's path, where it was checked; Π₂₀₂₀ = 1.35 is in no table and
+section 7.2's path gives 1.36).
 
 ## Candidates, not scheduled
 

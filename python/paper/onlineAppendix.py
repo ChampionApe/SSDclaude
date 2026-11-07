@@ -51,16 +51,17 @@ class Ex:
 
 
 E = Ex
-# What the notes of page C5's figures share; each adds its variant: `omega` layer 1's political weight, `lux` how
+# What the notes of page C5's figures share; each adds its variant: `omega` the model's political weight, `lux` how
 # Luxembourg votes, `table` the label of the table with the slopes. The cost parameter carried to every country is
-# appendix C.2's Harberger elasticity, \varepsilon, never \epsilon (the universal pension of section 2).
-OECD26LAYER1 = (r'Layer 1 of the cross-country test of section \ref{{sec:esc:crossSection}}: every country at the '
+# appendix C.2's Harberger elasticity, \varepsilon, never \epsilon (the universal pension of section 2). Layer 1 prints
+# as "the model", layer 2 as "own ω" (tablesOECD26's NAMES); no exhibit prints "layer".
+OECD26LAYER1 = (r'The model of the cross-country test of section \ref{{sec:esc:crossSection}}: every country at the '
                 r'U.S.\ $\beta$ and $\varepsilon$, at its cost $\lambda_{{n,t}} = \varepsilon\,\Pi_{{n,t}}/R_{{n,t}}$, '
                 r'{omega}, with its own workers per retiree, income distribution, observed design and CSES propensities '
                 r'to vote{lux}. The model\textquotesingle s index is $1/(2-\theta)$ of the design in force in 2020 on the '
                 r'freely simulated path, its spending $\tau(1-\alpha)$ in 2020 on the path of the design it chooses; '
                 r'the lines are least-squares fits (table \ref{{table:OECD26:{table}}}).')
-MEANOMEGA, USOMEGA = r'at the mean of layer 2\textquotesingle s $\omega$', r'at the U.S.\ $\omega$'
+MEANOMEGA, USOMEGA = r'at the mean of the countries\textquotesingle{} own $\omega$', r'at the U.S.\ $\omega$'
 FLATLUX = r' (Luxembourg, which has none, at a flat profile)'
 OECD26CAPTION = r'The relations of figure \ref{fig:US:OECDdata} in the data and in the model, '
 EXHIBITS = {
@@ -159,7 +160,7 @@ EXHIBITS = {
                r'at the paper\textquotesingle s measure of the design). Under CRRA preferences the workweek with '
                r'the design pinned is not stored.'),
     # C5, in the page's order: appendix G's population and data variants in full (their slopes: the paper's
-    # table:OECD26:variants), Luxembourg left out, layer 1 at the U.S. omega
+    # table:OECD26:variants), Luxembourg left out, the model at the U.S. omega
     'OECD26_Layer1_nuNone': E('figure', 'OECD26_Layer1_nuNone',
         caption = OECD26CAPTION + r'$\nu$ uncorrected',
         note = OECD26LAYER1.format(omega = MEANOMEGA, lux = FLATLUX, table = 'variants')
@@ -189,7 +190,7 @@ EXHIBITS = {
                + r' On the {csesN} countries with a CSES survey: Luxembourg, which has none, is left out.'),
     'OECD26_Slopes_cses': E('table', 'OECD26_Slopes_cses'),
     'OECD26_Layer1_omegaUS': E('figure', 'OECD26_Layer1_omegaUS',
-        caption = OECD26CAPTION + r'layer 1 at the U.S.\ $\omega$',
+        caption = OECD26CAPTION + r'every country at the U.S.\ $\omega$',      # tablesOECD26.OMEGACAPTION['anchor']
         note = OECD26LAYER1.format(omega = USOMEGA, lux = FLATLUX, table = 'slopes_omegaUS')),
     'OECD26_Slopes_omegaUS': E('table', 'OECD26_Slopes_omegaUS'),
     # C6

@@ -71,12 +71,14 @@ OUTPUTS = {
     'US_ESC_TauTheta':        ('figure', figuresOA.escTauTheta,       'Figs/US_ESC_TauTheta.pdf'),
     # Figure 1 (fig:US:OECDdata) from stage (0)'s data/oecdFigure1.csv; also writes oecdCorrelations.csv.
     'OECDdata':               ('figure', oecdFigure1.figure,          'Figs/OECDdata.pdf'),
-    # The cross-country test at config.US['oecd26']'s variant (own turnout, Luxembourg flat; layer 1 at the mean
-    # layer-2 omega; nu at the statutory correction), on the θ variant's in-sample countries (config.US['theta']):
-    # section 6's spending at the observed designs without the cost (OECD26_Spending); figure 1.1's relations with
-    # the model's layer 1 beside the data (spending at the chosen designs, config.US['oecd26']['spendingReading']),
-    # the slopes of the data and both layers, and each country's calibrated omega (layer 2), at the design in force
-    # in 2020; the predicted against the observed design (OECD26_ThetaFit, section 7.3); appendix G's slopes under the
+    # The cross-country test at config.US['oecd26']'s variant (own turnout, Luxembourg flat; the model, layer 1, at
+    # the mean of the countries' own omega, layer 2; nu at the statutory correction), on the θ variant's in-sample
+    # countries (config.US['theta']); the outputs print layer 1 as "the model" and layer 2 as "own omega"
+    # (tablesOECD26's NAMES): section 6's spending at the observed designs without the cost (OECD26_Spending); figure
+    # 1.1's relations with the model beside the data (spending at the chosen designs,
+    # config.US['oecd26']['spendingReading']), the slopes of the data and the model, and each country's own omega,
+    # at the design in force in 2020; the predicted against the observed design, the model and own omega
+    # (OECD26_ThetaFit, section 7.3, where own omega is defined); appendix G's slopes under the
     # population and the data variants (OECD26_Variants) and the predicted design under each
     # (OECD26_ThetaFitPopulation, OECD26_ThetaFitMeasure). Each figure writes its note (Figs/<name>_note.tex). The
     # index version of figure 7.3 is built for discussion, not input. Inputs: python/US/runOECD26.py (results/oecd26/,
@@ -119,7 +121,7 @@ OUTPUTS = {
     'NUM_HorizonPaths':       ('table', tablesHorizon.numHorizonPaths,  'Tables/NUM_HorizonPaths.tex'),
     'NUM_SelectionFiles':     ('table', tablesOA.numSelectionFiles,     'Tables/NUM_SelectionFiles.tex'),
     # Page C5, the cross-country test: appendix G's variants in full (figure 7.2 and table 10 at each population and
-    # data variant; their slopes are OECD26_Variants's), Luxembourg left out and layer 1 at the U.S. omega (figure 7.2
+    # data variant; their slopes are OECD26_Variants's), Luxembourg left out and the model at the U.S. omega (figure 7.2
     # and table 5 at each). Names: the builder's output name, OECD26_<base> + tablesOECD26.suffix.
     'OECD26_Layer1_nuNone':   ('figure', partial(figuresOECD26.oecd26Figure, 1, retAge = 'none', slopesTable = False),
                                'Figs/OECD26_Layer1_nuNone.pdf'),

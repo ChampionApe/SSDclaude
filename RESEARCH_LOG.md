@@ -223,3 +223,15 @@ triage's open items: kappa drops (1+γ_{t,0})/(1+γ_{t+1,0}) (n_t is formal youn
 bitwise), sizePiR keeps the pi solved at, pinTheta=False removed, sweeps resume only at their settings, drivers
 refuse results/ without --theta, InformalSavings' objectiveFrozen anchors at the column's first feasible node (bitwise).
 writing/Paper unchanged; what stays open is in `notes/codeReview_triage.md`.
+
+## 2026-11-07 — C.2 derived step by step; layers renamed; a microfoundation of the τ² cost (W24)
+
+RKB's three requests, four agents (briefs archived the same day, `archive/INDEX.md`). C.2 now derives the cost from the
+benefit formula to f (the transfer property, the triangle, the share of revenue, both derivatives of ln f), still τ¹;
+77 pp, checkPaper OK. "Layer 1" prints as the model and "layer 2" as own ω in every output (paper, appendix G, site);
+table 5 without own ω, own ω first at figure 7.3; internal names unchanged; numbers cell by cell as before (python/paper
+log). The τ² worktree synced (build 59/0, its `notes/tauPower_k2.md`). Fable's note `notes/tauPower_microfoundation.md`:
+τ²(1−θ)² needs the uniform tax component (1−Π/R)τ and a convex extensive response (no one at the margin at a zero
+wedge); carrier π(1−π), flat across countries. The coauthor's `quadratic_cost.pdf` (untracked) is the same model; RKB
+chose its accounting, the excess burden (elasticity 3.9 at ρ = 1), with the fiscal externality (2.6) in a footnote
+(note §10). The test with λ_{n,t} = 2κπ(1−π) runs on the worktree (`notes/brief_convexCarrier.md`).

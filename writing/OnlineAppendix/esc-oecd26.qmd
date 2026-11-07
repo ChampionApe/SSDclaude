@@ -6,27 +6,29 @@ statutory retirement age, its income distribution, its observed design and its p
 from the CSES; Luxembourg, which has no CSES survey and enforces compulsory voting, votes at the same rate in every
 income group. Every country takes from the U.S. the discount factor $\beta$ and the cost of redistribution as the
 elasticity $\varepsilon$, so that country $n$ faces $\lambda_{n,t} = \varepsilon\,\Pi_{n,t}/R_{n,t}$ at its own ratio
-of the pay-as-you-go return to the market return. Layer 2 calibrates each country's political weight of the old
-$\omega$ to its pension spending at its observed design; layer 1 gives every country the mean of these weights. The
-U.S. anchor, where $\omega$ and $\varepsilon$ are calibrated, is measured as every other country is (appendix
+of the pay-as-you-go return to the market return. In the model every country also takes the same political weight of
+the old $\omega$, the mean of the weights that match each country's pension spending at its observed design; the model
+with each country's own political weight, own $\omega$ for short, calibrates each country's $\omega$ to that spending.
+The U.S. anchor, where $\omega$ and $\varepsilon$ are calibrated, is measured as every other country is (appendix
 {{< var p.app_oecd26_anchor >}} of the paper). This page shows the variants of appendix {{< var p.app_oecd26 >}} in
-full, and the test with Luxembourg left out and with layer 1 at the U.S. political weight.
+full, and the test with Luxembourg left out and with the model at the U.S. political weight.
 
 ## The paper's specification {#esc-oecd26-paper}
 
 The paper reports the test in figure {{< var p.fig_OECD26_layer1 >}} and table {{< var p.table_OECD26_slopes >}}, and
-each country's political weight and design in layer 2 in table {{< var p.table_OECD26_omega >}}. Table
-{{< var p.table_OECD26_variants >}} gives the slopes under each variant below, and figures
-{{< var p.fig_OECD26_thetaFitPopulation >}} and {{< var p.fig_OECD26_thetaFitMeasure >}} the predicted designs.
+each country's own political weight and the design it chooses with own $\omega$ in table
+{{< var p.table_OECD26_omega >}}. Table {{< var p.table_OECD26_variants >}} gives the slopes under each variant below,
+and figures {{< var p.fig_OECD26_thetaFitPopulation >}} and {{< var p.fig_OECD26_thetaFitMeasure >}} the predicted
+designs.
 
 ## Other population data {#esc-oecd26-population}
 
 Workers per retiree as the population data give them, and corrected for each country's gap to the U.S. effective age
-of labour-market exit in place of the statutory age. The data side of the test does not depend on them. The second
-layer hardly moves under either reading, since its political weights are calibrated to spending. In the first layer
-the exit age leaves the test close to the paper's. With workers per retiree uncorrected, Luxembourg, whose population
-grew fastest, chooses a design close to the Beveridgean corner, and the predicted designs track the observed ones much
-less closely; without Luxembourg they track them about as closely as under either correction (appendix
+of labour-market exit in place of the statutory age. The data side of the test does not depend on them. With own
+$\omega$ the test hardly moves under either reading, since the political weights are calibrated to spending. In the
+model the exit age leaves the test close to the paper's. With workers per retiree uncorrected, Luxembourg, whose
+population grew fastest, chooses a design close to the Beveridgean corner, and the predicted designs track the observed
+ones much less closely; without Luxembourg they track them about as closely as under either correction (appendix
 {{< var p.app_oecd26_readings >}} of the paper).
 
 ### Uncorrected {#esc-oecd26-nuNone}
@@ -46,8 +48,8 @@ less closely; without Luxembourg they track them about as closely as under eithe
 Each measure of the design is its own cross-section: the data and the model are calibrated to it, on the countries
 where it is defined, with the U.S. anchor recalibrated under it (appendix {{< var p.app_oecd26_readings >}} of the
 paper). The public tier on 23 countries leaves the test as it is. Under all mandatory tiers the relations keep their
-signs, while the first layer predicts the design less well, in part because it puts Iceland, which only this measure
-covers, close to the Beveridgean corner.
+signs, while the model predicts the design less well, in part because it puts Iceland, which only this measure covers,
+close to the Beveridgean corner.
 
 ### The public tier on 23 countries {#esc-oecd26-thetaA}
 
@@ -64,16 +66,16 @@ covers, close to the Beveridgean corner.
 ## Luxembourg left out {#esc-oecd26-luxembourg}
 
 The test on the countries with a CSES survey, all but Luxembourg. Without Luxembourg the data's index falls more steeply
-with population growth than with it, and the index of the model's first layer falls much less steeply than the data's.
+with population growth than with it, and the model's index falls much less steeply than the data's.
 
 {{< include _generated/exhibits/OECD26_Layer1_cses.qmd >}}
 
 {{< include _generated/exhibits/OECD26_Slopes_cses.qmd >}}
 
-## Layer 1 at the U.S. political weight {#esc-oecd26-omegaUS}
+## The model at the U.S. political weight {#esc-oecd26-omegaUS}
 
-Every country in layer 1 at the U.S. $\omega$ in place of the mean of layer 2's weights. Layer 2 is the paper's. At
-the U.S. weight, above that mean, the countries choose somewhat more Bismarckian designs and spend more, while the
+Every country in the model at the U.S. $\omega$ in place of the mean of the countries' own weights. The results with own
+$\omega$ do not depend on this choice and are the paper's. At the U.S. weight, above that mean, the countries choose somewhat more Bismarckian designs and spend more, while the
 cross-section is nearly the paper's: the predicted designs track the observed ones about as closely, and every slope
 keeps its sign.
 

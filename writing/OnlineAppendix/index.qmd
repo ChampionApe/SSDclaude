@@ -42,7 +42,7 @@ The design chosen by the electorate, section {{< var p.sec_esc >}}.
 - [C2. Other cost specifications](esc-costs.qmd) <span>· a cost on the design, the tax against a pinned design</span>
 - [C3. Other parameters](esc-parameters.qmd) <span>· across ρ and ξ</span>
 - [C4. The timing of the choice](esc-timing.qmd) <span>· the corner without the cost</span>
-- [C5. The cross-country test](esc-oecd26.qmd) <span>· the variants in full, Luxembourg left out, layer 1 at the U.S. weight</span>
+- [C5. The cross-country test](esc-oecd26.qmd) <span>· the variants in full, Luxembourg left out, the model at the U.S. weight</span>
 - [C6. The UK and France calibrated in full](esc-countries.qmd) <span>· the deep test, each country's own cost</span>
 :::
 

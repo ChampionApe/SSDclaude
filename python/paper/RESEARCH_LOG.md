@@ -202,3 +202,13 @@ smoothKnots, interpKind; France's and the UK's retAge and βUS, the U.S. sweep's
 of `config.US['gridSettings']`/`retAgeFR`/`retAgeUK` runs the child, which re-solves those rows; a row without the columns counts as
 current (one notice per csv: FR, UK today). The summary keeps the presence check; `--dry` prints only what would run: today nothing.
 On a temp copy at n = 51 (ρ 0.5) HEAD's `missing` returns [], the new [0.5] (`python/US/test_oecd26Theta.py` Q).
+
+## 2026-11-07 — "layer 1" prints as the model, "layer 2" as own ω (`notes/brief_ownOmega.md`, Part A)
+RKB: own ω is secondary. Every reader-facing OECD26 output now says "the model" (`Model`) and "own ω" (`Own $\omega$`); csvs,
+`layer` arguments, keys, file names, tex labels and row keys keep their names (`tablesOECD26` NAMES, `LAYERNAME`). Table 5
+(`OECD26_Slopes`, paper's variant, `slopesLayers`) drops its own-ω column and reads layer1.csv only; the site's `_cses`/`_omegaUS`
+keep both. Figure 7.2's note describes the model alone (ω = 1.20 as the mean of the weights matching spending, G.3); figure 7.3's
+note defines own ω; figure 6.2's 1.17 is the mean of the weights reproducing spending without the cost; table 11's ∗ note points to
+table 5 for its data and model rows only. No number moved: 30 regenerated tex identical to HEAD but labels and wording, table 5's
+Model = HEAD's Layer 1 cell by cell, OECD26 marks.json unchanged. build 59/0, `--map`, `--site`; test_oecd26 16/16 (new layer-word
+scan), test_onlineAppendix 11/11. Stale `_cps`/`_29`/`_size` files in `_generated/` (no page includes them) still say "layer".

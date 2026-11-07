@@ -15,7 +15,7 @@ data/oecd26_theta.csv (its in-sample countries, I = 1/(2 - θ), its spending), o
 26 for the measure 'paper'. The deep test's csv (escCountry, escCornerSlope) is synthetic too, for US_ESC_Country.
 Reads data/oecdFigure1.csv, data/oecd26_sample.csv and data/oecd26_theta.csv; writes only to the temporary directory.
 """
-import os, sys, json, tempfile, shutil
+import os, re, sys, json, tempfile, shutil
 
 import numpy as np, pandas as pd
 
@@ -50,6 +50,12 @@ SLOPE = {(V['spec'], V['betaRule']): -0.3, ('size', 'common'): -0.2, ('size', 'c
 SLOPETHETA = {'index': -0.4, 'A': -0.25, 'B': -0.35}
 P = {'size': 10.5, 'sizePiR': 20.8, 'none': np.nan}
 OMEGAMEAN = 1.2                                               # layer 1's ω under omegaRule 'mean' (the anchor's is 1.23)
+
+
+def _readerLayer(text):
+    """ The reader-facing "layer" words of a built tex or note: none may remain (tablesOECD26's NAMES); internal
+    names (layer1.csv, fig:OECD26:layer1, OECD26_Layer1, the `% row:` keys) carry a digit and are not words. """
+    return re.findall(r'(?i).{0,30}layer(?!\d).{0,30}', text)
 
 
 def _slope(spec, betaRule, theta):
@@ -318,6 +324,18 @@ def test_builders_write_and_convert():
         t.html(TT.Context(strict = True))
         keys = [l.split('% row: ')[1] for l in tex.splitlines() if '% row: ' in l]
         assert len(keys) == len(set(keys)) and len(keys) == (5 if name == 'OECD26_Slopes' else n), name
+        assert not _readerLayer(tex), (name, _readerLayer(tex))
+    # table 5 (the paper's variant) shows the data and the model alone; a variant also own ω
+    tex = T.oecd26Slopes()
+    assert r'{lYY}' in tex and r'\textbf{Model} \\' in tex and 'Own' not in tex and 'layer2.csv' not in tex
+    assert r'The model as in figure \ref{fig:OECD26:layer1}.' in tex
+    assert all(len(r) == 3 for r in _table(tex).values())
+    tex = T.oecd26Slopes(spending = 'observed')                 # a variant on the same rows
+    assert r'{lYYY}' in tex and r'\textbf{Model} & \textbf{Own $\omega$} \\' in tex and not _readerLayer(tex)
+    assert r'own $\omega$: each country\textquotesingle s $\omega$ calibrated' in tex and r'\textit{targeted}' in tex
+    assert all(len(r) == 4 for r in _table(tex).values())
+    assert r'\textbf{Model, own $\omega$}' in T.oecd26Omega() and r'(own $\omega$, figure \ref{fig:OECD26:thetaFit})' \
+        in T.oecd26Omega()
     # the paper's note points to appendix G.1 for θ; a variant's note states MEASURENOTE in full
     assert r'\ref{app:oecd26:data}' in T.oecd26Omega() and 'clipped' not in T.oecd26Omega() and C.THETADEF in T.MEASURENOTE
     paths = F.oecd26Figure(1)
@@ -326,6 +344,11 @@ def test_builders_write_and_convert():
     assert len(marks) == 5*(2*n + 2)
     line = [m for m in marks if m['id'].endswith('index_growth--model--fit')][0]
     assert abs(line['value'] + 0.3) < 1e-10 and line['row'] == 'index_growth'
+    # figure 7.2 names the model alone (own ω first appears in figure 7.3), its legend included
+    note = open([q for q in paths if q.endswith('_note.tex')][0], encoding = 'utf-8').read()
+    svg = open([q for q in paths if q.endswith('.svg')][0], encoding = 'utf-8').read()
+    assert not _readerLayer(note) and not _readerLayer(svg) and r'own $\omega$' not in note and '<!-- model -->' in svg
+    assert r'\ref{app:oecd26:layer2}' in note
     assert len(json.load(open([q for q in F.oecd26Figure(2) if q.endswith('.marks.json')][0],
                               encoding = 'utf-8'))['marks']) == 2*(2*n + 2)
 
@@ -364,10 +387,11 @@ def test_spending_slopes_exact_and_note():
     for k in T.SPENDING:
         for side in ('data', 'layer1'):
             assert T._cell(s.loc[k, side]) not in note, (k, side)
-    a = D.oecd26Anchor(spec = 'none')                    # the sample, the anchor's β, layer 1's mean ω, the turnout
+    a = D.oecd26Anchor(spec = 'none')                    # the sample, the anchor's β, the model's mean ω, the turnout
     assert ('{} countries'.format(len(SAMPLE)) in note and r'$\beta = ' + C.num(a['β'], 2) + '$' in note
-            and 'mean of the second layer' in note and C.num(OMEGAMEAN, 2) in note
-            and T.TURNOUTNOTE[V['turnout']] in note and r'\varepsilon' not in note)
+            and r'$\omega = ' + C.num(OMEGAMEAN, 2) + r'$, the mean of the political weights that reproduce each '
+                r'country\textquotesingle s spending without the cost' in note
+            and T.TURNOUTNOTE[V['turnout']] in note and r'\varepsilon' not in note and not _readerLayer(note))
     marks = json.load(open([q for q in paths if q.endswith('.marks.json')][0], encoding = 'utf-8'))['marks']
     assert len(marks) == 2*(2*len(SAMPLE) + 2)
 
@@ -412,12 +436,15 @@ def test_variants_table_population_and_measures():
     assert rows['population_nra_layer1'][0].endswith(r'$^{\ast}$') and rows['population_none_layer1'][0] == 'Uncorrected'
     assert rows['measure_{}_data'.format(THETA)][0].endswith(r'$^{\ast}$') and not rows['measure_A_data'][0].endswith('$')
     assert ' --: not computed.' in tex and r'\ref{fig:OECD26:layer1}' in tex
+    assert rows['population_nra_layer1'][1] == 'Model' and rows['population_nra_layer2'][1] == r'Own $\omega$'
+    assert (r'The model as in figure \ref{fig:OECD26:layer1}, own $\omega$ as in figure \ref{fig:OECD26:thetaFit}.'
+            in tex and not _readerLayer(tex))
 
 
 def test_layer1_omega_rules_never_mix():
     """ Layer 1 at the mean ω (the paper's) and at the U.S. ω side by side in one csv: each reader call returns its own
     rule's rows and slope, layer 2 one reading under either; a layer-1 rule asked of layer 2 is an error; the paper's
-    notes give layer 1's mean ω, the U.S.-ω variant's the anchor's. """
+    notes give the model's mean ω, the U.S.-ω variant's the anchor's; the panel titles name the rule off the paper's. """
     fresh()
     synthetic()
     synthetic(omegaRule = 'anchor', b = -0.2, layers = (1,))
@@ -429,17 +456,20 @@ def test_layer1_omega_rules_never_mix():
     assert len(D.oecd26Layer(1, omegaRule = 'anchor')) == 29 and len(D.oecd26Layer(1)) == 29
     assert T.layer1Omega(T.variant()) == OMEGAMEAN and T.layer1Omega(T.variant(omegaRule = 'anchor')) is None
     tex = T.oecd26Slopes(omegaRule = 'anchor')
-    assert '--only OECD26_Slopes_omegaUS\n' in tex and r'$\omega = 1.23$' in tex and 'mean of layer 2' not in tex
-    assert 'Model and layers as in figure' in T.oecd26Slopes()
+    assert '--only OECD26_Slopes_omegaUS\n' in tex and r'$\omega = 1.23$' in tex and 'mean of the' not in tex
+    assert T.OMEGACAPTION['anchor'] in tex and not _readerLayer(tex)
     note = open([q for q in F.oecd26Figure(1) if q.endswith('_note.tex')][0], encoding = 'utf-8').read()
-    assert 'mean of the second layer' in note and C.num(OMEGAMEAN, 2) in note
+    assert (r'$\omega = ' + C.num(OMEGAMEAN, 2) + r'$, the mean of the political weights that match each '
+            r'country\textquotesingle s spending at its observed design (appendix \ref{app:oecd26:layer2})' in note)
+    assert F.layerTitle(1) == 'Model' and F.layerTitle(1, 'anchor') == r'Model: U.S. $\omega$'
+    assert F.layerTitle(2) == r'Own $\omega$'
 
 
 def test_theta_fit_statistics_and_figures():
     """ tablesOECD26.thetaFit: r, RMSE and the RMSE at the mean over the countries other than the U.S., in θ and in
     index units, as computed here; OECD26_ThetaFit and appendix G's OECD26_ThetaFitPopulation and _Measure write their
-    marks (every dot, line and statistic); the notes point to figure 7.2, leave the statistics to the panels and, at the
-    mean ω, put the U.S. on the 45-degree line in layer 2 only. """
+    marks (every dot, line and statistic); the notes point to figure 7.2, define own ω, leave the statistics to the
+    panels and, at the mean ω, put the U.S. on the 45-degree line with own ω only. """
     fresh()
     synthetic()
     for r in C.US['oecd26']['populationVariants']:
@@ -462,10 +492,16 @@ def test_theta_fit_statistics_and_figures():
     f1 = T.thetaFit(1)
     assert 'RMSE {}'.format(C.num(f1['rmse'], 2)) not in note and '$r = ' not in note
     assert 'other {} countries'.format(f1['nStat']) in note and r'\ref{fig:OECD26:layer1}' in note
-    assert V['omegaRule'] == 'mean' and 'in the second layer it lies on the' in note
+    assert V['omegaRule'] == 'mean' and 'in the right panel it lies on the' in note
+    # own ω is defined here, where it first appears
+    assert (r'each country\textquotesingle s own political weight (own $\omega$), calibrated to its spending at its '
+            r'observed design (appendix \ref{app:oecd26:layer2})' in note and not _readerLayer(note))
+    svg = open([q for q in paths if q.endswith('.svg')][0], encoding = 'utf-8').read()
+    assert not _readerLayer(svg)
     for kind, ns in (('population', [n]*3), ('measure', [len(D.oecd26SampleOf(m)) for m in T.MEASURES])):
         paths = F.oecd26ThetaFitRows(kind)
         assert any(os.path.basename(q) == 'OECD26_ThetaFit{}.pdf'.format(kind.capitalize()) for q in paths), kind
+        assert not _readerLayer(open([q for q in paths if q.endswith('.svg')][0], encoding = 'utf-8').read()), kind
         marks = json.load(open([q for q in paths if q.endswith('.marks.json')][0], encoding = 'utf-8'))['marks']
         assert len(marks) == sum(2*(k + 2) for k in ns), kind
 

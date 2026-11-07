@@ -4,6 +4,10 @@ two of section 6's spending test at the observed designs without the cost, spend
 weights (OECD26_Omega), the five slopes under appendix G's population and data variants (OECD26_Variants), and the
 predicted against the observed design (thetaFit, figuresOECD26's OECD26_ThetaFit*).
 
+NAMES: layer 1 (layer1.csv, `layer` 1) is printed as "the model" (header `Model`), layer 2 (layer2.csv, each country's
+own political weight) as "own ω" (`Own $\omega$`); no output prints "layer". OECD26_Slopes at the paper's variant
+shows the model alone (table 5); own ω's slopes there are OECD26_Variants' starred rows.
+
 THE DESIGN'S MEASURE (`theta`, config.US['theta'] by default): the data side's index is I = 1/(2 - θ) of that variant
 of data/oecd26_theta.csv and its spending the variant's, on its countries (datasets.oecd26SampleOf: inSample and a
 finite θ); the model's rows are the variant's (datasets.oecd26Dir). `theta` 'paper' is figure 1.1's index on
@@ -21,8 +25,8 @@ Every builder takes
            the anchor's);
   spending the model's spending: 'chosen' (100 τInForce (1 - α), the 2020 tax on the path whose design in force is the
            chosen one, = spending2020 τInForce/τ2020; reading 'inForce' and a cost only) | 'observed' (spending2020, the
-           tax at the observed design, which layer 2's ω matches by construction);
-  omegaRule layer 1's ω: 'mean' (the mean of layer 2's) | 'anchor' (the U.S. anchor's);
+           tax at the observed design, which own ω (layer 2) matches by construction);
+  omegaRule the model's (layer 1's) ω: 'mean' (the mean of the countries' own ω) | 'anchor' (the U.S. anchor's);
   retAge   ν's retirement-age correction: 'nra' (statutory age) | 'none' | 'exit' (effective exit age);
   theta    the design's measure (config.THETANAMES): config.US['theta'] or a data variant (results/oecd26_theta_<V>/);
 each None for the paper's variant, PAPER, which is config.US['oecd26']'s (sample '26', spending its
@@ -70,10 +74,12 @@ BETACAPTION = {'common': r'the U.S.\ $\beta$ in every country',
                'commonR': r'each country\textquotesingle s $\beta$ set to the U.S.\ 2020 return'}
 TURNOUTCAPTION = {'csesFlat': 'each country at its own turnout', 'cses': 'without Luxembourg'}
 SPENDINGCAPTION = {'chosen': 'spending at the chosen designs', 'observed': 'spending at the observed designs'}
-OMEGACAPTION = {'anchor': r'layer 1 at the U.S.\ $\omega$', 'mean': r'layer 1 at the mean $\omega$'}
+OMEGACAPTION = {'anchor': r'every country at the U.S.\ $\omega$', 'mean': r'every country at the mean $\omega$'}
 RETAGECAPTION = {'none': r'$\nu$ uncorrected', 'exit': r'$\nu$ corrected at the effective exit age',
                  'nra': r'$\nu$ corrected at the statutory retirement age'}
 THETACAPTION = {m: r'the design measured as ' + C.THETANAMES.get(m, m) for m in MEASURES}
+# A layer as a header or row label prints it (NAMES above).
+LAYERNAME = {1: 'Model', 2: r'Own $\omega$'}
 # The notes' sentence on the propensities to vote by income group.
 TURNOUTNOTE = {'csesFlat': r'Turnout: each country\textquotesingle s own propensities to vote by income group, from the '
                            r'CSES; Luxembourg, which has no CSES survey and enforces compulsory voting, at a flat profile.',
@@ -348,35 +354,46 @@ def _and(items):
     return items[0] if len(items) == 1 else ', '.join(items[:-1]) + ' and ' + items[-1]
 
 
+def _meanWords(v):
+    """ The model's ω under omegaRule 'mean' in words, for a note that does not define own ω beside it. """
+    return (r'the mean of the political weights that match each country\textquotesingle s spending'
+            + (r' at its observed design' if v['spending'] == 'chosen' else ''))
+
+
 def _layersText(a, v, matches = True, layers = (1, 2), ω = None):
-    r""" The note's sentence on what the layers share with the anchor `a` and what layer 2 calibrates, at the
-    variant `v`; `matches` adds that layer 2 then matches spending (at the observed design under spending 'chosen');
-    `layers` the layers the output shows; `ω` layer 1's ω under omegaRule 'mean' (layer1Omega(v) where None). """
+    r""" The note's sentence on the model (layer 1: what every country shares with the anchor `a`) and, where `layers`
+    holds 2, own ω (layer 2: what each country calibrates), at the variant `v`; `matches` adds that own ω then matches
+    spending (under spending 'observed'); `ω` the model's ω under omegaRule 'mean' (layer1Omega(v) where None), the
+    mean of the countries' own ω where own ω is defined beside it, else in words (_meanWords). """
     ω = layer1Omega(v) if ω is None else ω
     items = _shared(a, v)
     if ω is not None:
         items = [i for i in items if not i.startswith(r'$\omega')]
-    mean = '' if ω is None else r', at $\omega = ' + C.num(ω, 2) + r'$, the mean of layer 2\textquotesingle s'
+    both = 2 in layers
+    mean = '' if ω is None else (r', at $\omega = ' + C.num(ω, 2) + r'$, '
+                                 + (r'the mean of the countries\textquotesingle{} own $\omega$' if both else _meanWords(v)))
     tail = {'size': '', 'none': ', without the cost',
             'sizePiR': r', each at its cost $\lambda_{n,t} = \varepsilon\,\Pi_{n,t}/R_{n,t}$'}[v['spec']] \
         + (r', with the $\beta$ that sets its 2020 return to the U.S.\ one' if v['betaRule'] == 'commonR' else '')
     calibrated = r'$\omega$' if v['betaRule'] == 'common' else r'$\beta$ and $\omega$'
-    one = r'Layer 1: every country' + (r' at the U.S.\ ' + _and(items) if items else '') + mean + tail
-    two = ('layer 2: ' + calibrated + r' calibrated to each country\textquotesingle s spending'
+    one = r'The model: every country' + (r' at the U.S.\ ' + _and(items) if items else '') + mean + tail
+    two = (r'own $\omega$: each country\textquotesingle s ' + calibrated + r' calibrated to its spending'
            + (r' at its observed design' if v['spending'] == 'chosen' else '')
            + (r' and the U.S.\ 2020 return' if v['betaRule'] == 'commonR' else '')
            + (', which it then matches' if matches and v['spending'] == 'observed' else ''))
-    if layers == (1,):
+    if not both:
         return one + '.'
     return one + '; ' + two + '.'
 
 
 def specText(a, v, matches = True, layers = (1, 2)):
-    r""" The notes' account of the model, its layers and the turnout. The paper's variant points to figure 7.2
-    (`OECD26_Layer1`), whose note and section 7.3 define them (notes/paper_styleGuide.md, "What a note holds"); a
-    variant states them in full, since they differ from figure 7.2's. """
+    r""" The notes' account of the model, own ω (where `layers` holds 2) and the turnout. The paper's variant points to
+    figure 7.2 (`OECD26_Layer1`), whose note and section 7.3 define the model, and to figure 7.3 (`OECD26_ThetaFit`),
+    whose note defines own ω (notes/paper_styleGuide.md, "What a note holds"); a variant states them in full, since
+    they differ from figures 7.2's and 7.3's. """
     if suffix(**v) == '':
-        return r'Model and layers as in figure \ref{fig:OECD26:layer1}.'
+        return (r'The model as in figure \ref{fig:OECD26:layer1}'
+                + (r', own $\omega$ as in figure \ref{fig:OECD26:thetaFit}' if 2 in layers else '') + '.')
     return modelText(v) + ' ' + _layersText(a, v, matches, layers) + ' ' + turnoutNote(v['turnout'])
 
 
@@ -390,38 +407,45 @@ def modelText(v):
             + r', and its spending $\tau(1-\alpha)$ ' + spend + '.')
 
 
+def slopesLayers(v):
+    """ The layers OECD26_Slopes shows at the variant `v`: the model alone at the paper's variant (table 5), the model
+    and own ω at any other. """
+    return (1,) if suffix(**v) == '' else (1, 2)
+
+
 def oecd26Slopes(turnout = None, sample = None, reading = None, spec = None, betaRule = None, spending = None,
                  omegaRule = None, retAge = None, theta = None):
-    r""" The slopes of figure 1.1's relations: the data on the sample, the model with layer 1's political weight
-    (the mean of layer 2's, or the U.S. one) and the U.S. cost (layer 1) and with each country's own political
-    weight (layer 2). """
+    r""" The slopes of figure 1.1's relations: the data on the sample and the model (layer 1: the U.S. cost and one
+    political weight, the mean of the countries' own or the U.S. one), and at a variant other than the paper's also
+    with each country's own political weight (own ω, layer 2; slopesLayers). """
     v = variant(turnout, sample, reading, spec, betaRule, spending, omegaRule, retAge, theta)
-    s = slopes(**v)
+    layers = slopesLayers(v)
+    s = slopes(**v, layers = layers)
     a = D.oecd26Anchor(v['turnout'], v['spec'], _thetaSource(v))
     body = []
     for _, r in s.iterrows():
         label = YTEX[r['y']] + ' on ' + XTEX[r['x']]
-        cells = [label, _cell(r['data'], stack = True), _cell(r['layer1'], stack = True),
-                 r'\textit{targeted}' if r['targeted2'] else _cell(r['layer2'], stack = True)]
+        cells = ([label, _cell(r['data'], stack = True), _cell(r['layer1'], stack = True)]
+                 + ([r'\textit{targeted}' if r['targeted2'] else _cell(r['layer2'], stack = True)] if 2 in layers else []))
         body.append(' & '.join(cells) + r' \\ % row: ' + rowKey(r['y'] + '_' + r['x']))
     note = (r'\textit{Note:} Least-squares slopes, standard errors in parentheses, ' + '{} countries. '.format(s.attrs['n'])
-            + specText(a, v))
+            + specText(a, v, layers = layers))
     sfx = suffix(**v)
     return _xwrap('OECD26_Slopes' + sfx,
-                  D.oecd26DirRel(_thetaSource(v)) + 'layer1.csv, layer2.csv, anchor.csv; data/oecdFigure1.csv, '
-                  'oecd26_theta.csv',
+                  D.oecd26DirRel(_thetaSource(v)) + ''.join('layer{}.csv, '.format(k) for k in layers)
+                  + 'anchor.csv; data/oecdFigure1.csv, oecd26_theta.csv',
                   r'Figure \ref{fig:US:OECDdata}\textquotesingle s relations in the data and in the model'
                   + variantCaption(**v),
-                  'table:OECD26:slopes' + sfx, 'lYYY',
-                  [r'\textbf{Relation}', r'\textbf{Data}', r'\textbf{Layer 1}', r'\textbf{Layer 2}'],
+                  'table:OECD26:slopes' + sfx, 'l' + 'Y'*(1 + len(layers)),
+                  [r'\textbf{Relation}', r'\textbf{Data}'] + [r'\textbf{' + LAYERNAME[k] + '}' for k in layers],
                   '\n'.join(body), note, width = r'\textwidth')
 
 
 def oecd26Omega(turnout = None, sample = None, reading = None, spec = None, betaRule = None, retAge = None,
                 theta = None):
-    r""" Layer 2 by country: the inputs that differ across countries (workers per retiree in 2020, the dispersion
-    of relative incomes, spending, the index and the design it implies), the calibrated political weight and the
-    design predicted at the U.S. cost, in the order of figure 1.1's footnote. Layer 1's ω rule is no part of it. """
+    r""" Own ω (layer 2) by country: the inputs that differ across countries (workers per retiree in 2020, the
+    dispersion of relative incomes, spending, the index and the design it implies), the calibrated political weight and
+    the design predicted at the U.S. cost, in the order of figure 1.1's footnote. The model's ω rule is no part of it. """
     v = variant(turnout, sample, reading, spec, betaRule, retAge = retAge, theta = theta)
     _check(v)
     p = panelData(2, **v)
@@ -464,7 +488,7 @@ def oecd26Omega(turnout = None, sample = None, reading = None, spec = None, beta
         note = (r'\textit{Note:} ' + '{} countries'.format(len(p)) + r'. $\nu_{2020}$, workers per retiree; '
                 r'$\tilde V$, the dispersion of relative incomes at the U.S.\ income percentiles; spending in \% of '
                 r'GDP; $\theta$ and $I = 1/(2-\theta)$ as in appendix \ref{app:oecd26:data}. $\omega$ is calibrated to '
-                r'spending at the observed design (layer 2, figure \ref{fig:OECD26:layer1}); the last two columns are '
+                r'spending at the observed design (own $\omega$, figure \ref{fig:OECD26:thetaFit}); the last two columns are '
                 r'the model\textquotesingle s design for 2020, chosen in 1990, and its index. $^{\ast}$The anchor, '
                 r'where $\omega$ and $\varepsilon$ are calibrated.' + dagger)
     else:
@@ -473,7 +497,7 @@ def oecd26Omega(turnout = None, sample = None, reading = None, spec = None, beta
                 + measureNote(v) + ' ' + head + cost + r'; the last two columns are the model\textquotesingle s design, '
                 + design + r', and its index.' + anchor + dagger + ' ' + turnoutNote(v['turnout']))
     # two header rows, the data's columns and the model's under a spanner each, so that nine columns fit
-    header = (r' & \multicolumn{5}{c}{\textbf{Data}} & \multicolumn{3}{c}{\textbf{Model, layer 2}} \\' + '\n'
+    header = (r' & \multicolumn{5}{c}{\textbf{Data}} & \multicolumn{3}{c}{\textbf{Model, own $\omega$}} \\' + '\n'
               + r'\cmidrule(lr){2-6}\cmidrule(lr){7-9}' + '\n'
               + r'\textbf{Country} & $\nu_{2020}$ & $\tilde V$ & spending & $I$ & $\theta$ & $\omega$ & $\theta$ & $I$')
     sfx = suffix(**v)
@@ -515,11 +539,12 @@ def _variantSlopes(paper = False, **kw):
 
 def oecd26Variants():
     r""" The slopes of figure 1.1's relations (OECD26_Slopes's five) under appendix G's variants, one column per
-    relation. Panel A, the population data: the data (the same at every ν) and layers 1 and 2 at each reading of ν
-    (populationRows, the paper's starred), then the uncorrected ν without Luxembourg (turnout 'cses'), with its own data
-    on its 20 countries. Panel B, the measure of the design: per measure (MEASURES, the paper's first) its own data, on
-    its own countries, and layers 1 and 2, the data variants from results/oecd26_theta_<V>/ (stage (ii)'s
-    oecd26Variants), at the paper's ν. A variant whose rows are missing or stale prints `--`; the paper's own (starred) raise. Rows keyed
+    relation. Panel A, the population data: the data (the same at every ν) and the model and own ω (layers 1 and 2,
+    rows `Model`, `Own $\omega$`) at each reading of ν (populationRows, the paper's starred), then the uncorrected ν
+    without Luxembourg (turnout 'cses'), with its own data on its 20 countries. Panel B, the measure of the design: per
+    measure (MEASURES, the paper's first) its own data, on its own countries, and the model and own ω, the data variants
+    from results/oecd26_theta_<V>/ (stage (ii)'s oecd26Variants), at the paper's ν. A variant whose rows are missing or
+    stale prints `--`; the paper's own (starred) raise; the starred own-ω rows are the paper's only own-ω slopes. Rows keyed
     `population_data`, `population_<retAge>_<layer1|layer2>`, `population_none_cses_<data|layer1|layer2>`,
     `measure_<θ>_<data|layer1|layer2>`. """
     pop = {r: _variantSlopes(r == PAPER['retAge'], retAge = r) for r in populationRows()}
@@ -540,15 +565,15 @@ def oecd26Variants():
     body = [r'\multicolumn{%d}{l}{\textit{A. The population data, $\nu$}} \\' % ncol,
             keyed(' & '.join(['Data', ''] + cells(first, 'data')) + r' \\', 'population_data')]
     for r, s in pop.items():
-        for side, lab in (('layer1', 'Layer 1'), ('layer2', 'Layer 2')):
+        for side, lab in (('layer1', LAYERNAME[1]), ('layer2', LAYERNAME[2])):
             name = cap(C.RETAGENAMES[r]) + star(r == PAPER['retAge']) if side == 'layer1' else ''
             body.append(keyed(' & '.join([name, lab] + cells(s, side)) + r' \\', 'population_{}_{}'.format(r, side)))
-    for side, lab in (('data', 'Data'), ('layer1', 'Layer 1'), ('layer2', 'Layer 2')):
+    for side, lab in (('data', 'Data'), ('layer1', LAYERNAME[1]), ('layer2', LAYERNAME[2])):
         name = cap(C.RETAGENAMES['none']) + r', without Luxembourg' if side == 'data' else ''
         body.append(keyed(' & '.join([name, lab] + cells(noLux, side)) + r' \\', 'population_none_cses_{}'.format(side)))
     body.append(r'\multicolumn{%d}{l}{\textit{B. The measure of the design, $\theta$}} \\' % ncol)
     for m, s in meas.items():
-        for side, lab in (('data', 'Data'), ('layer1', 'Layer 1'), ('layer2', 'Layer 2')):
+        for side, lab in (('data', 'Data'), ('layer1', LAYERNAME[1]), ('layer2', LAYERNAME[2])):
             name = cap(C.THETANAMES[m]) + star(m == PAPER['theta']) if side == 'data' else ''
             body.append(keyed(' & '.join([name, lab] + cells(s, side)) + r' \\', 'measure_{}_{}'.format(m, side)))
     n = first.attrs['n']
@@ -562,7 +587,8 @@ def oecd26Variants():
             + r'. Panel B: each measure of $\theta$ is its own cross-section, the data '
             r'and the model calibrated to it, on its countries' + (' (' + ns + ')' if ns else '')
             + r', at the paper\textquotesingle s $\nu$. ' + specText(None, variant())
-            + r' $^{\ast}$The paper\textquotesingle s specification, table \ref{table:OECD26:slopes}.' + _dashNote(body))
+            + r' $^{\ast}$The paper\textquotesingle s specification; its data and model rows are those of table '
+            r'\ref{table:OECD26:slopes}.' + _dashNote(body))
     header = r'\textbf{Variant} & & ' + ' & '.join(RELTEX[k] for k in RELATIONS)
     return _xwrap('OECD26_Variants',
                   'results/oecd26/, results/oecd26_theta_<V>/ layer1.csv, layer2.csv, anchor.csv; data/oecd26_theta.csv, '

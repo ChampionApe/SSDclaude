@@ -124,6 +124,13 @@ Where the reasoning behind each choice the paper rests on is written down.
   the note's proposed edits D1–D3, `docReview_proposals.md`. Commits `dfccd4e`, `0253295`, `e0a0f02`; root log
   2026-11-04 (evening, night). Left open: C15 in `notes/TODO.md`.
 
+**The cost's derivation, the cross-section's names and the τ² cost (2026-11-07), archived 2026-11-07** — `notes/`
+- Appendix C.2 as a step-by-step derivation of the cost, still τ¹: `brief_appendixC2.md`. "Layer 1" prints as the
+  model and "layer 2" as own ω (table 5 without own ω, own ω first at figure 7.3; internal names unchanged):
+  `brief_ownOmega.md`. The theorist's brief for a microfoundation of the τ² cost: `brief_tauPowerMicrofoundation.md`;
+  the note it produced, with RKB's decision on the accounting after the coauthor's version, is live
+  (`notes/tauPower_microfoundation.md`). Root log 2026-11-07; open in `notes/TODO.md` W24.
+
 ## Session logs
 
 `sessionLogs/RESEARCH_LOG_<log>.md`, one per live log, oldest first: verbatim through 2026-09-11, then a heading
@@ -364,6 +371,10 @@ Archived 2026-11-04 (the cross-section's theme above):
   appendix G's variants.
 - `brief_codeDocReview.md`, `codeReview_triage.md`, `docReview_proposals.md`: the code and technical-note review
   (its theme above).
+
+Archived 2026-11-07 (the theme above):
+- `brief_appendixC2.md`, `brief_ownOmega.md`, `brief_tauPowerMicrofoundation.md`: C.2's derivation, the own-ω names,
+  the τ² microfoundation's brief.
 
 ## Code
 
